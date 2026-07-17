@@ -53,6 +53,7 @@ $routes = [
 ];
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if ($method === 'HEAD') $method = 'GET'; // serve HEAD via the GET handler (body is discarded by the server)
 foreach ($routes as [$m, $rx, $fn]) {
     if ($m !== $method) continue;
     if (preg_match($rx, $path, $params)) {

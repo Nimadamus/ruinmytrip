@@ -15,7 +15,8 @@ function csrf_field(): string {
 function csrf_check(): void {
     $sent = $_POST['_csrf'] ?? '';
     if (!is_string($sent) || !hash_equals($_SESSION['_csrf'] ?? '', $sent)) {
-        http_response_code(419);
+        // 403 (standard) — not 419: CDN/edge proxies reject non-standard codes and rewrite them to 500.
+        http_response_code(403);
         exit('Invalid or expired form token. Go back and try again.');
     }
 }
