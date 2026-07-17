@@ -945,6 +945,22 @@ function admin_mail_check(array $a): void {
         printf("%-16s %s
 ", $k, is_bool($v) ? ($v ? 'yes' : 'NO') : (string)$v);
     }
+    // Optional: /admin/mail-check?smtp=1 probes whether this host can open an outbound SMTP
+    // connection at all. Render is documented (and previously measured on another service) to
+    // block outbound SMTP; this measures it from THIS container rather than assuming.
+    if (input('smtp') === '1') {
+        foreach ([['smtp.gmail.com',465],['smtp.gmail.com',587],['smtp.gmail.com',2525]] as [$h,$port]) {
+            $t0 = microtime(true);
+            $fp = @fsockopen($h, $port, $errno, $errstr, 8);
+            $ms = (int)round((microtime(true)-$t0)*1000);
+            if ($fp) { $banner = trim((string)@fgets($fp, 128)); fclose($fp);
+                       printf("smtp %s:%-5d OPEN  %dms  banner=%s
+", $h, $port, $ms, substr($banner,0,40)); }
+            else     { printf("smtp %s:%-5d BLOCKED %dms  (%d %s)
+", $h, $port, $ms, $errno, substr($errstr,0,40)); }
+        }
+    }
+
     // Optional live probe: /admin/mail-check?send=1 sends one email to the admin's own address.
     if (input('send') === '1') {
         $me = current_user();
