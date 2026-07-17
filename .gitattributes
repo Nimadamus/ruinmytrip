@@ -1,0 +1,6 @@
+# Keep LF in the repo for files that run inside the Linux container / shells.
+* text=auto
+*.sh text eol=lf
+Dockerfile text eol=lf
+docker/* text eol=lf
+*.php text eol=lf
