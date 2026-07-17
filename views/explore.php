@@ -1,0 +1,29 @@
+<?php /** @var array $dests @var array $cats @var string $qs @var string $cat */ ?>
+<div class="wrap">
+  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Explore</p>
+  <h1>Explore destinations</h1>
+  <p class="muted">Traveler-reviewed places, honest guides, and who's heading there next.</p>
+  <form action="<?= e(url('explore')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
+    <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">
+    <select name="category" onchange="this.form.submit()">
+      <option value="">All styles</option>
+      <?php foreach ($cats as $c): ?>
+        <option value="<?= e($c['category']) ?>" <?= $cat===$c['category']?'selected':'' ?>><?= e(ucfirst($c['category'])) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <button class="btn btn-primary" type="submit">Search</button>
+  </form>
+  <?php if (!$dests): ?><p class="muted">No destinations match. Try a broader search.</p><?php endif; ?>
+  <div class="grid g-3" style="padding-bottom:50px">
+    <?php foreach ($dests as $d): ?>
+      <article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>">
+        <img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name']) ?>">
+        <div class="card-body">
+          <span class="chip"><?= e($d['category']) ?></span>
+          <h3><?= e($d['name']) ?>, <?= e($d['country']) ?></h3>
+          <p class="muted"><?= e($d['summary']) ?></p>
+          <div class="meta-row"><?= (int)$d['reviews'] ?> reviews · <?= (int)$d['trips'] ?> trips</div>
+        </div></a></article>
+    <?php endforeach; ?>
+  </div>
+</div>
