@@ -338,10 +338,22 @@ function trip_new_form(array $a): void {
 function trip_create(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $title = input('title'); $body = input('body'); $dest = (int)input('destination_id');
-    $cover = input('cover_url'); $visited = input('visited_on');
+    $cover = trim((string) input('cover_url')); $visited = input('visited_on');
     $errors = [];
+    if (!rmt_rate_ok('trip_create', (string)$me['id'], 20, 3600)) $errors[] = 'You are posting very fast. Try again later.';
     if (strlen($title) < 5) $errors[] = 'Give your trip a title (5+ characters).';
     if (strlen($body) < 20) $errors[] = 'Add a bit more to your story (20+ characters).';
+    if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
+    if (mb_strlen($body) > 20000) $errors[] = 'That story is too long.';
+    // Same restriction as profile photos: an unvalidated URL rendered into <img src> is a
+    // javascript:/data: delivery vector.
+    if ($cover !== '' && (!filter_var($cover, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $cover))) {
+        $errors[] = 'Cover photo URL must be a full https:// web address.';
+    }
+    if ($dest > 0 && !dest_by_id($dest)) $errors[] = 'That destination does not exist.';
+    if ($visited !== '' && (strtotime($visited) === false || strtotime($visited) > time())) {
+        $errors[] = 'That trip date is not valid.';
+    }
     if ($errors) { view('trip_new', ['dests'=>all_dests(),'errors'=>$errors], ['title'=>'Share a trip — RuinMyTrip']); return; }
     $d = $dest ? dest_by_id($dest) : null;
     $cover = $cover ?: ($d['hero_url'] ?? '');
@@ -543,11 +555,50 @@ function follow_action(array $a): void {
     redirect(input('return','/'));
 }
 
+/**
+ * Interactable content types -> table. Same allow-list discipline as reports: a type that
+ * reaches a table name is never taken raw from the request.
+ */
+const RMT_INTERACT_TARGETS = [
+    'trip'   => 'trips',
+    'review' => 'reviews',
+    'guide'  => 'guides',
+    'meetup' => 'meetups',
+];
+
+/**
+ * Is $tt#$tid something $user is allowed to interact with (comment on, like, save)?
+ *
+ * You may only touch content you can actually SEE. Without this, a stranger could comment on and
+ * like another user's unpublished draft purely by guessing its id — the draft 404s for them, but
+ * the interaction endpoints never checked. Proven before this fix: @snoop landed a comment and a
+ * like on a draft they could not view.
+ */
+function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
+    $table = RMT_INTERACT_TARGETS[$tt] ?? null;
+    if (!$table || $tid < 1) return false;
+
+    $row = q_one("SELECT user_id, status FROM {$table} WHERE id = ?", [$tid]);
+    if (!$row) return false;                       // must exist — no ghost interactions
+    if (($row['status'] ?? '') === 'published') return true;
+    if (!$user) return false;
+    if ((int) ($row['user_id'] ?? 0) === (int) $user['id']) return true;   // own draft
+    return in_array($user['role'] ?? '', ['admin', 'mod'], true);
+}
+
 function react_action(array $a): void {
-    require_login(); csrf_check(); $me=current_user();
-    $kind=input('kind','like'); $tt=input('target_type'); $tid=(int)input('target_id');
-    $tbl = $kind==='save' ? 'saves' : 'likes';
-    if (!in_array($tt,['trip','review','guide','meetup'],true) || !$tid) redirect(input('return','/'));
+    require_login(); csrf_check(); $me = current_user();
+    $kind = input('kind', 'like') === 'save' ? 'save' : 'like';
+    $tbl  = $kind === 'save' ? 'saves' : 'likes';
+    $tt   = (string) input('target_type');
+    $tid  = (int) input('target_id');
+
+    if (!rmt_can_interact($tt, $tid, $me)) redirect(input('return', '/'));
+    if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(input('return', '/'));
+    }
+
     $has = q_one("SELECT 1 FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?", [(int)$me['id'],$tt,$tid]);
     if ($has) db()->prepare("DELETE FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?")->execute([(int)$me['id'],$tt,$tid]);
     else db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id) VALUES (?,?,?)")->execute([(int)$me['id'],$tt,$tid]);
@@ -555,12 +606,19 @@ function react_action(array $a): void {
 }
 
 function comment_action(array $a): void {
-    require_login(); csrf_check(); $me=current_user();
-    $tt=input('target_type'); $tid=(int)input('target_id'); $body=input('body');
-    if ($body!=='' && in_array($tt,['trip','review','guide'],true) && $tid) {
-        q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
-            [(int)$me['id'],$tt,$tid,mb_substr($body,0,2000),date('Y-m-d H:i:s')]);
+    require_login(); csrf_check(); $me = current_user();
+    $tt   = (string) input('target_type');
+    $tid  = (int) input('target_id');
+    $body = trim((string) input('body'));
+
+    if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(input('return','/'));
+    if (!rmt_rate_ok('comment', (string)$me['id'], 30, 3600)) {
+        flash('You are commenting very fast. Try again shortly.');
+        redirect(input('return','/'));
     }
+
+    q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
+        [(int)$me['id'], $tt, $tid, mb_substr($body, 0, 2000), date('Y-m-d H:i:s')]);
     redirect(input('return','/'));
 }
 
