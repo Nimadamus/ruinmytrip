@@ -45,6 +45,11 @@ def die(msg):
 
 def http(url, method="GET", data=None, headers=None):
     req = urllib.request.Request(url, method=method, headers=headers or {})
+    # Resend sits behind Cloudflare, which blocks the default Python-urllib user agent with
+    # "error code: 1010" — an HTML edge error that looks nothing like an API response and is
+    # easy to misread as a Resend failure. Always send a real UA.
+    req.add_header("User-Agent", "ruinmytrip-setup/1.0")
+    req.add_header("Accept", "application/json")
     body = None
     if data is not None:
         body = json.dumps(data).encode()
