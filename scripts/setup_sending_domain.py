@@ -68,16 +68,25 @@ def public_ip():
         return r.read().decode().strip()
 
 
-def nc_call(command, extra=None):
-    """Namecheap XML API. Returns the raw XML."""
+def nc_call(command, extra=None, method="GET"):
+    """
+    Namecheap XML API. POST is used for setHosts because the DKIM public key is ~218 chars and a
+    long GET query string silently drops records (Namecheap returns Status=OK but writes fewer
+    records than sent — observed Jul 17 2026).
+    """
     params = {
         "ApiUser": NC_USER, "ApiKey": NC_KEY, "UserName": NC_USER,
         "Command": command, "ClientIp": public_ip(),
     }
     params.update(extra or {})
-    url = "https://api.namecheap.com/xml.response?" + urllib.parse.urlencode(params)
-    with urllib.request.urlopen(url, timeout=45) as r:
-        x = r.read().decode()
+    if method == "POST":
+        req = urllib.request.Request("https://api.namecheap.com/xml.response",
+            data=urllib.parse.urlencode(params).encode(), method="POST",
+            headers={"Content-Type": "application/x-www-form-urlencoded"})
+        x = urllib.request.urlopen(req, timeout=45).read().decode()
+    else:
+        url = "https://api.namecheap.com/xml.response?" + urllib.parse.urlencode(params)
+        x = urllib.request.urlopen(url, timeout=45).read().decode()
     status = re.search(r'ApiResponse Status="(\w+)"', x)
     if not status or status.group(1) != "OK":
         errs = re.findall(r'<Error Number="(\d+)">([^<]+)</Error>', x)
@@ -86,12 +95,13 @@ def nc_call(command, extra=None):
 
 
 def read_zone():
-    """Live host records + EmailType. EmailType=FWD is load-bearing: it generates the MX+SPF."""
+    """Live host records + EmailType. NOTE the parser: a naive [^/]+ regex breaks on the '/' in a
+    DKIM base64 value and makes present records look missing — use a >-terminated match."""
     x = nc_call("namecheap.domains.dns.getHosts", {"SLD": SLD, "TLD": TLD})
     res = re.search(r"<DomainDNSGetHostsResult([^>]*)>", x)
     attrs = dict(re.findall(r'(\w+)="([^"]*)"', res.group(1))) if res else {}
     hosts = []
-    for row in re.findall(r"<host\s([^/]+)/>", x, re.I):
+    for row in re.findall(r"<host\b([^>]*?)/>", x, re.I):
         d = dict(re.findall(r'(\w+)="([^"]*)"', row))
         hosts.append({
             "Name": d.get("Name", "@"), "Type": d.get("Type", "A"),
@@ -110,7 +120,7 @@ def write_zone(hosts, email_type):
         extra[f"TTL{i}"] = h["TTL"]
         if h["Type"] == "MX":
             extra[f"MXPref{i}"] = h["MXPref"]
-    nc_call("namecheap.domains.dns.setHosts", extra)
+    nc_call("namecheap.domains.dns.setHosts", extra, method="POST")
 
 
 def key(h):
@@ -155,45 +165,62 @@ def main():
 
     print("\n== 2. Namecheap: read the live zone")
     hosts, email_type = read_zone()
-    print(f"   EmailType={email_type}  (FWD is what generates the eforward MX + SPF — must be resent)")
+    print(f"   EmailType={email_type}")
     for h in hosts:
         print(f"     {h['Type']:6} {h['Name']:24} -> {h['Address'][:50]}")
-    before = {key(h) for h in hosts}
 
-    print("\n== 3. Merge (existing records kept verbatim)")
-    merged = list(hosts)
-    for r in records:
-        # Resend gives FQDNs; Namecheap wants the name relative to the apex.
-        name = r["name"]
-        if name.endswith("." + SLD + "." + TLD):
-            name = name[: -(len(SLD) + len(TLD) + 2)]
-        elif name == f"{SLD}.{TLD}":
-            name = "@"
-        new = {"Name": name, "Type": r["type"].upper(),
-               "Address": r["value"], "MXPref": str(r.get("priority") or 10), "TTL": "1799"}
-        if key(new) in before:
-            print(f"   = already present: {new['Type']} {new['Name']}")
-            continue
-        merged.append(new)
-        print(f"   + ADD {new['Type']:5} {new['Name']:30} -> {new['Address'][:50]}")
+    # Resend needs an MX (send.<domain> Return-Path). Namecheap DROPS custom MX while
+    # EmailType=FWD, so we must switch to EmailType=MX. Under FWD the eforward1-5 MX and the
+    # forwarding SPF are AUTO-GENERATED and absent from the host list — switching to MX would
+    # lose them, so we re-author them explicitly. (Checked first: if no forwarding rules are
+    # configured they are cosmetic, but we preserve them regardless so forwarding still works.)
+    EFORWARD = [
+        ("@", "MX", "eforward1.registrar-servers.com.", "10"),
+        ("@", "MX", "eforward2.registrar-servers.com.", "10"),
+        ("@", "MX", "eforward3.registrar-servers.com.", "10"),
+        ("@", "MX", "eforward4.registrar-servers.com.", "15"),
+        ("@", "MX", "eforward5.registrar-servers.com.", "20"),
+        ("@", "TXT", "v=spf1 include:spf.efwd.registrar-servers.com ~all", None),
+    ]
+
+    print("\n== 3. Build target zone (EmailType=MX, forwarding records preserved)")
+    merged = []
+    seen = set()
+
+    def add(name, typ, addr, pref):
+        k = (typ.upper(), name.lower(), addr.rstrip(".").lower())
+        if k in seen:
+            return
+        seen.add(k)
+        merged.append({"Name": name, "Type": typ.upper(), "Address": addr,
+                       "MXPref": pref or "10", "TTL": "1799"})
+
+    for h in hosts:                                   # keep every existing non-MX record (A, CNAME, …)
+        if h["Type"].upper() != "MX":
+            add(h["Name"], h["Type"], h["Address"], h["MXPref"])
+    for name, typ, addr, pref in EFORWARD:            # forwarding MX + SPF, explicit
+        add(name, typ, addr, pref)
+    for r in records:                                 # Resend records (names already apex-relative)
+        add(r["name"], r["type"], r["value"], str(r.get("priority") or 10))
+
+    for h in merged:
+        print(f"   {h['Type']:5} {h['Name']:24} -> {h['Address'][:50]}")
 
     if not APPLY:
-        print(f"\nDRY RUN — nothing written. {len(hosts)} existing + "
-              f"{len(merged)-len(hosts)} new = {len(merged)} records.")
-        print("Re-run with --apply to write.")
+        print(f"\nDRY RUN — nothing written ({len(merged)} records). Re-run with --apply.")
         return
 
-    print("\n== 4. Namecheap: setHosts (replaces the whole zone — resending everything)")
-    write_zone(merged, email_type)
+    print("\n== 4. Namecheap: setHosts (POST) with EmailType=MX")
+    write_zone(merged, "MX")
     time.sleep(3)
     after_hosts, after_type = read_zone()
     after = {key(h) for h in after_hosts}
-    lost = before - after
-    if lost:
-        die(f"records LOST by setHosts: {lost} — restore immediately")
-    if after_type != email_type:
-        die(f"EmailType changed {email_type} -> {after_type}; email forwarding may be broken")
-    print(f"   OK: {len(after_hosts)} records, EmailType={after_type}, 0 pre-existing records lost")
+    # Per-record check — every intended record must actually be present (the earlier failure mode
+    # was setHosts returning OK while silently dropping the MX and the long DKIM TXT).
+    missing = [h for h in merged if key(h) not in after]
+    if missing:
+        die("records MISSING after write: " + ", ".join(f"{h['Type']} {h['Name']}" for h in missing))
+    print(f"   OK: all {len(merged)} records present, EmailType={after_type}")
 
     print("\n== 5. Resend: trigger verification")
     http(f"https://api.resend.com/domains/{dom_id}/verify", "POST", None, rh)
