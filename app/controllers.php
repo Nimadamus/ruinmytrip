@@ -733,15 +733,88 @@ function settings_save(array $a): void {
 }
 
 /* ---------- report & admin ---------- */
+/**
+ * Reportable content types -> the table each lives in. An allow-list, not a free-text field:
+ * target_type reaching a table name must never be attacker-controlled.
+ */
+const RMT_REPORT_TARGETS = [
+    'review'  => 'reviews',
+    'trip'    => 'trips',
+    'guide'   => 'guides',
+    'meetup'  => 'meetups',
+    'comment' => 'comments',
+    'user'    => 'users',
+];
+const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
+
 function report_form(array $a): void {
     require_login();
-    view('report', ['tt'=>input('target_type'),'tid'=>input('target_id')], ['title'=>'Report content — RuinMyTrip']);
+    view('report', ['tt'=>input('target_type'),'tid'=>input('target_id'),'errors'=>[]],
+         ['title'=>'Report content — RuinMyTrip']);
 }
+
+/**
+ * POST /report
+ *
+ * A report queue is only useful if what lands in it is real. Without these checks the queue is
+ * trivially floodable: before this, one account filed 31 reports on the same review, plus a
+ * report against a nonexistent id and one with an invented target_type.
+ */
 function report_submit(array $a): void {
-    require_login(); csrf_check(); $me=current_user();
-    q_run("INSERT INTO reports (reporter_id,target_type,target_id,reason,details,status,created_at) VALUES (?,?,?,?,?, 'open', ?)",
-        [(int)$me['id'],input('target_type'),(int)input('target_id'),input('reason'),input('details'),date('Y-m-d H:i:s')]);
-    flash('Thanks — our moderators will review this.'); redirect('/');
+    require_login(); csrf_check(); $me = current_user();
+
+    $tt     = (string) input('target_type');
+    $tid    = (int) input('target_id');
+    $reason = (string) input('reason');
+    $details= trim((string) input('details'));
+    $errors = [];
+
+    if (!isset(RMT_REPORT_TARGETS[$tt])) $errors[] = 'That is not something you can report.';
+    if (!in_array($reason, RMT_REPORT_REASONS, true)) $errors[] = 'Choose a reason for the report.';
+    if (mb_strlen($details) > 2000) $errors[] = 'Please keep the details under 2000 characters.';
+
+    // The target must actually exist — a queue full of reports against nothing wastes the one
+    // resource moderation has, which is attention.
+    if (!$errors) {
+        $table = RMT_REPORT_TARGETS[$tt];
+        if (!q_one("SELECT 1 FROM {$table} WHERE id = ?", [$tid])) {
+            $errors[] = 'That content no longer exists.';
+        }
+    }
+
+    // You cannot report your own content, and you cannot report the same thing twice while the
+    // first report is still open.
+    if (!$errors && $tt !== 'user') {
+        $table = RMT_REPORT_TARGETS[$tt];
+        $owner = q_one("SELECT user_id FROM {$table} WHERE id = ?", [$tid]);
+        if ($owner && (int)($owner['user_id'] ?? 0) === (int)$me['id']) {
+            $errors[] = 'You cannot report your own content. Edit or delete it instead.';
+        }
+    }
+    if (!$errors && $tt === 'user' && $tid === (int)$me['id']) {
+        $errors[] = 'You cannot report yourself.';
+    }
+    if (!$errors) {
+        $dupe = q_one("SELECT 1 FROM reports WHERE reporter_id=? AND target_type=? AND target_id=? AND status='open'",
+                      [(int)$me['id'], $tt, $tid]);
+        if ($dupe) $errors[] = 'You have already reported this. Our moderators are looking at it.';
+    }
+
+    // Rate limit regardless of outcome, so probing for what exists is also throttled.
+    if (!rmt_rate_ok('report', (string)$me['id'], 10, 3600)) {
+        $errors[] = 'You have sent a lot of reports. Try again later.';
+    }
+
+    if ($errors) {
+        view('report', ['tt'=>$tt, 'tid'=>$tid, 'errors'=>$errors],
+             ['title'=>'Report content — RuinMyTrip']); return;
+    }
+
+    q_run("INSERT INTO reports (reporter_id,target_type,target_id,reason,details,status,created_at)
+           VALUES (?,?,?,?,?, 'open', ?)",
+        [(int)$me['id'], $tt, $tid, $reason, $details ?: null, date('Y-m-d H:i:s')]);
+    flash('Thanks — our moderators will review this.');
+    redirect('/');
 }
 
 function admin_dashboard(array $a): void {
@@ -758,15 +831,25 @@ function admin_dashboard(array $a): void {
     view('admin', compact('reports','stats'), ['title'=>'Moderation — RuinMyTrip']);
 }
 function admin_resolve(array $a): void {
-    require_role('admin','mod'); csrf_check(); $me=current_user();
-    $rid=(int)input('report_id'); $action=input('action');
-    $rep=q_one('SELECT * FROM reports WHERE id=?', [$rid]); if(!$rep){redirect('/admin');}
-    if ($action==='hide' && in_array($rep['target_type'],['trip','review','guide','meetup','comment'],true)) {
-        $tbl=['trip'=>'trips','review'=>'reviews','guide'=>'guides','meetup'=>'meetups','comment'=>'comments'][$rep['target_type']];
-        db()->prepare("UPDATE $tbl SET status='hidden' WHERE id=?")->execute([(int)$rep['target_id']]);
+    require_role('admin','mod'); csrf_check(); $me = current_user();
+    $rid = (int) input('report_id');
+    $action = (string) input('action');
+    $rep = q_one('SELECT * FROM reports WHERE id=?', [$rid]);
+    if (!$rep) redirect('/admin');
+
+    $tt = (string) $rep['target_type'];
+    $table = RMT_REPORT_TARGETS[$tt] ?? null;
+
+    // 'user' has no status column of this kind; suspending an account is a separate action.
+    if ($table && $tt !== 'user' && in_array($action, ['hide','restore'], true)) {
+        $newStatus = $action === 'hide' ? 'hidden' : 'published';
+        db()->prepare("UPDATE {$table} SET status=? WHERE id=?")->execute([$newStatus, (int)$rep['target_id']]);
     }
-    db()->prepare("UPDATE reports SET status='resolved', resolved_by=? WHERE id=?")->execute([(int)$me['id'],$rid]);
-    flash('Report resolved.'); redirect('/admin');
+    db()->prepare("UPDATE reports SET status='resolved', resolved_by=? WHERE id=?")
+        ->execute([(int)$me['id'], $rid]);
+    flash($action === 'hide' ? 'Content hidden and report resolved.'
+         : ($action === 'restore' ? 'Content restored and report resolved.' : 'Report dismissed.'));
+    redirect('/admin');
 }
 
 /* ---------- media ---------- */

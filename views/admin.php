@@ -19,6 +19,8 @@
         <input type="hidden" name="report_id" value="<?= (int)$r['id'] ?>">
         <button class="btn btn-ghost btn-sm" name="action" value="dismiss">Dismiss</button>
         <button class="btn btn-accent btn-sm" name="action" value="hide" data-confirm="Hide this content?">Hide content</button>
+        <?php /* Moderation must be reversible: a wrong call should be undoable without a DB edit. */ ?>
+        <button class="btn btn-ghost btn-sm" name="action" value="restore" data-confirm="Restore this content publicly?">Restore</button>
       </form>
     </div></div>
   <?php endforeach; ?>
