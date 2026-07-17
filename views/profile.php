@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -10,14 +10,25 @@
       </h1>
       <p class="muted" style="margin:.1rem 0">@<?= e($u['username']) ?> <?= $u['home_city']?' · '.e($u['home_city']):'' ?></p>
       <div class="stat-inline">
-        <span><b><?= $followers ?></b> followers</span>
-        <span><b><?= $following ?></b> following</span>
-        <span><b><?= (int)$u['credibility_score'] ?></b> credibility</span>
+        <?php /* Every figure is a live COUNT (see rmt_profile_stats) — no stored counters. */ ?>
+        <span><b><?= (int)$stats['reviews'] ?></b> <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?></span>
+        <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
+        <a href="<?= e(url('u/'.$u['username'].'/followers')) ?>"><b><?= $followers ?></b> <?= $followers === 1 ? 'follower' : 'followers' ?></a>
+        <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
       </div>
+      <?php if ($badges): ?>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+          <?php foreach ($badges as $b): ?>
+            <span class="chip" style="background:#0f766e;color:#fff" title="<?= e($b['description']) ?>">
+              <?= e($b['icon']) ?> <?= e($b['name']) ?>
+            </span>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
     </div>
     <div>
       <?php if ($me && (int)$me['id']===(int)$u['id']): ?>
-        <a class="btn btn-ghost" href="<?= e(url('settings')) ?>">Edit profile</a>
+        <a class="btn btn-ghost" href="<?= e(url('u/'.$u['username'].'/edit')) ?>">Edit profile</a>
       <?php elseif ($me): ?>
         <form class="inline-form" method="post" action="<?= e(url('follow')) ?>">
           <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
@@ -53,5 +64,10 @@
     <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
   </div></div><?php endforeach; ?><?php endif; ?>
+  <?php if ($isMe && !$reviews && !$trips): ?>
+    <div class="callout" style="margin-top:24px">
+      Your profile is empty. <a href="<?= e(url('review/new')) ?>">Write your first review</a> and it will show up here.
+    </div>
+  <?php endif; ?>
   <div style="height:40px"></div>
 </div>

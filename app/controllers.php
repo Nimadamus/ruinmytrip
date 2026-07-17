@@ -87,20 +87,84 @@ function profile(array $a): void {
                 FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.username=?', [$a['username']]);
     if (!$u) not_found();
     $uid = (int)$u['id'];
+    $me = current_user();
+    $isMe = $me && (int)$me['id'] === $uid;
+
     $trips = q_all("SELECT t.*, d.name dest_name FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
                     WHERE t.user_id=? AND t.status='published' ORDER BY t.id DESC", [$uid]);
     $reviews = q_all("SELECT * FROM reviews WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     $guides = q_all("SELECT * FROM guides WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
-    $followers = (int)(q_one('SELECT COUNT(*) c FROM follows WHERE followee_id=?', [$uid])['c'] ?? 0);
-    $following = (int)(q_one('SELECT COUNT(*) c FROM follows WHERE follower_id=?', [$uid])['c'] ?? 0);
-    $me = current_user();
+
+    // Every stat is a live COUNT — never a stored counter, never a placeholder.
+    $stats = rmt_profile_stats($uid);
+    $followers = $stats['followers'];
+    $following = $stats['following'];
+    $badges = rmt_user_badges($uid);
+
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
-    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me'), [
+    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => $u['avatar_url'] ?: url('assets/img/og-default.svg'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])]],
+        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ProfilePage',
+            'mainEntity'=>['@type'=>'Person','name'=>$u['display_name'] ?: $u['username'],
+                           'alternateName'=>'@'.$u['username'],
+                           'description'=>$u['bio'] ?: null,
+                           'url'=>url('u/'.$u['username'])]]),
     ]);
+}
+
+/** GET /u/{username}/followers */
+function profile_followers(array $a): void {
+    $u = q_one('SELECT id, username FROM users WHERE username = ?', [$a['username']]);
+    if (!$u) not_found();
+    $people = rmt_followers((int)$u['id']);
+    view('people_list', ['u'=>$u, 'people'=>$people, 'mode'=>'followers', 'me'=>current_user()], [
+        'title' => 'Followers of @'.$u['username'].' — RuinMyTrip',
+        'description' => 'Travelers following @'.$u['username'].' on RuinMyTrip.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])],
+                          ['name'=>'Followers','url'=>url('u/'.$u['username'].'/followers')]],
+    ]);
+}
+
+/** GET /u/{username}/following */
+function profile_following(array $a): void {
+    $u = q_one('SELECT id, username FROM users WHERE username = ?', [$a['username']]);
+    if (!$u) not_found();
+    $people = rmt_following((int)$u['id']);
+    view('people_list', ['u'=>$u, 'people'=>$people, 'mode'=>'following', 'me'=>current_user()], [
+        'title' => 'Travelers @'.$u['username'].' follows — RuinMyTrip',
+        'description' => 'Travelers followed by @'.$u['username'].' on RuinMyTrip.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])],
+                          ['name'=>'Following','url'=>url('u/'.$u['username'].'/following')]],
+    ]);
+}
+
+/** GET /u/{username}/edit — owner only. The canonical edit-profile page. */
+function profile_edit_form(array $a): void {
+    require_login();
+    $me = current_user();
+    if ($me['username'] !== $a['username']) { http_response_code(403); exit('403 — you can only edit your own profile.'); }
+    view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$me], ['title'=>'Edit your profile — RuinMyTrip']);
+}
+
+/** POST /u/{username}/edit */
+function profile_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    if ($me['username'] !== $a['username']) { http_response_code(403); exit('403 — you can only edit your own profile.'); }
+
+    $v = rmt_profile_validate($_POST);
+    if (!$v['ok']) {
+        view('profile_edit', ['me'=>$me, 'errors'=>$v['errors'], 'p'=>array_merge($me, $_POST)],
+             ['title'=>'Edit your profile — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=? WHERE user_id=?')
+        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'], (int)$me['id']]);
+    flash('Profile updated.');
+    redirect('/u/'.$me['username']);
 }
 
 function feed(array $a): void {
@@ -306,6 +370,9 @@ function review_create(array $a): void {
     $slug = rmt_review_slug($d + ['id'=>$id]);
     db()->prepare('UPDATE reviews SET slug = ? WHERE id = ?')->execute([$slug, $id]);
 
+    // Badges are evaluated against real activity, never granted by hand.
+    if (!$isDraft) rmt_award_badges((int)$me['id']);
+
     flash($isDraft ? 'Draft saved. Only you can see it.' : 'Review published.');
     redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug);
 }
@@ -373,6 +440,7 @@ function review_edit_submit(array $a): void {
         ->execute([$d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
                    $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
+    if ($status === 'published') rmt_award_badges((int)current_user()['id']);
     flash('Review updated.');
     redirect($status === 'draft' ? '/reviews?mine=1' : '/review/'.(int)$r['id'].'/'.$slug);
 }
@@ -573,12 +641,21 @@ function reset_submit(array $a): void {
 }
 
 function settings_form(array $a): void {
-    require_login(); view('settings', ['me'=>current_user(),'errors'=>[]], ['title'=>'Settings — RuinMyTrip']);
+    // /settings predates /u/{username}/edit and is still linked from older pages. Keep it working
+    // by sending it to the canonical editor rather than maintaining two forms that can drift.
+    require_login();
+    redirect('/u/'.current_user()['username'].'/edit');
 }
 function settings_save(array $a): void {
-    require_login(); csrf_check(); $me=current_user();
+    require_login(); csrf_check(); $me = current_user();
+    $v = rmt_profile_validate($_POST);
+    if (!$v['ok']) {
+        view('profile_edit', ['me'=>$me, 'errors'=>$v['errors'], 'p'=>array_merge($me, $_POST)],
+             ['title'=>'Edit your profile — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=? WHERE user_id=?')
-        ->execute([input('display_name'),input('bio'),input('home_city'),input('avatar_url'),(int)$me['id']]);
+        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'], (int)$me['id']]);
     flash('Profile updated.'); redirect('/u/'.$me['username']);
 }
 
