@@ -1,0 +1,22 @@
+# Secrets / local config
+/config.php
+/app/config.php
+.env
+
+# Local dev DB
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# User uploads (never commit media)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# PHP / tooling
+/vendor/
+composer.lock
+*.log
+.DS_Store
+Thumbs.db
+
+# Local PHP ini override
+/php.local.ini
