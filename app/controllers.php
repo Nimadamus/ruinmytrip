@@ -161,6 +161,20 @@ function profile_edit_submit(array $a): void {
              ['title'=>'Edit your profile — RuinMyTrip']); return;
     }
     $d = $v['data'];
+
+    // An uploaded photo wins over the URL field.
+    if (!empty($_FILES['avatar']['name'] ?? '')) {
+        $res = rmt_upload_image($_FILES['avatar'], (int)$me['id']);
+        if (!$res['ok']) {
+            view('profile_edit', ['me'=>$me, 'errors'=>[$res['error']], 'p'=>array_merge($me, $_POST)],
+                 ['title'=>'Edit your profile — RuinMyTrip']); return;
+        }
+        $d['avatar_url'] = $res['url'];
+        $old = q_one('SELECT avatar_key FROM profiles WHERE user_id=?', [(int)$me['id']]);
+        db()->prepare('UPDATE profiles SET avatar_key=? WHERE user_id=?')->execute([$res['key'], (int)$me['id']]);
+        if (!empty($old['avatar_key'])) rmt_storage_delete((string)$old['avatar_key']);
+    }
+
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=? WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'], (int)$me['id']]);
     flash('Profile updated.');
@@ -370,11 +384,55 @@ function review_create(array $a): void {
     $slug = rmt_review_slug($d + ['id'=>$id]);
     db()->prepare('UPDATE reviews SET slug = ? WHERE id = ?')->execute([$slug, $id]);
 
+    // Photo failures must never be silent: the review still publishes (losing written text
+    // because one image failed would be worse), but the user is told exactly what happened.
+    $photoErrors = rmt_attach_review_photos($id, (int)$me['id']);
+
     // Badges are evaluated against real activity, never granted by hand.
     if (!$isDraft) rmt_award_badges((int)$me['id']);
 
-    flash($isDraft ? 'Draft saved. Only you can see it.' : 'Review published.');
+    $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Review published.';
+    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
+    flash($msg);
     redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug);
+}
+
+/**
+ * Store any photos submitted with a review. Upload failures are reported to the user but never
+ * discard the review itself — losing written text because one image failed would be worse than
+ * a missing photo.
+ * @return string[] error messages
+ */
+function rmt_attach_review_photos(int $reviewId, int $ownerId): array {
+    $errors = [];
+    if (empty($_FILES['photos']) || !is_array($_FILES['photos']['name'] ?? null)) return $errors;
+
+    $existing = (int)(q_one('SELECT COUNT(*) c FROM review_photos WHERE review_id=?', [$reviewId])['c'] ?? 0);
+    $slots = max(0, 6 - $existing);   // cap photos per review
+
+    $n = count($_FILES['photos']['name']);
+    for ($i = 0; $i < $n; $i++) {
+        if ((int)$_FILES['photos']['error'][$i] === UPLOAD_ERR_NO_FILE) continue;
+        if ($slots <= 0) { $errors[] = 'You can attach up to 6 photos per review.'; break; }
+        if (!rmt_rate_ok('upload', (string)$ownerId, 40, 3600)) { $errors[] = 'Too many uploads. Try again later.'; break; }
+
+        $file = [
+            'name'     => $_FILES['photos']['name'][$i],
+            'type'     => $_FILES['photos']['type'][$i],
+            'tmp_name' => $_FILES['photos']['tmp_name'][$i],
+            'error'    => $_FILES['photos']['error'][$i],
+            'size'     => $_FILES['photos']['size'][$i],
+        ];
+        $res = rmt_upload_image($file, $ownerId);
+        if (!$res['ok']) { $errors[] = $res['error']; continue; }
+
+        q_run('INSERT INTO review_photos (review_id, url, storage_key, caption, width, height, bytes, sort, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?)',
+              [$reviewId, $res['url'], $res['key'], null, $res['w'], $res['h'], $res['bytes'],
+               $existing + $i, date('Y-m-d H:i:s')]);
+        $slots--;
+    }
+    return $errors;
 }
 
 /** GET /review/{id}/{slug} — public permalink. */
@@ -412,7 +470,8 @@ function review_edit_form(array $a): void {
     $r = rmt_review_get((int)$a['id']);
     if (!$r) not_found();
     if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
-    view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[]],
+    $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
+    view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
          ['title'=>'Edit review — RuinMyTrip']);
 }
 
@@ -425,7 +484,8 @@ function review_edit_submit(array $a): void {
     $isDraft = input('action') === 'draft';
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
-        view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors']],
+        $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
+        view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors'], 'photos'=>$photos],
              ['title'=>'Edit review — RuinMyTrip']); return;
     }
     $d = $v['data'];
@@ -440,8 +500,21 @@ function review_edit_submit(array $a): void {
         ->execute([$d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
                    $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
+    $photoErrors = rmt_attach_review_photos((int)$r['id'], (int)current_user()['id']);
+
+    // Remove any photos the author unticked.
+    foreach ((array)($_POST['remove_photo'] ?? []) as $pid) {
+        $ph = q_one('SELECT * FROM review_photos WHERE id=? AND review_id=?', [(int)$pid, (int)$r['id']]);
+        if ($ph) {
+            db()->prepare('DELETE FROM review_photos WHERE id=?')->execute([(int)$ph['id']]);
+            rmt_storage_delete((string)$ph['storage_key']);
+        }
+    }
+
     if ($status === 'published') rmt_award_badges((int)current_user()['id']);
-    flash('Review updated.');
+    $msg = 'Review updated.';
+    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
+    flash($msg);
     redirect($status === 'draft' ? '/reviews?mine=1' : '/review/'.(int)$r['id'].'/'.$slug);
 }
 
@@ -694,6 +767,29 @@ function admin_resolve(array $a): void {
     }
     db()->prepare("UPDATE reports SET status='resolved', resolved_by=? WHERE id=?")->execute([(int)$me['id'],$rid]);
     flash('Report resolved.'); redirect('/admin');
+}
+
+/* ---------- media ---------- */
+/**
+ * GET /media/{key} — serve a stored file.
+ *
+ * Content-Type is taken from the DB (set when we re-encoded the image), never from the request,
+ * and X-Content-Type-Options: nosniff stops a browser second-guessing it. Together with the
+ * re-encode on upload, a stored file cannot be coerced into executing as HTML or script.
+ */
+function media_show(array $a): void {
+    $key = (string) ($a['key'] ?? '');
+    if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $key)) not_found();
+    $m = rmt_storage_get($key);
+    if (!$m) not_found();
+
+    header('Content-Type: ' . $m['mime']);
+    header('X-Content-Type-Options: nosniff');
+    header('Content-Security-Policy: default-src \'none\'; sandbox');
+    header('Content-Length: ' . strlen($m['bytes']));
+    // Keys are random and content-addressed in practice, so a key's bytes never change.
+    header('Cache-Control: public, max-age=31536000, immutable');
+    echo $m['bytes'];
 }
 
 /* ---------- admin diagnostics ---------- */

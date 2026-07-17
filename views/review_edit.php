@@ -8,8 +8,29 @@
     <?php else: ?>Changes go live as soon as you save.<?php endif; ?>
   </p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
-  <form method="post" action="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>"><?= csrf_field() ?>
+  <form method="post" enctype="multipart/form-data" action="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>"><?= csrf_field() ?>
     <?php include __DIR__ . '/_review_form.php'; ?>
+
+    <?php if (!empty($photos)): ?>
+      <label>Current photos</label>
+      <div class="grid g-3" style="gap:10px">
+        <?php foreach ($photos as $ph): ?>
+          <label style="display:block;cursor:pointer">
+            <img class="card-media" src="<?= e($ph['url']) ?>" alt="" style="border-radius:8px">
+            <span class="muted" style="display:flex;gap:6px;align-items:center;margin-top:4px;font-size:.9rem">
+              <input type="checkbox" name="remove_photo[]" value="<?= (int)$ph['id'] ?>"> Remove
+            </span>
+          </label>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+
+    <label for="photos">Add photos <span class="muted">(up to 6 total)</span></label>
+    <input type="file" id="photos" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple>
+    <p class="muted" style="margin:.3rem 0 0;font-size:.9rem">
+      Photos are resized and re-saved on upload, which removes camera metadata such as GPS location.
+    </p>
+
     <div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn btn-primary" name="action" value="publish">
         <?= $r['status'] === 'draft' ? 'Publish review' : 'Save changes' ?>

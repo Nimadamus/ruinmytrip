@@ -63,6 +63,7 @@ $routes = [
     ['GET',  '#^/affiliate$#',                 'page_affiliate'],
     ['GET',  '#^/safety$#',                    'page_safety'],
     ['GET',  '#^/sitemap\.xml$#',              'sitemap'],
+    ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/healthz$#',                    'healthz'],
     ['GET',  '#^/readyz$#',                     'readyz'],
 ];
