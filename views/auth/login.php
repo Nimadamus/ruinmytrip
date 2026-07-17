@@ -10,6 +10,8 @@
     <input type="password" id="password" name="password" required autocomplete="current-password">
     <div style="margin-top:18px"><button class="btn btn-primary btn-block">Sign in</button></div>
   </form>
-  <p class="muted" style="margin-top:16px">New here? <a href="<?= e(url('register')) ?>">Create a free account</a></p>
-  <p class="hint">Demo login: maya@example.com / travel1234</p>
+  <p class="muted" style="margin-top:16px">
+    <a href="<?= e(url('forgot-password')) ?>">Forgot your password?</a>
+  </p>
+  <p class="muted" style="margin-top:4px">New here? <a href="<?= e(url('register')) ?>">Create a free account</a></p>
 </div></div>

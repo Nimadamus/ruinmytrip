@@ -35,6 +35,12 @@ $routes = [
     ['GET',  '#^/register$#',                  'register_form'],
     ['POST', '#^/register$#',                  'register_submit'],
     ['GET',  '#^/logout$#',                    'logout_action'],
+    ['GET',  '#^/verify-email$#',              'verify_email'],
+    ['POST', '#^/verify-email/resend$#',       'verify_email_resend'],
+    ['GET',  '#^/forgot-password$#',           'forgot_form'],
+    ['POST', '#^/forgot-password$#',           'forgot_submit'],
+    ['GET',  '#^/reset-password$#',            'reset_form'],
+    ['POST', '#^/reset-password$#',            'reset_submit'],
     ['POST', '#^/follow$#',                    'follow_action'],
     ['POST', '#^/react$#',                     'react_action'],   // like/save
     ['POST', '#^/comment$#',                   'comment_action'],

@@ -323,17 +323,140 @@ function meetup_rsvp(array $a): void {
 function login_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/login', ['errors'=>[]], ['title'=>'Sign in — RuinMyTrip']); }
 function login_submit(array $a): void {
     csrf_check();
-    if (attempt_login(input('email'), input('password'))) { flash('Welcome back.'); redirect('/feed'); }
+    $email = input('email');
+    // Two limits: per-IP stops broad credential stuffing, per-email stops a targeted attack on
+    // one account from a botnet. Either tripping blocks the attempt.
+    if (!rmt_rate_ok('login_ip', rmt_client_ip(), 20, 900) || !rmt_rate_ok('login_email', $email, 10, 900)) {
+        $mins = (int)ceil(rmt_rate_retry_after(900) / 60);
+        view('auth/login', ['errors'=>["Too many sign-in attempts. Try again in about {$mins} minute(s)."]],
+             ['title'=>'Sign in — RuinMyTrip']); return;
+    }
+    if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect('/feed'); }
     view('auth/login', ['errors'=>['Incorrect email or password.']], ['title'=>'Sign in — RuinMyTrip']);
 }
 function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
 function register_submit(array $a): void {
     csrf_check();
+    if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
+        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.']],
+             ['title'=>'Join RuinMyTrip']); return;
+    }
     $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
-    if ($r['ok']) { flash('Welcome to RuinMyTrip.'); redirect('/feed'); }
+    if ($r['ok']) {
+        flash(($r['mail_ok'] ?? false)
+            ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
+            : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link below.');
+        redirect('/verify-email');
+    }
     view('auth/register', ['errors'=>$r['errors']], ['title'=>'Join RuinMyTrip']);
 }
 function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
+
+/* ---------- email verification ---------- */
+
+/** GET /verify-email — with ?token= consumes it; without, shows the "check your inbox" page. */
+function verify_email(array $a): void {
+    $raw = (string) input('token');
+    if ($raw === '') {
+        $me = current_user();
+        view('auth/verify_notice', ['me'=>$me, 'verified'=>email_is_verified($me)],
+             ['title'=>'Confirm your email — RuinMyTrip']);
+        return;
+    }
+    $row = rmt_token_lookup($raw, 'verify');
+    if (!$row) {
+        view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
+             'errors'=>['That confirmation link is invalid or has expired. Request a new one below.']],
+             ['title'=>'Confirm your email — RuinMyTrip']);
+        return;
+    }
+    db()->prepare('UPDATE users SET email_verified_at = ? WHERE id = ?')
+        ->execute([date('Y-m-d H:i:s'), (int)$row['user_id']]);
+    rmt_token_consume((int)$row['id']);
+    // Confirming the address proves control of the account — log them in.
+    session_regenerate_id(true);
+    $_SESSION['uid'] = (int)$row['user_id'];
+    flash('Email confirmed. Welcome to RuinMyTrip.');
+    redirect('/feed');
+}
+
+/** POST /verify-email/resend */
+function verify_email_resend(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    if (email_is_verified($me)) { flash('Your email is already confirmed.'); redirect('/feed'); }
+    if (!rmt_rate_ok('verify_resend', (string)$me['email'], 3, 3600)) {
+        flash('Too many emails requested. Try again in an hour.'); redirect('/verify-email');
+    }
+    [$ok, $detail] = send_verification_email($me);
+    flash($ok ? 'Confirmation email sent. Check your inbox.'
+              : 'We could not send that email right now. Please try again shortly.');
+    redirect('/verify-email');
+}
+
+/* ---------- password reset ---------- */
+
+function forgot_form(array $a): void {
+    view('auth/forgot', ['errors'=>[], 'sent'=>false], ['title'=>'Reset your password — RuinMyTrip']);
+}
+
+/**
+ * POST /forgot-password
+ * Always renders the same "if that address exists, we sent a link" result — revealing whether
+ * an email is registered would leak membership, which for a travel/meetup product is a privacy
+ * problem, not just an auth one.
+ */
+function forgot_submit(array $a): void {
+    csrf_check();
+    $email = strtolower(trim(input('email')));
+    $allowed = rmt_rate_ok('forgot_ip', rmt_client_ip(), 10, 3600)
+            && rmt_rate_ok('forgot_email', $email, 3, 3600);
+    if ($allowed && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $u = q_one('SELECT * FROM users WHERE email = ?', [$email]);
+        if ($u && $u['status'] !== 'suspended') send_password_reset_email($u);
+    }
+    view('auth/forgot', ['errors'=>[], 'sent'=>true], ['title'=>'Reset your password — RuinMyTrip']);
+}
+
+function reset_form(array $a): void {
+    $raw = (string) input('token');
+    $row = rmt_token_lookup($raw, 'reset');
+    view('auth/reset', ['token'=>$raw, 'valid'=>(bool)$row, 'errors'=>[]],
+         ['title'=>'Choose a new password — RuinMyTrip']);
+}
+
+function reset_submit(array $a): void {
+    csrf_check();
+    $raw = (string) input('token');
+    $row = rmt_token_lookup($raw, 'reset');
+    if (!$row) {
+        view('auth/reset', ['token'=>$raw, 'valid'=>false, 'errors'=>['That reset link is invalid or has expired.']],
+             ['title'=>'Choose a new password — RuinMyTrip']); return;
+    }
+    $pw = (string) input('password');
+    $pw2 = (string) input('password_confirm');
+    $errors = [];
+    if (strlen($pw) < 8) $errors[] = 'Password must be at least 8 characters.';
+    if ($pw !== $pw2)    $errors[] = 'Those passwords do not match.';
+    if ($errors) {
+        view('auth/reset', ['token'=>$raw, 'valid'=>true, 'errors'=>$errors],
+             ['title'=>'Choose a new password — RuinMyTrip']); return;
+    }
+    $uid = (int) $row['user_id'];
+    db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+        ->execute([password_hash($pw, PASSWORD_BCRYPT), $uid]);
+    rmt_token_consume((int)$row['id']);
+    rmt_token_burn_all($uid, 'reset');   // any other outstanding reset links die with this one
+
+    // Completing a reset proves control of the mailbox, so it also confirms the address.
+    db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
+        ->execute([date('Y-m-d H:i:s'), $uid]);
+
+    session_regenerate_id(true);
+    $_SESSION['uid'] = $uid;
+    flash('Password updated. You are signed in.');
+    redirect('/feed');
+}
 
 function settings_form(array $a): void {
     require_login(); view('settings', ['me'=>current_user(),'errors'=>[]], ['title'=>'Settings — RuinMyTrip']);
