@@ -33,9 +33,19 @@ php -c php.local.ini -S localhost:8080 -t public public/router.php   # SQLite, a
 ```
 
 ## Backups & restore
-- Render Postgres (paid plan) includes automated daily backups + point-in-time recovery from the dashboard.
-- Manual dump (with a temporary IP allow-list entry): `pg_dump "$EXTERNAL_DATABASE_URL" > backup.sql`.
-- Restore: `psql "$EXTERNAL_DATABASE_URL" < backup.sql`.
+Primary system = **automated daily backups via GitHub Actions** — see [`docs/BACKUP_RESTORE.md`](docs/BACKUP_RESTORE.md) for the full procedure.
+- Workflow `.github/workflows/db-backup.yml`, daily **07:17 UTC** (+ manual `workflow_dispatch`).
+- Each run opens the DB firewall to the runner `/32`, `pg_dump` (custom format), GPG-AES256
+  encrypts, **restores into a throwaway container + integrity checks** to prove the dump is usable,
+  uploads the encrypted dump as an artifact (**30-day retention** = 30 restore points), then
+  **always re-locks** the firewall. Failures email `nj2121@gmail.com` from `noreply@send.ruinmytrip.com`.
+- Concurrency-guarded so backups never overlap. DB creds are fetched at runtime via the Render API,
+  never committed or stored as a secret.
+- **Restore (summary):** download the `rmt-db-backup-<stamp>` artifact →
+  `gpg --batch --decrypt --passphrase-fd 0 -o rmt.dump <file>.gpg` →
+  `pg_restore --no-owner --no-privileges --exit-on-error --dbname="$CONN" rmt.dump`. Full steps and
+  the firewall-open snippet are in `docs/BACKUP_RESTORE.md`.
+- Manual one-off dump (temporary `/32` allow-list entry, then re-lock): see the same doc.
 
 ## Rollback
 - **Code:** Render keeps every deploy. Roll back in the dashboard (Deploys → Rollback) or redeploy a previous commit. Every commit here is reversible.
