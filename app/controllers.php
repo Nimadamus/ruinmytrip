@@ -30,7 +30,9 @@ function home(array $a): void {
                      WHERE g.status='published' ORDER BY g.id DESC LIMIT 3");
     foreach ($stories as &$s) $s['author'] = author((int)$s['user_id']); unset($s);
     foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
-    view('home', compact('trending','stories','reviews','meetups','guides'), [
+    // Real total, not count($trending) — $trending is LIMIT 6 and would print "6" forever.
+    $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations'), [
         'title' => 'RuinMyTrip — Real trips, honest reviews, safe travel meetups',
         'description' => 'Join a trustworthy travel community. Share trips, review destinations and stays, follow travelers you trust, and find safe public meetups — RuinMyTrip.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),

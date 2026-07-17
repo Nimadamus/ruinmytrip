@@ -20,10 +20,16 @@ try {
     rmt_apply_schema($pdo, $driver);
     fwrite(STDOUT, "migrate: schema applied\n");
 
+    // Demo content is NEVER seeded into production — it fabricates members/reviews and creates
+    // an admin account whose password is public in this repo. rmt_seed_data() also refuses, but
+    // skip explicitly here so a deploy can never crash-loop on the exception.
+    $isProd = (($GLOBALS['config']['app_env'] ?? '') === 'production') || getenv('DATABASE_URL');
     $count = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
     $seed = getenv('SEED_DEMO');
     $seed = ($seed === false || $seed === '') ? '1' : $seed;
-    if ($count === 0 && $seed !== '0') {
+    if ($isProd) {
+        fwrite(STDOUT, "migrate: seed skipped (production — demo content is never seeded live)\n");
+    } elseif ($count === 0 && $seed !== '0') {
         rmt_seed_data($pdo);
         $n = (int) $pdo->query('SELECT COUNT(*) FROM destinations')->fetchColumn();
         fwrite(STDOUT, "migrate: seeded demo content ({$n} destinations)\n");

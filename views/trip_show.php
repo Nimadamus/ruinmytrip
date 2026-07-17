@@ -7,7 +7,7 @@
   <div class="meta-row"><img class="avatar" src="<?= e($t['author']['avatar_url']??'') ?>" alt="">
     <span><a href="<?= e(url('u/'.$t['author']['username'])) ?>">@<?= e($t['author']['username']) ?></a> · <?= e(ago($t['created_at'])) ?>
     <?php if($t['visited_on']):?> · visited <?= e(date('M Y', strtotime((string)$t['visited_on']))) ?><?php endif;?></span>
-    <?php if ($t['verified']): ?><span class="verified">Verified visit</span><?php endif; ?>
+    <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?>
   </div>
   <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
   <div><?= nl2br(e($t['body'])) ?></div>

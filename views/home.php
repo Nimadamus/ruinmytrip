@@ -10,8 +10,9 @@
       <button class="btn btn-primary" type="submit">Explore</button>
     </form>
     <div class="hero-stats">
-      <div><b><?= count($trending) ?>+</b><span>Destinations</span></div>
-      <div><b>Verified</b><span>Traveler reviews</span></div>
+      <?php /* Real COUNT(*) from the DB — never a hardcoded or LIMIT-capped number. */ ?>
+      <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
+      <div><b>Honest</b><span>Traveler reviews</span></div>
       <div><b>Safety-first</b><span>Public meetups</span></div>
     </div>
   </div>
@@ -47,10 +48,13 @@
           <div class="meta-row">
             <img class="avatar" src="<?= e($s['author']['avatar_url'] ?? '') ?>" alt="">
             <span>@<?= e($s['author']['username'] ?? 'traveler') ?> · <?= e(ago($s['created_at'])) ?></span>
-            <?php if ($s['verified']): ?><span class="verified">Verified visit</span><?php endif; ?>
+            <?php if (show_verified($s)): ?><span class="verified">Verified visit</span><?php endif; ?>
           </div>
         </div></a></article>
     <?php endforeach; ?>
+    <?php if (!$stories): ?>
+      <p class="muted">No trip stories yet. <a href="<?= e(url('register')) ?>">Create a profile</a> and be the first to share one.</p>
+    <?php endif; ?>
   </div>
 </div></section>
 
@@ -63,7 +67,7 @@
           <div class="card"><div class="card-body">
             <div style="display:flex;justify-content:space-between;align-items:center">
               <span class="stars"><?= stars((int)$r['rating']) ?></span>
-              <?php if ($r['verified']): ?><span class="verified">Verified</span><?php endif; ?>
+              <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
             </div>
             <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem"><?= e($r['title']) ?></h3>
             <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span></p>
@@ -71,6 +75,9 @@
             <div class="meta-row">@<?= e($r['author']['username'] ?? 'traveler') ?></div>
           </div></div>
         <?php endforeach; ?>
+        <?php if (!$reviews): ?>
+          <p class="muted">No reviews yet. The first honest one can be yours.</p>
+        <?php endif; ?>
       </div>
       <p style="margin-top:16px"><a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a></p>
     </div>
@@ -106,6 +113,9 @@
           <p class="muted"><?= e(mb_strimwidth($g['summary'],0,110,'…')) ?></p>
         </div></a></article>
     <?php endforeach; ?>
+    <?php if (!$guides): ?>
+      <p class="muted">No guides published yet.</p>
+    <?php endif; ?>
   </div>
 </div></section>
 

@@ -25,7 +25,7 @@
             <img class="card-media" loading="lazy" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>">
             <div class="card-body"><h3><?= e($t['title']) ?></h3>
               <div class="meta-row"><img class="avatar" src="<?= e($t['author']['avatar_url']??'') ?>" alt="">@<?= e($t['author']['username']??'') ?>
-              <?php if ($t['verified']): ?><span class="verified">Verified visit</span><?php endif; ?></div>
+              <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?></div>
             </div></a></article>
         <?php endforeach; ?>
       </div>
@@ -36,7 +36,7 @@
         <div class="card" style="margin-bottom:14px"><div class="card-body">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <span class="stars"><?= stars((int)$r['rating']) ?></span>
-            <?php if ($r['verified']): ?><span class="verified">Verified</span><?php endif; ?>
+            <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
           </div>
           <h3 style="margin:.3rem 0 .1rem;font-size:1.1rem"><?= e($r['title']) ?></h3>
           <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span> · @<?= e($r['author']['username']??'') ?></p>

@@ -18,8 +18,20 @@ function rmt_migrate_and_seed(PDO $pdo): void {
     rmt_seed_data($pdo);
 }
 
-/** Insert seed/demo content. Portable across sqlite/mysql/pgsql (prepared statements). */
+/**
+ * Insert seed/demo content. Portable across sqlite/mysql/pgsql (prepared statements).
+ *
+ * DEMO CONTENT IS FAKE AND MUST NEVER EXIST IN PRODUCTION. It fabricates members, reviews,
+ * trips and meetups, and — critically — it creates an `admin` account whose password is
+ * plaintext in this file, in a PUBLIC repo. Seeding a live DB hands anyone who reads the
+ * repo an admin login. This guard makes that impossible regardless of what SEED_DEMO says.
+ */
 function rmt_seed_data(PDO $pdo): void {
+    if ((($GLOBALS['config']['app_env'] ?? '') === 'production') || getenv('DATABASE_URL')) {
+        throw new RuntimeException(
+            'rmt_seed_data() refused: demo content must never be inserted into a production database.'
+        );
+    }
     $now = date('Y-m-d H:i:s');
     $img = fn(string $id) => "https://images.unsplash.com/photo-$id?w=1400&q=80&auto=format&fit=crop";
 

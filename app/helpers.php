@@ -59,3 +59,20 @@ function age_from(string $birthdate): int {
     $b = strtotime($birthdate); if (!$b) return 0;
     return (int)floor((time() - $b) / 31557600);
 }
+
+/**
+ * Is there a real verification system behind the "Verified" badge?
+ *
+ * No. Nothing in the codebase ever sets trips.verified / reviews.verified to 1 — only the
+ * demo seed did, and that data is gone. Showing the badge would assert a trust signal the
+ * product cannot currently earn, so every render site is gated on this.
+ *
+ * Flip to true ONLY when geo-checkin / receipt / EXIF verification actually exists and writes
+ * the column. The badge markup is left in place so that work is a one-line switch.
+ */
+function verification_system_exists(): bool { return false; }
+
+/** Show the "verified" badge only when the row is flagged AND a real system stands behind it. */
+function show_verified(?array $row): bool {
+    return verification_system_exists() && !empty($row['verified']);
+}
