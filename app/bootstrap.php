@@ -2,7 +2,8 @@
 declare(strict_types=1);
 
 define('BASE_PATH', dirname(__DIR__));
-$config = require BASE_PATH . '/app/config.php';
+require BASE_PATH . '/app/loadconfig.php';
+$config = rmt_load_config();
 $GLOBALS['config'] = $config;
 
 require BASE_PATH . '/app/db.php';

@@ -6,10 +6,20 @@ declare(strict_types=1);
  * Production uses MySQL: import schema.mysql.sql and manage real content — do NOT run this seed in prod.
  * Seed images are distinct, real, licensed travel photos (Unsplash). Marked as demo content.
  */
-function rmt_migrate_and_seed(PDO $pdo): void {
-    $sql = file_get_contents(BASE_PATH . '/database/schema.sqlite.sql');
-    $pdo->exec($sql);
+/** Apply the schema for the given driver (idempotent for pgsql via IF NOT EXISTS). */
+function rmt_apply_schema(PDO $pdo, string $driver): void {
+    $file = ['pgsql' => 'schema.pgsql.sql', 'mysql' => 'schema.mysql.sql'][$driver] ?? 'schema.sqlite.sql';
+    $pdo->exec(file_get_contents(dirname(__DIR__) . '/database/' . $file));
+}
 
+/** Local convenience: build + seed a fresh SQLite DB. */
+function rmt_migrate_and_seed(PDO $pdo): void {
+    rmt_apply_schema($pdo, 'sqlite');
+    rmt_seed_data($pdo);
+}
+
+/** Insert seed/demo content. Portable across sqlite/mysql/pgsql (prepared statements). */
+function rmt_seed_data(PDO $pdo): void {
     $now = date('Y-m-d H:i:s');
     $img = fn(string $id) => "https://images.unsplash.com/photo-$id?w=1400&q=80&auto=format&fit=crop";
 

@@ -1,0 +1,35 @@
+# RuinMyTrip — Render blueprint (infra-as-code / rollback reference).
+# The live services were created via the Render API, but this file documents the exact
+# desired state and lets the setup be reproduced or restored from the dashboard.
+databases:
+  - name: ruinmytrip-db
+    databaseName: ruinmytrip
+    user: ruinmytrip
+    plan: free            # NOTE: free Postgres EXPIRES (~30d) — upgrade to a paid plan before public launch (billing decision).
+    region: oregon
+
+services:
+  - type: web
+    name: ruinmytrip-web
+    runtime: docker
+    repo: https://github.com/Nimadamus/ruinmytrip
+    branch: main
+    region: oregon
+    plan: free            # free web spins down on idle (cold starts). Upgrade to Starter for always-on (billing decision).
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    preDeployCommand: php database/migrate.php
+    autoDeploy: true
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_URL
+        sync: false        # set to the temp onrender.com URL first, then https://ruinmytrip.com at cutover
+      - key: SECURITY_SALT
+        generateValue: true
+      - key: SEED_DEMO
+        value: "1"         # set to "0" and redeploy to stop seeding demo content
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ruinmytrip-db
+          property: connectionString

@@ -8,6 +8,11 @@ function db(): PDO {
     if ($c['db_driver'] === 'sqlite') {
         $pdo = new PDO('sqlite:' . $c['sqlite_path']);
         $pdo->exec('PRAGMA foreign_keys = ON');
+    } elseif ($c['db_driver'] === 'pgsql') {
+        $p = $c['pgsql'];
+        $dsn = "pgsql:host={$p['host']};port={$p['port']};dbname={$p['name']}";
+        if (!empty($p['sslmode'])) $dsn .= ";sslmode={$p['sslmode']}";
+        $pdo = new PDO($dsn, $p['user'], $p['pass']);
     } else {
         $m = $c['mysql'];
         $dsn = "mysql:host={$m['host']};port={$m['port']};dbname={$m['name']};charset=utf8mb4";
@@ -26,7 +31,9 @@ function q_all(string $sql, array $args = []): array {
 function q_one(string $sql, array $args = []): ?array {
     $st = db()->prepare($sql); $st->execute($args); $r = $st->fetch(); return $r === false ? null : $r;
 }
-/** Convenience: run a write, return last insert id. */
+/** Convenience: run a write, return last insert id (empty string when N/A, e.g. composite-key tables on pgsql). */
 function q_run(string $sql, array $args = []): string {
-    $st = db()->prepare($sql); $st->execute($args); return db()->lastInsertId();
+    $st = db()->prepare($sql); $st->execute($args);
+    try { return (string) db()->lastInsertId(); }
+    catch (\PDOException $e) { return ''; } // pgsql lastval() undefined on no-serial inserts
 }

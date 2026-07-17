@@ -387,6 +387,15 @@ function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'
 function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure — RuinMyTrip']); }
 function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety — RuinMyTrip']); }
 
+/* ---------- health check (Render) ---------- */
+function healthz(array $a): void {
+    header('Content-Type: text/plain');
+    $db = 'unknown';
+    try { db()->query('SELECT 1'); $db = 'ok'; } catch (Throwable $e) { $db = 'down'; }
+    // App process is up either way -> 200 so a transient DB blip doesn't flap the service.
+    echo "ok db=$db";
+}
+
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');

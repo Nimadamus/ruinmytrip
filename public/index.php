@@ -48,6 +48,7 @@ $routes = [
     ['GET',  '#^/affiliate$#',                 'page_affiliate'],
     ['GET',  '#^/safety$#',                    'page_safety'],
     ['GET',  '#^/sitemap\.xml$#',              'sitemap'],
+    ['GET',  '#^/healthz$#',                    'healthz'],
 ];
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
