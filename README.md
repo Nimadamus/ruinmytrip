@@ -29,6 +29,7 @@ See `ARCHITECTURE.md` -> Deployment. DNS is **not** changed until the build is a
 
 ## Operations
 - **Deployment:** `DEPLOY_RENDER.md` (production = Render, Docker + PostgreSQL).
+- **Auto-deploy:** pushes to `main` deploy automatically via `.github/workflows/render-deploy.yml`.
 - **Database backups & restore:** `docs/BACKUP_RESTORE.md`. Automated daily encrypted backups run
   via `.github/workflows/db-backup.yml` (07:17 UTC), self-verified by an isolated restore + integrity
   check each run, 30-day retention, email alert on failure. Restore steps are in that doc.
