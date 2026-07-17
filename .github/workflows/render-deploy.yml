@@ -1,0 +1,49 @@
+name: render-deploy
+
+# Auto-deploy on push. The Render service has autoDeploy enabled, but the repo has no Render
+# GitHub App installation / push webhook (the service was created from the public repo URL via
+# the API, which builds but never installed the webhook). Connecting the GitHub App requires an
+# interactive dashboard action; this restores "push -> deploy" without it, using the Render API
+# and the RENDER_API_KEY repo secret. No second service, no URL/DNS/plan change.
+
+on:
+  push:
+    branches: [main]
+
+# One deploy at a time; a newer push cancels a still-pending trigger (Render also supersedes).
+concurrency:
+  group: render-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      SERVICE: srv-d9co4n0k1i2s73cg0nfg
+    steps:
+      - name: Trigger Render deploy and wait for it to go live
+        run: |
+          set -euo pipefail
+          RESP=$(curl -fsS -X POST -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" -d '{"clearCache":"do_not_clear"}' \
+            "https://api.render.com/v1/services/$SERVICE/deploys")
+          DEP=$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin)['id'])")
+          echo "Triggered Render deploy $DEP for commit ${GITHUB_SHA:0:7}"
+          for i in $(seq 1 60); do
+            ST=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
+              "https://api.render.com/v1/services/$SERVICE/deploys/$DEP" \
+              | python3 -c "import sys,json;print(json.load(sys.stdin)['status'])")
+            echo "deploy $DEP: $ST"
+            case "$ST" in
+              live) echo "DEPLOY LIVE"; exit 0 ;;
+              build_failed|update_failed|canceled|deactivated|pre_deploy_failed)
+                echo "DEPLOY FAILED: $ST"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "timed out waiting for deploy"; exit 1
