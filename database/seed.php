@@ -67,18 +67,6 @@ function rmt_seed_data(PDO $pdo): void {
     }
 
     // --- Reviews ---
-    $revs = [
-        [1,1,'destination','Kyoto','Kyoto',5,'Worth the early alarms','Go at sunrise. By 9am the crowds arrive and the magic thins out.',1],
-        [2,3,'attraction','Skyline Gondola','Queenstown',4,'Touristy but the view earns it','Do it once at sunset, then hike back down.',1],
-        [3,6,'restaurant','Mercado 20 de Noviembre','Oaxaca',5,'Smoke, meat, and joy','Point at what looks good on the grill. You will not regret it.',1],
-        [1,2,'destination','Lisbon','Lisbon',4,'Charming, hilly, alive','Wear real shoes. The 28 tram is a pickpocket buffet at rush hour.',0],
-    ];
-    $ir = $pdo->prepare('INSERT INTO reviews (user_id,destination_id,subject_type,subject_name,title,rating,body,verified,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?)');
-    foreach ($revs as $r) {
-        $ir->execute([$r[0],$r[1],$r[2],$r[3],$r[5],$r[4]==='Kyoto'?5:$r[4] ?? 4,$r[7]??'', 0, 'published',$now]);
-    }
-    // (simpler explicit insert to avoid index confusion)
-    $pdo->exec("DELETE FROM reviews");
     $revs2 = [
         [1,1,'destination','Kyoto',5,'Worth the early alarms','Go at sunrise. By 9am the crowds arrive and the magic thins out.',1],
         [2,3,'attraction','Skyline Gondola, Queenstown',4,'Touristy but the view earns it','Do it once at sunset, then hike back down.',1],
