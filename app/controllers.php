@@ -554,7 +554,18 @@ function review_delete(array $a): void {
 
 function follow_action(array $a): void {
     require_login(); csrf_check(); $me=current_user();
-    $target=(int)input('user_id'); if (!$target || $target===(int)$me['id']) redirect('/');
+    $target=(int)input('user_id');
+    if (!$target || $target===(int)$me['id']) redirect(input('return','/'));
+    // The target must be a real, active user. Without this, following a bogus id throws an
+    // uncaught FK violation (500) — which also happens naturally if the followee deleted their
+    // account between the page loading and the click.
+    if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$target])) {
+        flash('That traveler is no longer available.'); redirect(input('return','/'));
+    }
+    // Follows create notifications, so cap them to blunt notification-spam.
+    if (!rmt_rate_ok('follow', (string)$me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.'); redirect(input('return','/'));
+    }
     $exists = q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$target]);
     if ($exists) db()->prepare('DELETE FROM follows WHERE follower_id=? AND followee_id=?')->execute([(int)$me['id'],$target]);
     else {
