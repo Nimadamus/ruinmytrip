@@ -336,7 +336,7 @@ function trip_new_form(array $a): void {
     view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip — RuinMyTrip','description'=>'Post a trip story with photos.']);
 }
 function trip_create(array $a): void {
-    require_login(); csrf_check(); $me = current_user();
+    require_verified_email(); csrf_check(); $me = current_user();
     $title = input('title'); $body = input('body'); $dest = (int)input('destination_id');
     $cover = trim((string) input('cover_url')); $visited = input('visited_on');
     $errors = [];
@@ -377,6 +377,12 @@ function review_create(array $a): void {
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $isDraft = input('action') === 'draft';
+    // Publishing requires a confirmed email; saving a private draft does not, so an unverified
+    // user can still write and keep their work.
+    if (!$isDraft && !email_is_verified($me)) {
+        flash('Confirm your email to publish. Your draft tools still work in the meantime.');
+        redirect('/verify-email');
+    }
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
         view('review_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'r'=>$_POST],
@@ -494,6 +500,10 @@ function review_edit_submit(array $a): void {
     if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
 
     $isDraft = input('action') === 'draft';
+    if (!$isDraft && !email_is_verified(current_user())) {
+        flash('Confirm your email to publish this review.');
+        redirect('/verify-email');
+    }
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
         $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
