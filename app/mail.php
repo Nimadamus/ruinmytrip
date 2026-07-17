@@ -42,9 +42,30 @@ function rmt_mail_send(string $to, string $subject, string $html, string $text =
     // ext-curl is not guaranteed to be compiled into every PHP build we might run on, and a
     // missing extension would turn every verification email into a fatal error. Use curl when
     // it exists, fall back to a plain stream POST when it does not.
-    return function_exists('curl_init')
+    $res = function_exists('curl_init')
         ? rmt_mail_post_curl($key, $json)
         : rmt_mail_post_stream($key, $json);
+
+    // A failed transactional email is invisible to the user and to us unless we say so. Log the
+    // reason to stderr (Render captures it). Never log the API key or the message body.
+    if (!$res[0]) error_log('[rmt_mail] send FAILED: ' . $res[1]);
+    return $res;
+}
+
+/**
+ * Mail transport diagnostics — no secrets, safe to surface to an admin.
+ * @return array<string,string|bool>
+ */
+function rmt_mail_diagnostics(): array {
+    return [
+        'key_present'     => rmt_mail_enabled(),
+        'key_len'         => strlen(getenv('RESEND_API_KEY') ?: ''),
+        'from'            => rmt_mail_from(),
+        'has_curl'        => function_exists('curl_init'),
+        'has_openssl'     => extension_loaded('openssl'),
+        'allow_url_fopen' => (bool) ini_get('allow_url_fopen'),
+        'https_wrappers'  => in_array('https', stream_get_wrappers(), true),
+    ];
 }
 
 /** @return array{0:bool,1:string} */

@@ -48,6 +48,7 @@ $routes = [
     ['POST', '#^/report$#',                    'report_submit'],
     ['GET',  '#^/admin$#',                     'admin_dashboard'],
     ['POST', '#^/admin/resolve$#',             'admin_resolve'],
+    ['GET',  '#^/admin/mail-check$#',          'admin_mail_check'],
     ['GET',  '#^/terms$#',                     'page_terms'],
     ['GET',  '#^/privacy$#',                   'page_privacy'],
     ['GET',  '#^/guidelines$#',                'page_guidelines'],

@@ -505,6 +505,30 @@ function admin_resolve(array $a): void {
     flash('Report resolved.'); redirect('/admin');
 }
 
+/* ---------- admin diagnostics ---------- */
+/**
+ * GET /admin/mail-check — admin-only. Reports whether this container can actually send mail and
+ * which transport it would use. Exposes no secret values (key length only, never the key).
+ */
+function admin_mail_check(array $a): void {
+    require_role('admin');
+    header('Content-Type: text/plain');
+    foreach (rmt_mail_diagnostics() as $k => $v) {
+        printf("%-16s %s
+", $k, is_bool($v) ? ($v ? 'yes' : 'NO') : (string)$v);
+    }
+    // Optional live probe: /admin/mail-check?send=1 sends one email to the admin's own address.
+    if (input('send') === '1') {
+        $me = current_user();
+        [$ok, $detail] = rmt_mail_send((string)$me['email'], 'RuinMyTrip mail check',
+            '<p>Transport probe from production. If you received this, outbound mail works.</p>');
+        printf("
+%-16s %s
+%-16s %s
+", 'probe_sent', $ok ? 'yes' : 'NO', 'probe_detail', $detail);
+    }
+}
+
 /* ---------- legal / safety ---------- */
 function page_terms(array $a): void { view('legal/terms', [], ['title'=>'Terms of Service — RuinMyTrip']); }
 function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Privacy Policy — RuinMyTrip']); }
