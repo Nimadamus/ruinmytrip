@@ -388,12 +388,16 @@ function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>
 function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety — RuinMyTrip']); }
 
 /* ---------- health check (Render) ---------- */
+// Liveness only — NO DB call, so health never flaps on DB latency (that caused Render edge 404s).
 function healthz(array $a): void {
     header('Content-Type: text/plain');
-    $db = 'unknown';
-    try { db()->query('SELECT 1'); $db = 'ok'; } catch (Throwable $e) { $db = 'down'; }
-    // App process is up either way -> 200 so a transient DB blip doesn't flap the service.
-    echo "ok db=$db";
+    echo 'ok';
+}
+// Separate readiness probe that DOES check the DB (for manual/diagnostic use, not the Render health path).
+function readyz(array $a): void {
+    header('Content-Type: text/plain');
+    try { db()->query('SELECT 1'); echo 'ready db=ok'; }
+    catch (Throwable $e) { http_response_code(503); echo 'db=down'; }
 }
 
 /* ---------- sitemap ---------- */
