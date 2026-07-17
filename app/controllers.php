@@ -133,13 +133,31 @@ function trip_show(array $a): void {
 }
 
 function reviews_index(array $a): void {
-    $reviews = q_all("SELECT r.*, d.name dest_name, d.slug dest_slug FROM reviews r
-                      LEFT JOIN destinations d ON d.id=r.destination_id
-                      WHERE r.status='published' ORDER BY r.verified DESC, r.id DESC LIMIT 50");
+    $me = current_user();
+    $mine = input('mine') === '1';
+    $cat  = input('category');
+
+    if ($mine) {
+        // A user's own reviews INCLUDING drafts — the only place drafts are listed.
+        require_login();
+        $reviews = q_all("SELECT r.*, d.name dest_name, d.slug dest_slug FROM reviews r
+                          LEFT JOIN destinations d ON d.id=r.destination_id
+                          WHERE r.user_id = ? AND r.status <> 'removed'
+                          ORDER BY CASE r.status WHEN 'draft' THEN 0 ELSE 1 END, r.id DESC",
+                         [(int)$me['id']]);
+    } else {
+        $sql = "SELECT r.*, d.name dest_name, d.slug dest_slug FROM reviews r
+                LEFT JOIN destinations d ON d.id=r.destination_id
+                WHERE r.status='published'";
+        $args = [];
+        if (in_array($cat, RMT_REVIEW_CATEGORIES, true)) { $sql .= ' AND r.subject_type = ?'; $args[] = $cat; }
+        $sql .= ' ORDER BY r.id DESC LIMIT 50';
+        $reviews = q_all($sql, $args);
+    }
     foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
-    view('reviews_index', compact('reviews'), [
-        'title'=>'Traveler reviews — RuinMyTrip',
-        'description'=>'Honest, verified traveler reviews of destinations, hotels, restaurants, nightlife, attractions and tours.',
+    view('reviews_index', compact('reviews','mine','cat','me'), [
+        'title'=>$mine ? 'Your reviews — RuinMyTrip' : 'Traveler reviews — RuinMyTrip',
+        'description'=>'Honest traveler reviews of destinations, hotels, restaurants, attractions and experiences.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')]],
     ]);
 }
@@ -258,21 +276,117 @@ function trip_create(array $a): void {
 
 function review_new_form(array $a): void {
     require_login();
-    view('review_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Write a review — RuinMyTrip','description'=>'Share an honest, verified review.']);
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>null],
+         ['title'=>'Write a review — RuinMyTrip']);
 }
+
 function review_create(array $a): void {
     require_login(); csrf_check(); $me = current_user();
-    $dest=(int)input('destination_id'); $type=input('subject_type','destination'); $subject=input('subject_name');
-    $rating=max(1,min(5,(int)input('rating'))); $title=input('title'); $body=input('body');
-    $errors=[];
-    if (!$subject) $errors[]='Name what you are reviewing.';
-    if (strlen($body) < 15) $errors[]='Add a few words to your review (15+ characters).';
-    if ($errors) { view('review_new', ['dests'=>all_dests(),'errors'=>$errors], ['title'=>'Write a review — RuinMyTrip']); return; }
-    q_run("INSERT INTO reviews (user_id,destination_id,subject_type,subject_name,rating,title,body,verified,status,created_at)
-           VALUES (?,?,?,?,?,?,?,0,'published',?)",
-        [(int)$me['id'], $dest ?: null, $type, $subject, $rating, $title, $body, date('Y-m-d H:i:s')]);
-    flash('Review posted.');
-    redirect($dest ? '/d/'.(dest_by_id($dest)['slug'] ?? '') : '/reviews');
+    if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
+        view('review_new', ['dests'=>all_dests(), 'errors'=>['You are posting very fast. Try again later.'], 'r'=>null],
+             ['title'=>'Write a review — RuinMyTrip']); return;
+    }
+    $isDraft = input('action') === 'draft';
+    $v = rmt_review_validate($_POST, $isDraft);
+    if (!$v['ok']) {
+        view('review_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'r'=>$_POST],
+             ['title'=>'Write a review — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $now = date('Y-m-d H:i:s');
+    $status = $isDraft ? 'draft' : 'published';
+    $id = (int) q_run("INSERT INTO reviews
+        (user_id,destination_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
+         visited_on,safety_rating,value_rating,verified,status,created_at,updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",
+        [(int)$me['id'], $d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'],
+         $d['title'], $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'],
+         $d['safety_rating'], $d['value_rating'], $status, $now, $now]);
+
+    $slug = rmt_review_slug($d + ['id'=>$id]);
+    db()->prepare('UPDATE reviews SET slug = ? WHERE id = ?')->execute([$slug, $id]);
+
+    flash($isDraft ? 'Draft saved. Only you can see it.' : 'Review published.');
+    redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug);
+}
+
+/** GET /review/{id}/{slug} — public permalink. */
+function review_show(array $a): void {
+    $r = rmt_review_get((int)$a['id']);
+    if (!$r) not_found();
+    $me = current_user();
+    if (!rmt_review_can_view($r, $me)) not_found();
+
+    // Canonicalise: a wrong or missing slug redirects to the real one rather than serving the
+    // same content on many URLs.
+    $slug = $r['slug'] ?: rmt_review_slug($r);
+    if (($a['slug'] ?? '') !== $slug) redirect(rmt_review_path($r));
+
+    $author = author((int)$r['user_id']);
+    $photos = q_all('SELECT * FROM review_photos WHERE review_id = ? ORDER BY sort, id', [(int)$r['id']]);
+    // No robots directive: a draft/hidden review 404s for anyone but its author (see
+    // rmt_review_can_view), so crawlers cannot reach it. Access control, not noindex.
+    view('review_show', compact('r','author','photos','me'), [
+        'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
+        'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
+                          ['name'=>$r['title'] ?: $r['subject_name'],'url'=>url(ltrim(rmt_review_path($r),'/'))]],
+        'jsonld' => $r['status']==='published' ? jsonld(['@context'=>'https://schema.org','@type'=>'Review',
+            'itemReviewed'=>['@type'=>'Place','name'=>$r['subject_name']],
+            'reviewRating'=>['@type'=>'Rating','ratingValue'=>(int)$r['rating'],'bestRating'=>5,'worstRating'=>1],
+            'author'=>['@type'=>'Person','name'=>'@'.$r['username']],
+            'datePublished'=>substr((string)$r['created_at'],0,10),
+            'reviewBody'=>mb_strimwidth(strip_tags((string)$r['body']),0,500,'…')]) : '',
+    ]);
+}
+
+function review_edit_form(array $a): void {
+    require_login();
+    $r = rmt_review_get((int)$a['id']);
+    if (!$r) not_found();
+    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+    view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[]],
+         ['title'=>'Edit review — RuinMyTrip']);
+}
+
+function review_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $r = rmt_review_get((int)$a['id']);
+    if (!$r) not_found();
+    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+
+    $isDraft = input('action') === 'draft';
+    $v = rmt_review_validate($_POST, $isDraft);
+    if (!$v['ok']) {
+        view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors']],
+             ['title'=>'Edit review — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    // A hidden/removed review stays that way on edit — editing must not let a user undo moderation.
+    $status = in_array($r['status'], ['hidden','removed'], true)
+        ? $r['status']
+        : ($isDraft ? 'draft' : 'published');
+    $slug = rmt_review_slug($d + ['id'=>(int)$r['id']]);
+    db()->prepare("UPDATE reviews SET destination_id=?, subject_type=?, subject_name=?, rating=?, title=?,
+                   body=?, what_great=?, what_ruined=?, visited_on=?, safety_rating=?, value_rating=?,
+                   status=?, slug=?, updated_at=? WHERE id=?")
+        ->execute([$d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
+                   $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
+                   $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
+    flash('Review updated.');
+    redirect($status === 'draft' ? '/reviews?mine=1' : '/review/'.(int)$r['id'].'/'.$slug);
+}
+
+/** POST /review/{id}/delete — soft delete. Rows are never destroyed. */
+function review_delete(array $a): void {
+    require_login(); csrf_check();
+    $r = rmt_review_get((int)$a['id']);
+    if (!$r) not_found();
+    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+    db()->prepare("UPDATE reviews SET status='removed', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$r['id']]);
+    flash('Review deleted.');
+    redirect('/u/'.current_user()['username']);
 }
 
 function follow_action(array $a): void {
@@ -557,6 +671,11 @@ function sitemap(array $a): void {
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
+    // Published reviews only — drafts/hidden/removed are never listed. Rows missing a slug
+    // (pre-Phase-4) fall back to a generated one so the URL still resolves.
+    foreach (q_all("SELECT id, slug, title, subject_name FROM reviews WHERE status='published'") as $rv) {
+        $urls[] = url('review/'.$rv['id'].'/'.($rv['slug'] ?: rmt_review_slug($rv)));
+    }
     foreach (q_all("SELECT username FROM users WHERE status='active'") as $u) $urls[] = url('u/'.$u['username']);
     echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
     echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";

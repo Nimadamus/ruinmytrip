@@ -6,10 +6,20 @@ function rmt_current_url(): string {
     return rtrim((string)cfg('app_url'), '/') . $path;
 }
 
-/** Emit a JSON-LD script block. */
+/**
+ * Emit a JSON-LD script block.
+ *
+ * SECURITY: the payload is embedded in an HTML <script> element, so any literal "</script>" in a
+ * string value would terminate the block early and let the rest of the value be parsed as HTML —
+ * i.e. stored XSS via any user-controlled field that reaches JSON-LD (review titles, trip titles,
+ * usernames, bios). JSON_HEX_TAG encodes < and > as < / >, which JSON-LD consumers
+ * decode back to the original characters, so escaping costs nothing and closes the hole.
+ * JSON_HEX_AMP/APOS/QUOT are included for the same reason.
+ */
 function jsonld(array $data): string {
-    return '<script type="application/ld+json">' .
-        json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
+    $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+           | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
+    return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
 }
 
 /** BreadcrumbList JSON-LD from [['name'=>,'url'=>], ...]. */

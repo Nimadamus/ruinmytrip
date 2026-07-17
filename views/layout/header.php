@@ -42,8 +42,10 @@
         <a href="<?= e(url('notifications')) ?>" title="Notifications">🔔</a>
         <?php if (in_array($me['role'],['admin','mod'],true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">@<?= e($me['username']) ?></a>
+        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
         <a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a>
       <?php else: ?>
+        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
         <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a>
         <a class="btn btn-primary" href="<?= e(url('register')) ?>">Join free</a>
       <?php endif; ?>

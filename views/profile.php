@@ -46,11 +46,12 @@
     <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e($g['cover_url']) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($g['title']) ?></h3></div></a></article>
   <?php endforeach; ?></div><?php endif; ?>
 
-  <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews</h2>
+  <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
   <?php foreach ($reviews as $r): ?><div class="card" style="margin-bottom:12px"><div class="card-body">
-    <span class="stars"><?= stars((int)$r['rating']) ?></span> <b><?= e($r['title']) ?></b>
-    <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?></p>
-    <p style="margin:.4rem 0 0"><?= e($r['body']) ?></p>
+    <span class="stars"><?= stars((int)$r['rating']) ?></span>
+    <b><a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></b>
+    <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
+    <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
   </div></div><?php endforeach; ?><?php endif; ?>
   <div style="height:40px"></div>
 </div>

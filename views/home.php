@@ -9,6 +9,7 @@
       <input type="search" name="q" placeholder="Where to next? Try Kyoto, Lisbon, Banff…" aria-label="Search destinations">
       <button class="btn btn-primary" type="submit">Explore</button>
     </form>
+    <p style="margin:18px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a></p>
     <div class="hero-stats">
       <?php /* Real COUNT(*) from the DB — never a hardcoded or LIMIT-capped number. */ ?>
       <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
@@ -69,7 +70,9 @@
               <span class="stars"><?= stars((int)$r['rating']) ?></span>
               <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
             </div>
-            <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem"><?= e($r['title']) ?></h3>
+            <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem">
+              <a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
+            </h3>
             <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span></p>
             <p style="margin:.5rem 0 0"><?= e(mb_strimwidth($r['body'],0,120,'…')) ?></p>
             <div class="meta-row">@<?= e($r['author']['username'] ?? 'traveler') ?></div>
