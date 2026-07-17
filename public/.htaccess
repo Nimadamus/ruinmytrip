@@ -1,0 +1,17 @@
+# RuinMyTrip — front controller routing for Apache/LiteSpeed (cPanel).
+# Point the domain's document root at this /public directory.
+Options -Indexes
+RewriteEngine On
+
+# Serve real files/dirs directly.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else -> index.php
+RewriteRule ^ index.php [L]
+
+# Basic hardening
+<FilesMatch "\.(sqlite|ini|md|sql)$">
+  Require all denied
+</FilesMatch>

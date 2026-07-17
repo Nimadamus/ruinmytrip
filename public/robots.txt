@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /settings
+Disallow: /notifications
+Disallow: /admin
+Disallow: /report
+
+Sitemap: https://ruinmytrip.com/sitemap.xml
