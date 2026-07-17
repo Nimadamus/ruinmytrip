@@ -40,7 +40,8 @@ function rmt_token_issue(int $userId, string $kind): string {
  */
 function rmt_token_lookup(string $raw, string $kind): ?array {
     if ($raw === '' || !ctype_xdigit($raw)) return null;
-    $row = q_one('SELECT * FROM auth_tokens WHERE token_hash = ? AND kind = ?', [rmt_token_hash($raw), $kind]);
+    $row = q_one('SELECT t.*, u.email FROM auth_tokens t JOIN users u ON u.id = t.user_id
+                  WHERE t.token_hash = ? AND t.kind = ?', [rmt_token_hash($raw), $kind]);
     if (!$row) return null;
     if ($row['used_at'] !== null) return null;
     if (strtotime((string) $row['expires_at']) < time()) return null;

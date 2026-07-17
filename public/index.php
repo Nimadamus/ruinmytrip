@@ -44,6 +44,7 @@ $routes = [
     ['POST', '#^/register$#',                  'register_submit'],
     ['GET',  '#^/logout$#',                    'logout_action'],
     ['GET',  '#^/verify-email$#',              'verify_email'],
+    ['POST', '#^/verify-email/confirm$#',      'verify_email_confirm'],
     ['POST', '#^/verify-email/resend$#',       'verify_email_resend'],
     ['GET',  '#^/forgot-password$#',           'forgot_form'],
     ['POST', '#^/forgot-password$#',           'forgot_submit'],

@@ -678,6 +678,16 @@ function logout_action(array $a): void { logout(); flash('Signed out.'); redirec
 /* ---------- email verification ---------- */
 
 /** GET /verify-email — with ?token= consumes it; without, shows the "check your inbox" page. */
+/**
+ * GET /verify-email
+ *
+ * With ?token=, this ONLY validates the token and renders a confirm page — it does NOT consume
+ * it. A GET must be safe: email security scanners and link-preview bots (Gmail, Outlook Safe
+ * Links, corporate proxies) prefetch every URL in a message, so a GET that burned a single-use
+ * token verified the account as the BOT and left the human with "invalid or expired". The
+ * destructive step is POST /verify-email/confirm, which bots do not issue. Reproduced on prod:
+ * a GoogleImageProxy GET consumed the token before the user clicked.
+ */
 function verify_email(array $a): void {
     $raw = (string) input('token');
     if ($raw === '') {
@@ -688,15 +698,34 @@ function verify_email(array $a): void {
     }
     $row = rmt_token_lookup($raw, 'verify');
     if (!$row) {
+        // Token missing/used/expired. If it was already used the account is likely verified, so
+        // point them at sign-in rather than a dead-end error.
         view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
-             'errors'=>['That confirmation link is invalid or has expired. Request a new one below.']],
+             'errors'=>['This confirmation link has already been used or has expired. '
+                      . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
              ['title'=>'Confirm your email — RuinMyTrip']);
         return;
     }
-    db()->prepare('UPDATE users SET email_verified_at = ? WHERE id = ?')
+    // Valid token — show a one-click confirm page. Nothing is consumed on GET.
+    view('auth/verify_confirm', ['token'=>$raw, 'email'=>$row['email'] ?? null],
+         ['title'=>'Confirm your email — RuinMyTrip']);
+}
+
+/** POST /verify-email/confirm — the actual, human-triggered verification. */
+function verify_email_confirm(array $a): void {
+    csrf_check();
+    $raw = (string) input('token');
+    $row = rmt_token_lookup($raw, 'verify');
+    if (!$row) {
+        view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
+             'errors'=>['This confirmation link has already been used or has expired. '
+                      . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
+             ['title'=>'Confirm your email — RuinMyTrip']);
+        return;
+    }
+    db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
         ->execute([date('Y-m-d H:i:s'), (int)$row['user_id']]);
     rmt_token_consume((int)$row['id']);
-    // Confirming the address proves control of the account — log them in.
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$row['user_id'];
     flash('Email confirmed. Welcome to RuinMyTrip.');
