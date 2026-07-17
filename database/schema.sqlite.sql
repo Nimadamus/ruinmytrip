@@ -144,3 +144,8 @@ CREATE INDEX idx_reviews_dest ON reviews(destination_id);
 CREATE INDEX idx_guides_dest ON guides(destination_id);
 CREATE INDEX idx_meetups_dest ON meetups(destination_id);
 CREATE INDEX idx_notif_user ON notifications(user_id, read_at);
+CREATE TABLE sessions (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL DEFAULT '',
+  updated_at INTEGER NOT NULL
+);

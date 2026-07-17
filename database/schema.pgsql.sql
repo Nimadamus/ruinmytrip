@@ -110,3 +110,8 @@ CREATE INDEX IF NOT EXISTS idx_reviews_dest ON reviews(destination_id);
 CREATE INDEX IF NOT EXISTS idx_guides_dest ON guides(destination_id);
 CREATE INDEX IF NOT EXISTS idx_meetups_dest ON meetups(destination_id);
 CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, read_at);
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY,
+  data TEXT NOT NULL DEFAULT '',
+  updated_at BIGINT NOT NULL
+);
