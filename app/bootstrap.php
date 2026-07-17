@@ -1,0 +1,22 @@
+<?php
+declare(strict_types=1);
+
+define('BASE_PATH', dirname(__DIR__));
+$config = require BASE_PATH . '/app/config.php';
+$GLOBALS['config'] = $config;
+
+require BASE_PATH . '/app/db.php';
+require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/csrf.php';
+require BASE_PATH . '/app/auth.php';
+require BASE_PATH . '/app/seo.php';
+
+session_name($config['session_name']);
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
+session_start();
+
+// Auto-migrate + seed on local SQLite so the site runs out of the box.
+if ($config['db_driver'] === 'sqlite' && !file_exists($config['sqlite_path'])) {
+    require BASE_PATH . '/database/seed.php';
+    rmt_migrate_and_seed(db());
+}
