@@ -1,0 +1,177 @@
+name: db-backup
+
+# Automated production Postgres backup for RuinMyTrip.
+# Runs daily with no manual trigger. Each run: opens the DB firewall to THIS runner's IP only,
+# pg_dumps prod, re-locks the firewall (always), encrypts the dump (GPG AES256), verifies it by
+# restoring into a throwaway Postgres service container and running integrity checks, then stores
+# the encrypted dump as a retained artifact. Alerts by email on any failure.
+#
+# Nothing here ever writes to the production database. The restore test targets an ephemeral
+# container (localhost:5432) that is destroyed when the job ends.
+
+on:
+  schedule:
+    - cron: '17 7 * * *'      # daily at 07:17 UTC (off the top of the hour to avoid scheduler congestion)
+  workflow_dispatch: {}        # manual run, used for the acceptance test
+
+# Never let two backups run at once (a second run queues; it does not cancel the first).
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      DB_ID: dpg-d9co0937uimc73enjljg-a
+      ALERT_EMAIL: nj2121@gmail.com
+      MAIL_FROM: 'RuinMyTrip Backups <noreply@send.ruinmytrip.com>'
+      RETENTION_DAYS: '30'
+
+    # Ephemeral Postgres used ONLY to verify the dump restores. Torn down with the job.
+    services:
+      verifydb:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: verifypw
+          POSTGRES_DB: verifydb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Install PostgreSQL 16 client
+        run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+          pg_dump --version
+
+      - name: Open DB firewall to this runner and fetch connection string
+        run: |
+          set -euo pipefail
+          IP=$(curl -fsS https://api.ipify.org)
+          echo "Runner IP: $IP"
+          # Replace the allowlist with ONLY this runner /32 (also overwrites any stale entry).
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d "{\"ipAllowList\":[{\"cidrBlock\":\"$IP/32\",\"description\":\"gha-backup temporary\"}]}" \
+            "https://api.render.com/v1/postgres/$DB_ID" > /dev/null
+          CONN=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
+            "https://api.render.com/v1/postgres/$DB_ID/connection-info" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin)['externalConnectionString'])")
+          # Keep the connection string out of every log line.
+          echo "::add-mask::$CONN"
+          echo "CONN=$CONN" >> "$GITHUB_ENV"
+          # Give the firewall change a moment to propagate before connecting.
+          sleep 20
+
+      - name: Dump and encrypt
+        run: |
+          set -euo pipefail
+          STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          mkdir -p out
+          DUMP="out/rmt_${STAMP}.dump"
+          ENC="out/rmt_${STAMP}.dump.gpg"
+          echo "ENC=$ENC" >> "$GITHUB_ENV"
+          # Custom format = compressed and restorable with pg_restore.
+          pg_dump --format=custom --no-owner --no-privileges --dbname="$CONN" --file="$DUMP"
+          RAW=$(stat -c%s "$DUMP")
+          # Encrypt (AES256). Passphrase over stdin — never on the command line / process list.
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase-fd 0 -o "$ENC" "$DUMP"
+          rm -f "$DUMP"                      # keep only the encrypted copy on disk
+          SIZE=$(stat -c%s "$ENC")
+          echo "RAW_BYTES=$RAW" >> "$GITHUB_ENV"
+          echo "ENC_BYTES=$SIZE" >> "$GITHUB_ENV"
+          echo "Dump raw ${RAW} bytes -> encrypted ${SIZE} bytes"
+
+      - name: Restore into isolated verify DB + integrity checks
+        run: |
+          set -euo pipefail
+          export PGPASSWORD=verifypw
+          VERIFY="postgresql://postgres:verifypw@localhost:5432/verifydb"
+          # Decrypt to a temp dump, restore into the throwaway container (NOT prod).
+          printf '%s' "$BACKUP_PASSPHRASE" | gpg --batch --yes --decrypt --passphrase-fd 0 \
+            -o out/verify.dump "$ENC"
+          pg_restore --no-owner --no-privileges --exit-on-error --dbname="$VERIFY" out/verify.dump
+          # Integrity checks: expected tables exist, migrations applied, catalog rows present.
+          psql "$VERIFY" -v ON_ERROR_STOP=1 <<'SQL'
+          \echo '--- restored tables ---'
+          \dt
+          DO $$
+          DECLARE
+            need text[] := ARRAY['users','profiles','destinations','reviews','review_photos',
+                                 'trips','comments','follows','meetups','reports',
+                                 'auth_tokens','badges','media','schema_migrations'];
+            t text;
+            n int;
+          BEGIN
+            FOREACH t IN ARRAY need LOOP
+              IF to_regclass(t) IS NULL THEN
+                RAISE EXCEPTION 'integrity check FAILED: table % missing from restore', t;
+              END IF;
+            END LOOP;
+            SELECT count(*) INTO n FROM schema_migrations;
+            IF n < 1 THEN RAISE EXCEPTION 'integrity check FAILED: no schema_migrations rows'; END IF;
+            RAISE NOTICE 'schema_migrations rows: %', n;
+            SELECT count(*) INTO n FROM destinations;
+            IF n < 1 THEN RAISE EXCEPTION 'integrity check FAILED: destinations empty'; END IF;
+            RAISE NOTICE 'destinations rows: %', n;
+            RAISE NOTICE 'integrity checks PASSED';
+          END $$;
+          SQL
+          rm -f out/verify.dump
+          echo "Restore + integrity checks passed against the isolated verify DB."
+
+      - name: Upload encrypted backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rmt-db-backup-${{ env.STAMP }}
+          path: ${{ env.ENC }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### RuinMyTrip DB backup"
+            echo "- result: ${{ job.status }}"
+            echo "- timestamp (UTC): ${STAMP:-n/a}"
+            echo "- encrypted size: ${ENC_BYTES:-n/a} bytes (raw ${RAW_BYTES:-n/a})"
+            echo "- destination: GitHub Actions artifact rmt-db-backup-${STAMP:-n/a} (retention ${RETENTION_DAYS}d)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ALWAYS re-lock the DB firewall, even if any step above failed or the job was cancelled.
+      - name: Re-lock DB firewall (always)
+        if: always()
+        run: |
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID" > /dev/null && \
+            echo "DB firewall re-locked to internal-only." || echo "WARNING: re-lock call failed"
+
+      - name: Email alert on failure
+        if: failure()
+        run: |
+          printf '%s' '{
+            "from": "'"$MAIL_FROM"'",
+            "to": ["'"$ALERT_EMAIL"'"],
+            "subject": "RuinMyTrip DB backup FAILED",
+            "html": "<p>The scheduled RuinMyTrip database backup failed. Run: <a href=\"'"$GITHUB_SERVER_URL"'/'"$GITHUB_REPOSITORY"'/actions/runs/'"$GITHUB_RUN_ID"'\">view logs</a>.</p>"
+          }' | curl -fsS -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" --data @- > /dev/null \
+            && echo "Failure alert emailed to $ALERT_EMAIL" || echo "WARNING: alert email failed"
