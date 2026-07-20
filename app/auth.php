@@ -86,7 +86,7 @@ function send_password_reset_email(array $u): array {
     }
 }
 
-function register_user(string $username, string $email, string $password, string $birthdate): array {
+function register_user(string $username, string $email, string $password, string $birthdate, ?string $ref = null): array {
     $errors = [];
     $username = trim($username); $email = strtolower(trim($email));
     if (!preg_match('/^[a-zA-Z0-9_]{3,24}$/', $username)) $errors[] = 'Username must be 3–24 letters, numbers, or underscores.';
@@ -100,9 +100,13 @@ function register_user(string $username, string $email, string $password, string
     if ($errors) return ['ok' => false, 'errors' => $errors];
 
     $hash = password_hash($password, PASSWORD_BCRYPT);
-    $id = q_run('INSERT INTO users (username, email, password_hash, role, birthdate, status, created_at)
-                 VALUES (?,?,?,?,?,?,?)',
-                [$username, $email, $hash, 'user', $birthdate, 'active', date('Y-m-d H:i:s')]);
+    // Referral is recorded only when ?ref= resolved to a real active member. It grants nothing,
+    // so a forged or absent ref is harmless — it exists to show members their invites landed.
+    $referrer = rmt_referrer_username($ref);
+    if ($referrer === $username) $referrer = null;
+    $id = q_run('INSERT INTO users (username, email, password_hash, role, birthdate, status, created_at, referred_by)
+                 VALUES (?,?,?,?,?,?,?,?)',
+                [$username, $email, $hash, 'user', $birthdate, 'active', date('Y-m-d H:i:s'), $referrer]);
     q_run('INSERT INTO profiles (user_id, display_name, credibility_score) VALUES (?,?,0)', [$id, $username]);
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$id;

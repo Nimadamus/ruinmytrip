@@ -2,7 +2,7 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Explore</p>
   <h1>Explore destinations</h1>
-  <p class="muted">Traveler-reviewed places, honest guides, and who's heading there next.</p>
+  <p class="muted">Every destination here carries a researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a> and practical tips. The review counts below are travelers only, so they read zero until real people post.</p>
   <form action="<?= e(url('explore')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
     <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">
     <select name="category" onchange="this.form.submit()">
@@ -20,9 +20,13 @@
         <img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name']) ?>">
         <div class="card-body">
           <span class="chip"><?= e($d['category']) ?></span>
+          <?php if ((int)$d['editorial'] > 0): ?><?= rmt_editorial_badge('review') ?><?php endif; ?>
           <h3><?= e($d['name']) ?>, <?= e($d['country']) ?></h3>
           <p class="muted"><?= e($d['summary']) ?></p>
-          <div class="meta-row"><?= (int)$d['reviews'] ?> reviews · <?= (int)$d['trips'] ?> trips</div>
+          <div class="meta-row">
+            <?= (int)$d['reviews'] ?> traveler <?= (int)$d['reviews'] === 1 ? 'review' : 'reviews' ?>
+            · <?= (int)$d['trips'] ?> <?= (int)$d['trips'] === 1 ? 'trip' : 'trips' ?>
+          </div>
         </div></a></article>
     <?php endforeach; ?>
   </div>

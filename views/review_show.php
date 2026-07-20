@@ -7,6 +7,14 @@
     </div>
   <?php endif; ?>
 
+  <?php $isEd = rmt_is_editorial($author); ?>
+  <?php if ($isEd): ?>
+    <div class="card ed-panel" style="margin-bottom:18px"><div class="card-body">
+      <?= rmt_editorial_badge('review') ?>
+      <p style="margin:.5rem 0 0"><?= e(rmt_editorial_disclosure()) ?></p>
+    </div></div>
+  <?php endif; ?>
+
   <p class="eyebrow" style="text-transform:capitalize"><?= e($r['subject_type']) ?>
     <?php if ($r['dest_name']): ?> · <a href="<?= e(url('d/'.$r['dest_slug'])) ?>"><?= e($r['dest_name']) ?></a><?php endif; ?>
   </p>
@@ -22,11 +30,19 @@
     <?php if (!empty($author['avatar_url'])): ?>
       <img class="avatar" src="<?= e($author['avatar_url']) ?>" alt="">
     <?php endif; ?>
-    <span>by <a href="<?= e(url('u/'.$author['username'])) ?>">@<?= e($author['username']) ?></a>
+    <span>by <a href="<?= e(url('u/'.$author['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($author['username']) ?></a>
       · <?= e(ago((string)$r['created_at'])) ?>
       <?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?>
     </span>
   </div>
+
+  <?php if ($isEd): ?>
+    <div class="empty-cta" style="margin-top:22px">
+      <h2 style="margin:0 0 6px;font-size:1.15rem">Been to <?= e($r['dest_name'] ?: $r['subject_name']) ?>? This page needs you more than it needs us.</h2>
+      <p class="muted" style="margin:0 0 14px">A first-hand review outranks desk research every time, and yours will sit above this one.</p>
+      <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a>
+    </div>
+  <?php endif; ?>
 
   <p style="margin:22px 0;white-space:pre-wrap;font-size:1.05rem;line-height:1.7"><?= e($r['body']) ?></p>
 

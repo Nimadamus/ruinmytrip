@@ -1,9 +1,13 @@
-<?php /** @var array $errors */ ?>
+<?php /** @var array $errors @var ?string $ref */ $ref = $ref ?? null; ?>
 <div class="wrap"><div class="form-card">
   <h1>Join RuinMyTrip</h1>
+  <?php if ($ref): ?>
+    <div class="callout" style="margin-top:0"><b>@<?= e($ref) ?> invited you.</b> RuinMyTrip is built from first-hand traveler reviews, so the most useful thing you can do here is write one.</div>
+  <?php endif; ?>
   <p class="muted">Build your traveler profile. Share trips, reviews, and guides.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('register')) ?>"><?= csrf_field() ?>
+    <?php if ($ref): ?><input type="hidden" name="ref" value="<?= e($ref) ?>"><?php endif; ?>
     <label for="username">Username</label>
     <input type="text" id="username" name="username" value="<?= e(input('username')) ?>" required pattern="[A-Za-z0-9_]{3,24}" autocomplete="username">
     <label for="email">Email</label>

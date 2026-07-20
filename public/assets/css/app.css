@@ -146,3 +146,44 @@ textarea{min-height:140px;resize:vertical}
   .footer-grid{grid-template-columns:1fr 1fr}
   .hero-inner{padding:64px 20px 48px}
 }
+
+/* ---- editorial layer ---------------------------------------------------- */
+/* Editorial content must never be mistakable for a traveler review, so its label is a solid
+   ink-coloured chip (community chips are pale teal) and its container carries a left rule. */
+.ed-badge,a.ed-badge{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;
+  padding:.18rem .7rem;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none}
+/* `.card a{color:inherit}` is more specific than a bare class, which rendered the badge as an
+   empty black pill inside every card. The type-qualified selector wins it back. */
+a.ed-badge:hover{background:var(--brand)}
+.ed-panel{border-left:4px solid var(--ink);background:#fbfcfe}
+.ed-note{font-size:.85rem;color:var(--muted);margin:.5rem 0 0;line-height:1.5}
+.section-rule{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
+.section-rule h2{margin:0;font-size:1.35rem}
+.section-rule .count{color:var(--muted);font-weight:600;font-size:.95rem}
+
+/* Empty states are a designed part of the page, not an accident. */
+.empty-cta{background:linear-gradient(120deg,#f4f8fb,#eef6f5);border:1px dashed #c9d8dd;
+  border-radius:var(--radius);padding:26px 22px}
+.empty-cta h2,.empty-cta h3{margin-top:0}
+.empty-steps{display:grid;gap:10px;margin:14px 0 0;padding:0;list-style:none;counter-reset:step}
+.empty-steps li{counter-increment:step;padding-left:34px;position:relative;color:var(--muted)}
+.empty-steps li::before{content:counter(step);position:absolute;left:0;top:0;width:24px;height:24px;
+  border-radius:999px;background:var(--brand);color:#fff;font-weight:800;font-size:.8rem;
+  display:grid;place-items:center}
+
+.tips-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.tips-list li{position:relative;padding-left:26px;line-height:1.6}
+.tips-list li::before{content:"→";position:absolute;left:0;color:var(--brand);font-weight:800}
+
+.photo-credit{font-size:.75rem;color:var(--muted);margin:6px 0 0;text-align:right}
+.photo-credit a{color:var(--muted);text-decoration:underline}
+
+.rating-split{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-start}
+.rating-split .rs-item{min-width:150px}
+.rating-split .rs-label{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rating-split .rs-value{font-size:1.05rem;font-weight:700}
+
+.invite-row{display:flex;gap:10px;flex-wrap:wrap}
+.invite-row input{flex:1;min-width:240px;padding:.6rem .9rem;border:1px solid var(--line);
+  border-radius:10px;font:inherit;background:var(--paper)}

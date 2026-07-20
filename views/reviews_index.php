@@ -25,9 +25,15 @@
   </div>
 
   <?php if (!$reviews): ?>
-    <p class="muted"><?= $mine
-      ? 'You have not written a review yet.'
-      : 'No reviews here yet. The first honest one can be yours.' ?></p>
+    <div class="empty-cta">
+      <h3><?= $mine ? 'You have not written a review yet.' : 'Nothing here yet.' ?></h3>
+      <p class="muted" style="margin:0"><?= $mine
+        ? 'Start with the last trip you took. The bad parts are the useful parts.'
+        : 'No reviews in this category yet, and we will not pad it with invented ones. The first honest review can be yours.' ?></p>
+      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a></p>
+    </div>
+  <?php elseif (!$mine): ?>
+    <p class="hint" style="margin:-6px 0 16px">Reviews marked <?= rmt_editorial_badge('review') ?> are written by our own team from research, never counted in a destination's community rating.</p>
   <?php endif; ?>
 
   <div class="grid" style="gap:14px">
@@ -42,7 +48,8 @@
             <?php elseif (in_array($r['status'], ['hidden','removed'], true)): ?>
               <span class="chip" style="background:#fee2e2;color:#b42318"><?= e(ucfirst($r['status'])) ?></span>
             <?php endif; ?>
-            <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
+            <?php if (rmt_is_editorial($r)): ?><?= rmt_editorial_badge('review') ?>
+            <?php elseif (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
           </span>
         </div>
         <h2 style="margin:.35rem 0 .2rem;font-size:1.1rem">
@@ -54,7 +61,7 @@
         </p>
         <p style="margin:.5rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 160, '…')) ?></p>
         <div class="meta-row" style="justify-content:space-between">
-          <span>@<?= e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?></span>
+          <span><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?></span>
           <?php if (rmt_review_can_edit($r, $me)): ?>
             <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
           <?php endif; ?>

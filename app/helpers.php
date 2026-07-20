@@ -38,6 +38,20 @@ function ago(string $ts): string {
     return date('M j, Y', $t);
 }
 
+/**
+ * Absolute URL for a stored asset path.
+ *
+ * Images are stored root-relative ("/media/abc.jpg") so the same row works on localhost, a
+ * preview, and production. og:image is the one place that must be absolute, because scrapers
+ * resolve it out of context.
+ */
+function abs_url(?string $u): string {
+    $u = (string) $u;
+    if ($u === '') return url('assets/img/og-default.svg');
+    if (preg_match('#^https?://#i', $u)) return $u;
+    return url(ltrim($u, '/'));
+}
+
 /** Render a view within the layout. */
 function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);
