@@ -49,6 +49,11 @@ function rmt_load_config(): array {
         return $cfg;
     }
 
-    // Local dev
-    return require dirname(__DIR__) . '/app/config.php';
+    // Local dev. RMT_SQLITE points the app at an alternate database file, which is how the
+    // production-shaped preview DB (scripts/dev_preview_db.php) gets served without disturbing
+    // the demo-seeded one.
+    $cfg = require dirname(__DIR__) . '/app/config.php';
+    if ($alt = getenv('RMT_SQLITE')) $cfg['sqlite_path'] = $alt;
+    if ($url = getenv('RMT_APP_URL')) $cfg['app_url'] = rtrim($url, '/');
+    return $cfg;
 }

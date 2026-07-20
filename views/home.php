@@ -11,10 +11,12 @@
     </form>
     <p style="margin:18px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a></p>
     <div class="hero-stats">
-      <?php /* Real COUNT(*) from the DB — never a hardcoded or LIMIT-capped number. */ ?>
+      <?php /* Real COUNT(*) from the DB — never a hardcoded or LIMIT-capped number. The review
+               figure counts community reviews only, so it reads 0 until travelers actually post.
+               A launch site saying "0 traveler reviews" is the whole pitch working. */ ?>
       <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
-      <div><b>Honest</b><span>Traveler reviews</span></div>
-      <div><b>Safety-first</b><span>Public meetups</span></div>
+      <div><b><?= (int)$stat_community_reviews ?></b><span><?= $stat_community_reviews === 1 ? 'Traveler review' : 'Traveler reviews' ?></span></div>
+      <div><b>0</b><span>Fake ones</span></div>
     </div>
   </div>
 </section>
@@ -39,6 +41,21 @@
 <section class="block" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="section-head"><div><p class="eyebrow">Fresh from the community</p><h2>Recent traveler stories</h2></div>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">More stories</a></div>
+  <?php if (!$stories): ?>
+    <div class="empty-cta">
+      <h3>Nobody has posted a trip story yet. That is not a bug.</h3>
+      <p class="muted" style="margin:0">RuinMyTrip opened with real destination research and zero invented travelers. Every story on this page from here on will belong to somebody who actually went.</p>
+      <ol class="empty-steps">
+        <li>Create a profile, it takes a minute.</li>
+        <li>Write up your last trip, good parts and bad.</li>
+        <li>Invite one traveler whose opinion you trust.</li>
+      </ol>
+      <p style="margin:16px 0 0">
+        <a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a>
+        <a class="btn btn-ghost" href="<?= e(url('invite')) ?>">Invite a traveler</a>
+      </p>
+    </div>
+  <?php endif; ?>
   <div class="grid g-2">
     <?php foreach ($stories as $s): ?>
       <article class="card"><a href="<?= e(url('trip/'.$s['id'].'/'.$s['slug'])) ?>">
@@ -53,9 +70,6 @@
           </div>
         </div></a></article>
     <?php endforeach; ?>
-    <?php if (!$stories): ?>
-      <p class="muted">No trip stories yet. <a href="<?= e(url('register')) ?>">Create a profile</a> and be the first to share one.</p>
-    <?php endif; ?>
   </div>
 </div></section>
 
@@ -63,26 +77,33 @@
   <div class="grid g-2" style="align-items:start">
     <div>
       <p class="eyebrow">Trusted reviews</p><h2>Reviews you can actually believe</h2>
+      <?php if ($stat_community_reviews === 0 && $reviews): ?>
+        <p class="muted">Everything below is an <b>editorial review</b>, researched and written by our own team and labelled as such. There are no traveler reviews on RuinMyTrip yet, and we are not going to invent any. <a href="<?= e(url('review/new')) ?>">Yours would be the first.</a></p>
+      <?php endif; ?>
       <div class="grid" style="gap:14px">
         <?php foreach ($reviews as $r): ?>
-          <div class="card"><div class="card-body">
-            <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="card <?= rmt_is_editorial($r) ? 'ed-panel' : '' ?>"><div class="card-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
               <span class="stars"><?= stars((int)$r['rating']) ?></span>
-              <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
+              <?php if (rmt_is_editorial($r)): ?><?= rmt_editorial_badge('review') ?>
+              <?php elseif (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
             </div>
             <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem">
               <a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
             </h3>
             <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span></p>
             <p style="margin:.5rem 0 0"><?= e(mb_strimwidth($r['body'],0,120,'…')) ?></p>
-            <div class="meta-row">@<?= e($r['author']['username'] ?? 'traveler') ?></div>
+            <div class="meta-row"><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?></div>
           </div></div>
         <?php endforeach; ?>
         <?php if (!$reviews): ?>
           <p class="muted">No reviews yet. The first honest one can be yours.</p>
         <?php endif; ?>
       </div>
-      <p style="margin-top:16px"><a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a></p>
+      <p style="margin-top:16px">
+        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a>
+        <a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a>
+      </p>
     </div>
     <div>
       <p class="eyebrow">Meet fellow travelers</p><h2>Upcoming public meetups</h2>
@@ -111,6 +132,7 @@
         <img class="card-media" loading="lazy" src="<?= e($g['cover_url']) ?>" alt="<?= e($g['title']) ?>">
         <div class="card-body">
           <?php if ($g['dest_name']): ?><span class="chip"><?= e($g['dest_name']) ?></span><?php endif; ?>
+          <?php if (rmt_is_editorial($g)): ?><?= rmt_editorial_badge() ?><?php endif; ?>
           <?php if ($g['premium']): ?><span class="chip" style="background:#fef3c7;color:#92400e">Premium</span><?php endif; ?>
           <h3><?= e($g['title']) ?></h3>
           <p class="muted"><?= e(mb_strimwidth($g['summary'],0,110,'…')) ?></p>

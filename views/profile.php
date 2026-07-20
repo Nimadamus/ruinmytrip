@@ -5,7 +5,8 @@
     <img class="avatar-lg" src="<?= e($u['avatar_url'] ?: url('assets/img/og-default.svg')) ?>" alt="<?= e($u['username']) ?>">
     <div style="flex:1;min-width:220px">
       <h1 style="margin:0"><?= e($u['display_name'] ?: $u['username']) ?>
-        <?php if (in_array($u['role'],['admin','mod'],true)): ?><span class="chip" style="background:#eef;color:#334">Team</span>
+        <?php if (rmt_is_editorial($u)): ?><?= rmt_editorial_badge() ?>
+        <?php elseif (in_array($u['role'],['admin','mod'],true)): ?><span class="chip" style="background:#eef;color:#334">Team</span>
         <?php elseif ($u['role']==='creator'): ?><span class="chip" style="background:#fef3c7;color:#92400e">Creator</span><?php endif; ?>
       </h1>
       <p class="muted" style="margin:.1rem 0">@<?= e($u['username']) ?> <?= $u['home_city']?' · '.e($u['home_city']):'' ?></p>

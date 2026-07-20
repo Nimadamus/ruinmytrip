@@ -30,9 +30,14 @@ function home(array $a): void {
                      WHERE g.status='published' ORDER BY g.id DESC LIMIT 3");
     foreach ($stories as &$s) $s['author'] = author((int)$s['user_id']); unset($s);
     foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
+    foreach ($guides as &$g) $g['author'] = author((int)$g['user_id']); unset($g);
     // Real total, not count($trending) — $trending is LIMIT 6 and would print "6" forever.
     $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations'), [
+    // Real community total (editorial excluded). Drives the homepage copy: while it is 0 the page
+    // says so plainly rather than dressing editorial content up as community activity.
+    $stat_community_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
+                                            WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews'), [
         'title' => 'RuinMyTrip — Real trips, honest reviews, safe travel meetups',
         'description' => 'Join a trustworthy travel community. Share trips, review destinations and stays, follow travelers you trust, and find safe public meetups — RuinMyTrip.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
@@ -42,9 +47,17 @@ function home(array $a): void {
 
 function explore(array $a): void {
     $qs = trim((string)($_GET['q'] ?? '')); $cat = trim((string)($_GET['category'] ?? ''));
-    $sql = 'SELECT d.*, (SELECT COUNT(*) FROM reviews r WHERE r.destination_id=d.id) reviews,
-            (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) trips FROM destinations d WHERE 1=1';
-    $args = [];
+    // "reviews" on a destination card means TRAVELER reviews. Counting our own editorial review
+    // here would put "1 review" on every card while the community section is empty, which is
+    // exactly the impression this site exists not to give.
+    $sql = "SELECT d.*,
+              (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id
+                WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) reviews,
+              (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id
+                WHERE r.destination_id=d.id AND r.status='published' AND u.role  = ?) editorial,
+              (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips
+            FROM destinations d WHERE 1=1";
+    $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
     if ($qs !== '') { $sql .= ' AND (d.name LIKE ? OR d.country LIKE ? OR d.summary LIKE ?)'; $args[]="%$qs%";$args[]="%$qs%";$args[]="%$qs%"; }
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
     $sql .= ' ORDER BY d.name';
@@ -64,16 +77,22 @@ function destination(array $a): void {
     foreach ($trips as &$t) $t['author'] = author((int)$t['user_id']); unset($t);
     $reviews = q_all("SELECT r.* FROM reviews r WHERE r.destination_id=? AND r.status='published' ORDER BY r.verified DESC, r.id DESC", [$id]);
     foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
+    // Editorial and community reviews are rendered in separate, separately labelled sections.
+    [$editorial, $reviews] = rmt_split_editorial($reviews);
+    $tips = rmt_destination_tips($id);
     $guides = q_all("SELECT g.* FROM guides g WHERE g.destination_id=? AND g.status='published' ORDER BY g.id DESC", [$id]);
+    foreach ($guides as &$g) $g['author'] = author((int)$g['user_id']); unset($g);
     $meetups = q_all("SELECT m.* FROM meetups m WHERE m.destination_id=? AND m.status='published' ORDER BY m.date_start", [$id]);
     $going = q_all("SELECT g.*, u.username, p.avatar_url, p.display_name FROM going g
                     JOIN users u ON u.id=g.user_id LEFT JOIN profiles p ON p.user_id=u.id
                     WHERE g.destination_id=? AND g.visibility='public' ORDER BY g.date_from", [$id]);
-    $avg = q_one("SELECT ROUND(AVG(rating),1) a, COUNT(*) c FROM reviews WHERE destination_id=? AND status='published'", [$id]);
-    view('destination', compact('d','trips','reviews','guides','meetups','going','avg'), [
+    // Community score only. An editorial rating is the site's own opinion and must never be
+    // presented, or marked up for search engines, as traveler consensus.
+    $avg = rmt_community_avg($id);
+    view('destination', compact('d','trips','reviews','editorial','tips','guides','meetups','going','avg'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
-        'og_image' => $d['hero_url'],
+        'og_image' => abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
             'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
@@ -105,7 +124,7 @@ function profile(array $a): void {
     view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
-        'og_image' => $u['avatar_url'] ?: url('assets/img/og-default.svg'),
+        'og_image' => abs_url($u['avatar_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ProfilePage',
             'mainEntity'=>['@type'=>'Person','name'=>$u['display_name'] ?: $u['username'],
@@ -203,7 +222,7 @@ function trip_show(array $a): void {
     view('trip_show', compact('t','photos','comments'), [
         'title' => $t['title'].' — RuinMyTrip',
         'description' => mb_substr(strip_tags((string)$t['body']),0,150),
-        'og_image' => $t['cover_url'] ?: url('assets/img/og-default.svg'),
+        'og_image' => abs_url($t['cover_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>$t['dest_name']?:'Trips','url'=>$t['dest_slug']?url('d/'.$t['dest_slug']):url('explore')],['name'=>$t['title'],'url'=>url('trip/'.$t['id'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$t['title'],
             'datePublished'=>$t['created_at'],'author'=>['@type'=>'Person','name'=>$t['author']['display_name']??$t['author']['username']]]),
@@ -259,9 +278,36 @@ function guide_show(array $a): void {
     view('guide_show', compact('g'), [
         'title'=>$g['title'].' — RuinMyTrip',
         'description'=>$g['summary'],
-        'og_image'=>$g['cover_url'] ?: url('assets/img/og-default.svg'),
+        'og_image'=>abs_url($g['cover_url']),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Guides','url'=>url('guides')],['name'=>$g['title'],'url'=>url('g/'.$g['slug'])]],
         'jsonld'=>jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$g['title'],'datePublished'=>$g['created_at']]),
+    ]);
+}
+
+/**
+ * GET /invite — ask real travelers to bring real travelers.
+ *
+ * Deliberately not a growth-hack: no rewards, no address-book upload, no auto-emailing anyone.
+ * A member gets a link with their username on it and copy they can send themselves. The counts
+ * shown are real rows in `users` (referred_by) — never an estimate.
+ */
+function invite_page(array $a): void {
+    $me = current_user();
+    $link = rmt_invite_link($me);
+    $joined = $me
+        ? (int) (q_one('SELECT COUNT(*) c FROM users WHERE referred_by = ?', [$me['username']])['c'] ?? 0)
+        : 0;
+    // Of the people they invited, how many have actually published a review? That is the number
+    // that matters to the site, so it is the number shown.
+    $contributed = $me
+        ? (int) (q_one("SELECT COUNT(DISTINCT u.id) c FROM users u
+                          JOIN reviews r ON r.user_id = u.id AND r.status = 'published'
+                         WHERE u.referred_by = ?", [$me['username']])['c'] ?? 0)
+        : 0;
+    view('invite', compact('me','link','joined','contributed'), [
+        'title' => 'Invite a traveler you trust — RuinMyTrip',
+        'description' => 'RuinMyTrip is only as good as the people writing on it. Invite travelers whose recommendations you would actually act on.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Invite','url'=>url('invite')]],
     ]);
 }
 
@@ -668,21 +714,25 @@ function login_submit(array $a): void {
     if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect('/feed'); }
     view('auth/login', ['errors'=>['Incorrect email or password.']], ['title'=>'Sign in — RuinMyTrip']);
 }
-function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
+function register_form(array $a): void {
+    if (is_logged_in()) redirect('/feed');
+    view('auth/register', ['errors'=>[], 'ref'=>rmt_referrer_username(input('ref'))], ['title'=>'Join RuinMyTrip']);
+}
 function register_submit(array $a): void {
     csrf_check();
+    $ref = rmt_referrer_username(input('ref'));
     if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
-        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.']],
+        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.'], 'ref'=>$ref],
              ['title'=>'Join RuinMyTrip']); return;
     }
-    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
+    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'), $ref);
     if ($r['ok']) {
         flash(($r['mail_ok'] ?? false)
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
             : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link below.');
         redirect('/verify-email');
     }
-    view('auth/register', ['errors'=>$r['errors']], ['title'=>'Join RuinMyTrip']);
+    view('auth/register', ['errors'=>$r['errors'], 'ref'=>$ref], ['title'=>'Join RuinMyTrip']);
 }
 function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
 
@@ -1029,6 +1079,13 @@ function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Pri
 function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'=>'Community Guidelines — RuinMyTrip']); }
 function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure — RuinMyTrip']); }
 function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety — RuinMyTrip']); }
+function page_editorial(array $a): void {
+    view('legal/editorial', [], [
+        'title' => 'Editorial policy — how RuinMyTrip labels its own content',
+        'description' => 'RuinMyTrip publishes researched editorial reviews under one official account, always labelled, never counted in community ratings, and never presented as a traveler visit.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Editorial policy','url'=>url('editorial-policy')]],
+    ]);
+}
 
 /* ---------- health check (Render) ---------- */
 // Liveness only — NO DB call, so health never flaps on DB latency (that caused Render edge 404s).
@@ -1047,7 +1104,8 @@ function readyz(array $a): void {
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
     $urls = [url(), url('explore'), url('reviews'), url('guides'), url('meetups'), url('going'),
-             url('terms'), url('privacy'), url('guidelines'), url('affiliate'), url('safety')];
+             url('invite'), url('editorial-policy'), url('terms'), url('privacy'), url('guidelines'),
+             url('affiliate'), url('safety')];
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);

@@ -19,7 +19,21 @@ function rmt_current_url(): string {
 function jsonld(array $data): string {
     $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
            | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT;
-    return '<script type="application/ld+json">' . json_encode($data, $flags) . '</script>';
+    // Drop null properties. Callers build these arrays with conditional entries (an
+    // aggregateRating only exists once real reviews do), and emitting "aggregateRating":null is
+    // an invalid, meaningless assertion in structured data. Absent is the correct encoding of
+    // "we do not have this".
+    return '<script type="application/ld+json">' . json_encode(rmt_jsonld_prune($data), $flags) . '</script>';
+}
+
+/** Recursively remove null values from a JSON-LD payload. */
+function rmt_jsonld_prune(array $data): array {
+    $out = [];
+    foreach ($data as $k => $v) {
+        if ($v === null) continue;
+        $out[$k] = is_array($v) ? rmt_jsonld_prune($v) : $v;
+    }
+    return $out;
 }
 
 /** BreadcrumbList JSON-LD from [['name'=>,'url'=>], ...]. */
