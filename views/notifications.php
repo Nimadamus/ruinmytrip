@@ -11,8 +11,10 @@
   <ul class="list-plain">
     <?php foreach ($items as $n): ?>
       <li class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
-        <?php if ($n['type']==='follow'): ?>
-          <b>@<?= e($n['actor']) ?></b> started following you.
+        <?php if ($n['type']==='follow' && $n['actor']): ?>
+          <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> started following you.</a>
+        <?php elseif ($n['type']==='follow'): ?>
+          <b>Someone</b> started following you, then deleted their account.
         <?php else: ?>
           <b><?= e($n['type']) ?></b> from @<?= e($n['actor']) ?>
         <?php endif; ?>
