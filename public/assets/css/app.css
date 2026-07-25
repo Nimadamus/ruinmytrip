@@ -36,7 +36,8 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .brand span{color:var(--brand)}
 .brand-mark{color:var(--accent)}
 .nav-search{flex:1;max-width:420px}
-.nav-search input{width:100%;padding:.55rem 1rem;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.95rem}
+.nav-search input,.nav-search-mobile input{width:100%;padding:.55rem 1rem;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.95rem}
+.nav-search-mobile{display:none}
 .site-nav{display:flex;align-items:center;gap:14px;margin-left:auto}
 .site-nav a{color:var(--ink-2);font-weight:600;font-size:.95rem}
 .nav-toggle{display:none;background:none;border:0;font-size:1.5rem;margin-left:auto;cursor:pointer}
@@ -144,6 +145,9 @@ textarea{min-height:140px;resize:vertical}
   .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:12px 20px;border-bottom:1px solid var(--line);gap:6px}
   body.nav-open .site-nav{display:flex}
   .site-nav a{padding:8px 0}
+  /* The header search box is hidden above (no room), so give the dropdown its own -- otherwise
+     search is only reachable below 900px by typing /search or /explore directly. */
+  .nav-search-mobile{display:block;margin-bottom:6px}
 }
 @media (max-width:680px){
   .g-2,.g-3,.g-4{grid-template-columns:1fr}

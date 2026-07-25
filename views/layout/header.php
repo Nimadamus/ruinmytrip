@@ -32,6 +32,9 @@
     </form>
     <button class="nav-toggle" aria-label="Menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
     <nav class="site-nav" aria-label="Primary">
+      <form class="nav-search-mobile" action="<?= e(url('search')) ?>" method="get" role="search">
+        <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
+      </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
