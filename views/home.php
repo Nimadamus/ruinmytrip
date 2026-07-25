@@ -57,7 +57,7 @@
   <div class="grid g-2">
     <?php foreach ($stories as $s): ?>
       <article class="card"><a href="<?= e(url('trip/'.$s['id'].'/'.$s['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e($s['cover_url']) ?>" alt="<?= e($s['title']) ?>">
+        <img class="card-media" loading="lazy" src="<?= e(abs_url($s['cover_url'])) ?>" alt="<?= e($s['title']) ?>">
         <div class="card-body">
           <?php if ($s['dest_name']): ?><span class="chip"><?= e($s['dest_name']) ?></span><?php endif; ?>
           <h3><?= e($s['title']) ?></h3>
@@ -127,7 +127,7 @@
   <div class="grid g-3">
     <?php foreach ($guides as $g): ?>
       <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e($g['cover_url']) ?>" alt="<?= e($g['title']) ?>">
+        <img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt="<?= e($g['title']) ?>">
         <div class="card-body">
           <?php if ($g['dest_name']): ?><span class="chip"><?= e($g['dest_name']) ?></span><?php endif; ?>
           <?php if (rmt_is_editorial($g)): ?><?= rmt_editorial_badge() ?><?php endif; ?>

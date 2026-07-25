@@ -120,7 +120,7 @@
       <div class="grid" style="gap:16px">
         <?php foreach ($trips as $t): ?>
           <article class="card"><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-            <img class="card-media" loading="lazy" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>">
+            <img class="card-media" loading="lazy" src="<?= e(abs_url($t['cover_url'])) ?>" alt="<?= e($t['title']) ?>">
             <div class="card-body"><h3><?= e($t['title']) ?></h3>
               <div class="meta-row"><img class="avatar" src="<?= e(avatar_url($t['author']['avatar_url']??null)) ?>" alt="">@<?= e($t['author']['username']??'') ?>
               <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?></div>

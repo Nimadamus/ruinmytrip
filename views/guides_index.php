@@ -13,7 +13,7 @@
   <div class="grid g-3" style="padding:20px 0 50px">
     <?php foreach ($guides as $g): ?>
       <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e($g['cover_url']) ?>" alt="<?= e($g['title']) ?>">
+        <img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt="<?= e($g['title']) ?>">
         <div class="card-body">
           <?php if($g['dest_name']):?><span class="chip"><?= e($g['dest_name']) ?></span><?php endif;?>
           <?php if(rmt_is_editorial($g)):?><?= rmt_editorial_badge() ?><?php endif;?>
