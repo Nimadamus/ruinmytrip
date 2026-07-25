@@ -30,7 +30,6 @@ $routes = [
     ['GET',  '#^/review/(?<id>\d+)(?:/(?<slug>[a-z0-9\-]*))?$#', 'review_show'],
     ['GET',  '#^/guides$#',                    'guides_index'],
     ['GET',  '#^/g/(?<slug>[a-z0-9\-]+)$#',    'guide_show'],
-    ['GET',  '#^/invite$#',                    'invite_page'],
     ['GET',  '#^/meetups$#',                   'meetups_index'],
     ['GET',  '#^/meetup/(?<id>\d+)$#',         'meetup_show'],
     ['POST', '#^/meetup/(?<id>\d+)/rsvp$#',    'meetup_rsvp'],

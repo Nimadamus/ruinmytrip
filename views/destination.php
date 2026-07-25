@@ -90,7 +90,6 @@
           </ol>
           <p style="margin:16px 0 0">
             <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a>
-            <a class="btn btn-ghost" href="<?= e(url('invite')) ?>">Invite someone who has been</a>
           </p>
         </div>
       <?php endif; ?>
@@ -171,7 +170,6 @@
       <div style="margin-top:18px;display:grid;gap:8px">
         <a class="btn btn-accent btn-block" href="<?= e(url('review/new')) ?>">Share your experience</a>
         <a class="btn btn-primary btn-block" href="<?= e(url('trip/new')) ?>">Share a trip here</a>
-        <a class="btn btn-ghost btn-block" href="<?= e(url('invite')) ?>">Invite a traveler</a>
       </div>
     </aside>
   </div>

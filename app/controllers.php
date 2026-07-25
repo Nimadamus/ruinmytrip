@@ -284,33 +284,6 @@ function guide_show(array $a): void {
     ]);
 }
 
-/**
- * GET /invite — ask real travelers to bring real travelers.
- *
- * Deliberately not a growth-hack: no rewards, no address-book upload, no auto-emailing anyone.
- * A member gets a link with their username on it and copy they can send themselves. The counts
- * shown are real rows in `users` (referred_by) — never an estimate.
- */
-function invite_page(array $a): void {
-    $me = current_user();
-    $link = rmt_invite_link($me);
-    $joined = $me
-        ? (int) (q_one('SELECT COUNT(*) c FROM users WHERE referred_by = ?', [$me['username']])['c'] ?? 0)
-        : 0;
-    // Of the people they invited, how many have actually published a review? That is the number
-    // that matters to the site, so it is the number shown.
-    $contributed = $me
-        ? (int) (q_one("SELECT COUNT(DISTINCT u.id) c FROM users u
-                          JOIN reviews r ON r.user_id = u.id AND r.status = 'published'
-                         WHERE u.referred_by = ?", [$me['username']])['c'] ?? 0)
-        : 0;
-    view('invite', compact('me','link','joined','contributed'), [
-        'title' => 'Invite a traveler you trust — RuinMyTrip',
-        'description' => 'RuinMyTrip is only as good as the people writing on it. Invite travelers whose recommendations you would actually act on.',
-        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Invite','url'=>url('invite')]],
-    ]);
-}
-
 function meetups_index(array $a): void {
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
                       (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going
@@ -714,25 +687,21 @@ function login_submit(array $a): void {
     if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect('/feed'); }
     view('auth/login', ['errors'=>['Incorrect email or password.']], ['title'=>'Sign in — RuinMyTrip']);
 }
-function register_form(array $a): void {
-    if (is_logged_in()) redirect('/feed');
-    view('auth/register', ['errors'=>[], 'ref'=>rmt_referrer_username(input('ref'))], ['title'=>'Join RuinMyTrip']);
-}
+function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
 function register_submit(array $a): void {
     csrf_check();
-    $ref = rmt_referrer_username(input('ref'));
     if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
-        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.'], 'ref'=>$ref],
+        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.']],
              ['title'=>'Join RuinMyTrip']); return;
     }
-    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'), $ref);
+    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
     if ($r['ok']) {
         flash(($r['mail_ok'] ?? false)
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
             : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link below.');
         redirect('/verify-email');
     }
-    view('auth/register', ['errors'=>$r['errors'], 'ref'=>$ref], ['title'=>'Join RuinMyTrip']);
+    view('auth/register', ['errors'=>$r['errors']], ['title'=>'Join RuinMyTrip']);
 }
 function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
 
@@ -1104,7 +1073,7 @@ function readyz(array $a): void {
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
     $urls = [url(), url('explore'), url('reviews'), url('guides'), url('meetups'), url('going'),
-             url('invite'), url('editorial-policy'), url('terms'), url('privacy'), url('guidelines'),
+             url('editorial-policy'), url('terms'), url('privacy'), url('guidelines'),
              url('affiliate'), url('safety')];
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);

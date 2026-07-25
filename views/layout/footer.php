@@ -17,7 +17,6 @@
       <h4>Community</h4>
       <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>
       <a href="<?= e(url('safety')) ?>">Meetup Safety</a>
-      <a href="<?= e(url('invite')) ?>">Invite a traveler</a>
       <a href="<?= e(url('register')) ?>">Create an account</a>
     </div>
     <div>

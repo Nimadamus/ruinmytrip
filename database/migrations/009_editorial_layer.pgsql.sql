@@ -30,7 +30,3 @@ CREATE TABLE IF NOT EXISTS destination_tips (
   sort INTEGER NOT NULL DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_dest_tips ON destination_tips(destination_id, sort);
-
--- Who invited this account, by username. Set only from a real /invite link click at
--- registration time. Nullable forever; nothing is gated on it.
-ALTER TABLE users ADD COLUMN IF NOT EXISTS referred_by TEXT;

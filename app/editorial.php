@@ -111,19 +111,3 @@ function rmt_photo_credit_html(?array $d): string {
     }
     return '<p class="photo-credit">' . $txt . '</p>';
 }
-
-/**
- * The invite link a member shares. `ref` is only ever a username, and nothing is gated on it,
- * so a forged or missing ref costs nothing.
- */
-function rmt_invite_link(?array $user): string {
-    return $user ? url('register?ref=' . rawurlencode((string) $user['username'])) : url('register');
-}
-
-/** Normalise a ?ref= value to a real member username, or null. */
-function rmt_referrer_username(?string $ref): ?string {
-    $ref = trim((string) $ref);
-    if ($ref === '' || !preg_match('/^[A-Za-z0-9_]{1,40}$/', $ref)) return null;
-    $u = q_one('SELECT username FROM users WHERE username = ? AND status = ?', [$ref, 'active']);
-    return $u['username'] ?? null;
-}

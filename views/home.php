@@ -48,11 +48,9 @@
       <ol class="empty-steps">
         <li>Create a profile, it takes a minute.</li>
         <li>Write up your last trip, good parts and bad.</li>
-        <li>Invite one traveler whose opinion you trust.</li>
       </ol>
       <p style="margin:16px 0 0">
         <a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a>
-        <a class="btn btn-ghost" href="<?= e(url('invite')) ?>">Invite a traveler</a>
       </p>
     </div>
   <?php endif; ?>
