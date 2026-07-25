@@ -86,7 +86,14 @@ function age_from(string $birthdate): int {
  */
 function verification_system_exists(): bool { return false; }
 
-/** Show the "verified" badge only when the row is flagged AND a real system stands behind it. */
+/**
+ * Show the "verified" badge only when the row is flagged AND a real system stands behind it.
+ *
+ * Editorial content is excluded first and unconditionally: nobody from the team necessarily
+ * visited (see app/editorial.php), so no future write to a row's `verified` column can ever
+ * make this true for editorial content, independent of whether verification_system_exists().
+ */
 function show_verified(?array $row): bool {
+    if (rmt_is_editorial($row)) return false;
     return verification_system_exists() && !empty($row['verified']);
 }

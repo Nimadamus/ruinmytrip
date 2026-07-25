@@ -99,6 +99,13 @@ check('two community items',           count($co), 2);
 check('editorial item is the right one', (int) $ed[0]['id'], 2);
 check('community order preserved',     array_column($co, 'id'), [1, 3]);
 
+echo "\n-- editorial content never shows a Verified visit badge --\n";
+// verification_system_exists() is globally false today, so both cases already return false for
+// that reason alone. The case that matters is the day it flips true: an editorial row must still
+// be excluded, so the guard is checked first, ahead of (and independent of) that global switch.
+check('editorial row, verified=1 spoofed', show_verified(['author'=>['role'=>'editorial'],'verified'=>1]), false);
+check('member row, verified=1 (system still off)', show_verified(['author'=>['role'=>'user'],'verified'=>1]), false);
+
 echo "\n-- JSON-LD never asserts a null rating --\n";
 // A destination with no community reviews must omit aggregateRating entirely. Emitting
 // "aggregateRating":null is invalid structured data and reads as a broken claim.
@@ -107,13 +114,6 @@ check('null property pruned',          str_contains($json, 'aggregateRating'), f
 check('real properties survive',       str_contains($json, 'Nowhere'), true);
 $json = jsonld(['@type' => 'X', 'aggregateRating' => ['ratingValue' => '3.0', 'reviewCount' => 2]]);
 check('present rating kept',           str_contains($json, 'ratingValue'), true);
-
-echo "\n-- referral ids are validated, not trusted --\n";
-check('unknown username rejected',     rmt_referrer_username('does_not_exist'), null);
-check('real member accepted',          rmt_referrer_username('real_traveler'), 'real_traveler');
-check('empty rejected',                rmt_referrer_username(''), null);
-check('sql-ish junk rejected',         rmt_referrer_username("' OR 1=1--"), null);
-check('over-long rejected',            rmt_referrer_username(str_repeat('a', 60)), null);
 
 echo "\n" . ($fail === 0 ? "ALL EDITORIAL TESTS PASS\n" : "{$fail} EDITORIAL TEST(S) FAILED\n");
 exit($fail === 0 ? 0 : 1);

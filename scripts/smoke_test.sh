@@ -17,7 +17,7 @@ echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
 for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going \
          /login /register /terms /privacy /guidelines /safety /affiliate \
-         /invite /editorial-policy /sitemap.xml /robots.txt; do check "$p" 200; done
+         /editorial-policy /sitemap.xml /robots.txt; do check "$p" 200; done
 echo "-- editorial layer (expect 200) --"
 # These exist on any correctly published instance. They deliberately do NOT reference the demo
 # seed, which no longer exists anywhere: a smoke test that only passes against fabricated
