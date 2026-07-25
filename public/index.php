@@ -20,6 +20,9 @@ $routes = [
     ['GET',  '#^/feed$#',                      'feed'],
     ['GET',  '#^/trip/new$#',                  'trip_new_form'],
     ['POST', '#^/trip/new$#',                  'trip_create'],
+    ['GET',  '#^/trip/(?<id>\d+)/edit$#',      'trip_edit_form'],
+    ['POST', '#^/trip/(?<id>\d+)/edit$#',      'trip_edit_submit'],
+    ['POST', '#^/trip/(?<id>\d+)/delete$#',    'trip_delete'],
     ['GET',  '#^/trip/(?<id>\d+)(?:/[a-z0-9\-]+)?$#', 'trip_show'],
     ['GET',  '#^/reviews$#',                   'reviews_index'],
     ['GET',  '#^/review/new$#',                'review_new_form'],
@@ -53,6 +56,7 @@ $routes = [
     ['POST', '#^/follow$#',                    'follow_action'],
     ['POST', '#^/react$#',                     'react_action'],   // like/save
     ['POST', '#^/comment$#',                   'comment_action'],
+    ['POST', '#^/comment/(?<id>\d+)/delete$#', 'comment_delete'],
     ['GET',  '#^/report$#',                    'report_form'],
     ['POST', '#^/report$#',                    'report_submit'],
     ['GET',  '#^/admin$#',                     'admin_dashboard'],

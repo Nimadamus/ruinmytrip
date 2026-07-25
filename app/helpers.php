@@ -67,6 +67,17 @@ function avatar_url(?string $u): string {
     return url(ltrim($u, '/'));
 }
 
+/**
+ * Value to pre-fill into a `type="url"` edit-form field. Some stored URLs (a destination's
+ * fallback photo, copied onto a trip at creation) are relative paths -- fine in an <img src>, but
+ * a relative value in a type="url" input fails the browser's native constraint validation and
+ * silently blocks the whole form from submitting. Only ever show a value the user could have
+ * typed here themselves; anything else is treated as unset.
+ */
+function editable_url_value(?string $u): string {
+    return preg_match('#^https://#i', (string) $u) ? (string) $u : '';
+}
+
 /** Render a view within the layout. */
 function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);

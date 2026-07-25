@@ -28,7 +28,7 @@
 
     <label for="avatar_url">…or paste a photo URL</label>
     <input type="url" id="avatar_url" name="avatar_url" maxlength="500"
-           value="<?= e($p['avatar_url'] ?? '') ?>" placeholder="https://…">
+           value="<?= e(editable_url_value($p['avatar_url'] ?? null)) ?>" placeholder="https://…">
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
       An uploaded file takes priority over this field.
     </p>

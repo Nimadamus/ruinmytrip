@@ -391,12 +391,19 @@ function trip_new_form(array $a): void {
     require_login();
     view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip — RuinMyTrip','description'=>'Post a trip story with photos.']);
 }
-function trip_create(array $a): void {
-    require_verified_email(); csrf_check(); $me = current_user();
-    $title = input('title'); $body = input('body'); $dest = (int)input('destination_id');
-    $cover = trim((string) input('cover_url')); $visited = input('visited_on');
+/**
+ * Validate a submitted trip. Shared by trip_create and trip_edit_submit so the two rule sets
+ * can never drift apart.
+ * @return array{ok:bool, errors:string[], data:array<string,mixed>}
+ */
+function rmt_trip_validate(array $in): array {
     $errors = [];
-    if (!rmt_rate_ok('trip_create', (string)$me['id'], 20, 3600)) $errors[] = 'You are posting very fast. Try again later.';
+    $title = (string) ($in['title'] ?? '');
+    $body = (string) ($in['body'] ?? '');
+    $dest = (int) ($in['destination_id'] ?? 0);
+    $cover = trim((string) ($in['cover_url'] ?? ''));
+    $visited = (string) ($in['visited_on'] ?? '');
+
     if (strlen($title) < 5) $errors[] = 'Give your trip a title (5+ characters).';
     if (strlen($body) < 20) $errors[] = 'Add a bit more to your story (20+ characters).';
     if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
@@ -410,19 +417,99 @@ function trip_create(array $a): void {
     if ($visited !== '' && (strtotime($visited) === false || strtotime($visited) > time())) {
         $errors[] = 'That trip date is not valid.';
     }
-    if ($errors) { view('trip_new', ['dests'=>all_dests(),'errors'=>$errors], ['title'=>'Share a trip — RuinMyTrip']); return; }
-    $d = $dest ? dest_by_id($dest) : null;
-    $cover = $cover ?: ($d['hero_url'] ?? '');
+    return ['ok' => !$errors, 'errors' => $errors, 'data' => [
+        'title' => $title, 'body' => $body, 'destination_id' => $dest ?: null,
+        'cover_url' => $cover, 'visited_on' => $visited ?: null,
+    ]];
+}
+
+/** Only the author may edit or delete a trip. */
+function rmt_trip_can_edit(array $t, ?array $user): bool {
+    return $user !== null && (int) $t['user_id'] === (int) $user['id'];
+}
+
+function trip_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_rate_ok('trip_create', (string)$me['id'], 20, 3600)) {
+        view('trip_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
+             ['title'=>'Share a trip — RuinMyTrip']); return;
+    }
+    $v = rmt_trip_validate($_POST);
+    if (!$v['ok']) {
+        view('trip_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Share a trip — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
+    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
     $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,verified,status,created_at)
                  VALUES (?,?,?,?,?,?,?,?, 'published', ?)",
-        [(int)$me['id'], $dest ?: null, $title, slugify($title), $body, $cover, $visited ?: null, 0, date('Y-m-d H:i:s')]);
+        [(int)$me['id'], $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
+         $d['visited_on'], 0, date('Y-m-d H:i:s')]);
     // Photo failures must never be silent, and must never cost the user their written story --
     // same rule as reviews (rmt_attach_review_photos).
     $photoErrors = rmt_attach_trip_photos($id, (int)$me['id']);
     $msg = 'Trip published.';
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
-    redirect('/trip/'.$id.'/'.slugify($title));
+    redirect('/trip/'.$id.'/'.slugify($d['title']));
+}
+
+function trip_edit_form(array $a): void {
+    require_login();
+    $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
+    if (!$t) not_found();
+    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+    $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort, id', [(int)$t['id']]);
+    view('trip_edit', ['t'=>$t, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
+         ['title'=>'Edit trip — RuinMyTrip']);
+}
+
+function trip_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
+    if (!$t) not_found();
+    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+
+    $v = rmt_trip_validate($_POST);
+    if (!$v['ok']) {
+        $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort, id', [(int)$t['id']]);
+        view('trip_edit', ['t'=>array_merge($t, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors'], 'photos'=>$photos],
+             ['title'=>'Edit trip — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
+    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? $t['cover_url']);
+    $slug = slugify($d['title']);
+    db()->prepare("UPDATE trips SET destination_id=?, title=?, slug=?, body=?, cover_url=?, visited_on=?, updated_at=? WHERE id=?")
+        ->execute([$d['destination_id'], $d['title'], $slug, $d['body'], $cover, $d['visited_on'],
+                   date('Y-m-d H:i:s'), (int)$t['id']]);
+    $photoErrors = rmt_attach_trip_photos((int)$t['id'], (int)current_user()['id']);
+
+    // Remove any photos the author unticked.
+    foreach ((array)($_POST['remove_photo'] ?? []) as $pid) {
+        $ph = q_one('SELECT * FROM trip_photos WHERE id=? AND trip_id=?', [(int)$pid, (int)$t['id']]);
+        if ($ph) {
+            db()->prepare('DELETE FROM trip_photos WHERE id=?')->execute([(int)$ph['id']]);
+            if (!empty($ph['storage_key'])) rmt_storage_delete((string)$ph['storage_key']);
+        }
+    }
+
+    $msg = 'Trip updated.';
+    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
+    flash($msg);
+    redirect('/trip/'.(int)$t['id'].'/'.$slug);
+}
+
+/** POST /trip/{id}/delete — soft delete. Rows are never destroyed. */
+function trip_delete(array $a): void {
+    require_login(); csrf_check();
+    $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
+    if (!$t) not_found();
+    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+    db()->prepare("UPDATE trips SET status='removed', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$t['id']]);
+    flash('Trip deleted.');
+    redirect('/u/'.current_user()['username']);
 }
 
 /**
@@ -738,6 +825,16 @@ function comment_action(array $a): void {
 
     q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
         [(int)$me['id'], $tt, $tid, mb_substr($body, 0, 2000), date('Y-m-d H:i:s')]);
+    redirect(input('return','/'));
+}
+
+/** POST /comment/{id}/delete — author only. Soft delete, same as reviews and trips. */
+function comment_delete(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $c = q_one('SELECT * FROM comments WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if ((int)$c['user_id'] !== (int)$me['id']) { forbidden('That is not your comment.'); }
+    db()->prepare("UPDATE comments SET status='removed' WHERE id=?")->execute([(int)$c['id']]);
     redirect(input('return','/'));
 }
 

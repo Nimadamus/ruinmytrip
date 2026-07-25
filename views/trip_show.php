@@ -25,14 +25,27 @@
         <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
         <button class="btn <?= $saved?'btn-primary':'btn-ghost' ?> btn-sm" aria-pressed="<?= $saved?'true':'false' ?>">
           <?= $saved?'⭑ Saved':'⭑ Save' ?><?= $saveCount?' · '.$saveCount:'' ?></button></form>
-      <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=trip&target_id='.$t['id'])) ?>">⚑ Report</a>
+      <?php if ((int)$t['user_id'] === (int)$me['id']): ?>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
+      <?php else: ?>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=trip&target_id='.$t['id'])) ?>">⚑ Report</a>
+      <?php endif; ?>
     <?php endif; ?>
   </div>
 
   <h2>Comments</h2>
   <?php foreach ($comments as $c): ?>
     <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
-      <b>@<?= e($c['username']) ?></b> <span class="hint"><?= e(ago($c['created_at'])) ?></span>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <span><b>@<?= e($c['username']) ?></b> <span class="hint"><?= e(ago($c['created_at'])) ?></span></span>
+        <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>
+          <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/delete')) ?>"
+                onsubmit="return confirm('Delete this comment?');"><?= csrf_field() ?>
+            <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
+            <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
+          </form>
+        <?php endif; ?>
+      </div>
       <p style="margin:.3rem 0 0"><?= nl2br(e($c['body'])) ?></p>
     </div></div>
   <?php endforeach; ?>
