@@ -970,6 +970,13 @@ function comment_action(array $a): void {
     $body = trim((string) input('body'));
 
     if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(input('return','/'));
+    // An over-limit comment used to be silently truncated at 2000 chars (mb_substr) with no
+    // indication to the author -- silent data loss instead of the validation error every other
+    // body-length limit in the app (trip/guide/review) gives.
+    if (mb_strlen($body) > 2000) {
+        flash('That comment is too long (2000 characters max). Please shorten it and try again.');
+        redirect(input('return','/'));
+    }
     if (!rmt_submit_ok('comment_'.$tt.'_'.$tid, input('_submit'))) {
         flash('That comment was already posted.'); redirect(input('return','/'));
     }
@@ -979,7 +986,7 @@ function comment_action(array $a): void {
     }
 
     q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
-        [(int)$me['id'], $tt, $tid, mb_substr($body, 0, 2000), date('Y-m-d H:i:s')]);
+        [(int)$me['id'], $tt, $tid, $body, date('Y-m-d H:i:s')]);
     redirect(input('return','/'));
 }
 

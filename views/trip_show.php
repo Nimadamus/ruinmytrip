@@ -55,7 +55,7 @@
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_trip_'.$t['id'])) ?>">
       <input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
       <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-      <textarea name="body" placeholder="Add a comment" style="min-height:80px"></textarea>
+      <textarea name="body" placeholder="Add a comment" maxlength="2000" style="min-height:80px"></textarea>
       <button class="btn btn-primary" style="margin-top:8px">Post comment</button>
     </form>
   <?php else: ?><p style="margin-bottom:60px"><a href="<?= e(url('login')) ?>">Sign in</a> to comment.</p><?php endif; ?>
