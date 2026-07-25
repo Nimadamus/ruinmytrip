@@ -9,6 +9,27 @@ function author(int $uid): ?array {
     return q_one('SELECT u.id,u.username,u.role,p.display_name,p.avatar_url,p.credibility_score
                   FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.id=?', [$uid]);
 }
+/**
+ * Batch version of author(): one query for a whole list's worth of user ids instead of one
+ * query per row. Used to fill in $row['author'] on a result set -- see authors_fill() below.
+ * @return array<int,array> keyed by user id
+ */
+function authors_by_ids(array $uids): array {
+    $uids = array_values(array_unique(array_filter(array_map('intval', $uids))));
+    if (!$uids) return [];
+    $ph = implode(',', array_fill(0, count($uids), '?'));
+    $rows = q_all("SELECT u.id,u.username,u.role,p.display_name,p.avatar_url,p.credibility_score
+                   FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.id IN ($ph)", $uids);
+    $out = [];
+    foreach ($rows as $r) $out[(int)$r['id']] = $r;
+    return $out;
+}
+/** Set $row['author'] on every row from a single batched author lookup, in place. */
+function authors_fill(array &$rows, string $idField = 'user_id'): void {
+    $authors = authors_by_ids(array_column($rows, $idField));
+    foreach ($rows as &$row) $row['author'] = $authors[(int)$row[$idField]] ?? null;
+    unset($row);
+}
 function stars(int $n): string { return str_repeat('★', $n) . str_repeat('☆', 5 - $n); }
 function not_found(): void { http_response_code(404); view('404', [], ['title'=>'Not found — RuinMyTrip']); exit; }
 
@@ -28,9 +49,9 @@ function home(array $a): void {
     $guides = q_all("SELECT g.*, d.name dest_name FROM guides g
                      LEFT JOIN destinations d ON d.id=g.destination_id
                      WHERE g.status='published' ORDER BY g.id DESC LIMIT 3");
-    foreach ($stories as &$s) $s['author'] = author((int)$s['user_id']); unset($s);
-    foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
-    foreach ($guides as &$g) $g['author'] = author((int)$g['user_id']); unset($g);
+    authors_fill($stories);
+    authors_fill($reviews);
+    authors_fill($guides);
     // Real total, not count($trending) — $trending is LIMIT 6 and would print "6" forever.
     $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
     // Real community total (editorial excluded). Drives the homepage copy: while it is 0 the page
@@ -74,14 +95,14 @@ function destination(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int)$d['id'];
     $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 8", [$id]);
-    foreach ($trips as &$t) $t['author'] = author((int)$t['user_id']); unset($t);
+    authors_fill($trips);
     $reviews = q_all("SELECT r.* FROM reviews r WHERE r.destination_id=? AND r.status='published' ORDER BY r.verified DESC, r.id DESC", [$id]);
-    foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
+    authors_fill($reviews);
     // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);
     $tips = rmt_destination_tips($id);
     $guides = q_all("SELECT g.* FROM guides g WHERE g.destination_id=? AND g.status='published' ORDER BY g.id DESC", [$id]);
-    foreach ($guides as &$g) $g['author'] = author((int)$g['user_id']); unset($g);
+    authors_fill($guides);
     $meetups = q_all("SELECT m.* FROM meetups m WHERE m.destination_id=? AND m.status='published' ORDER BY m.date_start", [$id]);
     $going = q_all("SELECT g.*, u.username, p.avatar_url, p.display_name FROM going g
                     JOIN users u ON u.id=g.user_id LEFT JOIN profiles p ON p.user_id=u.id
@@ -206,7 +227,7 @@ function feed(array $a): void {
                     LEFT JOIN destinations d ON d.id=t.destination_id
                     WHERE t.status='published' AND (t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))
                     ORDER BY t.created_at DESC, t.id DESC LIMIT 40", [$uid,$uid]);
-    foreach ($items as &$t) $t['author'] = author((int)$t['user_id']); unset($t);
+    authors_fill($items);
     view('feed', compact('items','me'), ['title'=>'Your feed — RuinMyTrip','description'=>'Latest trips from travelers you follow.']);
 }
 
@@ -251,7 +272,7 @@ function reviews_index(array $a): void {
         $sql .= ' ORDER BY r.id DESC LIMIT 50';
         $reviews = q_all($sql, $args);
     }
-    foreach ($reviews as &$r) $r['author'] = author((int)$r['user_id']); unset($r);
+    authors_fill($reviews);
     view('reviews_index', compact('reviews','mine','cat','me'), [
         'title'=>$mine ? 'Your reviews — RuinMyTrip' : 'Traveler reviews — RuinMyTrip',
         'description'=>'Honest traveler reviews of destinations, hotels, restaurants, attractions and experiences.',
@@ -262,7 +283,7 @@ function reviews_index(array $a): void {
 function guides_index(array $a): void {
     $guides = q_all("SELECT g.*, d.name dest_name FROM guides g LEFT JOIN destinations d ON d.id=g.destination_id
                      WHERE g.status='published' ORDER BY g.id DESC");
-    foreach ($guides as &$g) $g['author'] = author((int)$g['user_id']); unset($g);
+    authors_fill($guides);
     view('guides_index', compact('guides'), [
         'title'=>'Travel guides & itineraries — RuinMyTrip',
         'description'=>'Detailed, traveler-written guides and day-by-day itineraries you can trust.',
@@ -289,7 +310,8 @@ function meetups_index(array $a): void {
                       (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going
                       FROM meetups m LEFT JOIN destinations d ON d.id=m.destination_id
                       WHERE m.status='published' ORDER BY m.date_start");
-    foreach ($meetups as &$m) $m['host'] = author((int)$m['host_id']); unset($m);
+    $hosts = authors_by_ids(array_column($meetups, 'host_id'));
+    foreach ($meetups as &$m) $m['host'] = $hosts[(int)$m['host_id']] ?? null; unset($m);
     view('meetups_index', compact('meetups'), [
         'title'=>'Public travel meetups — RuinMyTrip',
         'description'=>'Optional, public, safety-first travel meetups. Meet fellow travelers in a destination — never dating, never precise location sharing.',
