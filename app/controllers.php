@@ -999,7 +999,17 @@ function meetup_rsvp(array $a): void {
     $mid=(int)$a['id']; $m=q_one('SELECT * FROM meetups WHERE id=?', [$mid]); if(!$m) not_found();
     $has = q_one('SELECT 1 FROM meetup_rsvps WHERE meetup_id=? AND user_id=?', [$mid,(int)$me['id']]);
     if ($has) db()->prepare('DELETE FROM meetup_rsvps WHERE meetup_id=? AND user_id=?')->execute([$mid,(int)$me['id']]);
-    else db()->prepare("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (?,?, 'going')")->execute([$mid,(int)$me['id']]);
+    else {
+        // Same double-click race as react_action/follow_action: the (meetup_id,user_id) primary
+        // key stops a duplicate RSVP row, but without this catch the loser of the race got an
+        // uncaught PDOException (500 page) instead of a no-op. This one was missed when the other
+        // three toggle actions were fixed.
+        try {
+            db()->prepare("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (?,?, 'going')")->execute([$mid,(int)$me['id']]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+    }
     redirect('/meetup/'.$mid);
 }
 

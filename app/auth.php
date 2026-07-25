@@ -7,8 +7,12 @@ function current_user(): ?array {
     $cached = true;
     $id = $_SESSION['uid'] ?? null;
     if (!$id) return $user = null;
-    $user = q_one('SELECT u.*, p.display_name, p.avatar_url, p.bio, p.home_city, p.credibility_score
-                   FROM users u LEFT JOIN profiles p ON p.user_id = u.id WHERE u.id = ?', [$id]);
+    // Every other status-sensitive check in the app (follow, founding-traveler badge, password
+    // reset, sitemap) already gates on status='active' -- but this one, the single function every
+    // authenticated action goes through, did not. Suspending or removing a user had zero effect on
+    // a session they already held: they kept full access until they happened to log out.
+    $user = q_one("SELECT u.*, p.display_name, p.avatar_url, p.bio, p.home_city, p.credibility_score
+                   FROM users u LEFT JOIN profiles p ON p.user_id = u.id WHERE u.id = ? AND u.status = 'active'", [$id]);
     return $user;
 }
 
@@ -100,9 +104,21 @@ function register_user(string $username, string $email, string $password, string
     if ($errors) return ['ok' => false, 'errors' => $errors];
 
     $hash = password_hash($password, PASSWORD_BCRYPT);
-    $id = q_run('INSERT INTO users (username, email, password_hash, role, birthdate, status, created_at)
-                 VALUES (?,?,?,?,?,?,?)',
-                [$username, $email, $hash, 'user', $birthdate, 'active', date('Y-m-d H:i:s')]);
+    // The two uniqueness checks above are check-then-act: two near-simultaneous submissions (a
+    // double-click on a slow connection, or two tabs) for the same email/username can both pass
+    // them before either INSERT lands. The UNIQUE constraints on users.username/email stop the
+    // duplicate row, but without this catch the loser got an uncaught PDOException (500 page)
+    // instead of the same friendly "already taken" message the pre-check gives everyone else.
+    try {
+        $id = q_run('INSERT INTO users (username, email, password_hash, role, birthdate, status, created_at)
+                     VALUES (?,?,?,?,?,?,?)',
+                    [$username, $email, $hash, 'user', $birthdate, 'active', date('Y-m-d H:i:s')]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        if (q_one('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'That email is already registered.';
+        if (q_one('SELECT id FROM users WHERE username = ?', [$username])) $errors[] = 'That username is taken.';
+        return ['ok' => false, 'errors' => $errors ?: ['That email or username is already taken.']];
+    }
     q_run('INSERT INTO profiles (user_id, display_name, credibility_score) VALUES (?,?,0)', [$id, $username]);
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$id;

@@ -1,10 +1,13 @@
 <?php
 /**
- * Regression test for the like/save/follow double-click race: likes, saves, and follows are
- * each protected by a DB primary key on (user_id, target_type, target_id) / (follower_id,
- * followee_id), so a duplicate row can never land -- but before this fix, two near-simultaneous
- * requests that both read the "not yet liked" state raced to INSERT, and the loser's uncaught
- * PDOException surfaced as a raw 500 page instead of a no-op.
+ * Regression test for the like/save/follow/meetup-RSVP/registration double-click race: each of
+ * these is protected by a DB uniqueness constraint -- (user_id, target_type, target_id) for
+ * likes/saves, (follower_id, followee_id) for follows, (meetup_id, user_id) for RSVPs,
+ * username/email UNIQUE for registration -- so a duplicate row can never land, but before this
+ * fix, two near-simultaneous requests that both passed the "not taken yet" check raced to
+ * INSERT, and the loser's uncaught PDOException surfaced as a raw 500 page instead of a no-op
+ * (or, for registration, instead of the same friendly "already taken" message everyone else
+ * gets from the normal, non-race duplicate-signup path).
  *
  * Confirmed live locally (not reproducible as a deterministic unit test, since it depends on
  * request timing): a second INSERT of an identical (user_id,target_type,target_id) row throws
@@ -20,7 +23,9 @@
  */
 declare(strict_types=1);
 
-$src = file_get_contents(dirname(__DIR__) . '/app/controllers.php');
+$controllersSrc = file_get_contents(dirname(__DIR__) . '/app/controllers.php');
+$authSrc = file_get_contents(dirname(__DIR__) . '/app/auth.php');
+$src = $controllersSrc . "\n" . $authSrc;
 
 function extract_function(string $src, string $name): string {
     $start = strpos($src, "function {$name}(");
@@ -39,9 +44,9 @@ $check = function (string $name, bool $ok) use (&$fail) {
     if (!$ok) $fail++;
 };
 
-foreach (['react_action', 'follow_action'] as $fn) {
+foreach (['react_action', 'follow_action', 'meetup_rsvp', 'register_user'] as $fn) {
     $body = extract_function($src, $fn);
-    $check("{$fn}() found in controllers.php", $body !== '');
+    $check("{$fn}() found in app/controllers.php or app/auth.php", $body !== '');
     $check("{$fn}(): the racy INSERT is inside a try block", (bool) preg_match('/try\s*\{[^}]*INSERT INTO/s', $body));
     $check("{$fn}(): catches \\PDOException specifically (not a bare Throwable/Exception)", (bool) preg_match('/catch\s*\(\s*\\\\?PDOException/', $body));
     // Must check the duplicate-key codes for BOTH drivers this app runs on (sqlite dev, pgsql
