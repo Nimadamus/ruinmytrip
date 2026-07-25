@@ -96,7 +96,16 @@ $sel = static fn(string $k, $v) => (string) ($r[$k] ?? '') === (string) $v ? ' s
   if (!box || !sel || !list) return;
   sel.style.display = 'none';
   box.addEventListener('input', function () {
-    var hit = Array.prototype.find.call(list.options, function (o) { return o.value === box.value; });
+    var v = box.value.trim().toLowerCase();
+    var hit = Array.prototype.find.call(list.options, function (o) { return o.value.toLowerCase() === v; });
+    // Typing "Kyoto" alone never exactly matches an option's full "Kyoto, Japan" text, so a user
+    // who types a name and hits submit without clicking the suggestion got a bare "Choose a
+    // destination" error with no clue why. If the partial text uniquely identifies one
+    // destination, bind it live instead of requiring the exact click.
+    if (!hit && v) {
+      var matches = Array.prototype.filter.call(list.options, function (o) { return o.value.toLowerCase().indexOf(v) === 0; });
+      if (matches.length === 1) hit = matches[0];
+    }
     sel.value = hit ? hit.dataset.id : '';
   });
 })();

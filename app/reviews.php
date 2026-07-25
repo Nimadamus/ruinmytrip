@@ -44,7 +44,7 @@ function rmt_review_validate(array $in, bool $isDraft): array {
 
     // A draft may be incomplete — that is the point of a draft. Publishing is held to the full bar.
     if (!$isDraft) {
-        if ($destId <= 0)      $errors[] = 'Choose a destination.';
+        if ($destId <= 0)      $errors[] = 'Choose a destination from the suggestions as you type.';
         if ($subject === '')   $errors[] = 'Name what you are reviewing.';
         if ($title === '')     $errors[] = 'Add a headline.';
         if ($rating < 1 || $rating > 5) $errors[] = 'Give an overall rating from 1 to 5.';
