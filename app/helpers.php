@@ -84,7 +84,12 @@ function age_from(string $birthdate): int {
  * Flip to true ONLY when geo-checkin / receipt / EXIF verification actually exists and writes
  * the column. The badge markup is left in place so that work is a one-line switch.
  */
-function verification_system_exists(): bool { return false; }
+function verification_system_exists(): bool {
+    // Test-only escape hatch so the editorial-exclusion guard in show_verified() below can be
+    // exercised as if verification were live, instead of trivially passing because this is off.
+    // Never defined outside tests/editorial_test.php; production behavior is unchanged.
+    return defined('RMT_TEST_FORCE_VERIFICATION_EXISTS') ? RMT_TEST_FORCE_VERIFICATION_EXISTS : false;
+}
 
 /**
  * Show the "verified" badge only when the row is flagged AND a real system stands behind it.

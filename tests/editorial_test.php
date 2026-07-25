@@ -100,11 +100,21 @@ check('editorial item is the right one', (int) $ed[0]['id'], 2);
 check('community order preserved',     array_column($co, 'id'), [1, 3]);
 
 echo "\n-- editorial content never shows a Verified visit badge --\n";
-// verification_system_exists() is globally false today, so both cases already return false for
-// that reason alone. The case that matters is the day it flips true: an editorial row must still
-// be excluded, so the guard is checked first, ahead of (and independent of) that global switch.
-check('editorial row, verified=1 spoofed', show_verified(['author'=>['role'=>'editorial'],'verified'=>1]), false);
-check('member row, verified=1 (system still off)', show_verified(['author'=>['role'=>'user'],'verified'=>1]), false);
+// verification_system_exists() is globally false today, so these two prove nothing on their own
+// -- both would return false even without the guard. Exercise the guard for real below.
+check('editorial row, verified=1, system off', show_verified(['author'=>['role'=>'editorial'],'verified'=>1]), false);
+check('member row, verified=1, system off',    show_verified(['author'=>['role'=>'user'],'verified'=>1]),      false);
+
+// Simulate verification being live (the day this ships for real members) via a test-only escape
+// hatch in verification_system_exists(). If the editorial-exclusion guard in show_verified() were
+// ever removed or reordered, this is the case that would catch it -- the two lines above cannot.
+define('RMT_TEST_FORCE_VERIFICATION_EXISTS', true);
+check('editorial row, verified=1, system LIVE -> still hidden',
+      show_verified(['author'=>['role'=>'editorial'],'verified'=>1]), false);
+check('member row, verified=1, system LIVE -> shown',
+      show_verified(['author'=>['role'=>'user'],'verified'=>1]),      true);
+check('member row, verified=0, system LIVE -> hidden',
+      show_verified(['author'=>['role'=>'user'],'verified'=>0]),      false);
 
 echo "\n-- JSON-LD never asserts a null rating --\n";
 // A destination with no community reviews must omit aggregateRating entirely. Emitting
