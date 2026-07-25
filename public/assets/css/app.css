@@ -19,7 +19,7 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .skip:focus{left:12px;top:12px;background:#fff;padding:8px 14px;z-index:100;border-radius:8px}
 
 /* buttons */
-.btn{display:inline-block;padding:.6rem 1.1rem;border-radius:999px;font-weight:600;border:1px solid transparent;cursor:pointer;font-size:.95rem;transition:.15s}
+.btn{display:inline-block;padding:.6rem 1.1rem;border-radius:999px;font-weight:600;border:1px solid transparent;cursor:pointer;font-size:.95rem;transition:.15s;white-space:nowrap}
 .btn:hover{text-decoration:none;transform:translateY(-1px)}
 .btn-primary{background:var(--brand);color:#fff}
 .btn-primary:hover{background:var(--brand-2)}
@@ -135,13 +135,17 @@ textarea{min-height:140px;resize:vertical}
   .g-4{grid-template-columns:repeat(2,1fr)}
   .g-3{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr 1fr}
-}
-@media (max-width:680px){
+  /* The full horizontal nav (search box + up to 8 links/buttons) has no room below ~900px --
+     at tablet widths (e.g. 768px) it was wrapping button text mid-word instead of adapting.
+     Switch to the same hamburger dropdown mobile already uses, rather than leaving a cramped
+     middle ground between this breakpoint and the old 680px one. */
   .nav-search{display:none}
   .nav-toggle{display:block}
   .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:12px 20px;border-bottom:1px solid var(--line);gap:6px}
   body.nav-open .site-nav{display:flex}
   .site-nav a{padding:8px 0}
+}
+@media (max-width:680px){
   .g-2,.g-3,.g-4{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
   .hero-inner{padding:64px 20px 48px}
