@@ -22,7 +22,7 @@
     <?php foreach ($people as $pp): ?>
       <article class="card"><div class="card-body" style="display:flex;gap:12px;align-items:flex-start">
         <?php if (!empty($pp['avatar_url'])): ?>
-          <img class="avatar" style="width:48px;height:48px" src="<?= e($pp['avatar_url']) ?>" alt="">
+          <img class="avatar" style="width:48px;height:48px" src="<?= e(avatar_url($pp['avatar_url']??null)) ?>" alt="">
         <?php endif; ?>
         <div style="flex:1;min-width:0">
           <h2 style="font-size:1.05rem;margin:0">

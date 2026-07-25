@@ -62,7 +62,7 @@
           <?php if ($s['dest_name']): ?><span class="chip"><?= e($s['dest_name']) ?></span><?php endif; ?>
           <h3><?= e($s['title']) ?></h3>
           <div class="meta-row">
-            <img class="avatar" src="<?= e($s['author']['avatar_url'] ?? '') ?>" alt="">
+            <img class="avatar" src="<?= e(avatar_url($s['author']['avatar_url'] ?? null)) ?>" alt="">
             <span>@<?= e($s['author']['username'] ?? 'traveler') ?> · <?= e(ago($s['created_at'])) ?></span>
             <?php if (show_verified($s)): ?><span class="verified">Verified visit</span><?php endif; ?>
           </div>

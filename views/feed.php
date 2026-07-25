@@ -10,7 +10,7 @@
     <article class="card" style="margin-bottom:18px">
       <a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"></a>
       <div class="card-body">
-        <div class="meta-row" style="margin:0 0 8px"><img class="avatar" src="<?= e($t['author']['avatar_url']??'') ?>" alt="">
+        <div class="meta-row" style="margin:0 0 8px"><img class="avatar" src="<?= e(avatar_url($t['author']['avatar_url']??null)) ?>" alt="">
           <span><a href="<?= e(url('u/'.$t['author']['username'])) ?>">@<?= e($t['author']['username']) ?></a> · <?= e(ago($t['created_at'])) ?><?= $t['dest_name']?' · '.e($t['dest_name']):'' ?></span></div>
         <h3><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>"><?= e($t['title']) ?></a></h3>
         <p><?= e(mb_strimwidth(strip_tags((string)$t['body']),0,180,'…')) ?></p>

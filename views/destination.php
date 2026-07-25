@@ -122,7 +122,7 @@
           <article class="card"><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
             <img class="card-media" loading="lazy" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>">
             <div class="card-body"><h3><?= e($t['title']) ?></h3>
-              <div class="meta-row"><img class="avatar" src="<?= e($t['author']['avatar_url']??'') ?>" alt="">@<?= e($t['author']['username']??'') ?>
+              <div class="meta-row"><img class="avatar" src="<?= e(avatar_url($t['author']['avatar_url']??null)) ?>" alt="">@<?= e($t['author']['username']??'') ?>
               <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?></div>
             </div></a></article>
         <?php endforeach; ?>
@@ -151,7 +151,7 @@
         <ul class="list-plain">
           <?php foreach ($going as $g): ?>
             <li class="meta-row" style="justify-content:flex-start">
-              <img class="avatar" src="<?= e($g['avatar_url']??'') ?>" alt="">
+              <img class="avatar" src="<?= e(avatar_url($g['avatar_url']??null)) ?>" alt="">
               <span><a href="<?= e(url('u/'.$g['username'])) ?>">@<?= e($g['username']) ?></a> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?>–<?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
             </li>
           <?php endforeach; ?>

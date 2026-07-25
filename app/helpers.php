@@ -52,6 +52,21 @@ function abs_url(?string $u): string {
     return url(ltrim($u, '/'));
 }
 
+/**
+ * Avatar <img> src, falling back to a real placeholder icon instead of an empty string.
+ *
+ * An empty src attribute renders as a broken-image icon in every browser -- with zero real
+ * users yet, that was the single most common "looks unfinished" thing on the site. The old
+ * fallback (og-default.svg, a 1200x630 wordmark banner) isn't a fix either: cropped to a 34px
+ * circle it shows an unreadable sliver of text, not a placeholder that reads as intentional.
+ */
+function avatar_url(?string $u): string {
+    $u = (string) $u;
+    if ($u === '') return url('assets/img/avatar-default.svg');
+    if (preg_match('#^https?://#i', $u)) return $u;
+    return url(ltrim($u, '/'));
+}
+
 /** Render a view within the layout. */
 function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);

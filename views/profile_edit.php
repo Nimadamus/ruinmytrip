@@ -18,7 +18,7 @@
 
     <label for="avatar">Profile photo</label>
     <?php if (!empty($p['avatar_url'])): ?>
-      <img class="avatar" style="width:72px;height:72px;margin-bottom:8px" src="<?= e($p['avatar_url']) ?>" alt="">
+      <img class="avatar" style="width:72px;height:72px;margin-bottom:8px" src="<?= e(avatar_url($p['avatar_url']??null)) ?>" alt="">
     <?php endif; ?>
     <input type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/webp">
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">

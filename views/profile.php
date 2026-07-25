@@ -2,7 +2,7 @@
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
-    <img class="avatar-lg" src="<?= e($u['avatar_url'] ?: url('assets/img/og-default.svg')) ?>" alt="<?= e($u['username']) ?>">
+    <img class="avatar-lg" src="<?= e(avatar_url($u['avatar_url'])) ?>" alt="<?= e($u['username']) ?>">
     <div style="flex:1;min-width:220px">
       <h1 style="margin:0"><?= e($u['display_name'] ?: $u['username']) ?>
         <?php if (rmt_is_editorial($u)): ?><?= rmt_editorial_badge() ?>

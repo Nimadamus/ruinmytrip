@@ -6,7 +6,7 @@
   <div class="grid g-2" style="padding:14px 0 50px">
     <?php foreach ($rows as $r): ?>
       <div class="card"><div class="card-body" style="display:flex;gap:14px;align-items:center">
-        <img class="avatar" style="width:48px;height:48px" src="<?= e($r['avatar_url']??'') ?>" alt="">
+        <img class="avatar" style="width:48px;height:48px" src="<?= e(avatar_url($r['avatar_url']??null)) ?>" alt="">
         <div>
           <b><a href="<?= e(url('u/'.$r['username'])) ?>">@<?= e($r['username']) ?></a></b>
           <p class="muted" style="margin:.1rem 0 0">Heading to <a href="<?= e(url('d/'.$r['dest_slug'])) ?>"><?= e($r['dest_name']) ?></a></p>

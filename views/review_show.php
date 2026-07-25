@@ -28,7 +28,7 @@
 
   <div class="meta-row" style="margin-top:10px">
     <?php if (!empty($author['avatar_url'])): ?>
-      <img class="avatar" src="<?= e($author['avatar_url']) ?>" alt="">
+      <img class="avatar" src="<?= e(avatar_url($author['avatar_url']??null)) ?>" alt="">
     <?php endif; ?>
     <span>by <a href="<?= e(url('u/'.$author['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($author['username']) ?></a>
       · <?= e(ago((string)$r['created_at'])) ?>

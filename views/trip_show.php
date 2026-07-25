@@ -4,7 +4,7 @@
 </div>
 <div class="wrap prose">
   <h1><?= e($t['title']) ?></h1>
-  <div class="meta-row"><img class="avatar" src="<?= e($t['author']['avatar_url']??'') ?>" alt="">
+  <div class="meta-row"><img class="avatar" src="<?= e(avatar_url($t['author']['avatar_url']??null)) ?>" alt="">
     <span><a href="<?= e(url('u/'.$t['author']['username'])) ?>">@<?= e($t['author']['username']) ?></a> · <?= e(ago($t['created_at'])) ?>
     <?php if($t['visited_on']):?> · visited <?= e(date('M Y', strtotime((string)$t['visited_on']))) ?><?php endif;?></span>
     <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?>
