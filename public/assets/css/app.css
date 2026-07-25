@@ -35,10 +35,10 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .brand:hover{text-decoration:none}
 .brand span{color:var(--brand)}
 .brand-mark{color:var(--accent)}
-.nav-search{flex:1;max-width:420px}
+.nav-search{flex:1;min-width:160px;max-width:420px}
 .nav-search input,.nav-search-mobile input{width:100%;padding:.55rem 1rem;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.95rem}
 .nav-search-mobile{display:none}
-.site-nav{display:flex;align-items:center;gap:14px;margin-left:auto}
+.site-nav{display:flex;align-items:center;gap:14px;margin-left:auto;flex-shrink:0}
 .site-nav a{color:var(--ink-2);font-weight:600;font-size:.95rem}
 .nav-toggle{display:none;background:none;border:0;font-size:1.5rem;margin-left:auto;cursor:pointer}
 
@@ -136,17 +136,22 @@ textarea{min-height:140px;resize:vertical}
   .g-4{grid-template-columns:repeat(2,1fr)}
   .g-3{grid-template-columns:repeat(2,1fr)}
   .footer-grid{grid-template-columns:1fr 1fr}
-  /* The full horizontal nav (search box + up to 8 links/buttons) has no room below ~900px --
-     at tablet widths (e.g. 768px) it was wrapping button text mid-word instead of adapting.
-     Switch to the same hamburger dropdown mobile already uses, rather than leaving a cramped
-     middle ground between this breakpoint and the old 680px one. */
+}
+@media (max-width:1240px){
+  /* The full horizontal nav (search box + up to 8 links/buttons signed out, 10 signed in --
+     Feed/bell/@username/Write a Review/Share a trip add two more) needs ~1200px of natural width
+     signed in before it stops overflowing the header (measured: still clipped "Write a Review"
+     and horizontal-scrolled at 1150px). 900px was enough signed out but not signed in. One
+     breakpoint wide enough for the signed-in case covers both, rather than leaving a cramped
+     middle ground. Deliberately its own breakpoint, not merged into the 900px one above -- that
+     one also resizes card grids, which have no connection to how many nav items are showing. */
   .nav-search{display:none}
   .nav-toggle{display:block}
   .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:12px 20px;border-bottom:1px solid var(--line);gap:6px}
   body.nav-open .site-nav{display:flex}
   .site-nav a{padding:8px 0}
   /* The header search box is hidden above (no room), so give the dropdown its own -- otherwise
-     search is only reachable below 900px by typing /search or /explore directly. */
+     search is only reachable below this width by typing /search or /explore directly. */
   .nav-search-mobile{display:block;margin-bottom:6px}
 }
 @media (max-width:680px){
