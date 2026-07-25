@@ -19,7 +19,26 @@ function current_user(): ?array {
 function is_logged_in(): bool { return current_user() !== null; }
 
 function require_login(): void {
-    if (!is_logged_in()) { flash('Please sign in to continue.'); redirect('/login'); }
+    if (!is_logged_in()) {
+        // A logged-out visit to any protected route (a notification link, a deep link, a bookmark)
+        // always dropped the user on /feed after signing in, discarding wherever they were actually
+        // headed -- most noticeable on mobile, where re-finding a specific page by hand is worse.
+        $return = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        flash('Please sign in to continue.');
+        redirect('/login?return=' . urlencode($return));
+    }
+}
+
+/**
+ * Only ever redirect back to a same-site relative path. Without this, `return` becomes an open
+ * redirect: /login?return=https://evil.example would send a freshly-authenticated user straight
+ * to an attacker's page right after they typed their password.
+ */
+function rmt_safe_return_path(string $path): string {
+    if ($path === '' || $path[0] !== '/' || str_starts_with($path, '//') || str_contains($path, '://')) {
+        return '/feed';
+    }
+    return $path;
 }
 
 function require_role(string ...$roles): void {

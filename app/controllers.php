@@ -1021,19 +1021,26 @@ function meetup_rsvp(array $a): void {
 }
 
 /* ---------- auth ---------- */
-function login_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/login', ['errors'=>[]], ['title'=>'Sign in — RuinMyTrip']); }
+function login_form(array $a): void {
+    if (is_logged_in()) redirect('/feed');
+    view('auth/login', ['errors'=>[], 'return'=>rmt_safe_return_path((string) input('return'))], ['title'=>'Sign in — RuinMyTrip']);
+}
 function login_submit(array $a): void {
     csrf_check();
     $email = input('email');
+    $return = rmt_safe_return_path((string) input('return'));
     // Two limits: per-IP stops broad credential stuffing, per-email stops a targeted attack on
     // one account from a botnet. Either tripping blocks the attempt.
     if (!rmt_rate_ok('login_ip', rmt_client_ip(), 20, 900) || !rmt_rate_ok('login_email', $email, 10, 900)) {
         $mins = (int)ceil(rmt_rate_retry_after(900) / 60);
-        view('auth/login', ['errors'=>["Too many sign-in attempts. Try again in about {$mins} minute(s)."]],
+        view('auth/login', ['errors'=>["Too many sign-in attempts. Try again in about {$mins} minute(s)."], 'return'=>$return],
              ['title'=>'Sign in — RuinMyTrip']); return;
     }
-    if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect('/feed'); }
-    view('auth/login', ['errors'=>['Incorrect email or password.']], ['title'=>'Sign in — RuinMyTrip']);
+    // A logged-out visit to a protected route redirects here with ?return= set (see
+    // require_login()) so signing in lands back where the user was actually headed, not always
+    // on /feed -- most noticeable on mobile, where re-finding a page by hand is worse.
+    if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect($return); }
+    view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in — RuinMyTrip']);
 }
 function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
 function register_submit(array $a): void {
