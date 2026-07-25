@@ -114,7 +114,7 @@
             <p class="muted" style="margin:0"><?= e(date('M j, Y · g:ia', strtotime((string)$m['date_start']))) ?></p>
           </div></a></div>
         <?php endforeach; ?>
-        <?php if (!$meetups): ?><p class="muted">No public meetups scheduled yet.</p><?php endif; ?>
+        <?php if (!$meetups): ?><p class="muted">No public meetups yet — when a traveler hosts one, it shows up here.</p><?php endif; ?>
       </div>
       <p style="margin-top:16px"><a class="btn btn-ghost" href="<?= e(url('meetups')) ?>">Browse meetups</a></p>
     </div>
