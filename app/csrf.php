@@ -32,7 +32,6 @@ function csrf_valid(): bool {
 function csrf_check(): void {
     if (!csrf_valid()) {
         // 403 (standard) — not 419: CDN/edge proxies reject non-standard codes and rewrite them to 500.
-        http_response_code(403);
-        exit('Invalid or expired form token. Go back and try again.');
+        forbidden('Your form session expired. Go back and try again.');
     }
 }

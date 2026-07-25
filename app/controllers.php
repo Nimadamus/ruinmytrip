@@ -32,6 +32,11 @@ function authors_fill(array &$rows, string $idField = 'user_id'): void {
 }
 function stars(int $n): string { return str_repeat('★', $n) . str_repeat('☆', 5 - $n); }
 function not_found(): void { http_response_code(404); view('404', [], ['title'=>'Not found — RuinMyTrip']); exit; }
+function forbidden(string $msg = "You don't have permission to do that."): void {
+    http_response_code(403);
+    view('403', compact('msg'), ['title'=>'Not authorized — RuinMyTrip']);
+    exit;
+}
 
 /* ---------- public pages ---------- */
 function home(array $a): void {
@@ -190,7 +195,7 @@ function profile_following(array $a): void {
 function profile_edit_form(array $a): void {
     require_login();
     $me = current_user();
-    if ($me['username'] !== $a['username']) { http_response_code(403); exit('403 — you can only edit your own profile.'); }
+    if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
     view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$me], ['title'=>'Edit your profile — RuinMyTrip']);
 }
 
@@ -198,7 +203,7 @@ function profile_edit_form(array $a): void {
 function profile_edit_submit(array $a): void {
     require_login(); csrf_check();
     $me = current_user();
-    if ($me['username'] !== $a['username']) { http_response_code(403); exit('403 — you can only edit your own profile.'); }
+    if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
 
     $v = rmt_profile_validate($_POST);
     if (!$v['ok']) {
@@ -533,7 +538,7 @@ function review_edit_form(array $a): void {
     require_login();
     $r = rmt_review_get((int)$a['id']);
     if (!$r) not_found();
-    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+    if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
     $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
     view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
          ['title'=>'Edit review — RuinMyTrip']);
@@ -543,7 +548,7 @@ function review_edit_submit(array $a): void {
     require_login(); csrf_check();
     $r = rmt_review_get((int)$a['id']);
     if (!$r) not_found();
-    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+    if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
 
     $isDraft = input('action') === 'draft';
     if (!$isDraft && !email_is_verified(current_user())) {
@@ -591,7 +596,7 @@ function review_delete(array $a): void {
     require_login(); csrf_check();
     $r = rmt_review_get((int)$a['id']);
     if (!$r) not_found();
-    if (!rmt_review_can_edit($r, current_user())) { http_response_code(403); exit('403 — that is not your review.'); }
+    if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
     db()->prepare("UPDATE reviews SET status='removed', updated_at=? WHERE id=?")
         ->execute([date('Y-m-d H:i:s'), (int)$r['id']]);
     flash('Review deleted.');

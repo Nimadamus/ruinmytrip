@@ -20,7 +20,7 @@ function require_login(): void {
 
 function require_role(string ...$roles): void {
     $u = current_user();
-    if (!$u || !in_array($u['role'], $roles, true)) { http_response_code(403); exit('403 — not authorized.'); }
+    if (!$u || !in_array($u['role'], $roles, true)) { forbidden('You are not authorized to view this page.'); }
 }
 
 function attempt_login(string $email, string $password): bool {
