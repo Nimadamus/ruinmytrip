@@ -7,7 +7,7 @@
     <?php if($m['date_end']):?>– <?= e(date('g:ia', strtotime((string)$m['date_end']))) ?><?php endif;?>
     · Hosted by <a href="<?= e(url('u/'.$m['host']['username'])) ?>">@<?= e($m['host']['username']) ?></a></p>
 
-  <div class="callout"><b>How location works:</b> this meetup is tied to the destination only. The exact meeting spot is a public place shared with confirmed attendees in-app. We never post your precise or live location.</div>
+  <div class="callout"><b>How location works:</b> this meetup is tied to the destination only. If the host names a specific meeting spot, it's in the description below, visible to everyone — RuinMyTrip has no separate private-location feature. We never post anyone's precise or live location.</div>
 
   <p style="font-size:1.1rem"><?= nl2br(e($m['description'])) ?></p>
 
