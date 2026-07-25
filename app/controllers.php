@@ -250,7 +250,12 @@ function trip_show(array $a): void {
     $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
                        LEFT JOIN profiles p ON p.user_id=u.id
                        WHERE c.target_type='trip' AND c.target_id=? AND c.status='published' ORDER BY c.id", [(int)$t['id']]);
-    view('trip_show', compact('t','photos','comments'), [
+    $me = current_user();
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='trip' AND target_id=?", [(int)$t['id']])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='trip' AND target_id=?", [(int)$t['id']])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
+    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved'), [
         'title' => $t['title'].' — RuinMyTrip',
         'description' => mb_substr(strip_tags((string)$t['body']),0,150),
         'og_image' => abs_url($t['cover_url']),

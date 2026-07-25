@@ -1,4 +1,4 @@
-<?php /** @var array $t @var array $photos @var array $comments */ $me = current_user(); ?>
+<?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved */ $me = current_user(); ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if($t['dest_slug']):?><a href="<?= e(url('d/'.$t['dest_slug'])) ?>"><?= e($t['dest_name']) ?></a> / <?php endif;?><?= e($t['title']) ?></p>
 </div>
@@ -18,11 +18,13 @@
       <form class="inline-form" method="post" action="<?= e(url('react')) ?>"><?= csrf_field() ?>
         <input type="hidden" name="kind" value="like"><input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
         <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-        <button class="btn btn-ghost btn-sm">♥ Like</button></form>
+        <button class="btn <?= $liked?'btn-primary':'btn-ghost' ?> btn-sm" aria-pressed="<?= $liked?'true':'false' ?>">
+          <?= $liked?'♥ Liked':'♥ Like' ?><?= $likeCount?' · '.$likeCount:'' ?></button></form>
       <form class="inline-form" method="post" action="<?= e(url('react')) ?>"><?= csrf_field() ?>
         <input type="hidden" name="kind" value="save"><input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
         <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-        <button class="btn btn-ghost btn-sm">⭑ Save</button></form>
+        <button class="btn <?= $saved?'btn-primary':'btn-ghost' ?> btn-sm" aria-pressed="<?= $saved?'true':'false' ?>">
+          <?= $saved?'⭑ Saved':'⭑ Save' ?><?= $saveCount?' · '.$saveCount:'' ?></button></form>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=trip&target_id='.$t['id'])) ?>">⚑ Report</a>
     <?php endif; ?>
   </div>
