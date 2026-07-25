@@ -10,12 +10,12 @@
     <label for="destination_id">Destination</label>
     <select id="destination_id" name="destination_id">
       <option value="">— Select a destination —</option>
-      <?php foreach ($dests as $d): ?><option value="<?= (int)$d['id'] ?>"><?= e($d['name'].', '.$d['country']) ?></option><?php endforeach; ?>
+      <?php foreach ($dests as $d): ?><option value="<?= (int)$d['id'] ?>"<?= (string)input('destination_id') === (string)$d['id'] ? ' selected' : '' ?>><?= e($d['name'].', '.$d['country']) ?></option><?php endforeach; ?>
     </select>
     <label for="cover_url">Cover image URL <span class="hint">(optional — defaults to the destination photo)</span></label>
-    <input type="url" id="cover_url" name="cover_url" placeholder="https://…">
+    <input type="url" id="cover_url" name="cover_url" value="<?= e(input('cover_url')) ?>" placeholder="https://…">
     <label for="visited_on">When did you visit?</label>
-    <input type="date" id="visited_on" name="visited_on">
+    <input type="date" id="visited_on" name="visited_on" value="<?= e(input('visited_on')) ?>">
     <label for="body">Your story</label>
     <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?" required><?= e(input('body')) ?></textarea>
     <label for="photos">Photos <span class="muted">(optional, up to 6)</span></label>
