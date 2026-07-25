@@ -96,7 +96,12 @@ function destination(array $a): void {
     $id = (int)$d['id'];
     $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 8", [$id]);
     authors_fill($trips);
-    $reviews = q_all("SELECT r.* FROM reviews r WHERE r.destination_id=? AND r.status='published' ORDER BY r.verified DESC, r.id DESC", [$id]);
+    // Editorial always sorts first regardless of id, so it can never be pushed out by LIMIT once
+    // a destination has 30+ community reviews -- there is exactly one editorial review per
+    // destination, so this never crowds out real ones.
+    $reviews = q_all("SELECT r.* FROM reviews r JOIN users u ON u.id=r.user_id
+                      WHERE r.destination_id=? AND r.status='published'
+                      ORDER BY (u.role=?) DESC, r.verified DESC, r.id DESC LIMIT 30", [$id, RMT_EDITORIAL_ROLE]);
     authors_fill($reviews);
     // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);

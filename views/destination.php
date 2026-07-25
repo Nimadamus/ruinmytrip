@@ -77,7 +77,7 @@
 
       <div class="section-rule">
         <h2>Traveler reviews</h2>
-        <span class="count"><?= count($reviews) ?></span>
+        <span class="count"><?= (int)$avg['c'] ?></span>
       </div>
       <?php if (!$reviews): ?>
         <div class="empty-cta">
