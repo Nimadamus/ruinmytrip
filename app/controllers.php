@@ -408,11 +408,53 @@ function trip_create(array $a): void {
     if ($errors) { view('trip_new', ['dests'=>all_dests(),'errors'=>$errors], ['title'=>'Share a trip — RuinMyTrip']); return; }
     $d = $dest ? dest_by_id($dest) : null;
     $cover = $cover ?: ($d['hero_url'] ?? '');
-    $id = q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,verified,status,created_at)
+    $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,verified,status,created_at)
                  VALUES (?,?,?,?,?,?,?,?, 'published', ?)",
         [(int)$me['id'], $dest ?: null, $title, slugify($title), $body, $cover, $visited ?: null, 0, date('Y-m-d H:i:s')]);
-    flash('Trip published.');
+    // Photo failures must never be silent, and must never cost the user their written story --
+    // same rule as reviews (rmt_attach_review_photos).
+    $photoErrors = rmt_attach_trip_photos($id, (int)$me['id']);
+    $msg = 'Trip published.';
+    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
+    flash($msg);
     redirect('/trip/'.$id.'/'.slugify($title));
+}
+
+/**
+ * Store any photos submitted with a trip. Same shape as rmt_attach_review_photos(): upload
+ * failures are reported but never discard the trip itself.
+ * @return string[] error messages
+ */
+function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
+    $errors = [];
+    if (empty($_FILES['photos']) || !is_array($_FILES['photos']['name'] ?? null)) return $errors;
+
+    $existing = (int)(q_one('SELECT COUNT(*) c FROM trip_photos WHERE trip_id=?', [$tripId])['c'] ?? 0);
+    $slots = max(0, 6 - $existing);   // cap photos per trip, same as reviews
+
+    $n = count($_FILES['photos']['name']);
+    for ($i = 0; $i < $n; $i++) {
+        if ((int)$_FILES['photos']['error'][$i] === UPLOAD_ERR_NO_FILE) continue;
+        if ($slots <= 0) { $errors[] = 'You can attach up to 6 photos per trip.'; break; }
+        if (!rmt_rate_ok('upload', (string)$ownerId, 40, 3600)) { $errors[] = 'Too many uploads. Try again later.'; break; }
+
+        $file = [
+            'name'     => $_FILES['photos']['name'][$i],
+            'type'     => $_FILES['photos']['type'][$i],
+            'tmp_name' => $_FILES['photos']['tmp_name'][$i],
+            'error'    => $_FILES['photos']['error'][$i],
+            'size'     => $_FILES['photos']['size'][$i],
+        ];
+        $res = rmt_upload_image($file, $ownerId);
+        if (!$res['ok']) { $errors[] = $res['error']; continue; }
+
+        q_run('INSERT INTO trip_photos (trip_id, url, storage_key, caption, width, height, bytes, sort, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?)',
+              [$tripId, $res['url'], $res['key'], null, $res['w'], $res['h'], $res['bytes'],
+               $existing + $i, date('Y-m-d H:i:s')]);
+        $slots--;
+    }
+    return $errors;
 }
 
 function review_new_form(array $a): void {
