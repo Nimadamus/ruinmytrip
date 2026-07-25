@@ -5,6 +5,7 @@ define('BASE_PATH', dirname(__DIR__));
 require BASE_PATH . '/app/loadconfig.php';
 $config = rmt_load_config();
 $GLOBALS['config'] = $config;
+require BASE_PATH . '/app/errors.php';
 
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
