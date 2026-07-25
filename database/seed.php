@@ -12,9 +12,18 @@ function rmt_apply_schema(PDO $pdo, string $driver): void {
     $pdo->exec(file_get_contents(dirname(__DIR__) . '/database/' . $file));
 }
 
-/** Local convenience: build + seed a fresh SQLite DB. */
+/**
+ * Local convenience: build + seed a fresh SQLite DB.
+ *
+ * schema.sqlite.sql is a frozen baseline snapshot (pre-migration 002); it does not by itself
+ * contain every table/column added since. Every fresh local DB must go through the same
+ * migrations production does, or a first-run checkout crashes the moment it touches any
+ * feature added after that snapshot (rate limiting, badges, review/trip photos, the editorial
+ * layer, trip/guide edit -- all migration-only additions with nothing in the base snapshot).
+ */
 function rmt_migrate_and_seed(PDO $pdo): void {
     rmt_apply_schema($pdo, 'sqlite');
+    rmt_migrate($pdo, 'sqlite');
     rmt_seed_data($pdo);
 }
 

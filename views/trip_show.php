@@ -52,6 +52,7 @@
   <?php if (!$comments): ?><p class="muted">No comments yet.</p><?php endif; ?>
   <?php if ($me): ?>
     <form method="post" action="<?= e(url('comment')) ?>" style="margin:12px 0 60px"><?= csrf_field() ?>
+      <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_trip_'.$t['id'])) ?>">
       <input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
       <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
       <textarea name="body" placeholder="Add a comment" style="min-height:80px"></textarea>

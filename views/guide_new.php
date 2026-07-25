@@ -5,6 +5,7 @@
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('guide/new')) ?>">
     <?= csrf_field() ?>
+    <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('guide_new')) ?>">
     <label for="title">Title</label>
     <input type="text" id="title" name="title" value="<?= e(input('title')) ?>" placeholder="Four days in Kyoto without the tour buses" required>
     <label for="destination_id">Destination</label>

@@ -373,6 +373,9 @@ function guide_new_form(array $a): void {
 
 function guide_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_submit_ok('guide_new', input('_submit'))) {
+        flash('That guide was already submitted.'); redirect('/guides'); return;
+    }
     if (!rmt_rate_ok('guide_create', (string)$me['id'], 10, 3600)) {
         view('guide_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
              ['title'=>'Write a guide — RuinMyTrip']); return;
@@ -558,6 +561,9 @@ function rmt_trip_can_edit(array $t, ?array $user): bool {
 
 function trip_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_submit_ok('trip_new', input('_submit'))) {
+        flash('That trip was already submitted.'); redirect('/'); return;
+    }
     if (!rmt_rate_ok('trip_create', (string)$me['id'], 20, 3600)) {
         view('trip_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
              ['title'=>'Share a trip — RuinMyTrip']); return;
@@ -685,6 +691,9 @@ function review_new_form(array $a): void {
 
 function review_create(array $a): void {
     require_login(); csrf_check(); $me = current_user();
+    if (!rmt_submit_ok('review_new', input('_submit'))) {
+        flash('That review was already submitted.'); redirect('/'); return;
+    }
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
         view('review_new', ['dests'=>all_dests(), 'errors'=>['You are posting very fast. Try again later.'], 'r'=>null],
              ['title'=>'Write a review — RuinMyTrip']); return;
@@ -882,7 +891,15 @@ function follow_action(array $a): void {
     $exists = q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$target]);
     if ($exists) db()->prepare('DELETE FROM follows WHERE follower_id=? AND followee_id=?')->execute([(int)$me['id'],$target]);
     else {
-        q_run('INSERT INTO follows (follower_id,followee_id,created_at) VALUES (?,?,?)', [(int)$me['id'],$target,date('Y-m-d H:i:s')]);
+        // Same double-click race as react_action: the (follower_id,followee_id) primary key
+        // stops a duplicate follow row, but without this catch the loser of the race got an
+        // uncaught PDOException (500 page) instead of a no-op.
+        try {
+            q_run('INSERT INTO follows (follower_id,followee_id,created_at) VALUES (?,?,?)', [(int)$me['id'],$target,date('Y-m-d H:i:s')]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+            redirect(input('return','/'));
+        }
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$target,'follow',(int)$me['id'],'user',(int)$me['id'],date('Y-m-d H:i:s')]);
     }
@@ -935,7 +952,14 @@ function react_action(array $a): void {
 
     $has = q_one("SELECT 1 FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?", [(int)$me['id'],$tt,$tid]);
     if ($has) db()->prepare("DELETE FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?")->execute([(int)$me['id'],$tt,$tid]);
-    else db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id) VALUES (?,?,?)")->execute([(int)$me['id'],$tt,$tid]);
+    else {
+        // A double-click can fire two near-simultaneous requests that both see $has as false; the
+        // table's (user_id,target_type,target_id) primary key stops a duplicate row, but the
+        // loser previously surfaced as an uncaught PDOException (500 page) instead of just no-op'ing
+        // into the same end state the winner already produced.
+        try { db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id) VALUES (?,?,?)")->execute([(int)$me['id'],$tt,$tid]); }
+        catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
+    }
     redirect(input('return','/'));
 }
 
@@ -946,6 +970,9 @@ function comment_action(array $a): void {
     $body = trim((string) input('body'));
 
     if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(input('return','/'));
+    if (!rmt_submit_ok('comment_'.$tt.'_'.$tid, input('_submit'))) {
+        flash('That comment was already posted.'); redirect(input('return','/'));
+    }
     if (!rmt_rate_ok('comment', (string)$me['id'], 30, 3600)) {
         flash('You are commenting very fast. Try again shortly.');
         redirect(input('return','/'));

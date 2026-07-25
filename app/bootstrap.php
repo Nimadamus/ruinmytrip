@@ -10,6 +10,7 @@ require BASE_PATH . '/app/errors.php';
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/csrf.php';
+require BASE_PATH . '/app/idempotency.php';
 require BASE_PATH . '/app/mail.php';
 require BASE_PATH . '/app/tokens.php';
 require BASE_PATH . '/app/ratelimit.php';
@@ -25,6 +26,7 @@ require BASE_PATH . '/app/session.php';
 // CLI tools that build their own database define RMT_NO_AUTOSEED first: they must not have a
 // demo-seeded DB conjured underneath them just because the default file was absent.
 if (!defined('RMT_NO_AUTOSEED') && $config['db_driver'] === 'sqlite' && !file_exists($config['sqlite_path'])) {
+    require BASE_PATH . '/app/migrator.php';
     require BASE_PATH . '/database/seed.php';
     rmt_migrate_and_seed(db());
 }
