@@ -2,7 +2,7 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
-    <img src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
+    <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
     <div class="overlay">
       <div>
         <span class="chip"><?= e($d['category']) ?></span>
@@ -112,7 +112,7 @@
 
       <div class="section-rule">
         <h2>Trip stories</h2>
-        <span class="count"><?= count($trips) ?></span>
+        <span class="count"><?= $tripCount ?></span>
       </div>
       <?php if (!$trips): ?>
         <p class="muted">No trip stories from <?= e($d['name']) ?> yet. <a href="<?= e(url('trip/new')) ?>">Share the first one.</a></p>

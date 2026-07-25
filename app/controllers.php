@@ -84,7 +84,14 @@ function explore(array $a): void {
               (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips
             FROM destinations d WHERE 1=1";
     $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
-    if ($qs !== '') { $sql .= ' AND (d.name LIKE ? OR d.country LIKE ? OR d.summary LIKE ?)'; $args[]="%$qs%";$args[]="%$qs%";$args[]="%$qs%"; }
+    // LOWER() on both sides, not bare LIKE: LIKE is case-insensitive on SQLite (local dev) but
+    // case-SENSITIVE on Postgres (production), so this silently returned zero results in
+    // production for any search that didn't match the stored capitalization exactly.
+    if ($qs !== '') {
+        $sql .= ' AND (LOWER(d.name) LIKE ? OR LOWER(d.country) LIKE ? OR LOWER(d.summary) LIKE ?)';
+        $needle = '%'.mb_strtolower($qs).'%';
+        $args[]=$needle;$args[]=$needle;$args[]=$needle;
+    }
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
     $sql .= ' ORDER BY d.name';
     $dests = q_all($sql, $args);
@@ -101,6 +108,9 @@ function destination(array $a): void {
     $id = (int)$d['id'];
     $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 8", [$id]);
     authors_fill($trips);
+    // $trips is capped at 8 for the page grid -- the badge next to "Trip stories" must show the
+    // true total, not silently cap at 8 the way the reviews count did before rmt_community_avg().
+    $tripCount = (int) q_one("SELECT COUNT(*) c FROM trips WHERE destination_id=? AND status='published'", [$id])['c'];
     // Editorial always sorts first regardless of id, so it can never be pushed out by LIMIT once
     // a destination has 30+ community reviews -- there is exactly one editorial review per
     // destination, so this never crowds out real ones.
@@ -120,7 +130,7 @@ function destination(array $a): void {
     // Community score only. An editorial rating is the site's own opinion and must never be
     // presented, or marked up for search engines, as traveler consensus.
     $avg = rmt_community_avg($id);
-    view('destination', compact('d','trips','reviews','editorial','tips','guides','meetups','going','avg'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -482,10 +492,13 @@ function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
     $dests=$trips=$guides=[];
     if ($qs !== '') {
-        $like = "%$qs%";
-        $dests = q_all('SELECT * FROM destinations WHERE name LIKE ? OR country LIKE ? OR summary LIKE ? LIMIT 10', [$like,$like,$like]);
-        $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.status='published' AND (t.title LIKE ? OR t.body LIKE ?) LIMIT 10", [$like,$like]);
-        $guides = q_all("SELECT * FROM guides WHERE status='published' AND (title LIKE ? OR summary LIKE ?) LIMIT 10", [$like,$like]);
+        // LOWER() on both sides -- see explore()'s comment: bare LIKE is case-insensitive on
+        // SQLite but case-sensitive on Postgres, so production search silently missed anything
+        // not typed in the exact stored capitalization.
+        $like = '%'.mb_strtolower($qs).'%';
+        $dests = q_all('SELECT * FROM destinations WHERE LOWER(name) LIKE ? OR LOWER(country) LIKE ? OR LOWER(summary) LIKE ? LIMIT 10', [$like,$like,$like]);
+        $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.status='published' AND (LOWER(t.title) LIKE ? OR LOWER(t.body) LIKE ?) LIMIT 10", [$like,$like]);
+        $guides = q_all("SELECT * FROM guides WHERE status='published' AND (LOWER(title) LIKE ? OR LOWER(summary) LIKE ?) LIMIT 10", [$like,$like]);
     }
     view('search', compact('qs','dests','trips','guides'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
