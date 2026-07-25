@@ -320,6 +320,121 @@ function guide_show(array $a): void {
     ]);
 }
 
+/**
+ * Validate a submitted guide. Body is stored and rendered as plain text for traveler-authored
+ * guides (see guide_show.php) -- only editorial/seed content is trusted with raw HTML -- so the
+ * length floor is generous enough to require an actually useful guide, not a one-liner.
+ * @return array{ok:bool, errors:string[], data:array<string,mixed>}
+ */
+function rmt_guide_validate(array $in): array {
+    $errors = [];
+    $title = trim((string) ($in['title'] ?? ''));
+    $summary = trim((string) ($in['summary'] ?? ''));
+    $body = (string) ($in['body'] ?? '');
+    $dest = (int) ($in['destination_id'] ?? 0);
+    $cover = trim((string) ($in['cover_url'] ?? ''));
+
+    if (mb_strlen($title) < 5) $errors[] = 'Give your guide a title (5+ characters).';
+    if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
+    if (mb_strlen($summary) < 10) $errors[] = 'Add a one-line summary (10+ characters).';
+    if (mb_strlen($summary) > 300) $errors[] = 'That summary is too long (300 characters max).';
+    if (strlen($body) < 100) $errors[] = 'A guide needs real detail -- write at least 100 characters.';
+    if (mb_strlen($body) > 20000) $errors[] = 'That guide is too long.';
+    if ($cover !== '' && (!filter_var($cover, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $cover))) {
+        $errors[] = 'Cover photo URL must be a full https:// web address.';
+    }
+    if ($dest > 0 && !dest_by_id($dest)) $errors[] = 'That destination does not exist.';
+
+    return ['ok' => !$errors, 'errors' => $errors, 'data' => [
+        'title' => $title, 'summary' => $summary, 'body' => $body,
+        'destination_id' => $dest ?: null, 'cover_url' => $cover,
+    ]];
+}
+
+/** Only the author may edit or delete a guide. Editorial guides are edited via the DB, not here. */
+function rmt_guide_can_edit(array $g, ?array $user): bool {
+    return $user !== null && (int) $g['user_id'] === (int) $user['id'];
+}
+
+function guide_new_form(array $a): void {
+    require_login();
+    view('guide_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Write a guide — RuinMyTrip','description'=>'Share a detailed, practical travel guide.']);
+}
+
+function guide_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_rate_ok('guide_create', (string)$me['id'], 10, 3600)) {
+        view('guide_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
+             ['title'=>'Write a guide — RuinMyTrip']); return;
+    }
+    $v = rmt_guide_validate($_POST);
+    if (!$v['ok']) {
+        view('guide_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Write a guide — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
+    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
+    $slug = rmt_guide_unique_slug($d['title']);
+    q_run("INSERT INTO guides (user_id,destination_id,slug,title,summary,body,cover_url,premium,status,created_at)
+           VALUES (?,?,?,?,?,?,?,0,'published',?)",
+        [(int)$me['id'], $d['destination_id'], $slug, $d['title'], $d['summary'], $d['body'], $cover, date('Y-m-d H:i:s')]);
+    flash('Guide published.');
+    redirect('/g/'.$slug);
+}
+
+/** A unique slug, appending -2/-3/... on collision. Guides (unlike trips/reviews) look up by slug alone. */
+function rmt_guide_unique_slug(string $title, int $excludeId = 0): string {
+    $base = slugify($title) ?: 'guide';
+    $slug = $base; $n = 1;
+    while (true) {
+        $row = q_one('SELECT id FROM guides WHERE slug=?', [$slug]);
+        if (!$row || (int)$row['id'] === $excludeId) return $slug;
+        $n++; $slug = $base.'-'.$n;
+    }
+}
+
+function guide_edit_form(array $a): void {
+    require_login();
+    $g = q_one('SELECT * FROM guides WHERE id=?', [(int)$a['id']]);
+    if (!$g) not_found();
+    if (!rmt_guide_can_edit($g, current_user())) { forbidden('That is not your guide.'); }
+    view('guide_edit', ['g'=>$g, 'dests'=>all_dests(), 'errors'=>[]], ['title'=>'Edit guide — RuinMyTrip']);
+}
+
+function guide_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $g = q_one('SELECT * FROM guides WHERE id=?', [(int)$a['id']]);
+    if (!$g) not_found();
+    if (!rmt_guide_can_edit($g, current_user())) { forbidden('That is not your guide.'); }
+
+    $v = rmt_guide_validate($_POST);
+    if (!$v['ok']) {
+        view('guide_edit', ['g'=>array_merge($g, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors']],
+             ['title'=>'Edit guide — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
+    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? $g['cover_url']);
+    $slug = rmt_guide_unique_slug($d['title'], (int)$g['id']);
+    db()->prepare("UPDATE guides SET destination_id=?, title=?, slug=?, summary=?, body=?, cover_url=?, updated_at=? WHERE id=?")
+        ->execute([$d['destination_id'], $d['title'], $slug, $d['summary'], $d['body'], $cover,
+                   date('Y-m-d H:i:s'), (int)$g['id']]);
+    flash('Guide updated.');
+    redirect('/g/'.$slug);
+}
+
+/** POST /guide/{id}/delete — soft delete. Rows are never destroyed. */
+function guide_delete(array $a): void {
+    require_login(); csrf_check();
+    $g = q_one('SELECT * FROM guides WHERE id=?', [(int)$a['id']]);
+    if (!$g) not_found();
+    if (!rmt_guide_can_edit($g, current_user())) { forbidden('That is not your guide.'); }
+    db()->prepare("UPDATE guides SET status='removed', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$g['id']]);
+    flash('Guide deleted.');
+    redirect('/u/'.current_user()['username']);
+}
+
 function meetups_index(array $a): void {
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
                       (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going

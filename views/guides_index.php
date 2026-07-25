@@ -1,13 +1,14 @@
-<?php /** @var array $guides */ ?>
+<?php /** @var array $guides */ $me = current_user(); ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Guides</p>
   <h1>Travel guides & itineraries</h1>
   <p class="muted">Detailed, practical plans you can actually follow. Guides marked <?= rmt_editorial_badge() ?> are researched and written by our own team; the rest come from travelers.</p>
+  <p><a class="btn btn-primary" href="<?= e(url($me ? 'guide/new' : 'register')) ?>">Write a guide</a></p>
   <?php if (!$guides): ?>
     <div class="empty-cta" style="margin-bottom:24px">
       <h3>No guides published yet.</h3>
       <p class="muted" style="margin:0">Know a place well enough to plan somebody else's week there? That is a guide.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a></p>
+      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url($me ? 'guide/new' : 'register')) ?>">Write a guide</a></p>
     </div>
   <?php endif; ?>
   <div class="grid g-3" style="padding:20px 0 50px">
