@@ -20,3 +20,6 @@ Thumbs.db
 
 # Local PHP ini override
 /php.local.ini
+
+# Ad hoc QA driver scripts/screenshots (session-scoped, never committed)
+/.qa-tmp/
