@@ -14,6 +14,8 @@
  */
 declare(strict_types=1);
 
+$GLOBALS['config'] = ['app_url' => 'https://ruinmytrip.com'];
+require dirname(__DIR__) . '/app/helpers.php';
 require dirname(__DIR__) . '/app/auth.php';
 
 $fail = 0;
@@ -31,6 +33,18 @@ $check('a bare filename with no leading slash falls back to /feed', rmt_safe_ret
 $check('a protocol-relative path ("//host") falls back to /feed -- would redirect off-site', rmt_safe_return_path('//evil.example.com/phish'), '/feed');
 $check('a full external URL falls back to /feed -- open-redirect protection', rmt_safe_return_path('https://evil.example.com/phish'), '/feed');
 $check('a javascript: URL falls back to /feed', rmt_safe_return_path('javascript:alert(1)'), '/feed');
+// Action forms (comment/react/follow/report/meetup RSVP) build their `return` field with url(),
+// which always emits a same-origin ABSOLUTE URL, not a bare path -- confirmed live: this reached
+// rmt_safe_return_path() as "https://ruinmytrip.com/trip/22/..." and fell back to /feed instead
+// of the trip page, because the naive checks correctly (but too broadly) reject anything
+// containing "://". A same-origin absolute URL must resolve to just its path+query.
+$check('a same-origin absolute URL resolves to its path', rmt_safe_return_path('https://ruinmytrip.com/trip/22/qa-test'), '/trip/22/qa-test');
+$check('a same-origin absolute URL with a query string resolves correctly', rmt_safe_return_path('https://ruinmytrip.com/explore?q=kyoto'), '/explore?q=kyoto');
+$check('the bare origin with no path resolves to /', rmt_safe_return_path('https://ruinmytrip.com'), '/');
+// Prefix-confusion attacks must still fail: a foreign host that merely starts with our domain
+// name is NOT a same-origin match and must not be treated as one.
+$check('a look-alike host ("ruinmytrip.com.evil.com") is NOT treated as same-origin', rmt_safe_return_path('https://ruinmytrip.com.evil.com/phish'), '/feed');
+$check('userinfo-confusion ("ruinmytrip.com@evil.com") is NOT treated as same-origin', rmt_safe_return_path('https://ruinmytrip.com@evil.com/phish'), '/feed');
 // Conservative by design: a path merely containing "://" anywhere (even as a query value) is
 // rejected rather than parsed apart to check where it actually points. Falling back to /feed is
 // always safe; trying to be clever about what counts as "safe enough" is how open redirects

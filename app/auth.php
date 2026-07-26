@@ -40,8 +40,21 @@ function require_login(): void {
  * Only ever redirect back to a same-site relative path. Without this, `return` becomes an open
  * redirect: /login?return=https://evil.example would send a freshly-authenticated user straight
  * to an attacker's page right after they typed their password.
+ *
+ * Action forms (comment, react, follow, report, meetup RSVP) build their `return` field with
+ * url(), which always returns a same-origin ABSOLUTE URL, not a bare path -- confirmed live: one
+ * of those return values reached this function as "https://ruinmytrip.com/trip/22/...", which
+ * the checks below correctly reject on their own (it contains "://"), so it fell back to /feed
+ * instead of the trip page. Strip a same-origin prefix down to a plain path first so those
+ * values validate normally; anything that ISN'T our own origin is untouched by the strip and
+ * still gets rejected by the checks that follow.
  */
 function rmt_safe_return_path(string $path): string {
+    $appUrl = rtrim((string) cfg('app_url'), '/');
+    if ($appUrl !== '') {
+        if ($path === $appUrl) $path = '/';
+        elseif (str_starts_with($path, $appUrl . '/')) $path = substr($path, strlen($appUrl));
+    }
     if ($path === '' || $path[0] !== '/' || str_starts_with($path, '//') || str_contains($path, '://')) {
         return '/feed';
     }
