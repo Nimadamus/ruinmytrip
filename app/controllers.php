@@ -642,6 +642,14 @@ function trip_delete(array $a): void {
     if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
     db()->prepare("UPDATE trips SET status='removed', updated_at=? WHERE id=?")
         ->execute([date('Y-m-d H:i:s'), (int)$t['id']]);
+    // The trip row itself is soft-deleted (matches every other content type), but the uploaded
+    // photo BLOBS in the media table are not cheap DB rows -- left alone, they stayed in storage
+    // and stayed reachable at their direct /media/{key} URL forever, even after the owner
+    // "deleted" the trip that showed them. Same cleanup trip_edit_submit already does per-photo
+    // when a photo is unticked; a deleted trip just does it for all of them at once.
+    foreach (q_all('SELECT storage_key FROM trip_photos WHERE trip_id=?', [(int)$t['id']]) as $ph) {
+        if (!empty($ph['storage_key'])) rmt_storage_delete((string)$ph['storage_key']);
+    }
     flash('Trip deleted.');
     redirect('/u/'.current_user()['username']);
 }
@@ -870,6 +878,11 @@ function review_delete(array $a): void {
     if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
     db()->prepare("UPDATE reviews SET status='removed', updated_at=? WHERE id=?")
         ->execute([date('Y-m-d H:i:s'), (int)$r['id']]);
+    // Same gap as trip_delete() had: the review row soft-deletes, but its uploaded photo BLOBS
+    // in the media table stayed reachable at their direct /media/{key} URL forever otherwise.
+    foreach (q_all('SELECT storage_key FROM review_photos WHERE review_id=?', [(int)$r['id']]) as $ph) {
+        if (!empty($ph['storage_key'])) rmt_storage_delete((string)$ph['storage_key']);
+    }
     flash('Review deleted.');
     redirect('/u/'.current_user()['username']);
 }
