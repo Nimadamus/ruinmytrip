@@ -38,6 +38,19 @@ $check('a javascript: URL falls back to /feed', rmt_safe_return_path('javascript
 $check('a path containing "://" anywhere is rejected even mid-query (safe-by-default, not parsed)',
     rmt_safe_return_path('/redirect?next=http://example.com'), '/feed');
 
+// require_login() itself ends in redirect(), which calls exit() -- it can't be invoked directly
+// in this process. POST-only action endpoints (comment, react, follow, report, meetup RSVP) have
+// no GET route at all, so capturing their raw REQUEST_URI as the return target sent a freshly
+// logged-in user to a dead 404 instead of back to the page they were actually on (confirmed live:
+// a session expiring mid comment-submit landed on /login?return=%2Fcomment, and GET /comment is a
+// 404). Those forms already carry their own `return` field pointing at the real page for their
+// own post-success redirect; this is a static check that require_login() prefers it.
+$authSrc = file_get_contents(dirname(__DIR__) . '/app/auth.php');
+$reqLoginStart = strpos($authSrc, 'function require_login(');
+$reqLoginBody = $reqLoginStart === false ? '' : substr($authSrc, $reqLoginStart, 1400);
+$check("require_login() prefers input('return') over the raw request URI",
+    (bool) preg_match('/input\([\'"]return[\'"]\)\s*\?:/', $reqLoginBody), true);
+
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed\n"; exit(1); }
 echo "ALL LOGIN REDIRECT-BACK TESTS PASS\n";

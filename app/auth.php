@@ -23,7 +23,14 @@ function require_login(): void {
         // A logged-out visit to any protected route (a notification link, a deep link, a bookmark)
         // always dropped the user on /feed after signing in, discarding wherever they were actually
         // headed -- most noticeable on mobile, where re-finding a specific page by hand is worse.
-        $return = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+        //
+        // POST-only action endpoints (comment, react, follow, report, meetup RSVP) have no GET
+        // route at all -- capturing their own REQUEST_URI as the return target sent a freshly
+        // logged-in user to a dead 404 instead of back to the page they were actually on
+        // (confirmed live: a session expiring mid comment-submit redirected to /login?return=
+        // %2Fcomment, and GET /comment is a 404). Those forms already carry their own `return`
+        // field pointing at that real page for their own post-success redirect; prefer it here.
+        $return = (string) (input('return') ?: ($_SERVER['REQUEST_URI'] ?? '/'));
         flash('Please sign in to continue.');
         redirect('/login?return=' . urlencode($return));
     }
