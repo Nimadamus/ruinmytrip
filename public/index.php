@@ -30,6 +30,7 @@ $routes = [
     ['GET',  '#^/review/(?<id>\d+)/edit$#',   'review_edit_form'],
     ['POST', '#^/review/(?<id>\d+)/edit$#',   'review_edit_submit'],
     ['POST', '#^/review/(?<id>\d+)/delete$#', 'review_delete'],
+    ['POST', '#^/review/(?<id>\d+)/vote$#', 'review_vote_action'],
     ['GET',  '#^/review/(?<id>\d+)(?:/(?<slug>[a-z0-9\-]*))?$#', 'review_show'],
     ['GET',  '#^/guides$#',                    'guides_index'],
     ['GET',  '#^/guide/new$#',                 'guide_new_form'],
@@ -59,6 +60,7 @@ $routes = [
     ['GET',  '#^/reset-password$#',            'reset_form'],
     ['POST', '#^/reset-password$#',            'reset_submit'],
     ['POST', '#^/follow$#',                    'follow_action'],
+    ['POST', '#^/compliment$#',                'compliment_action'],
     ['POST', '#^/react$#',                     'react_action'],   // like/save
     ['POST', '#^/comment$#',                   'comment_action'],
     ['POST', '#^/comment/(?<id>\d+)/delete$#', 'comment_delete'],

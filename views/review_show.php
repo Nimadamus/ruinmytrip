@@ -1,4 +1,5 @@
-<?php /** @var array $r @var ?array $author @var array $photos @var ?array $me */ ?>
+<?php /** @var array $r @var ?array $author @var array $photos @var ?array $me @var array $voteCounts @var array $myVotes */ ?>
+<?php $rmt_vote_labels = ['useful'=>'👍 Useful','funny'=>'😄 Funny','cool'=>'😎 Cool']; ?>
 <article class="wrap" style="max-width:760px;padding-top:28px">
   <?php if ($r['status'] !== 'published'): ?>
     <div class="callout"><b><?= e(ucfirst((string)$r['status'])) ?>.</b>
@@ -88,7 +89,23 @@
     </div>
   <?php endif; ?>
 
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:28px 0 40px">
+  <?php $isOwn = $me && (int)$me['id'] === (int)$r['user_id']; ?>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:26px 0 4px">
+    <span class="muted" style="margin-right:4px">Was this review helpful?</span>
+    <?php foreach (RMT_REVIEW_VOTE_TYPES as $vt): $mine = in_array($vt, $myVotes, true); ?>
+      <?php if ($me && !$isOwn): ?>
+        <form class="inline-form" method="post" action="<?= e(url('review/'.(int)$r['id'].'/vote')) ?>">
+          <?= csrf_field() ?><input type="hidden" name="vote_type" value="<?= e($vt) ?>">
+          <input type="hidden" name="return" value="<?= e(url(ltrim(rmt_review_path($r),'/'))) ?>">
+          <button class="btn btn-sm <?= $mine?'btn-primary':'btn-ghost' ?>"><?= e($rmt_vote_labels[$vt]) ?> <?= (int)$voteCounts[$vt] ?></button>
+        </form>
+      <?php else: ?>
+        <span class="chip"><?= e($rmt_vote_labels[$vt]) ?> <?= (int)$voteCounts[$vt] ?></span>
+      <?php endif; ?>
+    <?php endforeach; ?>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 40px">
     <?php if (rmt_review_can_edit($r, $me)): ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
     <?php endif; ?>

@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -13,7 +13,9 @@
       <div class="stat-inline">
         <?php /* Every figure is a live COUNT (see rmt_profile_stats) — no stored counters. */ ?>
         <span><b><?= (int)$stats['reviews'] ?></b> <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?></span>
+        <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
+        <span title="Useful + funny + cool votes from other travelers"><b><?= (int)$stats['votes'] ?></b> <?= $stats['votes'] === 1 ? 'vote' : 'votes' ?></span>
         <a href="<?= e(url('u/'.$u['username'].'/followers')) ?>"><b><?= $followers ?></b> <?= $followers === 1 ? 'follower' : 'followers' ?></a>
         <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
       </div>
@@ -42,6 +44,34 @@
     </div>
   </div>
   <?php if ($u['bio']): ?><p style="max-width:70ch;margin:18px 0"><?= e($u['bio']) ?></p><?php endif; ?>
+
+  <?php if ($compliments || ($me && !$isMe)): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px">Compliments</p>
+      <?php if (!$compliments): ?><p class="muted" style="margin:0 0 10px">No compliments yet.</p><?php endif; ?>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <?php foreach ($compliments as $c): ?>
+          <span class="chip" title="<?= (int)$c['c'] ?>"><?= e(RMT_COMPLIMENT_TYPES[$c['type']] ?? $c['type']) ?> · <?= (int)$c['c'] ?></span>
+        <?php endforeach; ?>
+      </div>
+      <?php if ($me && !$isMe): ?>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+          <?php foreach (RMT_COMPLIMENT_TYPES as $slug=>$label): $sent = in_array($slug, $myCompliments, true); ?>
+            <?php if ($sent): ?>
+              <span class="chip" style="background:#0f766e;color:#fff">Sent: <?= e($label) ?></span>
+            <?php else: ?>
+              <form class="inline-form" method="post" action="<?= e(url('compliment')) ?>">
+                <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
+                <input type="hidden" name="type" value="<?= e($slug) ?>">
+                <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
+                <button class="btn btn-ghost btn-sm">+ <?= e($label) ?></button>
+              </form>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </div></div>
+  <?php endif; ?>
 
   <h2 style="margin-top:24px">Trips</h2>
   <?php if (!$trips): ?><p class="muted">No trips shared yet.</p><?php endif; ?>

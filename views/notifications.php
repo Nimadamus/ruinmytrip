@@ -15,6 +15,10 @@
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> started following you.</a>
         <?php elseif ($n['type']==='follow'): ?>
           <b>Someone</b> started following you, then deleted their account.
+        <?php elseif ($n['type']==='compliment' && $n['actor']): ?>
+          <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> sent you a compliment.</a>
+        <?php elseif ($n['type']==='compliment'): ?>
+          <b>Someone</b> sent you a compliment, then deleted their account.
         <?php else: ?>
           <b><?= e($n['type']) ?></b> from @<?= e($n['actor']) ?>
         <?php endif; ?>

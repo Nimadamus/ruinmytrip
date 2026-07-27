@@ -12,9 +12,23 @@ declare(strict_types=1);
 /** Badge award rules. Slug => [label, rule]. A badge is EARNED or it is not shown. */
 const RMT_FOUNDING_TRAVELER_CUTOFF = 100;   // first N accounts, by id
 
+/** Elite Traveler thresholds — deliberately steep: this is a status, not a participation badge. */
+const RMT_ELITE_MIN_REVIEWS = 10;
+const RMT_ELITE_MIN_DESTINATIONS = 5;
+const RMT_ELITE_MIN_VOTES = 15;
+
+/** The three vote flavors a review can receive, and the compliment types a profile can receive. */
+const RMT_REVIEW_VOTE_TYPES = ['useful', 'funny', 'cool'];
+const RMT_COMPLIMENT_TYPES = [
+    'great_reviews' => 'Great Reviews',
+    'great_photos'  => 'Great Photos',
+    'trustworthy'   => 'Trustworthy',
+    'helpful'       => 'Helpful',
+];
+
 /**
  * Profile stats for a user id.
- * @return array{reviews:int, trips:int, places:int, followers:int, following:int}
+ * @return array{reviews:int, trips:int, places:int, followers:int, following:int, photos:int, votes:int, compliments:int}
  */
 function rmt_profile_stats(int $uid): array {
     $one = static fn(string $sql, array $a) => (int) (q_one($sql, $a)['c'] ?? 0);
@@ -32,7 +46,54 @@ function rmt_profile_stats(int $uid): array {
                              ) x", [$uid, $uid]),
         'followers' => $one('SELECT COUNT(*) c FROM follows WHERE followee_id=?', [$uid]),
         'following' => $one('SELECT COUNT(*) c FROM follows WHERE follower_id=?', [$uid]),
+        // "Photos" = every photo the user has actually posted, on a trip or a review.
+        'photos'    => $one("SELECT COUNT(*) c FROM (
+                               SELECT rp.id FROM review_photos rp JOIN reviews r ON r.id=rp.review_id
+                                WHERE r.user_id=? AND r.status='published'
+                               UNION ALL
+                               SELECT tp.id FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id
+                                WHERE t.user_id=? AND t.status='published'
+                             ) x", [$uid, $uid]),
+        'votes'       => rmt_votes_received($uid),
+        'compliments' => $one('SELECT COUNT(*) c FROM compliments WHERE to_user_id=?', [$uid]),
     ];
+}
+
+/** Total useful+funny+cool votes cast on this user's published reviews by other travelers. */
+function rmt_votes_received(int $uid): int {
+    return (int) (q_one("SELECT COUNT(*) c FROM review_votes rv JOIN reviews r ON r.id=rv.review_id
+                         WHERE r.user_id=? AND r.status='published'", [$uid])['c'] ?? 0);
+}
+
+/**
+ * Vote counts for one review, split by flavor.
+ * @return array{useful:int, funny:int, cool:int}
+ */
+function rmt_review_vote_counts(int $reviewId): array {
+    $rows = q_all('SELECT vote_type, COUNT(*) c FROM review_votes WHERE review_id=? GROUP BY vote_type', [$reviewId]);
+    $out = array_fill_keys(RMT_REVIEW_VOTE_TYPES, 0);
+    foreach ($rows as $r) {
+        if (isset($out[$r['vote_type']])) $out[$r['vote_type']] = (int) $r['c'];
+    }
+    return $out;
+}
+
+/** Which of the three vote flavors $uid has already cast on this review. */
+function rmt_review_my_votes(int $reviewId, int $uid): array {
+    $rows = q_all('SELECT vote_type FROM review_votes WHERE review_id=? AND user_id=?', [$reviewId, $uid]);
+    return array_column($rows, 'vote_type');
+}
+
+/** Compliments received, grouped by type, most-recent type first. */
+function rmt_compliments_received(int $uid): array {
+    return q_all("SELECT type, COUNT(*) c, MAX(created_at) last_at FROM compliments
+                  WHERE to_user_id=? GROUP BY type ORDER BY last_at DESC", [$uid]);
+}
+
+/** Compliment types $fromUid has already sent $toUid (so the UI can show "sent" not a live count). */
+function rmt_compliments_sent_by(int $fromUid, int $toUid): array {
+    $rows = q_all('SELECT type FROM compliments WHERE from_user_id=? AND to_user_id=?', [$fromUid, $toUid]);
+    return array_column($rows, 'type');
 }
 
 /** Badges a user currently holds. */
@@ -58,21 +119,38 @@ function rmt_qualifies_founding_traveler(int $uid): bool {
 }
 
 /**
+ * Does this user qualify as Elite Traveler? Modeled on Yelp Elite but rule-based rather than
+ * staff-curated: enough published reviews, spread across enough distinct destinations (not one
+ * place reviewed ten times), that other travelers have actually found useful/funny/cool.
+ */
+function rmt_qualifies_elite_traveler(int $uid): bool {
+    $u = q_one('SELECT id, status FROM users WHERE id = ?', [$uid]);
+    if (!$u || $u['status'] !== 'active') return false;
+    $stats = rmt_profile_stats($uid);
+    return $stats['reviews'] >= RMT_ELITE_MIN_REVIEWS
+        && $stats['places'] >= RMT_ELITE_MIN_DESTINATIONS
+        && $stats['votes'] >= RMT_ELITE_MIN_VOTES;
+}
+
+/**
  * Evaluate and grant any badges this user has newly earned. Idempotent — safe to call on every
  * publish. Returns the slugs newly awarded.
  */
 function rmt_award_badges(int $uid): array {
+    $rules = [
+        'founding-traveler' => 'rmt_qualifies_founding_traveler',
+        'elite-traveler'    => 'rmt_qualifies_elite_traveler',
+    ];
     $awarded = [];
-    if (rmt_qualifies_founding_traveler($uid)) {
-        $b = q_one("SELECT id FROM badges WHERE slug = 'founding-traveler'");
-        if ($b) {
-            $has = q_one('SELECT 1 FROM user_badges WHERE user_id=? AND badge_id=?', [$uid, (int) $b['id']]);
-            if (!$has) {
-                q_run('INSERT INTO user_badges (user_id, badge_id, awarded_at) VALUES (?,?,?)',
-                      [$uid, (int) $b['id'], date('Y-m-d H:i:s')]);
-                $awarded[] = 'founding-traveler';
-            }
-        }
+    foreach ($rules as $slug => $qualifies) {
+        if (!$qualifies($uid)) continue;
+        $b = q_one('SELECT id FROM badges WHERE slug = ?', [$slug]);
+        if (!$b) continue;
+        $has = q_one('SELECT 1 FROM user_badges WHERE user_id=? AND badge_id=?', [$uid, (int) $b['id']]);
+        if ($has) continue;
+        q_run('INSERT INTO user_badges (user_id, badge_id, awarded_at) VALUES (?,?,?)',
+              [$uid, (int) $b['id'], date('Y-m-d H:i:s')]);
+        $awarded[] = $slug;
     }
     return $awarded;
 }

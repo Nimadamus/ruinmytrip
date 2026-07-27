@@ -160,9 +160,11 @@ function profile(array $a): void {
     $followers = $stats['followers'];
     $following = $stats['following'];
     $badges = rmt_user_badges($uid);
+    $compliments = rmt_compliments_received($uid);
+    $myCompliments = ($me && !$isMe) ? rmt_compliments_sent_by((int)$me['id'], $uid) : [];
 
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
-    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe'), [
+    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -797,9 +799,11 @@ function review_show(array $a): void {
 
     $author = author((int)$r['user_id']);
     $photos = q_all('SELECT * FROM review_photos WHERE review_id = ? ORDER BY sort, id', [(int)$r['id']]);
+    $voteCounts = rmt_review_vote_counts((int)$r['id']);
+    $myVotes = $me ? rmt_review_my_votes((int)$r['id'], (int)$me['id']) : [];
     // No robots directive: a draft/hidden review 404s for anyone but its author (see
     // rmt_review_can_view), so crawlers cannot reach it. Access control, not noindex.
-    view('review_show', compact('r','author','photos','me'), [
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes'), [
         'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
@@ -974,6 +978,79 @@ function react_action(array $a): void {
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
     }
     redirect(input('return','/'));
+}
+
+/**
+ * POST /review/{id}/vote — Yelp-style useful/funny/cool. A user can hold any subset of the
+ * three at once (three independent toggles), which is why this isn't routed through react_action:
+ * that endpoint's tables key on (user,target_type,target_id) with no room for a vote flavor.
+ */
+function review_vote_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $rid  = (int) $a['id'];
+    $type = (string) input('vote_type');
+
+    if (!in_array($type, RMT_REVIEW_VOTE_TYPES, true)) redirect(input('return', '/'));
+    if (!rmt_can_interact('review', $rid, $me)) redirect(input('return', '/'));
+
+    $r = q_one('SELECT user_id FROM reviews WHERE id=?', [$rid]);
+    if (!$r) redirect(input('return', '/'));
+    // Voting your own review up is not a signal from another traveler — it's not one at all.
+    if ((int) $r['user_id'] === (int) $me['id']) redirect(input('return', '/'));
+
+    if (!rmt_rate_ok('review_vote', (string) $me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(input('return', '/'));
+    }
+
+    $has = q_one('SELECT 1 FROM review_votes WHERE review_id=? AND user_id=? AND vote_type=?', [$rid, (int) $me['id'], $type]);
+    if ($has) {
+        db()->prepare('DELETE FROM review_votes WHERE review_id=? AND user_id=? AND vote_type=?')
+            ->execute([$rid, (int) $me['id'], $type]);
+    } else {
+        try {
+            q_run('INSERT INTO review_votes (review_id,user_id,vote_type,created_at) VALUES (?,?,?,?)',
+                  [$rid, (int) $me['id'], $type, date('Y-m-d H:i:s')]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+            redirect(input('return', '/'));
+        }
+        rmt_award_badges((int) $r['user_id']); // votes received can newly qualify the author for Elite Traveler
+    }
+    redirect(input('return', '/'));
+}
+
+/**
+ * POST /compliment — send another traveler's profile a Yelp-style compliment. Add-only (there is
+ * no "un-compliment"): a duplicate of the same type from the same sender is just a silent no-op,
+ * same spirit as the report-dedup check, so double-clicking the button can't inflate the count.
+ */
+function compliment_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $toId = (int) input('user_id');
+    $type = (string) input('type');
+
+    if (!isset(RMT_COMPLIMENT_TYPES[$type])) redirect(input('return', '/'));
+    if (!$toId || $toId === (int) $me['id']) redirect(input('return', '/'));
+    if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$toId])) {
+        flash('That traveler is no longer available.'); redirect(input('return', '/'));
+    }
+    if (!rmt_rate_ok('compliment', (string) $me['id'], 40, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(input('return', '/'));
+    }
+
+    try {
+        q_run('INSERT INTO compliments (from_user_id,to_user_id,type,created_at) VALUES (?,?,?,?)',
+              [(int) $me['id'], $toId, $type, date('Y-m-d H:i:s')]);
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [$toId, 'compliment', (int) $me['id'], 'user', (int) $me['id'], date('Y-m-d H:i:s')]);
+        flash('Compliment sent.');
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        flash('You already sent that compliment.');
+    }
+    redirect(input('return', '/'));
 }
 
 function comment_action(array $a): void {
