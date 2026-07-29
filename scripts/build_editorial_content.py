@@ -40,6 +40,10 @@ NAME_TO_SLUG = {
     "cape town": "cape-town-south-africa",
     "cusco": "cusco-peru",
     "ubud": "ubud-indonesia",
+    "new orleans": "new-orleans-usa",
+    "rome": "rome-italy",
+    "bangkok": "bangkok-thailand",
+    "sydney": "sydney-australia",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -57,6 +61,10 @@ SLUG_TO_NAME = {
     "cape-town-south-africa": "Cape Town",
     "cusco-peru": "Cusco",
     "ubud-indonesia": "Ubud",
+    "new-orleans-usa": "New Orleans",
+    "rome-italy": "Rome",
+    "bangkok-thailand": "Bangkok",
+    "sydney-australia": "Sydney",
 }
 
 
