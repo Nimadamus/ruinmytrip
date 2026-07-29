@@ -323,7 +323,16 @@ function guide_show(array $a): void {
                 LEFT JOIN destinations d ON d.id=g.destination_id WHERE g.slug=?", [$a['slug']]);
     if (!$g || $g['status']!=='published') not_found();
     $g['author'] = author((int)$g['user_id']);
-    view('guide_show', compact('g'), [
+    $me = current_user();
+    $gid = (int) $g['id'];
+    $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
+                       LEFT JOIN profiles p ON p.user_id=u.id
+                       WHERE c.target_type='guide' AND c.target_id=? AND c.status='published' ORDER BY c.id", [$gid]);
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='guide' AND target_id=?", [$gid])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='guide' AND target_id=?", [$gid])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
+    view('guide_show', compact('g','me','comments','likeCount','saveCount','liked','saved'), [
         'title'=>$g['title'].' — RuinMyTrip',
         'description'=>$g['summary'],
         'og_image'=>abs_url($g['cover_url']),
@@ -872,9 +881,12 @@ function review_show(array $a): void {
     $photos = q_all('SELECT * FROM review_photos WHERE review_id = ? ORDER BY sort, id', [(int)$r['id']]);
     $voteCounts = rmt_review_vote_counts((int)$r['id']);
     $myVotes = $me ? rmt_review_my_votes((int)$r['id'], (int)$me['id']) : [];
+    $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
+                       LEFT JOIN profiles p ON p.user_id=u.id
+                       WHERE c.target_type='review' AND c.target_id=? AND c.status='published' ORDER BY c.id", [(int)$r['id']]);
     // No robots directive: a draft/hidden review 404s for anyone but its author (see
     // rmt_review_can_view), so crawlers cannot reach it. Access control, not noindex.
-    view('review_show', compact('r','author','photos','me','voteCounts','myVotes'), [
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments'), [
         'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],

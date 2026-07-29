@@ -1,4 +1,4 @@
-<?php /** @var array $g */ $me = current_user(); ?>
+<?php /** @var array $g @var ?array $me @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('guides')) ?>">Guides</a> / <?= e($g['title']) ?></p></div>
 <div class="wrap prose">
   <?php $isEd = rmt_is_editorial($g); ?>
@@ -21,10 +21,17 @@
       <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a>
     </div>
   <?php endif;?>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 60px">
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?php if($g['dest_slug']):?><?= e(url('d/'.$g['dest_slug'])) ?><?php else:?><?= e(url('guides')) ?><?php endif;?>">← More about this destination</a>
     <?php if (rmt_guide_can_edit($g, $me)): ?>
       <a class="btn btn-ghost" href="<?= e(url('guide/'.(int)$g['id'].'/edit')) ?>">Edit</a>
     <?php endif; ?>
   </div>
+
+  <?php
+    // showActionsBar defaults true: renders Like/Save + Report (Edit is handled above instead).
+    $targetType = 'guide'; $targetId = (int)$g['id']; $ownerId = (int)$g['user_id'];
+    $returnUrl = url('g/'.$g['slug']);
+    include __DIR__ . '/_engagement.php';
+  ?>
 </div>

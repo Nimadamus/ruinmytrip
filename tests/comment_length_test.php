@@ -39,7 +39,9 @@ $check('the INSERT no longer silently truncates via mb_substr',
 $check('the INSERT binds the full, untruncated $body',
     (bool) preg_match('/INSERT INTO comments.*VALUES.*\$body/s', $body));
 
-$viewSrc = file_get_contents(dirname(__DIR__) . '/views/trip_show.php');
+// The comment textarea lives in the shared _engagement.php partial (trip/review/guide pages all
+// include it) rather than being duplicated per content type.
+$viewSrc = file_get_contents(dirname(__DIR__) . '/views/_engagement.php');
 $check('the comment textarea has a matching client-side maxlength="2000"',
     (bool) preg_match('/<textarea name="body"[^>]*maxlength="2000"/', $viewSrc));
 

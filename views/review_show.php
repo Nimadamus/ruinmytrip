@@ -116,4 +116,10 @@
       <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$r['dest_slug'])) ?>">More about <?= e($r['dest_name']) ?></a>
     <?php endif; ?>
   </div>
+
+  <?php
+    $showActionsBar = false; $targetType = 'review'; $targetId = (int)$r['id']; $ownerId = (int)$r['user_id'];
+    $returnUrl = url(ltrim(rmt_review_path($r),'/'));
+    include __DIR__ . '/_engagement.php';
+  ?>
 </article>

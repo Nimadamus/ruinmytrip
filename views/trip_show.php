@@ -13,50 +13,12 @@
   <div><?= nl2br(e($t['body'])) ?></div>
   <?php foreach ($photos as $p): ?><img class="article-hero" loading="lazy" src="<?= e($p['url']) ?>" alt="<?= e($p['caption']) ?>"><?php endforeach; ?>
 
-  <div style="display:flex;gap:10px;margin:24px 0;flex-wrap:wrap">
-    <?php if ($me): ?>
-      <form class="inline-form" method="post" action="<?= e(url('react')) ?>"><?= csrf_field() ?>
-        <input type="hidden" name="kind" value="like"><input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
-        <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-        <button class="btn <?= $liked?'btn-primary':'btn-ghost' ?> btn-sm" aria-pressed="<?= $liked?'true':'false' ?>">
-          <?= $liked?'♥ Liked':'♥ Like' ?><?= $likeCount?' · '.$likeCount:'' ?></button></form>
-      <form class="inline-form" method="post" action="<?= e(url('react')) ?>"><?= csrf_field() ?>
-        <input type="hidden" name="kind" value="save"><input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
-        <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-        <button class="btn <?= $saved?'btn-primary':'btn-ghost' ?> btn-sm" aria-pressed="<?= $saved?'true':'false' ?>">
-          <?= $saved?'⭑ Saved':'⭑ Save' ?><?= $saveCount?' · '.$saveCount:'' ?></button></form>
-      <?php if ((int)$t['user_id'] === (int)$me['id']): ?>
-        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
-      <?php else: ?>
-        <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=trip&target_id='.$t['id'])) ?>">⚑ Report</a>
-      <?php endif; ?>
-    <?php endif; ?>
-  </div>
-
-  <h2>Comments</h2>
-  <?php foreach ($comments as $c): ?>
-    <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span><b>@<?= e($c['username']) ?></b> <span class="hint"><?= e(ago($c['created_at'])) ?></span></span>
-        <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>
-          <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/delete')) ?>"
-                onsubmit="return confirm('Delete this comment?');"><?= csrf_field() ?>
-            <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-            <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
-          </form>
-        <?php endif; ?>
-      </div>
-      <p style="margin:.3rem 0 0"><?= nl2br(e($c['body'])) ?></p>
-    </div></div>
-  <?php endforeach; ?>
-  <?php if (!$comments): ?><p class="muted">No comments yet.</p><?php endif; ?>
-  <?php if ($me): ?>
-    <form method="post" action="<?= e(url('comment')) ?>" style="margin:12px 0 60px"><?= csrf_field() ?>
-      <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_trip_'.$t['id'])) ?>">
-      <input type="hidden" name="target_type" value="trip"><input type="hidden" name="target_id" value="<?= (int)$t['id'] ?>">
-      <input type="hidden" name="return" value="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-      <textarea name="body" placeholder="Add a comment" maxlength="2000" style="min-height:80px"></textarea>
-      <button class="btn btn-primary" style="margin-top:8px">Post comment</button>
-    </form>
-  <?php else: ?><p style="margin-bottom:60px"><a href="<?= e(url('login')) ?>">Sign in</a> to comment.</p><?php endif; ?>
+  <?php if ($me && (int)$t['user_id'] === (int)$me['id']): ?>
+    <p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a></p>
+  <?php endif; ?>
+  <?php
+    $targetType = 'trip'; $targetId = (int)$t['id']; $ownerId = (int)$t['user_id'];
+    $returnUrl = url('trip/'.$t['id'].'/'.$t['slug']);
+    include __DIR__ . '/_engagement.php';
+  ?>
 </div>
