@@ -459,6 +459,155 @@ function guide_delete(array $a): void {
     redirect('/u/'.current_user()['username']);
 }
 
+/* ---------- blog ---------- */
+const RMT_BLOG_CATEGORIES = ['stories', 'tips', 'safety', 'budget', 'gear', 'news'];
+
+function blog_index(array $a): void {
+    $cat = input('category');
+    $sql = "SELECT p.* FROM blog_posts p WHERE p.status='published'";
+    $args = [];
+    if (in_array($cat, RMT_BLOG_CATEGORIES, true)) { $sql .= ' AND p.category = ?'; $args[] = $cat; }
+    $sql .= ' ORDER BY p.id DESC LIMIT 50';
+    $posts = q_all($sql, $args);
+    authors_fill($posts);
+    view('blog_index', ['posts'=>$posts,'cat'=>(string)$cat], [
+        'title'=>'Blog — RuinMyTrip',
+        'description'=>'Travel tips, safety notes, budget breakdowns and real stories from the RuinMyTrip community.',
+        'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')]],
+    ]);
+}
+
+function blog_show(array $a): void {
+    $p = q_one("SELECT * FROM blog_posts WHERE slug=?", [$a['slug']]);
+    if (!$p || $p['status']!=='published') not_found();
+    $p['author'] = author((int)$p['user_id']);
+    $me = current_user();
+    $pid = (int) $p['id'];
+    $comments = q_all("SELECT c.*, u.username, p2.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
+                       LEFT JOIN profiles p2 ON p2.user_id=u.id
+                       WHERE c.target_type='blog_post' AND c.target_id=? AND c.status='published' ORDER BY c.id", [$pid]);
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='blog_post' AND target_id=?", [$pid])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='blog_post' AND target_id=?", [$pid])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved'), [
+        'title' => $p['title'].' — RuinMyTrip Blog',
+        'description' => $p['summary'],
+        'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')],['name'=>$p['title'],'url'=>url('blog/'.$p['slug'])]],
+        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$p['title'],'datePublished'=>$p['created_at']]),
+    ]);
+}
+
+/** @return array{ok:bool, errors:string[], data:array<string,mixed>} */
+function rmt_blog_validate(array $in): array {
+    $errors = [];
+    $title = trim((string) ($in['title'] ?? ''));
+    $summary = trim((string) ($in['summary'] ?? ''));
+    $body = (string) ($in['body'] ?? '');
+    $category = (string) ($in['category'] ?? '');
+    $cover = trim((string) ($in['cover_url'] ?? ''));
+
+    if (mb_strlen($title) < 5) $errors[] = 'Give your post a title (5+ characters).';
+    if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
+    if (mb_strlen($summary) < 10) $errors[] = 'Add a one-line summary (10+ characters).';
+    if (mb_strlen($summary) > 300) $errors[] = 'That summary is too long (300 characters max).';
+    if (strlen($body) < 200) $errors[] = 'A blog post needs real substance -- write at least 200 characters.';
+    if (mb_strlen($body) > 20000) $errors[] = 'That post is too long.';
+    if (!in_array($category, RMT_BLOG_CATEGORIES, true)) $errors[] = 'Choose a category.';
+    if ($cover !== '' && (!filter_var($cover, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $cover))) {
+        $errors[] = 'Cover photo URL must be a full https:// web address.';
+    }
+
+    return ['ok' => !$errors, 'errors' => $errors, 'data' => [
+        'title' => $title, 'summary' => $summary, 'body' => $body,
+        'category' => $category, 'cover_url' => $cover,
+    ]];
+}
+
+/** Only the author may edit or delete a post. */
+function rmt_blog_can_edit(array $p, ?array $user): bool {
+    return $user !== null && (int) $p['user_id'] === (int) $user['id'];
+}
+
+/** A unique slug, appending -2/-3/... on collision. Blog posts, like guides, look up by slug alone. */
+function rmt_blog_unique_slug(string $title, int $excludeId = 0): string {
+    $base = slugify($title) ?: 'post';
+    $slug = $base; $n = 1;
+    while (true) {
+        $row = q_one('SELECT id FROM blog_posts WHERE slug=?', [$slug]);
+        if (!$row || (int)$row['id'] === $excludeId) return $slug;
+        $n++; $slug = $base.'-'.$n;
+    }
+}
+
+function blog_new_form(array $a): void {
+    require_login();
+    view('blog_new', ['errors'=>[]], ['title'=>'Write a blog post — RuinMyTrip','description'=>'Share a travel story, tip, or safety note with the RuinMyTrip community.']);
+}
+
+function blog_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_submit_ok('blog_new', input('_submit'))) {
+        flash('That post was already submitted.'); redirect('/blog'); return;
+    }
+    if (!rmt_rate_ok('blog_create', (string)$me['id'], 10, 3600)) {
+        view('blog_new', ['errors'=>['You are posting very fast. Try again later.']],
+             ['title'=>'Write a blog post — RuinMyTrip']); return;
+    }
+    $v = rmt_blog_validate($_POST);
+    if (!$v['ok']) {
+        view('blog_new', ['errors'=>$v['errors']], ['title'=>'Write a blog post — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $slug = rmt_blog_unique_slug($d['title']);
+    q_run("INSERT INTO blog_posts (user_id,slug,title,summary,body,cover_url,category,status,created_at)
+           VALUES (?,?,?,?,?,?,?,'published',?)",
+        [(int)$me['id'], $slug, $d['title'], $d['summary'], $d['body'], $d['cover_url'], $d['category'], date('Y-m-d H:i:s')]);
+    flash('Post published.');
+    redirect('/blog/'.$slug);
+}
+
+function blog_edit_form(array $a): void {
+    require_login();
+    $p = q_one('SELECT * FROM blog_posts WHERE id=?', [(int)$a['id']]);
+    if (!$p) not_found();
+    if (!rmt_blog_can_edit($p, current_user())) { forbidden('That is not your post.'); }
+    view('blog_edit', ['p'=>$p, 'errors'=>[]], ['title'=>'Edit post — RuinMyTrip']);
+}
+
+function blog_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $p = q_one('SELECT * FROM blog_posts WHERE id=?', [(int)$a['id']]);
+    if (!$p) not_found();
+    if (!rmt_blog_can_edit($p, current_user())) { forbidden('That is not your post.'); }
+
+    $v = rmt_blog_validate($_POST);
+    if (!$v['ok']) {
+        view('blog_edit', ['p'=>array_merge($p, $_POST), 'errors'=>$v['errors']],
+             ['title'=>'Edit post — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $slug = rmt_blog_unique_slug($d['title'], (int)$p['id']);
+    db()->prepare("UPDATE blog_posts SET title=?, slug=?, summary=?, body=?, cover_url=?, category=?, updated_at=? WHERE id=?")
+        ->execute([$d['title'], $slug, $d['summary'], $d['body'], $d['cover_url'], $d['category'],
+                   date('Y-m-d H:i:s'), (int)$p['id']]);
+    flash('Post updated.');
+    redirect('/blog/'.$slug);
+}
+
+/** POST /blog/{id}/delete — soft delete. Rows are never destroyed. */
+function blog_delete(array $a): void {
+    require_login(); csrf_check();
+    $p = q_one('SELECT * FROM blog_posts WHERE id=?', [(int)$a['id']]);
+    if (!$p) not_found();
+    if (!rmt_blog_can_edit($p, current_user())) { forbidden('That is not your post.'); }
+    db()->prepare("UPDATE blog_posts SET status='removed', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$p['id']]);
+    flash('Post deleted.');
+    redirect('/u/'.current_user()['username']);
+}
+
 function meetups_index(array $a): void {
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
                       (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going
@@ -531,7 +680,7 @@ function leaderboard(array $a): void {
  */
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=[];
+    $dests=$trips=$guides=$reviews=$people=$posts=[];
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         if ($driver === 'pgsql') {
@@ -546,6 +695,8 @@ function search(array $a): void {
             $reviews = q_all("SELECT r.*,d.slug dest_slug,d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
                               WHERE r.status='published' AND r.search_vector @@ $tsq
                               ORDER BY ts_rank(r.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $posts = q_all("SELECT * FROM blog_posts WHERE status='published' AND search_vector @@ $tsq
+                            ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
         } else {
             $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
                             WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
@@ -557,6 +708,8 @@ function search(array $a): void {
             $reviews = q_all("SELECT r.*,dd.slug dest_slug,dd.name dest_name FROM reviews r JOIN reviews_fts f ON f.rowid=r.id
                               LEFT JOIN destinations dd ON dd.id=r.destination_id
                               WHERE reviews_fts MATCH ? AND r.status='published' ORDER BY rank LIMIT 10", [$qs]);
+            $posts = q_all("SELECT p.* FROM blog_posts p JOIN blog_posts_fts f ON f.rowid=p.id
+                            WHERE blog_posts_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$qs]);
         }
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
@@ -567,9 +720,9 @@ function search(array $a): void {
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
     }
-    view('search', compact('qs','dests','trips','guides','reviews','people'), [
+    view('search', compact('qs','dests','trips','guides','reviews','people','posts'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
-        'description'=>'Search destinations, trips, reviews, guides, and travelers across RuinMyTrip.',
+        'description'=>'Search destinations, trips, reviews, guides, blog posts, and travelers across RuinMyTrip.',
     ]);
 }
 
@@ -1011,10 +1164,11 @@ function follow_action(array $a): void {
  * reaches a table name is never taken raw from the request.
  */
 const RMT_INTERACT_TARGETS = [
-    'trip'   => 'trips',
-    'review' => 'reviews',
-    'guide'  => 'guides',
-    'meetup' => 'meetups',
+    'trip'      => 'trips',
+    'review'    => 'reviews',
+    'guide'     => 'guides',
+    'meetup'    => 'meetups',
+    'blog_post' => 'blog_posts',
 ];
 
 /**
@@ -1393,12 +1547,13 @@ function settings_save(array $a): void {
  * target_type reaching a table name must never be attacker-controlled.
  */
 const RMT_REPORT_TARGETS = [
-    'review'  => 'reviews',
-    'trip'    => 'trips',
-    'guide'   => 'guides',
-    'meetup'  => 'meetups',
-    'comment' => 'comments',
-    'user'    => 'users',
+    'review'    => 'reviews',
+    'trip'      => 'trips',
+    'guide'     => 'guides',
+    'blog_post' => 'blog_posts',
+    'meetup'    => 'meetups',
+    'comment'   => 'comments',
+    'user'      => 'users',
 ];
 const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
 
@@ -1600,12 +1755,13 @@ function readyz(array $a): void {
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = [url(), url('explore'), url('reviews'), url('guides'), url('meetups'), url('going'),
+    $urls = [url(), url('explore'), url('reviews'), url('guides'), url('blog'), url('meetups'), url('going'),
              url('leaderboard'), url('editorial-policy'), url('terms'), url('privacy'),
              url('guidelines'), url('affiliate'), url('safety')];
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
+    foreach (q_all("SELECT slug FROM blog_posts WHERE status='published'") as $bp) $urls[] = url('blog/'.$bp['slug']);
     // Published reviews only — drafts/hidden/removed are never listed. Rows missing a slug
     // (pre-Phase-4) fall back to a generated one so the URL still resolves.
     foreach (q_all("SELECT id, slug, title, subject_name FROM reviews WHERE status='published'") as $rv) {

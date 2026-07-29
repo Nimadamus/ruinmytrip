@@ -37,6 +37,7 @@
       </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
+      <a href="<?= e(url('blog')) ?>">Blog</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
