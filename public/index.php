@@ -11,6 +11,7 @@ if ($path === '/') $path = '/';
 $routes = [
     ['GET',  '#^/$#',                          'home'],
     ['GET',  '#^/explore$#',                   'explore'],
+    ['GET',  '#^/discover$#',                  'discover'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)$#',    'destination'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_form'],
     ['POST', '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_submit'],

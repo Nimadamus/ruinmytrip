@@ -244,24 +244,28 @@ function profile_edit_submit(array $a): void {
 }
 
 /**
- * A unified activity feed used to show trips only. Reviews, guides and blog posts from the same
- * followed travelers were invisible here even though they are the majority of what people
- * actually publish -- a "social" feed that only shows one of four content types is not really a
- * feed. Each content type is fetched separately (their schemas differ too much for one clean
- * UNION) and merged in PHP, tagged with a $kind the view uses to link/label/excerpt correctly.
+ * Fetch a merged, chronological activity stream across all four publishable content types.
+ * $scopeUid null -> everyone (public discover). $scopeUid set -> that user's own content plus
+ * everyone they follow (personal feed). Each content type is fetched separately (their schemas
+ * differ too much for one clean UNION), tagged with a $kind the view uses to link/label/excerpt
+ * correctly, then merged and sorted in PHP.
  */
-function feed(array $a): void {
-    require_login(); $me = current_user(); $uid = (int)$me['id'];
-    $args = [$uid, $uid];
-    $followedT = '(t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-    $followedR = '(r.user_id=? OR r.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-    $followedG = '(g.user_id=? OR g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-    $followedPlain = '(user_id=? OR user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
+    if ($scopeUid !== null) {
+        $args = [$scopeUid, $scopeUid];
+        $followedT = '(t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+        $followedR = '(r.user_id=? OR r.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+        $followedG = '(g.user_id=? OR g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+        $followedPlain = '(user_id=? OR user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+    } else {
+        $args = [];
+        $followedT = $followedR = $followedG = $followedPlain = '1=1';
+    }
 
     $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                     LEFT JOIN destinations d ON d.id=t.destination_id
                     WHERE t.status='published' AND $followedT
-                    ORDER BY t.created_at DESC, t.id DESC LIMIT 40", $args);
+                    ORDER BY t.created_at DESC, t.id DESC LIMIT $limitEach", $args);
     foreach ($trips as &$row) {
         $row['kind'] = 'trip';
         $row['feed_url'] = url('trip/'.$row['id'].'/'.$row['slug']);
@@ -271,7 +275,7 @@ function feed(array $a): void {
 
     $reviews = q_all("SELECT r.*, d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
                       WHERE r.status='published' AND $followedR
-                      ORDER BY r.created_at DESC, r.id DESC LIMIT 40", $args);
+                      ORDER BY r.created_at DESC, r.id DESC LIMIT $limitEach", $args);
     foreach ($reviews as &$row) {
         $row['kind'] = 'review';
         $row['title'] = $row['title'] ?: $row['subject_name'];
@@ -282,7 +286,7 @@ function feed(array $a): void {
 
     $guides = q_all("SELECT g.*, d.name dest_name FROM guides g LEFT JOIN destinations d ON d.id=g.destination_id
                      WHERE g.status='published' AND $followedG
-                     ORDER BY g.created_at DESC, g.id DESC LIMIT 40", $args);
+                     ORDER BY g.created_at DESC, g.id DESC LIMIT $limitEach", $args);
     foreach ($guides as &$row) {
         $row['kind'] = 'guide';
         $row['feed_url'] = url('g/'.$row['slug']);
@@ -291,7 +295,7 @@ function feed(array $a): void {
     unset($row);
 
     $posts = q_all("SELECT * FROM blog_posts WHERE status='published' AND $followedPlain
-                    ORDER BY created_at DESC, id DESC LIMIT 40", $args);
+                    ORDER BY created_at DESC, id DESC LIMIT $limitEach", $args);
     foreach ($posts as &$row) {
         $row['kind'] = 'blog_post';
         $row['dest_name'] = null;
@@ -302,11 +306,28 @@ function feed(array $a): void {
 
     $items = array_merge($trips, $reviews, $guides, $posts);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
-    $items = array_slice($items, 0, 40);
+    $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
+    return $items;
+}
+
+function feed(array $a): void {
+    require_login(); $me = current_user(); $uid = (int)$me['id'];
+    $items = rmt_activity_items($uid);
     view('feed', compact('items','me'), [
         'title' => 'Your feed — RuinMyTrip',
         'description' => 'Latest trips, reviews, guides and blog posts from travelers you follow.',
+    ]);
+}
+
+/** Public, no-login activity stream across the whole site -- what a logged-out visitor or a
+ *  logged-in user with zero follows sees instead of an empty feed. */
+function discover(array $a): void {
+    $items = rmt_activity_items(null);
+    view('discover', ['items'=>$items, 'me'=>current_user()], [
+        'title' => 'Discover — RuinMyTrip',
+        'description' => 'The latest trips, reviews, guides and blog posts from every traveler on RuinMyTrip.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Discover','url'=>url('discover')]],
     ]);
 }
 
@@ -1812,7 +1833,7 @@ function readyz(array $a): void {
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = [url(), url('explore'), url('reviews'), url('guides'), url('blog'), url('meetups'), url('going'),
+    $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('blog'), url('meetups'), url('going'),
              url('leaderboard'), url('editorial-policy'), url('terms'), url('privacy'),
              url('guidelines'), url('affiliate'), url('safety')];
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
