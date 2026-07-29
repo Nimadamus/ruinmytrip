@@ -43,6 +43,7 @@ $routes = [
     ['GET',  '#^/meetup/(?<id>\d+)$#',         'meetup_show'],
     ['POST', '#^/meetup/(?<id>\d+)/rsvp$#',    'meetup_rsvp'],
     ['GET',  '#^/going$#',                     'going_index'],
+    ['GET',  '#^/leaderboard$#',               'leaderboard'],
     ['GET',  '#^/search$#',                    'search'],
     ['GET',  '#^/notifications$#',             'notifications'],
     ['GET',  '#^/settings$#',                  'settings_form'],

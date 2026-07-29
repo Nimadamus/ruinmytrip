@@ -493,6 +493,27 @@ function going_index(array $a): void {
     ]);
 }
 
+function leaderboard(array $a): void {
+    $slug = trim((string)($_GET['d'] ?? ''));
+    $dest = $slug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$slug]) : null;
+    $rows = rmt_top_reviewers($dest ? (int)$dest['id'] : null, 25);
+    foreach ($rows as &$row) $row['badges'] = rmt_user_badges((int)$row['id']);
+    unset($row);
+    $destinations = q_all('SELECT slug, name FROM destinations ORDER BY name');
+
+    $breadcrumbs = [['name'=>'Home','url'=>url()]];
+    if ($dest) $breadcrumbs[] = ['name'=>$dest['name'],'url'=>url('d/'.$dest['slug'])];
+    $breadcrumbs[] = ['name'=>'Top Reviewers','url'=>url('leaderboard'.($dest?('?d='.$dest['slug']):''))];
+
+    view('leaderboard', ['rows'=>$rows, 'dest'=>$dest, 'destinations'=>$destinations], [
+        'title' => ($dest ? 'Top Reviewers in '.$dest['name'] : 'Top Reviewers').' — RuinMyTrip',
+        'description' => $dest
+            ? 'The most trusted travel reviewers writing about '.$dest['name'].' on RuinMyTrip, ranked by published reviews and community votes.'
+            : 'The most trusted travel reviewers on RuinMyTrip, ranked by published reviews, community votes, and compliments.',
+        'breadcrumbs' => $breadcrumbs,
+    ]);
+}
+
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
     $dests=$trips=$guides=[];
@@ -1518,8 +1539,8 @@ function readyz(array $a): void {
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
     $urls = [url(), url('explore'), url('reviews'), url('guides'), url('meetups'), url('going'),
-             url('editorial-policy'), url('terms'), url('privacy'), url('guidelines'),
-             url('affiliate'), url('safety')];
+             url('leaderboard'), url('editorial-policy'), url('terms'), url('privacy'),
+             url('guidelines'), url('affiliate'), url('safety')];
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);

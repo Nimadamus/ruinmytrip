@@ -155,6 +155,35 @@ function rmt_award_badges(int $uid): array {
     return $awarded;
 }
 
+/**
+ * Top reviewers, ranked by a weighted score: 3 points per published review, 1 point per
+ * useful/funny/cool vote received, 2 points per compliment received. Optionally scoped to a
+ * single destination (reviews AND votes both restricted to that destination) so each destination
+ * page can surface its own top local voice, not just the site-wide leaders.
+ */
+function rmt_top_reviewers(?int $destinationId = null, int $limit = 20): array {
+    $destCond = $destinationId !== null ? 'AND r.destination_id = ?' : '';
+    $voteDestCond = $destinationId !== null ? 'AND r2.destination_id = ?' : '';
+    $args = $destinationId !== null ? [$destinationId, $destinationId] : [];
+    return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city,
+                         COUNT(DISTINCT r.id) AS review_count,
+                         COALESCE(v.votes,0) AS votes,
+                         COALESCE(c.compliments,0) AS compliments,
+                         (COUNT(DISTINCT r.id)*3 + COALESCE(v.votes,0) + COALESCE(c.compliments,0)*2) AS score
+                  FROM users u
+                  JOIN reviews r ON r.user_id = u.id AND r.status='published' $destCond
+                  LEFT JOIN profiles p ON p.user_id = u.id
+                  LEFT JOIN (SELECT r2.user_id, COUNT(*) votes FROM review_votes rv
+                             JOIN reviews r2 ON r2.id = rv.review_id AND r2.status='published' $voteDestCond
+                             GROUP BY r2.user_id) v ON v.user_id = u.id
+                  LEFT JOIN (SELECT to_user_id, COUNT(*) compliments FROM compliments
+                             GROUP BY to_user_id) c ON c.to_user_id = u.id
+                  WHERE u.status = 'active'
+                  GROUP BY u.id, u.username, p.display_name, p.avatar_url, p.home_city, v.votes, c.compliments
+                  ORDER BY score DESC, review_count DESC, u.id ASC
+                  LIMIT $limit", $args);
+}
+
 /** Followers of a user, newest first. */
 function rmt_followers(int $uid, int $limit = 200): array {
     return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.bio, p.home_city, f.created_at
