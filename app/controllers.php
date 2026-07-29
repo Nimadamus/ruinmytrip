@@ -243,14 +243,71 @@ function profile_edit_submit(array $a): void {
     redirect('/u/'.$me['username']);
 }
 
+/**
+ * A unified activity feed used to show trips only. Reviews, guides and blog posts from the same
+ * followed travelers were invisible here even though they are the majority of what people
+ * actually publish -- a "social" feed that only shows one of four content types is not really a
+ * feed. Each content type is fetched separately (their schemas differ too much for one clean
+ * UNION) and merged in PHP, tagged with a $kind the view uses to link/label/excerpt correctly.
+ */
 function feed(array $a): void {
     require_login(); $me = current_user(); $uid = (int)$me['id'];
-    $items = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
+    $args = [$uid, $uid];
+    $followedT = '(t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+    $followedR = '(r.user_id=? OR r.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+    $followedG = '(g.user_id=? OR g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+    $followedPlain = '(user_id=? OR user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+
+    $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                     LEFT JOIN destinations d ON d.id=t.destination_id
-                    WHERE t.status='published' AND (t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))
-                    ORDER BY t.created_at DESC, t.id DESC LIMIT 40", [$uid,$uid]);
+                    WHERE t.status='published' AND $followedT
+                    ORDER BY t.created_at DESC, t.id DESC LIMIT 40", $args);
+    foreach ($trips as &$row) {
+        $row['kind'] = 'trip';
+        $row['feed_url'] = url('trip/'.$row['id'].'/'.$row['slug']);
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string)$row['body']), 0, 180, '…');
+    }
+    unset($row);
+
+    $reviews = q_all("SELECT r.*, d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
+                      WHERE r.status='published' AND $followedR
+                      ORDER BY r.created_at DESC, r.id DESC LIMIT 40", $args);
+    foreach ($reviews as &$row) {
+        $row['kind'] = 'review';
+        $row['title'] = $row['title'] ?: $row['subject_name'];
+        $row['feed_url'] = url(ltrim(rmt_review_path($row), '/'));
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string)$row['body']), 0, 180, '…');
+    }
+    unset($row);
+
+    $guides = q_all("SELECT g.*, d.name dest_name FROM guides g LEFT JOIN destinations d ON d.id=g.destination_id
+                     WHERE g.status='published' AND $followedG
+                     ORDER BY g.created_at DESC, g.id DESC LIMIT 40", $args);
+    foreach ($guides as &$row) {
+        $row['kind'] = 'guide';
+        $row['feed_url'] = url('g/'.$row['slug']);
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string)$row['summary']), 0, 180, '…');
+    }
+    unset($row);
+
+    $posts = q_all("SELECT * FROM blog_posts WHERE status='published' AND $followedPlain
+                    ORDER BY created_at DESC, id DESC LIMIT 40", $args);
+    foreach ($posts as &$row) {
+        $row['kind'] = 'blog_post';
+        $row['dest_name'] = null;
+        $row['feed_url'] = url('blog/'.$row['slug']);
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string)$row['summary']), 0, 180, '…');
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts);
+    usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
+    $items = array_slice($items, 0, 40);
     authors_fill($items);
-    view('feed', compact('items','me'), ['title'=>'Your feed — RuinMyTrip','description'=>'Latest trips from travelers you follow.']);
+    view('feed', compact('items','me'), [
+        'title' => 'Your feed — RuinMyTrip',
+        'description' => 'Latest trips, reviews, guides and blog posts from travelers you follow.',
+    ]);
 }
 
 function trip_show(array $a): void {
