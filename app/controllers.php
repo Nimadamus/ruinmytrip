@@ -514,21 +514,53 @@ function leaderboard(array $a): void {
     ]);
 }
 
+/**
+ * Real full-text search (migration 015): Postgres tsvector+GIN in prod, SQLite FTS5 locally —
+ * see app/controllers.php's search() and database/migrations/015_fulltext_search.*. Ranked by
+ * relevance, not just "contains the substring", and now covers reviews and people too (the old
+ * LIKE search never searched review content or usernames at all).
+ */
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=[];
+    $dests=$trips=$guides=$reviews=$people=[];
     if ($qs !== '') {
-        // LOWER() on both sides -- see explore()'s comment: bare LIKE is case-insensitive on
-        // SQLite but case-sensitive on Postgres, so production search silently missed anything
-        // not typed in the exact stored capitalization.
+        $driver = $GLOBALS['config']['db_driver'];
+        if ($driver === 'pgsql') {
+            $tsq = "plainto_tsquery('english', ?)";
+            $dests = q_all("SELECT * FROM destinations WHERE search_vector @@ $tsq
+                            ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
+                            WHERE t.status='published' AND t.search_vector @@ $tsq
+                            ORDER BY ts_rank(t.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $guides = q_all("SELECT * FROM guides WHERE status='published' AND search_vector @@ $tsq
+                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $reviews = q_all("SELECT r.*,d.slug dest_slug,d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
+                              WHERE r.status='published' AND r.search_vector @@ $tsq
+                              ORDER BY ts_rank(r.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+        } else {
+            $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
+                            WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
+            $trips = q_all("SELECT t.*,dd.slug dest_slug FROM trips t JOIN trips_fts f ON f.rowid=t.id
+                            LEFT JOIN destinations dd ON dd.id=t.destination_id
+                            WHERE trips_fts MATCH ? AND t.status='published' ORDER BY rank LIMIT 10", [$qs]);
+            $guides = q_all("SELECT g.* FROM guides g JOIN guides_fts f ON f.rowid=g.id
+                             WHERE guides_fts MATCH ? AND g.status='published' ORDER BY rank LIMIT 10", [$qs]);
+            $reviews = q_all("SELECT r.*,dd.slug dest_slug,dd.name dest_name FROM reviews r JOIN reviews_fts f ON f.rowid=r.id
+                              LEFT JOIN destinations dd ON dd.id=r.destination_id
+                              WHERE reviews_fts MATCH ? AND r.status='published' ORDER BY rank LIMIT 10", [$qs]);
+        }
+        // People: usernames/display names are short strings where substring matching is what
+        // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
+        // that, so this stays LIKE-based on purpose.
         $like = '%'.mb_strtolower($qs).'%';
-        $dests = q_all('SELECT * FROM destinations WHERE LOWER(name) LIKE ? OR LOWER(country) LIKE ? OR LOWER(summary) LIKE ? LIMIT 10', [$like,$like,$like]);
-        $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.status='published' AND (LOWER(t.title) LIKE ? OR LOWER(t.body) LIKE ?) LIMIT 10", [$like,$like]);
-        $guides = q_all("SELECT * FROM guides WHERE status='published' AND (LOWER(title) LIKE ? OR LOWER(summary) LIKE ?) LIMIT 10", [$like,$like]);
+        $people = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city FROM users u
+                         LEFT JOIN profiles p ON p.user_id=u.id
+                         WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
+                         LIMIT 10", [$like,$like]);
     }
-    view('search', compact('qs','dests','trips','guides'), [
+    view('search', compact('qs','dests','trips','guides','reviews','people'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
-        'description'=>'Search destinations, trips, and guides across RuinMyTrip.',
+        'description'=>'Search destinations, trips, reviews, guides, and travelers across RuinMyTrip.',
     ]);
 }
 

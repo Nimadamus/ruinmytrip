@@ -1,7 +1,7 @@
 <?php
 /**
  * Regression test for a production-only search bug: `LIKE` is case-insensitive on SQLite (local
- * dev) but case-SENSITIVE on Postgres (production) -- see app/controllers.php explore()/search().
+ * dev) but case-SENSITIVE on Postgres (production) -- see app/controllers.php explore().
  * A search for "kyoto" silently returned zero results in production against a "Kyoto" row, while
  * working fine in every local test, because SQLite can't reproduce the bug at all.
  *
@@ -11,8 +11,15 @@
  *
  * Because the bug is driver-specific and this suite only runs against SQLite, a runtime query
  * can't tell "fixed" apart from "broken" -- SQLite's LIKE masks it either way. The real guard is
- * static: every user-facing search column must be wrapped in LOWER() on both sides so the
- * comparison is case-insensitive regardless of which engine runs it.
+ * static: every user-facing search column in explore() must be wrapped in LOWER() on both sides
+ * so the comparison is case-insensitive regardless of which engine runs it.
+ *
+ * search() itself was rewritten in migration 015 to use real full-text search (Postgres
+ * tsvector/ts_rank, SQLite FTS5) instead of LIKE for destinations/trips/reviews/guides -- both
+ * engines' text-search normalizes case by construction, so the LOWER()-wrapping requirement no
+ * longer applies there. It still asserts driver-branching + FTS usage so a regression back to
+ * bare LIKE (which would reintroduce the case bug) fails loudly. People search stays LIKE-based
+ * on purpose (substring matching on short usernames), so it's still checked here.
  *
  *   php tests/search_case_test.php   -> PASS/FAIL per case, exits non-zero on any failure.
  */
@@ -43,23 +50,20 @@ $search = extract_function($src, 'search');
 $check('explore() found in controllers.php', $explore !== '');
 $check('search() found in controllers.php', $search !== '');
 
-// Every column compared against user search input must be LOWER()-wrapped. A bare "column LIKE"
-// on one of these specific columns means the case-sensitivity bug is back.
-$mustBeLowered = [
-    'explore()' => ['d.name', 'd.country', 'd.summary'],
-    'search()'  => ['name', 'country', 'summary', 't.title', 't.body', 'title', 'summary'],
-];
-
-foreach (['explore()' => $explore, 'search()' => $search] as $label => $body) {
-    foreach ($mustBeLowered[$label] as $col) {
-        $wrapped = preg_match('/LOWER\(\s*' . preg_quote($col, '/') . '\s*\)\s*LIKE/i', $body) === 1;
-        $check("{$label}: {$col} is LOWER()-wrapped before LIKE", $wrapped);
-    }
-    // The needle itself must be lowercased in PHP too -- LOWER(col) LIKE '%Kyoto%' would still
-    // fail to match "kyoto" the column lowercased but the needle not.
-    $needleLowered = preg_match('/mb_strtolower\(\$qs\)/', $body) === 1;
-    $check("{$label}: search term is lowercased before binding", $needleLowered);
+// explore() still does bare LIKE search: every column compared against user input must be
+// LOWER()-wrapped, or the case-sensitivity bug is back.
+foreach (['d.name', 'd.country', 'd.summary'] as $col) {
+    $wrapped = preg_match('/LOWER\(\s*' . preg_quote($col, '/') . '\s*\)\s*LIKE/i', $explore) === 1;
+    $check("explore(): {$col} is LOWER()-wrapped before LIKE", $wrapped);
 }
+$check('explore(): search term is lowercased before binding', preg_match('/mb_strtolower\(\$qs\)/', $explore) === 1);
+
+// search() must still branch per driver and use each engine's real full-text mechanism -- a
+// regression to bare "LIKE ?" against these content columns would silently reintroduce the bug.
+$check('search(): branches on db_driver', preg_match('/db_driver.*pgsql/s', $search) === 1);
+$check('search(): pgsql path uses tsvector/ts_rank', preg_match('/search_vector\s*@@|ts_rank/', $search) === 1);
+$check('search(): sqlite path uses FTS5 MATCH', preg_match('/_fts\s+MATCH/', $search) === 1);
+$check('search(): people search term is lowercased before LIKE binding', preg_match('/mb_strtolower\(\$qs\)/', $search) === 1);
 
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed\n"; exit(1); }
