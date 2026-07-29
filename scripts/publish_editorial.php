@@ -153,7 +153,17 @@ function rmt_paras(string $text): string {
 $log = [];
 $run = function (string $sql, array $args) use ($apply, &$log) {
     $log[] = preg_replace('/\s+/', ' ', substr($sql, 0, 60)) . '…';
-    if ($apply) return q_run($sql, $args);
+    if (!$apply) return '';
+    // Only INSERTs care about lastInsertId(). q_run() calls it unconditionally, and on
+    // Postgres, lastInsertId()'s lastval() throws a real server-side error (not just a client
+    // exception) when this is the first statement in the session/transaction to touch a
+    // sequence -- e.g. every UPDATE call here, once the editorial account already exists and
+    // the very first statement in the run is no longer the account-creating INSERT. Postgres
+    // aborts the whole transaction on that error even though q_run() catches it locally, so
+    // every later statement fails with "current transaction is aborted". UPDATE/DELETE go
+    // through a plain execute() instead.
+    if (stripos(ltrim($sql), 'INSERT') === 0) return q_run($sql, $args);
+    db()->prepare($sql)->execute($args);
     return '';
 };
 
