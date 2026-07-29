@@ -26,24 +26,92 @@ jobs:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       SERVICE: srv-d9co4n0k1i2s73cg0nfg
     steps:
+      - uses: actions/checkout@v4
+
       - name: Trigger Render deploy and wait for it to go live
         run: |
-          set -euo pipefail
-          RESP=$(curl -fsS -X POST -H "Authorization: Bearer $RENDER_API_KEY" \
-            -H "Content-Type: application/json" -d '{"clearCache":"do_not_clear"}' \
-            "https://api.render.com/v1/services/$SERVICE/deploys")
-          DEP=$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin)['id'])")
+          set -uo pipefail
+          JSON=".github/scripts/render_json.py"
+
+          api() {
+            # api METHOD URL BODY_FILE [DATA] -> writes body to BODY_FILE, prints HTTP status code
+            local method="$1" url="$2" file="$3" data="${4:-}"
+            if [ -n "$data" ]; then
+              curl -sS -o "$file" -w '%{http_code}' -X "$method" \
+                -H "Authorization: Bearer $RENDER_API_KEY" \
+                -H "Content-Type: application/json" -d "$data" "$url"
+            else
+              curl -sS -o "$file" -w '%{http_code}' -X "$method" \
+                -H "Authorization: Bearer $RENDER_API_KEY" "$url"
+            fi
+          }
+
+          fail_with_body() {
+            local context="$1" code="$2" file="$3"
+            echo "::error::$context — HTTP $code"
+            echo "Render API response body:"
+            cat "$file" 2>/dev/null || echo "(empty response body)"
+            exit 1
+          }
+
+          # --- Trigger the deploy, retrying on transient empty/invalid bodies ---
+          DEP=""
+          for attempt in 1 2 3 4; do
+            BODY_FILE=$(mktemp)
+            CODE=$(api POST "https://api.render.com/v1/services/$SERVICE/deploys" "$BODY_FILE" '{"clearCache":"do_not_clear"}')
+            if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
+              fail_with_body "Render deploy trigger failed" "$CODE" "$BODY_FILE"
+            fi
+            if DEP=$(python3 "$JSON" field "$BODY_FILE" id); then
+              rm -f "$BODY_FILE"
+              break
+            fi
+            echo "::warning::Render returned HTTP $CODE with an empty/invalid JSON body on attempt $attempt/4; retrying"
+            rm -f "$BODY_FILE"
+            DEP=""
+            sleep $((attempt * 3))
+          done
+
+          # Fallback: the POST can succeed server-side (deploy created) even when the
+          # HTTP response body comes back empty (observed Render API flakiness). Before
+          # giving up, check whether a deploy for this exact commit already exists.
+          if [ -z "$DEP" ]; then
+            echo "Direct trigger response never parsed after retries; checking deploy history for commit ${GITHUB_SHA} as a fallback"
+            BODY_FILE=$(mktemp)
+            CODE=$(api GET "https://api.render.com/v1/services/$SERVICE/deploys?limit=5" "$BODY_FILE")
+            if [ "$CODE" -ge 200 ] && [ "$CODE" -lt 300 ]; then
+              DEP=$(python3 "$JSON" find_commit "$BODY_FILE" "$GITHUB_SHA" || true)
+            fi
+            rm -f "$BODY_FILE"
+          fi
+
+          if [ -z "$DEP" ]; then
+            echo "::error::Could not obtain a Render deploy id after retries and fallback lookup for commit ${GITHUB_SHA}"
+            exit 1
+          fi
+
           echo "Triggered Render deploy $DEP for commit ${GITHUB_SHA:0:7}"
+
+          # --- Poll for completion ---
           for i in $(seq 1 60); do
-            ST=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
-              "https://api.render.com/v1/services/$SERVICE/deploys/$DEP" \
-              | python3 -c "import sys,json;print(json.load(sys.stdin)['status'])")
+            BODY_FILE=$(mktemp)
+            CODE=$(api GET "https://api.render.com/v1/services/$SERVICE/deploys/$DEP" "$BODY_FILE")
+            if [ "$CODE" -lt 200 ] || [ "$CODE" -ge 300 ]; then
+              fail_with_body "Render deploy status check failed" "$CODE" "$BODY_FILE"
+            fi
+            if ! ST=$(python3 "$JSON" field "$BODY_FILE" status); then
+              echo "::warning::empty/invalid status body on poll $i, retrying"
+              rm -f "$BODY_FILE"
+              sleep 15
+              continue
+            fi
+            rm -f "$BODY_FILE"
             echo "deploy $DEP: $ST"
             case "$ST" in
               live) echo "DEPLOY LIVE"; exit 0 ;;
               build_failed|update_failed|canceled|deactivated|pre_deploy_failed)
-                echo "DEPLOY FAILED: $ST"; exit 1 ;;
+                echo "::error::Render deploy $DEP failed with status: $ST"; exit 1 ;;
             esac
             sleep 15
           done
-          echo "timed out waiting for deploy"; exit 1
+          echo "::error::timed out waiting for deploy $DEP to go live"; exit 1
