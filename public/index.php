@@ -46,6 +46,7 @@ $routes = [
     ['GET',  '#^/leaderboard$#',               'leaderboard'],
     ['GET',  '#^/search$#',                    'search'],
     ['GET',  '#^/notifications$#',             'notifications'],
+    ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],
     ['GET',  '#^/settings$#',                  'settings_form'],
     ['POST', '#^/settings$#',                  'settings_save'],
     ['GET',  '#^/login$#',                     'login_form'],

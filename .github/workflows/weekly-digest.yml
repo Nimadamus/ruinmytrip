@@ -1,0 +1,89 @@
+name: weekly-digest
+
+# Weekly RuinMyTrip activity digest email (scripts/send_digest.php). Opens the DB firewall to
+# THIS runner's IP only, runs the digest against production, always re-locks the firewall.
+# A user with zero activity in the window gets nothing -- the script itself decides that, this
+# workflow just runs it on a schedule. Alerts by email on any failure.
+
+on:
+  schedule:
+    - cron: '0 15 * * 1'      # weekly, Monday 15:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (preview only, sends nothing)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: weekly-digest
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MAIL_FROM: 'RuinMyTrip <noreply@send.ruinmytrip.com>'
+      APP_ENV: production
+      APP_URL: https://ruinmytrip.com
+      DB_ID: dpg-d9co0937uimc73enjljg-a
+      ALERT_EMAIL: nj2121@gmail.com
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql, curl, openssl, mbstring
+
+      - name: Open DB firewall to this runner and fetch connection string
+        run: |
+          set -euo pipefail
+          IP=$(curl -fsS https://api.ipify.org)
+          echo "Runner IP: $IP"
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d "{\"ipAllowList\":[{\"cidrBlock\":\"$IP/32\",\"description\":\"gha-digest temporary\"}]}" \
+            "https://api.render.com/v1/postgres/$DB_ID" > /dev/null
+          CONN=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
+            "https://api.render.com/v1/postgres/$DB_ID/connection-info" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin)['externalConnectionString'])")
+          echo "::add-mask::$CONN"
+          echo "DATABASE_URL=$CONN" >> "$GITHUB_ENV"
+          sleep 20
+
+      - name: Send digest
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            php scripts/send_digest.php --dry-run
+          else
+            php scripts/send_digest.php
+          fi
+
+      - name: Re-lock DB firewall (always)
+        if: always()
+        run: |
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID" > /dev/null && \
+            echo "DB firewall re-locked to internal-only." || echo "WARNING: re-lock call failed"
+
+      - name: Email alert on failure
+        if: failure()
+        run: |
+          printf '%s' '{
+            "from": "'"$MAIL_FROM"'",
+            "to": ["'"$ALERT_EMAIL"'"],
+            "subject": "RuinMyTrip weekly digest FAILED",
+            "html": "<p>The scheduled RuinMyTrip weekly digest run failed. Run: <a href=\"'"$GITHUB_SERVER_URL"'/'"$GITHUB_REPOSITORY"'/actions/runs/'"$GITHUB_RUN_ID"'\">view logs</a>.</p>"
+          }' | curl -fsS -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" --data @- > /dev/null \
+            && echo "Failure alert emailed to $ALERT_EMAIL" || echo "WARNING: alert email failed"

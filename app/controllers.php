@@ -572,6 +572,24 @@ function notifications(array $a): void {
     view('notifications', compact('items','me'), ['title'=>'Notifications — RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
 }
 
+/**
+ * Unsubscribe from the weekly digest email. Token-based (rmt_unsubscribe_verify), not
+ * login-gated -- a signed-out recipient clicking a link in their inbox is exactly the case
+ * this exists for.
+ */
+function unsubscribe_action(array $a): void {
+    $uid = (int) ($_GET['u'] ?? 0);
+    $token = (string) ($_GET['t'] ?? '');
+    $ok = $uid > 0 && rmt_unsubscribe_verify($uid, $token);
+    if ($ok) {
+        db()->prepare('UPDATE profiles SET digest_opt_out=1 WHERE user_id=?')->execute([$uid]);
+    }
+    view('unsubscribe', ['ok' => $ok], [
+        'title' => 'Unsubscribe — RuinMyTrip',
+        'description' => 'Manage RuinMyTrip email preferences.',
+    ]);
+}
+
 /* ---------- forms & writes ---------- */
 function trip_new_form(array $a): void {
     require_login();

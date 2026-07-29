@@ -162,3 +162,59 @@ function rmt_mail_password_reset(string $to, string $username, string $link): ar
           . "This link expires in 1 hour and can only be used once. If you didn't request it, ignore this email.";
     return rmt_mail_send($to, 'Reset your RuinMyTrip password', $html, $text);
 }
+
+/**
+ * Stateless, non-expiring unsubscribe token: an HMAC of the user id, not a stored/burnable value
+ * like auth_tokens. A digest link must keep working for months without a re-issued token every
+ * send, and unsubscribing is not a security-sensitive action worth an expiry window.
+ */
+function rmt_unsubscribe_token(int $userId): string {
+    return hash_hmac('sha256', (string) $userId, (string) cfg('security_salt'));
+}
+
+function rmt_unsubscribe_verify(int $userId, string $token): bool {
+    return hash_equals(rmt_unsubscribe_token($userId), $token);
+}
+
+function rmt_unsubscribe_url(int $userId): string {
+    return url('unsubscribe?u=' . $userId . '&t=' . rmt_unsubscribe_token($userId));
+}
+
+/**
+ * Weekly activity digest. Only sent when there is real, non-zero activity to report — see
+ * scripts/send_digest.php, which skips a user entirely rather than emailing an empty summary.
+ * @param array{followers:int,follower_names:string[],votes:int,compliments:int,reviews:array} $activity
+ */
+function rmt_mail_digest(string $to, string $username, array $activity, string $unsubscribeUrl): array {
+    $lines = [];
+    if ($activity['followers'] > 0) {
+        $names = $activity['follower_names'] ? ' (' . implode(', ', array_map(fn($n) => '@' . $n, $activity['follower_names'])) . ')' : '';
+        $lines[] = '<li>' . (int) $activity['followers'] . ' new ' . ($activity['followers'] === 1 ? 'follower' : 'followers') . e($names) . '</li>';
+    }
+    if ($activity['votes'] > 0) {
+        $lines[] = '<li>' . (int) $activity['votes'] . ' useful/funny/cool ' . ($activity['votes'] === 1 ? 'vote' : 'votes') . ' on your reviews</li>';
+    }
+    if ($activity['compliments'] > 0) {
+        $lines[] = '<li>' . (int) $activity['compliments'] . ' ' . ($activity['compliments'] === 1 ? 'compliment' : 'compliments') . ' on your profile</li>';
+    }
+    $reviewsHtml = '';
+    if ($activity['reviews']) {
+        $items = array_map(fn($r) => '<li><a href="' . e($r['url']) . '">' . e($r['title']) . '</a> — ' . e($r['author']) . '</li>', $activity['reviews']);
+        $reviewsHtml = '<p style="margin:20px 0 8px;font-weight:600">New from travelers you follow</p><ul style="margin:0;padding-left:20px">' . implode('', $items) . '</ul>';
+    }
+
+    $bodyHtml = '<p>Hi @' . e($username) . ' — here is what happened on RuinMyTrip this week.</p>'
+              . '<ul style="margin:0;padding-left:20px">' . implode('', $lines) . '</ul>'
+              . $reviewsHtml
+              . '<p style="color:#8895a3;font-size:12px;margin:24px 0 0">'
+              . '<a href="' . e($unsubscribeUrl) . '" style="color:#8895a3">Unsubscribe from these emails</a></p>';
+    $html = rmt_mail_layout('Your week on RuinMyTrip', $bodyHtml);
+
+    $text = "Hi @{$username},\n\nHere is what happened on RuinMyTrip this week.\n\n"
+          . ($activity['followers'] > 0 ? $activity['followers'] . " new follower(s)\n" : '')
+          . ($activity['votes'] > 0 ? $activity['votes'] . " vote(s) on your reviews\n" : '')
+          . ($activity['compliments'] > 0 ? $activity['compliments'] . " compliment(s)\n" : '')
+          . "\nUnsubscribe: {$unsubscribeUrl}";
+
+    return rmt_mail_send($to, 'Your RuinMyTrip week', $html, $text);
+}
