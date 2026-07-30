@@ -42,7 +42,7 @@ $showActionsBar ??= true;
         </form>
       <?php endif; ?>
     </div>
-    <p style="margin:.3rem 0 0"><?= nl2br(e($c['body'])) ?></p>
+    <p style="margin:.3rem 0 0"><?= rmt_linkify_mentions(nl2br(e($c['body']))) ?></p>
   </div></div>
 <?php endforeach; ?>
 <?php if (!$comments): ?><p class="muted">No comments yet.</p><?php endif; ?>

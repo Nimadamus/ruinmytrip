@@ -6,7 +6,7 @@
   <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>">@<?= e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>
   <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e($p['cover_url']) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($p['summary']) ?></p>
-  <div style="white-space:pre-wrap"><?= rmt_linkify_tags(nl2br(e($p['body']))) ?></div>
+  <div style="white-space:pre-wrap"><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>

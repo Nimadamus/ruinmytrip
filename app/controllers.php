@@ -510,6 +510,7 @@ function guide_create(array $a): void {
         [(int)$me['id'], $d['destination_id'], $slug, $d['title'], $d['summary'], $d['body'], $cover, date('Y-m-d H:i:s')]);
     $gid = (int) q_one('SELECT id FROM guides WHERE slug=?', [$slug])['id'];
     rmt_sync_tags('guide', $gid, $d['title'], $d['summary'], $d['body']);
+    rmt_notify_mentions('guide', $gid, (int)$me['id'], [], $d['title'], $d['summary'], $d['body']);
     flash('Guide published.');
     redirect('/g/'.$slug);
 }
@@ -552,6 +553,7 @@ function guide_edit_submit(array $a): void {
         ->execute([$d['destination_id'], $d['title'], $slug, $d['summary'], $d['body'], $cover,
                    date('Y-m-d H:i:s'), (int)$g['id']]);
     rmt_sync_tags('guide', (int)$g['id'], $d['title'], $d['summary'], $d['body']);
+    rmt_notify_mentions('guide', (int)$g['id'], (int)current_user()['id'], [], $d['title'], $d['summary'], $d['body']);
     flash('Guide updated.');
     redirect('/g/'.$slug);
 }
@@ -676,6 +678,7 @@ function blog_create(array $a): void {
         [(int)$me['id'], $slug, $d['title'], $d['summary'], $d['body'], $d['cover_url'], $d['category'], date('Y-m-d H:i:s')]);
     $pid = (int) q_one('SELECT id FROM blog_posts WHERE slug=?', [$slug])['id'];
     rmt_sync_tags('blog_post', $pid, $d['title'], $d['summary'], $d['body']);
+    rmt_notify_mentions('blog_post', $pid, (int)$me['id'], [], $d['title'], $d['summary'], $d['body']);
     flash('Post published.');
     redirect('/blog/'.$slug);
 }
@@ -705,6 +708,7 @@ function blog_edit_submit(array $a): void {
         ->execute([$d['title'], $slug, $d['summary'], $d['body'], $d['cover_url'], $d['category'],
                    date('Y-m-d H:i:s'), (int)$p['id']]);
     rmt_sync_tags('blog_post', (int)$p['id'], $d['title'], $d['summary'], $d['body']);
+    rmt_notify_mentions('blog_post', (int)$p['id'], (int)current_user()['id'], [], $d['title'], $d['summary'], $d['body']);
     flash('Post updated.');
     redirect('/blog/'.$slug);
 }
@@ -928,6 +932,7 @@ function trip_create(array $a): void {
         [(int)$me['id'], $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
          $d['visited_on'], 0, date('Y-m-d H:i:s')]);
     rmt_sync_tags('trip', $id, $d['title'], $d['body']);
+    rmt_notify_mentions('trip', $id, (int)$me['id'], [], $d['title'], $d['body']);
     // Photo failures must never be silent, and must never cost the user their written story --
     // same rule as reviews (rmt_attach_review_photos).
     $photoErrors = rmt_attach_trip_photos($id, (int)$me['id']);
@@ -967,6 +972,7 @@ function trip_edit_submit(array $a): void {
         ->execute([$d['destination_id'], $d['title'], $slug, $d['body'], $cover, $d['visited_on'],
                    date('Y-m-d H:i:s'), (int)$t['id']]);
     rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
+    rmt_notify_mentions('trip', (int)$t['id'], (int)current_user()['id'], [], $d['title'], $d['body']);
     $photoErrors = rmt_attach_trip_photos((int)$t['id'], (int)current_user()['id']);
 
     // Remove any photos the author unticked.
@@ -1082,6 +1088,10 @@ function review_create(array $a): void {
     $slug = rmt_review_slug($d + ['id'=>$id]);
     db()->prepare('UPDATE reviews SET slug = ? WHERE id = ?')->execute([$slug, $id]);
     rmt_sync_tags('review', $id, $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+    // Drafts must not ping anyone; the mention fires when the review later publishes via edit.
+    if ($status === 'published') {
+        rmt_notify_mentions('review', $id, (int)$me['id'], [], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+    }
 
     // Photo failures must never be silent: the review still publishes (losing written text
     // because one image failed would be worse), but the user is told exactly what happened.
@@ -1210,6 +1220,9 @@ function review_edit_submit(array $a): void {
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
                    $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
     rmt_sync_tags('review', (int)$r['id'], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+    if ($status === 'published') {
+        rmt_notify_mentions('review', (int)$r['id'], (int)current_user()['id'], [], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+    }
     $photoErrors = rmt_attach_review_photos((int)$r['id'], (int)current_user()['id']);
 
     // Remove any photos the author unticked.
@@ -1432,6 +1445,16 @@ function comment_action(array $a): void {
 
     q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
         [(int)$me['id'], $tt, $tid, $body, date('Y-m-d H:i:s')]);
+
+    // Tell the content's author someone commented (follows and compliments already notified, but
+    // comments never did). Skip self-comments; @mentions in the body ping their own recipients,
+    // minus the author if they were both mentioned and would get this comment notification.
+    $owner = (int) (q_one('SELECT user_id FROM ' . RMT_INTERACT_TARGETS[$tt] . ' WHERE id=?', [$tid])['user_id'] ?? 0);
+    if ($owner && $owner !== (int)$me['id']) {
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+            [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
+    }
+    rmt_notify_mentions($tt, $tid, (int)$me['id'], [$owner], $body);
     redirect(input('return','/'));
 }
 

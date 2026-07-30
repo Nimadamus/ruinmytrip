@@ -19,6 +19,17 @@
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> sent you a compliment.</a>
         <?php elseif ($n['type']==='compliment'): ?>
           <b>Someone</b> sent you a compliment, then deleted their account.
+        <?php elseif ($n['type']==='comment' || $n['type']==='mention'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $verb = $n['type']==='comment' ? 'commented on your' : 'mentioned you in a';
+          $noun = ['trip'=>'trip story','review'=>'review','guide'=>'guide','blog_post'=>'blog post','meetup'=>'meetup'][$n['target_type']] ?? 'post';
+          $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> <?= e($verb) ?> <?= e($noun) ?>.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> <?= e($verb) ?> <?= e($noun) ?> that is no longer available.
+          <?php endif; ?>
         <?php else: ?>
           <b><?= e($n['type']) ?></b> from @<?= e($n['actor']) ?>
         <?php endif; ?>

@@ -13,7 +13,7 @@
   <?php /* Editorial guides are seeded/edited by our own team and trusted with rich HTML. Traveler
            guides are untrusted user input -- rendering them raw would be stored XSS, so they get
            the same escape-then-nl2br treatment as trip and review bodies. */ ?>
-  <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $g['body'] : rmt_linkify_tags(nl2br(e($g['body']))) ?></div>
+  <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $g['body'] : rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($g['body'])))) ?></div>
   <?php if (!$isEd && !empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>
