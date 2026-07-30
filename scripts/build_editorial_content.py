@@ -44,6 +44,14 @@ NAME_TO_SLUG = {
     "rome": "rome-italy",
     "bangkok": "bangkok-thailand",
     "sydney": "sydney-australia",
+    "mexico city": "mexico-city-mexico",
+    "ciudad de mexico": "mexico-city-mexico",
+    "ciudad de méxico": "mexico-city-mexico",
+    "istanbul": "istanbul-turkiye",
+    "i̇stanbul": "istanbul-turkiye",
+    "edinburgh": "edinburgh-scotland",
+    "medellin": "medellin-colombia",
+    "medellín": "medellin-colombia",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -65,6 +73,10 @@ SLUG_TO_NAME = {
     "rome-italy": "Rome",
     "bangkok-thailand": "Bangkok",
     "sydney-australia": "Sydney",
+    "mexico-city-mexico": "Mexico City",
+    "istanbul-turkiye": "Istanbul",
+    "edinburgh-scotland": "Edinburgh",
+    "medellin-colombia": "Medellín",
 }
 
 
@@ -173,6 +185,10 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("research_dir")
     ap.add_argument("--out", default="database/editorial/content.json")
+    ap.add_argument("--merge", action="store_true",
+                    help="keep destinations already in --out that this research batch does not "
+                         "cover, instead of rebuilding the whole file (research files for past "
+                         "batches are not retained in the repo)")
     a = ap.parse_args()
 
     files = sorted(glob.glob(os.path.join(a.research_dir, "rmt_research_*.json")))
@@ -191,6 +207,11 @@ def main() -> int:
                 return 1
             seen.add(item["slug"])
             items.append(item)
+
+    if a.merge and os.path.exists(a.out):
+        with open(a.out, encoding="utf-8") as fh:
+            existing = json.load(fh).get("destinations", [])
+        items.extend(e for e in existing if e.get("slug") not in seen)
 
     items.sort(key=lambda x: x["slug"])
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
