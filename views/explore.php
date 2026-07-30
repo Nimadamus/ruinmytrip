@@ -13,6 +13,14 @@
     </select>
     <button class="btn btn-primary" type="submit">Search</button>
   </form>
+  <?php if (!empty($topTags)): ?>
+    <div class="tag-row" style="margin:-14px 0 24px">
+      <?php foreach ($topTags as $t): ?>
+        <a class="chip" href="<?= e(url('tag/'.$t['name'])) ?>">#<?= e($t['name']) ?></a>
+      <?php endforeach; ?>
+      <a class="chip" href="<?= e(url('tags')) ?>">All topics →</a>
+    </div>
+  <?php endif; ?>
   <?php if (!$dests): ?><p class="muted">No destinations match. Try a broader search.</p><?php endif; ?>
   <div class="grid g-3" style="padding-bottom:50px">
     <?php foreach ($dests as $d): ?>

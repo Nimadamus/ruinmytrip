@@ -45,19 +45,22 @@
     </div>
   <?php endif; ?>
 
-  <p style="margin:22px 0;white-space:pre-wrap;font-size:1.05rem;line-height:1.7"><?= e($r['body']) ?></p>
+  <p style="margin:22px 0;white-space:pre-wrap;font-size:1.05rem;line-height:1.7"><?= rmt_linkify_tags(e($r['body'])) ?></p>
+  <?php if (!empty($tags)): ?>
+    <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
+  <?php endif; ?>
 
   <?php if ($r['what_great']): ?>
     <div class="card" style="margin:14px 0"><div class="card-body">
       <p class="eyebrow" style="color:#0f766e;margin:0 0 6px">What was great</p>
-      <p style="margin:0;white-space:pre-wrap"><?= e($r['what_great']) ?></p>
+      <p style="margin:0;white-space:pre-wrap"><?= rmt_linkify_tags(e($r['what_great'])) ?></p>
     </div></div>
   <?php endif; ?>
 
   <?php if ($r['what_ruined']): ?>
     <div class="card" style="margin:14px 0"><div class="card-body">
       <p class="eyebrow" style="color:#b42318;margin:0 0 6px">What nearly ruined the trip</p>
-      <p style="margin:0;white-space:pre-wrap"><?= e($r['what_ruined']) ?></p>
+      <p style="margin:0;white-space:pre-wrap"><?= rmt_linkify_tags(e($r['what_ruined'])) ?></p>
     </div></div>
   <?php endif; ?>
 

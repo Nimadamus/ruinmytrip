@@ -96,7 +96,8 @@ function explore(array $a): void {
     $sql .= ' ORDER BY d.name';
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
-    view('explore', compact('dests','cats','qs','cat'), [
+    $topTags = rmt_top_tags(14);
+    view('explore', compact('dests','cats','qs','cat','topTags'), [
         'title' => 'Explore destinations — RuinMyTrip',
         'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
@@ -324,10 +325,35 @@ function feed(array $a): void {
  *  logged-in user with zero follows sees instead of an empty feed. */
 function discover(array $a): void {
     $items = rmt_activity_items(null);
-    view('discover', ['items'=>$items, 'me'=>current_user()], [
+    $topTags = rmt_top_tags(14);
+    view('discover', ['items'=>$items, 'me'=>current_user(), 'topTags'=>$topTags], [
         'title' => 'Discover — RuinMyTrip',
         'description' => 'The latest trips, reviews, guides and blog posts from every traveler on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Discover','url'=>url('discover')]],
+    ]);
+}
+
+/** GET /tags — every topic in use on published content, biggest first. */
+function tags_index(array $a): void {
+    $tags = rmt_top_tags(100);
+    view('tags_index', ['tags'=>$tags], [
+        'title' => 'Topics — RuinMyTrip',
+        'description' => 'Browse every topic travelers are tagging: budget travel, solo trips, scams to avoid, and more.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Topics','url'=>url('tags')]],
+    ]);
+}
+
+/** GET /tag/{name} — published trips, reviews, guides and blog posts carrying one hashtag. */
+function tag_show(array $a): void {
+    $name = strtolower((string)$a['name']);
+    $tag = q_one('SELECT * FROM tags WHERE name=?', [$name]);
+    if (!$tag) not_found();
+    $items = rmt_tag_items((int)$tag['id']);
+    view('tag_show', ['tag'=>$tag, 'items'=>$items, 'me'=>current_user()], [
+        'title' => '#'.$tag['name'].' — RuinMyTrip',
+        'description' => 'Trips, reviews, guides and blog posts tagged #'.$tag['name'].' by real travelers.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Topics','url'=>url('tags')],
+                          ['name'=>'#'.$tag['name'],'url'=>url('tag/'.$tag['name'])]],
     ]);
 }
 
@@ -345,7 +371,8 @@ function trip_show(array $a): void {
     $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='trip' AND target_id=?", [(int)$t['id']])['n'];
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
-    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved'), [
+    $tags = rmt_tags_for('trip', (int)$t['id']);
+    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags'), [
         'title' => $t['title'].' — RuinMyTrip',
         'description' => mb_substr(strip_tags((string)$t['body']),0,150),
         'og_image' => abs_url($t['cover_url']),
@@ -410,7 +437,8 @@ function guide_show(array $a): void {
     $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='guide' AND target_id=?", [$gid])['n'];
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
-    view('guide_show', compact('g','me','comments','likeCount','saveCount','liked','saved'), [
+    $tags = rmt_tags_for('guide', $gid);
+    view('guide_show', compact('g','me','comments','likeCount','saveCount','liked','saved','tags'), [
         'title'=>$g['title'].' — RuinMyTrip',
         'description'=>$g['summary'],
         'og_image'=>abs_url($g['cover_url']),
@@ -480,6 +508,8 @@ function guide_create(array $a): void {
     q_run("INSERT INTO guides (user_id,destination_id,slug,title,summary,body,cover_url,premium,status,created_at)
            VALUES (?,?,?,?,?,?,?,0,'published',?)",
         [(int)$me['id'], $d['destination_id'], $slug, $d['title'], $d['summary'], $d['body'], $cover, date('Y-m-d H:i:s')]);
+    $gid = (int) q_one('SELECT id FROM guides WHERE slug=?', [$slug])['id'];
+    rmt_sync_tags('guide', $gid, $d['title'], $d['summary'], $d['body']);
     flash('Guide published.');
     redirect('/g/'.$slug);
 }
@@ -521,6 +551,7 @@ function guide_edit_submit(array $a): void {
     db()->prepare("UPDATE guides SET destination_id=?, title=?, slug=?, summary=?, body=?, cover_url=?, updated_at=? WHERE id=?")
         ->execute([$d['destination_id'], $d['title'], $slug, $d['summary'], $d['body'], $cover,
                    date('Y-m-d H:i:s'), (int)$g['id']]);
+    rmt_sync_tags('guide', (int)$g['id'], $d['title'], $d['summary'], $d['body']);
     flash('Guide updated.');
     redirect('/g/'.$slug);
 }
@@ -568,7 +599,8 @@ function blog_show(array $a): void {
     $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='blog_post' AND target_id=?", [$pid])['n'];
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
-    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved'), [
+    $tags = rmt_tags_for('blog_post', $pid);
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags'), [
         'title' => $p['title'].' — RuinMyTrip Blog',
         'description' => $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
@@ -642,6 +674,8 @@ function blog_create(array $a): void {
     q_run("INSERT INTO blog_posts (user_id,slug,title,summary,body,cover_url,category,status,created_at)
            VALUES (?,?,?,?,?,?,?,'published',?)",
         [(int)$me['id'], $slug, $d['title'], $d['summary'], $d['body'], $d['cover_url'], $d['category'], date('Y-m-d H:i:s')]);
+    $pid = (int) q_one('SELECT id FROM blog_posts WHERE slug=?', [$slug])['id'];
+    rmt_sync_tags('blog_post', $pid, $d['title'], $d['summary'], $d['body']);
     flash('Post published.');
     redirect('/blog/'.$slug);
 }
@@ -670,6 +704,7 @@ function blog_edit_submit(array $a): void {
     db()->prepare("UPDATE blog_posts SET title=?, slug=?, summary=?, body=?, cover_url=?, category=?, updated_at=? WHERE id=?")
         ->execute([$d['title'], $slug, $d['summary'], $d['body'], $d['cover_url'], $d['category'],
                    date('Y-m-d H:i:s'), (int)$p['id']]);
+    rmt_sync_tags('blog_post', (int)$p['id'], $d['title'], $d['summary'], $d['body']);
     flash('Post updated.');
     redirect('/blog/'.$slug);
 }
@@ -892,6 +927,7 @@ function trip_create(array $a): void {
                  VALUES (?,?,?,?,?,?,?,?, 'published', ?)",
         [(int)$me['id'], $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
          $d['visited_on'], 0, date('Y-m-d H:i:s')]);
+    rmt_sync_tags('trip', $id, $d['title'], $d['body']);
     // Photo failures must never be silent, and must never cost the user their written story --
     // same rule as reviews (rmt_attach_review_photos).
     $photoErrors = rmt_attach_trip_photos($id, (int)$me['id']);
@@ -930,6 +966,7 @@ function trip_edit_submit(array $a): void {
     db()->prepare("UPDATE trips SET destination_id=?, title=?, slug=?, body=?, cover_url=?, visited_on=?, updated_at=? WHERE id=?")
         ->execute([$d['destination_id'], $d['title'], $slug, $d['body'], $cover, $d['visited_on'],
                    date('Y-m-d H:i:s'), (int)$t['id']]);
+    rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
     $photoErrors = rmt_attach_trip_photos((int)$t['id'], (int)current_user()['id']);
 
     // Remove any photos the author unticked.
@@ -1044,6 +1081,7 @@ function review_create(array $a): void {
 
     $slug = rmt_review_slug($d + ['id'=>$id]);
     db()->prepare('UPDATE reviews SET slug = ? WHERE id = ?')->execute([$slug, $id]);
+    rmt_sync_tags('review', $id, $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
 
     // Photo failures must never be silent: the review still publishes (losing written text
     // because one image failed would be worse), but the user is told exactly what happened.
@@ -1115,9 +1153,10 @@ function review_show(array $a): void {
     $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
                        LEFT JOIN profiles p ON p.user_id=u.id
                        WHERE c.target_type='review' AND c.target_id=? AND c.status='published' ORDER BY c.id", [(int)$r['id']]);
+    $tags = rmt_tags_for('review', (int)$r['id']);
     // No robots directive: a draft/hidden review 404s for anyone but its author (see
     // rmt_review_can_view), so crawlers cannot reach it. Access control, not noindex.
-    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments'), [
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags'), [
         'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
@@ -1170,6 +1209,7 @@ function review_edit_submit(array $a): void {
         ->execute([$d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
                    $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
+    rmt_sync_tags('review', (int)$r['id'], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
     $photoErrors = rmt_attach_review_photos((int)$r['id'], (int)current_user()['id']);
 
     // Remove any photos the author unticked.
@@ -1834,8 +1874,9 @@ function readyz(array $a): void {
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
     $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('blog'), url('meetups'), url('going'),
-             url('leaderboard'), url('editorial-policy'), url('terms'), url('privacy'),
+             url('leaderboard'), url('tags'), url('editorial-policy'), url('terms'), url('privacy'),
              url('guidelines'), url('affiliate'), url('safety')];
+    foreach (rmt_top_tags(100) as $t) $urls[] = url('tag/'.$t['name']);
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);

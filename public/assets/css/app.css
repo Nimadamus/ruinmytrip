@@ -200,3 +200,10 @@ a.ed-badge:hover{background:var(--brand)}
 .invite-row{display:flex;gap:10px;flex-wrap:wrap}
 .invite-row input{flex:1;min-width:240px;padding:.6rem .9rem;border:1px solid var(--line);
   border-radius:10px;font:inherit;background:var(--paper)}
+
+.tag-link{font-weight:700;text-decoration:none}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.tag-chip{text-transform:none;font-size:.85rem;padding:.3rem .85rem;text-decoration:none}
+.tag-chip .muted{font-weight:400;margin-left:2px}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.tag-row .chip{text-transform:none;text-decoration:none}

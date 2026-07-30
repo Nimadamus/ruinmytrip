@@ -18,6 +18,7 @@ require BASE_PATH . '/app/auth.php';
 require BASE_PATH . '/app/reviews.php';
 require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/profiles.php';
+require BASE_PATH . '/app/tags.php';
 require BASE_PATH . '/app/storage.php';
 require BASE_PATH . '/app/seo.php';
 require BASE_PATH . '/app/session.php';

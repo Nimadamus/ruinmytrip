@@ -10,7 +10,10 @@
     <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?>
   </div>
   <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
-  <div><?= nl2br(e($t['body'])) ?></div>
+  <div><?= rmt_linkify_tags(nl2br(e($t['body']))) ?></div>
+  <?php if (!empty($tags)): ?>
+    <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
+  <?php endif; ?>
   <?php foreach ($photos as $p): ?><img class="article-hero" loading="lazy" src="<?= e($p['url']) ?>" alt="<?= e($p['caption']) ?>"><?php endforeach; ?>
 
   <?php if ($me && (int)$t['user_id'] === (int)$me['id']): ?>

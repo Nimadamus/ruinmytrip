@@ -1,27 +1,14 @@
-<?php /** @var array $items @var ?array $me */
+<?php /** @var array $tag @var array $items @var ?array $me */
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog'];
 ?>
 <div class="wrap" style="max-width:760px">
-  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Discover</p>
-  <h1 style="margin-top:8px">Discover</h1>
-  <p class="muted">The latest trips, reviews, guides and blog posts from every traveler on RuinMyTrip.</p>
-  <?php if (!empty($topTags)): ?>
-    <div class="tag-row">
-      <?php foreach ($topTags as $t): ?>
-        <a class="chip" href="<?= e(url('tag/'.$t['name'])) ?>">#<?= e($t['name']) ?></a>
-      <?php endforeach; ?>
-      <a class="chip" href="<?= e(url('tags')) ?>">All topics →</a>
-    </div>
-  <?php endif; ?>
-  <?php if (!$me): ?>
-    <div class="callout">
-      <a href="<?= e(url('register')) ?>">Join free</a> to follow travelers and get this curated into your own feed.
-    </div>
-  <?php endif; ?>
+  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('tags')) ?>">Topics</a> / #<?= e($tag['name']) ?></p>
+  <h1 style="margin-top:8px">#<?= e($tag['name']) ?></h1>
+  <p class="muted"><?= count($items) ?> published post<?= count($items) === 1 ? '' : 's' ?> tagged #<?= e($tag['name']) ?>.</p>
   <?php if (!$items): ?>
     <div class="empty-cta" style="margin:24px 0">
-      <h3>Nothing published yet.</h3>
-      <p class="muted" style="margin:0">Be the first to share a trip, a review, a guide, or a blog post.</p>
+      <h3>Nothing published under this topic yet.</h3>
+      <p class="muted" style="margin:0">Use #<?= e($tag['name']) ?> in a trip, review, guide or blog post and it will show up here.</p>
     </div>
   <?php endif; ?>
   <?php foreach ($items as $it): ?>

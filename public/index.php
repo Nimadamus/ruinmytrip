@@ -52,6 +52,8 @@ $routes = [
     ['POST', '#^/meetup/(?<id>\d+)/rsvp$#',    'meetup_rsvp'],
     ['GET',  '#^/going$#',                     'going_index'],
     ['GET',  '#^/leaderboard$#',               'leaderboard'],
+    ['GET',  '#^/tags$#',                      'tags_index'],
+    ['GET',  '#^/tag/(?<name>[a-z0-9][a-z0-9_\-]{1,29})$#', 'tag_show'],
     ['GET',  '#^/search$#',                    'search'],
     ['GET',  '#^/notifications$#',             'notifications'],
     ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],

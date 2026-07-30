@@ -15,7 +15,7 @@ check() { # path expected
 
 echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
-for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going \
+for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /login /register /terms /privacy /guidelines /safety /affiliate \
          /editorial-policy /sitemap.xml /robots.txt; do check "$p" 200; done
 echo "-- editorial layer (expect 200) --"
