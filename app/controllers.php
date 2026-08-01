@@ -101,9 +101,11 @@ function explore(array $a): void {
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
     $sql .= match ($sort) {
         'popular' => ' ORDER BY wants DESC, d.name',
-        // Destinations with zero community reviews sort after rated ones, never first --
-        // `avg_rating IS NULL` evaluates to 0/1 in both drivers, so it's a valid ORDER BY key.
-        'rating'  => ' ORDER BY avg_rating IS NULL, avg_rating DESC, d.name',
+        // A single five-star review should not be able to outrank a destination with fifty
+        // honest ones -- `reviews < 2` pushes anything below that sample size out of the ranked
+        // tier (still sorted among itself by whatever rating it has, just never above real
+        // consensus). `IS NULL`/`< 2` both evaluate to 0/1 in both drivers, valid ORDER BY keys.
+        'rating'  => ' ORDER BY (avg_rating IS NULL OR reviews < 2), avg_rating DESC, d.name',
         default   => ' ORDER BY d.name',
     };
     $dests = q_all($sql, $args);
