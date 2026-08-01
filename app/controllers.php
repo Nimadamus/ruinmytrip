@@ -160,6 +160,8 @@ function profile(array $a): void {
                     WHERE t.user_id=? AND t.status='published' ORDER BY t.id DESC", [$uid]);
     $reviews = q_all("SELECT * FROM reviews WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     $guides = q_all("SELECT * FROM guides WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
+    $collections = q_all("SELECT c.*, (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+                          FROM collections c WHERE c.user_id=? AND c.status='published' ORDER BY c.id DESC", [$uid]);
     $wishlist = q_all("SELECT d.id, d.slug, d.name, d.country FROM saves s JOIN destinations d ON d.id=s.target_id
                        WHERE s.user_id=? AND s.target_type='destination' ORDER BY d.name", [$uid]);
 
@@ -174,7 +176,7 @@ function profile(array $a): void {
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist'), [
+    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -732,6 +734,186 @@ function blog_delete(array $a): void {
         ->execute([date('Y-m-d H:i:s'), (int)$p['id']]);
     flash('Post deleted.');
     redirect('/u/'.current_user()['username']);
+}
+
+/* ---------- collections ---------- */
+
+function collections_index(array $a): void {
+    $collections = q_all("SELECT c.*,
+                            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+                           FROM collections c WHERE c.status='published' ORDER BY c.id DESC LIMIT 50");
+    authors_fill($collections);
+    view('collections_index', ['collections'=>$collections], [
+        'title' => 'Collections — RuinMyTrip',
+        'description' => 'Traveler-curated lists of destinations, with the honest reasoning behind each pick.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')]],
+    ]);
+}
+
+function collection_show(array $a): void {
+    $c = q_one("SELECT * FROM collections WHERE slug=?", [$a['slug']]);
+    if (!$c || $c['status']!=='published') not_found();
+    $c['author'] = author((int)$c['user_id']);
+    $me = current_user();
+    $cid = (int) $c['id'];
+    $items = q_all("SELECT ci.*, d.slug dest_slug, d.name dest_name, d.country dest_country, d.hero_url dest_hero
+                    FROM collection_items ci JOIN destinations d ON d.id=ci.destination_id
+                    WHERE ci.collection_id=? ORDER BY ci.sort, ci.id", [$cid]);
+    $comments = q_all("SELECT cm.*, u.username, p2.avatar_url FROM comments cm JOIN users u ON u.id=cm.user_id
+                       LEFT JOIN profiles p2 ON p2.user_id=u.id
+                       WHERE cm.target_type='collection' AND cm.target_id=? AND cm.status='published' ORDER BY cm.id", [$cid]);
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='collection' AND target_id=?", [$cid])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='collection' AND target_id=?", [$cid])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'collection',$cid]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'collection',$cid]);
+    $canEdit = rmt_collection_can_edit($c, $me);
+    view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit'), [
+        'title' => $c['title'].' — RuinMyTrip Collections',
+        'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
+        'og_image' => $items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg'),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')],['name'=>$c['title'],'url'=>url('c/'.$c['slug'])]],
+        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ItemList','name'=>$c['title'],
+            'description'=>$c['summary'],
+            'itemListElement'=>array_map(fn($it,$i)=>['@type'=>'ListItem','position'=>$i+1,'name'=>$it['dest_name'],'url'=>url('d/'.$it['dest_slug'])], $items, array_keys($items))]),
+    ]);
+}
+
+/** @return array{ok:bool, errors:string[], data:array<string,mixed>} */
+function rmt_collection_validate(array $in): array {
+    $errors = [];
+    $title = trim((string) ($in['title'] ?? ''));
+    $summary = trim((string) ($in['summary'] ?? ''));
+    if (mb_strlen($title) < 5) $errors[] = 'Give your collection a title (5+ characters).';
+    if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
+    if (mb_strlen($summary) > 500) $errors[] = 'That summary is too long (500 characters max).';
+    return ['ok' => !$errors, 'errors' => $errors, 'data' => ['title' => $title, 'summary' => $summary]];
+}
+
+/** Only the author may edit or delete a collection. */
+function rmt_collection_can_edit(array $c, ?array $user): bool {
+    return $user !== null && (int) $c['user_id'] === (int) $user['id'];
+}
+
+/** A unique slug, appending -2/-3/... on collision. */
+function rmt_collection_unique_slug(string $title, int $excludeId = 0): string {
+    $base = slugify($title) ?: 'collection';
+    $slug = $base; $n = 1;
+    while (true) {
+        $row = q_one('SELECT id FROM collections WHERE slug=?', [$slug]);
+        if (!$row || (int)$row['id'] === $excludeId) return $slug;
+        $n++; $slug = $base.'-'.$n;
+    }
+}
+
+function collection_new_form(array $a): void {
+    require_login();
+    view('collection_new', ['errors'=>[]], ['title'=>'Start a collection — RuinMyTrip','description'=>'Curate a list of destinations for other travelers.']);
+}
+
+function collection_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    if (!rmt_submit_ok('collection_new', input('_submit'))) {
+        flash('That collection was already created.'); redirect('/collections'); return;
+    }
+    if (!rmt_rate_ok('collection_create', (string)$me['id'], 10, 3600)) {
+        view('collection_new', ['errors'=>['You are creating collections very fast. Try again later.']],
+             ['title'=>'Start a collection — RuinMyTrip']); return;
+    }
+    $v = rmt_collection_validate($_POST);
+    if (!$v['ok']) {
+        view('collection_new', ['errors'=>$v['errors']], ['title'=>'Start a collection — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $slug = rmt_collection_unique_slug($d['title']);
+    q_run("INSERT INTO collections (user_id,slug,title,summary,status,created_at) VALUES (?,?,?,?,'published',?)",
+        [(int)$me['id'], $slug, $d['title'], $d['summary'], date('Y-m-d H:i:s')]);
+    flash('Collection created. Now add a few destinations to it.');
+    redirect('/collection/'.(int) q_one('SELECT id FROM collections WHERE slug=?', [$slug])['id'].'/edit');
+}
+
+function collection_edit_form(array $a): void {
+    require_login();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+    $items = q_all("SELECT ci.*, d.name dest_name, d.country dest_country FROM collection_items ci
+                    JOIN destinations d ON d.id=ci.destination_id WHERE ci.collection_id=? ORDER BY ci.sort, ci.id", [(int)$c['id']]);
+    $usedIds = array_column($items, 'destination_id');
+    $available = $usedIds
+        ? q_all('SELECT id,name,country FROM destinations WHERE id NOT IN ('.implode(',', array_fill(0, count($usedIds), '?')).') ORDER BY name', $usedIds)
+        : all_dests();
+    view('collection_edit', ['c'=>$c, 'items'=>$items, 'available'=>$available, 'errors'=>[]], ['title'=>'Edit collection — RuinMyTrip']);
+}
+
+function collection_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+
+    $v = rmt_collection_validate($_POST);
+    if (!$v['ok']) {
+        $items = q_all('SELECT ci.*, d.name dest_name, d.country dest_country FROM collection_items ci
+                        JOIN destinations d ON d.id=ci.destination_id WHERE ci.collection_id=? ORDER BY ci.sort, ci.id', [(int)$c['id']]);
+        view('collection_edit', ['c'=>array_merge($c, $_POST), 'items'=>$items, 'available'=>[], 'errors'=>$v['errors']],
+             ['title'=>'Edit collection — RuinMyTrip']); return;
+    }
+    $d = $v['data'];
+    $slug = rmt_collection_unique_slug($d['title'], (int)$c['id']);
+    db()->prepare("UPDATE collections SET title=?, slug=?, summary=?, updated_at=? WHERE id=?")
+        ->execute([$d['title'], $slug, $d['summary'], date('Y-m-d H:i:s'), (int)$c['id']]);
+    flash('Collection updated.');
+    redirect('/collection/'.(int)$c['id'].'/edit');
+}
+
+/** POST /collection/{id}/delete — soft delete. Items rows are left in place; the show page 404s
+ *  once status is no longer 'published', same as every other content type here. */
+function collection_delete(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+    db()->prepare("UPDATE collections SET status='removed', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$c['id']]);
+    flash('Collection deleted.');
+    redirect('/u/'.current_user()['username']);
+}
+
+/** POST /collection/{id}/items — owner-only, adds one destination (+ optional note) to the list. */
+function collection_item_add(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+
+    $did = (int) input('destination_id');
+    $note = trim((string) input('note'));
+    if (mb_strlen($note) > 500) {
+        flash('That note is too long (500 characters max).'); redirect('/collection/'.(int)$c['id'].'/edit'); return;
+    }
+    if (!$did || !dest_by_id($did)) redirect('/collection/'.(int)$c['id'].'/edit');
+    $count = (int) (q_one('SELECT COUNT(*) n FROM collection_items WHERE collection_id=?', [(int)$c['id']])['n'] ?? 0);
+    if ($count >= 50) {
+        flash('A collection can hold at most 50 destinations.'); redirect('/collection/'.(int)$c['id'].'/edit'); return;
+    }
+    $nextSort = (int) (q_one('SELECT COALESCE(MAX(sort),-1) n FROM collection_items WHERE collection_id=?', [(int)$c['id']])['n'] ?? -1) + 1;
+    try {
+        q_run('INSERT INTO collection_items (collection_id,destination_id,note,sort) VALUES (?,?,?,?)',
+            [(int)$c['id'], $did, $note !== '' ? $note : null, $nextSort]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+    }
+    redirect('/collection/'.(int)$c['id'].'/edit');
+}
+
+/** POST /collection/{id}/items/{item_id}/delete — owner-only. */
+function collection_item_remove(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    if (!$c) not_found();
+    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+    db()->prepare('DELETE FROM collection_items WHERE id=? AND collection_id=?')->execute([(int)$a['item_id'], (int)$c['id']]);
+    redirect('/collection/'.(int)$c['id'].'/edit');
 }
 
 function meetups_index(array $a): void {
@@ -1305,11 +1487,12 @@ function follow_action(array $a): void {
  * reaches a table name is never taken raw from the request.
  */
 const RMT_INTERACT_TARGETS = [
-    'trip'      => 'trips',
-    'review'    => 'reviews',
-    'guide'     => 'guides',
-    'meetup'    => 'meetups',
-    'blog_post' => 'blog_posts',
+    'trip'       => 'trips',
+    'review'     => 'reviews',
+    'guide'      => 'guides',
+    'meetup'     => 'meetups',
+    'blog_post'  => 'blog_posts',
+    'collection' => 'collections',
 ];
 
 /**
@@ -1729,13 +1912,14 @@ function settings_save(array $a): void {
  * target_type reaching a table name must never be attacker-controlled.
  */
 const RMT_REPORT_TARGETS = [
-    'review'    => 'reviews',
-    'trip'      => 'trips',
-    'guide'     => 'guides',
-    'blog_post' => 'blog_posts',
-    'meetup'    => 'meetups',
-    'comment'   => 'comments',
-    'user'      => 'users',
+    'review'     => 'reviews',
+    'trip'       => 'trips',
+    'guide'      => 'guides',
+    'blog_post'  => 'blog_posts',
+    'meetup'     => 'meetups',
+    'comment'    => 'comments',
+    'user'       => 'users',
+    'collection' => 'collections',
 ];
 const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
 
@@ -1937,13 +2121,14 @@ function readyz(array $a): void {
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('blog'), url('meetups'), url('going'),
+    $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('collections'), url('blog'), url('meetups'), url('going'),
              url('leaderboard'), url('tags'), url('editorial-policy'), url('terms'), url('privacy'),
              url('guidelines'), url('affiliate'), url('safety')];
     foreach (rmt_top_tags(100) as $t) $urls[] = url('tag/'.$t['name']);
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
+    foreach (q_all("SELECT slug FROM collections WHERE status='published'") as $c) $urls[] = url('c/'.$c['slug']);
     foreach (q_all("SELECT slug FROM blog_posts WHERE status='published'") as $bp) $urls[] = url('blog/'.$bp['slug']);
     // Published reviews only — drafts/hidden/removed are never listed. Rows missing a slug
     // (pre-Phase-4) fall back to a generated one so the URL still resolves.

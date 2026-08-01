@@ -38,6 +38,7 @@
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('discover')) ?>">Discover</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
+      <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
       <a href="<?= e(url('tags')) ?>">Topics</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>

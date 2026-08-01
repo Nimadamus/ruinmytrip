@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -114,6 +114,14 @@
   <?php if ($guides): ?><h2 style="margin-top:30px">Guides</h2>
   <div class="grid g-3"><?php foreach ($guides as $g): ?>
     <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($g['title']) ?></h3></div></a></article>
+  <?php endforeach; ?></div><?php endif; ?>
+
+  <?php if ($collections): ?><h2 style="margin-top:30px">Collections</h2>
+  <div class="grid g-3"><?php foreach ($collections as $c): ?>
+    <article class="card"><a href="<?= e(url('c/'.$c['slug'])) ?>"><div class="card-body">
+      <h3 style="font-size:1.05rem"><?= e($c['title']) ?></h3>
+      <p class="muted" style="margin:.3rem 0 0"><?= (int)$c['item_count'] ?> <?= (int)$c['item_count']===1?'destination':'destinations' ?></p>
+    </div></a></article>
   <?php endforeach; ?></div><?php endif; ?>
 
   <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
