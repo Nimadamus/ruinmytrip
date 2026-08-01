@@ -10,7 +10,7 @@
       <p class="muted" style="margin:0">Been to <?= e($d['name']) ?>? Add photos to a trip or review.</p>
       <p style="margin:16px 0 0">
         <a class="btn btn-accent" href="<?= e(url('trip/new')) ?>">Share a trip</a>
-        <a class="btn btn-ghost" href="<?= e(url('review/new')) ?>">Write a review</a>
+        <a class="btn btn-ghost" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write a review</a>
       </p>
     </div>
   <?php endif; ?>

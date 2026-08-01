@@ -1299,7 +1299,12 @@ function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
 
 function review_new_form(array $a): void {
     require_login();
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>null],
+    // A "Share your experience" link from a destination page should not dump the writer back
+    // into an empty type-ahead they have to re-search -- that extra step is exactly the kind of
+    // friction that keeps a real review from ever getting written.
+    $preselect = (int) input('destination');
+    $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r],
          ['title'=>'Write a review — RuinMyTrip']);
 }
 
