@@ -148,6 +148,7 @@ function destination(array $a): void {
     // Community score only. An editorial rating is the site's own opinion and must never be
     // presented, or marked up for search engines, as traveler consensus.
     $avg = rmt_community_avg($id);
+    $avgByCategory = rmt_community_avg_by_category($id);
     $me = current_user();
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
     $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
@@ -156,7 +157,7 @@ function destination(array $a): void {
             (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved','wantCount','photos','photoCount'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),

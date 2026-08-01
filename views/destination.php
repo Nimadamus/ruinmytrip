@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -60,6 +60,21 @@
       <?php endforeach; ?>
     </div>
   </div></div>
+
+  <?php $rmt_catBreakdown = array_filter($avgByCategory, fn($c) => $c['subject_type'] !== 'destination'); ?>
+  <?php if ($rmt_catBreakdown): ?>
+    <div class="card" style="margin-top:12px"><div class="card-body">
+      <p class="rs-label" style="margin:0 0 8px">By what travelers actually reviewed</p>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <?php foreach ($rmt_catBreakdown as $cat): ?>
+          <div>
+            <p class="muted" style="margin:0;text-transform:capitalize"><?= e($cat['subject_type']) ?>s</p>
+            <p style="margin:0"><span class="stars" style="font-size:.9rem"><?= stars((int)round((float)$cat['a'])) ?></span> <?= e((string)$cat['a']) ?> <span class="muted">(<?= (int)$cat['c'] ?>)</span></p>
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div></div>
+  <?php endif; ?>
 
   <div class="grid g-2" style="margin-top:26px;align-items:start">
     <div>

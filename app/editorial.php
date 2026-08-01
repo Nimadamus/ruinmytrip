@@ -97,6 +97,29 @@ function rmt_community_avg(int $destId): array {
     ];
 }
 
+/**
+ * Community rating broken out by what was actually reviewed (destination/hotel/restaurant/
+ * attraction/experience), not just blended into one number. A destination can be a great place
+ * to visit and a bad place to eat at the same time -- one average hides that; this doesn't.
+ * Editorial excluded, same role filter as rmt_community_avg(). Only categories with at least one
+ * community review are returned, in RMT_REVIEW_CATEGORIES display order.
+ *
+ * @return array<int,array{subject_type:string,a:string,c:int}>
+ */
+function rmt_community_avg_by_category(int $destId): array {
+    $rows = q_all("SELECT r.subject_type, ROUND(AVG(r.rating), 1) a, COUNT(*) c
+                     FROM reviews r JOIN users u ON u.id = r.user_id
+                    WHERE r.destination_id = ? AND r.status = 'published' AND u.role <> ?
+                    GROUP BY r.subject_type", [$destId, RMT_EDITORIAL_ROLE]);
+    $byType = [];
+    foreach ($rows as $row) $byType[$row['subject_type']] = $row;
+    $out = [];
+    foreach (RMT_REVIEW_CATEGORIES as $type) {
+        if (isset($byType[$type])) $out[] = $byType[$type];
+    }
+    return $out;
+}
+
 /** Practical tips for a destination, in display order. */
 function rmt_destination_tips(int $destId): array {
     return q_all('SELECT * FROM destination_tips WHERE destination_id = ? ORDER BY sort, id', [$destId]);
