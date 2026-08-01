@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -121,7 +121,7 @@
           <h3 style="margin:.3rem 0 .1rem;font-size:1.1rem">
             <a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
           </h3>
-          <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span> · @<?= e($r['author']['username']??'') ?><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
+          <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span> · @<?= e($r['author']['username']??'') ?><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?><?php endif; ?></p>
           <p style="margin:.5rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 240, '…')) ?></p>
           <?php if ($r['what_ruined']): ?>
             <p class="muted" style="margin:.5rem 0 0;font-size:.92rem"><b style="color:#b42318">Nearly ruined it:</b> <?= e(mb_strimwidth((string)$r['what_ruined'], 0, 120, '…')) ?></p>

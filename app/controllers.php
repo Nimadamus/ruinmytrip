@@ -126,10 +126,15 @@ function destination(array $a): void {
     $tripCount = (int) q_one("SELECT COUNT(*) c FROM trips WHERE destination_id=? AND status='published'", [$id])['c'];
     // Editorial always sorts first regardless of id, so it can never be pushed out by LIMIT once
     // a destination has 30+ community reviews -- there is exactly one editorial review per
-    // destination, so this never crowds out real ones.
-    $reviews = q_all("SELECT r.* FROM reviews r JOIN users u ON u.id=r.user_id
+    // destination, so this never crowds out real ones. Within the rest, verified still wins the
+    // tie it always has, but the next tiebreaker is now how many travelers actually found the
+    // review useful, not just recency -- a well-vetted review from last year should not get
+    // buried under a same-day one-liner.
+    $reviews = q_all("SELECT r.*,
+                        (SELECT COUNT(*) FROM review_votes rv WHERE rv.review_id=r.id AND rv.vote_type='useful') useful_count
+                      FROM reviews r JOIN users u ON u.id=r.user_id
                       WHERE r.destination_id=? AND r.status='published'
-                      ORDER BY (u.role=?) DESC, r.verified DESC, r.id DESC LIMIT 30", [$id, RMT_EDITORIAL_ROLE]);
+                      ORDER BY (u.role=?) DESC, r.verified DESC, useful_count DESC, r.id DESC LIMIT 30", [$id, RMT_EDITORIAL_ROLE]);
     authors_fill($reviews);
     // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);
