@@ -76,14 +76,25 @@ function rmt_editorial_disclosure(): string {
  * Community rating for a destination: published reviews from real members only.
  * Editorial ratings are excluded by role, so the number always means "what travelers said".
  *
- * @return array{a:?string,c:int}
+ * Safety/value are optional per review (the write form labels them "optional"), so their counts
+ * are tracked separately from the overall review count `c` -- a destination with 20 reviews but
+ * only 6 safety ratings should say "from 6", not silently average the 14 blanks as zero (AVG()
+ * over a nullable column already skips NULLs correctly; this just surfaces the real denominator).
+ *
+ * @return array{a:?string,c:int,safety_a:?string,safety_c:int,value_a:?string,value_c:int}
  */
 function rmt_community_avg(int $destId): array {
-    $row = q_one("SELECT ROUND(AVG(r.rating), 1) a, COUNT(*) c
+    $row = q_one("SELECT ROUND(AVG(r.rating), 1) a, COUNT(*) c,
+                         ROUND(AVG(r.safety_rating), 1) safety_a, COUNT(r.safety_rating) safety_c,
+                         ROUND(AVG(r.value_rating), 1) value_a, COUNT(r.value_rating) value_c
                     FROM reviews r JOIN users u ON u.id = r.user_id
                    WHERE r.destination_id = ? AND r.status = 'published' AND u.role <> ?",
                  [$destId, RMT_EDITORIAL_ROLE]);
-    return ['a' => $row['a'] ?? null, 'c' => (int) ($row['c'] ?? 0)];
+    return [
+        'a' => $row['a'] ?? null, 'c' => (int) ($row['c'] ?? 0),
+        'safety_a' => $row['safety_a'] ?? null, 'safety_c' => (int) ($row['safety_c'] ?? 0),
+        'value_a' => $row['value_a'] ?? null, 'value_c' => (int) ($row['value_c'] ?? 0),
+    ];
 }
 
 /** Practical tips for a destination, in display order. */

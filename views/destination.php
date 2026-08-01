@@ -33,6 +33,13 @@
         <p class="rs-label">Community rating</p>
         <?php if ((int)$avg['c'] > 0): ?>
           <p class="rs-value"><span class="stars"><?= stars((int)round((float)$avg['a'])) ?></span> <?= e((string)$avg['a']) ?><span class="muted" style="font-weight:400"> from <?= (int)$avg['c'] ?> traveler <?= (int)$avg['c'] === 1 ? 'review' : 'reviews' ?></span></p>
+          <?php if ($avg['safety_c'] > 0 || $avg['value_c'] > 0): ?>
+            <p class="hint" style="margin:0">
+              <?php if ($avg['safety_c'] > 0): ?>Safety <?= e((string)$avg['safety_a']) ?>/5 <span class="muted">(<?= $avg['safety_c'] ?>)</span><?php endif; ?>
+              <?php if ($avg['safety_c'] > 0 && $avg['value_c'] > 0): ?> · <?php endif; ?>
+              <?php if ($avg['value_c'] > 0): ?>Value <?= e((string)$avg['value_a']) ?>/5 <span class="muted">(<?= $avg['value_c'] ?>)</span><?php endif; ?>
+            </p>
+          <?php endif; ?>
         <?php else: ?>
           <p class="rs-value muted" style="font-weight:600">No traveler reviews yet</p>
           <p class="hint" style="margin:0">This score stays empty until real travelers post. We do not fill it in ourselves.</p>
