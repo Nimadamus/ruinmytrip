@@ -52,6 +52,10 @@ NAME_TO_SLUG = {
     "edinburgh": "edinburgh-scotland",
     "medellin": "medellin-colombia",
     "medellín": "medellin-colombia",
+    "barcelona": "barcelona-spain",
+    "tokyo": "tokyo-japan",
+    "cairo": "cairo-egypt",
+    "buenos aires": "buenos-aires-argentina",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -77,6 +81,10 @@ SLUG_TO_NAME = {
     "istanbul-turkiye": "Istanbul",
     "edinburgh-scotland": "Edinburgh",
     "medellin-colombia": "Medellín",
+    "barcelona-spain": "Barcelona",
+    "tokyo-japan": "Tokyo",
+    "cairo-egypt": "Cairo",
+    "buenos-aires-argentina": "Buenos Aires",
 }
 
 
