@@ -89,6 +89,10 @@ NAME_TO_SLUG = {
     "zurich": "zurich-switzerland",
     "seminyak": "seminyak-bali-indonesia",
     "warsaw": "warsaw-poland",
+    "jaipur": "jaipur-india",
+    "petra": "petra-jordan",
+    "dubrovnik": "dubrovnik-croatia",
+    "san jose": "san-jose-costa-rica",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -150,6 +154,10 @@ SLUG_TO_NAME = {
     "zurich-switzerland": "Zurich",
     "seminyak-bali-indonesia": "Seminyak",
     "warsaw-poland": "Warsaw",
+    "jaipur-india": "Jaipur",
+    "petra-jordan": "Petra",
+    "dubrovnik-croatia": "Dubrovnik",
+    "san-jose-costa-rica": "San Jose",
 }
 
 
