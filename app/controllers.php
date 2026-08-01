@@ -99,14 +99,22 @@ function explore(array $a): void {
         $args[]=$needle;$args[]=$needle;$args[]=$needle;
     }
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
+    // Postgres resolves a non-trivial ORDER BY expression (anything beyond a bare column/alias)
+    // against the FROM-clause tables, not the SELECT list -- so `ORDER BY avg_rating IS NULL`
+    // fails with "column avg_rating does not exist" even though `avg_rating` is a real output
+    // column, because that expression isn't a bare reference. SQLite has no such restriction,
+    // which is exactly why this passed local testing and then 500'd in production. Wrapping the
+    // whole query as a derived table makes every output column, including subquery aliases like
+    // avg_rating, a real column of `x` that any ORDER BY expression can reference safely.
+    $sql = "SELECT * FROM ($sql) x";
     $sql .= match ($sort) {
-        'popular' => ' ORDER BY wants DESC, d.name',
+        'popular' => ' ORDER BY wants DESC, name',
         // A single five-star review should not be able to outrank a destination with fifty
         // honest ones -- `reviews < 2` pushes anything below that sample size out of the ranked
         // tier (still sorted among itself by whatever rating it has, just never above real
         // consensus). `IS NULL`/`< 2` both evaluate to 0/1 in both drivers, valid ORDER BY keys.
-        'rating'  => ' ORDER BY (avg_rating IS NULL OR reviews < 2), avg_rating DESC, d.name',
-        default   => ' ORDER BY d.name',
+        'rating'  => ' ORDER BY (avg_rating IS NULL OR reviews < 2), avg_rating DESC, name',
+        default   => ' ORDER BY name',
     };
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
