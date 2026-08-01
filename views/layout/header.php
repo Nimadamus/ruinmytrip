@@ -46,6 +46,7 @@
       <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
+        <a href="<?= e(url('messages')) ?>" title="Messages">✉️<?php $unread = rmt_unread_message_count((int)$me['id']); if ($unread): ?> <span class="chip" style="background:#0f766e;color:#fff"><?= $unread ?></span><?php endif; ?></a>
         <a href="<?= e(url('notifications')) ?>" title="Notifications">🔔</a>
         <?php if (in_array($me['role'],['admin','mod'],true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">@<?= e($me['username']) ?></a>

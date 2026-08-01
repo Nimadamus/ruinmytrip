@@ -1,4 +1,4 @@
-<?php /** @var array $items */ ?>
+<?php /** @var array $items @var array $me */ ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Notifications</h1>
   <?php if(!$items):?>
@@ -29,6 +29,15 @@
             <a href="<?= e($href) ?>"><b><?= e($who) ?></b> <?= e($verb) ?> <?= e($noun) ?>.</a>
           <?php else: ?>
             <b><?= e($who) ?></b> <?= e($verb) ?> <?= e($noun) ?> that is no longer available.
+          <?php endif; ?>
+        <?php elseif ($n['type']==='message'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id'], (int)$me['id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> sent you a message.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> sent you a message.
           <?php endif; ?>
         <?php else: ?>
           <b><?= e($n['type']) ?></b> from @<?= e($n['actor']) ?>

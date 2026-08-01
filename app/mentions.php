@@ -83,8 +83,16 @@ function rmt_linkify_mentions(string $escapedHtml): string {
  * Where a notification about a piece of content should land. Returns null when the content is
  * gone or unpublished, so the view can degrade to plain text instead of linking to a 404.
  */
-function rmt_notification_target_url(string $type, int $id): ?string {
+function rmt_notification_target_url(string $type, int $id, int $forUserId = 0): ?string {
     switch ($type) {
+        case 'conversation':
+            // $id is a conversations.id; resolve to the OTHER participant's thread URL, not the
+            // recipient's own — a notification always links to where the recipient should go.
+            $r = q_one('SELECT user_lo_id, user_hi_id FROM conversations WHERE id=?', [$id]);
+            if (!$r) return null;
+            $otherId = (int)$r['user_lo_id'] === $forUserId ? (int)$r['user_hi_id'] : (int)$r['user_lo_id'];
+            $u = q_one("SELECT username FROM users WHERE id=? AND status='active'", [$otherId]);
+            return $u ? url('messages/' . $u['username']) : null;
         case 'trip':
             $r = q_one("SELECT id, slug FROM trips WHERE id=? AND status='published'", [$id]);
             return $r ? url('trip/' . (int)$r['id'] . '/' . $r['slug']) : null;

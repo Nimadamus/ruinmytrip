@@ -165,7 +165,9 @@ function profile(array $a): void {
     $myCompliments = ($me && !$isMe) ? rmt_compliments_sent_by((int)$me['id'], $uid) : [];
 
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
-    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments'), [
+    $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
+    $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
+    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -1268,6 +1270,7 @@ function follow_action(array $a): void {
     if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$target])) {
         flash('That traveler is no longer available.'); redirect(input('return','/'));
     }
+    if (rmt_is_blocked((int)$me['id'], $target)) redirect(input('return','/'));
     // Follows create notifications, so cap them to blunt notification-spam.
     if (!rmt_rate_ok('follow', (string)$me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.'); redirect(input('return','/'));
@@ -1403,6 +1406,7 @@ function compliment_action(array $a): void {
     if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$toId])) {
         flash('That traveler is no longer available.'); redirect(input('return', '/'));
     }
+    if (rmt_is_blocked((int) $me['id'], $toId)) redirect(input('return', '/'));
     if (!rmt_rate_ok('compliment', (string) $me['id'], 40, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
         redirect(input('return', '/'));

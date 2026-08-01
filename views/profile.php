@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -32,12 +32,28 @@
     <div>
       <?php if ($me && (int)$me['id']===(int)$u['id']): ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$u['username'].'/edit')) ?>">Edit profile</a>
-      <?php elseif ($me): ?>
-        <form class="inline-form" method="post" action="<?= e(url('follow')) ?>">
+      <?php elseif ($me && $i_blocked_them): ?>
+        <form class="inline-form" method="post" action="<?= e(url('unblock')) ?>">
           <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
           <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
-          <button class="btn <?= $is_following?'btn-ghost':'btn-primary' ?>"><?= $is_following?'Following':'Follow' ?></button>
+          <button class="btn btn-ghost" style="color:#b42318">Unblock</button>
         </form>
+      <?php elseif ($me && $is_blocked): ?>
+        <?php /* They blocked me; nothing to offer here. */ ?>
+      <?php elseif ($me): ?>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <form class="inline-form" method="post" action="<?= e(url('follow')) ?>">
+            <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
+            <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
+            <button class="btn <?= $is_following?'btn-ghost':'btn-primary' ?>"><?= $is_following?'Following':'Follow' ?></button>
+          </form>
+          <a class="btn btn-ghost" href="<?= e(url('messages/'.$u['username'])) ?>">Message</a>
+          <form class="inline-form" method="post" action="<?= e(url('block')) ?>" onsubmit="return confirm('Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.');">
+            <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
+            <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
+            <button class="btn btn-ghost" style="color:#b42318">Block</button>
+          </form>
+        </div>
       <?php else: ?>
         <a class="btn btn-primary" href="<?= e(url('login')) ?>">Follow</a>
       <?php endif; ?>
@@ -54,7 +70,7 @@
           <span class="chip" title="<?= (int)$c['c'] ?>"><?= e(RMT_COMPLIMENT_TYPES[$c['type']] ?? $c['type']) ?> · <?= (int)$c['c'] ?></span>
         <?php endforeach; ?>
       </div>
-      <?php if ($me && !$isMe): ?>
+      <?php if ($me && !$isMe && !$is_blocked): ?>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
           <?php foreach (RMT_COMPLIMENT_TYPES as $slug=>$label): $sent = in_array($slug, $myCompliments, true); ?>
             <?php if ($sent): ?>
