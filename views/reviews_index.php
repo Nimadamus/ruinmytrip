@@ -69,7 +69,7 @@
         </p>
         <p style="margin:.5rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 160, '…')) ?></p>
         <div class="meta-row" style="justify-content:space-between">
-          <span><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?> found this useful<?php endif; ?></span>
+          <span><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?> found this useful<?php endif; ?><?php if (rmt_review_is_stale($r)): ?> · <span class="hint">⏳ may be outdated</span><?php endif; ?></span>
           <?php if (rmt_review_can_edit($r, $me)): ?>
             <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
           <?php endif; ?>

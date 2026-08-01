@@ -88,6 +88,12 @@ function rmt_review_validate(array $in, bool $isDraft): array {
     ]];
 }
 
+/** Has this review gone untouched for over a year? Used to flag that prices/rules may have moved on. */
+function rmt_review_is_stale(array $r): bool {
+    $ts = strtotime((string) ($r['updated_at'] ?? '') ?: (string) ($r['created_at'] ?? ''));
+    return $ts !== false && $ts < strtotime('-365 days');
+}
+
 /** URL slug for a review permalink. Never empty — falls back to the id. */
 function rmt_review_slug(array $r): string {
     $base = trim((string) ($r['title'] ?: $r['subject_name'] ?: ''));

@@ -37,6 +37,10 @@
     </span>
   </div>
 
+  <?php if (rmt_review_is_stale($r)): ?>
+    <p class="hint" style="margin:8px 0 0">⏳ Last updated <?= e(ago((string) ($r['updated_at'] ?: $r['created_at']))) ?> — prices and rules may have changed since.</p>
+  <?php endif; ?>
+
   <?php if ($isEd): ?>
     <div class="empty-cta" style="margin-top:22px">
       <h2 style="margin:0 0 6px;font-size:1.15rem">Been to <?= e($r['dest_name'] ?: $r['subject_name']) ?>? This page needs you more than it needs us.</h2>
