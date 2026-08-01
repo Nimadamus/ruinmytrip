@@ -431,6 +431,7 @@ function reviews_index(array $a): void {
     $me = current_user();
     $mine = input('mine') === '1';
     $cat  = input('category');
+    $sort = input('sort') === 'helpful' ? 'helpful' : 'new';
 
     if ($mine) {
         // A user's own reviews INCLUDING drafts — the only place drafts are listed.
@@ -441,16 +442,17 @@ function reviews_index(array $a): void {
                           ORDER BY CASE r.status WHEN 'draft' THEN 0 ELSE 1 END, r.id DESC",
                          [(int)$me['id']]);
     } else {
-        $sql = "SELECT r.*, d.name dest_name, d.slug dest_slug FROM reviews r
-                LEFT JOIN destinations d ON d.id=r.destination_id
+        $sql = "SELECT r.*, d.name dest_name, d.slug dest_slug,
+                  (SELECT COUNT(*) FROM review_votes rv WHERE rv.review_id=r.id AND rv.vote_type='useful') useful_count
+                FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
                 WHERE r.status='published'";
         $args = [];
         if (in_array($cat, RMT_REVIEW_CATEGORIES, true)) { $sql .= ' AND r.subject_type = ?'; $args[] = $cat; }
-        $sql .= ' ORDER BY r.id DESC LIMIT 50';
+        $sql .= $sort === 'helpful' ? ' ORDER BY useful_count DESC, r.id DESC LIMIT 50' : ' ORDER BY r.id DESC LIMIT 50';
         $reviews = q_all($sql, $args);
     }
     authors_fill($reviews);
-    view('reviews_index', compact('reviews','mine','cat','me'), [
+    view('reviews_index', compact('reviews','mine','cat','sort','me'), [
         'title'=>$mine ? 'Your reviews — RuinMyTrip' : 'Traveler reviews — RuinMyTrip',
         'description'=>'Honest traveler reviews of destinations, hotels, restaurants, attractions and experiences.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')]],

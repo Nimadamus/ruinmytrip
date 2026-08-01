@@ -1,4 +1,4 @@
-<?php /** @var array $reviews @var bool $mine @var string $cat @var ?array $me */ ?>
+<?php /** @var array $reviews @var bool $mine @var string $cat @var string $sort @var ?array $me */ ?>
 <section class="block"><div class="wrap">
   <div class="section-head">
     <div>
@@ -23,6 +23,14 @@
          style="<?= $mine ? 'background:var(--ink);color:#fff' : '' ?>"><?= $mine ? 'All reviews' : 'My reviews & drafts' ?></a>
     <?php endif; ?>
   </div>
+
+  <?php if (!$mine): ?>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 18px">
+      <span class="muted" style="font-size:.9rem;align-self:center">Sort:</span>
+      <a class="chip" href="<?= e(url('reviews'.($cat?'?category='.$cat:''))) ?>" style="<?= $sort==='new' ? 'background:var(--ink);color:#fff' : '' ?>">Newest</a>
+      <a class="chip" href="<?= e(url('reviews?sort=helpful'.($cat?'&category='.$cat:''))) ?>" style="<?= $sort==='helpful' ? 'background:var(--ink);color:#fff' : '' ?>">Most helpful</a>
+    </div>
+  <?php endif; ?>
 
   <?php if (!$reviews): ?>
     <div class="empty-cta">
@@ -61,7 +69,7 @@
         </p>
         <p style="margin:.5rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 160, '…')) ?></p>
         <div class="meta-row" style="justify-content:space-between">
-          <span><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?></span>
+          <span><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?> found this useful<?php endif; ?></span>
           <?php if (rmt_review_can_edit($r, $me)): ?>
             <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
           <?php endif; ?>
