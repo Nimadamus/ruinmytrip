@@ -1,4 +1,4 @@
-<?php /** @var array $dests @var array $cats @var string $qs @var string $cat */ ?>
+<?php /** @var array $dests @var array $cats @var string $qs @var string $cat @var string $sort */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Explore</p>
   <h1>Explore destinations</h1>
@@ -10,6 +10,10 @@
       <?php foreach ($cats as $c): ?>
         <option value="<?= e($c['category']) ?>" <?= $cat===$c['category']?'selected':'' ?>><?= e(ucfirst($c['category'])) ?></option>
       <?php endforeach; ?>
+    </select>
+    <select name="sort" onchange="this.form.submit()">
+      <option value="name" <?= $sort==='name'?'selected':'' ?>>A to Z</option>
+      <option value="popular" <?= $sort==='popular'?'selected':'' ?>>Most wanted</option>
     </select>
     <button class="btn btn-primary" type="submit">Search</button>
   </form>
@@ -34,6 +38,7 @@
           <div class="meta-row">
             <?= (int)$d['reviews'] ?> traveler <?= (int)$d['reviews'] === 1 ? 'review' : 'reviews' ?>
             · <?= (int)$d['trips'] ?> <?= (int)$d['trips'] === 1 ? 'trip' : 'trips' ?>
+            <?php if ((int)$d['wants'] > 0): ?> · ★ <?= (int)$d['wants'] ?> want to visit<?php endif; ?>
           </div>
         </div></a></article>
     <?php endforeach; ?>

@@ -73,6 +73,7 @@ function home(array $a): void {
 
 function explore(array $a): void {
     $qs = trim((string)($_GET['q'] ?? '')); $cat = trim((string)($_GET['category'] ?? ''));
+    $sort = ($_GET['sort'] ?? '') === 'popular' ? 'popular' : 'name';
     // "reviews" on a destination card means TRAVELER reviews. Counting our own editorial review
     // here would put "1 review" on every card while the community section is empty, which is
     // exactly the impression this site exists not to give.
@@ -81,7 +82,8 @@ function explore(array $a): void {
                 WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) reviews,
               (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id
                 WHERE r.destination_id=d.id AND r.status='published' AND u.role  = ?) editorial,
-              (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips
+              (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips,
+              (SELECT COUNT(*) FROM saves s WHERE s.target_type='destination' AND s.target_id=d.id) wants
             FROM destinations d WHERE 1=1";
     $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
     // LOWER() on both sides, not bare LIKE: LIKE is case-insensitive on SQLite (local dev) but
@@ -93,11 +95,11 @@ function explore(array $a): void {
         $args[]=$needle;$args[]=$needle;$args[]=$needle;
     }
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
-    $sql .= ' ORDER BY d.name';
+    $sql .= $sort === 'popular' ? ' ORDER BY wants DESC, d.name' : ' ORDER BY d.name';
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $topTags = rmt_top_tags(14);
-    view('explore', compact('dests','cats','qs','cat','topTags'), [
+    view('explore', compact('dests','cats','qs','cat','sort','topTags'), [
         'title' => 'Explore destinations — RuinMyTrip',
         'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
@@ -133,7 +135,8 @@ function destination(array $a): void {
     $avg = rmt_community_avg($id);
     $me = current_user();
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved'), [
+    $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved','wantCount'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
