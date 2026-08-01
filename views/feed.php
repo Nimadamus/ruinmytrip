@@ -1,5 +1,5 @@
 <?php /** @var array $items @var array $me */
-$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog'];
+$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection'];
 ?>
 <div class="wrap" style="max-width:760px">
   <h1 style="margin-top:24px">Your feed</h1>

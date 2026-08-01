@@ -256,11 +256,12 @@ function profile_edit_submit(array $a): void {
 }
 
 /**
- * Fetch a merged, chronological activity stream across all four publishable content types.
- * $scopeUid null -> everyone (public discover). $scopeUid set -> that user's own content plus
- * everyone they follow (personal feed). Each content type is fetched separately (their schemas
- * differ too much for one clean UNION), tagged with a $kind the view uses to link/label/excerpt
- * correctly, then merged and sorted in PHP.
+ * Fetch a merged, chronological activity stream across all five publishable content types
+ * (trips, reviews, guides, blog posts, collections). $scopeUid null -> everyone (public
+ * discover). $scopeUid set -> that user's own content plus everyone they follow (personal feed).
+ * Each content type is fetched separately (their schemas differ too much for one clean UNION),
+ * tagged with a $kind the view uses to link/label/excerpt correctly, then merged and sorted in
+ * PHP.
  */
 function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     if ($scopeUid !== null) {
@@ -316,7 +317,22 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts);
+    $collections = q_all("SELECT c.*,
+            (SELECT d.hero_url FROM collection_items ci JOIN destinations d ON d.id=ci.destination_id
+              WHERE ci.collection_id=c.id ORDER BY ci.sort, ci.id LIMIT 1) cover_url,
+            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+          FROM collections c WHERE c.status='published' AND $followedPlain
+          ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", $args);
+    foreach ($collections as &$row) {
+        $row['kind'] = 'collection';
+        $row['dest_name'] = null;
+        $row['feed_url'] = url('c/'.$row['slug']);
+        $count = (int)$row['item_count'];
+        $row['feed_excerpt'] = $row['summary'] ?: ($count.' '.($count===1?'destination':'destinations'));
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -328,7 +344,7 @@ function feed(array $a): void {
     $items = rmt_activity_items($uid);
     view('feed', compact('items','me'), [
         'title' => 'Your feed — RuinMyTrip',
-        'description' => 'Latest trips, reviews, guides and blog posts from travelers you follow.',
+        'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);
 }
 
@@ -339,7 +355,7 @@ function discover(array $a): void {
     $topTags = rmt_top_tags(14);
     view('discover', ['items'=>$items, 'me'=>current_user(), 'topTags'=>$topTags], [
         'title' => 'Discover — RuinMyTrip',
-        'description' => 'The latest trips, reviews, guides and blog posts from every traveler on RuinMyTrip.',
+        'description' => 'The latest trips, reviews, guides, collections and blog posts from every traveler on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Discover','url'=>url('discover')]],
     ]);
 }
@@ -767,7 +783,8 @@ function collection_show(array $a): void {
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'collection',$cid]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'collection',$cid]);
     $canEdit = rmt_collection_can_edit($c, $me);
-    view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit'), [
+    $tags = rmt_tags_for('collection', $cid);
+    view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit','tags'), [
         'title' => $c['title'].' — RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
         'og_image' => $items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg'),
@@ -827,8 +844,10 @@ function collection_create(array $a): void {
     $slug = rmt_collection_unique_slug($d['title']);
     q_run("INSERT INTO collections (user_id,slug,title,summary,status,created_at) VALUES (?,?,?,?,'published',?)",
         [(int)$me['id'], $slug, $d['title'], $d['summary'], date('Y-m-d H:i:s')]);
+    $cid = (int) q_one('SELECT id FROM collections WHERE slug=?', [$slug])['id'];
+    rmt_sync_tags('collection', $cid, $d['title'], $d['summary']);
     flash('Collection created. Now add a few destinations to it.');
-    redirect('/collection/'.(int) q_one('SELECT id FROM collections WHERE slug=?', [$slug])['id'].'/edit');
+    redirect('/collection/'.$cid.'/edit');
 }
 
 function collection_edit_form(array $a): void {
@@ -862,6 +881,7 @@ function collection_edit_submit(array $a): void {
     $slug = rmt_collection_unique_slug($d['title'], (int)$c['id']);
     db()->prepare("UPDATE collections SET title=?, slug=?, summary=?, updated_at=? WHERE id=?")
         ->execute([$d['title'], $slug, $d['summary'], date('Y-m-d H:i:s'), (int)$c['id']]);
+    rmt_sync_tags('collection', (int)$c['id'], $d['title'], $d['summary']);
     flash('Collection updated.');
     redirect('/collection/'.(int)$c['id'].'/edit');
 }
@@ -988,7 +1008,7 @@ function leaderboard(array $a): void {
  */
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=$posts=[];
+    $dests=$trips=$guides=$reviews=$people=$posts=$collections=[];
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         if ($driver === 'pgsql') {
@@ -1005,6 +1025,8 @@ function search(array $a): void {
                               ORDER BY ts_rank(r.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $posts = q_all("SELECT * FROM blog_posts WHERE status='published' AND search_vector @@ $tsq
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $collections = q_all("SELECT * FROM collections WHERE status='published' AND search_vector @@ $tsq
+                                  ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
         } else {
             $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
                             WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
@@ -1018,6 +1040,8 @@ function search(array $a): void {
                               WHERE reviews_fts MATCH ? AND r.status='published' ORDER BY rank LIMIT 10", [$qs]);
             $posts = q_all("SELECT p.* FROM blog_posts p JOIN blog_posts_fts f ON f.rowid=p.id
                             WHERE blog_posts_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$qs]);
+            $collections = q_all("SELECT c.* FROM collections c JOIN collections_fts f ON f.rowid=c.id
+                                  WHERE collections_fts MATCH ? AND c.status='published' ORDER BY rank LIMIT 10", [$qs]);
         }
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
@@ -1028,9 +1052,9 @@ function search(array $a): void {
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
     }
-    view('search', compact('qs','dests','trips','guides','reviews','people','posts'), [
+    view('search', compact('qs','dests','trips','guides','reviews','people','posts','collections'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
-        'description'=>'Search destinations, trips, reviews, guides, blog posts, and travelers across RuinMyTrip.',
+        'description'=>'Search destinations, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
     ]);
 }
 

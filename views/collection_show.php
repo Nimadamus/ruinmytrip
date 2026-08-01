@@ -1,9 +1,12 @@
-<?php /** @var array $c @var ?array $me @var array $items @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var bool $canEdit */ ?>
+<?php /** @var array $c @var ?array $me @var array $items @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var bool $canEdit @var array $tags */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('collections')) ?>">Collections</a> / <?= e($c['title']) ?></p></div>
 <div class="wrap prose">
   <h1><?= e($c['title']) ?></h1>
   <p class="muted">by <a href="<?= e(url('u/'.$c['author']['username'])) ?>">@<?= e($c['author']['username']) ?></a> · <?= e(ago($c['created_at'])) ?> · <?= count($items) ?> <?= count($items) === 1 ? 'destination' : 'destinations' ?></p>
   <?php if ($c['summary']): ?><p style="font-size:1.15rem;color:var(--muted)"><?= e($c['summary']) ?></p><?php endif; ?>
+  <?php if (!empty($tags)): ?>
+    <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
+  <?php endif; ?>
 
   <?php if (!$items): ?>
     <p class="muted">Nothing added to this collection yet.</p>

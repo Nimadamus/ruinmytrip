@@ -1,5 +1,5 @@
 <?php /** @var array $items @var ?array $me */
-$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog'];
+$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection'];
 ?>
 <div class="wrap" style="max-width:760px">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Discover</p>

@@ -132,7 +132,20 @@ function rmt_tag_items(int $tagId, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts);
+    $collections = q_all("SELECT c.*,
+            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+          FROM collections c WHERE c.status='published' AND c.id IN $in
+          ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", [$tagId, 'collection']);
+    foreach ($collections as &$row) {
+        $row['kind'] = 'collection';
+        $row['dest_name'] = null;
+        $row['feed_url'] = url('c/'.$row['slug']);
+        $count = (int)$row['item_count'];
+        $row['feed_excerpt'] = $row['summary'] ?: ($count.' '.($count===1?'destination':'destinations'));
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
