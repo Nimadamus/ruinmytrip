@@ -64,6 +64,11 @@ NAME_TO_SLUG = {
     "lima": "lima-peru",
     "hong kong": "hong-kong",
     "nairobi": "nairobi-kenya",
+    "accra": "accra-ghana",
+    "santorini": "santorini-greece",
+    "dubai": "dubai-uae",
+    "new york city": "new-york-city-usa",
+    "new york": "new-york-city-usa",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -101,6 +106,10 @@ SLUG_TO_NAME = {
     "lima-peru": "Lima",
     "hong-kong": "Hong Kong",
     "nairobi-kenya": "Nairobi",
+    "accra-ghana": "Accra",
+    "santorini-greece": "Santorini",
+    "dubai-uae": "Dubai",
+    "new-york-city-usa": "New York City",
 }
 
 
