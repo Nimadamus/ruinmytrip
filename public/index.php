@@ -104,6 +104,7 @@ $routes = [
     ['GET',  '#^/safety$#',                    'page_safety'],
     ['GET',  '#^/editorial-policy$#',          'page_editorial'],
     ['GET',  '#^/sitemap\.xml$#',              'sitemap'],
+    ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/healthz$#',                    'healthz'],
     ['GET',  '#^/readyz$#',                     'readyz'],

@@ -2190,3 +2190,32 @@ function sitemap(array $a): void {
     foreach ($urls as $u) echo '  <url><loc>'.e($u).'</loc></url>'."\n";
     echo '</urlset>';
 }
+
+/**
+ * GET /feed.xml — site-wide RSS 2.0 of the public activity stream (same data as /discover:
+ * trips, reviews, guides, blog posts, collections from every traveler). Reuses
+ * rmt_activity_items() rather than re-querying each content type, so a feed entry's title/link/
+ * excerpt can never drift from what the discover page shows for the same item.
+ */
+function feed_rss(array $a): void {
+    header('Content-Type: application/rss+xml; charset=utf-8');
+    $items = rmt_activity_items(null, 60);
+    echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+    echo '<rss version="2.0"><channel>'."\n";
+    echo '<title>RuinMyTrip</title>'."\n";
+    echo '<link>'.e(url()).'</link>'."\n";
+    echo '<description>Honest, real traveler trips, reviews, guides, collections and blog posts.</description>'."\n";
+    echo '<language>en-us</language>'."\n";
+    foreach ($items as $it) {
+        $who = $it['author']['username'] ?? '';
+        echo '<item>'."\n";
+        echo '  <title>'.e($it['title']).'</title>'."\n";
+        echo '  <link>'.e($it['feed_url']).'</link>'."\n";
+        echo '  <guid isPermaLink="true">'.e($it['feed_url']).'</guid>'."\n";
+        echo '  <pubDate>'.e(date(DATE_RSS, strtotime((string)$it['created_at']))).'</pubDate>'."\n";
+        if ($who !== '') echo '  <author>'.e($who).'</author>'."\n";
+        echo '  <description>'.e($it['feed_excerpt']).'</description>'."\n";
+        echo '</item>'."\n";
+    }
+    echo '</channel></rss>';
+}
