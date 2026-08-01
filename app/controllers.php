@@ -73,19 +73,23 @@ function home(array $a): void {
 
 function explore(array $a): void {
     $qs = trim((string)($_GET['q'] ?? '')); $cat = trim((string)($_GET['category'] ?? ''));
-    $sort = ($_GET['sort'] ?? '') === 'popular' ? 'popular' : 'name';
+    $sortIn = (string) ($_GET['sort'] ?? '');
+    $sort = in_array($sortIn, ['popular','rating'], true) ? $sortIn : 'name';
     // "reviews" on a destination card means TRAVELER reviews. Counting our own editorial review
     // here would put "1 review" on every card while the community section is empty, which is
-    // exactly the impression this site exists not to give.
+    // exactly the impression this site exists not to give. avg_rating uses the same
+    // role-exclusion as rmt_community_avg() so "highest rated" never reflects our own opinion.
     $sql = "SELECT d.*,
               (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id
                 WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) reviews,
               (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id
                 WHERE r.destination_id=d.id AND r.status='published' AND u.role  = ?) editorial,
               (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips,
-              (SELECT COUNT(*) FROM saves s WHERE s.target_type='destination' AND s.target_id=d.id) wants
+              (SELECT COUNT(*) FROM saves s WHERE s.target_type='destination' AND s.target_id=d.id) wants,
+              (SELECT AVG(r.rating) FROM reviews r JOIN users u ON u.id=r.user_id
+                WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) avg_rating
             FROM destinations d WHERE 1=1";
-    $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
+    $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
     // LOWER() on both sides, not bare LIKE: LIKE is case-insensitive on SQLite (local dev) but
     // case-SENSITIVE on Postgres (production), so this silently returned zero results in
     // production for any search that didn't match the stored capitalization exactly.
@@ -95,7 +99,13 @@ function explore(array $a): void {
         $args[]=$needle;$args[]=$needle;$args[]=$needle;
     }
     if ($cat !== '') { $sql .= ' AND d.category = ?'; $args[] = $cat; }
-    $sql .= $sort === 'popular' ? ' ORDER BY wants DESC, d.name' : ' ORDER BY d.name';
+    $sql .= match ($sort) {
+        'popular' => ' ORDER BY wants DESC, d.name',
+        // Destinations with zero community reviews sort after rated ones, never first --
+        // `avg_rating IS NULL` evaluates to 0/1 in both drivers, so it's a valid ORDER BY key.
+        'rating'  => ' ORDER BY avg_rating IS NULL, avg_rating DESC, d.name',
+        default   => ' ORDER BY d.name',
+    };
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $topTags = rmt_top_tags(14);

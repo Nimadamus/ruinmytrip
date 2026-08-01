@@ -13,6 +13,7 @@
     </select>
     <select name="sort" onchange="this.form.submit()">
       <option value="name" <?= $sort==='name'?'selected':'' ?>>A to Z</option>
+      <option value="rating" <?= $sort==='rating'?'selected':'' ?>>Highest rated</option>
       <option value="popular" <?= $sort==='popular'?'selected':'' ?>>Most wanted</option>
     </select>
     <button class="btn btn-primary" type="submit">Search</button>
@@ -33,6 +34,7 @@
         <div class="card-body">
           <span class="chip"><?= e($d['category']) ?></span>
           <?php if ((int)$d['editorial'] > 0): ?><?= rmt_editorial_badge('review') ?><?php endif; ?>
+          <?php if ($d['avg_rating'] !== null): ?><span class="stars" style="font-size:.85rem"><?= stars((int)round((float)$d['avg_rating'])) ?></span><?php endif; ?>
           <h3><?= e($d['name']) ?>, <?= e($d['country']) ?></h3>
           <p class="muted"><?= e($d['summary']) ?></p>
           <div class="meta-row">
