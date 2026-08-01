@@ -48,6 +48,7 @@
             <button class="btn <?= $is_following?'btn-ghost':'btn-primary' ?>"><?= $is_following?'Following':'Follow' ?></button>
           </form>
           <a class="btn btn-ghost" href="<?= e(url('messages/'.$u['username'])) ?>">Message</a>
+          <a class="btn btn-ghost" href="<?= e(url('report?target_type=user&target_id='.(int)$u['id'])) ?>">⚑ Report</a>
           <form class="inline-form" method="post" action="<?= e(url('block')) ?>" onsubmit="return confirm('Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.');">
             <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
             <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
