@@ -92,6 +92,30 @@ function rmt_destination_tips(int $destId): array {
 }
 
 /**
+ * Every real traveler photo for a destination -- trip photos and review photos merged, newest
+ * first. Two separately-bounded subqueries (LIMIT 200 each, portable across both drivers) rather
+ * than one unbounded UNION, then merged and re-sliced to $limit in PHP -- a popular destination
+ * could otherwise pull thousands of rows just to show a 12-photo teaser grid.
+ */
+function rmt_destination_photos(int $destId, int $limit = 0): array {
+    $tripPhotos = q_all("SELECT tp.url, tp.caption, tp.created_at, t.id parent_id, t.slug parent_slug,
+                                t.user_id, 'trip' AS kind
+                         FROM trip_photos tp JOIN trips t ON t.id = tp.trip_id
+                         WHERE t.destination_id = ? AND t.status = 'published'
+                         ORDER BY tp.created_at DESC, tp.id DESC LIMIT 200", [$destId]);
+    $reviewPhotos = q_all("SELECT rp.url, rp.caption, rp.created_at, r.id parent_id, r.slug parent_slug,
+                                  r.user_id, 'review' AS kind
+                           FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
+                           WHERE r.destination_id = ? AND r.status = 'published'
+                           ORDER BY rp.created_at DESC, rp.id DESC LIMIT 200", [$destId]);
+    $photos = array_merge($tripPhotos, $reviewPhotos);
+    usort($photos, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
+    if ($limit > 0) $photos = array_slice($photos, 0, $limit);
+    authors_fill($photos);
+    return $photos;
+}
+
+/**
  * Split a review list into [editorial, community] preserving order.
  * @return array{0:array,1:array}
  */

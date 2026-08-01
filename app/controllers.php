@@ -136,7 +136,12 @@ function destination(array $a): void {
     $me = current_user();
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
     $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved','wantCount'), [
+    $photos = rmt_destination_photos($id, 12);
+    $photoCount = (int) (q_one("SELECT
+            (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
+            (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
+        [$id, $id])['c'] ?? 0);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved','wantCount','photos','photoCount'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -145,6 +150,19 @@ function destination(array $a): void {
             'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
             'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']],
             'aggregateRating'=>$avg && $avg['c']>0 ? ['@type'=>'AggregateRating','ratingValue'=>$avg['a'],'reviewCount'=>$avg['c']] : null]),
+    ]);
+}
+
+/** GET /d/{slug}/photos — the full gallery; the destination page itself only teases 12. */
+function destination_photos(array $a): void {
+    $d = dest_by_slug($a['slug']); if (!$d) not_found();
+    $photos = rmt_destination_photos((int)$d['id'], 300);
+    view('destination_photos', compact('d','photos'), [
+        'title' => 'Photos of '.$d['name'].', '.$d['country'].' — RuinMyTrip',
+        'description' => 'Real traveler photos from trips and reviews in '.$d['name'].'.',
+        'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($d['hero_url']),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
+                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],['name'=>'Photos','url'=>url('d/'.$d['slug'].'/photos')]],
     ]);
 }
 
@@ -2150,6 +2168,13 @@ function sitemap(array $a): void {
              url('guidelines'), url('affiliate'), url('safety')];
     foreach (rmt_top_tags(100) as $t) $urls[] = url('tag/'.$t['name']);
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
+    // Only destinations with at least one real traveler photo get a /photos page indexed --
+    // an empty gallery is thin content, not a page worth ranking.
+    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
+                    WHERE EXISTS (SELECT 1 FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=d.id AND t.status='published')
+                       OR EXISTS (SELECT 1 FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=d.id AND r.status='published')") as $d) {
+        $urls[] = url('d/'.$d['slug'].'/photos');
+    }
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
     foreach (q_all("SELECT slug FROM collections WHERE status='published'") as $c) $urls[] = url('c/'.$c['slug']);

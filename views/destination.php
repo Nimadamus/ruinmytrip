@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved @var int $wantCount */ ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -121,6 +121,23 @@
           <?php endif; ?>
         </div></div>
       <?php endforeach; ?>
+
+      <?php if ($photos): ?>
+        <div class="section-rule">
+          <h2>Photos</h2>
+          <span class="count"><?= $photoCount ?></span>
+        </div>
+        <div class="grid g-4" style="gap:8px;margin-bottom:24px">
+          <?php foreach ($photos as $p): ?>
+            <a href="<?= e($p['kind']==='trip' ? url('trip/'.$p['parent_id'].'/'.$p['parent_slug']) : url('review/'.$p['parent_id'].($p['parent_slug'] ? '/'.$p['parent_slug'] : ''))) ?>">
+              <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover" src="<?= e(abs_url($p['url'])) ?>" alt="<?= e($p['caption'] ?: $d['name']) ?>">
+            </a>
+          <?php endforeach; ?>
+        </div>
+        <?php if ($photoCount > count($photos)): ?>
+          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">See all <?= $photoCount ?> photos →</a></p>
+        <?php endif; ?>
+      <?php endif; ?>
 
       <div class="section-rule">
         <h2>Trip stories</h2>
