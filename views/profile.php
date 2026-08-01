@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -87,6 +87,17 @@
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
+    </div></div>
+  <?php endif; ?>
+
+  <?php if ($wishlist): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px">Want to visit</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <?php foreach ($wishlist as $w): ?>
+          <a class="chip" href="<?= e(url('d/'.$w['slug'])) ?>"><?= e($w['name']) ?>, <?= e($w['country']) ?></a>
+        <?php endforeach; ?>
+      </div>
     </div></div>
   <?php endif; ?>
 

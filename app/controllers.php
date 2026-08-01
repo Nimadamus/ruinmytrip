@@ -131,7 +131,9 @@ function destination(array $a): void {
     // Community score only. An editorial rating is the site's own opinion and must never be
     // presented, or marked up for search engines, as traveler consensus.
     $avg = rmt_community_avg($id);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg'), [
+    $me = current_user();
+    $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','me','saved'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -155,6 +157,8 @@ function profile(array $a): void {
                     WHERE t.user_id=? AND t.status='published' ORDER BY t.id DESC", [$uid]);
     $reviews = q_all("SELECT * FROM reviews WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     $guides = q_all("SELECT * FROM guides WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
+    $wishlist = q_all("SELECT d.id, d.slug, d.name, d.country FROM saves s JOIN destinations d ON d.id=s.target_id
+                       WHERE s.user_id=? AND s.target_type='destination' ORDER BY d.name", [$uid]);
 
     // Every stat is a live COUNT — never a stored counter, never a placeholder.
     $stats = rmt_profile_stats($uid);
@@ -167,7 +171,7 @@ function profile(array $a): void {
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them'), [
+    view('profile', compact('u','trips','reviews','guides','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -1349,6 +1353,36 @@ function react_action(array $a): void {
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
     }
     redirect(input('return','/'));
+}
+
+/**
+ * POST /destination/save — a "want to visit" bucket list, toggled on/off. Kept outside
+ * react_action/RMT_INTERACT_TARGETS deliberately: destinations are global editorial rows with no
+ * user_id/status columns (they are never a draft, never owned by a user), so the generic
+ * rmt_can_interact() ownership/visibility check does not apply and would need a special case for
+ * the one content type it was never meant to cover. Reuses the same `saves` table other saves
+ * already use, just with target_type='destination'.
+ */
+function destination_save_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $did = (int) input('destination_id');
+    if (!$did || !dest_by_id($did)) redirect(input('return', '/'));
+    if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(input('return', '/'));
+    }
+    $uid = (int) $me['id'];
+    $has = q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $did]);
+    if ($has) {
+        db()->prepare("DELETE FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?")->execute([$uid, $did]);
+    } else {
+        try {
+            db()->prepare("INSERT INTO saves (user_id,target_type,target_id) VALUES (?, 'destination', ?)")->execute([$uid, $did]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+    }
+    redirect(input('return', '/'));
 }
 
 /**

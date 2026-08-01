@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg */ ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var ?array $me @var bool $saved */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -9,6 +9,13 @@
         <h1><?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
         <p style="color:#e8eef5;margin:.2rem 0 0;max-width:60ch"><?= e($d['summary']) ?></p>
       </div>
+      <?php if ($me): ?>
+        <form method="post" action="<?= e(url('destination/save')) ?>" style="margin-left:auto">
+          <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
+          <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
+          <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
+        </form>
+      <?php endif; ?>
     </div>
   </div>
   <?= rmt_photo_credit_html($d) ?>
