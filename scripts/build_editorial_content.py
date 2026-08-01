@@ -77,6 +77,10 @@ NAME_TO_SLUG = {
     "munich": "munich-germany",
     "cancun": "cancun-mexico",
     "vancouver": "vancouver-canada",
+    "singapore": "singapore",
+    "athens": "athens-greece",
+    "rio de janeiro": "rio-de-janeiro-brazil",
+    "tel aviv": "tel-aviv-israel",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -126,6 +130,10 @@ SLUG_TO_NAME = {
     "munich-germany": "Munich",
     "cancun-mexico": "Cancun",
     "vancouver-canada": "Vancouver",
+    "singapore": "Singapore",
+    "athens-greece": "Athens",
+    "rio-de-janeiro-brazil": "Rio de Janeiro",
+    "tel-aviv-israel": "Tel Aviv",
 }
 
 
