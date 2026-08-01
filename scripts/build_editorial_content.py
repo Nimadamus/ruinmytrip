@@ -73,6 +73,10 @@ NAME_TO_SLUG = {
     "paris": "paris-france",
     "chiang mai": "chiang-mai-thailand",
     "cartagena": "cartagena-colombia",
+    "havana": "havana-cuba",
+    "munich": "munich-germany",
+    "cancun": "cancun-mexico",
+    "vancouver": "vancouver-canada",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -118,6 +122,10 @@ SLUG_TO_NAME = {
     "paris-france": "Paris",
     "chiang-mai-thailand": "Chiang Mai",
     "cartagena-colombia": "Cartagena",
+    "havana-cuba": "Havana",
+    "munich-germany": "Munich",
+    "cancun-mexico": "Cancun",
+    "vancouver-canada": "Vancouver",
 }
 
 
