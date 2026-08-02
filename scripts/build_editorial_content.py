@@ -93,6 +93,10 @@ NAME_TO_SLUG = {
     "petra": "petra-jordan",
     "dubrovnik": "dubrovnik-croatia",
     "san jose": "san-jose-costa-rica",
+    "stockholm": "stockholm-sweden",
+    "osaka": "osaka-japan",
+    "montego bay": "montego-bay-jamaica",
+    "boracay": "boracay-philippines",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -158,6 +162,10 @@ SLUG_TO_NAME = {
     "petra-jordan": "Petra",
     "dubrovnik-croatia": "Dubrovnik",
     "san-jose-costa-rica": "San Jose",
+    "stockholm-sweden": "Stockholm",
+    "osaka-japan": "Osaka",
+    "montego-bay-jamaica": "Montego Bay",
+    "boracay-philippines": "Boracay",
 }
 
 
