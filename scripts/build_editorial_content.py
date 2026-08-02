@@ -101,6 +101,10 @@ NAME_TO_SLUG = {
     "porto": "porto-portugal",
     "kathmandu": "kathmandu-nepal",
     "maldives": "maldives",
+    "venice": "venice-italy",
+    "copenhagen": "copenhagen-denmark",
+    "tulum": "tulum-mexico",
+    "siem reap": "siem-reap-cambodia",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -174,6 +178,10 @@ SLUG_TO_NAME = {
     "porto-portugal": "Porto",
     "kathmandu-nepal": "Kathmandu",
     "maldives": "Maldives",
+    "venice-italy": "Venice",
+    "copenhagen-denmark": "Copenhagen",
+    "tulum-mexico": "Tulum",
+    "siem-reap-cambodia": "Siem Reap",
 }
 
 
