@@ -97,6 +97,10 @@ NAME_TO_SLUG = {
     "osaka": "osaka-japan",
     "montego bay": "montego-bay-jamaica",
     "boracay": "boracay-philippines",
+    "las vegas": "las-vegas-usa",
+    "porto": "porto-portugal",
+    "kathmandu": "kathmandu-nepal",
+    "maldives": "maldives",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -166,6 +170,10 @@ SLUG_TO_NAME = {
     "osaka-japan": "Osaka",
     "montego-bay-jamaica": "Montego Bay",
     "boracay-philippines": "Boracay",
+    "las-vegas-usa": "Las Vegas",
+    "porto-portugal": "Porto",
+    "kathmandu-nepal": "Kathmandu",
+    "maldives": "Maldives",
 }
 
 
