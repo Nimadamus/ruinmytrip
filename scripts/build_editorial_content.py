@@ -111,6 +111,12 @@ NAME_TO_SLUG = {
     "punta cana": "punta-cana-dominican-republic",
     "ho chi minh city": "ho-chi-minh-city-vietnam",
     "saigon": "ho-chi-minh-city-vietnam",
+    "krakow": "krakow-poland",
+    "kraków": "krakow-poland",
+    "cracow": "krakow-poland",
+    "nice": "nice-france",
+    "nassau": "nassau-bahamas",
+    "manila": "manila-philippines",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -192,6 +198,10 @@ SLUG_TO_NAME = {
     "phuket-thailand": "Phuket",
     "punta-cana-dominican-republic": "Punta Cana",
     "ho-chi-minh-city-vietnam": "Ho Chi Minh City",
+    "krakow-poland": "Krakow",
+    "nice-france": "Nice",
+    "nassau-bahamas": "Nassau",
+    "manila-philippines": "Manila",
 }
 
 
