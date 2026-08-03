@@ -105,6 +105,12 @@ NAME_TO_SLUG = {
     "copenhagen": "copenhagen-denmark",
     "tulum": "tulum-mexico",
     "siem reap": "siem-reap-cambodia",
+    "naples": "naples-italy",
+    "napoli": "naples-italy",
+    "phuket": "phuket-thailand",
+    "punta cana": "punta-cana-dominican-republic",
+    "ho chi minh city": "ho-chi-minh-city-vietnam",
+    "saigon": "ho-chi-minh-city-vietnam",
 }
 
 # Display names on the site, so "Oaxaca de Juarez" does not become the review subject when the
@@ -182,6 +188,10 @@ SLUG_TO_NAME = {
     "copenhagen-denmark": "Copenhagen",
     "tulum-mexico": "Tulum",
     "siem-reap-cambodia": "Siem Reap",
+    "naples-italy": "Naples",
+    "phuket-thailand": "Phuket",
+    "punta-cana-dominican-republic": "Punta Cana",
+    "ho-chi-minh-city-vietnam": "Ho Chi Minh City",
 }
 
 
