@@ -106,7 +106,10 @@ failed on Aug 5 and Aug 6. **When a Render database is recreated, grep the workf
 ## Rotating the passphrase
 
 Old artifacts stay encrypted under the old passphrase, so keep it until those artifacts expire
-(30 days). Set a new `BACKUP_PASSPHRASE` secret and update `CLAUDE.md`; new runs use the new one.
+(30 days). Set a new `BACKUP_PASSPHRASE` secret with `gh secret set BACKUP_PASSPHRASE < file`
+(reads from a file so the value never reaches a command line or shell history), record it in the
+external password manager, then securely delete the file. NEVER write it to `CLAUDE.md` or any
+other file on C: — that is exactly how the previous passphrase was lost.
 
 ## Notes / limits
 
