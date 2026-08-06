@@ -40,6 +40,46 @@ foreach (['.stat-inline', '.meta-row'] as $selector) {
     $check("{$selector} wraps on narrow viewports (flex-wrap:wrap)", strpos($rule, 'flex-wrap:wrap') !== false);
 }
 
+/*
+ * The hero search row, which is the site's PRIMARY call to action.
+ *
+ * Measured in a real browser at 375px: the pill-shaped row (search input + "Check a Destination")
+ * needs about 450px of natural width, so the button's right edge landed at x=449 on a 375px
+ * viewport. Because .hero sets overflow:hidden, the button was CLIPPED rather than merely scrolled
+ * off — the primary conversion path was unreachable on a standard phone, with no scrollbar to hint
+ * that anything was missing. Stacking the row below 680px is the fix; these assertions stop it
+ * silently regressing when Playwright is unavailable.
+ */
+$mobileBlocks = [];
+if (preg_match_all('/@media\s*\(max-width:\s*680px\s*\)\s*\{(.*?)
+\}/s', $css, $m)) {
+    $mobileBlocks = $m[1];
+}
+$mobileCss = implode("
+", $mobileBlocks);
+$check('a max-width:680px breakpoint exists', $mobileCss !== '');
+$check('.hero-search stacks vertically on phones',
+    (bool) preg_match('/\.hero-search\s*\{[^}]*flex-direction:\s*column/s', $mobileCss));
+$check('.hero-search input goes full width',
+    (bool) preg_match('/\.hero-search input\s*\{[^}]*width:\s*100%/s', $mobileCss));
+$check('the hero CTA button goes full width (so it cannot be clipped)',
+    (bool) preg_match('/\.hero-search \.btn\s*\{[^}]*width:\s*100%/s', $mobileCss));
+
+/* The hero clips its children, which is what turned the overflow above into an invisible failure. */
+$heroRule = css_rule($css, '.hero');
+$check('.hero still clips (so any future overflow there is a real bug, not a scrollbar)',
+    strpos($heroRule, 'overflow:hidden') !== false);
+
+/* Wide content must scroll inside its own container rather than widening the page. */
+$check('.table-scroll exists for wide admin tables',
+    strpos(css_rule($css, '.table-scroll'), 'overflow-x:auto') !== false);
+
+/* Grids that would otherwise force a minimum width collapse to fewer columns on phones. */
+$check('.cat-grid collapses on phones',
+    (bool) preg_match('/\.cat-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2/s', $mobileCss));
+$check('.signup-grid collapses to one column',
+    (bool) preg_match('/@media\s*\(max-width:\s*900px\)\s*\{\s*\.signup-grid\s*\{\s*grid-template-columns:\s*1fr/s', $css));
+
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed\n"; exit(1); }
 echo "ALL MOBILE OVERFLOW CSS TESTS PASS\n";

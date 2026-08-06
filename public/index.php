@@ -2,6 +2,10 @@
 declare(strict_types=1);
 require dirname(__DIR__) . '/app/bootstrap.php';
 require BASE_PATH . '/app/controllers.php';
+require BASE_PATH . '/app/controllers_warnings.php';
+require BASE_PATH . '/app/controllers_watchlist.php';
+require BASE_PATH . '/app/controllers_landing.php';
+require BASE_PATH . '/app/controllers_admin.php';
 
 $path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 $path = '/' . trim(rawurldecode($path), '/');
@@ -14,7 +18,40 @@ $routes = [
     ['GET',  '#^/discover$#',                  'discover'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)$#',    'destination'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/photos$#', 'destination_photos'],
+    ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/warnings$#', 'destination_warnings'],
     ['POST', '#^/destination/save$#',          'destination_save_action'],
+    ['POST', '#^/destination/follow$#',        'destination_follow_action'],
+
+    /* ---- warnings: the core entity ---- */
+    ['GET',  '#^/warnings$#',                  'warnings_index'],
+    ['GET',  '#^/warnings/(?<category>[a-z][a-z\-]{2,30})$#', 'warning_category'],
+    ['GET',  '#^/warning/new$#',               'warning_new_form'],
+    ['POST', '#^/warning/new$#',               'warning_create'],
+    ['GET',  '#^/warning/(?<id>\d+)/edit$#',   'warning_edit_form'],
+    ['POST', '#^/warning/(?<id>\d+)/edit$#',   'warning_edit_submit'],
+    ['POST', '#^/warning/(?<id>\d+)/delete$#', 'warning_delete'],
+    ['POST', '#^/warning/(?<id>\d+)/helpful$#','warning_vote_action'],
+    // /w/{id}/respond must precede the permalink, whose slug group would otherwise swallow it.
+    ['GET',  '#^/w/(?<id>\d+)/respond$#',      'warning_respond_form'],
+    ['POST', '#^/w/(?<id>\d+)/respond$#',      'warning_respond_submit'],
+    ['GET',  '#^/w/(?<id>\d+)(?:/(?<slug>[a-z0-9\-]*))?$#', 'warning_show'],
+    ['POST', '#^/outdated$#',                  'outdated_report_action'],
+
+    /* ---- trip watchlist, alerts, dashboard ---- */
+    ['GET',  '#^/dashboard$#',                 'dashboard'],
+    ['POST', '#^/watchlist/add$#',             'watchlist_add'],
+    ['GET',  '#^/watchlist/(?<id>\d+)/edit$#', 'watchlist_edit_form'],
+    ['POST', '#^/watchlist/(?<id>\d+)/edit$#', 'watchlist_edit_submit'],
+    ['POST', '#^/watchlist/(?<id>\d+)/delete$#','watchlist_delete'],
+    ['GET',  '#^/alerts$#',                    'alerts_form'],
+    ['POST', '#^/alerts/subscribe$#',          'alerts_subscribe'],
+    ['GET',  '#^/alerts/confirm$#',            'alerts_confirm'],
+    ['GET',  '#^/alerts/unsubscribe$#',        'alerts_unsubscribe'],
+
+    /* ---- editorial guide pages + monetization ---- */
+    ['GET',  '#^/warning-guides$#',            'landing_index'],
+    ['GET',  '#^/go/(?<slug>[a-z0-9\-]+)$#',   'affiliate_go'],
+    ['GET',  '#^/api/suggest$#',               'api_suggest'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_form'],
     ['POST', '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_submit'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/followers$#', 'profile_followers'],
@@ -94,9 +131,37 @@ $routes = [
     ['POST', '#^/comment/(?<id>\d+)/delete$#', 'comment_delete'],
     ['GET',  '#^/report$#',                    'report_form'],
     ['POST', '#^/report$#',                    'report_submit'],
-    ['GET',  '#^/admin$#',                     'admin_dashboard'],
+    // /admin is now the overview; the original abuse-report queue kept its handler at
+    // /admin/reports so no bookmark or moderator habit breaks. See docs/ROUTES.md.
+    ['GET',  '#^/admin$#',                     'admin_overview'],
+    ['GET',  '#^/admin/reports$#',             'admin_dashboard'],
     ['POST', '#^/admin/resolve$#',             'admin_resolve'],
     ['GET',  '#^/admin/mail-check$#',          'admin_mail_check'],
+    ['GET',  '#^/admin/warnings$#',            'admin_warnings'],
+    ['POST', '#^/admin/warnings/(?<id>\d+)/moderate$#', 'admin_warning_moderate'],
+    ['GET',  '#^/admin/destinations$#',        'admin_destinations'],
+    ['GET',  '#^/admin/destination/(?<id>\d+)$#',        'admin_destination_edit'],
+    ['POST', '#^/admin/destination/(?<id>\d+)$#',        'admin_destination_save'],
+    ['POST', '#^/admin/destination/(?<id>\d+)/section$#','admin_section_save'],
+    ['POST', '#^/admin/destination/(?<id>\d+)/faq$#',    'admin_faq_save'],
+    ['GET',  '#^/admin/pages$#',               'admin_pages'],
+    ['GET',  '#^/admin/page/new$#',            'admin_page_edit'],
+    ['GET',  '#^/admin/page/(?<id>\d+)$#',     'admin_page_edit'],
+    ['POST', '#^/admin/page$#',                'admin_page_save'],
+    ['POST', '#^/admin/page/(?<id>\d+)/delete$#','admin_page_delete'],
+    ['GET',  '#^/admin/responses$#',           'admin_responses'],
+    ['POST', '#^/admin/response/(?<id>\d+)$#', 'admin_response_action'],
+    ['GET',  '#^/admin/outdated$#',            'admin_outdated'],
+    ['POST', '#^/admin/outdated/(?<id>\d+)$#', 'admin_outdated_resolve'],
+    ['GET',  '#^/admin/alerts$#',              'admin_alerts'],
+    ['GET',  '#^/admin/affiliates$#',          'admin_affiliates'],
+    ['POST', '#^/admin/affiliate$#',           'admin_affiliate_save'],
+    ['POST', '#^/admin/affiliate/(?<id>\d+)/delete$#', 'admin_affiliate_delete'],
+    ['GET',  '#^/admin/users$#',               'admin_users'],
+    ['POST', '#^/admin/user/(?<id>\d+)$#',     'admin_user_save'],
+    ['GET',  '#^/admin/analytics$#',           'admin_analytics'],
+    ['GET',  '#^/admin/homepage$#',            'admin_homepage'],
+    ['POST', '#^/admin/homepage$#',            'admin_homepage_save'],
     ['GET',  '#^/terms$#',                     'page_terms'],
     ['GET',  '#^/privacy$#',                   'page_privacy'],
     ['GET',  '#^/guidelines$#',                'page_guidelines'],
@@ -108,6 +173,12 @@ $routes = [
     ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/healthz$#',                    'healthz'],
     ['GET',  '#^/readyz$#',                     'readyz'],
+
+    // LAST BY DESIGN: the editorial landing-page resolver. It only ever resolves a slug that is a
+    // real, published row in seo_landing_pages (admin/controllers_landing.php), so it cannot
+    // shadow any route above it and cannot render a stub for an arbitrary path — an unknown slug
+    // falls through to the same 404 as before.
+    ['GET',  '#^/(?<slug>[a-z0-9][a-z0-9\-]{3,90})$#', 'landing_page'],
 ];
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

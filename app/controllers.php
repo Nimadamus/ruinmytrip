@@ -39,34 +39,49 @@ function forbidden(string $msg = "You don't have permission to do that."): void 
 }
 
 /* ---------- public pages ---------- */
+/**
+ * GET / — the risk-first homepage.
+ *
+ * Every block here answers the promise in the headline: know what could ruin your trip before you
+ * book it. Two rules shape what it does NOT show:
+ *   * No vanity metrics. Where a count would read "0 travelers", the section renders a real
+ *     invitation instead (see views/home.php) rather than advertising emptiness.
+ *   * Social features (meetups, who is going, top reviewers, collections) are still fully
+ *     available and linked from the nav and footer, but they are not the homepage's job until
+ *     there is enough activity for them to be worth a visitor's attention.
+ */
 function home(array $a): void {
-    $trending = q_all('SELECT d.*, (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) AS trips
-                       FROM destinations d ORDER BY trips DESC, d.name LIMIT 6');
-    $stories = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
-                      LEFT JOIN destinations d ON d.id=t.destination_id
-                      WHERE t.status='published' ORDER BY t.created_at DESC, t.id DESC LIMIT 4");
-    $reviews = q_all("SELECT r.*, d.slug dest_slug FROM reviews r
-                      LEFT JOIN destinations d ON d.id=r.destination_id
-                      WHERE r.status='published' ORDER BY r.verified DESC, r.id DESC LIMIT 4");
-    $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug FROM meetups m
-                      LEFT JOIN destinations d ON d.id=m.destination_id
-                      WHERE m.status='published' ORDER BY m.date_start ASC LIMIT 3");
-    $guides = q_all("SELECT g.*, d.name dest_name FROM guides g
-                     LEFT JOIN destinations d ON d.id=g.destination_id
-                     WHERE g.status='published' ORDER BY g.id DESC LIMIT 3");
-    authors_fill($stories);
-    authors_fill($reviews);
-    authors_fill($guides);
-    // Real total, not count($trending) — $trending is LIMIT 6 and would print "6" forever.
-    $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
-    // Real community total (editorial excluded). Drives the homepage copy: while it is 0 the page
-    // says so plainly rather than dressing editorial content up as community activity.
-    $stat_community_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
-                                            WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews'), [
-        'title' => 'RuinMyTrip — Real trips, honest reviews, safe travel meetups',
-        'description' => 'Join a trustworthy travel community. Share trips, review destinations and stays, follow travelers you trust, and find safe public meetups — RuinMyTrip.',
+    $trendingDays  = max(7,  min(365, (int) rmt_setting('home_trending_days',  '120')));
+    $trendingCount = max(3,  min(12,  (int) rmt_setting('home_trending_count', '6')));
+    $homeIntro     = (string) rmt_setting('home_intro', '');
+
+    // Popular destinations: what the owner featured first, then the places with the most reviewed
+    // risk content and the most traveler warnings -- i.e. the pages that will actually answer a
+    // visitor's question, not merely the alphabetically first eight.
+    $dests = q_all("SELECT d.*,
+                      (SELECT COUNT(*) FROM warnings w WHERE w.destination_id=d.id AND w.status='approved') warning_count,
+                      (SELECT COUNT(*) FROM destination_risk_sections s WHERE s.destination_id=d.id) section_count
+                    FROM destinations d
+                    ORDER BY d.featured DESC, section_count DESC, warning_count DESC, d.name
+                    LIMIT 8");
+    $topCats  = rmt_top_categories_by_destination(array_column($dests, 'id'));
+    $trending = rmt_trending_warnings($trendingCount, $trendingDays);
+    $latest   = rmt_warning_query(['sort' => 'recent'], 6)['rows'];
+
+    $stat_destinations = (int) (q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
+    $stat_warnings     = (int) (q_one("SELECT COUNT(*) c FROM warnings WHERE status='approved'")['c'] ?? 0);
+    $stat_covered      = (int) (q_one('SELECT COUNT(DISTINCT destination_id) c FROM destination_risk_sections')['c'] ?? 0);
+
+    rmt_track('home_view');
+
+    view('home', compact('dests','topCats','trending','latest','stat_destinations','stat_warnings',
+                         'stat_covered','homeIntro'), [
+        'title' => 'Know What Could Ruin Your Trip Before You Book It — RuinMyTrip',
+        'description' => 'Tourist scams, hidden fees, bad neighbourhoods, transport mistakes, closures, crowds and '
+                       . 'seasonal risks — researched destination risk reports and honest traveler warnings, '
+                       . 'so you find the problems before your booking does.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
+            'description'=>'Travel warnings and destination risk reports.',
             'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']]),
     ]);
 }
@@ -74,7 +89,7 @@ function home(array $a): void {
 function explore(array $a): void {
     $qs = trim((string)($_GET['q'] ?? '')); $cat = trim((string)($_GET['category'] ?? ''));
     $sortIn = (string) ($_GET['sort'] ?? '');
-    $sort = in_array($sortIn, ['popular','rating'], true) ? $sortIn : 'name';
+    $sort = in_array($sortIn, ['popular','rating','risk','warnings','covered'], true) ? $sortIn : 'name';
     // "reviews" on a destination card means TRAVELER reviews. Counting our own editorial review
     // here would put "1 review" on every card while the community section is empty, which is
     // exactly the impression this site exists not to give. avg_rating uses the same
@@ -87,7 +102,11 @@ function explore(array $a): void {
               (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.status='published') trips,
               (SELECT COUNT(*) FROM saves s WHERE s.target_type='destination' AND s.target_id=d.id) wants,
               (SELECT AVG(r.rating) FROM reviews r JOIN users u ON u.id=r.user_id
-                WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) avg_rating
+                WHERE r.destination_id=d.id AND r.status='published' AND u.role <> ?) avg_rating,
+              -- The two numbers this site is actually about: how much reviewed risk content a
+              -- destination has, and how many travelers have warned about it.
+              (SELECT COUNT(*) FROM destination_risk_sections rs WHERE rs.destination_id=d.id) sections,
+              (SELECT COUNT(*) FROM warnings w WHERE w.destination_id=d.id AND w.status='approved') warnings
             FROM destinations d WHERE 1=1";
     $args = [RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE];
     // LOWER() on both sides, not bare LIKE: LIKE is case-insensitive on SQLite (local dev) but
@@ -114,68 +133,127 @@ function explore(array $a): void {
         // tier (still sorted among itself by whatever rating it has, just never above real
         // consensus). `IS NULL`/`< 2` both evaluate to 0/1 in both drivers, valid ORDER BY keys.
         'rating'  => ' ORDER BY (avg_rating IS NULL OR reviews < 2), avg_rating DESC, name',
+        // Unrated destinations sort last rather than first: a NULL risk_level means "we have not
+        // assessed this yet", which is not the same as "low risk" and must never be presented as it.
+        'risk'    => ' ORDER BY (risk_level IS NULL), risk_level DESC, name',
+        'warnings'=> ' ORDER BY warnings DESC, name',
+        'covered' => ' ORDER BY sections DESC, warnings DESC, name',
         default   => ' ORDER BY name',
     };
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $topTags = rmt_top_tags(14);
-    view('explore', compact('dests','cats','qs','cat','sort','topTags'), [
-        'title' => 'Explore destinations — RuinMyTrip',
-        'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
-        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
+    // Top warning categories per destination, in one batched query rather than one per card.
+    $topCats = rmt_top_categories_by_destination(array_column($dests, 'id'), 2);
+    $covered = 0;
+    foreach ($dests as $d0) { if ((int) $d0['sections'] > 0) $covered++; }
+    view('explore', compact('dests','cats','qs','cat','sort','topTags','topCats','covered'), [
+        'title' => 'All destinations — travel risk reports & warnings | RuinMyTrip',
+        'description' => 'Browse every destination we cover. Each one has a risk report: the scams, hidden costs, '
+                       . 'transport traps, closures and seasonal problems that ruin trips there.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Destinations','url'=>url('explore')]],
     ]);
 }
 
+/**
+ * GET /d/{slug} — the destination risk report.
+ *
+ * URL preserved from the previous design on purpose: these are the site's most-linked pages.
+ * What changed is the shape. The page now leads with the overall risk read and the specific
+ * things that could ruin the trip, then traveler warnings, then the FAQ — and only after all of
+ * that, the older community content (trip stories, reviews, meetups, who is going), which is
+ * kept and still linked but is no longer what the page is for.
+ */
 function destination(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int)$d['id'];
-    $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 8", [$id]);
+    $me = current_user();
+
+    /* --- the risk report --- */
+    $sections  = rmt_risk_sections($id);
+    $faqs      = rmt_destination_faqs($id);
+    $catCounts = rmt_warning_category_counts($id);
+    $warnCount = array_sum(array_column($catCounts, 'c'));
+    // Top warnings for the page itself; the full filterable list lives at /d/{slug}/warnings.
+    $warnings  = rmt_warning_query(['destination_id'=>$id, 'sort'=>'helpful'], 8)['rows'];
+    $newest    = rmt_warning_query(['destination_id'=>$id, 'sort'=>'recent'], 4)['rows'];
+    $pages     = q_all("SELECT slug, h1, template FROM seo_landing_pages
+                        WHERE destination_id=? AND status='published' ORDER BY id", [$id]);
+    // Related destinations: same country first, then same region, so the links are useful rather
+    // than random. Excludes itself and prefers ones that actually have a risk report.
+    $related   = q_all("SELECT * FROM (
+                            SELECT d2.*,
+                              (SELECT COUNT(*) FROM destination_risk_sections s WHERE s.destination_id=d2.id) sections,
+                              CASE WHEN d2.country = ? THEN 0 WHEN d2.region = ? THEN 1 ELSE 2 END proximity
+                            FROM destinations d2 WHERE d2.id <> ?
+                        ) x ORDER BY proximity, (sections = 0), name LIMIT 6",
+                       [(string)$d['country'], (string)($d['region'] ?? ''), $id]);
+
+    /* --- membership state --- */
+    $saved     = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
+    $following = $me ? (bool) q_one('SELECT 1 FROM destination_follows WHERE user_id=? AND destination_id=?', [(int)$me['id'], $id]) : false;
+    $watching  = $me ? rmt_watchlist_has((int)$me['id'], $id) : false;
+    $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
+
+    /* --- the older community layer, kept and demoted --- */
+    $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 6", [$id]);
     authors_fill($trips);
-    // $trips is capped at 8 for the page grid -- the badge next to "Trip stories" must show the
-    // true total, not silently cap at 8 the way the reviews count did before rmt_community_avg().
     $tripCount = (int) q_one("SELECT COUNT(*) c FROM trips WHERE destination_id=? AND status='published'", [$id])['c'];
-    // Editorial always sorts first regardless of id, so it can never be pushed out by LIMIT once
-    // a destination has 30+ community reviews -- there is exactly one editorial review per
-    // destination, so this never crowds out real ones. Within the rest, verified still wins the
-    // tie it always has, but the next tiebreaker is now how many travelers actually found the
-    // review useful, not just recency -- a well-vetted review from last year should not get
-    // buried under a same-day one-liner.
     $reviews = q_all("SELECT r.*,
                         (SELECT COUNT(*) FROM review_votes rv WHERE rv.review_id=r.id AND rv.vote_type='useful') useful_count
                       FROM reviews r JOIN users u ON u.id=r.user_id
                       WHERE r.destination_id=? AND r.status='published'
-                      ORDER BY (u.role=?) DESC, r.verified DESC, useful_count DESC, r.id DESC LIMIT 30", [$id, RMT_EDITORIAL_ROLE]);
+                      ORDER BY (u.role=?) DESC, r.verified DESC, useful_count DESC, r.id DESC LIMIT 12", [$id, RMT_EDITORIAL_ROLE]);
     authors_fill($reviews);
-    // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);
-    $tips = rmt_destination_tips($id);
+    $tips   = rmt_destination_tips($id);
     $guides = q_all("SELECT g.* FROM guides g WHERE g.destination_id=? AND g.status='published' ORDER BY g.id DESC", [$id]);
     authors_fill($guides);
     $meetups = q_all("SELECT m.* FROM meetups m WHERE m.destination_id=? AND m.status='published' ORDER BY m.date_start", [$id]);
     $going = q_all("SELECT g.*, u.username, p.avatar_url, p.display_name FROM going g
                     JOIN users u ON u.id=g.user_id LEFT JOIN profiles p ON p.user_id=u.id
                     WHERE g.destination_id=? AND g.visibility='public' ORDER BY g.date_from", [$id]);
-    // Community score only. An editorial rating is the site's own opinion and must never be
-    // presented, or marked up for search engines, as traveler consensus.
     $avg = rmt_community_avg($id);
     $avgByCategory = rmt_community_avg_by_category($id);
-    $me = current_user();
-    $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
-    $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
-    $photos = rmt_destination_photos($id, 12);
+    $photos = rmt_destination_photos($id, 8);
     $photoCount = (int) (q_one("SELECT
             (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount'), [
-        'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
-        'description' => $d['summary'],
+
+    rmt_track('destination_view', ['destination_id'=>$id, 'target_type'=>'destination', 'target_id'=>$id]);
+
+    // Structured data. TouristDestination carries the description; the FAQ block is emitted only
+    // when real reviewed Q&A exists, because FAQPage markup with invented questions is exactly
+    // the structured-data spam that gets a site demoted.
+    $ld = ['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'].', '.$d['country'],
+           'description'=>$d['risk_summary'] ?: $d['summary'],
+           'url'=>url('d/'.$d['slug']),
+           'geo'=>($d['lat'] && $d['lng']) ? ['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']] : null,
+           'aggregateRating'=>($avg && $avg['c']>0) ? ['@type'=>'AggregateRating','ratingValue'=>$avg['a'],'reviewCount'=>$avg['c']] : null];
+    $jsonld = jsonld($ld);
+    if ($faqs) {
+        $qa = [];
+        foreach ($faqs as $f) {
+            $qa[] = ['@type'=>'Question','name'=>$f['question'],
+                     'acceptedAnswer'=>['@type'=>'Answer','text'=>rmt_rich_excerpt($f['answer'], 900)]];
+        }
+        $jsonld .= jsonld(['@context'=>'https://schema.org','@type'=>'FAQPage','mainEntity'=>$qa]);
+    }
+
+    $metaDesc = $d['risk_summary']
+        ? rmt_rich_excerpt($d['risk_summary'], 155)
+        : ('What could ruin a trip to '.$d['name'].'? Scams, hidden costs, transport traps, closures and '
+           .'seasonal risks, plus honest traveler warnings.');
+
+    view('destination', compact('d','sections','faqs','catCounts','warnCount','warnings','newest','pages','related',
+                                'saved','following','watching','wantCount','trips','tripCount','reviews','editorial',
+                                'tips','guides','meetups','going','avg','avgByCategory','me','photos','photoCount'), [
+        'title' => 'What could ruin a trip to '.$d['name'].'? Warnings & risk report | RuinMyTrip',
+        'description' => $metaDesc,
         'og_image' => abs_url($d['hero_url']),
-        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
-        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
-            'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
-            'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']],
-            'aggregateRating'=>$avg && $avg['c']>0 ? ['@type'=>'AggregateRating','ratingValue'=>$avg['a'],'reviewCount'=>$avg['c']] : null]),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Destinations','url'=>url('explore')],['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
+        'jsonld' => $jsonld,
     ]);
 }
 
@@ -1052,13 +1130,40 @@ function leaderboard(array $a): void {
  * relevance, not just "contains the substring", and now covers reviews and people too (the old
  * LIKE search never searched review content or usernames at all).
  */
+/**
+ * Full-text search across everything the site knows.
+ *
+ * Three things this had to gain to be useful for a warnings site:
+ *   1. WARNINGS AND GUIDE PAGES are searched, not just destinations and community posts.
+ *      "istanbul airport taxi" has to reach a warning body.
+ *   2. EXACT PHRASES. Wrapping a query in double quotes switches both drivers to a phrase
+ *      query, so "resort fee" stops matching every page containing "resort".
+ *   3. TYPO TOLERANCE. A misspelt destination is the single most common failed search on a
+ *      travel site. When the indexed search finds no destination, rmt_fuzzy_destinations()
+ *      re-runs it as an edit-distance match over the destination list, which is small enough
+ *      (low hundreds) to score in PHP and works identically on both drivers.
+ *
+ * The subject/provider/neighbourhood axes the brief asks for (hotels, attractions, transport
+ * providers, neighbourhoods, airports) are covered by searching warnings.provider_name,
+ * warnings.location_detail, reviews.subject_name and destinations.airport_codes directly, since
+ * those are short identifier-ish strings where substring matching beats stemming.
+ */
 function search(array $a): void {
-    $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=$posts=$collections=[];
+    $raw = trim((string)($_GET['q'] ?? ''));
+    $qs = $raw;
+    $isPhrase = false;
+    if (strlen($qs) > 2 && $qs[0] === '"' && substr($qs, -1) === '"') {
+        $isPhrase = true;
+        $qs = trim(substr($qs, 1, -1));
+    }
+    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$warnings=$pages=$subjects=[];
+    $suggestions = [];
+    $categoryHits = [];
+
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         if ($driver === 'pgsql') {
-            $tsq = "plainto_tsquery('english', ?)";
+            $tsq = $isPhrase ? "phraseto_tsquery('english', ?)" : "plainto_tsquery('english', ?)";
             $dests = q_all("SELECT * FROM destinations WHERE search_vector @@ $tsq
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
@@ -1073,35 +1178,190 @@ function search(array $a): void {
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $collections = q_all("SELECT * FROM collections WHERE status='published' AND search_vector @@ $tsq
                                   ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $warnings = q_all("SELECT w.*, d.name dest_name, d.slug dest_slug, u.username, u.role author_role
+                               FROM warnings w JOIN destinations d ON d.id=w.destination_id JOIN users u ON u.id=w.user_id
+                               WHERE w.status='approved' AND w.search_vector @@ $tsq
+                               ORDER BY ts_rank(w.search_vector, $tsq) DESC LIMIT 12", [$qs,$qs]);
+            $pages = q_all("SELECT p.*, d.name dest_name FROM seo_landing_pages p
+                            LEFT JOIN destinations d ON d.id=p.destination_id
+                            WHERE p.status='published' AND p.search_vector @@ $tsq
+                            ORDER BY ts_rank(p.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
         } else {
+            // FTS5: a quoted string is already phrase syntax, so the phrase case just re-quotes
+            // the inner text; the loose case escapes any stray quote and lets FTS5 tokenise.
+            $m = $isPhrase ? '"'.str_replace('"','',$qs).'"' : str_replace('"',' ',$qs);
             $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
-                            WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
+                            WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$m]);
             $trips = q_all("SELECT t.*,dd.slug dest_slug FROM trips t JOIN trips_fts f ON f.rowid=t.id
                             LEFT JOIN destinations dd ON dd.id=t.destination_id
-                            WHERE trips_fts MATCH ? AND t.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                            WHERE trips_fts MATCH ? AND t.status='published' ORDER BY rank LIMIT 10", [$m]);
             $guides = q_all("SELECT g.* FROM guides g JOIN guides_fts f ON f.rowid=g.id
-                             WHERE guides_fts MATCH ? AND g.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                             WHERE guides_fts MATCH ? AND g.status='published' ORDER BY rank LIMIT 10", [$m]);
             $reviews = q_all("SELECT r.*,dd.slug dest_slug,dd.name dest_name FROM reviews r JOIN reviews_fts f ON f.rowid=r.id
                               LEFT JOIN destinations dd ON dd.id=r.destination_id
-                              WHERE reviews_fts MATCH ? AND r.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                              WHERE reviews_fts MATCH ? AND r.status='published' ORDER BY rank LIMIT 10", [$m]);
             $posts = q_all("SELECT p.* FROM blog_posts p JOIN blog_posts_fts f ON f.rowid=p.id
-                            WHERE blog_posts_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                            WHERE blog_posts_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$m]);
             $collections = q_all("SELECT c.* FROM collections c JOIN collections_fts f ON f.rowid=c.id
-                                  WHERE collections_fts MATCH ? AND c.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                                  WHERE collections_fts MATCH ? AND c.status='published' ORDER BY rank LIMIT 10", [$m]);
+            $warnings = q_all("SELECT w.*, d.name dest_name, d.slug dest_slug, u.username, u.role author_role
+                               FROM warnings w JOIN warnings_fts f ON f.rowid=w.id
+                               JOIN destinations d ON d.id=w.destination_id JOIN users u ON u.id=w.user_id
+                               WHERE warnings_fts MATCH ? AND w.status='approved' ORDER BY rank LIMIT 12", [$m]);
+            $pages = q_all("SELECT p.*, d.name dest_name FROM seo_landing_pages p
+                            JOIN seo_landing_pages_fts f ON f.rowid=p.id
+                            LEFT JOIN destinations d ON d.id=p.destination_id
+                            WHERE seo_landing_pages_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$m]);
         }
+        if ($warnings) authors_fill($warnings);
+
+        $like = '%'.mb_strtolower($qs).'%';
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
         // that, so this stays LIKE-based on purpose.
-        $like = '%'.mb_strtolower($qs).'%';
         $people = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city FROM users u
                          LEFT JOIN profiles p ON p.user_id=u.id
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
+
+        // Named subjects: hotels, attractions, transport operators and neighbourhoods, from both
+        // the warnings people filed about them and the reviews written about them.
+        $subjects = rmt_search_subjects($qs, 12);
+
+        // Airports, by IATA code or name fragment.
+        $airports = q_all("SELECT id, name, slug, country, airport_codes FROM destinations
+                           WHERE airport_codes IS NOT NULL AND LOWER(airport_codes) LIKE ? LIMIT 6", [$like]);
+        foreach ($airports as $ap) {
+            $already = false;
+            foreach ($dests as $d0) { if ((int)$d0['id'] === (int)$ap['id']) { $already = true; break; } }
+            if (!$already) $dests[] = $ap;
+        }
+
+        // Warning categories matched by name, so "scams" lands on the category page.
+        foreach (RMT_WARNING_CATEGORIES as $key => $meta) {
+            if (stripos($meta['label'], $qs) !== false || stripos($key, str_replace(' ', '-', $qs)) !== false) {
+                $categoryHits[$key] = $meta;
+            }
+        }
+
+        // Typo tolerance, only when the indexed search found no place at all.
+        if (!$dests) $suggestions = rmt_fuzzy_destinations($qs, 5);
+
+        rmt_track('destination_search', ['meta' => ['q' => mb_substr($qs, 0, 100),
+            'results' => count($dests)+count($warnings)+count($pages)+count($reviews)+count($trips)]]);
     }
-    view('search', compact('qs','dests','trips','guides','reviews','people','posts','collections'), [
+
+    view('search', compact('qs','raw','isPhrase','dests','trips','guides','reviews','people','posts',
+                           'collections','warnings','pages','subjects','suggestions','categoryHits'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
-        'description'=>'Search destinations, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
+        'description'=>'Search travel warnings, destination risk reports, guides, reviews and travelers across RuinMyTrip.',
     ]);
+}
+
+/**
+ * Named subjects people warn or write about: hotels, attractions, transport operators,
+ * neighbourhoods. Grouped so the same hotel named in six warnings appears once, with a count.
+ */
+function rmt_search_subjects(string $qs, int $limit = 12): array {
+    $like = '%'.mb_strtolower($qs).'%';
+    $rows = q_all("SELECT provider_name AS name, provider_type AS kind, destination_id,
+                          COUNT(*) c, MAX(severity) max_sev
+                   FROM warnings
+                   WHERE status='approved' AND provider_name IS NOT NULL AND LOWER(provider_name) LIKE ?
+                   GROUP BY provider_name, provider_type, destination_id
+                   ORDER BY c DESC LIMIT ".max(1,min(50,$limit)), [$like]);
+    $places = q_all("SELECT location_detail AS name, 'neighborhood' AS kind, destination_id,
+                            COUNT(*) c, MAX(severity) max_sev
+                     FROM warnings
+                     WHERE status='approved' AND location_detail IS NOT NULL AND LOWER(location_detail) LIKE ?
+                     GROUP BY location_detail, destination_id
+                     ORDER BY c DESC LIMIT ".max(1,min(50,$limit)), [$like]);
+    $reviewed = q_all("SELECT subject_name AS name, subject_type AS kind, destination_id,
+                              COUNT(*) c, NULL AS max_sev
+                       FROM reviews
+                       WHERE status='published' AND subject_name IS NOT NULL AND subject_type <> 'destination'
+                         AND LOWER(subject_name) LIKE ?
+                       GROUP BY subject_name, subject_type, destination_id
+                       ORDER BY c DESC LIMIT ".max(1,min(50,$limit)), [$like]);
+    $all = array_merge($rows, $places, $reviewed);
+    $dests = [];
+    foreach (q_all('SELECT id, name, slug FROM destinations') as $d) $dests[(int)$d['id']] = $d;
+    $out = [];
+    foreach ($all as $r) {
+        $d = $dests[(int)$r['destination_id']] ?? null;
+        if (!$d) continue;
+        $r['dest_name'] = $d['name']; $r['dest_slug'] = $d['slug'];
+        $out[] = $r;
+    }
+    usort($out, static fn($x, $y) => (int)$y['c'] <=> (int)$x['c']);
+    return array_slice($out, 0, $limit);
+}
+
+/**
+ * "Did you mean" for misspelt destinations.
+ *
+ * Runs in PHP over the destination list rather than in SQL: the list is small, and doing it here
+ * means the behaviour is identical on SQLite and Postgres instead of depending on whether
+ * pg_trgm happened to install. Scores by normalised Levenshtein distance and requires a real
+ * resemblance (>= 0.55) so a wild query returns nothing rather than a confident wrong guess.
+ */
+function rmt_fuzzy_destinations(string $qs, int $limit = 5): array {
+    $needle = mb_strtolower(trim($qs));
+    if ($needle === '' || mb_strlen($needle) < 3) return [];
+    $scored = [];
+    foreach (q_all('SELECT id, name, slug, country, summary FROM destinations') as $d) {
+        foreach ([mb_strtolower((string)$d['name']), mb_strtolower((string)$d['country'])] as $cand) {
+            if ($cand === '') continue;
+            $max = max(strlen($needle), strlen($cand));
+            if ($max === 0) continue;
+            // levenshtein() is byte-based and caps at 255 bytes; destination names are far shorter.
+            $score = 1 - (levenshtein($needle, $cand) / $max);
+            if (str_starts_with($cand, $needle)) $score = max($score, 0.9);
+            if ($score >= 0.55 && (!isset($scored[$d['id']]) || $scored[$d['id']]['score'] < $score)) {
+                $scored[$d['id']] = ['score' => $score] + $d;
+            }
+        }
+    }
+    usort($scored, static fn($x, $y) => $y['score'] <=> $x['score']);
+    return array_slice(array_values($scored), 0, $limit);
+}
+
+/**
+ * GET /api/suggest?q= — autocomplete for the header search and the destination pickers.
+ *
+ * Returns destinations (prefix first, then fuzzy so a typo still resolves) and any matching
+ * warning category. Deliberately tiny and cacheable: no auth, no user data, no write.
+ */
+function api_suggest(array $a): void {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: public, max-age=120');
+    $qs = trim((string)($_GET['q'] ?? ''));
+    if (mb_strlen($qs) < 2) { echo json_encode(['items' => []]); return; }
+    $like = mb_strtolower($qs).'%';
+    $contains = '%'.mb_strtolower($qs).'%';
+    $rows = q_all("SELECT id, name, slug, country FROM destinations
+                   WHERE LOWER(name) LIKE ? OR LOWER(country) LIKE ? OR LOWER(COALESCE(airport_codes,'')) LIKE ?
+                   ORDER BY (LOWER(name) LIKE ?) DESC, name LIMIT 8", [$contains, $contains, $contains, $like]);
+    $items = [];
+    $seen = [];
+    foreach ($rows as $r) {
+        $seen[(int)$r['id']] = true;
+        $items[] = ['type'=>'destination','id'=>(int)$r['id'],'label'=>$r['name'].', '.$r['country'],
+                    'url'=>url('d/'.$r['slug'])];
+    }
+    if (count($items) < 5) {
+        foreach (rmt_fuzzy_destinations($qs, 5) as $f) {
+            if (isset($seen[(int)$f['id']])) continue;
+            $items[] = ['type'=>'destination','id'=>(int)$f['id'],'label'=>$f['name'].', '.$f['country'],
+                        'url'=>url('d/'.$f['slug']),'fuzzy'=>true];
+        }
+    }
+    foreach (RMT_WARNING_CATEGORIES as $key => $meta) {
+        if (stripos($meta['label'], $qs) !== false) {
+            $items[] = ['type'=>'category','id'=>0,'label'=>$meta['label'].' warnings','url'=>url('warnings/'.$key)];
+        }
+    }
+    echo json_encode(['items' => array_slice($items, 0, 10)], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 }
 
 function notifications(array $a): void {
@@ -1809,7 +2069,12 @@ function login_submit(array $a): void {
     if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect($return); }
     view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in — RuinMyTrip']);
 }
-function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
+function register_form(array $a): void {
+    // Signed-in users now land on the dashboard, which is what an account is actually for.
+    if (is_logged_in()) redirect('/dashboard');
+    rmt_track('signup_started');
+    view('auth/register', ['errors'=>[]], ['title'=>'Create your free RuinMyTrip account']);
+}
 function register_submit(array $a): void {
     csrf_check();
     if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
@@ -1818,6 +2083,7 @@ function register_submit(array $a): void {
     }
     $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
     if ($r['ok']) {
+        rmt_track('signup_completed');
         flash(($r['mail_ok'] ?? false)
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
             : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link below.');
@@ -2196,9 +2462,23 @@ function readyz(array $a): void {
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('collections'), url('blog'), url('meetups'), url('going'),
+    $urls = [url(), url('explore'), url('warnings'), url('warning-guides'), url('alerts'), url('discover'),
+             url('reviews'), url('guides'), url('collections'), url('blog'), url('meetups'), url('going'),
              url('leaderboard'), url('tags'), url('editorial-policy'), url('terms'), url('privacy'),
              url('guidelines'), url('affiliate'), url('safety')];
+    // The ten warning categories and every destination's filterable warning list.
+    foreach (array_keys(RMT_WARNING_CATEGORIES) as $catKey) $urls[] = url('warnings/'.$catKey);
+    // Editorial guide pages: published rows only, so an unfinished draft is never advertised.
+    foreach (q_all("SELECT slug FROM seo_landing_pages WHERE status='published'") as $lp) $urls[] = url($lp['slug']);
+    // Approved warnings are real, indexable content with their own permalink.
+    foreach (q_all("SELECT id, slug, title FROM warnings WHERE status='approved'") as $wn) {
+        $urls[] = url('w/'.$wn['id'].'/'.($wn['slug'] ?: rmt_warning_slug($wn)));
+    }
+    // A destination's warning list is only worth indexing once it actually lists something.
+    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
+                    JOIN warnings w ON w.destination_id = d.id AND w.status='approved'") as $dw) {
+        $urls[] = url('d/'.$dw['slug'].'/warnings');
+    }
     foreach (rmt_top_tags(100) as $t) $urls[] = url('tag/'.$t['name']);
     foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
     // Only destinations with at least one real traveler photo get a /photos page indexed --

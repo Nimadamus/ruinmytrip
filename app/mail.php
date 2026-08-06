@@ -218,3 +218,66 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
 
     return rmt_mail_send($to, 'Your RuinMyTrip week', $html, $text);
 }
+
+/* ---------------------------------------------------------------- *
+ * Travel-warning alerts.
+ *
+ * Two templates, both deliberately plain: the confirmation for a new email-only subscriber, and
+ * the alert itself. The alert always names the destination in the subject line, always leads
+ * with severity, and always carries a one-click unsubscribe — the sender in
+ * scripts/send_alerts.php refuses to build a batch at all when there is nothing new, so an
+ * empty "here is your update" email can never be produced.
+ * ---------------------------------------------------------------- */
+
+/** Double opt-in confirmation for an email-only alert subscription. */
+function rmt_mail_alert_confirm(string $to, ?string $destName, string $link): array {
+    $where = $destName ? e($destName) : 'your destinations';
+    $html = rmt_mail_layout(
+        'Confirm your travel warning alerts',
+        '<p>Confirm this address and we will email you important new warnings for <strong>' . $where . '</strong>.</p>'
+        . '<p style="color:#4a5a6a">Weekly at most, only warnings serious enough to change plans, '
+        . 'and one click to stop at any time.</p>',
+        'Confirm alerts', $link
+    );
+    $text = "Confirm your RuinMyTrip travel warning alerts for {$where}:\n{$link}\n\n"
+          . "Weekly at most. One click to stop at any time.";
+    return rmt_mail_send($to, 'Confirm your RuinMyTrip alerts', $html, $text);
+}
+
+/**
+ * One alert email covering every new warning for one recipient.
+ *
+ * @param array<int,array{dest:string,title:string,severity:string,category:string,url:string,when:string}> $items
+ */
+function rmt_mail_warning_alert(string $to, string $greeting, array $items, string $unsubscribeUrl,
+                                string $subjectHint = ''): array {
+    if (!$items) return ['ok' => false, 'error' => 'nothing to send'];
+
+    $rows = '';
+    foreach ($items as $i) {
+        $rows .= '<li style="margin-bottom:14px">'
+              . '<a href="' . e($i['url']) . '" style="font-weight:600;color:#0f1b2d">' . e($i['title']) . '</a><br>'
+              . '<span style="color:#667;font-size:13px">' . e($i['dest']) . ' · ' . e($i['category'])
+              . ' · ' . e($i['severity']) . ($i['when'] !== '' ? ' · experienced ' . e($i['when']) : '')
+              . '</span></li>';
+    }
+    $bodyHtml = '<p>' . e($greeting) . '</p>'
+              . '<ul style="margin:16px 0;padding-left:20px">' . $rows . '</ul>'
+              . '<p style="color:#4a5a6a;font-size:13px">These are traveler-submitted reports reviewed by our '
+              . 'moderators. Unverified reports are labelled as such on the site.</p>'
+              . '<p style="color:#8895a3;font-size:12px;margin:24px 0 0">'
+              . '<a href="' . e($unsubscribeUrl) . '" style="color:#8895a3">Change how often you hear from us, or unsubscribe</a></p>';
+
+    $n = count($items);
+    $subject = $subjectHint !== ''
+        ? $n . ' new travel ' . ($n === 1 ? 'warning' : 'warnings') . ' for ' . $subjectHint
+        : $n . ' new travel ' . ($n === 1 ? 'warning' : 'warnings') . ' for your trips';
+
+    $text = $greeting . "\n\n";
+    foreach ($items as $i) {
+        $text .= "- {$i['title']} ({$i['dest']}, {$i['category']}, {$i['severity']})\n  {$i['url']}\n";
+    }
+    $text .= "\nUnsubscribe or change frequency: {$unsubscribeUrl}";
+
+    return rmt_mail_send($to, $subject, rmt_mail_layout('New warnings for your trip', $bodyHtml), $text);
+}
