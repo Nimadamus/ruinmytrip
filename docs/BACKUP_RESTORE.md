@@ -27,7 +27,7 @@ no manual trigger and never writes to production.
 | Secret | Purpose |
 |---|---|
 | `RENDER_API_KEY` | Toggle the DB firewall + fetch the connection string at runtime (so DB creds are never stored as a secret or committed). |
-| `BACKUP_PASSPHRASE` | AES256 passphrase for encrypting/decrypting dumps. **Losing this makes every backup unrecoverable.** Stored in `CLAUDE.md` Credentials. |
+| `BACKUP_PASSPHRASE` | AES256 passphrase for encrypting/decrypting dumps. **Losing this makes every backup unrecoverable.** Stored ONLY in an external password manager — see the incident note below. |
 | `RESEND_API_KEY` | Send the failure alert email. |
 
 The production DB id (`dpg-d9co0937uimc73enjljg-a`) and alert address are non-secret and live in
@@ -76,6 +76,32 @@ curl -s -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: ap
 curl -s -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
   -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/dpg-d9co0937uimc73enjljg-a"
 ```
+
+## Incident, 2026-08-06 — the passphrase was lost, and why
+
+This document previously said the passphrase was "Stored in `CLAUDE.md` Credentials". That file was
+destroyed by the C: NULL-byte corruption on or before 2026-07-24 (29,680 bytes of nulls, with no
+readable copy in `.bak` files, logs, Claude file-history, git or repo copies). The passphrase had
+been set on 2026-07-17, so it existed in that one location for about a week and was then gone.
+
+**Consequence: every backup artifact encrypted before 2026-08-06 must be treated as UNUSABLE,**
+including the otherwise-valid `rmt_20260806T122135Z.dump.gpg`. They are intact and correctly
+encrypted; nobody can decrypt them. They are deliberately NOT deleted — if the old passphrase ever
+resurfaces from an external record, they become usable again, and deleting them is irreversible.
+
+**Two rules follow from this:**
+
+1. **The passphrase never lives in a repo file, a dotfile, or anything on C: alone.** It lives in an
+   external password manager. This document records only *where*, never the value.
+2. **A backup you cannot decrypt is not a backup.** The nightly job's restore test decrypts inside
+   the run using the GitHub secret, so it passes even when no human can open the artifact. That is a
+   real blind spot: it proves the *artifact* is good, not that the *organisation* can recover.
+   Periodically confirm a human can still retrieve the passphrase and decrypt a downloaded artifact.
+
+A related failure the same day: `db-backup.yml` hardcoded `DB_ID` as a literal, and the Aug 5 Render
+cost-cut recreated the database with a new id. Every API call 404'd and the nightly backup silently
+failed on Aug 5 and Aug 6. **When a Render database is recreated, grep the workflows for a hardcoded
+`dpg-` id.**
 
 ## Rotating the passphrase
 
