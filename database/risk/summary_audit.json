@@ -8,8 +8,14 @@
       "verdict": "accurate — no change",
       "note": "Flagged for review on the assumption that the two-tier Louvre pricing was stale. It is not. The Louvre raised admission for non-EEA visitors by 45%, from EUR 22 to EUR 32, effective 14 January 2026; EEA visitors continue to pay EUR 22 and Norway, Iceland and Liechtenstein are exempt from the increase. Guided-group entry is EUR 28. The claim stands as written.",
       "sources": [
-        ["Louvre to hike ticket prices by 45% for most non-EU visitors — Artforum", "https://www.artforum.com/news/louvre-raises-ticket-prices-45-percent-for-non-eu-visitors-1234739815/"],
-        ["Louvre museum to hike entrance fee by 45% for non-European visitors — CNN", "https://www.cnn.com/2025/11/28/travel/louvre-ticket-price-hike-scli-intl"]
+        [
+          "Louvre to hike ticket prices by 45% for most non-EU visitors — Artforum",
+          "https://www.artforum.com/news/louvre-raises-ticket-prices-45-percent-for-non-eu-visitors-1234739815/"
+        ],
+        [
+          "Louvre museum to hike entrance fee by 45% for non-European visitors — CNN",
+          "https://www.cnn.com/2025/11/28/travel/louvre-ticket-price-hike-scli-intl"
+        ]
       ]
     },
     {
@@ -17,8 +23,14 @@
       "verdict": "accurate — no change",
       "note": "Highest-risk claim in the set, because it asserts a police power. Verified: amendments under the National Security Law effective 23 March 2026 empower police, immigration and customs officers to compel device passwords from any person, including foreign travellers and transit passengers; separate border powers took effect 30 March 2026 and apply regardless of whether national security is suspected. Refusal is a criminal offence carrying up to one year in prison and a HK$100,000 fine.",
       "sources": [
-        ["Hong Kong's new border-search powers allow officers to compel device passwords — VisaHQ", "https://www.visahq.com/news/2026-03-29/hk/hong-kongs-new-border-search-powers-allow-officers-to-compel-device-passwords-from-all-travellers/"],
-        ["New Hong Kong law lets border officers demand phone and laptop passwords — VisaHQ", "https://www.visahq.com/news/2026-03-31/hk/new-hong-kong-law-lets-border-officers-demand-phone-and-laptop-passwords/"]
+        [
+          "Hong Kong's new border-search powers allow officers to compel device passwords — VisaHQ",
+          "https://www.visahq.com/news/2026-03-29/hk/hong-kongs-new-border-search-powers-allow-officers-to-compel-device-passwords-from-all-travellers/"
+        ],
+        [
+          "New Hong Kong law lets border officers demand phone and laptop passwords — VisaHQ",
+          "https://www.visahq.com/news/2026-03-31/hk/new-hong-kong-law-lets-border-officers-demand-phone-and-laptop-passwords/"
+        ]
       ]
     },
     {
@@ -26,8 +38,14 @@
       "verdict": "accurate — no change",
       "note": "The levy is the UK's first city-wide visitor levy and took effect on 24 July 2026, thirteen days before this audit, so 'just started' is correct rather than merely surviving. It is 5% of the accommodation cost, capped at five consecutive nights, and does not apply to bookings made before 1 October 2025.",
       "sources": [
-        ["Edinburgh Visitor Levy comes into effect — City of Edinburgh Council", "https://www.edinburgh.gov.uk/news/article/14452/edinburgh-visitor-levy-comes-into-effect"],
-        ["UK's first city-wide visitor levy comes into effect in Edinburgh", "https://www.independenthotelshow.co.uk/news-hub/uks-first-city-wide-visitor-levy-comes-effect-edinburgh"]
+        [
+          "Edinburgh Visitor Levy comes into effect — City of Edinburgh Council",
+          "https://www.edinburgh.gov.uk/news/article/14452/edinburgh-visitor-levy-comes-into-effect"
+        ],
+        [
+          "UK's first city-wide visitor levy comes into effect in Edinburgh",
+          "https://www.independenthotelshow.co.uk/news-hub/uks-first-city-wide-visitor-levy-comes-effect-edinburgh"
+        ]
       ]
     },
     {
@@ -35,8 +53,14 @@
       "verdict": "accurate — no change",
       "note": "Verified: Las Vegas visitation fell 7.5% in 2025 to 38.5 million, roughly 3.1 million fewer visitors than the prior year and the sharpest decline since record-keeping began in 1970 outside the pandemic. Projections for 2026 are a partial recovery to about 40.1 million, so the summary describes a real and recent trough rather than a continuing collapse.",
       "sources": [
-        ["Las Vegas tourism down 7.5% in 2025 with 38.5 million visitors — Las Vegas Sun", "https://lasvegassun.com/news/2026/jan/28/las-vegas-tourism-down-75-in-2025-with-385-million/"],
-        ["Las Vegas visitation falls 7.5 percent in 2025 — Las Vegas Review-Journal", "https://www.reviewjournal.com/business/tourism/las-vegas-closes-the-book-on-2025-visitation-down-7-5-3613202/"]
+        [
+          "Las Vegas tourism down 7.5% in 2025 with 38.5 million visitors — Las Vegas Sun",
+          "https://lasvegassun.com/news/2026/jan/28/las-vegas-tourism-down-75-in-2025-with-385-million/"
+        ],
+        [
+          "Las Vegas visitation falls 7.5 percent in 2025 — Las Vegas Review-Journal",
+          "https://www.reviewjournal.com/business/tourism/las-vegas-closes-the-book-on-2025-visitation-down-7-5-3613202/"
+        ]
       ]
     },
     {
@@ -44,7 +68,10 @@
       "verdict": "accurate — no change",
       "note": "The Acropolis daily cap of 20,000 with staggered hourly entry has been in force since September 2023, with a maximum of 3,000 admitted in the 08:00-09:00 hour. Heat closures during severe heatwaves are also real. Verified while writing the Athens risk report.",
       "sources": [
-        ["Acropolis cap on daily visitors and staggered entry times — Euronews", "https://www.euronews.com/travel/2023/08/03/greeces-acropolis-cap-on-daily-visitors-and-staggered-entry-times-starting-in-september"]
+        [
+          "Acropolis cap on daily visitors and staggered entry times — Euronews",
+          "https://www.euronews.com/travel/2023/08/03/greeces-acropolis-cap-on-daily-visitors-and-staggered-entry-times-starting-in-september"
+        ]
       ]
     },
     {
@@ -52,7 +79,10 @@
       "verdict": "accurate — no change",
       "note": "Barcelona raised its nightly accommodation levy in April 2026 to roughly $10-17 for hotels and about $14 for holiday rentals, among the highest in Europe, and continues to restrict short-term rentals as part of its overtourism response. 'Doubled tourist tax' and 'Airbnb phase-out' both hold.",
       "sources": [
-        ["Barcelona raises taxes to address overtourism", "https://recommend.com/destinations/barcelona-raises-taxes-takes-other-steps-against-overtourism/"]
+        [
+          "Barcelona raises taxes to address overtourism",
+          "https://recommend.com/destinations/barcelona-raises-taxes-takes-other-steps-against-overtourism/"
+        ]
       ]
     },
     {
@@ -60,7 +90,10 @@
       "verdict": "accurate — written this session",
       "note": "Hawaii's Green Fee (Act 96 / SB1396, signed 27 May 2025) took effect 1 January 2026, adding 0.75% to the transient accommodations tax and taking Oahu's combined lodging tax from about 18.0% to about 18.7%.",
       "sources": [
-        ["Court decision allows Hawaii's Green Fee to take full effect — KHON2", "https://www.khon2.com/local-news/court-decision-allows-hawaiis-green-fee-to-take-full-effect/"]
+        [
+          "Court decision allows Hawaii's Green Fee to take full effect — KHON2",
+          "https://www.khon2.com/local-news/court-decision-allows-hawaiis-green-fee-to-take-full-effect/"
+        ]
       ]
     },
     {
@@ -68,7 +101,10 @@
       "verdict": "accurate — written this session",
       "note": "Los Angeles transient occupancy tax is 14%; hotels in the tourism marketing district add 2% of room revenue; resort fees of roughly $20-30 a night are common at beach properties.",
       "sources": [
-        ["US hotel stays cost more as bed taxes climb", "https://www.hotelmanagement-network.com/news/us-hotel-stays-cost-more-as-bed-taxes-climb-in-many-cities/"]
+        [
+          "US hotel stays cost more as bed taxes climb",
+          "https://www.hotelmanagement-network.com/news/us-hotel-stays-cost-more-as-bed-taxes-climb-in-many-cities/"
+        ]
       ]
     },
     {
@@ -76,7 +112,10 @@
       "verdict": "accurate — written this session",
       "note": "Miami Beach resort fees average around $25 a night, with luxury properties commonly $40-50 and some above $60, on top of a 4% city resort tax, 3% county convention development tax and 6% Florida sales tax.",
       "sources": [
-        ["Miami hotel and Airbnb fees — resort fees, parking, taxes", "https://nextbreakout.com/blog/miami-hotel-fees"]
+        [
+          "Miami hotel and Airbnb fees — resort fees, parking, taxes",
+          "https://nextbreakout.com/blog/miami-hotel-fees"
+        ]
       ]
     },
     {
@@ -84,7 +123,10 @@
       "verdict": "accurate — written this session",
       "note": "Epic Universe single-day tickets run $139-$199 for adults depending on date, and a 3-day park-to-park ticket including Epic Universe starts around $520.79.",
       "sources": [
-        ["2026 Epic Universe tickets now on sale — Disney Tourist Blog", "https://www.disneytouristblog.com/2026-epic-universe-1-day-multi-day-park-hopper-discount-tickets-now-on-sale/"]
+        [
+          "2026 Epic Universe tickets now on sale — Disney Tourist Blog",
+          "https://www.disneytouristblog.com/2026-epic-universe-1-day-multi-day-park-hopper-discount-tickets-now-on-sale/"
+        ]
       ]
     },
     {
@@ -92,16 +134,25 @@
       "verdict": "accurate — written this session",
       "note": "Car break-ins are well down from the 2023 peak and falling further into 2026. The Tenderloin, roughly bounded by Market, Powell, Geary and Van Ness, accounts for around 31% of tourist-related crime reports despite covering under 2% of the city's area.",
       "sources": [
-        ["San Francisco safety guide 2026 — neighbourhood scores and crime data", "https://safezone.city/guides/san-francisco-safety-guide"]
+        [
+          "San Francisco safety guide 2026 — neighbourhood scores and crime data",
+          "https://safezone.city/guides/san-francisco-safety-guide"
+        ]
       ]
     },
     {
       "slug": "lisbon-portugal",
-      "verdict": "rewritten this session",
-      "note": "The previous summary came from the demo seeder ('Tiled hills, trams, and Atlantic light.') and carried no checkable content. Replaced in migration 046 with the city tax, which doubled to EUR 4 per person per night in September 2024, has held at EUR 4 through 2026, and is capped at seven nights.",
+      "verdict": "row added by migration; production summary unchanged",
+      "note": "The lisbon-portugal ROW was only ever defined in database/seed.php, so a database built from migrations alone lacked it entirely — migration 046 adds it, ON CONFLICT (slug) DO NOTHING. Production DOES already have the row (confirmed 2026-08-06 by a read-only HTTP 200 on https://ruinmytrip.com/d/lisbon-portugal), and its summary is the researched editorial line published by publish_editorial.php, not the demo seeder text. So 046 is a no-op in production and the live summary is left exactly as it is. The city-tax summary written into 046 applies only where the row does not yet exist. The verified fact behind it: the Lisbon city tax doubled to EUR 4 per person per night in September 2024, has held at EUR 4 through 2026, and is capped at seven nights.",
       "sources": [
-        ["City tax in Lisbon 2026", "https://www.eazyal.com/blog/lisbon-tourist-tax-2026-alojamento-local"],
-        ["Portugal tourist tax 2026: verified rates by region", "https://www.portugalportfolio.com/portugal-tourist-tax-2026-verified-rates-by-region"]
+        [
+          "City tax in Lisbon 2026",
+          "https://www.eazyal.com/blog/lisbon-tourist-tax-2026-alojamento-local"
+        ],
+        [
+          "Portugal tourist tax 2026: verified rates by region",
+          "https://www.portugalportfolio.com/portugal-tourist-tax-2026-verified-rates-by-region"
+        ]
       ]
     }
   ]
