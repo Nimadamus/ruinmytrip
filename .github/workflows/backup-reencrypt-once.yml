@@ -1,0 +1,169 @@
+name: backup-reencrypt-once
+
+# ONE-TIME passphrase-rescue job, run manually before rotating BACKUP_PASSPHRASE.
+#
+# WHY THIS EXISTS. GitHub keeps exactly one value per secret name, and setting a secret overwrites
+# the old value irreversibly. Rotating BACKUP_PASSPHRASE would therefore strand every existing
+# artifact: they stay perfectly valid, but the only key that opens them is gone. This job re-encrypts
+# the current artifact under the NEW passphrase first, so nothing is stranded by the rotation.
+#
+# WHAT IT TOUCHES. Artifacts only. It never connects to the production database, never changes the
+# firewall, never deploys, and never writes application data. The heaviest thing it does is download
+# a file, decrypt it in a runner's temp directory, encrypt it again, and upload the result.
+#
+# SECRET HANDLING.
+#   * Both passphrases are read from the environment into gpg via --passphrase-fd 0, never as a
+#     command-line argument (which would expose them in the process list).
+#   * Neither is ever echoed, and neither is written to a file.
+#   * `set +x` is explicit in every step that touches a secret, so no shell trace can leak them.
+#   * GitHub masks registered secret values in logs, but this job does not rely on that alone.
+#
+# PLAINTEXT HANDLING. The decrypted dump exists only inside the runner's workspace, is never
+# uploaded, and is shredded in an `if: always()` step so it is destroyed even if a step fails or the
+# job is cancelled. The runner itself is ephemeral and discarded afterwards.
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: 'Run ID of the db-backup run holding the artifact to rescue'
+        required: true
+        type: string
+      artifact_name:
+        description: 'Artifact name on that run, e.g. rmt-db-backup-20260806T122135Z'
+        required: true
+        type: string
+
+concurrency:
+  group: backup-reencrypt-once
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read          # required to download an artifact from a DIFFERENT run
+
+jobs:
+  reencrypt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OLD_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+      NEW_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE_NEXT }}
+
+    steps:
+      - name: Refuse to run unless BOTH passphrases are present
+        run: |
+          set +x
+          set -euo pipefail
+          # Emptiness is checked without ever printing or comparing the values themselves.
+          if [ -z "${OLD_PASSPHRASE:-}" ]; then
+            echo "::error::BACKUP_PASSPHRASE is not set. Nothing to decrypt with."; exit 1
+          fi
+          if [ -z "${NEW_PASSPHRASE:-}" ]; then
+            echo "::error::BACKUP_PASSPHRASE_NEXT is not set. Create it before running this job."; exit 1
+          fi
+          if [ "${OLD_PASSPHRASE}" = "${NEW_PASSPHRASE}" ]; then
+            echo "::error::The two passphrases are identical — rotation would be a no-op."; exit 1
+          fi
+          echo "Both passphrases present and different. (Values never printed.)"
+
+      - name: Install PostgreSQL 16 client
+        run: |
+          set -euo pipefail
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-16
+
+      - name: Download the artifact to rescue
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: incoming
+
+      - name: Identify the source file
+        run: |
+          set -euo pipefail
+          SRC=$(find incoming -name '*.dump.gpg' | head -1)
+          if [ -z "$SRC" ]; then echo "::error::no .dump.gpg found in the artifact"; exit 1; fi
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "source: $SRC ($(stat -c%s "$SRC") bytes)"
+          echo "source sha256: $(sha256sum "$SRC" | cut -d' ' -f1)"
+
+      - name: Decrypt with the OLD passphrase, re-encrypt with the NEW one
+        run: |
+          set +x
+          set -euo pipefail
+          STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          echo "STAMP=$STAMP" >> "$GITHUB_ENV"
+          mkdir -p out
+          # Decrypt. --passphrase-fd 0 keeps the value off the command line and out of `ps`.
+          printf '%s' "$OLD_PASSPHRASE" | gpg --batch --yes --decrypt --passphrase-fd 0 \
+            -o plain.dump "$SRC" 2>/dev/null
+          RAW=$(stat -c%s plain.dump)
+          # Sanity-check that what came out really is a Postgres custom-format dump, WITHOUT
+          # printing any of its contents: count the table-of-contents entries and discard them.
+          TOC=$(pg_restore --list plain.dump | grep -c '^[0-9]' || true)
+          echo "decrypted ${RAW} bytes; dump table-of-contents entries: ${TOC}"
+          if [ "$TOC" -lt 1 ]; then echo "::error::decrypted file is not a readable pg dump"; exit 1; fi
+          # Re-encrypt under the new passphrase.
+          OUT="out/rmt_reencrypted_${STAMP}.dump.gpg"
+          printf '%s' "$NEW_PASSPHRASE" | gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase-fd 0 -o "$OUT" plain.dump 2>/dev/null
+          echo "OUT=$OUT" >> "$GITHUB_ENV"
+          echo "RAW_BYTES=$RAW" >> "$GITHUB_ENV"
+          echo "ENC_BYTES=$(stat -c%s "$OUT")" >> "$GITHUB_ENV"
+
+      - name: Prove the NEW artifact opens with the NEW passphrase
+        run: |
+          set +x
+          set -euo pipefail
+          # Round-trip check. Without this the job could happily upload something unopenable.
+          printf '%s' "$NEW_PASSPHRASE" | gpg --batch --yes --decrypt --passphrase-fd 0 \
+            -o roundtrip.dump "$OUT" 2>/dev/null
+          if ! cmp -s plain.dump roundtrip.dump; then
+            echo "::error::round-trip mismatch — the re-encrypted file does not match the original"; exit 1
+          fi
+          TOC=$(pg_restore --list roundtrip.dump | grep -c '^[0-9]' || true)
+          echo "round-trip byte-identical to the source dump; table-of-contents entries: ${TOC}"
+          shred -u roundtrip.dump 2>/dev/null || rm -f roundtrip.dump
+
+      - name: Checksum the new artifact
+        run: |
+          set -euo pipefail
+          SHA=$(sha256sum "$OUT" | cut -d' ' -f1)
+          echo "SHA256=$SHA" >> "$GITHUB_ENV"
+          echo "$SHA  $(basename "$OUT")" > "out/$(basename "$OUT").sha256"
+          echo "new artifact sha256: $SHA"
+
+      - name: Upload re-encrypted artifact + checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: rmt-db-backup-reencrypted-${{ env.STAMP }}
+          path: out/
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Summary (no secrets)
+        if: always()
+        run: |
+          {
+            echo "### Backup re-encryption (one-time rescue)"
+            echo "- result: ${{ job.status }}"
+            echo "- source run: ${{ inputs.source_run_id }} / ${{ inputs.artifact_name }}"
+            echo "- new artifact: rmt-db-backup-reencrypted-${STAMP:-n/a}"
+            echo "- encrypted size: ${ENC_BYTES:-n/a} bytes (raw ${RAW_BYTES:-n/a})"
+            echo "- sha256: ${SHA256:-n/a}"
+            echo "- production database: NOT contacted"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # ALWAYS destroy the decrypted dump, even on failure or cancellation.
+      - name: Shred plaintext (always)
+        if: always()
+        run: |
+          set +x
+          shred -u plain.dump 2>/dev/null || rm -f plain.dump
+          rm -f roundtrip.dump
+          echo "plaintext removed: $([ -e plain.dump ] && echo 'STILL PRESENT — INVESTIGATE' || echo 'confirmed gone')"

@@ -84,24 +84,80 @@ destroyed by the C: NULL-byte corruption on or before 2026-07-24 (29,680 bytes o
 readable copy in `.bak` files, logs, Claude file-history, git or repo copies). The passphrase had
 been set on 2026-07-17, so it existed in that one location for about a week and was then gone.
 
-**Consequence: every backup artifact encrypted before 2026-08-06 must be treated as UNUSABLE,**
-including the otherwise-valid `rmt_20260806T122135Z.dump.gpg`. They are intact and correctly
-encrypted; nobody can decrypt them. They are deliberately NOT deleted — if the old passphrase ever
-resurfaces from an external record, they become usable again, and deleting them is irreversible.
+### What is actually true (corrected 2026-08-06)
 
-**Two rules follow from this:**
+An earlier revision of this section said every artifact must be treated as **UNUSABLE**. That was an
+overstatement and is wrong. The precise position is:
+
+**The existing backups ARE decryptable.** The `BACKUP_PASSPHRASE` repo secret still holds the correct
+value, and it demonstrably works: workflow run **31100989871** on 2026-08-06 decrypted
+`rmt_20260806T122135Z.dump.gpg` inside the runner, restored it with `pg_restore --exit-on-error`, and
+reported `integrity checks PASSED` (38 `schema_migrations` rows, 80 `destinations` rows).
+
+**What is missing is a human-held copy of that passphrase.** GitHub secrets are write-only — the value
+can be *used* by a workflow but cannot be *read back* by a person. Its only recorded home was
+`CLAUDE.md`, which was destroyed. So:
+
+| | Can it decrypt a backup today? |
+|---|---|
+| A GitHub Actions workflow in this repo | **Yes** — proven by run 31100989871 |
+| A person, at a terminal, from the vault | **No** — no known human-held copy |
+
+**The practical risk is therefore narrower than "unusable", and still serious.** Recovery works only
+while GitHub Actions is available *and* this repository and its secrets are intact. That is precisely
+the scenario least likely to hold in a real disaster — losing the account, the repo, or access to
+Actions also loses the only route to your data. It also means recovery cannot be performed by anyone
+who lacks push/Actions rights on the repo.
+
+**Nothing is deleted.** All existing artifacts are retained.
+
+**Three rules follow:**
 
 1. **The passphrase never lives in a repo file, a dotfile, or anything on C: alone.** It lives in an
    external password manager. This document records only *where*, never the value.
-2. **A backup you cannot decrypt is not a backup.** The nightly job's restore test decrypts inside
-   the run using the GitHub secret, so it passes even when no human can open the artifact. That is a
-   real blind spot: it proves the *artifact* is good, not that the *organisation* can recover.
-   Periodically confirm a human can still retrieve the passphrase and decrypt a downloaded artifact.
+2. **A backup only a machine can open is only half a backup.** The nightly job's restore test
+   decrypts inside the run using the GitHub secret, so it passes whether or not any human can open
+   the artifact. It proves the *artifact* is good, not that the *organisation* can recover.
+3. **The human-held copy is the thing that must be tested**, not just the artifact. See the drill
+   below.
 
 A related failure the same day: `db-backup.yml` hardcoded `DB_ID` as a literal, and the Aug 5 Render
 cost-cut recreated the database with a new id. Every API call 404'd and the nightly backup silently
 failed on Aug 5 and Aug 6. **When a Render database is recreated, grep the workflows for a hardcoded
 `dpg-` id.**
+
+## Quarterly human-led restore drill
+
+The nightly job cannot detect the failure that actually happened here, because it decrypts with a
+secret no person can read. Only a human doing the restore proves recovery works. Run this **once a
+quarter** and whenever the passphrase is rotated or an operator changes.
+
+**Schedule:** first working week of January, April, July and October.
+
+**Procedure** (about 20 minutes, touches nothing in production):
+
+1. Retrieve `BACKUP_PASSPHRASE` from the external password manager. **If you cannot find it, the
+   drill has already failed — stop and rotate.** That is the single most important step.
+2. Download the most recent artifact from the latest successful `db-backup` run:
+   `gh run download <run-id> -n rmt-db-backup-<stamp> -D ./restore-drill`
+3. Start a disposable PostgreSQL matching production's major version:
+   `docker run -d --name rmt-drill -e POSTGRES_PASSWORD=drill -e POSTGRES_USER=drill -p 15432:5432 postgres:16`
+4. Decrypt locally, entering the passphrase at the Pinentry prompt (never as a command argument):
+   `gpg --decrypt -o drill.dump ./restore-drill/rmt_<stamp>.dump.gpg`
+5. Restore and check:
+   `pg_restore --no-owner --no-privileges --exit-on-error -d "postgresql://drill:drill@127.0.0.1:15432/drill" drill.dump`
+6. Confirm the numbers are plausible for the current site — table count, `schema_migrations` rows,
+   `destinations` rows — not merely that the restore exited zero.
+7. Tear down and erase: `docker rm -f rmt-drill && rm -f drill.dump`
+8. Record the date and outcome below.
+
+**Record**
+
+| Date | Artifact | Passphrase retrieved from vault? | Restore result | By |
+|---|---|---|---|---|
+| _(2026-08-06)_ | `rmt_20260806T122135Z.dump.gpg` | **NO — none held** | Passed in CI only; no human restore | — |
+
+That first row is the failure this drill exists to catch. It should never read "NO" again.
 
 ## Rotating the passphrase
 
