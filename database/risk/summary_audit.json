@@ -139,21 +139,12 @@
           "https://safezone.city/guides/san-francisco-safety-guide"
         ]
       ]
-    },
+    }
+  ],
+  "_excluded_from_stamping": [
     {
       "slug": "lisbon-portugal",
-      "verdict": "row added by migration; production summary unchanged",
-      "note": "The lisbon-portugal ROW was only ever defined in database/seed.php, so a database built from migrations alone lacked it entirely — migration 046 adds it, ON CONFLICT (slug) DO NOTHING. Production DOES already have the row (confirmed 2026-08-06 by a read-only HTTP 200 on https://ruinmytrip.com/d/lisbon-portugal), and its summary is the researched editorial line published by publish_editorial.php, not the demo seeder text. So 046 is a no-op in production and the live summary is left exactly as it is. The city-tax summary written into 046 applies only where the row does not yet exist. The verified fact behind it: the Lisbon city tax doubled to EUR 4 per person per night in September 2024, has held at EUR 4 through 2026, and is capped at seven nights.",
-      "sources": [
-        [
-          "City tax in Lisbon 2026",
-          "https://www.eazyal.com/blog/lisbon-tourist-tax-2026-alojamento-local"
-        ],
-        [
-          "Portugal tourist tax 2026: verified rates by region",
-          "https://www.portugalportfolio.com/portugal-tourist-tax-2026-verified-rates-by-region"
-        ]
-      ]
+      "reason": "Deliberately NOT stamped as reviewed. Migration 046 adds the lisbon-portugal ROW for environments that lack it, but production already has the row and its summary is the researched editorial line published by publish_editorial.php — text about short-term rental caps, tuk-tuk bans and pickpocket pressure. What was verified this session was the Lisbon CITY TAX (EUR 4 per person per night since September 2024, capped at seven nights), which is a different claim from the one production displays. Stamping the live summary as 'checked' on the strength of an unrelated verified fact is precisely the failure this field exists to prevent, so Lisbon renders no review date and its production summary is left exactly as it is."
     }
   ]
 }
