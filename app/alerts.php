@@ -126,6 +126,12 @@ function rmt_new_warning_count(array $watch): int {
  *
  * Deliberately derived from what this destination is actually warned about rather than a generic
  * packing list — a checklist that says the same thing for Reykjavik and Cancun is noise.
+ *
+ * There is one entry for EVERY warning category. That completeness is the point: the first
+ * version covered six of the ten, which meant a trip whose destination was warned about only
+ * scams — by some distance the most common category — produced an empty checklist and the
+ * dashboard silently rendered nothing. A category with no action here is a category whose
+ * warnings a traveler is never prompted to act on.
  */
 function rmt_trip_prep_actions(array $watch): array {
     $destId = (int) $watch['destination_id'];
@@ -160,6 +166,29 @@ function rmt_trip_prep_actions(array $watch): array {
         $out[] = ['label' => 'Confirm opening hours and closures before booking timed entry',
                   'why' => 'Closures and construction reported here', 'urgent' => $days !== null && $days <= 14];
     }
+    if (isset($counts['scams'])) {
+        $n = $counts['scams']['c'];
+        $out[] = ['label' => 'Read the reported scams before you arrive',
+                  'why' => $n . ' scam ' . ($n === 1 ? 'report' : 'reports') . ' here — they are easiest to avoid when you already know the opening line',
+                  'urgent' => $days !== null && $days <= 14];
+    }
+    if (isset($counts['crowds'])) {
+        $out[] = ['label' => 'Book timed entry for the busiest sights now',
+                  'why' => 'Crowding and sellouts reported here',
+                  'urgent' => $days !== null && $days <= 45];
+    }
+    if (isset($counts['health-safety'])) {
+        $out[] = ['label' => 'Check health and safety guidance, and your insurance cover',
+                  'why' => 'Health or safety issues reported here',
+                  'urgent' => $days !== null && $days <= 30];
+    }
+    if (isset($counts['accommodation'])) {
+        $out[] = ['label' => 'Re-check your accommodation booking and its total price',
+                  'why' => 'Accommodation problems reported here',
+                  'urgent' => $days !== null && $days <= 21];
+    }
+    // Most urgent first, so a trip two weeks out leads with what still has time to be fixed.
+    usort($out, static fn($a, $b) => (int) ($b['urgent'] ?? false) <=> (int) ($a['urgent'] ?? false));
     return $out;
 }
 

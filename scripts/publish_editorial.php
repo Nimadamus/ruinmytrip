@@ -41,11 +41,23 @@ $files = glob($dir . '/*.json') ?: [];
 if (!$files) fail("no editorial content found in {$dir}");
 
 $items = [];
+$skipped = [];
 foreach ($files as $f) {
     $json = json_decode((string) file_get_contents($f), true);
     if (!is_array($json) || !isset($json['destinations'])) fail("malformed JSON: {$f}");
+    // Only consume files that are actually editorial review payloads. This glob previously
+    // swallowed ANY *.json in the directory, so a sibling file with a different shape (the risk
+    // reports, briefly) made every entry fail validation and stopped this script running at all.
+    // A payload is ours only if its entries carry the editorial-specific fields.
+    $probe = $json['destinations'][0] ?? null;
+    if (is_array($probe) && !array_key_exists('headline', $probe) && !array_key_exists('rating', $probe)) {
+        $skipped[] = basename($f);
+        continue;
+    }
     foreach ($json['destinations'] as $d) $items[] = $d + ['_file' => basename($f)];
 }
+if ($skipped) out('  ignored (not editorial payloads): ' . implode(', ', $skipped));
+if (!$items) fail("no editorial destination entries found in {$dir}");
 
 $required = ['slug','name','country','summary','headline','body','rating','safety_rating',
              'value_rating','what_great','what_ruined','tips','photo_url','photo_credit',

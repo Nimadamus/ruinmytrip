@@ -137,7 +137,11 @@ if [ -n "$WID" ]; then
     -X POST "$BASE/admin/warnings/$WID/moderate" \
     --data-urlencode "_csrf=$T" --data-urlencode "action=approve" --data-urlencode "note=E2E approval")" "302"
   ck "approved warning canonicalises publicly" "$(curl -s -o /dev/null -w '%{http_code}' "$BASE/w/$WID")" "302"
-  T=$(csrf "$JAR_A" "$BASE/admin/warnings?status=pending")
+  # Take the token from ?status=approved, NOT ?status=pending: approving the warning above just
+  # emptied the pending queue, and an empty queue page renders no moderation form — so it carries
+  # no CSRF field at all, the token comes back blank, and the POST 403s before ever reaching the
+  # guard under test. Any page with at least one row works.
+  T=$(csrf "$JAR_A" "$BASE/admin/warnings?status=approved")
   NONOTE=$(curl -s -L -b "$JAR_A" -c "$JAR_A" -X POST "$BASE/admin/warnings/$WID/moderate" \
     --data-urlencode "_csrf=$T" --data-urlencode "action=reject" --data-urlencode "note=")
   grep_ok "$NONOTE" "Add a short note" "a rejection without a reason is refused"

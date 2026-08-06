@@ -37,6 +37,20 @@ $defs = rmt_risk_section_defs();
   </div>
   <?= rmt_photo_credit_html($d) ?>
 
+  <?php /* Provenance for the summary itself. Only rendered when a person actually re-verified it —
+           a NULL summary_reviewed_at prints nothing, because a date on an unchecked claim is worse
+           than no date at all. Separate from the risk report's own last-reviewed line below. */ ?>
+  <?php if (!empty($d['summary_reviewed_at'])): $sumSrc = rmt_sources($d['summary_sources'] ?? null); ?>
+    <p class="reviewed-line" style="justify-content:flex-end">
+      <span>Summary checked <?= e(date('F j, Y', strtotime((string) $d['summary_reviewed_at']))) ?></span>
+      <?php foreach ($sumSrc as $i => $src): ?>
+        <?php if (!empty($src['url'])): ?>
+          <a href="<?= e($src['url']) ?>" rel="nofollow noopener" target="_blank"><?= e($src['title'] ?: 'source') ?></a>
+        <?php endif; ?>
+      <?php endforeach; ?>
+    </p>
+  <?php endif; ?>
+
   <!-- OVERALL TRIP-RISK SUMMARY -->
   <div class="risk-summary">
     <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between">

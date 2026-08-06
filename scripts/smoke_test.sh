@@ -39,7 +39,11 @@ for p in /guides /reviews /meetups /going /tags /collections /blog /discover /le
          /login /register /terms /privacy /guidelines /safety /affiliate /editorial-policy \
          /sitemap.xml /robots.txt /feed.xml /healthz /readyz; do check "$p" 200; done
 check /u/ruinmytrip 200
-check /d/marrakech-morocco 200
+# Use destinations guaranteed by a MIGRATION, not by the demo seeder. marrakech-morocco and
+# kyoto-japan exist only in database/seed.php, so they are present on the live site (which
+# seeded on first boot) but absent from any database rebuilt from migrations alone — which
+# made these checks pass in production and fail on a rebuilt environment. See docs/ROUTES.md.
+check /d/paris-france 200
 
 echo "-- negative / auth (expect 404 or 302) --"
 check /this-page-does-not-exist 404
@@ -63,7 +67,7 @@ has /api/suggest?q=par "destination"              "autocomplete endpoint respond
 echo "-- trust labelling (a regression here means we are misrepresenting content) --"
 # Editorial content must be labelled wherever it renders, and traveler warnings must carry their
 # verification state. If either stops matching, the site is passing something off as something else.
-has /d/kyoto-japan "Official Review"              "editorial review labelled"
+has /d/paris-france "Official Review"             "editorial review labelled"
 has /warning-guides "Researched, dated, sourced"  "guide index states what the guides are"
 
 echo "-- no accidental noindex anywhere (hard rule) --"

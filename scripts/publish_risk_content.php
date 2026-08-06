@@ -2,7 +2,12 @@
 declare(strict_types=1);
 
 /**
- * Publish destination risk reports from database/editorial/risk_content.json.
+ * Publish destination risk reports from database/risk/risk_content.json.
+ *
+ * NOTE ON THE PATH: this file deliberately does NOT live in database/editorial/. That directory is
+ * glob()-ed by scripts/publish_editorial.php, which treats every *.json in it as a destination
+ * review payload — dropping this file there made that script reject its own valid content and
+ * refuse to run. Risk reports get their own directory so the two pipelines cannot collide.
  *
  * This is the counterpart to scripts/publish_editorial.php (which publishes the older
  * review/guide editorial layer). It writes:
@@ -51,7 +56,7 @@ if (!$apply && !in_array('--check', $args, true)) {
     exit(1);
 }
 
-$path = BASE_PATH . '/database/editorial/risk_content.json';
+$path = BASE_PATH . '/database/risk/risk_content.json';
 if (!is_file($path)) { fwrite(STDERR, "missing {$path}\n"); exit(1); }
 $data = json_decode((string) file_get_contents($path), true);
 if (!is_array($data) || !isset($data['destinations'])) { fwrite(STDERR, "risk_content.json is not valid\n"); exit(1); }

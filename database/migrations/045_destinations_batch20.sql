@@ -47,4 +47,10 @@ INSERT INTO destinations (slug, name, country, region, lat, lng, summary, hero_u
    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/San_Francisco_skyline_from_Golden_Gate_Bridge%2C_09_2017.jpg/1280px-San_Francisco_skyline_from_Golden_Gate_Bridge%2C_09_2017.jpg',
    'Mariordo (Mario Roberto Duran Ortiz)', 'CC BY-SA 4.0',
    'https://commons.wikimedia.org/wiki/File:San_Francisco_skyline_from_Golden_Gate_Bridge,_09_2017.jpg',
-   'city', 'SFO, OAK, SJC');
+   'city', 'SFO, OAK, SJC')
+-- Defensive, and never an overwrite. None of these five slugs appears in any earlier migration or
+-- in the demo seeder, so on the current production database this clause does nothing. It is here
+-- so the migration stays correct against a database whose history we cannot fully inspect: if a
+-- row with one of these slugs already exists, its content is left exactly as it is rather than
+-- being replaced by this file.
+ON CONFLICT (slug) DO NOTHING;

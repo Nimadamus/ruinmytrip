@@ -141,7 +141,16 @@ $prep = rmt_trip_prep_actions(['destination_id' => 1, 'date_from' => date('Y-m-d
 $labels = array_column($prep, 'label');
 $check('a scams-only destination does not suggest visa homework',
     in_array('Check entry requirements and passport validity', $labels, true), false);
-$check('crowds produce no action on their own', $prep, []);
+// This previously asserted the checklist came back EMPTY for a scams/crowds destination. That was
+// asserting a gap, not a behaviour: rmt_trip_prep_actions() covered only six of the ten warning
+// categories, so a destination warned about scams — the single most common category — produced no
+// checklist and the dashboard silently rendered nothing. Every category now yields an action, so
+// the correct assertion is that the checklist is populated and category-appropriate.
+$check('a scams warning does produce an action', count($prep) > 0, true);
+$check('and it is the scams-specific one',
+    in_array('Read the reported scams before you arrive', $labels, true), true);
+$check('crowds also produce their own action',
+    in_array('Book timed entry for the busiest sights now', $labels, true), true);
 $mk('entry-requirements', 4, $now);
 $mk('neighborhoods', 2, $now);
 $prep = rmt_trip_prep_actions(['destination_id' => 1, 'date_from' => date('Y-m-d', strtotime('+20 days'))]);
