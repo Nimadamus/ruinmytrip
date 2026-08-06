@@ -26,8 +26,12 @@ require BASE_PATH . '/app/editorial.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)');
+// safety_rating/value_rating/subject_type arrived with migration 003, after this test was
+// written; rmt_community_avg() has selected them ever since, so the stub schema has to carry
+// them or every case below dies on "no such column" before it can assert anything.
 $pdo->exec('CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
-                                  rating INT, status TEXT)');
+                                  rating INT, safety_rating INT, value_rating INT,
+                                  subject_type TEXT DEFAULT "destination", status TEXT)');
 $pdo->exec('CREATE TABLE destination_tips (id INTEGER PRIMARY KEY, destination_id INT, body TEXT, sort INT)');
 $pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT)');
 

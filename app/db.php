@@ -37,3 +37,17 @@ function q_run(string $sql, array $args = []): string {
     try { return (string) db()->lastInsertId(); }
     catch (\PDOException $e) { return ''; } // pgsql lastval() undefined on no-serial inserts
 }
+/**
+ * Run a write that has no insert id — UPDATE, DELETE, or an INSERT whose id nobody wants.
+ *
+ * This exists because q_run() unconditionally calls lastInsertId(), and on Postgres that is
+ * lastval(), which raises a real server-side error when nothing in the session has touched a
+ * sequence yet. q_run() swallows the PHP exception, but Postgres has already marked the
+ * transaction aborted, so every later statement fails with 25P02. Inside a transaction, or for
+ * any statement whose id is not needed, use this instead.
+ *
+ * @return int rows affected
+ */
+function q_exec(string $sql, array $args = []): int {
+    $st = db()->prepare($sql); $st->execute($args); return $st->rowCount();
+}

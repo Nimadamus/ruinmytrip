@@ -1,227 +1,374 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
+<?php
+/**
+ * The destination risk report — the page this whole site exists to produce.
+ *
+ * Reading order is deliberate and is the answer to "what could ruin my trip here?":
+ *   1. the overall risk read and the summary
+ *   2. is it worth visiting at all
+ *   3. the reviewed risk sections, one per failure mode
+ *   4. what travelers have actually reported, filterable
+ *   5. FAQ, related destinations, submit CTA
+ *   6. only then the community layer this site already had (trips, reviews, meetups, who's going),
+ *      which is kept and linked but is no longer what the page is for
+ *
+ * @var array $d @var array $sections @var array $faqs @var array $catCounts @var int $warnCount
+ * @var array $warnings @var array $newest @var array $pages @var array $related
+ * @var bool  $saved @var bool $following @var bool $watching @var int $wantCount
+ * @var array $trips @var int $tripCount @var array $reviews @var array $editorial @var array $tips
+ * @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory
+ * @var ?array $me @var array $photos @var int $photoCount
+ */
+$destUrl = url('d/' . $d['slug']);
+$risk = (int) ($d['risk_level'] ?? 0);
+$defs = rmt_risk_section_defs();
+?>
 <div class="wrap">
-  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
+  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Destinations</a> / <?= e($d['name']) ?></p>
+
   <div class="dest-hero">
-    <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
+    <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'] . ', ' . $d['country']) ?>" width="1160" height="340">
     <div class="overlay">
       <div>
-        <span class="chip"><?= e($d['category']) ?></span>
-        <h1><?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
-        <p style="color:#e8eef5;margin:.2rem 0 0;max-width:60ch"><?= e($d['summary']) ?></p>
-      </div>
-      <div style="margin-left:auto;text-align:right">
-        <?php if ($me): ?>
-          <form method="post" action="<?= e(url('destination/save')) ?>">
-            <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
-            <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
-            <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
-          </form>
-        <?php endif; ?>
-        <?php if ($wantCount > 0): ?>
-          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0"><?= $wantCount ?> <?= $wantCount === 1 ? 'traveler wants' : 'travelers want' ?> to visit</p>
-        <?php endif; ?>
+        <?php if (!empty($d['category'])): ?><span class="chip"><?= e($d['category']) ?></span><?php endif; ?>
+        <h1>What could ruin a trip to <?= e($d['name']) ?>?</h1>
+        <p style="color:#e8eef5;margin:.3rem 0 0;max-width:62ch"><?= e($d['summary']) ?></p>
       </div>
     </div>
   </div>
   <?= rmt_photo_credit_html($d) ?>
 
-  <?php /* Two ratings, never blended. The community score is what travelers said; the editorial
-            score is the site's own research-based assessment and is labelled as such. */ ?>
-  <div class="card" style="margin-top:18px"><div class="card-body">
-    <div class="rating-split">
-      <div class="rs-item">
-        <p class="rs-label">Community rating</p>
-        <?php if ((int)$avg['c'] > 0): ?>
-          <p class="rs-value"><span class="stars"><?= stars((int)round((float)$avg['a'])) ?></span> <?= e((string)$avg['a']) ?><span class="muted" style="font-weight:400"> from <?= (int)$avg['c'] ?> traveler <?= (int)$avg['c'] === 1 ? 'review' : 'reviews' ?></span></p>
-          <?php if ($avg['safety_c'] > 0 || $avg['value_c'] > 0): ?>
-            <p class="hint" style="margin:0">
-              <?php if ($avg['safety_c'] > 0): ?>Safety <?= e((string)$avg['safety_a']) ?>/5 <span class="muted">(<?= $avg['safety_c'] ?>)</span><?php endif; ?>
-              <?php if ($avg['safety_c'] > 0 && $avg['value_c'] > 0): ?> · <?php endif; ?>
-              <?php if ($avg['value_c'] > 0): ?>Value <?= e((string)$avg['value_a']) ?>/5 <span class="muted">(<?= $avg['value_c'] ?>)</span><?php endif; ?>
-            </p>
-          <?php endif; ?>
+  <!-- OVERALL TRIP-RISK SUMMARY -->
+  <div class="risk-summary">
+    <div style="display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between">
+      <div style="flex:1;min-width:280px">
+        <p class="eyebrow">Overall trip risk</p>
+        <?php if ($risk): ?>
+          <h2 class="risk-<?= $risk ?>" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span class="risk-meter r<?= $risk ?>"><i></i><i></i><i></i><i></i></span>
+            <?= e(rmt_risk_level_label($risk)) ?>
+          </h2>
+          <p class="muted" style="margin:.1rem 0 .6rem;font-size:.9rem"><?= e(RMT_RISK_LEVELS[$risk]['desc']) ?></p>
         <?php else: ?>
-          <p class="rs-value muted" style="font-weight:600">No traveler reviews yet</p>
-          <p class="hint" style="margin:0">This score stays empty until real travelers post. We do not fill it in ourselves.</p>
+          <h2>Not yet rated</h2>
+          <p class="muted" style="margin:.1rem 0 .6rem;font-size:.9rem">
+            We only publish a risk level once the report has been researched and reviewed. Traveler warnings
+            below still apply.</p>
+        <?php endif; ?>
+
+        <?php if (!empty($d['risk_summary'])): ?>
+          <div class="prose" style="max-width:none"><?= rmt_rich((string) $d['risk_summary']) ?></div>
+        <?php endif; ?>
+
+        <?php if (!empty($d['best_months']) || !empty($d['worst_months'])): ?>
+          <p style="margin:.8rem 0 0;font-size:.92rem">
+            <?php if (!empty($d['best_months'])): ?><b>Easiest months:</b> <?= e($d['best_months']) ?><?php endif; ?>
+            <?php if (!empty($d['best_months']) && !empty($d['worst_months'])): ?> · <?php endif; ?>
+            <?php if (!empty($d['worst_months'])): ?><b>Hardest months:</b> <?= e($d['worst_months']) ?><?php endif; ?>
+          </p>
+        <?php endif; ?>
+
+        <?php if (!empty($d['last_reviewed_at'])): ?>
+          <p class="reviewed-line">
+            <span>Last reviewed <?= e(date('F j, Y', strtotime((string) $d['last_reviewed_at']))) ?></span>
+            <?php $outdatedTarget = 'destination'; $outdatedId = (int) $d['id']; $outdatedReturn = $destUrl;
+                  include __DIR__ . '/_outdated_button.php'; ?>
+          </p>
         <?php endif; ?>
       </div>
-      <?php foreach ($editorial as $ed): ?>
-        <div class="rs-item">
-          <p class="rs-label"><?= rmt_editorial_badge('review') ?> rating</p>
-          <p class="rs-value"><span class="stars"><?= stars((int)$ed['rating']) ?></span> <?= (int)$ed['rating'] ?>/5</p>
-          <?php if ($ed['safety_rating'] || $ed['value_rating']): ?>
-            <p class="hint" style="margin:0">
-              <?php if ($ed['safety_rating']): ?>Safety <?= (int)$ed['safety_rating'] ?>/5<?php endif; ?>
-              <?php if ($ed['safety_rating'] && $ed['value_rating']): ?> · <?php endif; ?>
-              <?php if ($ed['value_rating']): ?>Value <?= (int)$ed['value_rating'] ?>/5<?php endif; ?>
+
+      <!-- Save / follow / watch -->
+      <div style="min-width:250px">
+        <?php if ($me): ?>
+          <form method="post" action="<?= e(url('watchlist/add')) ?>" style="background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px">
+            <?= csrf_field() ?>
+            <input type="hidden" name="destination_id" value="<?= (int) $d['id'] ?>">
+            <input type="hidden" name="return" value="<?= e($destUrl) ?>">
+            <p style="margin:0 0 8px;font-weight:700;font-size:.95rem">
+              <?= $watching ? 'This trip is on your watchlist' : 'Going here? Save the trip' ?>
             </p>
-          <?php endif; ?>
-        </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <label class="skip" for="wd-from">Departure date</label>
+              <input id="wd-from" type="date" name="date_from" style="flex:1;min-width:130px;padding:.4rem .6rem;border:1px solid var(--line);border-radius:8px">
+              <label class="skip" for="wd-to">Return date</label>
+              <input id="wd-to" type="date" name="date_to" style="flex:1;min-width:130px;padding:.4rem .6rem;border:1px solid var(--line);border-radius:8px">
+            </div>
+            <button class="btn btn-primary btn-block btn-sm" style="margin-top:8px" type="submit">
+              <?= $watching ? 'Update my trip' : 'Save this trip' ?>
+            </button>
+            <p class="hint" style="margin-top:6px">We will tell you if something serious is reported before you go.</p>
+          </form>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <form method="post" action="<?= e(url('destination/follow')) ?>" class="inline-form">
+              <?= csrf_field() ?>
+              <input type="hidden" name="destination_id" value="<?= (int) $d['id'] ?>">
+              <input type="hidden" name="return" value="<?= e($destUrl) ?>">
+              <button class="btn <?= $following ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $following ? 'Following' : 'Follow updates' ?></button>
+            </form>
+            <form method="post" action="<?= e(url('destination/save')) ?>" class="inline-form">
+              <?= csrf_field() ?>
+              <input type="hidden" name="destination_id" value="<?= (int) $d['id'] ?>">
+              <input type="hidden" name="return" value="<?= e($destUrl) ?>">
+              <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Save' ?></button>
+            </form>
+          </div>
+        <?php else: ?>
+          <div style="background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:16px">
+            <p style="margin:0 0 6px;font-weight:700">Going to <?= e($d['name']) ?>?</p>
+            <p class="hint" style="margin:0 0 10px">Save the destination and receive important warnings before your trip.</p>
+            <a class="btn btn-primary btn-block btn-sm" href="<?= e(url('register')) ?>">Create a free account</a>
+            <p class="hint" style="margin-top:8px;text-align:center">
+              or <a href="<?= e(url('alerts?destination=' . $d['slug'])) ?>">just get email alerts</a>
+            </p>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category counts: what is actually reported here -->
+  <?php if ($catCounts): ?>
+    <div class="filter-chips" style="margin-bottom:6px">
+      <?php foreach (RMT_WARNING_CATEGORIES as $k => $c): if (empty($catCounts[$k])) continue; ?>
+        <a href="<?= e($destUrl . '/warnings?category=' . $k) ?>">
+          <?= $c['icon'] ?> <?= e($c['label']) ?> <b><?= (int) $catCounts[$k]['c'] ?></b>
+        </a>
       <?php endforeach; ?>
     </div>
-  </div></div>
-
-  <?php $rmt_catBreakdown = array_filter($avgByCategory, fn($c) => $c['subject_type'] !== 'destination'); ?>
-  <?php if ($rmt_catBreakdown): ?>
-    <div class="card" style="margin-top:12px"><div class="card-body">
-      <p class="rs-label" style="margin:0 0 8px">By what travelers actually reviewed</p>
-      <div style="display:flex;gap:18px;flex-wrap:wrap">
-        <?php foreach ($rmt_catBreakdown as $cat): ?>
-          <div>
-            <p class="muted" style="margin:0;text-transform:capitalize"><?= e($cat['subject_type']) ?>s</p>
-            <p style="margin:0"><span class="stars" style="font-size:.9rem"><?= stars((int)round((float)$cat['a'])) ?></span> <?= e((string)$cat['a']) ?> <span class="muted">(<?= (int)$cat['c'] ?>)</span></p>
-          </div>
-        <?php endforeach; ?>
-      </div>
-    </div></div>
   <?php endif; ?>
 
-  <div class="grid g-2" style="margin-top:26px;align-items:start">
-    <div>
-      <?php foreach ($editorial as $ed): ?>
-        <div class="card ed-panel" style="margin-bottom:18px"><div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-            <?= rmt_editorial_badge('review') ?>
-            <span class="stars"><?= stars((int)$ed['rating']) ?></span>
-          </div>
-          <h2 style="margin:.5rem 0 .2rem;font-size:1.25rem">
-            <a href="<?= e(url('review/'.(int)$ed['id'].'/'.($ed['slug'] ?: rmt_review_slug($ed)))) ?>"><?= e($ed['title'] ?: $ed['subject_name']) ?></a>
-          </h2>
-          <p class="muted" style="margin:0">By <?= e(rmt_editorial_name()) ?></p>
-          <p style="margin:.7rem 0 0"><?= e(mb_strimwidth((string)$ed['body'], 0, 420, '…')) ?></p>
-          <?php if ($ed['what_ruined']): ?>
-            <p style="margin:.7rem 0 0;font-size:.95rem"><b style="color:#b42318">What nearly ruins it:</b> <?= e(mb_strimwidth((string)$ed['what_ruined'], 0, 180, '…')) ?></p>
+  <!-- Section nav -->
+  <?php if ($sections || $faqs): ?>
+    <nav class="risk-nav" aria-label="Sections of this report">
+      <?php foreach ($sections as $key => $s): ?>
+        <a href="#s-<?= e($key) ?>"><?= e($s['heading']) ?></a>
+      <?php endforeach; ?>
+      <?php if ($warnCount): ?><a href="#traveler-warnings">Traveler warnings</a><?php endif; ?>
+      <?php if ($faqs): ?><a href="#faq">FAQ</a><?php endif; ?>
+    </nav>
+  <?php endif; ?>
+</div>
+
+<div class="wrap" style="display:grid;grid-template-columns:minmax(0,1fr);gap:0">
+
+  <!-- THE RISK SECTIONS -->
+  <?php if ($sections): ?>
+    <?php foreach ($sections as $key => $s):
+        $type = (string) ($s['content_type'] ?: ($defs[$key]['type'] ?? 'editorial'));
+        $cat  = rmt_section_to_category($key);
+        $srcs = rmt_sources($s['sources_json'] ?? null);
+    ?>
+      <section class="risk-section" id="s-<?= e($key) ?>">
+        <h2>
+          <?= e($s['heading']) ?>
+          <span class="trust trust-<?= e($type) ?>"><?= e(['fact' => 'Checked facts', 'editorial' => 'Our guidance', 'alert' => 'Time-sensitive'][$type] ?? 'Our guidance') ?></span>
+          <?php if (!empty($s['severity'])): ?>
+            <span class="sev <?= e(rmt_severity_class((int) $s['severity'])) ?>"><?= e(rmt_severity_label((int) $s['severity'])) ?></span>
           <?php endif; ?>
-          <p style="margin:.9rem 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$ed['id'].'/'.($ed['slug'] ?: rmt_review_slug($ed)))) ?>">Read the full editorial review</a></p>
+        </h2>
+        <div class="prose" style="max-width:none"><?= rmt_rich((string) $s['body']) ?></div>
+
+        <?php if ($srcs): ?>
+          <div class="sources">
+            <b>Sources</b>
+            <ol>
+              <?php foreach ($srcs as $src): ?>
+                <li><?php if (!empty($src['url'])): ?><a href="<?= e($src['url']) ?>" rel="nofollow noopener" target="_blank"><?= e($src['title'] ?: $src['url']) ?></a><?php else: ?><?= e($src['title']) ?><?php endif; ?></li>
+              <?php endforeach; ?>
+            </ol>
+          </div>
+        <?php endif; ?>
+
+        <p class="reviewed-line">
+          <?php if (!empty($s['last_reviewed_at'])): ?>
+            <span>Last reviewed <?= e(date('F j, Y', strtotime((string) $s['last_reviewed_at']))) ?></span>
+          <?php endif; ?>
+          <?php if ($cat && !empty($catCounts[$cat])): ?>
+            <a href="<?= e($destUrl . '/warnings?category=' . $cat) ?>"><?= (int) $catCounts[$cat]['c'] ?> traveler <?= $catCounts[$cat]['c'] === 1 ? 'report' : 'reports' ?> on this →</a>
+          <?php elseif ($cat): ?>
+            <a href="<?= e(url('warning/new?destination=' . (int) $d['id'] . '&category=' . $cat)) ?>">Report something in this category →</a>
+          <?php endif; ?>
+          <?php $outdatedTarget = 'risk_section'; $outdatedId = (int) $s['id']; $outdatedReturn = $destUrl . '#s-' . $key;
+                include __DIR__ . '/_outdated_button.php'; ?>
+        </p>
+      </section>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <div class="empty-cta">
+      <h2 style="font-size:1.3rem">The risk report for <?= e($d['name']) ?> is not written yet</h2>
+      <p class="muted">We publish a destination report only once it has been researched and reviewed — an
+        auto-generated page restating a database row would be worse than nothing. Traveler warnings for
+        <?= e($d['name']) ?> still appear below as soon as they are submitted and approved.</p>
+      <a class="btn btn-accent" style="margin-top:12px" href="<?= e(url('warning/new?destination=' . (int) $d['id'])) ?>">Share what you learned here</a>
+    </div>
+  <?php endif; ?>
+
+  <!-- WHAT TRAVELERS REPORTED -->
+  <section id="traveler-warnings" style="margin-top:30px;scroll-margin-top:110px">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">First-hand</p>
+        <h2>Traveler warnings <?php if ($warnCount): ?><span class="muted" style="font-weight:600;font-size:1rem">(<?= number_format($warnCount) ?>)</span><?php endif; ?></h2>
+      </div>
+      <?php if ($warnCount > count($warnings)): ?>
+        <a href="<?= e($destUrl . '/warnings') ?>">Filter all <?= number_format($warnCount) ?> →</a>
+      <?php endif; ?>
+    </div>
+
+    <?php if ($warnings): ?>
+      <p class="muted" style="margin:-10px 0 16px;font-size:.9rem">
+        These are first-hand accounts from travelers, reviewed by a moderator before publication.
+        Reports marked <span class="trust trust-unverified">Unverified</span> have not been independently
+        confirmed. <a href="<?= e($destUrl . '/warnings') ?>">Filter by category, severity, season or traveler type →</a>
+      </p>
+      <?php foreach ($warnings as $w) { $showDest = false; include __DIR__ . '/_warning_card.php'; } ?>
+      <p><a class="btn btn-ghost" href="<?= e($destUrl . '/warnings') ?>">See every <?= e($d['name']) ?> warning</a></p>
+    <?php else: ?>
+      <div class="empty-cta">
+        <h3>No traveler warnings for <?= e($d['name']) ?> yet</h3>
+        <p class="muted">Nobody has filed one here. That is not the same as "nothing goes wrong" — it means we
+          have not heard about it. If something cost you money or a day of your trip, write it down while it is fresh.</p>
+        <a class="btn btn-accent" style="margin-top:12px" href="<?= e(url('warning/new?destination=' . (int) $d['id'])) ?>">Share a warning</a>
+      </div>
+    <?php endif; ?>
+
+    <div style="margin:18px 0">
+      <a class="btn btn-accent" href="<?= e(url('warning/new?destination=' . (int) $d['id'])) ?>">Submit a warning for <?= e($d['name']) ?></a>
+    </div>
+  </section>
+
+  <?= rmt_affiliate_block((int) $d['id'], null, 'Booking ' . $d['name'] . '?') ?>
+
+  <!-- FAQ -->
+  <?php if ($faqs): ?>
+    <section class="risk-section" id="faq" style="margin-top:24px">
+      <h2>Frequently asked questions</h2>
+      <?php foreach ($faqs as $f): ?>
+        <details style="border-bottom:1px solid var(--line);padding:.7rem 0">
+          <summary style="cursor:pointer;font-weight:700"><?= e($f['question']) ?></summary>
+          <div class="prose" style="max-width:none;margin-top:.5rem"><?= rmt_rich((string) $f['answer']) ?></div>
+        </details>
+      <?php endforeach; ?>
+    </section>
+  <?php endif; ?>
+
+  <!-- Guide pages for this destination -->
+  <?php if ($pages): ?>
+    <section style="margin-top:24px">
+      <div class="section-head"><div><p class="eyebrow">Go deeper</p><h2><?= e($d['name']) ?> warning guides</h2></div></div>
+      <div class="grid g-3">
+        <?php foreach ($pages as $p): ?>
+          <a class="cat-tile" href="<?= e(url($p['slug'])) ?>">
+            <b><?= e($p['h1']) ?></b>
+            <span><?= e(rmt_landing_template_label((string) $p['template'])) ?></span>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    </section>
+  <?php endif; ?>
+
+  <!-- Related destinations -->
+  <?php if ($related): ?>
+    <section style="margin-top:34px">
+      <div class="section-head"><div><p class="eyebrow">Nearby</p><h2>Related destination guides</h2></div></div>
+      <div class="grid g-3">
+        <?php foreach ($related as $r): ?>
+          <article class="card">
+            <a href="<?= e(url('d/' . $r['slug'])) ?>">
+              <img class="card-media" loading="lazy" decoding="async" width="380" height="238"
+                   src="<?= e($r['hero_url'] ?: url('assets/img/og-default.svg')) ?>" alt="<?= e($r['name']) ?>">
+            </a>
+            <div class="card-body">
+              <h3><a href="<?= e(url('d/' . $r['slug'])) ?>"><?= e($r['name']) ?></a></h3>
+              <p class="muted" style="font-size:.86rem;margin:0"><?= e($r['country']) ?><?php if ((int) $r['sections'] > 0): ?> · full risk report<?php endif; ?></p>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      </div>
+    </section>
+  <?php endif; ?>
+
+  <!-- ======================================================================
+       The community layer this site already had. Kept, still linked, and
+       deliberately below the risk report rather than removed.
+       ====================================================================== -->
+  <?php $hasCommunity = $tips || $editorial || $reviews || $trips || $guides || $photos || $meetups || $going; ?>
+  <?php if ($hasCommunity): ?>
+    <hr style="border:0;border-top:1px solid var(--line);margin:44px 0 26px">
+    <section>
+      <div class="section-head"><div><p class="eyebrow">Also from travelers</p><h2>Reviews, stories and photos</h2></div></div>
+
+      <?php if ($tips): ?>
+        <div class="card" style="margin-bottom:16px"><div class="card-body">
+          <h3 style="font-size:1.05rem">Practical tips <?= rmt_editorial_badge() ?></h3>
+          <ul class="tips-list"><?php foreach ($tips as $t): ?><li><?= e($t['body']) ?></li><?php endforeach; ?></ul>
+        </div></div>
+      <?php endif; ?>
+
+      <?php if ($avg['c'] > 0): ?>
+        <div class="card" style="margin-bottom:16px"><div class="card-body">
+          <div class="rating-split">
+            <div class="rs-item"><p class="rs-label">Traveler rating</p>
+              <p class="rs-value"><span class="stars"><?= stars((int) round((float) $avg['a'])) ?></span> <?= e($avg['a']) ?>/5 <span class="muted">from <?= (int) $avg['c'] ?></span></p></div>
+            <?php if ($avg['safety_c'] > 0): ?>
+              <div class="rs-item"><p class="rs-label">Safety</p><p class="rs-value"><?= e($avg['safety_a']) ?>/5 <span class="muted">from <?= (int) $avg['safety_c'] ?></span></p></div>
+            <?php endif; ?>
+            <?php if ($avg['value_c'] > 0): ?>
+              <div class="rs-item"><p class="rs-label">Value</p><p class="rs-value"><?= e($avg['value_a']) ?>/5 <span class="muted">from <?= (int) $avg['value_c'] ?></span></p></div>
+            <?php endif; ?>
+          </div>
+          <?php if ($avgByCategory): ?>
+            <p class="muted" style="margin:.6rem 0 0;font-size:.88rem">
+              <?php foreach ($avgByCategory as $cat): ?>
+                <span class="chip chip-cat"><?= e(ucfirst((string) $cat['subject_type'])) ?> <?= e($cat['a']) ?>/5 (<?= (int) $cat['c'] ?>)</span>
+              <?php endforeach; ?>
+            </p>
+          <?php endif; ?>
+        </div></div>
+      <?php endif; ?>
+
+      <?php foreach ($editorial as $r): ?>
+        <div class="card ed-panel" style="margin-bottom:12px"><div class="card-body">
+          <?= rmt_editorial_badge('review') ?>
+          <h3 style="font-size:1.05rem;margin-top:.4rem"><a href="<?= e(url(ltrim(rmt_review_path($r), '/'))) ?>"><?= e($r['title']) ?></a></h3>
+          <p class="muted" style="margin:0"><span class="stars"><?= stars((int) $r['rating']) ?></span></p>
+          <p style="margin:.4rem 0 0"><?= e(mb_strimwidth(strip_tags((string) $r['body']), 0, 260, '…')) ?></p>
           <p class="ed-note"><?= e(rmt_editorial_disclosure()) ?></p>
         </div></div>
       <?php endforeach; ?>
 
-      <?php if ($tips): ?>
-        <div class="card" style="margin-bottom:18px"><div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-            <h2 style="margin:0;font-size:1.15rem">Practical tips</h2>
-            <?= rmt_editorial_badge() ?>
-          </div>
-          <ul class="tips-list" style="margin-top:12px">
-            <?php foreach ($tips as $t): ?><li><?= e($t['body']) ?></li><?php endforeach; ?>
-          </ul>
-        </div></div>
-      <?php endif; ?>
-
-      <div class="section-rule">
-        <h2>Traveler reviews</h2>
-        <span class="count"><?= (int)$avg['c'] ?></span>
-      </div>
-      <?php if (!$reviews): ?>
-        <div class="empty-cta">
-          <h3>Be the first traveler to review <?= e($d['name']) ?></h3>
-          <p class="muted" style="margin:0">The editorial review above is desk research. What this page actually needs is somebody who went. If that is you, the honest version, including the part that went wrong, is worth more here than a polished one.</p>
-          <ol class="empty-steps">
-            <li>Rate it out of five, plus safety and value.</li>
-            <li>Say what was great, in specifics.</li>
-            <li>Say what nearly ruined the trip. This field is required.</li>
-          </ol>
-          <p style="margin:16px 0 0">
-            <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Share your experience</a>
-          </p>
+      <?php if ($reviews): ?>
+        <div class="grid g-2" style="margin-bottom:16px">
+          <?php foreach ($reviews as $r): ?>
+            <div class="card"><div class="card-body">
+              <h3 style="font-size:1.02rem"><a href="<?= e(url(ltrim(rmt_review_path($r), '/'))) ?>"><?= e($r['title']) ?></a></h3>
+              <p class="muted" style="margin:0"><span class="stars"><?= stars((int) $r['rating']) ?></span>
+                · @<?= e($r['author']['username'] ?? '') ?> · <?= e(ago((string) $r['created_at'])) ?></p>
+              <p style="margin:.4rem 0 0"><?= e(mb_strimwidth(strip_tags((string) $r['body']), 0, 180, '…')) ?></p>
+            </div></div>
+          <?php endforeach; ?>
         </div>
       <?php endif; ?>
-      <?php foreach ($reviews as $r): ?>
-        <div class="card" style="margin-bottom:14px"><div class="card-body">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span class="stars"><?= stars((int)$r['rating']) ?></span>
-            <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
-          </div>
-          <h3 style="margin:.3rem 0 .1rem;font-size:1.1rem">
-            <a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
-          </h3>
-          <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span> · @<?= e($r['author']['username']??'') ?><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?><?php endif; ?><?php if (rmt_review_is_stale($r)): ?> · ⏳<?php endif; ?></p>
-          <p style="margin:.5rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 240, '…')) ?></p>
-          <?php if ($r['what_ruined']): ?>
-            <p class="muted" style="margin:.5rem 0 0;font-size:.92rem"><b style="color:#b42318">Nearly ruined it:</b> <?= e(mb_strimwidth((string)$r['what_ruined'], 0, 120, '…')) ?></p>
-          <?php endif; ?>
-        </div></div>
-      <?php endforeach; ?>
 
       <?php if ($photos): ?>
-        <div class="section-rule">
-          <h2>Photos</h2>
-          <span class="count"><?= $photoCount ?></span>
-        </div>
-        <div class="grid g-4" style="gap:8px;margin-bottom:24px">
-          <?php foreach ($photos as $p): ?>
-            <a href="<?= e($p['kind']==='trip' ? url('trip/'.$p['parent_id'].'/'.$p['parent_slug']) : url('review/'.$p['parent_id'].($p['parent_slug'] ? '/'.$p['parent_slug'] : ''))) ?>">
-              <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover" src="<?= e(abs_url($p['url'])) ?>" alt="<?= e($p['caption'] ?: $d['name']) ?>">
-            </a>
+        <div class="grid g-4" style="margin-bottom:16px">
+          <?php foreach (array_slice($photos, 0, 8) as $ph): ?>
+            <img class="card-media" style="border-radius:12px" loading="lazy" decoding="async" width="280" height="175"
+                 src="<?= e($ph['url']) ?>" alt="<?= e($ph['caption'] ?: ('Traveler photo of ' . $d['name'])) ?>">
           <?php endforeach; ?>
         </div>
-        <?php if ($photoCount > count($photos)): ?>
-          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">See all <?= $photoCount ?> photos →</a></p>
-        <?php endif; ?>
+        <?php if ($photoCount > 8): ?><p><a href="<?= e($destUrl . '/photos') ?>">All <?= (int) $photoCount ?> traveler photos →</a></p><?php endif; ?>
       <?php endif; ?>
 
-      <div class="section-rule">
-        <h2>Trip stories</h2>
-        <span class="count"><?= $tripCount ?></span>
+      <div class="filter-chips" style="margin-top:14px">
+        <?php if ($tripCount): ?><a href="<?= e(url('explore')) ?>"><?= (int) $tripCount ?> trip stories</a><?php endif; ?>
+        <?php foreach ($guides as $g): ?><a href="<?= e(url('g/' . $g['slug'])) ?>">Guide: <?= e($g['title']) ?></a><?php endforeach; ?>
+        <?php if ($meetups): ?><a href="<?= e(url('meetups')) ?>"><?= count($meetups) ?> meetups</a><?php endif; ?>
+        <?php if ($going): ?><a href="<?= e(url('going')) ?>"><?= count($going) ?> travelers going</a><?php endif; ?>
+        <a href="<?= e(url('review/new?destination=' . (int) $d['id'])) ?>">Write a review</a>
       </div>
-      <?php if (!$trips): ?>
-        <p class="muted">No trip stories from <?= e($d['name']) ?> yet. <a href="<?= e(url('trip/new')) ?>">Share the first one.</a></p>
-      <?php endif; ?>
-      <div class="grid" style="gap:16px">
-        <?php foreach ($trips as $t): ?>
-          <article class="card"><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-            <img class="card-media" loading="lazy" src="<?= e(abs_url($t['cover_url'])) ?>" alt="<?= e($t['title']) ?>">
-            <div class="card-body"><h3><?= e($t['title']) ?></h3>
-              <div class="meta-row"><img class="avatar" src="<?= e(avatar_url($t['author']['avatar_url']??null)) ?>" alt="">@<?= e($t['author']['username']??'') ?>
-              <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?></div>
-            </div></a></article>
-        <?php endforeach; ?>
-      </div>
-    </div>
+    </section>
+  <?php endif; ?>
 
-    <aside>
-      <div class="card"><div class="card-body">
-        <h3>Guides &amp; itineraries</h3>
-        <?php if (!$guides): ?><p class="muted">No guides yet.</p><?php endif; ?>
-        <ul class="list-plain">
-          <?php foreach ($guides as $g): ?>
-            <li style="padding:8px 0;border-bottom:1px solid var(--line)">
-              <a href="<?= e(url('g/'.$g['slug'])) ?>"><?= e($g['title']) ?></a>
-              <?php if (rmt_is_editorial($g)): ?><br><?= rmt_editorial_badge() ?><?php endif; ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('guides')) ?>">All guides</a>
-      </div></div>
-
-      <div class="card" style="margin-top:18px"><div class="card-body">
-        <h3>Who's going</h3>
-        <p class="hint">Destination + date range only. Never precise location.</p>
-        <?php if (!$going): ?><p class="muted">No travelers listed yet.</p><?php endif; ?>
-        <ul class="list-plain">
-          <?php foreach ($going as $g): ?>
-            <li class="meta-row" style="justify-content:flex-start">
-              <img class="avatar" src="<?= e(avatar_url($g['avatar_url']??null)) ?>" alt="">
-              <span><a href="<?= e(url('u/'.$g['username'])) ?>">@<?= e($g['username']) ?></a> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?>–<?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('going')) ?>">See who's going</a>
-      </div></div>
-
-      <div class="card" style="margin-top:18px"><div class="card-body">
-        <h3>Meetups here</h3>
-        <?php if (!$meetups): ?><p class="muted">No public meetups yet.</p><?php endif; ?>
-        <ul class="list-plain">
-          <?php foreach ($meetups as $m): ?><li style="padding:6px 0"><a href="<?= e(url('meetup/'.$m['id'])) ?>"><?= e($m['title']) ?></a><br><span class="hint"><?= e(date('M j, g:ia', strtotime((string)$m['date_start']))) ?></span></li><?php endforeach; ?>
-        </ul>
-      </div></div>
-
-      <div style="margin-top:18px;display:grid;gap:8px">
-        <a class="btn btn-accent btn-block" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Share your experience</a>
-        <a class="btn btn-primary btn-block" href="<?= e(url('trip/new')) ?>">Share a trip here</a>
-      </div>
-    </aside>
-  </div>
+  <div style="height:50px"></div>
 </div>

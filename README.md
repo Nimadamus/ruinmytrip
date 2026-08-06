@@ -1,86 +1,117 @@
 # RuinMyTrip.com
 
-A bold, trustworthy travel social network — traveler profiles, trip stories, verified reviews of
-destinations/hotels/restaurants/nightlife/attractions/tours, travel guides & itineraries, a follow
-system, "Who's going" destination discovery, and **optional, safety-first** public travel meetups.
+**Know what could ruin your trip before you book it.**
 
-The name is playful; the product is premium, modern, adventurous, and safe. Not a dating/hookup site,
-not a joke page, not a generic blog.
+A travel-warning and trip-risk platform. RuinMyTrip collects the practical problems that wreck real
+trips — tourist scams, hidden fees, bad neighbourhood choices, transport mistakes, closures, crowding,
+seasonal risks and entry-requirement surprises — as **researched destination risk reports** plus
+**first-hand traveler warnings** that go through moderation before they are published.
+
+It is deliberately not a generic travel social network and not a TripAdvisor clone. The older
+community features (trip stories, reviews, guides, collections, meetups, who's going, top reviewers)
+still exist and are still linked, but they are secondary to the risk product — see
+`docs/ROUTES.md`, which records exactly what changed and confirms that **no public route was
+deleted or renamed** in the 2026 repositioning.
+
+## The two content types, and why they are separate
+
+| | Risk report | Traveler warning |
+|---|---|---|
+| Written by | The RuinMyTrip editorial team | A member, about their own trip |
+| Source | Published research, cited on the page | First-hand experience |
+| Published | Immediately, once reviewed | Only after a moderator approves it |
+| Labelled | "Checked facts" / "Our guidance" / "Time-sensitive" | Unverified / Verified / Disputed |
+| Carries | Sources + a "last reviewed" date | Date experienced + date submitted + severity |
+
+Both label themselves on every render path. A traveler warning is an **allegation** until a moderator
+corroborates it, and it says so — which is what makes it safe to let members name a business, and why
+a named business can file a response that publishes at the same prominence.
 
 ## Stack
-- **PHP 8** + **PDO** (MySQL in production, SQLite for local dev/test) — native to Namecheap shared cPanel.
-- No framework lock-in. Server-rendered, mobile-first, SEO-first (unique indexable URLs, sitemap,
-  canonical/OG/JSON-LD, breadcrumbs).
-- Zero build step: deploy the repo to the cPanel docroot.
+- **PHP 8** + **PDO**, no framework. PostgreSQL in production (Render, Docker), SQLite for local dev.
+- Server-rendered, mobile-first, SEO-first: unique indexable URLs, sitemap, canonical/OG/Twitter/JSON-LD,
+  breadcrumbs. **Never `noindex`** — unpublished content is protected by access control and a 404.
+- Zero build step. 24KB of CSS, 4KB of JS, no third-party scripts, no tracking tags.
 
 ## Local dev
 ```bash
-# from repo root
-php -S localhost:8080 -t public public/router.php
-# first run seeds a local SQLite DB automatically (see app/config.php APP_ENV=local)
+php -c php.local.ini -S 127.0.0.1:8080 -t public public/router.php
 ```
-Visit http://localhost:8080
+Visit http://127.0.0.1:8080 (`app/config.php` sets `app_url` to match — the port matters, because
+redirects are absolute).
 
-The auto-seed fabricates members and reviews so the UI has something to render. That is fine for
-layout work and useless for judging how the live site actually behaves. To preview what production
-looks like, build a database with the real destinations and **zero** invented content:
-
+Local fixture data (synthetic, production-guarded, purgeable):
 ```bash
-php scripts/dev_preview_db.php                       # 8 destinations, 0 users, 0 reviews
-RMT_SQLITE=$PWD/database/preview.sqlite php scripts/publish_editorial.php --apply
-RMT_SQLITE=$PWD/database/preview.sqlite RMT_APP_URL=http://127.0.0.1:8099 \
-  php -S 127.0.0.1:8099 -t public public/router.php
+php scripts/dev_fixtures.php              # bulk users/trips/reviews
+php scripts/dev_warning_fixtures.php      # ~80 warnings across the first destinations
+php scripts/dev_warning_fixtures.php --purge
 ```
 
 ## Tests
 ```bash
-php tests/csrf_test.php          # CSRF token states
-php tests/editorial_test.php     # editorial labelling + community-rating isolation
-bash scripts/smoke_test.sh https://ruinmytrip.com
+for t in tests/*_test.php; do php -c php.local.ini "$t"; done   # 17 suites
+bash scripts/smoke_test.sh http://127.0.0.1:8080                # routes, SEO, trust labelling
+bash scripts/e2e_warnings.sh                                    # full warning lifecycle (local only)
 ```
+`e2e_warnings.sh` signs in, submits, moderates and votes. Several steps are rate limited by design;
+re-running it repeatedly will trip those limits — see the header comment in the script.
 
-## Config
-Copy `app/config.sample.php` -> `app/config.php` and set DB + secrets. `config.php` is gitignored.
+## Publishing risk reports
+```bash
+php scripts/publish_risk_content.php --check   # validate, write nothing
+php scripts/publish_risk_content.php --apply   # write, single transaction
+php scripts/publish_risk_content.php --apply --only=paris-france
+```
+Reads `database/editorial/risk_content.json` and writes `destination_risk_sections`,
+`destination_faqs` and `seo_landing_pages`. It **never creates a destination row** — base rows belong
+in a numbered migration, so the schema history shows when a destination appeared. It refuses to write
+if any section is under 120 characters or any published guide page is under 600, because a page that
+restates a database row is worse than no page.
 
-## Deploy (later, after approval)
-See `ARCHITECTURE.md` -> Deployment. DNS is **not** changed until the build is approved.
-
-## Operations
-- **Deployment:** `DEPLOY_RENDER.md` (production = Render, Docker + PostgreSQL).
-- **Auto-deploy:** pushes to `main` deploy automatically via `.github/workflows/render-deploy.yml`.
-- **Database backups & restore:** `docs/BACKUP_RESTORE.md`. Automated daily encrypted backups run
-  via `.github/workflows/db-backup.yml` (07:17 UTC), self-verified by an isolated restore + integrity
-  check each run, 30-day retention, email alert on failure. Restore steps are in that doc.
+## Alerts
+```bash
+php scripts/send_alerts.php --dry-run   # print exactly what would go to whom
+php scripts/send_alerts.php             # send
+```
+Four independent brakes stop this becoming spam: per-trip frequency, a per-trip severity floor, a
+unique index on `alert_deliveries` that makes double-sending physically impossible, and a frequency
+window checked before any batch is built. A recipient with nothing new gets nothing — there is no
+"here is your update: nothing happened" email anywhere in the codebase.
 
 ## Editorial content (non-negotiable)
-The site launched with no traveler reviews because it had no travelers. It does **not** solve that
-with invented users. Instead it publishes researched editorial content under one official account
-(`users.role = 'editorial'`), and three rules are enforced in code, not by convention:
+The site launched with no traveler reviews because it had no travelers, and it does **not** solve that
+with invented users. Researched content is published under one official account
+(`users.role = 'editorial'`), with three rules enforced in code rather than by convention:
 
 1. **Authorship is the label.** Editorial = the author's role. Every render path asks
-   `app/editorial.php`, so unlabelled editorial content cannot exist and no per-row flag can drift
-   away from who wrote the words.
-2. **Editorial ratings never enter a community average.** `rmt_community_avg()` and the
-   explore/home counts filter by role. A destination page can show our 5/5 next to
-   "No traveler reviews yet" and both are literally true.
-3. **No claimed visits.** Editorial reviews carry no `visited_on` and never the verified badge, and
-   a disclosure sentence appears wherever one is read in full.
+   `app/editorial.php`, so unlabelled editorial content cannot exist.
+2. **Editorial ratings never enter a community average.** A destination page can show our assessment
+   next to "No traveler reviews yet" and both are literally true.
+3. **No claimed visits.** Editorial content carries no `visited_on` and never a verified badge.
 
-Publishing:
-```bash
-python scripts/build_editorial_content.py <research_dir>   # research -> database/editorial/content.json
-php scripts/publish_editorial.php --check                  # validate only
-php scripts/publish_editorial.php                          # dry run
-php scripts/publish_editorial.php --apply                  # write (idempotent, safe against prod)
-```
-`publish_editorial.php` is the opposite of `database/seed.php`: the seeder is hard-blocked in
-production because it fabricates people, this one is allowed there because it does not. Facts are
-checked against operator and government sources at time of writing; where a current price cannot be
-sourced it is described qualitatively rather than guessed. Photographs are real, freely licensed,
-imported into the `media` table (Commons allow-lists thumbnail widths and discourages hotlinking)
-and credited with licence and source link. Policy page: `/editorial-policy`.
+The same principle governs risk reports: **no traveler experience is ever invented**. Risk sections
+state researched facts with sources; anything first-person is a `warnings` row written by a real member.
+
+Editorial prose goes through `rmt_rich()` (`app/richtext.php`), which escapes everything and then
+rebuilds structure from a tiny closed markup — so there is no path from stored text to executable HTML
+even for an admin-authored page.
+
+## Monetization
+Built, disclosed, and switched off. `affiliate_links.active` defaults to 0, there are no seeded links,
+and every outbound partner link renders through one component that always emits the disclosure and
+always sets `rel="sponsored nofollow noopener"`. Warnings, risk reports and FAQs are never gated.
+
+## Operations
+- **Deployment:** `DEPLOY_RENDER.md` (Render, Docker + PostgreSQL). Pushes to `main` auto-deploy via
+  `.github/workflows/render-deploy.yml`.
+- **Routes and route changes:** `docs/ROUTES.md`.
+- **Backups & restore:** `docs/BACKUP_RESTORE.md`. Daily encrypted backups, self-verified by an
+  isolated restore each run, 30-day retention.
+- **Migrations** are forward-only and additive; `database/migrations/`, tracked in `schema_migrations`.
 
 ## Safety & privacy (non-negotiable)
 - Meetups are **public, optional, community** connections — never dating/hookups.
-- No precise real-time location. Visibility is **destination-level + date-range** only, opt-in.
+- No precise real-time location. Visibility is destination-level + date-range only, opt-in.
 - Reporting, blocking, moderation, age gate (16+ to use, 18+ to host meetups), community standards.
+- Analytics are first-party only. The visitor key is a salted hash that rotates every 24 hours; no raw
+  IP, no user agent, no third-party tag.
