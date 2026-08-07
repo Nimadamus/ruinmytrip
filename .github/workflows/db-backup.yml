@@ -30,7 +30,13 @@ jobs:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      DB_ID: dpg-d9co0937uimc73enjljg-a
+      # Updated 2026-08-06. The Aug 5 cost-cut migrated production onto a new 1GB instance
+      # with a NEW id and deleted the old one; this value still pointed at the deleted
+      # database, so every Render API call here 404'd and the nightly backup failed on
+      # 2026-08-05 and 2026-08-06. The firewall open/re-lock calls 404'd too — which meant
+      # the firewall was never opened, so nothing was left exposed, but there has been NO
+      # successful backup since 2026-08-04.
+      DB_ID: dpg-d9pei5v10e5c73d6vkl0-a
       ALERT_EMAIL: nj2121@gmail.com
       MAIL_FROM: 'RuinMyTrip Backups <noreply@send.ruinmytrip.com>'
       RETENTION_DAYS: '30'
