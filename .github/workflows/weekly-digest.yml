@@ -16,7 +16,10 @@ on:
         default: false
 
 concurrency:
-  group: weekly-digest
+  # Shared with db-backup.yml on purpose -- see the note there. Overlapping runs would
+  # clear each other's ipAllowList entry and fail with "SSL connection has been closed
+  # unexpectedly" partway through.
+  group: render-db-firewall
   cancel-in-progress: false
 
 permissions:
