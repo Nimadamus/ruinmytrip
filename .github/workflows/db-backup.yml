@@ -16,7 +16,10 @@ on:
 
 # Never let two backups run at once (a second run queues; it does not cancel the first).
 concurrency:
-  group: db-backup
+  # Shared with weekly-digest.yml on purpose. Both jobs REPLACE the database's single
+  # ipAllowList with their own runner /32 and then clear it, so two overlapping runs
+  # lock each other out of the database mid-job. Same group = they queue instead.
+  group: render-db-firewall
   cancel-in-progress: false
 
 permissions:
