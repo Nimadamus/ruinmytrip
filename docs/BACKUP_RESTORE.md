@@ -30,8 +30,16 @@ no manual trigger and never writes to production.
 | `BACKUP_PASSPHRASE` | AES256 passphrase for encrypting/decrypting dumps. **Losing this makes every backup unrecoverable.** Stored in `CLAUDE.md` Credentials. |
 | `RESEND_API_KEY` | Send the failure alert email. |
 
-The production DB id (`dpg-d9co0937uimc73enjljg-a`) and alert address are non-secret and live in
-the workflow `env:`.
+The production DB id is **not** hardcoded anywhere. `scripts/ci/resolve_render_db.sh` resolves it
+at run time from the `ruinmytrip-web` service's own `DATABASE_URL`, so replacing the Postgres
+instance does not require editing any workflow. (It was hardcoded until 2026-08-07; the Aug 5
+instance swap deleted the referenced database and silently broke the nightly backup for three
+nights.) The alert address is non-secret and lives in the workflow `env:`.
+
+To see which database the workflows will use:
+```bash
+RENDER_API_KEY=... ./scripts/ci/resolve_render_db.sh
+```
 
 ## Restore procedure (production incident)
 
@@ -66,15 +74,17 @@ You need: the `BACKUP_PASSPHRASE`, the target database connection string, `gpg`,
 
 ## Opening the firewall for a manual restore/dump
 
-The DB is internal-only. To connect from outside for a one-off, open a single `/32` then re-lock:
+The DB is internal-only. To connect from outside for a one-off, open a single `/32` then re-lock.
+Resolve the id first so this never targets a stale instance:
 ```bash
+DB_ID=$(./scripts/ci/resolve_render_db.sh | grep -o 'dpg-[a-z0-9-]*')
 IP=$(curl -s https://api.ipify.org)
 curl -s -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
   -d "{\"ipAllowList\":[{\"cidrBlock\":\"$IP/32\",\"description\":\"manual\"}]}" \
-  "https://api.render.com/v1/postgres/dpg-d9co0937uimc73enjljg-a"
+  "https://api.render.com/v1/postgres/$DB_ID"
 # ... do the work ...
 curl -s -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
-  -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/dpg-d9co0937uimc73enjljg-a"
+  -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID"
 ```
 
 ## Rotating the passphrase

@@ -32,7 +32,10 @@ jobs:
       MAIL_FROM: 'RuinMyTrip <noreply@send.ruinmytrip.com>'
       APP_ENV: production
       APP_URL: https://ruinmytrip.com
-      DB_ID: dpg-d9co0937uimc73enjljg-a
+      # Resolved at run time by scripts/ci/resolve_render_db.sh -- see db-backup.yml.
+      # This file held the id of a database deleted on 2026-08-05 and would have failed
+      # on the next Monday run.
+      RENDER_SERVICE_NAME: ruinmytrip-web
       ALERT_EMAIL: nj2121@gmail.com
 
     steps:
@@ -44,6 +47,9 @@ jobs:
         with:
           php-version: '8.3'
           extensions: pdo_pgsql, curl, openssl, mbstring
+
+      - name: Resolve production database id
+        run: ./scripts/ci/resolve_render_db.sh
 
       - name: Open DB firewall to this runner and fetch connection string
         run: |
@@ -72,6 +78,11 @@ jobs:
       - name: Re-lock DB firewall (always)
         if: always()
         run: |
+          # If resolution failed, the firewall was never opened -- nothing to undo.
+          if [ -z "${DB_ID:-}" ]; then
+            echo "No DB_ID was resolved; firewall was never opened, nothing to re-lock."
+            exit 0
+          fi
           curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
             -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID" > /dev/null && \
             echo "DB firewall re-locked to internal-only." || echo "WARNING: re-lock call failed"

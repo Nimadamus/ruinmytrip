@@ -30,13 +30,11 @@ jobs:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
       BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      # Updated 2026-08-06. The Aug 5 cost-cut migrated production onto a new 1GB instance
-      # with a NEW id and deleted the old one; this value still pointed at the deleted
-      # database, so every Render API call here 404'd and the nightly backup failed on
-      # 2026-08-05 and 2026-08-06. The firewall open/re-lock calls 404'd too — which meant
-      # the firewall was never opened, so nothing was left exposed, but there has been NO
-      # successful backup since 2026-08-04.
-      DB_ID: dpg-d9pei5v10e5c73d6vkl0-a
+      # DB_ID is deliberately NOT hardcoded here. It is resolved at run time from this
+      # service's own DATABASE_URL by scripts/ci/resolve_render_db.sh, so replacing the
+      # Postgres instance can never again leave this workflow pointing at a deleted
+      # database (which is what broke the nightly backup on 2026-08-05).
+      RENDER_SERVICE_NAME: ruinmytrip-web
       ALERT_EMAIL: nj2121@gmail.com
       MAIL_FROM: 'RuinMyTrip Backups <noreply@send.ruinmytrip.com>'
       RETENTION_DAYS: '30'
@@ -57,6 +55,12 @@ jobs:
           --health-retries 20
 
     steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Resolve production database id
+        run: ./scripts/ci/resolve_render_db.sh
+
       - name: Install PostgreSQL 16 client
         run: |
           set -euo pipefail
@@ -166,6 +170,11 @@ jobs:
       - name: Re-lock DB firewall (always)
         if: always()
         run: |
+          # If resolution failed, the firewall was never opened -- nothing to undo.
+          if [ -z "${DB_ID:-}" ]; then
+            echo "No DB_ID was resolved; firewall was never opened, nothing to re-lock."
+            exit 0
+          fi
           curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
             -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID" > /dev/null && \
             echo "DB firewall re-locked to internal-only." || echo "WARNING: re-lock call failed"
