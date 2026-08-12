@@ -17,6 +17,11 @@ That provisions `database/dev.sqlite` (gitignored) if needed, migrates it, and h
 Run it at the start of a session and any time a command fails with something like
 `no such table: users`.
 
+**Never put anything you depend on in the session scratchpad under `%LOCALAPPDATA%\Temp`.** All
+pipeline state now lives inside the repo and gitignored: `database/dev.sqlite`, the source cache in
+`.cache/place_sources/`, and batch working files in `.work/`. `dev_db.php` refuses outright to
+provision a database under any temp root, so the original failure cannot recur even by accident.
+
 **Never put the dev database in the session scratchpad under `%LOCALAPPDATA%\Temp`.** That
 directory is transient and is entitled to be cleared underneath you. On 2026-08-12 it was, mid
 session, taking every working file with it and leaving a zero-byte stub where the database had
@@ -125,6 +130,10 @@ Two encoding facts this script already handles, which cost real time to discover
 - Many official sites serve **windows-1252**, where the euro sign is byte 0x80. Decoding that as
   latin-1 turns it into a control character, and every price assertion fails for a reason that has
   nothing to do with the price. Decode order is header charset, document charset, utf-8, cp1252.
+- Some official ticketing platforms will not serve a page until a **session cookie** exists. Greece's
+  Hellenic Heritage store 307s every venue page to `/api/auth/ensure-token`; without a cookie jar the
+  redirect never resolves and the source looks permanently unreachable. The fetcher keeps a jar, which
+  is what makes `tickets.hh.gr` verifiable at all.
 - Some sites serve a page and then **403 the next request seconds later**. That is rate limiting, so
   fetches are retried once after a pause. A source that fails twice is genuinely unusable.
 

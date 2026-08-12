@@ -218,6 +218,88 @@
       "verdict": "Go, and go after you have climbed the hill rather than before. Twenty euros is fair for what is one of the best museum buildings of the century, and if you can travel in the winter season it is 15."
     },
     {
+      "destination_slug": "athens-greece",
+      "name": "Acropolis of Athens",
+      "type": "attraction",
+      "headline": "Thirty Euros Now, and the Only Real Decision Is What Time You Climb",
+      "body": "A ticket to visit the Acropolis of Athens is 30,00 euros through the official Hellenic Heritage ticket store.\n\nThat is the headline, but it is not the decision that will determine whether you enjoy this. The hour you go is. The rock is bare limestone with almost no shade, the marble underfoot is polished slick by two and a half thousand years of feet, and in July and August the site regularly closes in the middle of the day when temperatures make it unsafe. People who book a midday slot in summer are the ones who come away saying it was overrated.\n\nGo at opening, or in the last two hours before close. The light is better at both ends, the crowd is thinner, and you will actually be able to stand and look at the Parthenon rather than shuffling past it looking for shade.",
+      "what_great": "It is the single most consequential building in Western architecture and you can walk up to it. The site includes the Propylaia, the Erechtheion with its caryatid porch, the Temple of Athena Nike and the theatres on the southern slope, so one ticket covers a great deal. Early and late slots are genuinely pleasant.",
+      "what_ruined": "Thirty euros is a significant increase on the historic price and there is a further ticket if you want the Acropolis Museum below. There is essentially no shade on the summit. Midday closures in summer heat are real and can remove your slot. The polished marble is slippery in any weather.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five because it is the Acropolis and nothing substitutes for standing on it. Value is four rather than five: 30 euros is a substantial rise from what this cost a few years ago, and the summer heat can take the visit away from you entirely.",
+      "meta_description": "The Acropolis of Athens costs 30 euros through the official ticket store. Why the hour you go matters more than anything else you decide.",
+      "facts_checked": [
+        {
+          "fact": "A ticket to visit the Acropolis of Athens is 30,00 euros through the official Hellenic Heritage ticket store.",
+          "url": "https://tickets.hh.gr/en/venues/acropolis-of-athens-tickets",
+          "assert_text": "visit the acropolis of athens €30,00",
+          "confidence": "verified on the official Hellenic Heritage ticket store"
+        },
+        {
+          "fact": "Entry is timed and reduced or free tickets require valid ID or documentation at entry.",
+          "url": "https://tickets.hh.gr/en/venues/acropolis-of-athens-tickets",
+          "assert_text": "timed entry required",
+          "confidence": "verified on the official Hellenic Heritage ticket store"
+        }
+      ],
+      "what_it_is": "The citadel rock above Athens, holding the Parthenon, the Erechtheion, the Temple of Athena Nike and the Propylaia, together with the southern slope sites including the Theatre of Dionysus and the Odeon of Herodes Atticus.",
+      "why_go": "Because the Parthenon is the reference point for two thousand years of Western building and photographs consistently fail at the one thing that matters, which is how the proportions behave as you move around it.",
+      "the_good": "One ticket covers the summit and the slope sites, which is more than most visitors realise. The Erechtheion's caryatid porch rewards a long look. Early morning and late afternoon are genuinely calm, and the view over Athens to the sea is worth the climb on its own.",
+      "the_downsides": "Thirty euros, and the Acropolis Museum below is a separate ticket. No shade at the top. Summer midday closures for heat are a real risk to a booked slot. The marble walkways are slippery and the climb is unsuitable for some visitors.",
+      "best_for": "Every first-time visitor to Athens. Also anyone who can be at the gate for opening, since that is when the site is at its best by a wide margin.",
+      "skip_if": "You cannot manage uneven, slippery stone on a gradient, in which case the Acropolis Museum below tells much of the story with lifts and level floors. Skip a midday summer slot in particular, rather than skipping the site.",
+      "practical": "Book the earliest slot available, or the last two hours. Take water and a hat; there is no shade. Wear shoes with grip, because the marble is polished. Do the summit first and the southern slope on the way down. Check for heat closures on the day in July and August.",
+      "tickets": "A visit to the Acropolis of Athens is 30,00 euros through the official Hellenic Heritage ticket store, with timed entry required. Reduced and free tickets require valid ID or documentation at entry. The Acropolis Museum is a separate ticket.",
+      "getting_there": "Akropoli station on Metro line 2 for the southern slope entrance, or Monastiraki on lines 1 and 3 for the approach through Plaka. The main entrance is on the western side above the Areopagus.",
+      "location_context": "The rock rises directly above the centre of Athens, with Plaka on its northern slopes, the Acropolis Museum immediately south-east, and the Ancient Agora below to the north-west.",
+      "time_needed": "Two hours for the summit and the southern slope at a reasonable pace. Three if you take the theatres properly.",
+      "accessibility": "There is a lift on the northern side for visitors with reduced mobility, but the summit surfaces are uneven polished marble and the site is demanding; the Acropolis Museum below is fully step-free by contrast.",
+      "verdict": "Unmissable, and the only thing you really need to get right is the hour. Book the first slot of the day, carry water, and treat a midday summer booking as the one genuine mistake available here."
+    },
+    {
+      "destination_slug": "athens-greece",
+      "name": "National Archaeological Museum",
+      "type": "attraction",
+      "headline": "Twenty Euros for the Best Greek Collection on Earth, and Half of Athens Walks Past It",
+      "body": "A ticket to visit the National Archaeological Museum is 20,00 euros through the official Hellenic Heritage ticket store.\n\nThis is the best collection of ancient Greek material in the world, and a large share of visitors to Athens never go, because it sits in Exarcheia rather than in Plaka and does not appear on the walk between the Acropolis and the Agora.\n\nWhat is inside: the gold Mask of Agamemnon and the Mycenaean shaft grave finds, the bronze Artemision Zeus or Poseidon caught mid-throw, the Jockey of Artemision, the Antikythera Mechanism, and a sculpture collection that runs the whole arc from Cycladic figurines to Roman portraiture. The Antikythera Mechanism alone, a geared bronze astronomical calculator from the second century BC, rewrites what most people assume about ancient technology.",
+      "what_great": "The collection has no rival for ancient Greek material and it is presented with room to breathe. Twenty euros is fair for its scale. It is markedly quieter than the Acropolis, so you can stand in front of the Mycenaean gold without being moved along.",
+      "what_ruined": "It is a twenty-minute walk from the Plaka in a workaday part of the city, which is why so many visitors skip it. The building is large and the labelling is uneven, so some outstanding objects are easy to walk past. There is no natural pairing nearby, so it needs its own half-day.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. It holds the finest collection of ancient Greek art anywhere, it costs 20 euros, and it is consistently far quieter than the Acropolis sites because it sits outside the tourist quarter.",
+      "meta_description": "The National Archaeological Museum costs 20 euros. The Mask of Agamemnon, the Antikythera Mechanism, and far fewer people than the Acropolis.",
+      "facts_checked": [
+        {
+          "fact": "A ticket to visit the National Archaeological Museum is 20,00 euros through the official Hellenic Heritage ticket store.",
+          "url": "https://tickets.hh.gr/en/venues/national-archaeological-museum",
+          "assert_text": "visit the national archaeological museum €20,00",
+          "confidence": "verified on the official Hellenic Heritage ticket store"
+        },
+        {
+          "fact": "Entry is timed and reduced or free tickets require valid ID or documentation at entry.",
+          "url": "https://tickets.hh.gr/en/venues/national-archaeological-museum",
+          "assert_text": "timed entry required",
+          "confidence": "verified on the official Hellenic Heritage ticket store"
+        }
+      ],
+      "what_it_is": "Greece's national archaeological collection, in a nineteenth-century neoclassical building in Exarcheia, covering prehistoric, Mycenaean, Cycladic, sculpture, bronze, pottery and Egyptian collections.",
+      "why_go": "For the Mycenaean gold, the Artemision bronzes and the Antikythera Mechanism. These are the objects that other museums borrow, and they are all in one building.",
+      "the_good": "The finest ancient Greek collection anywhere, at 20 euros, with far fewer people than the Acropolis sites. The bronzes in particular are displayed with enough space to walk around them, which is rarely true elsewhere.",
+      "the_downsides": "Outside the tourist quarter, so it takes a deliberate trip. Uneven labelling means significant objects can go unnoticed. Its scale is tiring and there is nothing else nearby to build a day around.",
+      "best_for": "Anyone with a real interest in the ancient world, repeat visitors to Athens, and travellers who prefer a quiet museum to a crowded monument.",
+      "skip_if": "You have one day in Athens. The Acropolis and its museum come first. This is the second-day museum, and it deserves to be treated as one rather than squeezed in.",
+      "practical": "Give it a half-day and go straight to the Mycenaean room and the bronzes before fatigue sets in. It is about twenty-five minutes on foot from Syntagma, or take the metro to Omonia and walk. Exarcheia is fine by day and has good, cheap places to eat.",
+      "tickets": "A visit to the National Archaeological Museum is 20,00 euros through the official Hellenic Heritage ticket store, with timed entry required. Reduced and free tickets require valid ID or documentation at entry.",
+      "getting_there": "Victoria station on Metro line 1 or Omonia on lines 1 and 2, both about ten minutes on foot. Roughly twenty-five minutes walking from Syntagma.",
+      "location_context": "Patission Street on the edge of Exarcheia, north of Omonia, in a working district well away from Plaka and the Acropolis. It is an ordinary Athenian neighbourhood rather than a visitor quarter.",
+      "time_needed": "Three hours to do it justice. Ninety minutes if you go only for the Mycenaean gold and the bronzes.",
+      "accessibility": "The museum is served by lifts and ramps, and is considerably easier to visit than the Acropolis site for anyone with limited mobility.",
+      "verdict": "The most underrated major museum in Europe and the best value in Athens. Go on your second day, head for the bronzes and the Mycenaean gold first, and allow more time than you planned."
+    },
+    {
       "destination_slug": "barcelona-spain",
       "name": "Basilica de la Sagrada Familia",
       "type": "attraction",
@@ -717,6 +799,47 @@
       "time_needed": "Ninety minutes for the Ninomaru Palace and the main gardens. Two hours if you walk the full grounds.",
       "accessibility": "The grounds are largely flat, but the Ninomaru Palace route involves removing shoes and walking wooden corridors with steps, which limits access.",
       "verdict": "The best-value major site in Kyoto and the one that best explains how the country was actually governed. Go early, take the gardens as well as the palace, and reserve the Honmaru separately if you want it."
+    },
+    {
+      "destination_slug": "lisbon-portugal",
+      "name": "Oceanario de Lisboa",
+      "type": "attraction",
+      "headline": "Twenty-Nine Euros at Opening, Twenty-Seven at Midday, and Under-Threes Free",
+      "body": "The Oceanario prices by time slot, which is unusual and worth understanding before you book. For the 10 am to 11:30 am slot, ages 0 to 2 are free, 3 to 12 year olds pay 17 euros, 13 to 64 year olds pay 29 euros and over-65s pay 19 euros. From 12 pm to 3:30 pm the same tiers drop to 16, 27 and 18 euros.\n\nSo the busiest slot is also the most expensive one, and going a couple of hours later is both cheaper and quieter. That is the opposite of how most attractions work and most visitors do not notice it.\n\nThe building itself sits out in the marina at Parque das Nacoes, reached by a walkway over the water. The design centres on one enormous tank, viewed from two levels, with four separate habitat displays arranged around it so that the central ocean is always visible through them. It reads as one continuous ocean rather than a series of boxes, and it is the reason this aquarium is regularly rated the best in Europe.",
+      "what_great": "The central-tank design is genuinely clever and holds attention far longer than a conventional aquarium. Under-3s go free and the midday slot is 2 euros cheaper per adult than the opening one. Parque das Nacoes around it is pleasant, modern and easy to walk with children.",
+      "what_ruined": "Twenty-nine euros for an adult at the opening slot makes a family visit expensive. It is out at Parque das Nacoes, well away from central Lisbon, so it costs a metro trip each way. Weekends and school holidays are very busy regardless of which slot you pick.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because it is one of the best-designed public aquariums in the world and the central tank genuinely works. Value is four: 29 euros is a lot for a family, though the tiered time slots and free under-threes soften it.",
+      "meta_description": "The Oceanario de Lisboa charges 29 euros for adults at opening, 27 midday, with under-3s free and children 3-12 at 17 euros.",
+      "facts_checked": [
+        {
+          "fact": "For the 10 am to 11:30 am slot: ages 0-2 free, 3-12 at 17 euros, 13-64 at 29 euros, over-65s at 19 euros.",
+          "url": "https://www.oceanario.pt/en/visit/tickets",
+          "assert_text": "10 am - 11:30 am free 17€ 29€ 19€",
+          "confidence": "verified on the aquarium's official tickets page"
+        },
+        {
+          "fact": "Pricing is banded by age group across time slots.",
+          "url": "https://www.oceanario.pt/en/visit/tickets",
+          "assert_text": "0-2 years 3-12 years 13-64 years +65 years",
+          "confidence": "verified on the aquarium's official tickets page"
+        }
+      ],
+      "what_it_is": "A public aquarium in the Parque das Nacoes marina, built for Expo 98, arranged around a single very large central tank with four habitat zones surrounding it representing the North Atlantic, Antarctic, Pacific and Indian Ocean coasts.",
+      "why_go": "For the central tank, which is visible from every surrounding habitat so the whole building reads as one ocean rather than a corridor of glass boxes. It is a genuinely better idea than most aquariums manage.",
+      "the_good": "Outstanding design that keeps people looking for far longer than usual. Free entry for under-3s and a real discount for over-65s. Cheaper midday slots. The walk out over the water to the building is a good start to a visit.",
+      "the_downsides": "Twenty-nine euros an adult in the opening slot, and the family total mounts quickly. It is a long way from the historic centre. It is one of the busiest attractions in Lisbon at weekends and in school holidays.",
+      "best_for": "Families, anyone travelling with children, and visitors interested in design and architecture as much as marine life.",
+      "skip_if": "You have two days in Lisbon and have not seen Belem or Alfama. Those are the city. This is a very good aquarium that happens to be in Lisbon rather than a reason to come.",
+      "practical": "Book the 12 pm to 3:30 pm slot rather than the opening one: it is 2 euros cheaper per adult and less crowded. Allow an hour each way for travel from the centre. Combine it with Parque das Nacoes itself, which is free to walk and has the cable car along the waterfront.",
+      "tickets": "Time-slot pricing. For 10 am to 11:30 am: 0 to 2 free, 3 to 12 at 17 euros, 13 to 64 at 29 euros, over-65s at 19 euros. For 12 pm to 3:30 pm: 16, 27 and 18 euros for the same tiers, with under-3s still free.",
+      "getting_there": "Oriente station on Metro line 3, served also by mainline and suburban trains, then about ten minutes on foot through Parque das Nacoes.",
+      "location_context": "Parque das Nacoes in the far north-east of Lisbon, the redeveloped Expo 98 site on the Tagus, which is modern, spacious and entirely unlike the old city. The Vasco da Gama bridge and the waterfront cable car are both here.",
+      "time_needed": "Two hours inside. Allow half a day including travel from central Lisbon.",
+      "accessibility": "The building is step-free throughout with lifts between the two viewing levels, and the approach walkway is level.",
+      "verdict": "The best aquarium in Europe and worth the trip out, provided you book the midday slot rather than the opening one. It is a second-day Lisbon attraction, not a substitute for Belem or the old city."
     },
     {
       "destination_slug": "london-uk",

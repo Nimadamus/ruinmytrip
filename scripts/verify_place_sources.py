@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import html
+import http.cookiejar
 import json
 import os
 import re
@@ -205,6 +206,16 @@ def fetch(url: str) -> tuple[bool, str]:
     return ok, body
 
 
+# One opener with a cookie jar, shared across the run.
+#
+# Some official ticketing platforms will not serve a page until a session cookie exists. Greece's
+# Hellenic Heritage store is the example that forced this: every venue page 307s to
+# /api/auth/ensure-token and, without somewhere to keep the cookie it sets, the redirect never
+# resolves and the source looks permanently unreachable. With a jar it returns 200 and the prices
+# are right there. That is a genuine official source recovered with ten lines and no browser.
+_opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
+
 def _fetch_once(url: str) -> tuple[bool, str]:
     req = urllib.request.Request(
         url,
@@ -215,7 +226,7 @@ def _fetch_once(url: str) -> tuple[bool, str]:
         if attempt:
             time.sleep(RETRY_PAUSE)
         try:
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            with _opener.open(req, timeout=TIMEOUT) as r:
                 raw = r.read()
                 charset = r.headers.get_content_charset()
             return True, decode(raw, charset)

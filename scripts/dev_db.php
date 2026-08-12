@@ -65,6 +65,29 @@ if (in_array(strtolower((string) getenv('APP_ENV')), ['production', 'prod'], tru
 $dbPath = $pathArg ?: ($base . '/database/dev.sqlite');
 $seed   = $base . '/database/ruinmytrip.sqlite';
 
+/* ---------------- transient-location guard ----------------
+ * The original failure was a database living under %LOCALAPPDATA%\Temp, which another process
+ * cleared mid-session. That is not a hazard we can fix from inside this repo, because the sweep is
+ * done by something else entirely and is entitled to do it. What we can do is refuse to put
+ * anything we depend on there in the first place, and say so loudly if someone points --path at
+ * one. A warning here is much cheaper than the confusing "no such table: users" it prevents. */
+$transientRoots = array_filter([
+    getenv('TEMP'), getenv('TMP'), getenv('TMPDIR'),
+    getenv('LOCALAPPDATA') ? getenv('LOCALAPPDATA') . '\\Temp' : null,
+    '/tmp',
+]);
+$normalised = strtolower(str_replace('\\', '/', (string) $dbPath));
+foreach ($transientRoots as $root) {
+    $root = strtolower(str_replace('\\', '/', rtrim((string) $root, '\\/')));
+    if ($root !== '' && str_starts_with($normalised, $root . '/')) {
+        bail("refusing to use a database inside a transient directory:\n"
+           . "         {$dbPath}\n"
+           . "  That tree is cleared by other processes without warning, which is exactly how the\n"
+           . "  2026-08-12 data loss happened. Use the default (database/dev.sqlite) or another\n"
+           . "  durable path outside temp.");
+    }
+}
+
 /* ---------------- health check ---------------- */
 
 /**
