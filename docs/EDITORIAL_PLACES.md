@@ -62,9 +62,20 @@ python scripts/verify_place_sources.py                    # everything
 python scripts/verify_place_sources.py --slug paris-france  # one destination
 ```
 
-Exit code is non-zero if any assertion fails or any source is unreachable. A `FAIL` means the cited
-page no longer contains the asserted string, which means either the copy is now wrong or the
-assertion was too brittle. Fix one or the other. Never publish over a FAIL.
+Exit code is non-zero if anything did not pass. The three failure states mean different things and
+need opposite responses, which is why the tool separates them:
+
+- **FAIL** the page loaded and no longer contains the asserted string. Either the copy is now wrong
+  or the assertion was too brittle. Fix one or the other. **Never publish over a FAIL.**
+- **BLOCKED** the site answered 200 with almost no content, which is an interstitial or soft block,
+  not a page. Nothing is known about the fact either way. `www.stedelijk.nl` does exactly this after
+  a handful of requests: it returns a 157-character stub rather than a 403.
+- **UNREACHABLE** the fetch failed outright, after one retry.
+
+`--allow-blocked` lets a publish proceed past BLOCKED sources, and should only be used when a human
+has opened the page and confirmed the copy. It still prints them every run and labels them
+UNCHECKED rather than verified, because a source that cannot be re-checked is the one most likely to
+go stale without anyone noticing. Prefer dropping the page over relying on this.
 
 Two encoding facts this script already handles, which cost real time to discover:
 

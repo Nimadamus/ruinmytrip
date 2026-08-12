@@ -214,6 +214,11 @@ def main() -> int:
     ap.add_argument("--slug", help="only check this destination_slug")
     ap.add_argument("--name", help="only check places whose name contains this (case-insensitive)")
     ap.add_argument("--json", help="write a machine-readable report here")
+    ap.add_argument("--allow-blocked", action="store_true",
+                    help="do not fail on BLOCKED sources. BLOCKED means the site refused to show us "
+                         "the page, not that the fact is wrong. Use only when a human has read the "
+                         "source and confirmed the copy; the blocked assertions are still printed "
+                         "every run so the situation stays visible.")
     a = ap.parse_args()
 
     with open(a.file, encoding="utf-8") as fh:
@@ -249,7 +254,12 @@ def main() -> int:
             json.dump({"places": reports, "counts": counts}, fh, indent=2, ensure_ascii=False)
         print(f"report written to {a.json}")
 
-    bad = counts["FAIL"] + counts["BLOCKED"] + counts["UNREACHABLE"] + counts["INVALID"]
+    bad = counts["FAIL"] + counts["UNREACHABLE"] + counts["INVALID"]
+    if not a.allow_blocked:
+        bad += counts["BLOCKED"]
+    elif counts["BLOCKED"]:
+        print(f"\n{counts['BLOCKED']} BLOCKED assertion(s) ignored by --allow-blocked. "
+              f"These are UNCHECKED, not verified.")
     if bad:
         print(f"\n{bad} assertion(s) did not pass. Fix the entry or correct the copy before publishing.")
     return 1 if bad else 0
