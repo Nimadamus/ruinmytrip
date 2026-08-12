@@ -32,6 +32,7 @@ Exit code is 1 if any assertion fails or any source is unreachable, so it can ga
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -43,6 +44,14 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+
+# Same reason as probe_place_sources.py: a cp1252 stdout cannot encode an asserted string from a
+# Japanese or Greek source, and the resulting UnicodeEncodeError would take down a whole run.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLACES_JSON = os.path.join(HERE, "database", "editorial", "places.json")
@@ -127,16 +136,73 @@ def _host_lock(host: str) -> threading.Lock:
         return _host_locks.setdefault(host, threading.Lock())
 
 
+# On-disk page cache. This is the difference between a verifier that works at twenty places and one
+# that works at two thousand.
+#
+# Without it, every run re-fetches every source, so the request load on each museum grows with the
+# whole dataset and re-running the check twice in an afternoon is enough to get rate limited. That
+# is not hypothetical: www.stedelijk.nl starts returning a 157-character stub after a handful of
+# requests, and once it does, nothing on that host can be checked for a while.
+#
+# Caching successful fetches for a few hours means a re-run costs nothing, a batch only pays for
+# sources it has not seen recently, and the polite request rate stays flat as the dataset grows.
+# Failures are never cached: a blocked or broken source must be retried next time, or a transient
+# failure would look permanent.
+CACHE_DIR = os.path.join(HERE, ".cache", "place_sources")
+DEFAULT_MAX_AGE = 6 * 3600
+
+_cache_max_age = DEFAULT_MAX_AGE
+_cache_enabled = True
+
+
+def _cache_path(url: str) -> str:
+    return os.path.join(CACHE_DIR, hashlib.sha256(url.encode("utf-8")).hexdigest() + ".html")
+
+
+def _cache_read(url: str) -> str | None:
+    if not _cache_enabled:
+        return None
+    path = _cache_path(url)
+    try:
+        if time.time() - os.path.getmtime(path) > _cache_max_age:
+            return None
+        with open(path, encoding="utf-8") as fh:
+            return fh.read()
+    except OSError:
+        return None
+
+
+def _cache_write(url: str, body: str) -> None:
+    if not _cache_enabled:
+        return
+    try:
+        os.makedirs(CACHE_DIR, exist_ok=True)
+        with open(_cache_path(url), "w", encoding="utf-8") as fh:
+            fh.write(body)
+    except OSError:
+        pass  # a cache that cannot be written is not a reason to fail a check
+
+
 def fetch(url: str) -> tuple[bool, str]:
+    cached = _cache_read(url)
+    if cached is not None:
+        return True, cached
+
     host = urllib.parse.urlsplit(url).netloc.lower()
     with _host_lock(host):
         gap = time.monotonic() - _host_last.get(host, 0.0)
         if gap < MIN_HOST_INTERVAL:
             time.sleep(MIN_HOST_INTERVAL - gap)
         try:
-            return _fetch_once(url)
+            ok, body = _fetch_once(url)
         finally:
             _host_last[host] = time.monotonic()
+
+    # Only cache a page that actually looks like a page. Caching a soft-block would freeze the
+    # blocked state in for hours and hide a source that has since recovered.
+    if ok and len(normalise(body)) >= MIN_PAGE_CHARS:
+        _cache_write(url, body)
+    return ok, body
 
 
 def _fetch_once(url: str) -> tuple[bool, str]:
@@ -214,12 +280,20 @@ def main() -> int:
     ap.add_argument("--slug", help="only check this destination_slug")
     ap.add_argument("--name", help="only check places whose name contains this (case-insensitive)")
     ap.add_argument("--json", help="write a machine-readable report here")
+    ap.add_argument("--no-cache", action="store_true",
+                    help="ignore the on-disk page cache and re-fetch every source")
+    ap.add_argument("--max-age", type=int, default=DEFAULT_MAX_AGE,
+                    help=f"seconds a cached page stays usable (default {DEFAULT_MAX_AGE})")
     ap.add_argument("--allow-blocked", action="store_true",
                     help="do not fail on BLOCKED sources. BLOCKED means the site refused to show us "
                          "the page, not that the fact is wrong. Use only when a human has read the "
                          "source and confirmed the copy; the blocked assertions are still printed "
                          "every run so the situation stays visible.")
     a = ap.parse_args()
+
+    global _cache_enabled, _cache_max_age
+    _cache_enabled = not a.no_cache
+    _cache_max_age = a.max_age
 
     with open(a.file, encoding="utf-8") as fh:
         places = json.load(fh).get("places", [])

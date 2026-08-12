@@ -41,6 +41,16 @@ from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
+# Windows defaults stdout to cp1252, which cannot encode a Japanese temple name or a Greek museum
+# label. Printing one then raises UnicodeEncodeError and takes the whole run down, losing every
+# other result in the batch. Degrade unencodable characters instead of dying: this is a report, and
+# a mangled glyph in a context line costs nothing next to a lost run.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        pass
+
 # Reuse the verifier's fetch/normalise so probing and verifying agree on encoding and whitespace.
 _spec = importlib.util.spec_from_file_location("_rmt_verify", os.path.join(HERE, "verify_place_sources.py"))
 _v = importlib.util.module_from_spec(_spec)

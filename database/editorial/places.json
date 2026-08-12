@@ -106,7 +106,7 @@
           "fact": "Adults pay 22,50 euros and students pay 12,50 euros.",
           "url": "https://www.stedelijk.nl/en/visit",
           "assert_text": "adults: € 22,50 students: € 12,50",
-          "confidence": "verified on the museum's official visit page"
+          "confidence": "verified on the museum's official visit page; identical string also served on /en/tickets and /en"
         },
         {
           "fact": "Visitors under 19 go free.",
@@ -116,9 +116,9 @@
         },
         {
           "fact": "The museum is open Monday to Sunday 10am to 6pm.",
-          "url": "https://www.stedelijk.nl/en/visit",
+          "url": "https://www.stedelijk.nl/en/tickets",
           "assert_text": "mon - sun: 10 am - 6 pm",
-          "confidence": "verified on the museum's official visit page"
+          "confidence": "verified on the museum's official tickets page; the same figures also appear on /en/visit and /en"
         }
       ],
       "what_it_is": "Amsterdam's museum of modern and contemporary art and design on the Museumplein, in a nineteenth-century building joined to a large white extension completed in 2012.",
@@ -224,6 +224,87 @@
       "verdict": "Now that it is finished, this is the one Barcelona sight that is genuinely unmissable. Book direct and early, take the towers only if the extra ten euros is comfortable, and go for the interior rather than the facade."
     },
     {
+      "destination_slug": "barcelona-spain",
+      "name": "La Pedrera (Casa Mila)",
+      "type": "attraction",
+      "headline": "From Twenty-Nine Euros, and the Roof Is the Whole Point",
+      "body": "La Pedrera, properly Casa Mila, charges from 29 euros for the essential general admission and from 25 euros for the sunset slot.\n\nThe building is Gaudi's last civil work, a stone apartment block with no straight structural walls and a roof terrace of chimneys that look like helmeted sentries. The roof is the reason to go. The rest of the visit, an apartment furnished as it would have been in the 1910s and an attic of parabolic brick arches, is good, but the roof is what people remember.\n\nThe sunset ticket is cheaper than the standard one, which is unusual, and puts you on that roof at the best hour of the day. If your schedule allows it, that is the ticket to buy.",
+      "what_great": "The roof terrace is one of the great built spaces in Barcelona and the attic's brick arches explain how the building stands up. The sunset slot costs less than standard admission, which is a rare case of the better experience also being the cheaper one.",
+      "what_ruined": "From 29 euros is a lot for a single apartment building, especially if you are also paying for Sagrada Familia and Park Guell on the same trip. The route is one-way and the roof is small, so a full slot feels full. The Passeig de Gracia frontage is permanently crowded with people photographing it for free.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because the roof terrace is among the best things Gaudi built and the apartment reconstruction is genuinely informative. Value is three: from 29 euros for one building is steep even by Barcelona standards.",
+      "meta_description": "La Pedrera starts at 29 euros, or 25 for the sunset slot. Why the roof terrace justifies it and which ticket to actually buy.",
+      "facts_checked": [
+        {
+          "fact": "La Pedrera Essential general admission starts from 29 euros.",
+          "url": "https://www.lapedrera.com/en/home",
+          "assert_text": "la pedrera essential general admission from €29",
+          "confidence": "verified on the building's official site"
+        },
+        {
+          "fact": "The sunset general admission slot starts from 25 euros.",
+          "url": "https://www.lapedrera.com/en/home",
+          "assert_text": "general admission at sunset from €25",
+          "confidence": "verified on the building's official site"
+        }
+      ],
+      "what_it_is": "Casa Mila, known as La Pedrera, an apartment building on Passeig de Gracia completed by Antoni Gaudi in 1912, with a stone facade, a reconstructed period apartment, a parabolic-arched attic and a sculptural roof terrace.",
+      "why_go": "For the roof terrace, which is the most purely enjoyable thing Gaudi built, and for the attic, which quietly explains the engineering behind every curve in the building.",
+      "the_good": "The roof is genuinely extraordinary and the attic makes sense of the whole structure. The sunset ticket is cheaper than standard admission and is also the better time to be up there. It sits on Passeig de Gracia, so it needs no special journey.",
+      "the_downsides": "From 29 euros for one building is steep, and Barcelona will already have taken 26 euros off you at the Sagrada Familia. The route is one-way with no doubling back. The roof is compact and feels crowded on a full slot.",
+      "best_for": "Anyone interested in Gaudi or in structural engineering, photographers who can take the sunset slot, and visitors who want a second Gaudi building after the Sagrada Familia.",
+      "skip_if": "Your budget only covers one Gaudi ticket, in which case the Sagrada Familia is the one. Skip it also if you are content photographing the facade from the pavement, which is free and is what most people actually want.",
+      "practical": "Buy the sunset slot if your schedule allows, since it is cheaper than standard admission and puts you on the roof in the best light. Go straight up to the roof on arrival rather than working through the route in order. Book ahead; walk-up availability on Passeig de Gracia is unreliable.",
+      "tickets": "La Pedrera Essential general admission starts from 29 euros. The sunset general admission slot starts from 25 euros. A night experience is also sold at a higher price.",
+      "getting_there": "Diagonal on Metro lines 3 and 5 is immediately outside. Passeig de Gracia on lines 2, 3 and 4 is a few minutes south.",
+      "location_context": "Passeig de Gracia in the Eixample, Barcelona's grand shopping boulevard, with Casa Batllo a few blocks south and the Sagrada Familia about twenty minutes east on foot.",
+      "time_needed": "Around ninety minutes for the full route including the roof, apartment and attic.",
+      "verdict": "Worth it for the roof, and best bought as the cheaper sunset slot. If you are only paying for one Gaudi building this trip, make it the Sagrada Familia and admire this one from the street."
+    },
+    {
+      "destination_slug": "berlin-germany",
+      "name": "Jewish Museum Berlin",
+      "type": "attraction",
+      "headline": "The Core Exhibition Is Free, and the Building Is Half the Argument",
+      "body": "Admission to the core exhibition at the Jewish Museum Berlin is free of charge for everyone. That is unusual for a museum of this scale and it removes the main reason people talk themselves out of going.\n\nThe building is by Daniel Libeskind and it is not a container for the exhibition, it is part of it. Sharp angles, slanting floors, voids cut through the full height of the structure and a Holocaust Tower that is an unheated concrete shaft with a single slit of daylight. Whether that architecture is moving or manipulative is an argument people have, and having the argument is part of visiting.\n\nThe core exhibition itself covers two millennia of German Jewish life, and is careful to be a history of a people rather than only a history of their destruction.",
+      "what_great": "The core exhibition is free for everyone, which for a national-scale museum is remarkable. It tells German Jewish history as a whole rather than collapsing it into 1933 to 1945. The building is a genuine work in its own right and the Holocaust Tower is unlike anything else in a museum.",
+      "what_ruined": "The architecture is deliberately disorienting, with slanting floors and dead ends, which some visitors find powerful and others find exhausting. Certain temporary exhibitions are charged despite the free core. It is a heavy visit and there is no light way to do it.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. Admission to the core exhibition is free of charge for everyone, the collection is serious and unsentimental, and Libeskind's building does work that no display case could.",
+      "meta_description": "Admission to the Jewish Museum Berlin core exhibition is free for everyone. Libeskind's building, what to expect, and how long to allow.",
+      "facts_checked": [
+        {
+          "fact": "Admission to the core exhibition is free of charge for everyone.",
+          "url": "https://www.jmberlin.de/en/visit",
+          "assert_text": "admission to the core exhibition is free of charge for everyone",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "The museum lists free admission to the core exhibition among its prices.",
+          "url": "https://www.jmberlin.de/en/visit",
+          "assert_text": "free admission to the core exhibition",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "Germany's largest Jewish museum, in Kreuzberg, combining a Baroque building with Daniel Libeskind's 1999 extension, holding a core exhibition on two thousand years of German Jewish history plus the Garden of Exile and the Holocaust Tower.",
+      "why_go": "Because it treats German Jewish history as a long, ordinary, complicated story rather than only as a prelude to genocide, and because the building itself is one of the most discussed pieces of architecture in Europe.",
+      "the_good": "Free admission to the core exhibition for everyone. Serious, unsentimental curation across two millennia. The Libeskind spaces, particularly the Holocaust Tower and the Garden of Exile, do something that objects and labels cannot.",
+      "the_downsides": "Some temporary exhibitions are ticketed, which surprises people once they know the core is free. The slanting floors and deliberate disorientation are physically tiring. This is not a museum you can visit lightly or briefly.",
+      "best_for": "Anyone interested in German or Jewish history, visitors interested in contemporary architecture, and travellers on a budget given the free core exhibition.",
+      "skip_if": "You are short on time and have already booked the Holocaust Memorial and the Topography of Terror, since three heavy sites in one day is more than most people can absorb. Skip it if you need a museum you can walk out of after twenty minutes.",
+      "practical": "Allow more time than you think and eat first, because there is no natural break in the route. Go on a weekday morning if you want the Holocaust Tower without a queue, since it holds few people at a time. Check whether any temporary exhibition you want carries a charge.",
+      "tickets": "Admission to the core exhibition is free of charge for everyone. Certain temporary exhibitions carry a charge, and guided group admission is priced separately by duration.",
+      "getting_there": "U1 or U6 to Hallesches Tor, or U6 to Kochstrasse. Both are about ten minutes on foot.",
+      "location_context": "Lindenstrasse in Kreuzberg, south of Checkpoint Charlie, in a mixed residential and institutional part of central Berlin. The Berlinische Galerie is a few minutes away and the Topography of Terror is a fifteen-minute walk north.",
+      "time_needed": "Two to three hours for the core exhibition and the Libeskind spaces. Rushing it is possible but pointless.",
+      "accessibility": "The museum is step-free with lift access throughout and publishes detailed accessibility information; note that some Libeskind spaces have deliberately sloping floors.",
+      "verdict": "One of the best museums in Berlin and the core exhibition costs nothing. Go on a weekday, allow half a day, and do not stack it against another Holocaust site on the same afternoon."
+    },
+    {
       "destination_slug": "dublin-ireland",
       "name": "Book of Kells Experience at Trinity College",
       "type": "attraction",
@@ -262,6 +343,47 @@
       "location_context": "Dead centre of Dublin, between Grafton Street and Dame Street, with the college grounds forming a quiet walled enclave in the middle of the city. Temple Bar is a few minutes west and is best treated with caution on price.",
       "time_needed": "About 90 minutes for the standard experience, which is what the ticket is timed against.",
       "verdict": "Go for the Long Room and treat the manuscript as the historical anchor rather than the spectacle. Book ahead, take an early slot, and if you have any Trinity connection, use it, because the free entry extends to two guests."
+    },
+    {
+      "destination_slug": "dublin-ireland",
+      "name": "EPIC The Irish Emigration Museum",
+      "type": "attraction",
+      "headline": "Twenty-Two Online, Twenty-Four at the Door, and No Objects At All",
+      "body": "EPIC charges 22.00 euros for an adult aged 18 to 64 booking online and 24.00 on the day, with teenagers aged 13 to 17 at 15.00 online and 16.00 on the day.\n\nThe thing to understand before buying is that EPIC has no collection. It is a fully digital museum in the vaults of the CHQ building, telling the story of Irish emigration through twenty rooms of screens, projections and interactive galleries. There are no objects.\n\nThat is either the appeal or the problem, and which one it is for you is worth deciding in advance. It handles a diffuse, unphotogenic subject, thirty million people leaving over three centuries, better than an artefact museum could. But visitors expecting a traditional museum sometimes feel they have paid 22 euros for a very good exhibition rather than a collection.",
+      "what_great": "It solves a genuinely hard problem: how to tell the story of emigration when the evidence is scattered across the world. The genealogy element lets Irish-descended visitors look up their own family, which is the part people remember. Booking online saves 2 euros and teenagers pay 15.",
+      "what_ruined": "There are no objects at all, which disappoints anyone expecting a conventional museum. Twenty-two euros is a lot for a screen-based experience in a city with several free national museums. Walk-up costs 2 euros more than booking ahead for exactly the same visit.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because it does something genuinely difficult well: tell a diaspora story with almost no artefacts. Value is four, with online booking two euros cheaper and real family rates.",
+      "meta_description": "EPIC costs 22 euros online or 24 on the day, with teenagers at 15. A fully digital museum about Irish emigration, and who it suits.",
+      "facts_checked": [
+        {
+          "fact": "Adults aged 18 to 64 pay 22.00 euros online and 24.00 euros on the day.",
+          "url": "https://www.epicchq.com/visit/",
+          "assert_text": "adult (18-64) €22.00 €24.00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Teenagers aged 13 to 17 pay 15.00 euros online and 16.00 euros on the day.",
+          "url": "https://www.epicchq.com/visit/",
+          "assert_text": "teenager (13-17) €15.00 €16.00",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A fully digital museum in the vaults of the CHQ Building on Custom House Quay, telling the story of Irish emigration across twenty themed galleries, with an on-site genealogy service.",
+      "why_go": "Because the Irish diaspora is one of the defining facts about the country and there is no artefact that can carry it. This is the place that takes the subject seriously rather than reducing it to famine and sentiment.",
+      "the_good": "It makes a shapeless subject legible, and the genealogy service turns an abstract story into a personal one for anyone with Irish ancestry. Online booking is 2 euros cheaper, and teenage and child rates are genuinely reduced rather than token.",
+      "the_downsides": "No collection and no objects, which is a real mismatch for some visitors at 22 euros. Dublin has free national museums a short walk away, which sharpens the comparison. The screens mean the experience is paced by the equipment rather than by you.",
+      "best_for": "Anyone with Irish ancestry, particularly visitors from the United States, Canada or Australia; families with teenagers; and travellers interested in migration history generally.",
+      "skip_if": "You want to look at objects, in which case the National Museum of Ireland is free and a few minutes away. Skip it too if you are on a tight budget in what is already an expensive city.",
+      "practical": "Book online, which is 2 euros cheaper per adult than paying at the door. If you have Irish ancestry, allow extra time for the genealogy service rather than treating it as an add-on. The CHQ building has food and is a reasonable place to start or end a day on the docks.",
+      "tickets": "Adults aged 18 to 64 pay 22.00 euros online or 24.00 on the day. Teenagers aged 13 to 17 pay 15.00 online or 16.00 on the day, with lower rates for children aged 6 to 12.",
+      "getting_there": "The Luas red line stops at George's Dock, a minute away. It is about a fifteen-minute walk from O'Connell Bridge along the north quays.",
+      "location_context": "Custom House Quay in the Docklands, east of the city centre on the north bank of the Liffey, in a redeveloped commercial district. The Jeanie Johnston famine ship replica and the Famine Memorial are both a short walk along the river.",
+      "time_needed": "Ninety minutes to two hours for the twenty galleries. Longer if you use the genealogy service.",
+      "accessibility": "The museum is step-free throughout with lift access to the vault galleries, and publishes accessibility information for visitors.",
+      "verdict": "A good museum doing a hard job, provided you know before you book that there is nothing in a case. Book online for the cheaper rate, and if you have Irish ancestry the genealogy service is what will make it worth 22 euros."
     },
     {
       "destination_slug": "edinburgh-scotland",
@@ -560,6 +682,47 @@
       "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing."
     },
     {
+      "destination_slug": "munich-germany",
+      "name": "Alte Pinakothek",
+      "type": "attraction",
+      "headline": "Nine Euros Most Days and One Euro on Sunday, Which Is Almost Absurd",
+      "body": "The Alte Pinakothek charges 9 euro regular admission and 6 euro reduced, and on Sundays it is 1 euro. Admission is free for children and young people under the age of 18.\n\nThe Sunday rate is not a promotion. It is a standing Bavarian policy across the state collections, and it means one of the world's great holdings of European painting from the fourteenth to the eighteenth century costs about the same as a coffee.\n\nThe collection's strengths are Old German and Early Netherlandish painting, Rubens at a depth found nowhere else, and Italian work from the Renaissance. It is the sort of museum where the second-rank rooms in most galleries would be the highlight.",
+      "what_great": "Nine euro regular admission is remarkable for a collection of this standing, and the 1 euro Sunday rate is close to absurd. Under-18s go free. The Rubens holdings in particular are unmatched, and the building is calm and well lit for looking at paintings.",
+      "what_ruined": "The 1 euro Sunday is well known locally, so Sundays are correspondingly busy. Closed Mondays, which catches visitors out. The building sits in a museum quarter rather than a lively part of the city, so there is little around it.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. The collection is one of the most important holdings of old master painting in the world, regular admission is 9 euro, and on Sundays it is 1 euro.",
+      "meta_description": "The Alte Pinakothek costs 9 euro regular, 6 reduced, and 1 euro on Sundays. Under-18s free. One of Europe's great collections.",
+      "facts_checked": [
+        {
+          "fact": "Alte Pinakothek admission is 9 euro regular, 6 euro reduced, and 1 euro on Sundays.",
+          "url": "https://www.pinakothek.de/en/visit",
+          "assert_text": "alte pinakothek admission regular 9 euro reduced 6 euro sunday 1 euro",
+          "confidence": "verified on the Bavarian State Painting Collections official visit page"
+        },
+        {
+          "fact": "Admission is free for children and young people under the age of 18.",
+          "url": "https://www.pinakothek.de/en/visit",
+          "assert_text": "admission is free for children and young people under the age",
+          "confidence": "verified on the Bavarian State Painting Collections official visit page"
+        }
+      ],
+      "what_it_is": "One of the Bavarian State Painting Collections, in the Kunstareal museum quarter of Munich, holding European painting from the fourteenth to the eighteenth century including major Old German, Early Netherlandish, Italian and Flemish holdings.",
+      "why_go": "For the Rubens rooms, which have no equal anywhere, and for Old German and Early Netherlandish painting shown at a depth that most national galleries cannot approach.",
+      "the_good": "Nine euro regular admission, 6 euro reduced and 1 euro on Sundays, with under-18s free. A first-rank collection in a calm, well-lit building. It sits alongside the Neue Pinakothek and Pinakothek der Moderne, so a museum day needs no travel.",
+      "the_downsides": "Sundays are busy precisely because of the 1 euro rate. Closed on Mondays. The Kunstareal is a quiet institutional district with little atmosphere, so there is not much reason to linger outside the museums.",
+      "best_for": "Anyone with an interest in old master painting, budget travellers given the Sunday rate, and families since under-18s go free.",
+      "skip_if": "Pre-nineteenth-century painting does not interest you, in which case the Pinakothek der Moderne next door is the better ticket. Also check the day, because arriving on a Monday means not getting in at all.",
+      "practical": "Go on a Sunday for the 1 euro rate but arrive at opening, since everyone else in Munich knows about it too. Avoid Mondays entirely. Combine with the Neue Pinakothek or Pinakothek der Moderne, which are a two-minute walk away.",
+      "tickets": "Regular admission is 9 euro and reduced is 6 euro, with Sunday admission at 1 euro. Admission is free for children and young people under the age of 18.",
+      "getting_there": "U2 to Theresienstrasse or Konigsplatz, or tram 27 to Pinakotheken. It is about twenty minutes on foot from Munich Hauptbahnhof.",
+      "location_context": "The Kunstareal in Maxvorstadt, north of the centre, a purpose-built museum quarter shared with the Neue Pinakothek, the Pinakothek der Moderne, the Brandhorst and the Glyptothek. Quiet, institutional and green.",
+      "time_needed": "Two to three hours. The Rubens rooms alone can take an hour if you let them.",
+      "accessibility": "The museum is served by lifts and publishes accessibility information for visitors with reduced mobility.",
+      "verdict": "One of the best-value great museums in Europe, and on Sundays it is almost free. Go early on a Sunday, never on a Monday, and give the Rubens rooms more time than you planned."
+    },
+    {
       "destination_slug": "new-york-city-usa",
       "name": "Empire State Building",
       "type": "attraction",
@@ -777,6 +940,46 @@
     },
     {
       "destination_slug": "paris-france",
+      "name": "Pantheon",
+      "type": "attraction",
+      "headline": "Sixteen Euros, Free Under Twenty-Six, and Foucault's Pendulum Still Swings",
+      "body": "The Pantheon charges 16 euros, with free admission for under 26-year-old residents of the EU.\n\nThree things are worth your time inside. The nave holds a working replica of Foucault's pendulum, the 1851 experiment that demonstrated the rotation of the Earth in front of an audience, and it still swings. The crypt below holds Voltaire, Rousseau, Hugo, Zola, the Curies and Josephine Baker, which is the French republic deciding in public who it wants to have been. And in season there is a dome colonnade you can climb for one of the better views over the Left Bank.\n\nIt is a colder building than Sainte-Chapelle a mile north, and deliberately so. This is the republic's answer to a cathedral.",
+      "what_great": "The pendulum is a genuine scientific artefact rather than a display, and watching it move is oddly affecting. The crypt is a direct statement of national values, argued over for two centuries and still being added to. Under-26 EU residents get in free, and the dome climb in season is one of the best paid views in Paris.",
+      "what_ruined": "The main space is enormous, cold and largely empty, which some visitors find impressive and others find a waste of sixteen euros. The dome climb is seasonal and closes in bad weather. The crypt is dimly lit and the labelling assumes you already know who these people were.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because it combines a serious neoclassical interior, the crypt of the French republic's chosen dead, and a working physics demonstration. Value is four: 16 euros is fair and under-26 EU residents get in free.",
+      "meta_description": "The Pantheon costs 16 euros and is free for under-26 EU residents. The crypt, the pendulum, and the dome climb worth booking.",
+      "facts_checked": [
+        {
+          "fact": "Admission is 16 euros.",
+          "url": "https://www.paris-pantheon.fr/en/",
+          "assert_text": "price : 16€",
+          "confidence": "verified on the monument's official site"
+        },
+        {
+          "fact": "Free admission applies to under 26-year-old residents of the EU.",
+          "url": "https://www.paris-pantheon.fr/en/",
+          "assert_text": "free admission for under 26-year-old residents of the eu",
+          "confidence": "verified on the monument's official site"
+        }
+      ],
+      "what_it_is": "A neoclassical building on the Montagne Sainte-Genevieve, begun as a church and converted during the Revolution into a secular mausoleum for national figures, with a crypt, a working Foucault pendulum and a seasonal dome colonnade.",
+      "why_go": "For the crypt, which is where France argues about its own history by deciding who gets buried there, and for the pendulum, which is one of the few places you can watch a famous experiment actually running.",
+      "the_good": "A real scientific demonstration rather than a model of one, a crypt with genuine weight to it, and free admission for under-26 EU residents. The dome climb, when open, gives a view across the Left Bank that few visitors bother with.",
+      "the_downsides": "The nave is vast and sparse, and at 16 euros some visitors feel they have paid to stand in a cold empty room. The dome is seasonal and weather-dependent. Crypt labelling is thin if French history is not already familiar to you.",
+      "best_for": "Anyone interested in the French Revolution or the Third Republic, visitors with an interest in the history of science, and under-26 EU residents who get in free.",
+      "skip_if": "You want warmth, colour and decoration, in which case Sainte-Chapelle is the better sixteen-to-twenty-two euros. Skip the dome specifically if it is out of season or the weather is poor.",
+      "practical": "Check whether the dome colonnade is open before you go, since it is seasonal and is the best part when available. Go to the crypt first while you have energy for the reading. The Luxembourg gardens are two minutes away and free, which is the natural pairing.",
+      "tickets": "Admission is 16 euros, with free admission for under 26-year-old residents of the EU. The dome colonnade is seasonal and may require a separate timed booking.",
+      "getting_there": "RER B to Luxembourg is the closest station. Cardinal Lemoine and Maubert-Mutualite on Metro line 10 are both a short walk.",
+      "location_context": "The Latin Quarter in the 5th arrondissement, on the hill above the Luxembourg gardens, surrounded by the Sorbonne and a dense student quarter. The gardens, the Rue Mouffetard market and Saint-Etienne-du-Mont are all within a few minutes.",
+      "time_needed": "About an hour for the nave and crypt, ninety minutes with the dome climb.",
+      "verdict": "Better than its reputation, mainly because of the pendulum and the crypt rather than the architecture. Sixteen euros is fair, under-26 EU residents should simply go, and check the dome is open before you build a visit around it."
+    },
+    {
+      "destination_slug": "paris-france",
       "name": "Sainte-Chapelle",
       "type": "attraction",
       "headline": "Twenty-Two Euros for One Room, and Worth It on a Bright Day",
@@ -814,6 +1017,93 @@
       "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
       "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
       "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
+    },
+    {
+      "destination_slug": "vienna-austria",
+      "name": "Hofburg Imperial Palace",
+      "type": "attraction",
+      "headline": "Twenty Euros for the Sisi Myth, Told Better Than You Expect",
+      "body": "The Hofburg charges 20,00 euros for adults and 12,00 euros for children from age 6, on fixed admission times, with the standard route running about 60 minutes.\n\nWhat the ticket buys is three things in sequence: the Imperial Apartments, the Sisi Museum and the Silver Collection. The Sisi Museum is the reason most people come and it is better than its subject matter suggests, because it spends much of its length dismantling the sentimental version of Empress Elisabeth that Austrian tourism otherwise sells hard.\n\nFixed admission times matter here. This is not a come-when-you-like palace, and turning up without a slot in high season is how people end up eating lunch instead.",
+      "what_great": "The Sisi Museum treats its subject critically rather than as merchandise, which is rare for a national icon. One ticket covers three collections in a single route. Children from six pay 12 euros, and the whole thing takes about an hour, so it fits into a day rather than consuming one.",
+      "what_ruined": "Fixed admission times mean the visit has to be planned around. The route is one-way and busy through the middle of the day. The gift-shop version of Sisi outside the museum flatly contradicts the honest account inside it, which is a strange note to leave on.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the Sisi Museum is unusually honest about the difference between the woman and the legend built on her. Value is four: 20 euros covers three linked attractions and children from six pay 12.",
+      "meta_description": "The Hofburg costs 20 euros for adults and 12 for children from age 6, on fixed admission times. What the ticket covers and how long to allow.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 20,00 euros.",
+          "url": "https://www.hofburg-wien.at/en",
+          "assert_text": "adults: € 20,00",
+          "confidence": "verified on the Hofburg's official site"
+        },
+        {
+          "fact": "Children from age 6 pay 12,00 euros.",
+          "url": "https://www.hofburg-wien.at/en",
+          "assert_text": "children (from age 6): € 12,00",
+          "confidence": "verified on the Hofburg's official site"
+        }
+      ],
+      "what_it_is": "The winter residence of the Habsburgs in central Vienna, now a visitor route through the Imperial Apartments, the Sisi Museum devoted to Empress Elisabeth, and the Silver Collection of the imperial household.",
+      "why_go": "For the Sisi Museum, which is a genuinely thoughtful account of a woman who has been turned into a tourism product, and for state rooms that show how the Habsburgs actually lived rather than how they were painted.",
+      "the_good": "Three collections on one ticket, a route that takes about an hour, and a museum that argues with its own legend instead of selling it. Children from age 6 pay 12,00 euros, which makes it viable for families in an expensive city.",
+      "the_downsides": "Fixed admission times remove any flexibility from the day. The corridors are narrow and the middle of the day is congested. Photography is restricted in much of the route.",
+      "best_for": "First-time visitors to Vienna, anyone interested in the Habsburgs, and families given the child rate. It also works well as a shorter indoor stop between larger museums.",
+      "skip_if": "You are choosing between this and Schonbrunn on a short trip. Schonbrunn has the gardens and the scale; the Hofburg has the better museum. Pick one rather than doing both badly.",
+      "practical": "Book a fixed admission time rather than hoping to walk up. Sixty minutes is the honest allowance for the standard route. Go early or late, since the middle of the day is when tour groups move through.",
+      "tickets": "Adults pay 20,00 euros and children from age 6 pay 12,00 euros. Admission times are fixed, and the standard route runs about 60 minutes.",
+      "getting_there": "U3 to Herrengasse or U1 and U3 to Stephansplatz, both a short walk. Trams 1, 2, D and 71 stop on the Ring at Burgring.",
+      "location_context": "Dead centre of Vienna inside the Ring, between the Michaelerplatz and the Heldenplatz, with the Spanish Riding School in the same complex and the Kunsthistorisches Museum across the Ringstrasse.",
+      "time_needed": "About 60 minutes for the standard route, which is what the fixed admission times are built around. Ninety minutes if you read everything in the Sisi Museum.",
+      "verdict": "Better than it sounds, mostly because the Sisi Museum refuses to play along with the myth it exists to explain. Book a time slot, allow an hour, and treat the gift shop as a separate and less honest experience."
+    },
+    {
+      "destination_slug": "vienna-austria",
+      "name": "Kunst Haus Wien",
+      "type": "attraction",
+      "headline": "Sixteen Euros for the Building Hundertwasser Built to Argue With Straight Lines",
+      "body": "Kunst Haus Wien charges 16,00 euros for admission, with 13,00 for reduced tickets and for seniors 65 and over. Accompanying persons of people with disabilities receive free admission.\n\nThe museum is Hundertwasser's own, built in a converted furniture factory, and it is the clearest place to understand what he was actually arguing for: uneven floors on purpose, no straight lines where he could avoid them, trees growing out of the windows.\n\nIt is a short visit and an unusually physical one. You notice the building through your feet before you notice any of the paintings, which is precisely the point he was making.",
+      "what_great": "The building is the argument and you experience it directly rather than reading about it. Sixteen euros is cheap by Vienna museum standards and 13 covers both reduced tickets and over-65s. Accompanying persons of visitors with disabilities go free.",
+      "what_ruined": "It is small, and if Hundertwasser does not interest you there is not much else. The deliberately uneven floors are genuinely awkward for anyone unsteady on their feet. It sits away from the central museum cluster, so it costs a journey.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the building is a genuine one-off and the museum is small enough to enjoy. Value is four: 16 euros is modest for Vienna and the concessions are wide.",
+      "meta_description": "Kunst Haus Wien costs 16 euros, 13 reduced and for over-65s. The Hundertwasser museum, and why the floor is the exhibit.",
+      "facts_checked": [
+        {
+          "fact": "Admission is 16,00 euros.",
+          "url": "https://www.kunsthauswien.com/en/visit/",
+          "assert_text": "admission € 16,00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Seniors 65 and over pay 13,00 euros, the same as the reduced rate.",
+          "url": "https://www.kunsthauswien.com/en/visit/",
+          "assert_text": "seniors 65+ € 13,00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Accompanying persons of people with disabilities receive free admission.",
+          "url": "https://www.kunsthauswien.com/en/visit/",
+          "assert_text": "accompanying persons of people with disabilities receive free admission",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A museum in Landstrasse designed by Friedensreich Hundertwasser inside a converted Thonet furniture factory, holding the permanent collection of his work alongside changing photography and ecology exhibitions.",
+      "why_go": "Because the building makes his case better than his paintings do. Uneven floors, irregular windows and planted trees are not decoration here, they are the thesis, and you walk through it.",
+      "the_good": "A genuine architectural one-off you can walk around in, at 16,00 euros, which is modest for Vienna. Wide concessions at 13,00 for reduced and over-65s, and free entry for companions of disabled visitors. Small enough to see properly in an hour.",
+      "the_downsides": "Narrow appeal outside Hundertwasser and ecological design. The intentionally uneven floors are a real accessibility obstacle rather than a quirk. It is a tram ride from the centre, which is a lot for a one-hour museum unless you pair it with something.",
+      "best_for": "Anyone interested in twentieth-century architecture or environmental design, visitors who have already done the big Ring museums, and travellers who prefer small museums to exhausting ones.",
+      "skip_if": "You have two days in Vienna and have not yet seen the Belvedere or the Kunsthistorisches. Those come first. Skip it also if uneven ground is a problem for you, because that is unavoidable here.",
+      "practical": "Pair it with the Hundertwasserhaus a few streets away, which is a residential building you can only see from outside and costs nothing. An hour covers the museum. Wear shoes you are steady in.",
+      "tickets": "Admission is 16,00 euros, with 13,00 euros for reduced tickets and for seniors 65 and over. Accompanying persons of people with disabilities receive free admission.",
+      "getting_there": "Tram 1 to Radetzkyplatz, or U3 to Rochusgasse and a short walk. It is roughly twenty minutes on foot from Stephansplatz.",
+      "location_context": "Landstrasse, the third district, east of the centre near the Danube canal, in a residential quarter that also contains the Hundertwasserhaus. Quiet, ordinary Vienna rather than the imperial version.",
+      "time_needed": "About an hour for the museum, or ninety minutes with a temporary exhibition. Add twenty minutes to walk to the Hundertwasserhaus.",
+      "accessibility": "Accompanying persons of people with disabilities receive free admission, but the floors are deliberately uneven throughout, which is a genuine obstacle for anyone with limited mobility.",
+      "verdict": "A small, cheap, genuinely unusual museum that is worth the tram ride if the big Ring institutions have worn you out. Go for the building, not the paintings, and check the uneven floors will suit you."
     },
     {
       "destination_slug": "vienna-austria",
