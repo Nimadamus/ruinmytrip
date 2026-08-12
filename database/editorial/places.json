@@ -90,6 +90,53 @@
     },
     {
       "destination_slug": "amsterdam-netherlands",
+      "name": "Stedelijk Museum",
+      "type": "attraction",
+      "headline": "The Modern One on Museumplein, and the Quietest of the Three",
+      "body": "The Stedelijk charges 22,50 euros for adults and 12,50 for students and CJP holders, with free entry for visitors under 19. It opens 10am to 6pm daily, with no entry after 5.45pm.\n\nIt is the third museum on the Museumplein and the one most visitors drop when their schedule tightens. That is exactly why it is worth keeping: the Rijksmuseum and the Van Gogh Museum are both excellent and both crowded, while the Stedelijk holds modern and contemporary art in rooms where you can stand still.\n\nThe building is two halves, a nineteenth-century original and a white extension universally known as the bathtub. Opinions on it are strong in both directions, which is more than most museum architecture manages.",
+      "what_great": "Modern and contemporary art of real quality with room to actually look at it, which neither of its neighbours can offer. Slightly cheaper than the Rijksmuseum and Van Gogh Museum, free for under-19s, and half price for students. Same square, so it costs nothing in travel time.",
+      "what_ruined": "It is the least essential of the three Museumplein museums if you only have time for one, and it knows it. The 5.45pm cut-off catches late arrivals who assume a 6pm close means 6pm entry. The extension divides opinion sharply enough that some visitors dislike the building itself.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the collection is strong and the building is interesting, without quite the singular pull of its two neighbours. Value is four: 22,50 euros is slightly less than the Rijksmuseum and Van Gogh, and it is far less crowded.",
+      "meta_description": "The Stedelijk costs 22,50 euros, 12,50 for students and free under 19. The third museum on Museumplein, and the one with space to think.",
+      "facts_checked": [
+        {
+          "fact": "Adults pay 22,50 euros and students pay 12,50 euros.",
+          "url": "https://www.stedelijk.nl/en/visit",
+          "assert_text": "adults: € 22,50 students: € 12,50",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Visitors under 19 go free.",
+          "url": "https://www.stedelijk.nl/en/visit",
+          "assert_text": "under 19 years free",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "The museum is open Monday to Sunday 10am to 6pm.",
+          "url": "https://www.stedelijk.nl/en/visit",
+          "assert_text": "mon - sun: 10 am - 6 pm",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "Amsterdam's museum of modern and contemporary art and design on the Museumplein, in a nineteenth-century building joined to a large white extension completed in 2012.",
+      "why_go": "For twentieth-century and contemporary work seen in comfort, and for a collection that includes design and applied art alongside painting. It is the counterweight to the Golden Age and Van Gogh story the other two tell.",
+      "the_good": "Noticeably quieter than its neighbours, slightly cheaper at 22,50 euros, free under 19 and 12,50 for students and CJP holders. Sharing the Museumplein with the Rijksmuseum and Van Gogh Museum means no travel between them.",
+      "the_downsides": "If you can only do one Museumplein museum, this is not it, and the museum competes directly with two more famous neighbours. No entry after 5.45pm despite a 6pm close. The extension is genuinely divisive architecture.",
+      "best_for": "Visitors staying long enough to do more than one museum, anyone interested in modern design as well as art, students on the 12,50 rate and families given free under-19 entry.",
+      "skip_if": "You have one museum slot in Amsterdam. Take the Rijksmuseum, or the Van Gogh Museum if he is the draw. The Stedelijk is the third visit, not the first.",
+      "practical": "Arrive before 5.45pm or you will not get in regardless of the 6pm closing time. Pair it with the Rijksmuseum or Van Gogh Museum on the same square, ideally with this one second when the others have worn you out and you want somewhere calm.",
+      "tickets": "Adults pay 22,50 euros and students and CJP holders pay 12,50 euros. Visitors under 19 go free, as do Stedelijk members. Open daily 10am to 6pm with no entry after 5.45pm.",
+      "getting_there": "Tram 2 or 12 to Rijksmuseum, or tram 5 to Museumplein, both on the same square. Roughly twenty-five minutes on foot from Amsterdam Centraal.",
+      "location_context": "Museumplein 10 in Amsterdam Zuid, on the same square as the Rijksmuseum, the Van Gogh Museum and the Concertgebouw, in a quiet and well-off part of the city away from the canal-belt crowds.",
+      "time_needed": "Ninety minutes to two hours. It is comfortably done in an afternoon alongside one of its neighbours.",
+      "accessibility": "The museum is served by lifts across both buildings and publishes accessibility information for visitors with reduced mobility.",
+      "verdict": "The Museumplein museum people skip and should not, provided it is your second or third rather than your only one. Go late in the day for the quiet, but be through the door before 5.45pm."
+    },
+    {
+      "destination_slug": "amsterdam-netherlands",
       "name": "Van Gogh Museum",
       "type": "attraction",
       "headline": "Twenty-Five Euros, Sixteen for Students, and Buy Only From the Official Site",
@@ -177,6 +224,87 @@
       "verdict": "Now that it is finished, this is the one Barcelona sight that is genuinely unmissable. Book direct and early, take the towers only if the extra ten euros is comfortable, and go for the interior rather than the facade."
     },
     {
+      "destination_slug": "dublin-ireland",
+      "name": "Book of Kells Experience at Trinity College",
+      "type": "attraction",
+      "headline": "Twenty-Six Euros for a Ninth-Century Manuscript and the Room It Lives In",
+      "body": "The Book of Kells Experience at Trinity College starts at 26 euros per person, and the standard visit runs about 90 minutes.\n\nIt is worth being precise about what you see, because this is where expectations go wrong. The Book of Kells is displayed as two open pages under glass, and you file past them. The manuscript is astonishing and the display is necessarily brief. What most visitors remember instead is the Long Room, the barrel-vaulted eighteenth-century library upstairs, which is one of the most photographed interiors in Europe and deserves it.\n\nTrinity students and staff visit free of charge and can bring up to two guests, which is worth knowing if you have any connection to the college.",
+      "what_great": "The Long Room is spectacular and justifies the ticket largely on its own. The digital exhibition around the manuscript does a real job of explaining what you are looking at. Trinity students, staff and alumni go free and can bring up to two guests.",
+      "what_ruined": "Twenty-six euros is steep for what is, at the manuscript itself, a filed-past view of two pages. The route is one-way and paced by the group. The college is in the middle of Dublin and the surrounding streets are among the busiest in the city, so arriving is rarely calm.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because the Long Room is genuinely one of the great library interiors and the manuscript is extraordinary. Value is three: 26 euros is a lot when the manuscript itself is two open pages behind glass.",
+      "meta_description": "The Book of Kells Experience starts at 26 euros per person. What you actually see, why the Long Room matters more, and how to time it.",
+      "facts_checked": [
+        {
+          "fact": "The Book of Kells Experience starts at 26 euros per person.",
+          "url": "https://www.tcd.ie/visitors/book-of-kells/",
+          "assert_text": "from €26 per person",
+          "confidence": "verified on Trinity College Dublin's official visitor page"
+        },
+        {
+          "fact": "Trinity students, staff and alumni visit free of charge and can bring up to two guests, with pre-booking required.",
+          "url": "https://www.tcd.ie/visitors/book-of-kells/",
+          "assert_text": "free of charge and they can bring up to 2 guests",
+          "confidence": "verified on Trinity College Dublin's official visitor page"
+        }
+      ],
+      "what_it_is": "A ticketed route through Trinity College Dublin taking in a digital exhibition, the ninth-century illuminated Book of Kells displayed under glass, and the eighteenth-century Long Room of the Old Library.",
+      "why_go": "For the Long Room, which is one of the great library interiors anywhere, and for the manuscript, which is among the finest surviving examples of insular illumination.",
+      "the_good": "The Long Room is worth the trip by itself. The exhibition explains the manuscript well enough that the two pages on display actually mean something when you reach them. Free entry for Trinity students, staff and alumni, each able to bring two guests.",
+      "the_downsides": "At 26 euros the price sits awkwardly against what you see of the manuscript itself, which is two pages behind glass in a dim room. The route is one-way and moves at group pace. The Long Room is heavily photographed and rarely quiet.",
+      "best_for": "Anyone interested in medieval manuscripts or library architecture, visitors with a Trinity connection who get in free, and first-time visitors to Dublin looking for one substantial indoor sight.",
+      "skip_if": "You are on a tight budget in an already expensive city, or you were expecting to see the manuscript at length rather than in passing. The college grounds themselves are free to walk and are pleasant without the ticket.",
+      "practical": "Book a timed slot in advance, since this is among the busiest paid attractions in Ireland. Early slots are calmer. Give the Long Room more of your time than the manuscript, which is the reverse of what most people plan.",
+      "tickets": "The Book of Kells Experience starts at 26 euros per person for a visit of about 90 minutes, with guided and bundle options at higher prices. Trinity students, staff and alumni visit free of charge and can each bring up to two guests, with pre-booking required.",
+      "getting_there": "Trinity College sits at the end of Grafton Street in the centre of Dublin. Trinity is a stop on the Luas green line, and Pearse Street and Tara Street stations are both a short walk.",
+      "location_context": "Dead centre of Dublin, between Grafton Street and Dame Street, with the college grounds forming a quiet walled enclave in the middle of the city. Temple Bar is a few minutes west and is best treated with caution on price.",
+      "time_needed": "About 90 minutes for the standard experience, which is what the ticket is timed against.",
+      "verdict": "Go for the Long Room and treat the manuscript as the historical anchor rather than the spectacle. Book ahead, take an early slot, and if you have any Trinity connection, use it, because the free entry extends to two guests."
+    },
+    {
+      "destination_slug": "edinburgh-scotland",
+      "name": "National Museum of Scotland",
+      "type": "attraction",
+      "headline": "Free Entry in a City That Charges for Almost Everything Else",
+      "body": "The National Museum of Scotland has free entry, with charges for some special exhibitions only. In a city where the castle, the underground tours and most of the Royal Mile attractions all charge, that single fact makes this the best-value few hours in Edinburgh.\n\nThe collection is unusually broad: Scottish history and archaeology in one wing, natural history, world cultures, science and technology in another, joined by a Victorian glass-roofed grand gallery that is worth standing in on its own.\n\nThe roof terrace is the part visitors miss. It is free, it is at the top of the building, and it gives a view over the Old Town rooftops to the castle that many people pay for elsewhere.",
+      "what_great": "Free entry to a genuinely national-scale collection, which in Edinburgh is close to unique. The range means it works for almost anyone, including families on a wet afternoon. The roof terrace view over the Old Town costs nothing and is one of the best in the city.",
+      "what_ruined": "It is large and the layout across old and new buildings confuses people, so first visits often involve backtracking. Special exhibitions are charged, which is a jolt inside a free museum. It is one of the busiest indoor spaces in Edinburgh during festival season and in bad weather.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. Entry is free, the collection ranges from Scottish history to natural science to technology, and the roof terrace gives one of the best free views in Edinburgh.",
+      "meta_description": "The National Museum of Scotland has free entry, with charges only for some special exhibitions. Why it is the best-value few hours in Edinburgh.",
+      "facts_checked": [
+        {
+          "fact": "Entry is free, with charges for some special exhibitions.",
+          "url": "https://www.nms.ac.uk/national-museum-of-scotland/",
+          "assert_text": "free entry, charges for some special exhibitions",
+          "confidence": "verified on National Museums Scotland's official page"
+        },
+        {
+          "fact": "The venue is National Museums Scotland's Chambers Street museum.",
+          "url": "https://www.nms.ac.uk/national-museum-of-scotland/",
+          "assert_text": "national museum of scotland",
+          "confidence": "verified on National Museums Scotland's official page"
+        }
+      ],
+      "what_it_is": "Scotland's national museum on Chambers Street in the Old Town, combining Scottish history and archaeology with natural history, world cultures, science and technology across a Victorian grand gallery and a modern extension.",
+      "why_go": "Because it is free, comprehensive and central, and because the roof terrace gives a view of the castle and the Old Town that costs nothing. It is also the obvious answer to a wet Edinburgh afternoon, of which there are many.",
+      "the_good": "Free entry, a collection broad enough to suit almost any interest, and a genuinely impressive Victorian grand gallery. The roof terrace is free and underused. Being free means a short visit is not a waste, so you can come back.",
+      "the_downsides": "The building is a maze where the Victorian and modern halves meet, and the signage does not entirely solve it. Special exhibitions carry a charge. During the festival and on rainy days the central galleries get very busy.",
+      "best_for": "Families, budget travellers, anyone caught in Edinburgh weather, and visitors who want one substantial cultural stop without adding to an already expensive trip.",
+      "skip_if": "You have a single day in Edinburgh and want it to be about the city itself rather than a museum. The Old Town, Arthur's Seat and the walk down the Royal Mile are all free too.",
+      "practical": "Go up to the roof terrace first, because most visitors never find it and it is quietest early. Enter from Chambers Street for the grand gallery rather than the modern side entrance. Since it costs nothing, treat it as two short visits rather than one exhausting one.",
+      "tickets": "Entry is free. Some special exhibitions carry a charge.",
+      "getting_there": "A short walk from Edinburgh Waverley station, or up from the Grassmarket. Numerous bus routes stop on nearby Nicolson Street and George IV Bridge.",
+      "location_context": "Chambers Street in the Old Town, between the University of Edinburgh and the Royal Mile, with Greyfriars Kirkyard immediately behind and the Grassmarket downhill to the west.",
+      "time_needed": "Two to three hours for a broad visit. An hour is enough for one wing plus the roof terrace, and costs nothing.",
+      "accessibility": "The museum is step-free with lift access to all floors including the roof terrace, and publishes detailed accessibility information.",
+      "verdict": "The single best-value attraction in Edinburgh, on the simple grounds that it is excellent and free. Start on the roof terrace, pick two wings rather than all of them, and come back if the weather turns again."
+    },
+    {
       "destination_slug": "kyoto-japan",
       "name": "Kinkaku-ji",
       "type": "attraction",
@@ -215,6 +343,52 @@
       "location_context": "Kita ward, in the far north-west of Kyoto, well away from the Higashiyama temple belt on the other side of the city. Ryoan-ji and Ninna-ji are both nearby and are the natural pairings.",
       "time_needed": "Thirty to forty-five minutes on site. Budget an hour and a half to two hours including the bus each way from central Kyoto.",
       "verdict": "Excellent value and genuinely worth seeing, provided you treat it as one stop on a north-west Kyoto morning rather than a destination in itself. Arrive at opening and pair it with Ryoan-ji."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "Buckingham Palace State Rooms",
+      "type": "attraction",
+      "headline": "Thirty-Three Pounds in Advance, Thirty-Seven on the Day, and One Pound on Universal Credit",
+      "body": "The State Rooms at Buckingham Palace charge 33.00 pounds for an adult booking in advance and 37.00 pounds on the day. Young people aged 18 to 24 pay 21.50 in advance and 24.50 on the day.\n\nThe detail worth knowing, and one that is not widely advertised, is that 1 pound tickets are available to people on Universal Credit and other named UK benefits. That is a serious concession on an otherwise expensive ticket and it applies to the same visit.\n\nThe State Rooms are the working ceremonial heart of the palace, used for official entertaining, and they are open to visitors only during limited periods of the year. That scarcity is part of what you are paying for.",
+      "what_great": "The rooms are genuinely on the scale the building implies, and they are the ones actually used for state occasions rather than a reconstruction. Booking in advance saves 4 pounds a head. The 1 pound benefits ticket is a real and unusually generous concession.",
+      "what_ruined": "Thirty-three pounds is expensive and 37 on the day punishes spontaneity. Opening is seasonal, so the visit is unavailable for much of the year. The route is fixed and busy, and photography is restricted inside the State Rooms.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because the State Rooms are genuinely grand and open only part of the year, which makes the visit feel earned. Value is three: 33 pounds in advance is a lot, and rises to 37 if you turn up without booking.",
+      "meta_description": "Buckingham Palace State Rooms cost 33 pounds in advance or 37 on the day, with 1 pound tickets for people on Universal Credit.",
+      "facts_checked": [
+        {
+          "fact": "Adults pay 33.00 pounds in advance and 37.00 pounds on the day.",
+          "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+          "assert_text": "adult £33.00 £37.00",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        },
+        {
+          "fact": "Young people aged 18 to 24 pay 21.50 pounds in advance and 24.50 pounds on the day.",
+          "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+          "assert_text": "young person (18-24) £21.50 £24.50",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        },
+        {
+          "fact": "One pound tickets are available for visitors on Universal Credit and other named UK benefits.",
+          "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+          "assert_text": "£1 tickets to buckingham palace",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        }
+      ],
+      "what_it_is": "The nineteen State Rooms at Buckingham Palace, the ceremonial rooms used for official entertaining by the monarch, opened to visitors during limited periods of the year.",
+      "why_go": "Because these are the rooms actually used for state occasions, at a scale and level of finish that photographs flatten. The Throne Room and the Picture Gallery in particular are hard to compare to anything else open to the public in London.",
+      "the_good": "Genuine ceremonial interiors rather than a museum reconstruction, a meaningful advance-booking saving of 4 pounds a head, and a 1 pound ticket for visitors on Universal Credit and other named UK benefits. Seasonal opening keeps the visit feeling like an event.",
+      "the_downsides": "At 33 pounds in advance and 37 on the day this is one of the most expensive tickets in London. Opening is limited to parts of the year, so most visitors cannot go at all. The route is fixed, crowded and photography-restricted.",
+      "best_for": "Visitors with an interest in the monarchy or in interiors, anyone in London during the opening season who has budgeted for one major paid attraction, and UK benefit claimants who qualify for the 1 pound ticket.",
+      "skip_if": "You are visiting outside the opening season, in which case the question is settled for you. Skip it too if you are choosing between this and Westminster Abbey or St Paul's on a limited budget, since all three are expensive and this is the most so.",
+      "practical": "Book in advance rather than paying on the day, which saves 4 pounds per adult and guarantees entry. Check the opening dates before building a trip around it. If you or anyone in your party receives Universal Credit or another named UK benefit, check the 1 pound ticket before booking anything else.",
+      "tickets": "Adults pay 33.00 pounds in advance or 37.00 pounds on the day. Young people aged 18 to 24 pay 21.50 in advance or 24.50 on the day. One pound tickets are available for those on Universal Credit and other named UK benefits.",
+      "getting_there": "Green Park on the Jubilee, Piccadilly and Victoria lines, St James's Park on the Circle and District lines, and Victoria station are all within a short walk.",
+      "location_context": "At the western end of St James's Park where The Mall meets Constitution Hill, with Green Park to the north and Victoria to the south. The park itself is free and is the better half of the surrounding area.",
+      "time_needed": "Two to two and a half hours for the State Rooms with the audio guide, longer if a garden route is included in your ticket.",
+      "verdict": "Expensive, seasonal and worth it once if the interiors interest you. Book in advance to save the 4 pounds, check the opening dates before you plan around it, and check the 1 pound benefits ticket if it might apply to you."
     },
     {
       "destination_slug": "london-uk",
@@ -386,6 +560,129 @@
       "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing."
     },
     {
+      "destination_slug": "new-york-city-usa",
+      "name": "Empire State Building",
+      "type": "attraction",
+      "headline": "Forty-Four Dollars Before the Booking Fee, and the Best Reason to Go Is What You Can See",
+      "body": "Empire State Building tickets start at 44 dollars for the 86th-floor main deck, and a 5 dollar booking charge is added to each transaction, so the real floor is 49 dollars before you have chosen anything.\n\nThe counterintuitive argument for coming here rather than a taller, newer observatory is simple: this is the building everyone else is looking at. From One World Observatory or Top of the Rock you get a fine view that happens to contain the Empire State Building. From the Empire State Building you get a view that does not, which matters less than people expect, because what the 86th floor actually offers is an open-air deck in the middle of Midtown at a height where the street grid is still legible.\n\nThe 102nd floor is enclosed, higher and costs more. Most people are better served staying at 86.",
+      "what_great": "The 86th-floor deck is open-air, which no enclosed observatory can match: you hear the city as well as see it. Its position mid-island means both downtown and uptown are in view at once. Flexible ticket types allow rescheduling, which is genuinely useful given how much the weather decides here.",
+      "what_ruined": "Tickets start at 44 dollars and a 5 dollar booking charge is added to every transaction, so the advertised price is never the price. The upsell ladder from main deck to 102nd floor to flex tickets is aggressive. Queues at sunset are the worst of the day and that is exactly when everyone wants to be up there.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Four because the 86th-floor deck is an open-air view of a skyline that has no equal. Value is three: tickets start at 44 dollars, a 5 dollar booking charge is added to every transaction, and the upsells climb fast.",
+      "meta_description": "Empire State Building tickets start at 44 dollars plus a 5 dollar booking charge. Which deck to pick, when to go, and why the view beats the taller ones.",
+      "facts_checked": [
+        {
+          "fact": "Main deck 86th floor tickets start at 44 dollars.",
+          "url": "https://www.esbnyc.com/buy-tickets",
+          "assert_text": "buy tickets from $44",
+          "confidence": "verified on the building's official ticketing page"
+        },
+        {
+          "fact": "A 5 dollar booking charge is added to each transaction.",
+          "url": "https://www.esbnyc.com/buy-tickets",
+          "assert_text": "a $5 booking charge is added to each transaction",
+          "confidence": "verified on the building's official ticketing page"
+        }
+      ],
+      "what_it_is": "A 1931 Art Deco skyscraper on Fifth Avenue at 34th Street with two observation decks: the open-air 86th floor and the enclosed 102nd floor near the top of the mast.",
+      "why_go": "For the open-air 86th-floor deck, which sits high enough to see both ends of Manhattan and low enough that the streets below still read as streets rather than as a map. It is the most legible high view in the city.",
+      "the_good": "Open-air rather than behind glass, a central position that shows you more of the island than a downtown observatory does, and rescheduling on the flexible ticket types. The Art Deco lobby and the building's own exhibition are included and are better than they need to be.",
+      "the_downsides": "The starting price is 44 dollars and a 5 dollar booking charge lands on every transaction. The 102nd floor costs meaningfully more for an enclosed view that is not much better. Sunset slots are the most crowded hour of the day, and the deck is genuinely tight when full.",
+      "best_for": "First-time visitors to New York, anyone who wants an open-air view rather than a window, and photographers who can book an off-peak slot.",
+      "skip_if": "You specifically want the Empire State Building in your photograph, in which case Top of the Rock is the better choice. Skip it too if you are doing One World Observatory on the same trip, because two paid high views in one visit is a lot of money for diminishing returns.",
+      "practical": "Book a timed slot online and treat the 5 dollar booking charge as part of the price when you compare against other observatories. Avoid the hour either side of sunset unless you are prepared to queue. Weather decides this attraction more than any other in the city, so pick a clear day and use a flexible ticket if your dates allow.",
+      "tickets": "Main deck 86th floor tickets start at 44 dollars, with a 5 dollar booking charge added to each transaction. Upgraded and flexible ticket types cost more and allow rescheduling.",
+      "getting_there": "34th Street Herald Square on the B, D, F, M, N, Q, R and W lines is two blocks away. 34th Street Penn Station on the 1, 2, 3, A, C and E lines is a short walk west.",
+      "location_context": "Midtown Manhattan on Fifth Avenue at 34th Street, in a dense commercial district next to Herald Square and Macy's. It is functional rather than charming at street level, and Bryant Park and Koreatown are both a short walk for somewhere better to eat.",
+      "time_needed": "Around ninety minutes including security, the lift and time on the deck. Longer if you add the 102nd floor or arrive near sunset.",
+      "accessibility": "Both observation decks are reached by lift and the building publishes accessibility information for visitors with reduced mobility.",
+      "verdict": "Still the best paid high view in New York, mostly because it is open-air and centrally placed. Book off-peak, stay on the 86th floor, and remember the 5 dollar booking charge when you are comparing it against the alternatives."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
+      "name": "One World Observatory",
+      "type": "attraction",
+      "headline": "The Highest View in the City, Behind Glass, Starting at Forty-Four Dollars",
+      "body": "One World Observatory sits at the top of One World Trade Center and is the highest view in New York. Standard general admission starts at 44 dollars, a combination ticket at 54, the all-inclusive experience at 64 and a VIP tour at 74.\n\nThat ladder is the defining feature of the visit. Where the Empire State Building sells you a deck, this sells you a tiered experience, and the difference between the tiers is largely about queueing and extras rather than about the view, which is identical from all of them.\n\nThe view is entirely behind glass. That is a genuine trade against the Empire State Building's open-air 86th floor, and it is the single thing most likely to decide which one you should pick.",
+      "what_great": "It is the highest view in the city and the glass is floor to ceiling, so the outlook is uninterrupted. The harbour, the Statue of Liberty and the Brooklyn and Manhattan bridges all sit in one sweep, which no Midtown observatory can offer. Security and crowd handling are efficient.",
+      "what_ruined": "Everything is behind glass, so there is no open-air option at any price. The four-tier ticket ladder from 44 to 74 dollars makes the real cost hard to pin down before you start. The lift presentation and the routing through retail make it feel like a produced attraction rather than a viewpoint.",
+      "rating": 3,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Three because it is a very high view delivered as a managed experience, with a scripted lift ride and a route that pushes you through upsells. Value is three: the entry price matches the Empire State Building for a view that is higher but enclosed.",
+      "meta_description": "One World Observatory starts at 44 dollars, rising to 74 for the VIP tier. What the higher tiers actually add and whether the height is worth it.",
+      "facts_checked": [
+        {
+          "fact": "Standard general admission starts at 44 dollars.",
+          "url": "https://oneworldobservatory.com/en-US/tickets",
+          "assert_text": "standard general admission starting at $44",
+          "confidence": "verified on the observatory's official ticketing page"
+        },
+        {
+          "fact": "The all-inclusive experience starts at 64 dollars, above the combination tier at 54 and below the VIP tour at 74.",
+          "url": "https://oneworldobservatory.com/en-US/tickets",
+          "assert_text": "all - inclusive experience the best starting at $64",
+          "confidence": "verified on the observatory's official ticketing page"
+        }
+      ],
+      "what_it_is": "An observatory on the upper floors of One World Trade Center in the Financial District, the tallest building in the Western Hemisphere, reached by a lift that runs a time-lapse presentation on the way up.",
+      "why_go": "For the downtown-facing view, which is the one Midtown cannot give you: the harbour, the Statue of Liberty, Governors Island and the bridges laid out together, with Manhattan running north away from you.",
+      "the_good": "The highest vantage point in the city and floor-to-ceiling glass with a genuinely uninterrupted outlook. The downtown and harbour angle is distinct from every Midtown observatory. Crowd flow and security are handled well for the volume involved.",
+      "the_downsides": "Enclosed throughout, with no open-air deck at any tier. Four ticket tiers between 44 and 74 dollars obscure what you are actually paying for, since the view does not change between them. The scripted lift and the retail routing make it feel packaged.",
+      "best_for": "Visitors who want the harbour and downtown view, anyone travelling in cold or wet weather where an enclosed deck is an advantage, and people already visiting the 9/11 Memorial next door.",
+      "skip_if": "You want to be outside at height, in which case the Empire State Building's 86th floor is the better ticket for the same starting price. Skip it also if you are doing more than one paid observatory, because the marginal value of the second is low.",
+      "practical": "Buy the standard tier unless you have a specific reason to want the extras, because the view is the same from all of them. Combine it with the 9/11 Memorial, which is directly below and free to walk through. Cloud cover ruins this one more completely than the lower observatories, so check conditions before committing.",
+      "tickets": "Standard general admission starts at 44 dollars, the combination ticket at 54 dollars, the all-inclusive experience at 64 dollars and the VIP tour at 74 dollars.",
+      "getting_there": "World Trade Center on the E line, Cortlandt Street on the R and W, Fulton Street on the 2, 3, 4, 5, A, C and J, and the PATH from New Jersey all arrive within the complex.",
+      "location_context": "The Financial District at the World Trade Center site, directly above the 9/11 Memorial pools and the Oculus transit hall. Battery Park and the Staten Island Ferry terminal are both a short walk south.",
+      "time_needed": "About ninety minutes including security and the lift. The observatory floors themselves take around forty-five minutes at a relaxed pace.",
+      "accessibility": "The observatory is reached entirely by lift and the venue publishes accessibility information; the enclosed layout is step-free once you are on the observatory floors.",
+      "verdict": "Go for the harbour view, not for the height record. Buy the cheapest tier, pair it with the free 9/11 Memorial below, and pick the Empire State Building instead if being outdoors at altitude matters to you."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
+      "name": "Whitney Museum of American Art",
+      "type": "attraction",
+      "headline": "Free If You Are Twenty-Five or Under, Which Changes the Whole Calculation",
+      "body": "The Whitney charges 30 dollars for adults and 24 for seniors and students, and is free for visitors aged 25 and under. There are also free Friday nights and free second Sundays.\n\nThat pricing structure is the most interesting thing about visiting. New York museums are expensive and most of the concessions are token; here the under-26 rate is not a discount, it is free entry, which makes this the single best-value serious museum in the city for anyone young enough to qualify.\n\nThe museum itself is American art from roughly 1900 onward, in a Renzo Piano building at the foot of the High Line with outdoor terraces on several floors. Those terraces are a real part of the visit rather than an afterthought.",
+      "what_great": "Free for everyone 25 and under, plus free Friday nights and free second Sundays, which is genuinely unusual in New York. The building's outdoor terraces give river and skyline views included in the ticket. It is a manageable size, so you can see the whole thing without the exhaustion the larger museums produce.",
+      "what_ruined": "Thirty dollars is a lot if you are 26 or over and do not qualify for any of the free routes. The collection is narrow by design, so if American twentieth-century art is not your interest there is little else. Free Friday nights are correspondingly busy.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the collection and the building are both strong without being overwhelming. Value is four because 30 dollars is standard for New York but the free access for 25 and under, on Friday nights and on second Sundays is unusually generous.",
+      "meta_description": "The Whitney costs 30 dollars, 24 for seniors and students, and is free if you are 25 or under. Free Friday nights and second Sundays too.",
+      "facts_checked": [
+        {
+          "fact": "Adults pay 30 dollars and seniors and students pay 24 dollars.",
+          "url": "https://whitney.org/visit",
+          "assert_text": "adults $30 seniors and students $24",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Visitors 25 and under go free, with free Friday nights and free second Sundays.",
+          "url": "https://whitney.org/visit",
+          "assert_text": "25 and under free",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A museum of twentieth and twenty-first century American art in a Renzo Piano building in the Meatpacking District, at the southern end of the High Line, with terraces on several floors.",
+      "why_go": "For a focused, well-hung collection of American art that you can actually finish, and for a building that gives you outdoor space and river views as part of the ticket rather than as an extra.",
+      "the_good": "Free entry for everyone 25 and under, free Friday nights and free second Sundays. The outdoor terraces are a genuine feature. The scale is humane: this is a museum you leave feeling you saw, rather than one you leave feeling you failed.",
+      "the_downsides": "Thirty dollars for an adult who does not qualify for a free route is steep for a collection this focused. The subject matter is deliberately narrow. The free evenings are popular enough that the galleries feel quite different from a quiet weekday.",
+      "best_for": "Anyone 25 or under, who gets in free; visitors interested in modern and contemporary American art; and people who want a museum that fits into half a day rather than consuming it.",
+      "skip_if": "Your interest is European or older art, in which case this is the wrong museum entirely. Skip it also if you are over 25, on a tight budget, and have already paid for another major museum this trip.",
+      "practical": "Check your eligibility before buying, because 25 and under is free and the saving is the entire ticket. Combine it with a walk on the High Line, which starts directly outside and costs nothing. Go on a weekday if you want the terraces to yourself.",
+      "tickets": "Adults pay 30 dollars and seniors and students pay 24 dollars. Visitors 25 and under go free, and there are free Friday nights and free second Sundays. Members go free.",
+      "getting_there": "14th Street on the A, C, E and L lines, or 8th Avenue on the L, both a short walk. The High Line runs directly to the museum entrance from the north.",
+      "location_context": "The Meatpacking District at Gansevoort Street, where the High Line begins, with the Hudson River immediately west and the West Village a few minutes east. The immediate area is expensive and heavily branded but the river path is genuinely pleasant.",
+      "time_needed": "Two hours covers the museum comfortably, including time on the terraces. Ninety minutes is enough if you are selective.",
+      "accessibility": "The museum is served by lifts throughout and admission for a care partner accompanying a visitor with disabilities is free.",
+      "verdict": "If you are 25 or under this is the easiest recommendation in New York, because it is excellent and it is free. If you are older, it is a good museum at a normal New York price, and the High Line outside is the part that costs nothing."
+    },
+    {
       "destination_slug": "paris-france",
       "name": "Eiffel Tower",
       "type": "attraction",
@@ -517,6 +814,53 @@
       "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
       "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
       "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
+    },
+    {
+      "destination_slug": "vienna-austria",
+      "name": "Upper Belvedere",
+      "type": "attraction",
+      "headline": "Twenty-Three Euros to Stand in Front of The Kiss, and Under-19s Go Free",
+      "body": "The Upper Belvedere charges 23,00 euros for an admission ticket, 19,00 euros for seniors over 65 and for students under 26, and nothing at all for children and young people under 19.\n\nWhat almost everybody comes for is Klimt's The Kiss, which hangs here along with the largest collection of his work anywhere. That concentration is both the attraction and the problem: one room absorbs the crowd while a baroque palace full of Austrian art from the medieval period onward sits comparatively quiet around it.\n\nThe building is a Baroque summer palace with formal gardens running down to the Lower Belvedere, and the gardens are free to walk. On a good day that walk is a genuine part of the visit rather than a way of getting between two ticket desks.",
+      "what_great": "The Klimt holding is the best anywhere and The Kiss is genuinely worth the trip. Under-19s get in free and the concession rate covers students up to 26. The gardens between Upper and Lower Belvedere are free and are one of the most pleasant walks in central Vienna.",
+      "what_ruined": "The room holding The Kiss is congested for most of the day and people queue to photograph it rather than look at it. The 23 euro ticket covers the Upper Belvedere only, so a full visit to both palaces costs more. The rest of the collection is unfairly overlooked as a result of the Klimt concentration.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the building and the collection are both excellent, held back only by how hard the crowd concentrates on one painting. Value is four: 23 euros is fair, and free entry for everyone under 19 is a real family saving.",
+      "meta_description": "The Upper Belvedere costs 23 euros, 19 for over-65s and students under 26, and is free for under-19s. Where Klimt hangs and when to go.",
+      "facts_checked": [
+        {
+          "fact": "An Upper Belvedere admission ticket is 23,00 euros.",
+          "url": "https://www.belvedere.at/en/visit",
+          "assert_text": "eintrittsticket € 23,00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Seniors over 65 pay 19,00 euros, as do students under 26.",
+          "url": "https://www.belvedere.at/en/visit",
+          "assert_text": "senior*innen ab 65 € 19,00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Children and young people under 19 pay nothing.",
+          "url": "https://www.belvedere.at/en/visit",
+          "assert_text": "kinder und jugendliche unter 19 € 0,00",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A Baroque palace on the upper terrace of the Belvedere complex, built for Prince Eugene of Savoy and now a museum of Austrian art holding the world's largest collection of Gustav Klimt paintings, including The Kiss.",
+      "why_go": "For Klimt, and specifically for The Kiss, which is one of the few paintings that genuinely rewards the trip. The Baroque palace interior and the view down the gardens toward the city are the second reason.",
+      "the_good": "The Klimt rooms are unmatched, the building is a first-rank Baroque palace in its own right, and the gardens outside cost nothing. Free entry for everyone under 19 and a 19 euro rate for students under 26 and over-65s make it accessible for families and young travellers.",
+      "the_downsides": "The Kiss draws a persistent crowd and the room around it is the least comfortable part of the museum. The 23 euro ticket is for the Upper Belvedere alone, so seeing the Lower Belvedere as well means paying again. Much of the rest of the collection goes unlooked-at.",
+      "best_for": "Anyone who wants to see Klimt properly, visitors interested in Baroque architecture, and families given the free under-19 entry.",
+      "skip_if": "You have limited time in Vienna and a broader interest in art history, in which case the Kunsthistorisches Museum covers far more ground. Skip it if crowds around a single famous painting are the thing you most dislike about museums.",
+      "practical": "Go at opening or in the last two hours; the Klimt room is markedly calmer at both ends of the day. Walk the gardens down to the Lower Belvedere afterwards, which is free. Buy online to avoid the ticket queue, which is separate from the entry queue.",
+      "tickets": "An admission ticket to the Upper Belvedere is 23,00 euros. Seniors over 65 and students under 26 pay 19,00 euros. Children and young people under 19 pay nothing. Holders of a valid Vienna City Card receive a discount.",
+      "getting_there": "Tram D to Schloss Belvedere for the upper entrance, or tram 18 and O to Quartier Belvedere. Wien Hauptbahnhof is roughly a ten-minute walk.",
+      "location_context": "Landstrasse, the third district, on rising ground south-east of the Ringstrasse, with the formal gardens running downhill to the Lower Belvedere and the city skyline beyond. It is a quiet, embassy-heavy quarter well away from the Stephansplatz crowds.",
+      "time_needed": "Ninety minutes to two hours for the Upper Belvedere. Add another hour if you walk the gardens and continue to the Lower Belvedere.",
+      "accessibility": "The palace is served by lifts and the Belvedere publishes accessibility information for visitors with reduced mobility.",
+      "verdict": "Worth the 23 euros for the Klimt rooms alone, and better value than it looks once you count the free gardens. Go early, and if you are under 19, or travelling with anyone who is, the arithmetic is even easier."
     }
   ]
 }

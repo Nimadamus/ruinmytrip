@@ -37,6 +37,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -97,20 +98,36 @@ def decode(raw: bytes, header_charset: str | None) -> str:
     return raw.decode("utf-8", "replace")
 
 
+# Retried once with a pause. Several of these sites serve a page happily and then 403 the next
+# request from the same address seconds later; that is rate limiting, not a missing page, and
+# without a retry the verifier fails a publish for a reason that has nothing to do with the facts.
+# Kept deliberately small: this is a courtesy retry, not an attempt to defeat a block.
+RETRIES = 2
+RETRY_PAUSE = 4.0
+
+
 def fetch(url: str) -> tuple[bool, str]:
     req = urllib.request.Request(
         url,
         headers={"User-Agent": UA, "Accept": "text/html,*/*", "Accept-Language": "en"},
     )
-    try:
-        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-            raw = r.read()
-            charset = r.headers.get_content_charset()
-        return True, decode(raw, charset)
-    except urllib.error.HTTPError as e:
-        return False, f"HTTP {e.code}"
-    except Exception as e:  # network, TLS, DNS, timeout
-        return False, f"{type(e).__name__}: {e}"
+    last = "not attempted"
+    for attempt in range(RETRIES):
+        if attempt:
+            time.sleep(RETRY_PAUSE)
+        try:
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                raw = r.read()
+                charset = r.headers.get_content_charset()
+            return True, decode(raw, charset)
+        except urllib.error.HTTPError as e:
+            last = f"HTTP {e.code}"
+            # 404 and 410 are settled answers; retrying them just wastes time.
+            if e.code in (404, 410):
+                break
+        except Exception as e:  # network, TLS, DNS, timeout
+            last = f"{type(e).__name__}: {e}"
+    return False, last
 
 
 def check_place(place: dict) -> dict:
