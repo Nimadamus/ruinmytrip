@@ -37,8 +37,10 @@ import json
 import os
 import re
 import sys
+import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -105,8 +107,39 @@ def decode(raw: bytes, header_charset: str | None) -> str:
 RETRIES = 2
 RETRY_PAUSE = 4.0
 
+# Requests to one host are serialised and spaced. Two places can cite the same museum, and two
+# facts on one page already share a fetch, but across a batch the same domain still gets hit
+# repeatedly. Firing those concurrently is what produced intermittent 403s that failed a publish
+# for no content-related reason. Different hosts are still fetched in parallel, so a large batch is
+# not much slower; the same host is simply never hammered.
+MIN_HOST_INTERVAL = 1.5
+
+# Any real ticket or opening-hours page carries far more text than this. Anything shorter that still
+# came back 200 is an interstitial, a cookie wall or a soft block.
+MIN_PAGE_CHARS = 400
+_host_locks: dict[str, threading.Lock] = {}
+_host_last: dict[str, float] = {}
+_registry_lock = threading.Lock()
+
+
+def _host_lock(host: str) -> threading.Lock:
+    with _registry_lock:
+        return _host_locks.setdefault(host, threading.Lock())
+
 
 def fetch(url: str) -> tuple[bool, str]:
+    host = urllib.parse.urlsplit(url).netloc.lower()
+    with _host_lock(host):
+        gap = time.monotonic() - _host_last.get(host, 0.0)
+        if gap < MIN_HOST_INTERVAL:
+            time.sleep(MIN_HOST_INTERVAL - gap)
+        try:
+            return _fetch_once(url)
+        finally:
+            _host_last[host] = time.monotonic()
+
+
+def _fetch_once(url: str) -> tuple[bool, str]:
     req = urllib.request.Request(
         url,
         headers={"User-Agent": UA, "Accept": "text/html,*/*", "Accept-Language": "en"},
@@ -153,10 +186,18 @@ def check_place(place: dict) -> dict:
             entry["detail"] = "missing url or assert_text"
         else:
             ok, body = pages.get(url, (False, "not fetched"))
+            text = normalise(body) if ok else ""
             if not ok:
                 entry["status"] = "UNREACHABLE"
                 entry["detail"] = body
-            elif normalise(assert_text) in normalise(body):
+            elif len(text) < MIN_PAGE_CHARS:
+                # A 200 that returns almost nothing is a challenge or interstitial page, not the
+                # real one. Reporting that as FAIL would say "this fact is wrong" about copy that
+                # is fine, and send someone off to "correct" an accurate price. The distinction
+                # matters more the more pages there are to check.
+                entry["status"] = "BLOCKED"
+                entry["detail"] = f"page returned 200 but only {len(text)} chars of text, likely a block or challenge page"
+            elif normalise(assert_text) in text:
                 entry["status"] = "PASS"
                 entry["detail"] = ""
             else:
@@ -188,7 +229,7 @@ def main() -> int:
 
     reports = [check_place(p) for p in places]
 
-    counts = {"PASS": 0, "FAIL": 0, "UNREACHABLE": 0, "INVALID": 0}
+    counts = {"PASS": 0, "FAIL": 0, "BLOCKED": 0, "UNREACHABLE": 0, "INVALID": 0}
     for rep in reports:
         print(f"\n{rep['destination_slug']} / {rep['name']}")
         for f in rep["facts"]:
@@ -208,7 +249,7 @@ def main() -> int:
             json.dump({"places": reports, "counts": counts}, fh, indent=2, ensure_ascii=False)
         print(f"report written to {a.json}")
 
-    bad = counts["FAIL"] + counts["UNREACHABLE"] + counts["INVALID"]
+    bad = counts["FAIL"] + counts["BLOCKED"] + counts["UNREACHABLE"] + counts["INVALID"]
     if bad:
         print(f"\n{bad} assertion(s) did not pass. Fix the entry or correct the copy before publishing.")
     return 1 if bad else 0
