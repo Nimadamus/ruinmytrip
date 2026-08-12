@@ -7,6 +7,32 @@ the failure mode is not a broken build, it is a page that quietly states a wrong
 The whole system rests on one rule: **every number on a place page is tied to a string that a script
 can still find on an official page.** Not a note saying somebody checked. A re-runnable assertion.
 
+## Before anything: the local database
+
+```bash
+export RMT_SQLITE="$(php -c php.local.ini scripts/dev_db.php --quiet)"
+```
+
+That provisions `database/dev.sqlite` (gitignored) if needed, migrates it, and health-checks it.
+Run it at the start of a session and any time a command fails with something like
+`no such table: users`.
+
+**Never put the dev database in the session scratchpad under `%LOCALAPPDATA%\Temp`.** That
+directory is transient and is entitled to be cleared underneath you. On 2026-08-12 it was, mid
+session, taking every working file with it and leaving a zero-byte stub where the database had
+been. The first symptom was `SQLSTATE[HY000]: General error: 1 no such table: users`, which looks
+like schema corruption and is nothing of the sort. `scripts/dev_db.php` exists so that failure is
+detected immediately and in plain language rather than several commands later.
+
+It detects and recovers from all of: missing, zero bytes, truncated, all-NUL bytes (the separate
+C: corruption hazard, which keeps a plausible file size and only shows in the header), a valid
+SQLite file with no tables, and a database missing core tables. A file it rejects is renamed to
+`dev.sqlite.broken-<timestamp>` rather than deleted, so a real corruption event can still be
+examined afterwards.
+
+It refuses to run when `DATABASE_URL` is set or `APP_ENV=production`, and asserts the resolved
+driver is sqlite before migrating, so it cannot touch production.
+
 ## The five steps
 
 ### 1. Pick candidates and probe the sources FIRST

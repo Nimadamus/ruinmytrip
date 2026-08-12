@@ -25,3 +25,5 @@ Thumbs.db
 /.qa-tmp/
 __pycache__/
 .cache/
+database/dev.sqlite
+database/dev.sqlite.broken-*
