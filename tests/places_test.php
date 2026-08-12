@@ -160,5 +160,35 @@ $counts = rmt_place_type_counts(1);
 ok('type counts match the rows',
    array_sum($counts) === (int) q_one("SELECT COUNT(*) n FROM places WHERE destination_id=1 AND status='active'")['n']);
 
+// --- editorial place reviews (publish_editorial.php --apply writes these) ----------------------
+// A place whose ONLY review is editorial must read as "we wrote about this, no travelers have"
+// and must never carry a rating. The listing therefore tracks editorial separately from the
+// community count, and never adds the two together.
+$edOnly = rmt_place_resolve(2, 'attraction', 'Editorial Only Landmark', 1);
+q_run('INSERT INTO reviews (user_id,destination_id,place_id,subject_type,subject_name,rating,status)
+       VALUES (?,?,?,?,?,?,?)', [1, 2, $edOnly, 'attraction', 'Editorial Only Landmark', 5, 'published']);
+
+$edStats = rmt_place_stats((int) $edOnly);
+ok('an editorial-only place still reports NO community rating', $edStats['c'] === 0 && $edStats['a'] === null);
+
+$lisbon = rmt_places_for_destination(2);
+$row = null;
+foreach ($lisbon as $p) if ((int) $p['id'] === (int) $edOnly) $row = $p;
+ok('the listing surfaces an editorial-only place', $row !== null);
+ok('editorial is NOT counted in the listing review_count', $row && (int) $row['review_count'] === 0);
+ok('editorial is counted separately so the row is not shown as empty',
+   $row && (int) $row['editorial_count'] === 1);
+ok('an editorial-only place has no average to show', $row && $row['avg_rating'] === null);
+
+// A place with BOTH must show the community number only, with editorial tracked alongside it.
+q_run('INSERT INTO reviews (user_id,destination_id,place_id,subject_type,subject_name,rating,status)
+       VALUES (?,?,?,?,?,?,?)', [2, 2, $edOnly, 'attraction', 'Editorial Only Landmark', 3, 'published']);
+$mixed = null;
+foreach (rmt_places_for_destination(2) as $p) if ((int) $p['id'] === (int) $edOnly) $mixed = $p;
+ok('with both, review_count is the community count only', $mixed && (int) $mixed['review_count'] === 1);
+ok('with both, the average is the community rating only', $mixed && (float) $mixed['avg_rating'] === 3.0,
+   'got ' . var_export($mixed['avg_rating'] ?? null, true));
+ok('with both, editorial is still tracked separately', $mixed && (int) $mixed['editorial_count'] === 1);
+
 echo $fails ? "\n$fails FAILED\n" : "\nAll places tests passed.\n";
 exit($fails ? 1 : 0);

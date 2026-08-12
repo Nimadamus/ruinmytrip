@@ -85,7 +85,9 @@ function rmt_place_resolve(?int $destId, string $type, string $name, ?int $userI
     if (!$destId || $name === '' || !in_array($type, RMT_PLACE_TYPES, true)) return null;
     if (mb_strlen($name) > RMT_PLACE_NAME_MAX) return null;
 
-    $dest = dest_by_id($destId);
+    // Queried directly rather than through dest_by_id(), which lives in controllers.php. Resolution
+    // has to work from CLI publishers and backfills that never load the web controllers.
+    $dest = q_one('SELECT id, name FROM destinations WHERE id = ?', [$destId]);
     if (!$dest) return null;
 
     $key = rmt_place_name_key($name);
@@ -193,9 +195,17 @@ function rmt_places_for_destination(int $destId, string $type = '', int $limit =
     $where = '';
     if (in_array($type, RMT_PLACE_TYPES, true)) { $where = ' AND p.type = ?'; $args[] = $type; }
 
+    // `editorial_count` is tracked separately and never folded into review_count or the average.
+    // A place with an Official Review but no traveler reviews has something to read, and telling
+    // the reader "No published reviews yet" would send them past a page that is not empty. Counting
+    // it as a review instead would be the far worse error: it would put the site's own opinion into
+    // a number the reader takes for traveler consensus.
+    array_unshift($args, RMT_EDITORIAL_ROLE);
     return q_all("SELECT p.*,
                          COUNT(r.id) review_count,
-                         ROUND(AVG(r.rating), 1) avg_rating
+                         ROUND(AVG(r.rating), 1) avg_rating,
+                         (SELECT COUNT(*) FROM reviews er JOIN users eu ON eu.id = er.user_id
+                           WHERE er.place_id = p.id AND er.status = 'published' AND eu.role = ?) editorial_count
                     FROM places p
                     LEFT JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
                                        AND r.user_id IN (SELECT id FROM users WHERE role <> ?)

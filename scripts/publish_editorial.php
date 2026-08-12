@@ -40,11 +40,24 @@ function fail(string $s): never { fwrite(STDERR, 'ERROR: ' . $s . PHP_EOL); exit
 $files = glob($dir . '/*.json') ?: [];
 if (!$files) fail("no editorial content found in {$dir}");
 
-$items = [];
+/**
+ * Two content shapes live side by side in database/editorial/:
+ *
+ *   {"destinations": [...]}   the 80 destination entries, REBUILT by build_editorial_content.py
+ *   {"places":       [...]}   editorial reviews of individual hotels/restaurants/attractions
+ *
+ * They are separate files on purpose. build_editorial_content.py --merge rebuilds any destination
+ * a new research batch covers, so anything hand-added to a destination entry would be silently
+ * clobbered by the next batch. Places live outside that file and outside that script entirely.
+ */
+$items = $placeItems = [];
 foreach ($files as $f) {
     $json = json_decode((string) file_get_contents($f), true);
-    if (!is_array($json) || !isset($json['destinations'])) fail("malformed JSON: {$f}");
-    foreach ($json['destinations'] as $d) $items[] = $d + ['_file' => basename($f)];
+    if (!is_array($json) || (!isset($json['destinations']) && !isset($json['places']))) {
+        fail("malformed JSON (needs a 'destinations' or 'places' key): {$f}");
+    }
+    foreach ($json['destinations'] ?? [] as $d) $items[] = $d + ['_file' => basename($f)];
+    foreach ($json['places'] ?? [] as $p) $placeItems[] = $p + ['_file' => basename($f)];
 }
 
 $required = ['slug','name','country','summary','headline','body','rating','safety_rating',
@@ -83,12 +96,49 @@ foreach ($items as $i => $d) {
     if (mb_strlen((string) ($g['body'] ?? '')) < 600) $problems[] = "{$label}: guide body too thin";
 }
 
+/* editorial places: the same honesty bar as a destination entry, minus the things that only make
+   sense for a destination (hero photo, tips, guide). Every claim in a place body has to be
+   checkable, so facts_checked is REQUIRED here rather than optional -- a desk-researched opinion
+   about one hotel is worth publishing only if a reader can follow the sources behind it. */
+$placeRequired = ['destination_slug','name','type','headline','body','rating','safety_rating',
+                  'value_rating','what_great','what_ruined','facts_checked'];
+$seenPlace = [];
+foreach ($placeItems as $i => $p) {
+    $label = ($p['destination_slug'] ?? '?') . '/' . ($p['name'] ?? "#{$i}");
+    foreach ($placeRequired as $k) {
+        if (!isset($p[$k]) || $p[$k] === '' || $p[$k] === []) $problems[] = "{$label}: missing {$k}";
+    }
+    // Identity is (destination, normalised name) -- the same key the places table is unique on, so
+    // a duplicate here would resolve to one place row and the two entries would fight over it.
+    $key = ($p['destination_slug'] ?? '') . '|' . rmt_place_name_key((string) ($p['name'] ?? ''));
+    if (isset($seenPlace[$key])) $problems[] = "{$label}: duplicate place (same destination and name)";
+    $seenPlace[$key] = true;
+
+    if (!in_array($p['type'] ?? '', RMT_PLACE_TYPES, true)) {
+        $problems[] = "{$label}: type must be one of " . implode('/', RMT_PLACE_TYPES);
+    }
+    foreach (['rating','safety_rating','value_rating'] as $k) {
+        $v = (int) ($p[$k] ?? 0);
+        if ($v < 1 || $v > 5) $problems[] = "{$label}: {$k} must be 1-5, got {$v}";
+    }
+    if (mb_strlen((string) ($p['headline'] ?? '')) > RMT_REVIEW_TITLE_MAX) $problems[] = "{$label}: headline too long";
+    if (mb_strlen((string) ($p['body'] ?? '')) < 400) $problems[] = "{$label}: body under 400 chars, too thin to publish";
+    if (mb_strlen((string) ($p['name'] ?? '')) > RMT_PLACE_NAME_MAX) $problems[] = "{$label}: name too long";
+    if (count((array) ($p['facts_checked'] ?? [])) < 2) $problems[] = "{$label}: fewer than 2 checked facts";
+    foreach (['headline','body','what_great','what_ruined'] as $k) {
+        if (str_contains((string) ($p[$k] ?? ''), "\u{2014}")) $problems[] = "{$label}: em dash in {$k}";
+    }
+    // Nobody from the team necessarily went. This is the whole editorial promise.
+    if (!empty($p['visited_on'])) $problems[] = "{$label}: editorial content must not carry visited_on";
+}
+
 if ($problems) {
     out('VALIDATION FAILED (' . count($problems) . '):');
     foreach ($problems as $p) out('  - ' . $p);
     exit(1);
 }
-out('Validated ' . count($items) . ' destinations from ' . count($files) . ' file(s). No problems.');
+out('Validated ' . count($items) . ' destinations and ' . count($placeItems) . ' places from '
+    . count($files) . ' file(s). No problems.');
 if ($check) exit(0);
 
 /* ---------------- write ---------------- */
@@ -206,8 +256,11 @@ try {
               WHERE id = ?',
              [$d['summary'], $hero, $d['photo_credit'], $d['photo_license'], $d['photo_source_url'], $did]);
 
-        /* editorial review: one per destination, matched on author + destination */
-        $existing = q_one('SELECT id FROM reviews WHERE user_id = ? AND destination_id = ?', [$uid, $did]);
+        /* editorial review: one per destination, matched on author + destination.
+           `place_id IS NULL` is what keeps this the DESTINATION-level review. Without it this
+           lookup also matches the editorial reviews of places inside the same destination, and the
+           first one of those would be silently rewritten into a duplicate destination review. */
+        $existing = q_one('SELECT id FROM reviews WHERE user_id = ? AND destination_id = ? AND place_id IS NULL', [$uid, $did]);
         $slug = mb_substr(slugify((string) $d['headline']), 0, 70);
         if ($existing) {
             $run("UPDATE reviews SET subject_type='destination', subject_name=?, rating=?, title=?, body=?,
@@ -248,6 +301,50 @@ try {
                   VALUES (?,?,?,?,?,?,?,0,'published',?,?)",
                  [$uid, $did, $gslug, $g['title'], $g['summary'], $body, $hero, $now, $now]);
             out("    guide created (/g/{$gslug})");
+        }
+    }
+
+    /* ---------------- editorial place reviews ---------------- */
+    foreach ($placeItems as $p) {
+        $label = $p['destination_slug'] . '/' . $p['name'];
+        $dest = q_one('SELECT * FROM destinations WHERE slug = ?', [$p['destination_slug']]);
+        if (!$dest) { out("  SKIP {$label}: no such destination row"); continue; }
+        $did = (int) $dest['id'];
+
+        // Resolution is the same call the write form makes, so an editorial entry and a traveler
+        // typing the same name land on one place rather than two.
+        if (!$apply) {
+            $existingPlace = q_one('SELECT id FROM places WHERE destination_id = ? AND name_key = ?',
+                                   [$did, rmt_place_name_key((string) $p['name'])]);
+            out("  {$label} (destination {$did}) " . ($existingPlace ? "-> place {$existingPlace['id']}" : '-> would create place'));
+            $log[] = 'INSERT/UPDATE reviews (editorial place)…';
+            continue;
+        }
+
+        $pid = rmt_place_resolve($did, (string) $p['type'], (string) $p['name'], $uid);
+        if ($pid === null) { out("  SKIP {$label}: place did not resolve"); continue; }
+        out("  {$label} (destination {$did}, place {$pid})");
+
+        $slug = mb_substr(slugify((string) $p['headline']), 0, 70);
+        // Matched on author + place, so re-running corrects the same row instead of stacking.
+        $have = q_one('SELECT id FROM reviews WHERE user_id = ? AND place_id = ?', [$uid, $pid]);
+        if ($have) {
+            $run("UPDATE reviews SET destination_id=?, subject_type=?, subject_name=?, rating=?, title=?, body=?,
+                    what_great=?, what_ruined=?, safety_rating=?, value_rating=?, slug=?, visited_on=NULL,
+                    verified=0, status='published', updated_at=? WHERE id=?",
+                 [$did, $p['type'], $p['name'], (int)$p['rating'], $p['headline'], $p['body'],
+                  $p['what_great'], $p['what_ruined'], (int)$p['safety_rating'], (int)$p['value_rating'],
+                  $slug, $now, (int)$have['id']]);
+            out("    review updated (id {$have['id']}, /p/" . q_one('SELECT slug FROM places WHERE id=?', [$pid])['slug'] . ')');
+        } else {
+            $rid = $run("INSERT INTO reviews (user_id, destination_id, place_id, subject_type, subject_name, rating,
+                            title, body, what_great, what_ruined, safety_rating, value_rating, slug, visited_on,
+                            verified, status, created_at, updated_at)
+                         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NULL,0,'published',?,?)",
+                        [$uid, $did, $pid, $p['type'], $p['name'], (int)$p['rating'], $p['headline'], $p['body'],
+                         $p['what_great'], $p['what_ruined'], (int)$p['safety_rating'], (int)$p['value_rating'],
+                         $slug, $now, $now]);
+            out("    review created (id {$rid}, /p/" . q_one('SELECT slug FROM places WHERE id=?', [$pid])['slug'] . ')');
         }
     }
 

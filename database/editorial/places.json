@@ -1,0 +1,74 @@
+{
+  "places": [
+    {
+      "destination_slug": "barcelona-spain",
+      "name": "Basilica de la Sagrada Familia",
+      "type": "attraction",
+      "headline": "Finished at Last, and Priced Like It Knows",
+      "body": "The argument for going changed in 2026. After more than 140 years the basilica reached its final height of 172.5 metres when the upper arm of the cross on the central Tower of Jesus Christ was installed on 20 February 2026, and it is now the tallest church in the world, having passed Ulm Minster's roughly 162 metres in October 2025. What you queue for is no longer a building site with a good gift shop. It is a completed exterior.\n\nThe price has moved with the fame. General entry to the basilica is 26 euros at the official box office. Adding the towers takes it to 36 euros. Seniors pay 21 euros, and under-30s and student card holders pay 24 euros, rising to 28 and 34 euros respectively with tower access. Disabled visitors and their companions pay only for additional services, with general entrance free.\n\nThe practical trap is capacity, not cost. Nearly 4.9 million people came through in 2025, and entry is timed. Turning up on the day in high season is how people end up looking at the outside from the pavement and calling it a visit. Book a slot before you book anything else in Barcelona, and if you want the towers, book that at the same time, because it is a separate product and it sells out first.",
+      "what_great": "It is finished, and the difference is visible from the street. The interior light through the nave columns is the reason the building has a reputation that survives the crowds, and the tower climb is the only way to see the detail Gaudi put where he assumed nobody would ever stand. The official site sells direct, so there is no reason to pay a reseller markup.",
+      "what_ruined": "Twenty-six euros is the entry, not the total: towers are ten euros more, and the guided tour is 30. Timed entry means a missed slot is a missed visit, and you get 30 minutes of grace, not an afternoon. Resellers dominate search results and quote well above the official 26 euros for the same ticket, so people routinely pay a premium for nothing.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for the thing itself, which is now a completed world record rather than a construction site. Value drops to three because 26 euros before towers is high for a single building and the reseller ecosystem pushes many visitors above that for no added benefit.",
+      "facts_checked": [
+        {
+          "fact": "Official ticket prices: basilica 26,00 EUR base, 21,00 EUR seniors, 24,00 EUR under 30s and student card. With towers: 36,00 EUR base, 28,00 EUR seniors, 34,00 EUR under 30s and student card. Guided tour 30,00 EUR base. Disabled visitors and companions pay only for additional services; general entrance is free for that group.",
+          "url": "https://sagradafamilia.org/en/prices",
+          "confidence": "verified on the basilica's own pricing page"
+        },
+        {
+          "fact": "The upper arm of the cross on the Tower of Jesus Christ was installed on 20 February 2026, bringing the building to its final height of 172.5 metres and making it the tallest church in the world.",
+          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
+          "confidence": "verified in national broadcaster reporting"
+        },
+        {
+          "fact": "The Sagrada Familia passed Ulm Minster (approximately 162 metres) as the world's tallest church in October 2025.",
+          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
+          "confidence": "verified in national broadcaster reporting"
+        },
+        {
+          "fact": "Approximately 4.87 million people visited in 2025.",
+          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
+          "confidence": "reported figure, consistent with the basilica's own published annual visitor releases"
+        },
+        {
+          "fact": "Entry is timed, and ticket holders have 30 minutes after the time on the ticket to enter.",
+          "url": "https://sagradafamilia.org/en/prices",
+          "confidence": "verified on official ticketing information"
+        }
+      ]
+    },
+    {
+      "destination_slug": "kyoto-japan",
+      "name": "Kinkaku-ji",
+      "type": "attraction",
+      "headline": "Five Hundred Yen for One of the Best Views in Japan, and You Cannot Linger",
+      "body": "Kinkaku-ji is the rare famous thing that is not overpriced. General admission is 500 yen, primary and middle school students pay 300 yen, and the temple is open 9:00 a.m. to 5:00 p.m. all year round. Against Kyoto's 2026 cost of visiting, where the top band of the city lodging tax is 10,000 yen per person per night, a 500 yen ticket to the Golden Pavilion is close to the best value in the city.\n\nWhat the price does not buy is time with it. The route through the grounds is a one-way loop, and the pavilion itself is viewed from across the Mirror Pond rather than entered. The honest way to describe the visit is a walk of roughly twenty to thirty minutes with one spectacular sightline near the start, which is where every other visitor is also standing.\n\nPlan it as one stop, not the day. The 9:00 a.m. opening is the single best lever you have, because the pond view faces the crowd bottleneck and the pavilion catches the light early. Arriving mid-afternoon means the same 500 yen for the same loop with considerably more people in front of you.",
+      "what_great": "Five hundred yen, open every day of the year, and no reservation system to navigate. The gold leaf reflected in the Mirror Pond is a genuinely singular sight and the grounds are immaculately kept. For a city that has spent 2026 adding costs to visitors, this is one of the few headline attractions that has not moved its price out of reach.",
+      "what_ruined": "You cannot go inside the pavilion, and the loop is one-way, so if the main viewpoint is packed you cannot circle back and wait it out. The whole visit is short enough that people who travel across the city for it alone often feel shortchanged. Last entry effectively falls before the 5:00 p.m. close, so a late arrival can turn into no visit at all.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four rather than five because the visit is short, one-way and viewed at a distance, which is a real limitation and not a matter of taste. Value is five: 500 yen is exceptional for a site of this stature, especially in a city that has otherwise been raising the cost of visiting through 2026.",
+      "facts_checked": [
+        {
+          "fact": "Admission: general 500 yen, primary and middle school students 300 yen.",
+          "url": "https://www.shokoku-ji.jp/en/kinkakuji/access/",
+          "confidence": "verified on the temple's official Shokoku-ji site"
+        },
+        {
+          "fact": "Opening hours are 9:00 a.m. to 5:00 p.m., open all year round.",
+          "url": "https://www.shokoku-ji.jp/en/kinkakuji/access/",
+          "confidence": "verified on the temple's official Shokoku-ji site"
+        },
+        {
+          "fact": "Kyoto's municipal lodging tax runs on five tiers from March 1, 2026, topping out at 10,000 yen per person per night for rooms at 100,000 yen and above.",
+          "url": "https://kyoto.travel/en/news/tax-change/",
+          "confidence": "verified on official Kyoto City Tourism Association page"
+        }
+      ]
+    }
+  ]
+}

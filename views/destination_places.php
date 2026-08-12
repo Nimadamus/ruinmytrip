@@ -45,7 +45,13 @@
           <a href="<?= e(url('p/'.$p['slug'])) ?>"><?= e($p['name']) ?></a>
         </h2>
         <p class="muted" style="margin:0">
-          <?= $c > 0 ? $c.' traveler '.($c === 1 ? 'review' : 'reviews') : 'No published reviews yet' ?>
+          <?php if ($c > 0): ?>
+            <?= $c ?> traveler <?= $c === 1 ? 'review' : 'reviews' ?>
+          <?php elseif ((int)$p['editorial_count'] > 0): ?>
+            <?= rmt_editorial_badge('review') ?> <span class="hint">no traveler reviews yet</span>
+          <?php else: ?>
+            No published reviews yet
+          <?php endif; ?>
         </p>
       </div></article>
     <?php endforeach; ?>

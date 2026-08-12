@@ -127,6 +127,8 @@
                 <?php if ($tc > 0): ?>
                   <span class="stars"><?= stars((int) round((float)$tp['avg_rating'])) ?></span>
                   <?= e((string)$tp['avg_rating']) ?>/5 · <?= $tc ?>
+                <?php elseif ((int)$tp['editorial_count'] > 0): ?>
+                  <?= rmt_editorial_badge('review') ?>
                 <?php else: ?>
                   No reviews yet
                 <?php endif; ?>

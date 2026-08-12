@@ -140,11 +140,18 @@ function destination(array $a): void {
     // tie it always has, but the next tiebreaker is now how many travelers actually found the
     // review useful, not just recency -- a well-vetted review from last year should not get
     // buried under a same-day one-liner.
+    // Editorial reviews OF PLACES are excluded here. Community reviews of places are not: a
+    // traveler's review of a hotel in this city belongs on the city's page. But there is now more
+    // than one editorial review touching a destination, and letting them all through would turn the
+    // page into a wall of our own writing and break the "exactly one Official Review" lead the
+    // section is built around. The place ones are read on their own /p/ pages.
     $reviews = q_all("SELECT r.*,
                         (SELECT COUNT(*) FROM review_votes rv WHERE rv.review_id=r.id AND rv.vote_type='useful') useful_count
                       FROM reviews r JOIN users u ON u.id=r.user_id
                       WHERE r.destination_id=? AND r.status='published'
-                      ORDER BY (u.role=?) DESC, r.verified DESC, useful_count DESC, r.id DESC LIMIT 30", [$id, RMT_EDITORIAL_ROLE]);
+                        AND NOT (u.role=? AND r.place_id IS NOT NULL)
+                      ORDER BY (u.role=?) DESC, r.verified DESC, useful_count DESC, r.id DESC LIMIT 30",
+                     [$id, RMT_EDITORIAL_ROLE, RMT_EDITORIAL_ROLE]);
     authors_fill($reviews);
     // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);
