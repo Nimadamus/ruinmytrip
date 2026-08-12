@@ -23,3 +23,4 @@ Thumbs.db
 
 # Ad hoc QA driver scripts/screenshots (session-scoped, never committed)
 /.qa-tmp/
+__pycache__/
