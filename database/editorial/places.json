@@ -265,6 +265,47 @@
     },
     {
       "destination_slug": "berlin-germany",
+      "name": "Berlinische Galerie",
+      "type": "attraction",
+      "headline": "Seven Euros on the First Wednesday, Free Under Eighteen, and Berlin's Own Art",
+      "body": "The Berlinische Galerie offers reduced admission of 7 euros for all on the first Wednesday of every month, free admission for under 18s, and free admission for refugees.\n\nThe collection is deliberately local. This is art made in Berlin from 1870 onward, which means the Secession, Dada, New Objectivity, the divided city and what came after reunification. It is the story of one city told through the art it produced, rather than a survey assembled from elsewhere.\n\nThat focus is the appeal and the limitation. If you want a broad museum this is the wrong one, and the Gemaldegalerie or the Neue Nationalgalerie will suit you better. If you want to understand why Berlin looks and behaves the way it does, this is the more useful hour.",
+      "what_great": "Reduced 7 euro admission for everyone on the first Wednesday of each month, free for under 18s and free for refugees, which is an unusually broad set of concessions. The building is a converted glass warehouse with generous, well-lit space, and the Berlin-specific focus makes it genuinely different from the national collections.",
+      "what_ruined": "The collection is narrow by design, so visitors expecting a general modern art museum can find it thin. The first Wednesday is correspondingly busy. It sits in Kreuzberg away from the Museum Island cluster, so it needs a deliberate trip.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four because the collection is narrower than the big national museums, which suits some visitors and not others. Value is five: reduced admission on the first Wednesday of the month, free for under 18s and free for refugees.",
+      "meta_description": "The Berlinische Galerie has reduced 7 euro admission on the first Wednesday monthly, free under 18s and free entry for refugees.",
+      "facts_checked": [
+        {
+          "fact": "Reduced admission of 7 euros applies to all on the first Wednesday of every month.",
+          "url": "https://www.berlinischegalerie.de/en/",
+          "assert_text": "reduced admission (7 €) for all on the 1st wednesday of every month",
+          "confidence": "verified on the museum's official site"
+        },
+        {
+          "fact": "Under 18s enter free, as do refugees.",
+          "url": "https://www.berlinischegalerie.de/en/",
+          "assert_text": "free admission for under 18s",
+          "confidence": "verified on the museum's official site"
+        }
+      ],
+      "what_it_is": "Berlin's museum of modern art, photography and architecture, in a converted glass warehouse in Kreuzberg, collecting art produced in the city from 1870 to the present.",
+      "why_go": "Because it explains Berlin through what Berlin made: the Secession, Dada, New Objectivity, the divided decades and the years since. No other collection in the city is organised around that question.",
+      "the_good": "Broad concessions, with 7 euro admission for all on the first Wednesday of the month, free under 18s and free entry for refugees. A well-lit, generously proportioned building. A genuinely distinctive collection rather than a smaller version of a national museum.",
+      "the_downsides": "Narrow scope, which disappoints anyone expecting a general survey. Busy on the discounted first Wednesday. It is a deliberate trip out to Kreuzberg rather than something you pass on the way to somewhere else.",
+      "best_for": "Repeat visitors to Berlin, anyone interested in twentieth-century German art or the city's own history, and budget travellers who can time a first Wednesday.",
+      "skip_if": "It is your first visit and you have not yet seen Museum Island or the Neue Nationalgalerie. Those come first. Skip it if you want an encyclopaedic collection.",
+      "practical": "Aim for the first Wednesday of the month if your dates allow, since admission drops to 7 euros for everyone, but go early because everyone else knows too. Combine it with the Jewish Museum, which is a ten-minute walk away, if you have the stamina for two in a day.",
+      "tickets": "Reduced admission of 7 euros applies to all on the first Wednesday of every month. Under 18s enter free, as do refugees and friends of the museum.",
+      "getting_there": "Hallesches Tor on the U1 and U6 is about eight minutes on foot. Kochstrasse on the U6 is a similar distance.",
+      "location_context": "Alte Jakobstrasse in Kreuzberg, south of Checkpoint Charlie, a few minutes from the Jewish Museum in a mixed residential and gallery district well away from the Museum Island crowds.",
+      "time_needed": "Ninety minutes for the permanent collection, two hours with a temporary exhibition.",
+      "accessibility": "The building is step-free with lift access throughout, and the museum publishes accessibility information for visitors.",
+      "verdict": "The right museum for a second or third visit to Berlin rather than a first. Time it for the first Wednesday if you can, and pair it with the Jewish Museum ten minutes away."
+    },
+    {
+      "destination_slug": "berlin-germany",
       "name": "Jewish Museum Berlin",
       "type": "attraction",
       "headline": "The Core Exhibition Is Free, and the Building Is Half the Argument",
@@ -303,6 +344,47 @@
       "time_needed": "Two to three hours for the core exhibition and the Libeskind spaces. Rushing it is possible but pointless.",
       "accessibility": "The museum is step-free with lift access throughout and publishes detailed accessibility information; note that some Libeskind spaces have deliberately sloping floors.",
       "verdict": "One of the best museums in Berlin and the core exhibition costs nothing. Go on a weekday, allow half a day, and do not stack it against another Holocaust site on the same afternoon."
+    },
+    {
+      "destination_slug": "berlin-germany",
+      "name": "Topography of Terror",
+      "type": "attraction",
+      "headline": "Free, Open Until Eight, and the Hardest Hour in Berlin",
+      "body": "The Topography of Terror is free admission and opens daily 10 am to 8 pm, with the outdoor areas open until nightfall.\n\nIt stands on the ground where the Gestapo headquarters, the SS leadership and the Reich Security Main Office stood. The buildings are gone; what remains is the site itself, a surviving stretch of the Berlin Wall along Niederkirchnerstrasse, and an exhibition that does something unusual and uncomfortable.\n\nMost Holocaust memorials document what was done to people. This one documents who did it: the administrators, the desk officers, the career police officials, with names, photographs and biographies. It is the institutional machinery examined at close range, and it is harder to walk away from than a memorial.",
+      "what_great": "Free admission and open until 8 pm, which is later than almost any museum in the city and makes it possible after a full day. It examines perpetrators rather than only victims, which is rare and important. A long surviving section of the Berlin Wall runs along the site boundary at no cost.",
+      "what_ruined": "It is relentless, text-heavy and takes concentration, and there is no light way through it. The indoor exhibition is a single dense hall that gets crowded in bad weather. The outdoor trench exhibition is exposed, so a wet or cold day materially changes the visit.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. It is free, it is open late, and it does something no other Berlin site does: it examines the perpetrators rather than only commemorating the victims.",
+      "meta_description": "The Topography of Terror is free and open daily 10 am to 8 pm. Built on the Gestapo and SS headquarters site, it documents the perpetrators.",
+      "facts_checked": [
+        {
+          "fact": "The site is open daily 10 am to 8 pm, with outdoor areas until nightfall.",
+          "url": "https://www.topographie.de/en/",
+          "assert_text": "daily 10 am - 8 pm",
+          "confidence": "verified on the documentation centre's official site"
+        },
+        {
+          "fact": "Admission is free.",
+          "url": "https://www.topographie.de/en/",
+          "assert_text": "free admission",
+          "confidence": "verified on the documentation centre's official site"
+        }
+      ],
+      "what_it_is": "A documentation centre and outdoor exhibition in Kreuzberg on the site of the former Gestapo and SS headquarters, covering the institutions of Nazi terror, alongside a preserved stretch of the Berlin Wall on Niederkirchnerstrasse.",
+      "why_go": "Because it is the one major Berlin site that examines the perpetrators as individuals and as an institution, and because standing on the actual ground where those offices stood does something a museum elsewhere cannot.",
+      "the_good": "Free, open until 8 pm daily, and rigorous. The perpetrator focus fills a real gap in how this history is usually presented. A substantial section of the Berlin Wall runs along the site and costs nothing to walk.",
+      "the_downsides": "Extremely text-heavy and emotionally heavy, with no relief anywhere in the route. The indoor hall is one dense space that fills up when the weather turns. The outdoor trench exhibition is unsheltered.",
+      "best_for": "Anyone serious about twentieth-century German history, visitors on a budget, and travellers who want an evening option since it stays open until 8 pm.",
+      "skip_if": "You are travelling with young children, or you have already done the Jewish Museum and the Holocaust Memorial on the same day. Three of these in one day is more than most people can take in.",
+      "practical": "Go late; the 8 pm close makes this one of the few substantial sites you can do at the end of a day, and it is quieter then. Allow at least ninety minutes and do not stack it with another heavy site. The Wall section outside is worth ten minutes on its own even if you skip the exhibition.",
+      "tickets": "Free admission. Open daily 10 am to 8 pm, with outdoor areas open until nightfall and 8 pm at the latest.",
+      "getting_there": "Potsdamer Platz on the S1, S2, S25, U2 and regional lines is about eight minutes on foot. Kochstrasse on the U6 is a similar distance from the east.",
+      "location_context": "Niederkirchnerstrasse in Kreuzberg, between Potsdamer Platz and Checkpoint Charlie, alongside the Martin-Gropius-Bau. The Jewish Museum is a fifteen-minute walk south and the Holocaust Memorial ten minutes north.",
+      "time_needed": "Ninety minutes to two hours to read properly. Forty-five minutes if you take the outdoor trench exhibition and the Wall only.",
+      "accessibility": "The documentation centre and outdoor areas are step-free and the site publishes accessibility information for visitors.",
+      "verdict": "The most important free site in Berlin and the one that asks the hardest question. Go in the evening when it is quieter, allow more time than you expect, and do not pair it with another Holocaust site on the same day."
     },
     {
       "destination_slug": "dublin-ireland",
@@ -427,6 +509,53 @@
       "verdict": "The single best-value attraction in Edinburgh, on the simple grounds that it is excellent and free. Start on the roof terrace, pick two wings rather than all of them, and come back if the weather turns again."
     },
     {
+      "destination_slug": "edinburgh-scotland",
+      "name": "Palace of Holyroodhouse",
+      "type": "attraction",
+      "headline": "Twenty-Two in Advance, Twenty-Six at the Door, and Mary Queen of Scots' Bedchamber",
+      "body": "The Palace of Holyroodhouse charges 22.00 pounds for an adult booking in advance and 26.00 pounds on the day. Young people aged 18 to 24 pay 14.00 in advance and 17.00 on the day, children aged 5 to 17 pay 11.00 and 13.00, disabled visitors pay the same rates as children, an access companion goes free and under 5s are free.\n\nThe palace is the King's official residence in Scotland, at the bottom of the Royal Mile with Arthur's Seat rising behind it. The part most people come for is the historic apartments: Mary Queen of Scots' chambers, including the small room where her secretary David Rizzio was murdered in 1566 in front of her while she was six months pregnant.\n\nThe ruined abbey in the grounds is the quieter surprise and is included in the ticket.",
+      "what_great": "Mary Queen of Scots' apartments are the real thing rather than a reconstruction, and the Rizzio murder room lands harder in person than any retelling. The ruined abbey is included and is often empty. Booking ahead saves 4 pounds a head, and an access companion goes free.",
+      "what_ruined": "Turning up without booking costs 4 pounds more per adult for exactly the same visit. The route is fixed and one-way, so you cannot linger where you want to. The palace closes to visitors entirely during royal visits, which is not always obvious when planning.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four because the historical apartments and the abbey ruins are genuinely strong, held back by a fixed route and a price that jumps if you do not book. Value is four: booking ahead saves 4 pounds and children pay 11.",
+      "meta_description": "Holyroodhouse costs 22 pounds in advance or 26 on the day, with children 5-17 at 11 pounds and companions free.",
+      "facts_checked": [
+        {
+          "fact": "Adults pay 22.00 pounds in advance and 26.00 pounds on the day.",
+          "url": "https://www.royalcollection.org.uk/visit/palace-of-holyroodhouse",
+          "assert_text": "adult £22.00 £26.00",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        },
+        {
+          "fact": "Young people aged 18 to 24 pay 14.00 pounds in advance and 17.00 on the day.",
+          "url": "https://www.royalcollection.org.uk/visit/palace-of-holyroodhouse",
+          "assert_text": "young person (18-24) £14.00 £17.00",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        },
+        {
+          "fact": "Children aged 5 to 17 pay 11.00 pounds in advance and 13.00 on the day.",
+          "url": "https://www.royalcollection.org.uk/visit/palace-of-holyroodhouse",
+          "assert_text": "child (5-17) £11.00 £13.00",
+          "confidence": "verified on the Royal Collection Trust's official page"
+        }
+      ],
+      "what_it_is": "The official residence in Scotland of the monarch, at the foot of the Royal Mile, comprising state apartments still used for official business, the sixteenth-century historic apartments of Mary Queen of Scots, and the ruins of Holyrood Abbey.",
+      "why_go": "For Mary Queen of Scots' chambers and the Rizzio murder room, which is one of the few places in Britain where a famous violent episode happened in a room you can stand in.",
+      "the_good": "Genuine sixteenth-century apartments rather than a reconstruction. The abbey ruins are included and usually quiet. Real concessions, with children at 11 pounds, free access companions and free entry for under 5s. Booking ahead saves 4 pounds.",
+      "the_downsides": "Twenty-six pounds on the door is steep and entirely avoidable by booking. The route is fixed and paced by the crowd. Closures for royal visits can remove the option at short notice.",
+      "best_for": "Anyone interested in Scottish or Tudor-era history, visitors walking the Royal Mile who want a substantial stop at the bottom of it, and families given the child rate.",
+      "skip_if": "You have one paid attraction in your Edinburgh budget and have not done the castle. The castle is the more complete day. Skip it also if you cannot book ahead and object to paying 26 pounds.",
+      "practical": "Book in advance, which saves 4 pounds per adult and guarantees entry. Check for royal visit closures before building a day around it. Do the Royal Mile downhill from the castle so this is your last stop, then walk into Holyrood Park for Arthur's Seat, which is free.",
+      "tickets": "Adults pay 22.00 pounds in advance or 26.00 on the day. Young people aged 18 to 24 pay 14.00 and 17.00, children aged 5 to 17 pay 11.00 and 13.00, and disabled visitors pay 11.00 and 13.00. An access companion goes free and under 5s are free. A 2 pound transaction fee applies when pre-booking, and tickets can be converted to a one-year pass.",
+      "getting_there": "At the foot of the Royal Mile, roughly a twenty-minute walk downhill from Edinburgh Castle. Lothian buses 6, 35 and 300 stop nearby, and Edinburgh Waverley is about fifteen minutes on foot.",
+      "location_context": "The eastern end of the Old Town where the Royal Mile ends, with the Scottish Parliament directly opposite and Holyrood Park and Arthur's Seat immediately behind.",
+      "time_needed": "Ninety minutes to two hours including the abbey ruins and the gardens.",
+      "accessibility": "Disabled visitors pay the child rate and an access companion enters free; the palace publishes detailed access information, and parts of the historic apartments are reached by stairs.",
+      "verdict": "Worth it for Mary Queen of Scots' apartments, and clearly better value booked in advance than paid at the door. Make it the end of a Royal Mile walk and carry on into Holyrood Park afterwards, which costs nothing."
+    },
+    {
       "destination_slug": "kyoto-japan",
       "name": "Kinkaku-ji",
       "type": "attraction",
@@ -465,6 +594,47 @@
       "location_context": "Kita ward, in the far north-west of Kyoto, well away from the Higashiyama temple belt on the other side of the city. Ryoan-ji and Ninna-ji are both nearby and are the natural pairings.",
       "time_needed": "Thirty to forty-five minutes on site. Budget an hour and a half to two hours including the bus each way from central Kyoto.",
       "verdict": "Excellent value and genuinely worth seeing, provided you treat it as one stop on a north-west Kyoto morning rather than a destination in itself. Arrive at opening and pair it with Ryoan-ji."
+    },
+    {
+      "destination_slug": "kyoto-japan",
+      "name": "Nijo Castle",
+      "type": "attraction",
+      "headline": "Eight Hundred Yen for the Floors That Were Built to Betray You",
+      "body": "Nijo Castle charges 800 yen for a castle admission ticket, with 400 yen for junior and senior high school students and 300 yen for elementary school students. Entry is free of charge for those under elementary school age.\n\nWhat makes it worth the trip is the Ninomaru Palace, and specifically its floors. They are built to chirp underfoot, the so-called nightingale floors, as a security measure against anyone approaching unheard. You walk the whole palace on them, and the sound follows you room to room.\n\nThe painted screens inside are originals or high-quality reproductions depending on the room, and the rooms themselves are arranged by rank, so the further in you get the more restricted the access historically was. It is the clearest surviving illustration of how Tokugawa power was staged.",
+      "what_great": "Eight hundred yen for a UNESCO World Heritage site with intact palace interiors is exceptional value, particularly in a city that put its lodging tax up to 10,000 yen a night at the top band in 2026. The nightingale floors are a genuine physical experience rather than a display, and the grounds and gardens are included.",
+      "what_ruined": "The Ninomaru Palace interior is a single one-way route in socks with no photography permitted, so it moves at the pace of the group. The Honmaru Palace requires a separate advance reservation and its own ticket. Coach tours arrive in waves and the palace corridors do not absorb them well.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. The nightingale floors and the Ninomaru palace interiors are unlike anything else in Kyoto, and at 800 yen it is one of the best-value major sites in a city that has been raising prices everywhere else.",
+      "meta_description": "Nijo Castle costs 800 yen for adults and 400 for high school students. The nightingale floors, the palace interiors, and when to go.",
+      "facts_checked": [
+        {
+          "fact": "A castle admission ticket is 800 yen, with 400 yen for junior and senior high school students and 300 yen for elementary school students.",
+          "url": "https://nijo-jocastle.city.kyoto.lg.jp/admission/fee/?lang=en",
+          "assert_text": "castle admission ticket 800 yen (700 yen) 400 yen 300 yen",
+          "confidence": "verified on the City of Kyoto's official Nijo Castle site"
+        },
+        {
+          "fact": "Entry is free of charge for those under elementary school age.",
+          "url": "https://nijo-jocastle.city.kyoto.lg.jp/admission/fee/?lang=en",
+          "assert_text": "free of charge for those under elementary school age",
+          "confidence": "verified on the City of Kyoto's official Nijo Castle site"
+        }
+      ],
+      "what_it_is": "A flatland castle in central Kyoto built by the Tokugawa shogunate in 1603, comprising the Ninomaru Palace with its nightingale floors and painted screens, the separately ticketed Honmaru Palace, and extensive gardens. It is part of the Historic Monuments of Ancient Kyoto World Heritage listing.",
+      "why_go": "For the Ninomaru Palace, which is one of the few places you can walk through intact shogunate-era state rooms, and for the floors, which are an engineering answer to assassination that you experience with your feet.",
+      "the_good": "Eight hundred yen for a World Heritage site with intact interiors. The nightingale floors work exactly as described. School-age rates are genuinely cheap and under-school-age children are free. The gardens are included and are worth the extra twenty minutes.",
+      "the_downsides": "The palace route is one-way, in socks, with no photography, and you move at the speed of whoever is in front of you. The Honmaru Palace is a separate ticket needing advance reservation. Tour coaches concentrate through the middle of the day.",
+      "best_for": "Anyone interested in Japanese history or architecture, families given the cheap child rates, and travellers who want a major Kyoto site that has not priced itself out of reach.",
+      "skip_if": "You have one day in Kyoto and want temples and gardens rather than political history, in which case Fushimi Inari and the Higashiyama walk give you more. Skip the Honmaru add-on unless you have booked it in advance.",
+      "practical": "Go at opening or in the last ninety minutes to miss the coach groups. Wear socks you are happy to walk a palace in, since shoes come off for the Ninomaru route. If you want the Honmaru Palace, reserve it in advance; it cannot be added on arrival.",
+      "tickets": "A castle admission ticket is 800 yen, with 400 yen for junior and senior high school students and 300 yen for elementary school students. Entry is free of charge for those under elementary school age. A combined castle and Ninomaru palace ticket is sold at a higher price, and the Honmaru Palace requires a separate advance reservation.",
+      "getting_there": "Nijojo-mae station on the Tozai subway line is directly outside. City buses 9, 12, 50 and 101 stop at Nijojo-mae. Note that Kyoto abolished the bus-only day pass, so price individual fares.",
+      "location_context": "Nakagyo ward, central Kyoto, west of the Imperial Palace and north of the Shijo shopping district. Unlike the Higashiyama temple belt on the eastern hills, this is flat central city, so it combines easily with the Imperial Palace or Nishiki Market.",
+      "time_needed": "Ninety minutes for the Ninomaru Palace and the main gardens. Two hours if you walk the full grounds.",
+      "accessibility": "The grounds are largely flat, but the Ninomaru Palace route involves removing shoes and walking wooden corridors with steps, which limits access.",
+      "verdict": "The best-value major site in Kyoto and the one that best explains how the country was actually governed. Go early, take the gardens as well as the palace, and reserve the Honmaru separately if you want it."
     },
     {
       "destination_slug": "london-uk",
@@ -765,6 +935,47 @@
     },
     {
       "destination_slug": "new-york-city-usa",
+      "name": "New York Botanical Garden",
+      "type": "attraction",
+      "headline": "Thirty-Five Dollars, Free to New Yorkers on Wednesdays, and Worth the Train",
+      "body": "The New York Botanical Garden charges a weekday adult all-garden pass of 35 dollars, with 31 for seniors and students and 15 for children. Children under 2 are no charge. On Wednesdays, grounds admission is free to New York City residents all day.\n\nThe garden is 250 acres in the Bronx, which is a scale New Yorkers rarely encounter. Inside it is the Enid A. Haupt Conservatory, a Victorian-style glasshouse from 1902, and a fifty-acre stand of old-growth forest that has never been logged, the last remnant of the woodland that covered the whole city.\n\nThat forest is the argument for coming. Everything else here exists elsewhere; a never-logged New York forest does not.",
+      "what_great": "Two hundred and fifty acres and a fifty-acre old-growth forest, which is unlike anything else reachable on a Metro-North ticket. The 1902 conservatory is a serious piece of Victorian glasshouse architecture. Free grounds admission for NYC residents on Wednesdays, and children under 2 are no charge.",
+      "what_ruined": "Thirty-five dollars for a weekday adult is steep next to Central Park, which is free. It is in the Bronx, so it costs a train ride and most of a day. The all-garden pass and grounds-only admission are different products and the difference is easy to miss when booking.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because 250 acres with a Victorian glasshouse and old-growth forest is a genuinely different New York day. Value is three: 35 dollars on a weekday is a lot unless you are a city resident going on a Wednesday, when the grounds are free.",
+      "meta_description": "The New York Botanical Garden costs 35 dollars weekday adult, and grounds admission is free to NYC residents on Wednesdays.",
+      "facts_checked": [
+        {
+          "fact": "The weekday all-garden pass is 35 dollars for adults, 31 for seniors and students and 15 for children.",
+          "url": "https://www.nybg.org/visit/tickets/",
+          "assert_text": "weekday adult: $35 senior/student: $31 child: $15",
+          "confidence": "verified on the garden's official tickets page"
+        },
+        {
+          "fact": "Children under 2 are admitted at no charge.",
+          "url": "https://www.nybg.org/visit/tickets/",
+          "assert_text": "children under 2: no charge",
+          "confidence": "verified on the garden's official tickets page"
+        }
+      ],
+      "what_it_is": "A 250-acre botanical garden in the Bronx, with the 1902 Enid A. Haupt Conservatory, extensive collections, and a fifty-acre tract of old-growth forest that has never been logged.",
+      "why_go": "For the old-growth forest, which is the last surviving piece of the woodland that once covered New York City, and for the conservatory, which is one of the finest Victorian-style glasshouses in the United States.",
+      "the_good": "Genuine scale and genuine quiet, both rare in New York. The old-growth forest cannot be seen anywhere else in the city. Free grounds admission for NYC residents on Wednesdays, and under-2s are no charge.",
+      "the_downsides": "Thirty-five dollars weekday for an adult, against a free Central Park. It is a Bronx day out rather than a stop, so it costs travel time. Weekend pricing is higher again, and the ticket types are easy to confuse.",
+      "best_for": "New York City residents, who should simply go on a Wednesday; anyone interested in plants, trees or glasshouse architecture; and repeat visitors who have already done Manhattan.",
+      "skip_if": "You are in New York for three days and have not seen Central Park, the High Line or Prospect Park, all of which are free. This is a return-visit attraction, not a first-trip one.",
+      "practical": "If you are a New York City resident, go on a Wednesday when grounds admission is free, and bring proof of residency. Otherwise check whether you want the all-garden pass or grounds-only, since they are priced differently. Metro-North from Grand Central to Botanical Garden takes about twenty minutes and drops you at the gate.",
+      "tickets": "The weekday all-garden pass is 35 dollars for adults, 31 for seniors and students and 15 for children, with children under 2 at no charge. Weekend prices are higher. On Wednesdays, grounds admission is free to New York City residents all day, with proof of residency required and purchase onsite.",
+      "getting_there": "Metro-North Harlem line from Grand Central to Botanical Garden station, about twenty minutes, arriving directly opposite the entrance. The B, D and 4 subway to Bedford Park Boulevard is about a fifteen-minute walk.",
+      "location_context": "Bronx Park in the north-west Bronx, adjoining the Bronx Zoo, with Fordham University alongside and Arthur Avenue, the city's less touristed Italian quarter, a short bus ride away.",
+      "time_needed": "Half a day. Three hours is a realistic minimum given the scale, and the train each way adds an hour.",
+      "accessibility": "The garden publishes accessibility information and operates a tram tour included with the all-garden pass, which covers a large part of the grounds without walking.",
+      "verdict": "A genuinely different New York day, and free for city residents on Wednesdays. Non-residents should treat 35 dollars as the price of the old-growth forest and the conservatory, and should not attempt it on a first three-day trip."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
       "name": "One World Observatory",
       "type": "attraction",
       "headline": "The Highest View in the City, Behind Glass, Starting at Forty-Four Dollars",
@@ -1017,6 +1228,52 @@
       "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
       "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
       "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
+    },
+    {
+      "destination_slug": "venice-italy",
+      "name": "Gallerie dell'Accademia",
+      "type": "attraction",
+      "headline": "Twenty Euros, Two for Young Europeans, and Almost Nobody in It",
+      "body": "The Gallerie dell'Accademia charges a full price of 20,00 euros, with reduced admission of 2,00 euros for young persons who are EU citizens aged 18 to 25, and free entry for under 18s.\n\nThat 2 euro rate is not a typo and it is not a promotion. It is the standard Italian state museum concession, and it makes this one of the cheapest ways in Europe for a young traveller to stand in front of Giorgione, Bellini, Titian, Tintoretto and Veronese in the city where they worked.\n\nThe collection is the definitive account of Venetian painting from the fourteenth to the eighteenth century, and it is housed in a former religious complex at the foot of the Accademia bridge. It is also, reliably, the emptiest major attraction in Venice, because the crowd is at San Marco.",
+      "what_great": "The most important collection of Venetian painting anywhere, in the city that produced it. Twenty euros full price and 2 euros for EU citizens aged 18 to 25 is remarkable. It is genuinely quiet compared to everything else in Venice, so you can stand in front of things for as long as you want.",
+      "what_ruined": "Twenty euros is real money if you do not qualify for the concession and are already paying Venice prices for everything else. The labelling is sparse and largely assumes you know the painters. Booking online is through a single authorised operator, which catches people out.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. It holds the definitive collection of Venetian painting, it costs 20 euros, EU citizens aged 18 to 25 pay 2 euros, and it is consistently the quietest major museum in a city drowning in visitors.",
+      "meta_description": "The Gallerie dell'Accademia costs 20 euros, 2 euros for EU citizens aged 18 to 25, and under 18s free. The best-value hour in Venice.",
+      "facts_checked": [
+        {
+          "fact": "Full price admission is 20,00 euros.",
+          "url": "https://www.gallerieaccademia.it/en/visit",
+          "assert_text": "full price: €20.00",
+          "confidence": "verified on the gallery's official visit page"
+        },
+        {
+          "fact": "Young persons who are EU citizens aged 18 to 25 pay 2,00 euros.",
+          "url": "https://www.gallerieaccademia.it/en/visit",
+          "assert_text": "young persons (eu citizens aged 18-25): €2.00",
+          "confidence": "verified on the gallery's official visit page"
+        },
+        {
+          "fact": "Under 18s enter free.",
+          "url": "https://www.gallerieaccademia.it/en/visit",
+          "assert_text": "under 18s: free",
+          "confidence": "verified on the gallery's official visit page"
+        }
+      ],
+      "what_it_is": "The state gallery of Venetian art, in the former Scuola della Carita and adjoining convent at the southern foot of the Accademia bridge, holding Venetian painting from the fourteenth to the eighteenth century.",
+      "why_go": "Because Venetian painting is the thing Venice actually produced, and this is where it is. Giorgione's Tempest, Bellini, Titian, Tintoretto, Veronese's Feast in the House of Levi and Leonardo's Vitruvian Man are all here.",
+      "the_good": "A first-rank collection at 20 euros, with 2 euros for EU citizens aged 18 to 25 and free entry for under 18s. It is quiet in a city where nothing else is. Buying online lets you skip the ticket office queue.",
+      "the_downsides": "Labelling is thin and assumes prior knowledge. Twenty euros stings in a city that charges for everything. Online sales run through a single authorised operator, so anything else you find online is not the official channel.",
+      "best_for": "Anyone with an interest in Renaissance painting, EU citizens aged 18 to 25 who effectively get it for 2 euros, and any visitor who has had enough of the San Marco crush.",
+      "skip_if": "You have one day in Venice and have never been, in which case the city itself and the Basilica come first. Skip it also if you want context and explanation rather than paintings, since the labelling will not provide it.",
+      "practical": "Buy online through the authorised operator to skip the ticket office. Go in the morning while the crowd is at San Marco. If you are an EU citizen aged 18 to 25, bring ID, because the 2 euro rate is worth having the document for.",
+      "tickets": "Full price is 20,00 euros. Young persons who are EU citizens aged 18 to 25 pay 2,00 euros, and under 18s enter free. There are free admission days requiring no booking, and online sales run through a single authorised ticketing operator.",
+      "getting_there": "Vaporetto line 1 or 2 to Accademia, which stops at the foot of the bridge outside. It is about a twenty-minute walk from Piazza San Marco across the Accademia bridge.",
+      "location_context": "Dorsoduro, on the south side of the Grand Canal at the Accademia bridge, in the quieter university quarter. The Peggy Guggenheim Collection and the Punta della Dogana are both a short walk east along the same bank.",
+      "time_needed": "Two hours for the full collection at a reasonable pace. Ninety minutes if you go straight for the sixteenth century.",
+      "verdict": "The best-value serious museum in Venice, and the calmest. Go in the morning, buy online, and if you are a young EU citizen the 2 euro rate makes this close to the easiest recommendation on the site."
     },
     {
       "destination_slug": "vienna-austria",

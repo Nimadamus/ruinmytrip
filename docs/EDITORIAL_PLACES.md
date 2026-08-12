@@ -33,6 +33,23 @@ examined afterwards.
 It refuses to run when `DATABASE_URL` is set or `APP_ENV=production`, and asserts the resolved
 driver is sqlite before migrating, so it cannot touch production.
 
+## Starting the local server
+
+```bash
+scripts/dev_server.sh          # default port 8099
+```
+
+Do not start the server by hand. On 2026-08-12 a server left running from an earlier batch was
+still bound to the port, a second one bound alongside it, and requests were answered by whichever
+won. A full page sweep then reported six brand new pages as 404 while older pages returned 200,
+because the answering process was reading a database from two batches earlier.
+
+That is the dangerous failure: not a crash, a plausible wrong answer that gets reported as
+evidence. The script kills anything on the port, provisions the database, starts exactly one
+server, and then asserts the served sitemap lists the same number of editorial places the database
+holds. If a stale process is answering, it fails loudly instead of letting you check the wrong
+build.
+
 ## The five steps
 
 ### 1. Pick candidates and probe the sources FIRST
