@@ -245,24 +245,52 @@ function place_show(array $a): void {
     $me = current_user();
     $typeLabel = rmt_place_type_label((string) $p['type']);
 
-    $ld = ['@context'=>'https://schema.org', '@type'=>'Place', 'name'=>$p['name'],
-           'url'=>url(ltrim(rmt_place_path($p), '/')),
+    $ed = rmt_place_editorial($id);
+    $nearby = rmt_place_nearby($id, (int)$p['destination_id']);
+    $canonical = url(ltrim(rmt_place_path($p), '/'));
+
+    $ld = ['@context'=>'https://schema.org', '@type'=>'TouristAttraction', 'name'=>$p['name'],
+           'url'=>$canonical,
            'address'=>['@type'=>'PostalAddress','addressLocality'=>$p['dest_name'],'addressCountry'=>$p['dest_country']]];
+    if ($ed && !empty($ed['what_it_is'])) $ld['description'] = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 300, '…');
+    // aggregateRating is COMMUNITY ONLY and omitted entirely at zero. An empty aggregate, or one
+    // padded with our own rating, would be a consensus claim with nothing behind it.
     if ($stats['c'] > 0 && $stats['a'] !== null) {
         $ld['aggregateRating'] = ['@type'=>'AggregateRating','ratingValue'=>$stats['a'],
                                   'reviewCount'=>$stats['c'],'bestRating'=>5,'worstRating'=>1];
     }
+    // The editorial review is marked up as what it actually is: one Review, authored by the
+    // organisation, never folded into an aggregate. That is semantically correct and it is the
+    // opposite of inventing review counts.
+    if ($editorial) {
+        $er = $editorial[0];
+        $ld['review'] = ['@type'=>'Review',
+            'author'=>['@type'=>'Organization','name'=>rmt_editorial_name()],
+            'name'=>$er['title'],
+            'reviewRating'=>['@type'=>'Rating','ratingValue'=>(int)$er['rating'],'bestRating'=>5,'worstRating'=>1],
+            'datePublished'=>substr((string)$er['created_at'], 0, 10),
+            'reviewBody'=>mb_strimwidth(strip_tags((string)$er['body']), 0, 500, '…')];
+    }
 
-    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel'), [
-        'title' => $p['name'].' — '.$typeLabel.' reviews in '.$p['dest_name'].' | RuinMyTrip',
-        'description' => $stats['c'] > 0
+    // Description priority: the hand-written one, then the editorial opener, then the honest
+    // "nothing here yet" line. Never a generated template sentence dressed up as a summary.
+    $desc = $ed['meta_description'] ?? null;
+    if (!$desc && $ed && !empty($ed['what_it_is'])) $desc = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 155, '…');
+    if (!$desc) {
+        $desc = $stats['c'] > 0
             ? $p['name'].' in '.$p['dest_name'].': '.$stats['a'].'/5 from '.$stats['c'].' traveler '.($stats['c']===1?'review':'reviews').'.'
-            : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet — be the first to write one.',
+            : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
+    }
+
+    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby'), [
+        'title' => $p['name'].', '.$p['dest_name'].' — review, tips and is it worth visiting | RuinMyTrip',
+        'description' => $desc,
+        'canonical' => $canonical,
         'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($p['dest_hero']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$p['dest_name'],'url'=>url('d/'.$p['dest_slug'])],
                           ['name'=>'Places','url'=>url('d/'.$p['dest_slug'].'/places')],
-                          ['name'=>$p['name'],'url'=>url(ltrim(rmt_place_path($p), '/'))]],
+                          ['name'=>$p['name'],'url'=>$canonical]],
         'jsonld' => jsonld($ld),
     ]);
 }

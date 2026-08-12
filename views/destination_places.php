@@ -44,6 +44,12 @@
         <h2 style="margin:.35rem 0 .2rem;font-size:1.1rem">
           <a href="<?= e(url('p/'.$p['slug'])) ?>"><?= e($p['name']) ?></a>
         </h2>
+        <?php /* The snippet is the hand-written meta description for that place, not a truncated
+                 slice of its body: a generic first-40-words teaser is exactly the boilerplate this
+                 page is supposed to avoid. Places with no editorial simply show no snippet. */ ?>
+        <?php if (!empty($p['snippet'])): ?>
+          <p style="margin:0 0 .35rem"><?= e((string)$p['snippet']) ?></p>
+        <?php endif; ?>
         <p class="muted" style="margin:0">
           <?php if ($c > 0): ?>
             <?= $c ?> traveler <?= $c === 1 ? 'review' : 'reviews' ?>

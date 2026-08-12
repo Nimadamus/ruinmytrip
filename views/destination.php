@@ -118,21 +118,26 @@
         </div>
         <div class="grid" style="gap:10px;margin-bottom:10px">
           <?php foreach ($topPlaces as $tp): $tc = (int)$tp['review_count']; ?>
-            <div class="card"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-              <span>
-                <a href="<?= e(url('p/'.$tp['slug'])) ?>"><strong><?= e($tp['name']) ?></strong></a>
-                <span class="muted" style="text-transform:capitalize"> · <?= e(rmt_place_type_label((string)$tp['type'])) ?></span>
-              </span>
-              <span class="muted" style="white-space:nowrap">
-                <?php if ($tc > 0): ?>
-                  <span class="stars"><?= stars((int) round((float)$tp['avg_rating'])) ?></span>
-                  <?= e((string)$tp['avg_rating']) ?>/5 · <?= $tc ?>
-                <?php elseif ((int)$tp['editorial_count'] > 0): ?>
-                  <?= rmt_editorial_badge('review') ?>
-                <?php else: ?>
-                  No reviews yet
-                <?php endif; ?>
-              </span>
+            <div class="card"><div class="card-body">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+                <span>
+                  <a href="<?= e(url('p/'.$tp['slug'])) ?>"><strong><?= e($tp['name']) ?></strong></a>
+                  <span class="muted" style="text-transform:capitalize"> · <?= e(rmt_place_type_label((string)$tp['type'])) ?></span>
+                </span>
+                <span class="muted" style="white-space:nowrap">
+                  <?php if ($tc > 0): ?>
+                    <span class="stars"><?= stars((int) round((float)$tp['avg_rating'])) ?></span>
+                    <?= e((string)$tp['avg_rating']) ?>/5 · <?= $tc ?>
+                  <?php elseif ((int)$tp['editorial_count'] > 0): ?>
+                    <?= rmt_editorial_badge('review') ?>
+                  <?php else: ?>
+                    No reviews yet
+                  <?php endif; ?>
+                </span>
+              </div>
+              <?php if (!empty($tp['snippet'])): ?>
+                <p class="muted" style="margin:.35rem 0 0;font-size:.93rem"><?= e((string)$tp['snippet']) ?></p>
+              <?php endif; ?>
             </div></div>
           <?php endforeach; ?>
         </div>

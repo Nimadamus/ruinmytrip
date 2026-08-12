@@ -46,6 +46,11 @@ $pdo->exec('CREATE TABLE reviews (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id 
               value_rating INT, slug TEXT, title TEXT, status TEXT)');
 $pdo->exec('CREATE TABLE review_votes (id INTEGER PRIMARY KEY, review_id INT, vote_type TEXT)');
 $pdo->exec('CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT, url TEXT, caption TEXT, created_at TEXT)');
+$pdo->exec('CREATE TABLE place_editorial (place_id INTEGER PRIMARY KEY, meta_description TEXT,
+              what_it_is TEXT, why_go TEXT, the_good TEXT, the_downsides TEXT, best_for TEXT,
+              skip_if TEXT, practical TEXT, location_context TEXT, getting_there TEXT,
+              time_needed TEXT, accessibility TEXT, tickets TEXT, verdict TEXT, sources TEXT,
+              created_at TEXT NOT NULL, updated_at TEXT)');
 
 $pdo->exec("INSERT INTO users (id,username,role,status) VALUES
               (1,'ruinmytrip','editorial','active'), (2,'traveler_a','user','active'), (3,'traveler_b','user','active')");
@@ -189,6 +194,39 @@ ok('with both, review_count is the community count only', $mixed && (int) $mixed
 ok('with both, the average is the community rating only', $mixed && (float) $mixed['avg_rating'] === 3.0,
    'got ' . var_export($mixed['avg_rating'] ?? null, true));
 ok('with both, editorial is still tracked separately', $mixed && (int) $mixed['editorial_count'] === 1);
+
+// --- structured editorial (migration 041) ------------------------------------------------------
+// The editorial payload lives in its own table so a write can never touch the user-owned `places`
+// row, and so a place with no editorial simply has none rather than a row full of empty strings.
+ok('a place with no editorial returns null', rmt_place_editorial((int) $a['place_id']) === null);
+
+q_run('INSERT INTO place_editorial (place_id, meta_description, what_it_is, verdict, sources, created_at)
+       VALUES (?,?,?,?,?,?)',
+      [$a['place_id'], 'A hotel in Barcelona worth knowing about.', 'A hotel.', 'Go.',
+       json_encode([['fact' => 'It exists.', 'url' => 'https://example.test/x', 'assert_text' => 'exists']]),
+       '2026-08-12 00:00:00']);
+
+$edRow = rmt_place_editorial((int) $a['place_id']);
+ok('editorial is returned for a place that has it', $edRow !== null && $edRow['what_it_is'] === 'A hotel.');
+ok('sources are decoded from JSON into an array',
+   is_array($edRow['sources']) && ($edRow['sources'][0]['assert_text'] ?? null) === 'exists');
+ok('writing editorial does not alter the place row',
+   (int) q_one('SELECT COUNT(*) n FROM places WHERE id = ?', [$a['place_id']])['n'] === 1
+   && q_one('SELECT name FROM places WHERE id = ?', [$a['place_id']])['name'] === 'Hotel Arts');
+
+// The listing carries the hand-written snippet, so destination pages show a real sentence rather
+// than a truncated slice of body text.
+$withSnippet = null;
+foreach (rmt_places_for_destination(1) as $p) if ((int) $p['id'] === (int) $a['place_id']) $withSnippet = $p;
+ok('the listing exposes the editorial snippet',
+   $withSnippet && $withSnippet['snippet'] === 'A hotel in Barcelona worth knowing about.');
+
+// Nearby links must never point at a page with nothing on it.
+$near = rmt_place_nearby((int) $c['place_id'], 1);
+ok('nearby returns only places that have editorial',
+   count($near) === 1 && (int) $near[0]['id'] === (int) $a['place_id']);
+ok('nearby excludes the place you are already on',
+   count(array_filter($near, fn($n) => (int) $n['id'] === (int) $c['place_id'])) === 0);
 
 echo $fails ? "\n$fails FAILED\n" : "\nAll places tests passed.\n";
 exit($fails ? 1 : 0);

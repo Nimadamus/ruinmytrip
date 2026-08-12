@@ -205,7 +205,8 @@ function rmt_places_for_destination(int $destId, string $type = '', int $limit =
                          COUNT(r.id) review_count,
                          ROUND(AVG(r.rating), 1) avg_rating,
                          (SELECT COUNT(*) FROM reviews er JOIN users eu ON eu.id = er.user_id
-                           WHERE er.place_id = p.id AND er.status = 'published' AND eu.role = ?) editorial_count
+                           WHERE er.place_id = p.id AND er.status = 'published' AND eu.role = ?) editorial_count,
+                         (SELECT pe.meta_description FROM place_editorial pe WHERE pe.place_id = p.id) snippet
                     FROM places p
                     LEFT JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
                                        AND r.user_id IN (SELECT id FROM users WHERE role <> ?)
@@ -221,6 +222,50 @@ function rmt_place_type_counts(int $destId): array {
     $out = [];
     foreach ($rows as $r) $out[(string) $r['type']] = (int) $r['c'];
     return $out;
+}
+
+/**
+ * The ordered sections of a place's structured editorial, as [column => heading].
+ *
+ * Order is the reading order on the page and is deliberate: what it is, then why anyone goes, then
+ * the honest good and bad, then who it suits, then everything you need to actually turn up. The
+ * verdict is last because a verdict before the evidence is just an opinion.
+ */
+const RMT_PLACE_EDITORIAL_SECTIONS = [
+    'what_it_is'       => 'What it is',
+    'why_go'           => 'Why travelers go',
+    'the_good'         => 'What is genuinely good',
+    'the_downsides'    => 'Downsides and tourist traps',
+    'best_for'         => 'Best for',
+    'skip_if'          => 'Consider skipping if',
+    'practical'        => 'Practical advice',
+    'tickets'          => 'Tickets and reservations',
+    'getting_there'    => 'Getting there',
+    'location_context' => 'Where it sits',
+    'time_needed'      => 'How long to allow',
+    'accessibility'    => 'Accessibility',
+    'verdict'          => 'The RuinMyTrip verdict',
+];
+
+/** Structured editorial for a place, or null when the team has not written one. */
+function rmt_place_editorial(int $placeId): ?array {
+    $row = q_one('SELECT * FROM place_editorial WHERE place_id = ?', [$placeId]);
+    if (!$row) return null;
+    $row['sources'] = json_decode((string) ($row['sources'] ?? ''), true) ?: [];
+    return $row;
+}
+
+/**
+ * Other editorially covered attractions in the same destination, for the "nearby" links.
+ *
+ * Only places that actually have editorial are offered: linking to a bare place page with nothing
+ * on it would be the doorway-page pattern this content exists to avoid.
+ */
+function rmt_place_nearby(int $placeId, int $destId, int $limit = 6): array {
+    return q_all('SELECT p.id, p.slug, p.name, p.type, pe.meta_description
+                    FROM places p JOIN place_editorial pe ON pe.place_id = p.id
+                   WHERE p.destination_id = ? AND p.id <> ? AND p.status = ?
+                   ORDER BY p.name LIMIT ' . max(1, $limit), [$destId, $placeId, 'active']);
 }
 
 /**

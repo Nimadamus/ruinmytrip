@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var ?array $me @var string $typeLabel */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -43,6 +43,46 @@
     <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$p['destination_id'])) ?>">Write a review</a>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
   </p>
+
+  <?php /* Structured editorial. Only sections with content render, so a page never pads itself with
+           headings that say nothing. Every claim here is sourced; the list is printed at the end. */ ?>
+  <?php if ($ed): ?>
+    <div class="card" style="margin:0 0 26px"><div class="card-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin:0;font-size:1.15rem">RuinMyTrip guide to <?= e($p['name']) ?></h2>
+        <?= rmt_editorial_badge('review') ?>
+      </div>
+      <p class="hint" style="margin:.5rem 0 0"><?= e(rmt_editorial_disclosure()) ?></p>
+    </div></div>
+
+    <?php foreach (RMT_PLACE_EDITORIAL_SECTIONS as $col => $heading): ?>
+      <?php $val = trim((string) ($ed[$col] ?? '')); if ($val === '') continue; ?>
+      <section style="margin:0 0 22px">
+        <h2 style="font-size:1.05rem;margin:0 0 6px"><?= e($heading) ?></h2>
+        <?php foreach (preg_split('/\n\s*\n/', $val) ?: [] as $para): ?>
+          <?php $para = trim($para); if ($para === '') continue; ?>
+          <p style="margin:0 0 .6rem"><?= e($para) ?></p>
+        <?php endforeach; ?>
+      </section>
+    <?php endforeach; ?>
+
+    <?php if (!empty($ed['sources'])): ?>
+      <section style="margin:0 0 26px">
+        <h2 style="font-size:1.05rem;margin:0 0 6px">Sources</h2>
+        <p class="hint" style="margin:0 0 .5rem">Every figure above was checked against these before publication. If one has since changed, tell us and we will correct it.</p>
+        <ul class="list-plain" style="margin:0">
+          <?php foreach ($ed['sources'] as $s): ?>
+            <li style="padding:4px 0;font-size:.92rem">
+              <?= e((string) ($s['fact'] ?? '')) ?>
+              <?php if (!empty($s['url'])): ?>
+                <a href="<?= e((string) $s['url']) ?>" rel="nofollow noopener" target="_blank">source</a>
+              <?php endif; ?>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      </section>
+    <?php endif; ?>
+  <?php endif; ?>
 
   <?php if ($photos): ?>
     <h2 style="font-size:1.1rem;margin:0 0 10px">Traveler photos</h2>
@@ -106,4 +146,26 @@
       </div></article>
     <?php endforeach; ?>
   </div>
+
+  <?php /* Internal links to sibling attractions, but only ones with editorial behind them, so this
+           can never become a ring of empty pages pointing at each other. */ ?>
+  <?php if ($nearby): ?>
+    <section style="margin:0 0 50px">
+      <h2 style="font-size:1.1rem;margin:0 0 10px">Also in <?= e($p['dest_name']) ?></h2>
+      <div class="grid" style="gap:12px">
+        <?php foreach ($nearby as $n): ?>
+          <article class="card"><div class="card-body">
+            <span class="eyebrow" style="text-transform:capitalize"><?= e(rmt_place_type_label((string)$n['type'])) ?></span>
+            <h3 style="margin:.25rem 0 .2rem;font-size:1.02rem">
+              <a href="<?= e(url('p/'.$n['slug'])) ?>"><?= e($n['name']) ?></a>
+            </h3>
+            <?php if (!empty($n['meta_description'])): ?>
+              <p class="muted" style="margin:0;font-size:.93rem"><?= e((string)$n['meta_description']) ?></p>
+            <?php endif; ?>
+          </div></article>
+        <?php endforeach; ?>
+      </div>
+      <p style="margin:14px 0 0"><a href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">All reviewed places in <?= e($p['dest_name']) ?> →</a></p>
+    </section>
+  <?php endif; ?>
 </div>

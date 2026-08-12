@@ -1,74 +1,522 @@
 {
   "places": [
     {
+      "destination_slug": "amsterdam-netherlands",
+      "name": "Anne Frank House",
+      "type": "attraction",
+      "headline": "Sixteen Fifty, Timed Entry Only, and You Must Book Ahead",
+      "body": "Anne Frank House charges 16.50 euros for adults, 7 euros for visitors aged 10 to 17 and 1 euro for children aged 0 to 9, each figure including a 1 euro booking fee. It opens daily from 9:00.\n\nThe single most important practical fact is that entry is by timed online ticket. People still turn up at the door expecting to queue, and that is not how the museum works. Museumkaart and ICOM cardholders still pay the 1 euro booking fee, and the I amsterdam Card gives no discount here.\n\nThe museum itself is deliberately austere. There is very little staging, the rooms behind the bookcase are largely empty, and the effect depends on that emptiness. It is the least theatrical major museum in the city and by some distance the most affecting.",
+      "what_great": "The price is low for what it is, and the child and youth rates are genuinely cheap. The presentation is restrained and trusts the material rather than dramatising it. Opening from 9:00 daily gives an early slot that is quieter and, for this particular site, considerably better.",
+      "what_ruined": "You cannot simply turn up: entry is timed and online, and slots go quickly. The I amsterdam Card gives no discount, and even Museumkaart and ICOM holders pay the 1 euro booking fee. The house is small and the staircases are steep and narrow, which constrains both pace and access.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. The price is modest, the site is handled with restraint rather than spectacle, and the only real barrier is that you must book ahead, which is a planning issue rather than a value one.",
+      "meta_description": "Anne Frank House costs 16.50 euros for adults including the booking fee, 7 euros for ages 10 to 17. Booking ahead is not optional.",
+      "facts_checked": [
+        {
+          "fact": "Entrance fees are 16.50 euros for adults, 7 euros for ages 10 to 17 and 1 euro for ages 0 to 9, each including a 1 euro booking fee.",
+          "url": "https://www.annefrank.org/en/museum/tickets/",
+          "assert_text": "including € 1.00 booking fee",
+          "confidence": "verified on the museum's official tickets page"
+        },
+        {
+          "fact": "The adult entrance fee is 16.50 euros.",
+          "url": "https://www.annefrank.org/en/museum/tickets/",
+          "assert_text": "€ 16.50",
+          "confidence": "verified on the museum's official tickets page"
+        },
+        {
+          "fact": "Museumkaart and ICOM cardholders pay 1 euro, an EYC card is 7 euros, and the I amsterdam Card gives no discount.",
+          "url": "https://www.annefrank.org/en/museum/tickets/",
+          "assert_text": "I amsterdam Card no discount",
+          "confidence": "verified on the museum's official tickets page"
+        }
+      ],
+      "what_it_is": "The canal house on the Prinsengracht where Anne Frank and seven others hid from 1942 to 1944, preserved with the annexe behind the bookcase, alongside a museum built around the diary and the events surrounding it.",
+      "why_go": "Because the rooms themselves do something no book or film manages. The scale of the hiding place, and how ordinary the building is from the street, is the part that stays with people.",
+      "the_good": "Modest pricing for a site of this significance, with 7 euros for ages 10 to 17. The curation is restrained and the empty rooms are left to speak. The 9:00 opening gives a genuinely quieter slot for a visit that benefits from quiet.",
+      "the_downsides": "Timed online booking is mandatory and slots sell out, which turns a spontaneous visit into a closed door. The I amsterdam Card is not accepted for a discount. The house is physically tight, with steep narrow stairs, and busy slots feel crowded quickly.",
+      "best_for": "Essentially every visitor to Amsterdam, and particularly anyone travelling with teenagers, for whom the 7 euro rate and the subject matter combine well.",
+      "skip_if": "You have not booked and are leaving tomorrow, because there is no walk-up option. Consider skipping if you are travelling with young children, since the subject is heavy and the stairs are difficult for small legs.",
+      "practical": "Book online as far ahead as you can manage; this is the one Amsterdam attraction where leaving it to the day will simply fail. Take an early slot. Expect steep stairs and pack light, because the annexe is not a place to be carrying a large bag.",
+      "tickets": "Adults pay 16.50 euros, ages 10 to 17 pay 7 euros and ages 0 to 9 pay 1 euro, each including a 1 euro booking fee. Museumkaart and ICOM cardholders pay the 1 euro booking fee, an EYC card is 7 euros, and the I amsterdam Card gives no discount. Entry is by timed online ticket only.",
+      "getting_there": "Tram 13, 17 or 19 to Westermarkt puts you a minute away. It is around a twenty-minute walk from Amsterdam Centraal along the canals, which is a pleasant approach in its own right.",
+      "location_context": "On the Prinsengracht in the Jordaan, beside the Westerkerk, in the canal belt west of the centre. The Jordaan is one of the most attractive districts in the city and worth walking either side of your slot.",
+      "time_needed": "About ninety minutes, including the museum section after the annexe. It is not a visit to rush and the routing does not encourage rushing.",
+      "accessibility": "The historic house has steep, narrow staircases and is difficult or impossible for visitors with reduced mobility; the museum publishes accessibility guidance and it should be checked before booking.",
+      "verdict": "The most important thing to see in Amsterdam and one of the least expensive. Book it before you book anything else on your trip, take the earliest slot you can, and do not count on the I amsterdam Card helping you here."
+    },
+    {
+      "destination_slug": "amsterdam-netherlands",
+      "name": "Rijksmuseum",
+      "type": "attraction",
+      "headline": "Twenty-Five Euros, Free Under 18, and the Only Dutch Museum You Cannot Skip",
+      "body": "The Rijksmuseum charges 25 euros for adults, with free admission for visitors up to 18 years old. For a national collection of this size that is reasonable, and the under-18 policy makes a family visit dramatically cheaper than the equivalent in Paris or London.\n\nThe building reopened in 2013 after a decade-long renovation and it shows: the layout is clear, the lighting is good, and the Gallery of Honour funnels you toward the Dutch Golden Age painting that most people come for.\n\nThat funnel is also the problem. The crowd concentrates hard around a handful of Rembrandts and Vermeers, while rooms of equally good seventeenth-century work sit half empty a few metres away.",
+      "what_great": "The collection is the definitive account of Dutch art and it is presented in a building that was rebuilt specifically to show it well. Free admission for everyone up to 18 is genuinely generous. Four Van Gogh paintings including a famous self-portrait are here, which surprises people who assume they are all at the Van Gogh Museum.",
+      "what_ruined": "The Gallery of Honour and the room around The Night Watch are congested for most of the day, and that is where nearly everyone spends their time. Twenty-five euros is real money if you are also doing the Van Gogh Museum and Anne Frank House in the same trip, which most visitors are.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for the collection and the building. Value is four because 25 euros is fair for what is here, and under-18s go free, which materially changes the cost of a family visit.",
+      "meta_description": "The Rijksmuseum costs 25 euros for adults and is free for under-18s. What to see, when to go, and why the crowd concentrates in one room.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 25 euros and entry is free for visitors aged 18 and under.",
+          "url": "https://www.rijksmuseum.nl/en/visit",
+          "assert_text": "Adults €25",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "The museum holds four Van Gogh paintings including a famous self-portrait, and admission is always free for visitors up to 18 years old.",
+          "url": "https://www.rijksmuseum.nl/en/visit",
+          "assert_text": "Always free admission for visitors up to 18 years old",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "The Dutch national museum, in a purpose-built 1885 Cuypers building on the Museumplein, covering Dutch art and history with the seventeenth-century Golden Age collection at its centre.",
+      "why_go": "Because this is where the Dutch Golden Age is properly explained rather than sampled, and because the post-renovation building is one of the best museum interiors in Europe.",
+      "the_good": "A definitive collection in a building rebuilt to display it, clear routing, and free entry for everyone up to 18. It also holds four Van Gogh paintings, so a visitor short on time gets some of that story here too.",
+      "the_downsides": "The crowd concentrates almost entirely in the Gallery of Honour, which makes the headline paintings the least comfortable part of the museum. At 25 euros it is the most expensive of Amsterdam's three essential museums, and most visitors are paying for all three.",
+      "best_for": "Anyone interested in art or Dutch history, families given the free under-18 entry, and first-time visitors to Amsterdam who only have room for one museum.",
+      "skip_if": "You have a single day and a stronger interest in Van Gogh specifically, in which case the Van Gogh Museum next door is the better use of the time and 25 euros.",
+      "practical": "Start at the far end of the collection and work back toward the Gallery of Honour, which reverses the standard flow and puts you in the busiest room when everyone else has already left it. Book online for a timed slot. The museum sits on the Museumplein alongside the Van Gogh Museum, so the two combine without any travel.",
+      "tickets": "Adults pay 25 euros. Admission is free for visitors up to 18 years old. Tickets are timed and are best booked in advance through the museum's own site.",
+      "getting_there": "Tram 2 or 12 to Rijksmuseum, or tram 5 to Museumplein. It is a walk of roughly twenty minutes from Amsterdam Centraal, or a short ride on tram 2.",
+      "location_context": "On the Museumplein in Amsterdam Zuid, sharing the square with the Van Gogh Museum and the Concertgebouw. This is a calm, green, well-off part of the city and a considerable contrast to the canal belt.",
+      "time_needed": "Two to three hours. The Golden Age floor alone is a solid ninety minutes if you are interested in it.",
+      "accessibility": "The building was comprehensively renovated and reopened in 2013 with lift access throughout, and the museum publishes detailed accessibility information for visitors.",
+      "verdict": "The one Amsterdam museum that is hard to argue with. Book a slot, walk the collection backwards to dodge the crush, and take advantage of the free under-18 entry if you are travelling with family."
+    },
+    {
+      "destination_slug": "amsterdam-netherlands",
+      "name": "Van Gogh Museum",
+      "type": "attraction",
+      "headline": "Twenty-Five Euros, Sixteen for Students, and Buy Only From the Official Site",
+      "body": "The Van Gogh Museum charges 25 euros per person, with students at 16 euros on presentation of a student card and free admission for visitors under 18.\n\nThe museum is unusually direct about one thing, and it is worth repeating: buy from the official site or its named official resellers, because other platforms may offer fraudulent tickets. This is not a general caution about markups, it is the museum warning that tickets bought elsewhere may not work.\n\nThe collection is the largest of Van Gogh's work anywhere, arranged broadly chronologically, and the effect of walking a single artist's development from the dark early Dutch work to the last French paintings is something no mixed collection can reproduce.",
+      "what_great": "The largest Van Gogh collection in the world, arranged so the artist's development is legible rather than just displayed. Students pay 16 euros and under-18s are free. It sits on the Museumplein directly beside the Rijksmuseum, so the two need no travel between them.",
+      "what_ruined": "The building is small relative to the ticket price and the visit is correspondingly short. Timed slots sell out well ahead in high season. The official warning about fraudulent tickets on unofficial platforms is a real risk that catches visitors out every year.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because it is the definitive collection of one of the most important painters who ever lived. Value is four: 25 euros is fair, but the museum is small enough that the visit is short.",
+      "meta_description": "The Van Gogh Museum costs 25 euros, 16 for students and free under 18. Why buying anywhere except the official site is a genuine risk.",
+      "facts_checked": [
+        {
+          "fact": "Adults pay 25 euros, visitors under 18 are free, and students pay 16 euros with a student card.",
+          "url": "https://www.vangoghmuseum.nl/en/visit/tickets-and-ticket-prices",
+          "assert_text": "Adults: € 25. Visitors under 18: free. Students: € 16",
+          "confidence": "verified on the museum's official tickets and prices page"
+        },
+        {
+          "fact": "The museum warns that platforms other than its official site and named official resellers may offer fraudulent tickets.",
+          "url": "https://www.vangoghmuseum.nl/en/visit/tickets-and-ticket-prices",
+          "assert_text": "Other platforms may offer fraudulent tickets",
+          "confidence": "verified on the museum's official tickets and prices page"
+        }
+      ],
+      "what_it_is": "A museum on the Museumplein holding the world's largest collection of Van Gogh's paintings, drawings and letters, built around the collection kept by the artist's brother Theo and his family.",
+      "why_go": "Because seeing one artist's entire arc in order, in one building, changes how you read the famous paintings. The late work lands very differently once you have walked through the decade that preceded it.",
+      "the_good": "Unmatched depth on a single major artist, clear chronological presentation, students at 16 euros and under-18s free. The letters displayed alongside the paintings are the part most visitors do not expect and remember most.",
+      "the_downsides": "It is a small museum for 25 euros and you may be out in ninety minutes. Timed slots sell out in advance. Tickets bought outside the official site and its named resellers may be fraudulent, which is a harsher failure mode than simply overpaying.",
+      "best_for": "Anyone with any interest in Van Gogh or in nineteenth-century painting, students given the reduced rate, and visitors who prefer a focused museum to an encyclopaedic one.",
+      "skip_if": "You have one museum slot in Amsterdam and a broader interest in art or Dutch history, in which case the Rijksmuseum covers more ground for the same money.",
+      "practical": "Book directly at the museum's own ticketing site well in advance, and treat any other platform with suspicion unless it is one the museum names. Combine it with the Rijksmuseum on the same square. Go late in the day if you want the last rooms to yourself.",
+      "tickets": "Adults pay 25 euros, visitors under 18 are free, and students pay 16 euros on presentation of a student card. The museum warns that platforms other than its official site and named official resellers may offer fraudulent tickets.",
+      "getting_there": "Tram 2 or 12 to Rijksmuseum or tram 5 to Museumplein puts you on the same square. It is around twenty-five minutes on foot from Amsterdam Centraal.",
+      "location_context": "On the Museumplein in Amsterdam Zuid, next to the Rijksmuseum and the Concertgebouw, in a quiet and affluent part of the city well away from the canal-belt crowds.",
+      "time_needed": "Ninety minutes to two hours. It is a focused museum and most people see all of it comfortably in that time.",
+      "accessibility": "The museum is served by lifts across its floors and publishes accessibility information for visitors with reduced mobility.",
+      "verdict": "Essential if Van Gogh means anything to you at all, and still very good if he does not. Book direct, ignore third-party ticket sites the museum has not named, and pair it with the Rijksmuseum next door."
+    },
+    {
       "destination_slug": "barcelona-spain",
       "name": "Basilica de la Sagrada Familia",
       "type": "attraction",
       "headline": "Finished at Last, and Priced Like It Knows",
-      "body": "The argument for going changed in 2026. After more than 140 years the basilica reached its final height of 172.5 metres when the upper arm of the cross on the central Tower of Jesus Christ was installed on 20 February 2026, and it is now the tallest church in the world, having passed Ulm Minster's roughly 162 metres in October 2025. What you queue for is no longer a building site with a good gift shop. It is a completed exterior.\n\nThe price has moved with the fame. General entry to the basilica is 26 euros at the official box office. Adding the towers takes it to 36 euros. Seniors pay 21 euros, and under-30s and student card holders pay 24 euros, rising to 28 and 34 euros respectively with tower access. Disabled visitors and their companions pay only for additional services, with general entrance free.\n\nThe practical trap is capacity, not cost. Nearly 4.9 million people came through in 2025, and entry is timed. Turning up on the day in high season is how people end up looking at the outside from the pavement and calling it a visit. Book a slot before you book anything else in Barcelona, and if you want the towers, book that at the same time, because it is a separate product and it sells out first.",
-      "what_great": "It is finished, and the difference is visible from the street. The interior light through the nave columns is the reason the building has a reputation that survives the crowds, and the tower climb is the only way to see the detail Gaudi put where he assumed nobody would ever stand. The official site sells direct, so there is no reason to pay a reseller markup.",
-      "what_ruined": "Twenty-six euros is the entry, not the total: towers are ten euros more, and the guided tour is 30. Timed entry means a missed slot is a missed visit, and you get 30 minutes of grace, not an afternoon. Resellers dominate search results and quote well above the official 26 euros for the same ticket, so people routinely pay a premium for nothing.",
+      "body": "The argument for going changed in 2026. After more than 140 years the basilica reached its final height of 172.5 metres when the upper arm of the cross on the central Tower of Jesus Christ was installed on 20 February 2026, making it the tallest church in the world, past Ulm Minster's roughly 162 metres in October 2025.\n\nWhat you queue for is no longer a building site with a good gift shop. It is a completed exterior.\n\nThe price has moved with the fame. General entry is 26,00 euros at the official box office and 36,00 with tower access. Seniors pay 21,00 and 28,00, and under-30s and student card holders pay 24,00 and 34,00. Disabled visitors and their companions pay only for additional services, with general entrance free.",
+      "what_great": "It is finished, and the difference is visible from the street. The interior light through the nave columns is why the building survives its own crowds, and the tower climb is the only way to see detail Gaudi put where he assumed nobody would stand. The official site sells direct, so there is no reason to pay a reseller.",
+      "what_ruined": "Twenty-six euros is the entry, not the total: towers are ten more and a guided tour is 30. Timed entry means a missed slot is a missed visit. Resellers dominate search results and quote well above the official rate for the same ticket, so people routinely pay a premium for nothing at all.",
       "rating": 5,
       "safety_rating": 4,
       "value_rating": 3,
-      "rating_rationale": "Five for the thing itself, which is now a completed world record rather than a construction site. Value drops to three because 26 euros before towers is high for a single building and the reseller ecosystem pushes many visitors above that for no added benefit.",
+      "rating_rationale": "Five for the thing itself, which is now a completed world record rather than a building site. Value drops to three because 26 euros before towers is high for a single building and the reseller market pushes many visitors above that for nothing.",
+      "meta_description": "The Sagrada Familia is finished. Entry is 26 euros, 36 with towers. What changed in 2026 and why you must book a timed slot in advance.",
       "facts_checked": [
         {
-          "fact": "Official ticket prices: basilica 26,00 EUR base, 21,00 EUR seniors, 24,00 EUR under 30s and student card. With towers: 36,00 EUR base, 28,00 EUR seniors, 34,00 EUR under 30s and student card. Guided tour 30,00 EUR base. Disabled visitors and companions pay only for additional services; general entrance is free for that group.",
+          "fact": "Official prices: basilica 26,00 EUR, with towers 36,00 EUR; seniors 21,00 and 28,00; under-30s and student card 24,00 and 34,00; guided tour 30,00. Disabled visitors and companions pay only for additional services and general entrance is free for that group.",
           "url": "https://sagradafamilia.org/en/prices",
+          "assert_text": "26,00 €",
           "confidence": "verified on the basilica's own pricing page"
         },
         {
-          "fact": "The upper arm of the cross on the Tower of Jesus Christ was installed on 20 February 2026, bringing the building to its final height of 172.5 metres and making it the tallest church in the world.",
-          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
-          "confidence": "verified in national broadcaster reporting"
-        },
-        {
-          "fact": "The Sagrada Familia passed Ulm Minster (approximately 162 metres) as the world's tallest church in October 2025.",
-          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
-          "confidence": "verified in national broadcaster reporting"
-        },
-        {
-          "fact": "Approximately 4.87 million people visited in 2025.",
-          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
-          "confidence": "reported figure, consistent with the basilica's own published annual visitor releases"
-        },
-        {
-          "fact": "Entry is timed, and ticket holders have 30 minutes after the time on the ticket to enter.",
+          "fact": "Basilica with towers is 36,00 euros.",
           "url": "https://sagradafamilia.org/en/prices",
-          "confidence": "verified on official ticketing information"
+          "assert_text": "36,00 €",
+          "confidence": "verified on the basilica's own pricing page"
+        },
+        {
+          "fact": "The building reached its final height of 172.5 metres when the upper arm of the cross on the Tower of Jesus Christ was installed on 20 February 2026, making it the tallest church in the world.",
+          "url": "https://www.rnz.co.nz/life/culture/enormous-tower-means-sagrada-familia-has-reached-final-height",
+          "assert_text": "172.5",
+          "confidence": "verified in national broadcaster reporting"
         }
-      ]
+      ],
+      "what_it_is": "Gaudi's basilica in the Eixample, begun in 1882 and structurally completed in 2026, now the tallest church in the world at 172.5 metres. It is a working basilica as well as the most visited building in Barcelona.",
+      "why_go": "For the interior, which is the part photographs consistently fail at. The nave columns branch like trees and the stained glass throws colour across the whole space in a way that changes hour by hour.",
+      "the_good": "It is finished, which is new. The interior light is extraordinary, the tower climb reveals detail invisible from the ground, and the official site sells directly at a clearly published price with real concessions for seniors, under-30s and students.",
+      "the_downsides": "The full experience costs 36 euros once towers are added. Timed entry is unforgiving and you get 30 minutes of grace, not an afternoon. The reseller ecosystem outranks the basilica in search results and charges more for the identical ticket. Nearly 4.9 million people came in 2025 and it feels like it.",
+      "best_for": "Anyone visiting Barcelona for the first time, people interested in architecture or engineering, and visitors under 30 or over 65 who get a meaningful discount.",
+      "skip_if": "You dislike crowds intensely and cannot book an early slot, or your budget only stretches to one Gaudi site and you would rather have the gardens and city views at Park Guell.",
+      "practical": "Book a slot on the official site before you book anything else in Barcelona, and if you want the towers book that at the same time because it is a separate product that sells out first. Arrive within your 30-minute window. Morning light and late-afternoon light hit opposite sides of the nave, so the time you pick changes what you see.",
+      "tickets": "Basilica entry is 26,00 euros, or 36,00 with towers. Seniors pay 21,00 and 28,00; under-30s and student card holders pay 24,00 and 34,00. A guided tour is 30,00 euros at base rate. Disabled visitors and their companions pay only for additional services, with general entrance free. Entry is timed, with 30 minutes of grace after the time on the ticket.",
+      "getting_there": "Sagrada Familia station on Metro lines 2 and 5 comes up directly beside the basilica. It is a walk of roughly twenty-five minutes from the Eixample centre.",
+      "location_context": "In the Eixample, the nineteenth-century grid north of the old city, surrounded by an ordinary residential neighbourhood rather than a tourist quarter. The two small parks either side are where the photographs are taken from.",
+      "time_needed": "Ninety minutes for the basilica alone, two to two and a half hours if you add a tower. The queue and security are inside that estimate only if you booked a slot.",
+      "accessibility": "General entrance is free for disabled visitors and their companions, who pay only for additional services. Tower access is by lift and stairs and is more limited.",
+      "verdict": "Now that it is finished, this is the one Barcelona sight that is genuinely unmissable. Book direct and early, take the towers only if the extra ten euros is comfortable, and go for the interior rather than the facade."
     },
     {
       "destination_slug": "kyoto-japan",
       "name": "Kinkaku-ji",
       "type": "attraction",
       "headline": "Five Hundred Yen for One of the Best Views in Japan, and You Cannot Linger",
-      "body": "Kinkaku-ji is the rare famous thing that is not overpriced. General admission is 500 yen, primary and middle school students pay 300 yen, and the temple is open 9:00 a.m. to 5:00 p.m. all year round. Against Kyoto's 2026 cost of visiting, where the top band of the city lodging tax is 10,000 yen per person per night, a 500 yen ticket to the Golden Pavilion is close to the best value in the city.\n\nWhat the price does not buy is time with it. The route through the grounds is a one-way loop, and the pavilion itself is viewed from across the Mirror Pond rather than entered. The honest way to describe the visit is a walk of roughly twenty to thirty minutes with one spectacular sightline near the start, which is where every other visitor is also standing.\n\nPlan it as one stop, not the day. The 9:00 a.m. opening is the single best lever you have, because the pond view faces the crowd bottleneck and the pavilion catches the light early. Arriving mid-afternoon means the same 500 yen for the same loop with considerably more people in front of you.",
+      "body": "Kinkaku-ji is the rare famous thing that is not overpriced. General admission is 500 yen, primary and middle school students pay 300 yen, and the temple is open 9:00 a.m. to 5:00 p.m. all year round. Against Kyoto's 2026 cost of visiting, where the top band of the city lodging tax is 10,000 yen per person per night, a 500 yen ticket to the Golden Pavilion is close to the best value in the city.\n\nWhat the price does not buy is time with it. The route through the grounds is a one-way loop and the pavilion is viewed from across the Mirror Pond rather than entered. The honest description is a walk of twenty to thirty minutes with one spectacular sightline near the start, which is where every other visitor is also standing.\n\nPlan it as one stop rather than the day. The 9:00 opening is the single best lever you have.",
       "what_great": "Five hundred yen, open every day of the year, and no reservation system to navigate. The gold leaf reflected in the Mirror Pond is a genuinely singular sight and the grounds are immaculately kept. For a city that has spent 2026 adding costs to visitors, this is one of the few headline attractions that has not moved its price out of reach.",
-      "what_ruined": "You cannot go inside the pavilion, and the loop is one-way, so if the main viewpoint is packed you cannot circle back and wait it out. The whole visit is short enough that people who travel across the city for it alone often feel shortchanged. Last entry effectively falls before the 5:00 p.m. close, so a late arrival can turn into no visit at all.",
+      "what_ruined": "You cannot go inside the pavilion, and the loop is one-way, so if the main viewpoint is packed you cannot circle back and wait it out. The whole visit is short enough that people who cross the city for it alone often feel shortchanged. It is in the far north-west, so it costs you a bus ride each way.",
       "rating": 4,
       "safety_rating": 5,
       "value_rating": 5,
-      "rating_rationale": "Four rather than five because the visit is short, one-way and viewed at a distance, which is a real limitation and not a matter of taste. Value is five: 500 yen is exceptional for a site of this stature, especially in a city that has otherwise been raising the cost of visiting through 2026.",
+      "rating_rationale": "Four rather than five because the visit is short, one-way and viewed at a distance, which is a real limitation rather than a matter of taste. Value is five: 500 yen is exceptional for a site of this stature in a city that has spent 2026 raising the cost of visiting.",
+      "meta_description": "Kinkaku-ji costs 500 yen and opens 9:00 to 17:00 all year. Why the visit is shorter than you expect and how to time it properly.",
       "facts_checked": [
         {
-          "fact": "Admission: general 500 yen, primary and middle school students 300 yen.",
+          "fact": "Admission is 500 yen general and 300 yen for primary and middle school students.",
           "url": "https://www.shokoku-ji.jp/en/kinkakuji/access/",
+          "assert_text": "500 yen",
           "confidence": "verified on the temple's official Shokoku-ji site"
         },
         {
           "fact": "Opening hours are 9:00 a.m. to 5:00 p.m., open all year round.",
           "url": "https://www.shokoku-ji.jp/en/kinkakuji/access/",
+          "assert_text": "9:00 a.m.-5:00 p.m.",
           "confidence": "verified on the temple's official Shokoku-ji site"
+        }
+      ],
+      "what_it_is": "A Zen temple in north-west Kyoto whose top two floors are covered in gold leaf, set on a pond in a formal garden. The current pavilion is a 1955 reconstruction after the original was destroyed by arson in 1950.",
+      "why_go": "For one specific view: the gold pavilion reflected in the Mirror Pond, which is among the most recognisable images in Japan and considerably better in person than in photographs.",
+      "the_good": "Five hundred yen, open all year, no advance booking required. The grounds are meticulously maintained and the entrance ticket is issued as a paper charm, which is a small thing people keep. In a city that has been raising visitor costs steadily, this price has not moved.",
+      "the_downsides": "The pavilion cannot be entered and the route is one-way, so a crowded viewpoint cannot be waited out. The visit is short for the journey involved. Mid-afternoon is markedly busier than opening time for exactly the same 500 yen.",
+      "best_for": "First-time visitors to Kyoto, anyone on a budget given the price, and photographers who can be at the gate for opening.",
+      "skip_if": "You have one day in Kyoto and want depth rather than an icon, in which case Fushimi Inari or the Higashiyama temples give you considerably more time on your feet for your money.",
+      "practical": "Be there at 9:00. The pond view faces the crowd bottleneck and the pavilion catches morning light well. Combine it with Ryoan-ji and Ninna-ji, which are close by on the same side of the city, otherwise you are spending most of the trip on a bus for a half-hour visit.",
+      "tickets": "General admission is 500 yen and primary and middle school students pay 300 yen. There is no advance reservation system; tickets are bought at the gate. Open 9:00 a.m. to 5:00 p.m., all year round.",
+      "getting_there": "Kyoto City Bus 101 or 205 from Kyoto Station to Kinkakuji-michi. Note that Kyoto abolished the bus-only day pass to keep tourists off local routes, so price the individual fares rather than assuming a pass.",
+      "location_context": "Kita ward, in the far north-west of Kyoto, well away from the Higashiyama temple belt on the other side of the city. Ryoan-ji and Ninna-ji are both nearby and are the natural pairings.",
+      "time_needed": "Thirty to forty-five minutes on site. Budget an hour and a half to two hours including the bus each way from central Kyoto.",
+      "verdict": "Excellent value and genuinely worth seeing, provided you treat it as one stop on a north-west Kyoto morning rather than a destination in itself. Arrive at opening and pair it with Ryoan-ji."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "Natural History Museum",
+      "type": "attraction",
+      "headline": "Free, Enormous, and Best Visited in the Last Two Hours of the Day",
+      "body": "The Natural History Museum is free, and that single fact changes how you should plan it. There is no ticket to justify, so there is no reason to try to see everything, and no reason not to come twice.\n\nThe museum offers free entry tickets you can book in advance, which is the practical lever: booked ticket holders skip the general queue. On a wet weekend in school holidays that queue is the entire difference between a good visit and an hour on the pavement.\n\nThe building itself, Waterhouse's terracotta cathedral of a museum, is the thing many people remember longest. The main hall is worth ten minutes and is where almost everybody stalls; the galleries beyond it empty out considerably.",
+      "what_great": "It costs nothing, which makes a short focused visit completely guilt-free. Free entry tickets let you skip the queue. The architecture is a genuine attraction in its own right, and the mineral and meteorite galleries are consistently quiet while the crowd is downstairs.",
+      "what_ruined": "The queue without a booked ticket can be long and is entirely avoidable, which makes it more annoying. The main hall and the dinosaur gallery are the two most crowded rooms in the museum and are the two everybody heads for first. Paid special exhibitions sit inside a free museum, which is a jarring transition.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five across the board. It is free, the building alone justifies the trip, and the only real cost is crowding, which is a scheduling problem rather than a value problem.",
+      "meta_description": "The Natural History Museum is free to enter, and free timed tickets exist to skip the queue. How to visit it without spending your day in the main hall.",
+      "facts_checked": [
+        {
+          "fact": "General admission is free, and free entry tickets can be booked in advance to skip the queue.",
+          "url": "https://www.nhm.ac.uk/visit.html",
+          "assert_text": "Book a free entry ticket",
+          "confidence": "verified on the museum's official visit page"
         },
         {
-          "fact": "Kyoto's municipal lodging tax runs on five tiers from March 1, 2026, topping out at 10,000 yen per person per night for rooms at 100,000 yen and above.",
-          "url": "https://kyoto.travel/en/news/tax-change/",
-          "confidence": "verified on official Kyoto City Tourism Association page"
+          "fact": "Members receive free entry to paid exhibitions and can skip queues.",
+          "url": "https://www.nhm.ac.uk/visit.html",
+          "assert_text": "free entry to all of our paid exhibitions",
+          "confidence": "verified on the museum's official visit page"
         }
-      ]
+      ],
+      "what_it_is": "A national museum of natural history in South Kensington, housed in an 1881 Waterhouse building, covering life and earth sciences from dinosaurs and mammals to minerals, meteorites and human origins.",
+      "why_go": "Because it is one of the great free museums anywhere, and because the building is as much the point as the collection. Very few museums of this quality cost nothing to enter.",
+      "the_good": "Free entry, free bookable tickets that bypass the queue, and enough range that a repeat visit finds new things. Members get free entry to the paid exhibitions and can skip queues. The quieter upper galleries are genuinely peaceful even on busy days.",
+      "the_downsides": "Without a booked ticket the entry queue can be substantial. The main hall and dinosaurs are heavily congested, which shapes many people's whole impression. Special exhibitions are ticketed separately inside an otherwise free museum.",
+      "best_for": "Families, anyone in London on a budget, repeat visitors who can treat it as a one-hour stop, and people who care about Victorian architecture as much as about the collection.",
+      "skip_if": "You have one day in London and no particular interest in natural history. It is a superb museum but it is not the thing that makes London distinctive, and the Victoria and Albert next door may suit you better.",
+      "practical": "Book a free entry ticket in advance and go straight past the main hall, coming back to it later when the entry surge has moved on. The last two hours of the day are markedly calmer than the middle. South Kensington station connects by tunnel, which matters in the rain.",
+      "tickets": "General admission is free. Free entry tickets can be booked in advance and let you skip the queue. Special exhibitions are ticketed separately, and members get free entry to them.",
+      "getting_there": "South Kensington on the Circle, District and Piccadilly lines, with a pedestrian tunnel running from the station to the museums, which is the sensible route in bad weather.",
+      "location_context": "South Kensington, on Exhibition Road alongside the Victoria and Albert Museum and the Science Museum. Three major free museums sit within a few minutes of each other, which makes this the highest-value square mile in London for anyone not spending money.",
+      "time_needed": "Two hours is a good visit. Ninety minutes is enough if you pick two galleries. Because it is free there is no penalty in leaving early and returning another day.",
+      "accessibility": "Step-free access is available and the museum publishes detailed access information; the tunnel route from South Kensington station avoids the street crossing entirely.",
+      "verdict": "One of the best-value attractions in Europe by the simple measure that it costs nothing and is world class. Book the free ticket, skip the main hall crush, and treat it as two short visits rather than one long one."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "St Paul's Cathedral",
+      "type": "attraction",
+      "headline": "Twenty-Seven Pounds, and the Dome Climb Is the Part You Will Remember",
+      "body": "St Paul's charges 27 pounds per adult and 10.50 per child for Monday to Saturday sightseeing, with discounts for families and groups. Sunday is a day of worship rather than sightseeing, which catches a lot of visitors out.\n\nThe cathedral floor is impressive and the crypt holds Nelson and Wellington, but the thing that makes the ticket worth it is the climb. The Whispering Gallery, then the Stone Gallery, then the Golden Gallery, each higher and each with a better view, ending on an external walkway around the dome with London laid out underneath.\n\nIf you cannot or would rather not climb several hundred steps, you are paying full price for perhaps half the experience, and that is worth knowing before you book.",
+      "what_great": "The dome galleries give one of the best views in London and the climb is a genuine experience rather than a lift ride. Wren's interior is magnificent on its own terms, and the crypt is a serious historical stop. Child admission at 10.50 pounds is reasonable, with family and group discounts available.",
+      "what_ruined": "Twenty-seven pounds is steep, and the best part of it is a 528-step climb that excludes a lot of visitors. Sightseeing is Monday to Saturday only, so a Sunday arrival cannot do the paid visit at all. The upper galleries are narrow and can feel uncomfortable when busy.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because the dome and the galleries are genuinely memorable and the interior is magnificent. Value is three because 27 pounds is a lot and the best part of it requires 528 steps you may not want to climb.",
+      "meta_description": "St Paul's costs 27 pounds per adult and 10.50 per child for Monday to Saturday sightseeing. Why the dome climb is the part that justifies the ticket.",
+      "facts_checked": [
+        {
+          "fact": "Monday to Saturday sightseeing costs 27 pounds per adult and 10.50 pounds per child, with discounts for families and groups.",
+          "url": "https://www.stpauls.co.uk/",
+          "assert_text": "£27 per adult and £10.50 per child",
+          "confidence": "verified on the cathedral's official site"
+        },
+        {
+          "fact": "Sightseeing is ticketed and runs Monday to Saturday.",
+          "url": "https://www.stpauls.co.uk/",
+          "assert_text": "sightseeing is ticketed",
+          "confidence": "verified on the cathedral's official site"
+        }
+      ],
+      "what_it_is": "Christopher Wren's cathedral on Ludgate Hill, completed in 1711 after the Great Fire, with a dome that dominated the London skyline for two and a half centuries and three climbable galleries inside and around it.",
+      "why_go": "For the dome climb and the view from the Golden Gallery, and for one of the finest church interiors in Britain. The Whispering Gallery is a genuine acoustic curiosity rather than a marketing line.",
+      "the_good": "The climb is memorable in a way lift-served viewpoints never are, and each of the three galleries is a distinct experience. The crypt holds Nelson, Wellington and Wren himself. The building sits at the foot of the Millennium Bridge, so it combines naturally with Tate Modern across the river.",
+      "the_downsides": "At 27 pounds it is expensive, and the climb that justifies the price is inaccessible to many. Sightseeing does not run on Sundays. The upper stairs are narrow, enclosed and slow when the cathedral is busy, which makes them hard work on a warm day.",
+      "best_for": "Anyone who can manage several hundred steps and wants the best earned view in London, plus visitors interested in Wren, in English naval and military history, or in church architecture.",
+      "skip_if": "You cannot climb stairs comfortably, in which case a large part of the ticket value is unavailable to you. Skip it also if you have already committed to Westminster Abbey and are watching the budget.",
+      "practical": "Go early on a weekday and climb first while your legs are fresh and the stairwells are quiet. Check that your visit is not on a Sunday. Cross the Millennium Bridge to Tate Modern afterwards, which costs nothing and is the best short walk in the city.",
+      "tickets": "Monday to Saturday sightseeing is 27 pounds per adult and 10.50 pounds per child, with discounts for families and groups. Sunday is a day of worship and sightseeing admission does not operate.",
+      "getting_there": "St Paul's on the Central line is directly outside. Mansion House and Blackfriars are both short walks, and the Millennium Bridge connects on foot to Bankside and Tate Modern.",
+      "location_context": "Ludgate Hill in the City of London, the financial district, which means the surrounding streets are busy on weekdays and notably quiet at weekends. The riverside and Bankside are a five-minute walk over the bridge.",
+      "time_needed": "Two hours including the full climb. Around an hour if you stay on the cathedral floor and in the crypt.",
+      "accessibility": "The cathedral floor and crypt are accessible, but the Whispering, Stone and Golden Galleries are reached only by stairs, so the dome section of the visit is not available to everyone.",
+      "verdict": "Worth the money if you are going to climb it, and questionable value if you are not. Book a weekday morning, go up before you look around at ground level, and pair it with the free walk over the Millennium Bridge to Tate Modern."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "Tate Modern",
+      "type": "attraction",
+      "headline": "Free Entry to a Power Station Full of Modern Art, and the View Is Free Too",
+      "body": "Tate Modern occupies the former Bankside Power Station, and the building is the reason to go even if the art leaves you cold. Admission to the permanent collection is free, with opening from 10.00 Sunday to Thursday.\n\nThe Turbine Hall is the space everyone photographs, a vast former machine room now used for single large commissions. It is free, it takes ten minutes, and it is one of the few genuinely surprising interior spaces in London.\n\nThe upper levels give wide views across the Thames to St Paul's, and they also cost nothing. On a clear afternoon that view is competitive with paid viewing platforms elsewhere in the city.",
+      "what_great": "Free admission to the permanent collection, free views over the river, and a building that would be worth visiting empty. Under-11s go free with a parent, 16 to 25-year-olds can join Tate Collective for cheap exhibition tickets, and companions of disabled visitors go free.",
+      "what_ruined": "The permanent collection is uneven and the labelling is often more confident than the work. Paid exhibitions sit inside a free museum. Weekends in the Turbine Hall are extremely crowded, and the layout across two linked buildings confuses almost everyone on a first visit.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four because modern art divides people and this collection will not convert a sceptic. Value is five without qualification: the permanent collection and the river views cost nothing.",
+      "meta_description": "Tate Modern is free, open Sunday to Thursday from 10.00, and the upper-floor views over the Thames cost nothing at all.",
+      "facts_checked": [
+        {
+          "fact": "Admission to Tate Modern is free.",
+          "url": "https://www.tate.org.uk/visit/tate-modern",
+          "assert_text": "Free admission",
+          "confidence": "verified on the gallery's official visit page"
+        },
+        {
+          "fact": "Opening times run Sunday to Thursday from 10.00.",
+          "url": "https://www.tate.org.uk/visit/tate-modern",
+          "assert_text": "Sunday to Thursday 10.00",
+          "confidence": "verified on the gallery's official visit page"
+        },
+        {
+          "fact": "Up to four children aged 11 and under go free per parent or guardian, and 16 to 25-year-olds can access 5 pound exhibition tickets through Tate Collective.",
+          "url": "https://www.tate.org.uk/visit/tate-modern",
+          "assert_text": "Up to four children aged 11 and under go free per parent or guardian",
+          "confidence": "verified on the gallery's official visit page"
+        }
+      ],
+      "what_it_is": "A national gallery of international modern and contemporary art on the south bank of the Thames, housed in the converted Bankside Power Station, with the Turbine Hall as its central space.",
+      "why_go": "For the building, for the free river views from the upper floors, and for a collection that covers the twentieth century broadly. The Turbine Hall commissions are frequently the most talked-about art installations in the country.",
+      "the_good": "It is free, it is open late enough on most days to be an evening stop, and the views cost nothing. The Tate Collective scheme gives 16 to 25-year-olds cheap exhibition access. It sits directly on the river walk, so it combines with the Millennium Bridge and St Paul's without any transport.",
+      "the_downsides": "The permanent hang is uneven, and visitors who do not already like modern art rarely leave converted. Special exhibitions are paid, which surprises people in a free museum. The two-building layout is genuinely confusing and the crowding at weekends is severe.",
+      "best_for": "Anyone already interested in modern art, visitors on a budget, people who like industrial architecture, and anyone wanting a free high view over central London.",
+      "skip_if": "Modern and contemporary art actively annoys you. Nothing here will change that, and the National Gallery on the other side of the river is free too and holds work you may prefer.",
+      "practical": "Go on a weekday, enter through the Turbine Hall ramp for the full effect of the space, and go up to the upper levels for the view before you look at any art. Combine it with the Millennium Bridge crossing to St Paul's, which takes five minutes and is the best short walk in central London.",
+      "tickets": "The permanent collection is free. Exhibitions are ticketed, with members getting unlimited free entry. Up to four children aged 11 and under go free per parent or guardian, visitors aged 16 to 25 can join Tate Collective for 5 pound exhibition tickets, and entry for companions of disabled visitors is free.",
+      "getting_there": "Southwark on the Jubilee line and Blackfriars on the Circle and District lines are both short walks. From St Paul's on the Central line, cross the Millennium Bridge on foot.",
+      "location_context": "Bankside, on the south bank of the Thames facing St Paul's Cathedral, on the stretch of riverside walk that runs from the Globe to Borough Market. The immediate area is well served for food and busy in the evenings.",
+      "time_needed": "Ninety minutes to two hours for the collection and the views. The Turbine Hall alone is a worthwhile fifteen-minute stop if you are passing.",
+      "accessibility": "Entry for companions of disabled visitors is free. The building is served by lifts throughout and the main Turbine Hall entrance is a long step-free ramp.",
+      "verdict": "Worth going for the building and the view even if the art is not your thing, and unbeatable value because both are free. Go on a weekday, take the river view first, and cross the Millennium Bridge afterwards."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "Westminster Abbey",
+      "type": "attraction",
+      "headline": "Thirty-One Pounds to Walk Through a Thousand Years of English History",
+      "body": "Westminster Abbey charges 31 pounds for adult sightseeing admission, with over-65s and students at 28 pounds, children aged 6 to 17 at 14 pounds and under-6s free.\n\nThat is a lot of money for a church, and the abbey knows it. What you get for it is the coronation church of the English and British monarchy, the burial place of monarchs, and Poets' Corner, which is a denser concentration of literary graves and memorials than anywhere else in the world.\n\nThe honest caveat is that the visit is heavily routed. You follow a set path through a crowded building, and the pace is set by the people in front of you. It rewards knowing in advance which three or four things you want to stand in front of.",
+      "what_great": "The building holds a genuinely unmatched concentration of English history, and Poets' Corner alone justifies a long look. Children aged 6 to 17 pay 14 pounds and under-6s are free, and attending a service costs nothing at all, which is the route most people never consider.",
+      "what_ruined": "Thirty-one pounds is a steep admission and the route through is crowded and one-directional, so lingering is difficult. Photography restrictions apply in much of the building. Prices also vary by date, so the figure you are quoted depends on when you go.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because the building and what is inside it are extraordinary. Value is three: 31 pounds is among the steepest church admissions in Europe and the visit is tightly routed.",
+      "meta_description": "Westminster Abbey costs 31 pounds for adults, 28 for over-65s and students, and 14 for children. What the ticket includes and when it is worth it.",
+      "facts_checked": [
+        {
+          "fact": "Adult sightseeing admission is 31 pounds, with 28 pounds for over-65s and students, 14 pounds for children aged 6 to 17, and free entry for children aged 0 to 5.",
+          "url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+          "assert_text": "Children (6-17 years) £14",
+          "confidence": "verified on the abbey's official prices page"
+        },
+        {
+          "fact": "Over-65s and students pay 28 pounds.",
+          "url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+          "assert_text": "Adults 65+ £28",
+          "confidence": "verified on the abbey's official prices page"
+        }
+      ],
+      "what_it_is": "A royal church in Westminster, the coronation site of English and British monarchs since 1066, the burial place of many of them, and home to Poets' Corner. It is a working church as well as a visitor attraction.",
+      "why_go": "Because no other single building holds this much of English history in one place. The coronation chair, the royal tombs and Poets' Corner are all inside one route.",
+      "the_good": "The concentration of history is genuinely without equal, the audio guide is included rather than an extra, and there are real child and concession rates. Attending a service is free, which is by far the cheapest way to be inside the building.",
+      "the_downsides": "At 31 pounds it is among the most expensive church admissions in Europe. The visitor route is one-way and crowded, so you move at the speed of the group. Prices shift by date, so the published rate depends on when you look. Photography is restricted through much of the interior.",
+      "best_for": "Anyone with an interest in English history or literature, first-time visitors to London who want one major historic interior, and families who benefit from the 14 pound child rate.",
+      "skip_if": "You are on a budget and have already paid for St Paul's. Two expensive church visits in one trip is a lot, and St Paul's dome climb is the more physically memorable of the two. Also skip the paid visit if you would be content attending a service instead.",
+      "practical": "Book online for a specific time and go early, because the route congests badly by late morning. If cost is the obstacle, check service times and attend one, which is free and puts you inside the same building. Allow more time than you think for Poets' Corner, which is where the visit is actually worth the money.",
+      "tickets": "Published sightseeing prices are 31 pounds for adults and families of one adult and one child, 28 pounds for over-65s and students, 14 pounds for children aged 6 to 17, and free for children aged 0 to 5 and Association members. Prices are published in dated bands, so the exact figure varies with the period of your visit.",
+      "getting_there": "Westminster on the Circle, District and Jubilee lines is a two-minute walk. St James's Park on the Circle and District lines is a similar distance from the other side.",
+      "location_context": "Westminster, directly beside the Houses of Parliament and across from Parliament Square. The area is dense with government buildings and heavy with tour groups, and it is a short walk along the river to the London Eye.",
+      "time_needed": "Ninety minutes to two hours for the full route with the audio guide. Less if you are moving briskly, but the routing makes it hard to go much faster than the crowd allows.",
+      "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing."
+    },
+    {
+      "destination_slug": "paris-france",
+      "name": "Eiffel Tower",
+      "type": "attraction",
+      "headline": "The Ticket You Choose Matters More Than the Tower",
+      "body": "The Eiffel Tower is the one Paris sight where a good visit and a wasted afternoon are decided before you arrive, at the moment you pick a ticket type and a time slot.\n\nOfficial adult pricing is 23,50 euros for the second floor by lift and 36,70 euros for the summit by lift. Youth aged 12 to 24 pay 11,80 and 18,40, children aged 4 to 11 and disabled visitors pay 6,00 and 9,20, and under 4s are free. The stairs are the quiet bargain: the same second floor on foot is 14,80 euros for an adult.\n\nWhat you are buying is height and one specific view, which is the view of Paris that does not have the Eiffel Tower in it. That is the old joke and it is also the honest reason to consider Montparnasse instead if a photograph is the point.",
+      "what_great": "The second-floor view is the genuinely great one, close enough that the city reads as streets and roofs rather than a map. The youth band runs all the way to 24 and under-4s are free, which is unusually generous for a landmark this size. The stair ticket at 14,80 euros is both cheaper and usually faster than the lift queue.",
+      "what_ruined": "The summit costs 13,20 euros more than the second floor for a view that is further away and more crowded, and it is first to close in high wind. Resellers outrank the official site and charge more for the identical timed slot. The Champ de Mars approach is worked hard by bracelet and petition scammers.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Four because the second-floor view genuinely earns it. Value is three: 23,50 euros to the second floor is fair, 36,70 to the summit is a lot for a more distant version of the same city.",
+      "meta_description": "Eiffel Tower tickets run 23,50 euros to the second floor and 36,70 to the summit. What each buys, why the stairs win, and when to skip the summit.",
+      "facts_checked": [
+        {
+          "fact": "Adult second floor by lift is 23,50 euros. Ages 12-24 pay 11,80; ages 4-11 and disabled visitors 6,00; under 4s free.",
+          "url": "https://www.toureiffel.paris/en/rates-opening-times",
+          "assert_text": "23,50€",
+          "confidence": "verified on the tower's official rates and opening times page"
+        },
+        {
+          "fact": "Adult summit by lift is 36,70 euros.",
+          "url": "https://www.toureiffel.paris/en/rates-opening-times",
+          "assert_text": "36,70€",
+          "confidence": "verified on the tower's official rates and opening times page"
+        },
+        {
+          "fact": "Adult second floor by stairs is 14,80 euros.",
+          "url": "https://www.toureiffel.paris/en/rates-opening-times",
+          "assert_text": "14,80€",
+          "confidence": "verified on the tower's official rates and opening times page"
+        }
+      ],
+      "what_it_is": "A 330-metre iron lattice tower on the Champ de Mars, built for the 1889 World's Fair and kept afterwards because taking it down proved less useful than leaving it up. There are three visitor levels: first floor, second floor and the summit.",
+      "why_go": "Because it is the fixed point of the city, and because the second-floor view is the clearest reading of how Paris is actually laid out. From up there the Haussmann boulevards stop being a history-book phrase and become a visible pattern.",
+      "the_good": "The engineering is legible from underneath in a way photographs never convey, and standing under the base costs nothing. The ticket tiers are published plainly, the youth band is wide, and the stair option is a real saving rather than a token one.",
+      "the_downsides": "Timed slots sell out, and the summit closes in high wind with no warning. The base is a working ground for bracelet scammers, fake petitioners and unlicensed sellers. Reseller sites dominate search results and charge above the official rate for the same ticket.",
+      "best_for": "First-time visitors to Paris, families with children under 12 given the low child rates, and anyone who wants one high view and is happy for it to be this one.",
+      "skip_if": "You mainly want a skyline photograph with the tower in it, in which case Montparnasse does the job better. Skip the summit specifically if you are watching money: the second floor is the better view and 13,20 euros cheaper.",
+      "practical": "Book an exact time slot on the official site, not a reseller. If the lift queue is long and you are able-bodied, buy the stair ticket: 14,80 euros, a shorter queue, and a climb most people manage comfortably. Ignore anyone approaching you with a clipboard or a loop of string.",
+      "tickets": "Adult rates are 23,50 euros for the second floor by lift and 36,70 euros for the summit by lift. Ages 12 to 24 pay 11,80 and 18,40; ages 4 to 11 and disabled visitors pay 6,00 and 9,20; under 4s are free. The second floor by stairs is 14,80 euros for an adult.",
+      "getting_there": "Bir-Hakeim on Metro line 6 and Trocadero on lines 6 and 9 are closest, with RER C at Champ de Mars-Tour Eiffel. Trocadero is the approach worth taking on foot because it delivers the tower head-on across the river.",
+      "location_context": "The 7th arrondissement, on the Left Bank at the end of the Champ de Mars, with the Trocadero gardens across the Seine. It is a formal, expensive, largely residential quarter, and the restaurants nearest the base are priced for people who are not coming back.",
+      "time_needed": "Two to three hours including security and queueing for a second-floor visit, nearer four for the summit. Seeing it from underneath and from Trocadero takes about an hour and costs nothing.",
+      "accessibility": "Lifts serve the first and second floors, and disabled visitors pay the child rate of 6,00 euros to the second floor and 9,20 to the summit. Summit access is more limited because the upper lift is smaller.",
+      "verdict": "Go, take the second floor, and skip the summit unless the extra height genuinely matters to you. Everything people hate about this visit is a queueing and pricing problem rather than a problem with the tower, and both are solved by booking the right ticket direct."
+    },
+    {
+      "destination_slug": "paris-france",
+      "name": "Louvre Museum",
+      "type": "attraction",
+      "headline": "Now Charges Non-Europeans Ten Euros More, and Still Cannot Be Done in a Day",
+      "body": "The Louvre's pricing works in a way that matters to most people reading this. General admission is 22,00 euros for residents and citizens of the European Economic Area and 32,00 euros for everyone else, published as a two-tier rate on the museum's own site.\n\nThat is a meaningful gap and it is better known before you arrive than at the desk. Under 18s and EEA residents under 26 have their own free and reduced categories.\n\nThe other thing worth knowing is that the building defeats people. This is a former royal palace's worth of galleries, and the standard mistake is treating it as a checklist. The Mona Lisa is a long shuffle for a short look at a small painting behind glass across a crowded room, and it is the least rewarding famous thing in the building.",
+      "what_great": "The collection is without equal in range, from Mesopotamia to the mid-nineteenth century, and the building is a large part of the visit. Under 18s and EEA residents under 26 get in free or reduced. The Near Eastern antiquities and the French sculpture courts are near-empty while the crowd concentrates on three or four paintings.",
+      "what_ruined": "Non-EEA visitors pay 32,00 euros against 22,00 for EEA visitors, a ten-euro gap based on where you are from rather than what you see. The Mona Lisa room is the worst-value twenty minutes in Paris. Signage is poor for a building this size, and unplanned visits reliably become three hours of walking and very little looking.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for the collection, which has no real rival. Value is three because a non-EEA adult pays 32,00 euros and because the building's scale means most visitors see a fraction of what they paid for.",
+      "meta_description": "The Louvre charges 22 euros to EEA visitors and 32 to everyone else. What that two-tier price buys, and how to use the museum without wasting it.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 22,00 euros for EEA residents and citizens and 32,00 euros for non-EEA visitors.",
+          "url": "https://www.louvre.fr/en/visit/hours-admission",
+          "assert_text": "General admission : €22.00 to €32.00",
+          "confidence": "verified on the museum's official hours and admission page"
+        },
+        {
+          "fact": "The rate is published as a two-tier EEA and non-EEA structure.",
+          "url": "https://www.louvre.fr/en/visit/hours-admission",
+          "assert_text": "Non-EEA visitor rate",
+          "confidence": "verified on the museum's official hours and admission page"
+        },
+        {
+          "fact": "An audio guide costs 6,00 euros.",
+          "url": "https://www.louvre.fr/en/visit/hours-admission",
+          "assert_text": "€6.00",
+          "confidence": "verified on the museum's official hours and admission page"
+        }
+      ],
+      "what_it_is": "The former royal palace of the Louvre, now the most visited art museum in the world, holding everything from Egyptian and Near Eastern antiquities to European painting up to the mid-1800s.",
+      "why_go": "Because the density of first-rank work here is not matched anywhere else, and because several of the best rooms are quiet. The crowd is concentrated in a handful of galleries, which leaves most of the museum genuinely pleasant.",
+      "the_good": "Building and collection reinforce each other. The less famous wings are calm enough to actually look at things. Free and reduced categories for under 18s and EEA residents under 26 are substantial, and the official site publishes rates plainly, which many attractions this size do not.",
+      "the_downsides": "The two-tier rate means a non-EEA adult pays 32,00 euros where an EEA adult pays 22,00. The Mona Lisa disappoints almost everyone who queues for it. Wayfinding is weak, and people routinely leave exhausted having seen a corridor of a very large museum.",
+      "best_for": "Anyone with a specific interest they can name in advance, EEA visitors under 26 who get in cheaply or free, and people willing to make two shorter visits rather than one long one.",
+      "skip_if": "You want a single unmissable Paris highlight and have half a day. The Musee de l'Orangerie or the Rodin museum will give you a better afternoon. Skip it outright if the Mona Lisa is the main draw.",
+      "practical": "Choose two or three rooms before you go and accept you will not see the rest. Use the Carrousel du Louvre or Porte des Lions entrances rather than the Pyramid, which has the longest queue. Go on a late-opening evening if your dates allow.",
+      "tickets": "General admission is 22,00 euros for EEA residents and citizens and 32,00 euros for non-EEA visitors. A ticket bought at the museum is 9,00 euros for the Louvre-Delacroix combination, guided tours and workshops carry a 12,00 euro supplement at full rate, and an audio guide is 6,00 euros. Under 18s and EEA residents under 26 have separate free and reduced categories.",
+      "getting_there": "Palais-Royal Musee du Louvre on Metro lines 1 and 7 feeds directly into the Carrousel entrance, usually the fastest way in. Louvre-Rivoli on line 1 is a short walk.",
+      "location_context": "The 1st arrondissement, on the Right Bank between the Tuileries and the Palais-Royal. This is the centre of tourist Paris, so the immediate surroundings are convenient, expensive and not especially representative of the city.",
+      "time_needed": "Three hours is a realistic focused visit. A full day is possible, but most people stop absorbing anything after about four hours. Two visits of two hours beat one visit of four.",
+      "verdict": "Still the best museum collection on earth and still the easiest to visit badly. Decide what you are there for before you go in, use a non-Pyramid entrance, and if you are outside the EEA, know you are paying 32,00 euros and plan the visit to be worth it."
+    },
+    {
+      "destination_slug": "paris-france",
+      "name": "Sainte-Chapelle",
+      "type": "attraction",
+      "headline": "Twenty-Two Euros for One Room, and Worth It on a Bright Day",
+      "body": "Sainte-Chapelle is a small building with one overwhelming feature: an upper chapel walled almost entirely in thirteenth-century stained glass. Admission is 22 euros, with free admission for under 26-year-old residents of the EU.\n\nThat is a high price for what is, in floor area, one room. It is also close to unarguable on a bright day, because what you are paying for is a light effect no photograph reproduces and very few buildings anywhere can offer.\n\nThe corollary is the honest warning. On a grey Paris afternoon the same 22 euros buys a considerably duller experience. This is the rare attraction where checking the forecast is a practical booking decision rather than fussiness.",
+      "what_great": "The upper chapel is genuinely singular, and because the building is small you are not paying for corridors you will not walk. Under-26 EU residents get in free. It sits on the Ile de la Cite within minutes of Notre-Dame and the Conciergerie, so it slots into a day without a special journey.",
+      "what_ruined": "Twenty-two euros for one room is steep, and the payoff depends on sunlight, which the ticket page does not warn you about. The chapel is small enough that one tour group changes the experience. Security is airport-style because the site shares a perimeter with a working courthouse.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because the upper chapel is one of the most extraordinary interiors in Europe. Value is four rather than five only because 22 euros for a single room needs the right weather to pay off.",
+      "meta_description": "Sainte-Chapelle costs 22 euros and is essentially one room of thirteenth-century stained glass. Why the weather decides whether it is worth the ticket.",
+      "facts_checked": [
+        {
+          "fact": "Admission is 22 euros with free admission for under 26-year-old residents of the EU.",
+          "url": "https://www.sainte-chapelle.fr/en/",
+          "assert_text": "free admission for under 26-year-old residents",
+          "confidence": "verified on the monument's official site"
+        },
+        {
+          "fact": "The published price is 22 euros.",
+          "url": "https://www.sainte-chapelle.fr/en/",
+          "assert_text": "22€",
+          "confidence": "verified on the monument's official site"
+        }
+      ],
+      "what_it_is": "A royal chapel completed in the 1240s inside the medieval palace complex on the Ile de la Cite, built to house relics and engineered so the upper chapel's walls are almost entirely glass rather than stone.",
+      "why_go": "For roughly fifteen minutes of light that is not available anywhere else. The glass is largely thirteenth-century and the upper chapel is one of the high points of Gothic building in Europe.",
+      "the_good": "It is small, which is a virtue: there is one thing to see and you will see it properly rather than trudging past a hundred rooms. Free entry for under-26 EU residents is a real concession on an expensive ticket, and the location makes it easy to combine with the rest of the island.",
+      "the_downsides": "The price is high for the floor area and the payoff is weather-dependent. The room is small enough that crowding is felt immediately. Courthouse security controls the entrance and can add an unpredictable wait.",
+      "best_for": "Anyone interested in medieval art or architecture, photographers who can pick their day, and EU residents under 26 who get in free and can afford to be opportunistic about the weather.",
+      "skip_if": "The forecast is grey and you cannot move your date, or you are on a tight budget and have already committed to other paid sights on the island. This is a supplement to a Paris trip, not a foundation of one.",
+      "practical": "Go on a bright day, ideally late morning to early afternoon when the sun is on the glass. Allow for security screening shared with the Palais de Justice. Combine it with the Conciergerie next door rather than making a separate trip.",
+      "tickets": "Admission is 22 euros, with free admission for under 26-year-old residents of the EU.",
+      "getting_there": "Cite on Metro line 4 is essentially at the door. Saint-Michel Notre-Dame on RER B and C and Metro line 4 is a short walk across the river.",
+      "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
+      "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
+      "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
     }
   ]
 }

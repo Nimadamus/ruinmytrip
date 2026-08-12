@@ -125,7 +125,32 @@ foreach ($placeItems as $i => $p) {
     if (mb_strlen((string) ($p['body'] ?? '')) < 400) $problems[] = "{$label}: body under 400 chars, too thin to publish";
     if (mb_strlen((string) ($p['name'] ?? '')) > RMT_PLACE_NAME_MAX) $problems[] = "{$label}: name too long";
     if (count((array) ($p['facts_checked'] ?? [])) < 2) $problems[] = "{$label}: fewer than 2 checked facts";
-    foreach (['headline','body','what_great','what_ruined'] as $k) {
+
+    // Every sourced fact needs a URL and an assert_text: the exact string scripts/verify_place_sources.py
+    // must still find on that page. Without it "verified" is a note somebody typed, not a check
+    // anything can re-run when a museum changes its prices next spring.
+    foreach ((array) ($p['facts_checked'] ?? []) as $j => $f) {
+        foreach (['fact','url','assert_text'] as $k) {
+            if (empty($f[$k])) $problems[] = "{$label}: facts_checked[{$j}] missing {$k}";
+        }
+        if (!empty($f['url']) && !filter_var($f['url'], FILTER_VALIDATE_URL)) {
+            $problems[] = "{$label}: facts_checked[{$j}] url is not a URL";
+        }
+    }
+
+    // A page that answers three of the thirteen sections is a stub. The floor is what separates
+    // "genuinely useful" from a doorway page, so it is enforced rather than trusted.
+    $filled = 0;
+    foreach (array_keys(RMT_PLACE_EDITORIAL_SECTIONS) as $c) if (trim((string) ($p[$c] ?? '')) !== '') $filled++;
+    if ($filled < 9) $problems[] = "{$label}: only {$filled} of " . count(RMT_PLACE_EDITORIAL_SECTIONS) . " editorial sections filled, minimum 9";
+    foreach (['what_it_is','why_go','the_good','the_downsides','verdict'] as $c) {
+        if (trim((string) ($p[$c] ?? '')) === '') $problems[] = "{$label}: {$c} is required";
+    }
+    $md = trim((string) ($p['meta_description'] ?? ''));
+    if ($md === '') $problems[] = "{$label}: missing meta_description";
+    elseif (mb_strlen($md) < 70 || mb_strlen($md) > 165) $problems[] = "{$label}: meta_description must be 70-165 chars, got " . mb_strlen($md);
+
+    foreach (array_merge(['headline','body','what_great','what_ruined','meta_description'], array_keys(RMT_PLACE_EDITORIAL_SECTIONS)) as $k) {
         if (str_contains((string) ($p[$k] ?? ''), "\u{2014}")) $problems[] = "{$label}: em dash in {$k}";
     }
     // Nobody from the team necessarily went. This is the whole editorial promise.
@@ -345,6 +370,34 @@ try {
                          $p['what_great'], $p['what_ruined'], (int)$p['safety_rating'], (int)$p['value_rating'],
                          $slug, $now, $now]);
             out("    review created (id {$rid}, /p/" . q_one('SELECT slug FROM places WHERE id=?', [$pid])['slug'] . ')');
+        }
+
+        /* structured editorial: the sections the place page renders. Absent sections are written as
+           NULL rather than as empty strings, so the page skips them instead of printing a heading
+           with nothing under it. */
+        $cols = array_keys(RMT_PLACE_EDITORIAL_SECTIONS);
+        $vals = [];
+        foreach ($cols as $c) {
+            $v = trim((string) ($p[$c] ?? ''));
+            $vals[$c] = $v === '' ? null : $v;
+        }
+        $meta = trim((string) ($p['meta_description'] ?? ''));
+        $srcJson = json_encode(array_values((array) $p['facts_checked']), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+        $hasEd = q_one('SELECT place_id FROM place_editorial WHERE place_id = ?', [$pid]);
+        $setList = implode(', ', array_map(static fn($c) => "$c = ?", $cols));
+        $args = array_values($vals);
+        if ($hasEd) {
+            $run("UPDATE place_editorial SET meta_description = ?, {$setList}, sources = ?, updated_at = ? WHERE place_id = ?",
+                 array_merge([$meta ?: null], $args, [$srcJson, $now, $pid]));
+            out('    editorial sections updated (' . count(array_filter($vals)) . ' of ' . count($cols) . ')');
+        } else {
+            $colList = implode(', ', $cols);
+            $ph = implode(',', array_fill(0, count($cols), '?'));
+            $run("INSERT INTO place_editorial (place_id, meta_description, {$colList}, sources, created_at, updated_at)
+                  VALUES (?,?,{$ph},?,?,?)",
+                 array_merge([$pid, $meta ?: null], $args, [$srcJson, $now, $now]));
+            out('    editorial sections created (' . count(array_filter($vals)) . ' of ' . count($cols) . ')');
         }
     }
 
