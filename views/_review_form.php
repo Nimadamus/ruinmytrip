@@ -35,8 +35,18 @@ $sel = static fn(string $k, $v) => (string) ($r[$k] ?? '') === (string) $v ? ' s
 </select>
 
 <label for="subject_name">Name of the place or experience</label>
-<input type="text" id="subject_name" name="subject_name" maxlength="200"
-       placeholder="e.g. Skyline Gondola, Queenstown" value="<?= $val('subject_name') ?>">
+<?php /* Suggestions are places somebody has already reviewed in the chosen destination. Picking one
+         is not required -- the name is resolved to a place on the server either way (see
+         rmt_place_resolve) -- but a near-miss spelling would create a second page for the same
+         hotel, and offering the existing name is the cheapest way to prevent that. */ ?>
+<input type="text" id="subject_name" name="subject_name" maxlength="200" list="place-options"
+       autocomplete="off" placeholder="e.g. Skyline Gondola, Queenstown" value="<?= $val('subject_name') ?>">
+<datalist id="place-options">
+  <?php foreach (($placeOptions ?? []) as $po): ?>
+    <option data-dest="<?= (int)$po['destination_id'] ?>" value="<?= e($po['name']) ?>"></option>
+  <?php endforeach; ?>
+</datalist>
+<p class="hint" id="place-hint" style="margin:4px 0 0"></p>
 
 <label for="visited_on">When was your trip?</label>
 <input type="date" id="visited_on" name="visited_on" max="<?= date('Y-m-d') ?>" value="<?= $val('visited_on') ?>">
@@ -107,6 +117,47 @@ $sel = static fn(string $k, $v) => (string) ($r[$k] ?? '') === (string) $v ? ' s
       if (matches.length === 1) hit = matches[0];
     }
     sel.value = hit ? hit.dataset.id : '';
+    if (window.rmtSyncPlaces) window.rmtSyncPlaces();
   });
+})();
+
+// Show only the places that belong to the destination currently chosen, and tell the writer when
+// the name they typed is one that already has a page. Progressive enhancement only: with JS off the
+// full suggestion list is still offered and the server resolves the name exactly the same way.
+(function () {
+  var sel = document.getElementById('destination_id'),
+      list = document.getElementById('place-options'),
+      name = document.getElementById('subject_name'),
+      hint = document.getElementById('place-hint');
+  if (!sel || !list || !name || !hint) return;
+
+  var all = Array.prototype.slice.call(list.options);
+
+  function currentDest() { return sel.value || ''; }
+
+  window.rmtSyncPlaces = function () {
+    var dest = currentDest();
+    while (list.firstChild) list.removeChild(list.firstChild);
+    // With no destination picked yet there is nothing to scope suggestions to, so offer none rather
+    // than every place on the site -- a name from the wrong city is worse than no suggestion.
+    if (!dest) { hint.textContent = ''; return; }
+    all.forEach(function (o) { if (o.dataset.dest === dest) list.appendChild(o); });
+    describe();
+  };
+
+  function norm(s) { return s.toLowerCase().replace(/^(the|le|la|el|il)\s+/, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
+
+  function describe() {
+    var dest = currentDest(), v = norm(name.value);
+    if (!dest || !v) { hint.textContent = ''; return; }
+    var hit = all.some(function (o) { return o.dataset.dest === dest && norm(o.value) === v; });
+    hint.textContent = hit
+      ? 'This place already has a page — your review will be added to it.'
+      : 'New place. Your review will start its page.';
+  }
+
+  sel.addEventListener('change', window.rmtSyncPlaces);
+  name.addEventListener('input', describe);
+  window.rmtSyncPlaces();
 })();
 </script>

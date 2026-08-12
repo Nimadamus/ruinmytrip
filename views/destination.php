@@ -109,6 +109,38 @@
         </div></div>
       <?php endif; ?>
 
+      <?php /* Places only exist because somebody reviewed one, so this whole block stays hidden
+               until there is something real in it rather than showing an empty shell. */ ?>
+      <?php if ($topPlaces): ?>
+        <div class="section-rule">
+          <h2>Reviewed places</h2>
+          <span class="count"><?= (int)$placeCount ?></span>
+        </div>
+        <div class="grid" style="gap:10px;margin-bottom:10px">
+          <?php foreach ($topPlaces as $tp): $tc = (int)$tp['review_count']; ?>
+            <div class="card"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+              <span>
+                <a href="<?= e(url('p/'.$tp['slug'])) ?>"><strong><?= e($tp['name']) ?></strong></a>
+                <span class="muted" style="text-transform:capitalize"> · <?= e(rmt_place_type_label((string)$tp['type'])) ?></span>
+              </span>
+              <span class="muted" style="white-space:nowrap">
+                <?php if ($tc > 0): ?>
+                  <span class="stars"><?= stars((int) round((float)$tp['avg_rating'])) ?></span>
+                  <?= e((string)$tp['avg_rating']) ?>/5 · <?= $tc ?>
+                <?php else: ?>
+                  No reviews yet
+                <?php endif; ?>
+              </span>
+            </div></div>
+          <?php endforeach; ?>
+        </div>
+        <?php if ($placeCount > count($topPlaces)): ?>
+          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int)$placeCount ?> places →</a></p>
+        <?php else: ?>
+          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">Browse places by type →</a></p>
+        <?php endif; ?>
+      <?php endif; ?>
+
       <div class="section-rule">
         <h2>Traveler reviews</h2>
         <span class="count"><?= (int)$avg['c'] ?></span>

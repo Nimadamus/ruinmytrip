@@ -26,8 +26,11 @@ require BASE_PATH . '/app/editorial.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)');
+// safety_rating/value_rating are nullable in the real schema and are read by rmt_community_avg()
+// (it reports their denominators separately). The fixture must carry them or the test fails on a
+// missing column rather than on anything it is actually asserting.
 $pdo->exec('CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
-                                  rating INT, status TEXT)');
+                                  rating INT, safety_rating INT, value_rating INT, status TEXT)');
 $pdo->exec('CREATE TABLE destination_tips (id INTEGER PRIMARY KEY, destination_id INT, body TEXT, sort INT)');
 $pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT)');
 

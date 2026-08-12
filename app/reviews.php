@@ -107,11 +107,13 @@ function rmt_review_path(array $r): string {
     return '/review/' . (int) $r['id'] . '/' . ($r['slug'] ?: rmt_review_slug($r));
 }
 
-/** Fetch one review with its author and destination. */
+/** Fetch one review with its author, destination and the place it is about (if any). */
 function rmt_review_get(int $id): ?array {
-    return q_one('SELECT r.*, d.name dest_name, d.slug dest_slug, u.username, u.status user_status
+    return q_one('SELECT r.*, d.name dest_name, d.slug dest_slug, u.username, u.status user_status,
+                         p.slug place_slug, p.name place_name
                   FROM reviews r
                   LEFT JOIN destinations d ON d.id = r.destination_id
+                  LEFT JOIN places p ON p.id = r.place_id AND p.status = \'active\'
                   JOIN users u ON u.id = r.user_id
                   WHERE r.id = ?', [$id]);
 }

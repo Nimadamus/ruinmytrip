@@ -14,6 +14,8 @@ $routes = [
     ['GET',  '#^/discover$#',                  'discover'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)$#',    'destination'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/photos$#', 'destination_photos'],
+    ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/places$#', 'destination_places'],
+    ['GET',  '#^/p/(?<slug>[a-z0-9\-]+)$#',    'place_show'],
     ['POST', '#^/destination/save$#',          'destination_save_action'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_form'],
     ['POST', '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_submit'],

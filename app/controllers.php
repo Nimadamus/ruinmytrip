@@ -162,12 +162,15 @@ function destination(array $a): void {
     $me = current_user();
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
     $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
+    // Top places teaser: the destination page shows the best-rated few, /d/{slug}/places has them all.
+    $topPlaces = rmt_places_for_destination($id, '', 6);
+    $placeCount = array_sum(rmt_place_type_counts($id));
     $photos = rmt_destination_photos($id, 12);
     $photoCount = (int) (q_one("SELECT
             (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount'), [
         'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -189,6 +192,71 @@ function destination_photos(array $a): void {
         'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                            ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],['name'=>'Photos','url'=>url('d/'.$d['slug'].'/photos')]],
+    ]);
+}
+
+/**
+ * GET /d/{slug}/places — everything reviewable in one destination, best-rated first.
+ *
+ * An unknown ?type is treated as "all" rather than 404ing: the filter is a view preference, and a
+ * stale bookmark should show the page, not an error.
+ */
+function destination_places(array $a): void {
+    $d = dest_by_slug($a['slug']); if (!$d) not_found();
+    $id = (int) $d['id'];
+    $type = (string) ($_GET['type'] ?? '');
+    if (!in_array($type, RMT_PLACE_TYPES, true)) $type = '';
+    $places = rmt_places_for_destination($id, $type);
+    $counts = rmt_place_type_counts($id);
+    $total = array_sum($counts);
+    $label = $type === '' ? 'Places' : rmt_place_type_label($type, true);
+    view('destination_places', compact('d','places','counts','total','type','label'), [
+        'title' => $label.' in '.$d['name'].', '.$d['country'].' — reviewed by travelers | RuinMyTrip',
+        'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', rated by travelers who actually went.',
+        'og_image' => abs_url($d['hero_url']),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
+                          ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],['name'=>'Places','url'=>url('d/'.$d['slug'].'/places')]],
+    ]);
+}
+
+/**
+ * GET /p/{slug} — one hotel/restaurant/attraction/experience, every review of it, one average.
+ *
+ * The aggregateRating in the markup is the community number and excludes editorial by role (see
+ * rmt_place_stats), so the rating Google shows is the same one a reader sees and neither includes
+ * the site's own opinion. When nobody has published a review yet there is no rating property at
+ * all — an empty aggregate would be a rating claim with nothing behind it.
+ */
+function place_show(array $a): void {
+    $p = rmt_place_by_slug($a['slug']); if (!$p) not_found();
+    $id = (int) $p['id'];
+    $stats = rmt_place_stats($id);
+    $breakdown = rmt_place_rating_breakdown($id);
+    $reviews = rmt_place_reviews($id);
+    [$editorial, $reviews] = rmt_split_editorial($reviews);
+    $photos = rmt_place_photos($id, 12);
+    $me = current_user();
+    $typeLabel = rmt_place_type_label((string) $p['type']);
+
+    $ld = ['@context'=>'https://schema.org', '@type'=>'Place', 'name'=>$p['name'],
+           'url'=>url(ltrim(rmt_place_path($p), '/')),
+           'address'=>['@type'=>'PostalAddress','addressLocality'=>$p['dest_name'],'addressCountry'=>$p['dest_country']]];
+    if ($stats['c'] > 0 && $stats['a'] !== null) {
+        $ld['aggregateRating'] = ['@type'=>'AggregateRating','ratingValue'=>$stats['a'],
+                                  'reviewCount'=>$stats['c'],'bestRating'=>5,'worstRating'=>1];
+    }
+
+    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel'), [
+        'title' => $p['name'].' — '.$typeLabel.' reviews in '.$p['dest_name'].' | RuinMyTrip',
+        'description' => $stats['c'] > 0
+            ? $p['name'].' in '.$p['dest_name'].': '.$stats['a'].'/5 from '.$stats['c'].' traveler '.($stats['c']===1?'review':'reviews').'.'
+            : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet — be the first to write one.',
+        'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($p['dest_hero']),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
+                          ['name'=>$p['dest_name'],'url'=>url('d/'.$p['dest_slug'])],
+                          ['name'=>'Places','url'=>url('d/'.$p['dest_slug'].'/places')],
+                          ['name'=>$p['name'],'url'=>url(ltrim(rmt_place_path($p), '/'))]],
+        'jsonld' => jsonld($ld),
     ]);
 }
 
@@ -1054,7 +1122,7 @@ function leaderboard(array $a): void {
  */
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=$posts=$collections=[];
+    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=[];
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         if ($driver === 'pgsql') {
@@ -1073,6 +1141,10 @@ function search(array $a): void {
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $collections = q_all("SELECT * FROM collections WHERE status='published' AND search_vector @@ $tsq
                                   ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            $places = q_all("SELECT p.*, d.name dest_name, d.country dest_country FROM places p
+                             JOIN destinations d ON d.id=p.destination_id
+                             WHERE p.status='active' AND p.search_vector @@ $tsq
+                             ORDER BY ts_rank(p.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
         } else {
             $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
                             WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
@@ -1088,6 +1160,10 @@ function search(array $a): void {
                             WHERE blog_posts_fts MATCH ? AND p.status='published' ORDER BY rank LIMIT 10", [$qs]);
             $collections = q_all("SELECT c.* FROM collections c JOIN collections_fts f ON f.rowid=c.id
                                   WHERE collections_fts MATCH ? AND c.status='published' ORDER BY rank LIMIT 10", [$qs]);
+            $places = q_all("SELECT p.*, dd.name dest_name, dd.country dest_country FROM places p
+                             JOIN places_fts f ON f.rowid=p.id
+                             JOIN destinations dd ON dd.id=p.destination_id
+                             WHERE places_fts MATCH ? AND p.status='active' ORDER BY rank LIMIT 10", [$qs]);
         }
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
@@ -1098,9 +1174,9 @@ function search(array $a): void {
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
     }
-    view('search', compact('qs','dests','trips','guides','reviews','people','posts','collections'), [
+    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
-        'description'=>'Search destinations, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
+        'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
     ]);
 }
 
@@ -1315,7 +1391,7 @@ function review_new_form(array $a): void {
     // friction that keeps a real review from ever getting written.
     $preselect = (int) input('destination');
     $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r],
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions()],
          ['title'=>'Write a review — RuinMyTrip']);
 }
 
@@ -1325,7 +1401,7 @@ function review_create(array $a): void {
         flash('That review was already submitted.'); redirect('/'); return;
     }
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
-        view('review_new', ['dests'=>all_dests(), 'errors'=>['You are posting very fast. Try again later.'], 'r'=>null],
+        view('review_new', ['dests'=>all_dests(), 'errors'=>['You are posting very fast. Try again later.'], 'r'=>null, 'placeOptions'=>rmt_place_suggestions()],
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $isDraft = input('action') === 'draft';
@@ -1337,17 +1413,21 @@ function review_create(array $a): void {
     }
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
-        view('review_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'r'=>$_POST],
+        view('review_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'r'=>$_POST, 'placeOptions'=>rmt_place_suggestions()],
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $d = $v['data'];
     $now = date('Y-m-d H:i:s');
     $status = $isDraft ? 'draft' : 'published';
+    // Resolve what was reviewed to a real place row so every review of the same hotel collects on
+    // one page. Returns null for destination-level reviews and for drafts with no name yet — the
+    // column is nullable and the review renders from subject_name either way.
+    $placeId = rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)$me['id']);
     $id = (int) q_run("INSERT INTO reviews
-        (user_id,destination_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
+        (user_id,destination_id,place_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
          visited_on,safety_rating,value_rating,verified,status,created_at,updated_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",
-        [(int)$me['id'], $d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'],
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",
+        [(int)$me['id'], $d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'],
          $d['title'], $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'],
          $d['safety_rating'], $d['value_rating'], $status, $now, $now]);
 
@@ -1438,7 +1518,8 @@ function review_show(array $a): void {
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
                           ['name'=>$r['title'] ?: $r['subject_name'],'url'=>url(ltrim(rmt_review_path($r),'/'))]],
         'jsonld' => $r['status']==='published' ? jsonld(['@context'=>'https://schema.org','@type'=>'Review',
-            'itemReviewed'=>['@type'=>'Place','name'=>$r['subject_name']],
+            'itemReviewed'=>array_filter(['@type'=>'Place','name'=>$r['subject_name'],
+                'url'=>$r['place_slug'] ? url('p/'.$r['place_slug']) : null]),
             'reviewRating'=>['@type'=>'Rating','ratingValue'=>(int)$r['rating'],'bestRating'=>5,'worstRating'=>1],
             'author'=>['@type'=>'Person','name'=>'@'.$r['username']],
             'datePublished'=>substr((string)$r['created_at'],0,10),
@@ -1452,7 +1533,7 @@ function review_edit_form(array $a): void {
     if (!$r) not_found();
     if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
     $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
-    view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
+    view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos, 'placeOptions'=>rmt_place_suggestions()],
          ['title'=>'Edit review — RuinMyTrip']);
 }
 
@@ -1470,7 +1551,7 @@ function review_edit_submit(array $a): void {
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
         $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
-        view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors'], 'photos'=>$photos],
+        view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors'], 'photos'=>$photos, 'placeOptions'=>rmt_place_suggestions()],
              ['title'=>'Edit review — RuinMyTrip']); return;
     }
     $d = $v['data'];
@@ -1479,10 +1560,14 @@ function review_edit_submit(array $a): void {
         ? $r['status']
         : ($isDraft ? 'draft' : 'published');
     $slug = rmt_review_slug($d + ['id'=>(int)$r['id']]);
-    db()->prepare("UPDATE reviews SET destination_id=?, subject_type=?, subject_name=?, rating=?, title=?,
+    // Re-resolve on every edit: renaming the subject, or moving the review to another destination,
+    // must move the review to the place it now describes rather than leaving it counted against the
+    // old one. Re-resolving to null (subject cleared) correctly detaches it.
+    $placeId = rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)current_user()['id']);
+    db()->prepare("UPDATE reviews SET destination_id=?, place_id=?, subject_type=?, subject_name=?, rating=?, title=?,
                    body=?, what_great=?, what_ruined=?, visited_on=?, safety_rating=?, value_rating=?,
                    status=?, slug=?, updated_at=? WHERE id=?")
-        ->execute([$d['destination_id'], $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
+        ->execute([$d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
                    $d['value_rating'], $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
     rmt_sync_tags('review', (int)$r['id'], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
@@ -2208,6 +2293,13 @@ function sitemap(array $a): void {
                        OR EXISTS (SELECT 1 FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=d.id AND r.status='published')") as $d) {
         $urls[] = url('d/'.$d['slug'].'/photos');
     }
+    // Places index pages, and only places that actually have a published review on them. A place
+    // whose reviews are all drafts is a real row but an empty page, and thin pages do not belong
+    // in the sitemap (same rule the /photos galleries follow above).
+    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d JOIN places p ON p.destination_id=d.id
+                    WHERE p.status='active'") as $d) $urls[] = url('d/'.$d['slug'].'/places');
+    foreach (q_all("SELECT DISTINCT p.slug FROM places p JOIN reviews r ON r.place_id=p.id
+                    WHERE p.status='active' AND r.status='published'") as $p) $urls[] = url('p/'.$p['slug']);
     foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
     foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
     foreach (q_all("SELECT slug FROM collections WHERE status='published'") as $c) $urls[] = url('c/'.$c['slug']);

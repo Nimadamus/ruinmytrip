@@ -20,6 +20,12 @@
     <?php if ($r['dest_name']): ?> · <a href="<?= e(url('d/'.$r['dest_slug'])) ?>"><?= e($r['dest_name']) ?></a><?php endif; ?>
   </p>
   <h1 style="margin:.2rem 0 .4rem"><?= e($r['title'] ?: $r['subject_name']) ?></h1>
+  <?php /* The subject links to its own page, where every review of it is collected under one average. */ ?>
+  <?php if (!empty($r['place_slug'])): ?>
+    <p class="muted" style="margin:0 0 .4rem">Review of <a href="<?= e(url('p/'.$r['place_slug'])) ?>"><strong><?= e($r['place_name']) ?></strong></a></p>
+  <?php elseif (!empty($r['subject_name'])): ?>
+    <p class="muted" style="margin:0 0 .4rem">Review of <strong><?= e($r['subject_name']) ?></strong></p>
+  <?php endif; ?>
 
   <div class="meta-row" style="gap:10px;align-items:center">
     <span class="stars" style="font-size:1.1rem"><?= stars((int)$r['rating']) ?></span>
