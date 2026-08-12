@@ -177,6 +177,47 @@
       "verdict": "Essential if Van Gogh means anything to you at all, and still very good if he does not. Book direct, ignore third-party ticket sites the museum has not named, and pair it with the Rijksmuseum next door."
     },
     {
+      "destination_slug": "athens-greece",
+      "name": "Acropolis Museum",
+      "type": "attraction",
+      "headline": "Twenty Euros for the Parthenon Marbles, and the Argument About the Missing Half",
+      "body": "The Acropolis Museum charges 20 euros general admission and 10 euros reduced. Those are the summer rates, running 1 April to 31 October; the winter season from 1 November to 31 March is cheaper at 15,00 euros general, with the reduced rate staying at 10,00.\n\nThe museum was built to make a point. The top floor, the Parthenon Gallery, is oriented on exactly the same axis as the Parthenon itself, which stands visible through the glass a few hundred metres uphill. The surviving sculptures are mounted at their original spacing and height. Where a piece is in London rather than Athens, a plain white cast stands in its place.\n\nWalking that colonnade, with the original building in the window and the gaps marked in blank plaster, is the most effective argument in the Elgin Marbles dispute that either side has made. You are not told what to think; you are shown the holes.",
+      "what_great": "The Parthenon Gallery is a genuinely brilliant piece of museum design, and the sightline to the actual Parthenon through the glass does work no label could. The excavated ancient neighbourhood under the glass floor at the entrance is included. Winter admission drops to 15 euros, and there are several free admission days each year.",
+      "what_ruined": "Twenty euros is on top of the separate ticket for the Acropolis itself, so seeing both is a real outlay. The building is busy from mid-morning through the afternoon in season. The reduced rate stays at 10 euros in winter while the general rate falls, which narrows the concession when the museum is quietest.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because the top-floor Parthenon Gallery is one of the most intelligent museum spaces built this century. Value is four: 20 euros in summer, dropping to 15 in winter, with a 10 euro reduced rate.",
+      "meta_description": "The Acropolis Museum costs 20 euros general admission and 10 reduced, with a lower winter rate. Why the top floor is the whole point.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 20 euros in the summer season.",
+          "url": "https://www.theacropolismuseum.gr/en/plan-your-visit",
+          "assert_text": "general admission 20 €",
+          "confidence": "verified on the museum's official plan-your-visit page"
+        },
+        {
+          "fact": "Reduced admission is 10 euros.",
+          "url": "https://www.theacropolismuseum.gr/en/plan-your-visit",
+          "assert_text": "reduced admission* 10 €",
+          "confidence": "verified on the museum's official plan-your-visit page"
+        }
+      ],
+      "what_it_is": "A purpose-built museum at the foot of the Acropolis, opened in 2009, holding the finds from the Acropolis slopes and summit, with a top-floor gallery displaying the surviving Parthenon frieze and metopes in their original arrangement.",
+      "why_go": "For the Parthenon Gallery, which aligns with the real building visible through the window and marks every absent sculpture with a blank cast. It is the clearest presentation of a contested collection anywhere.",
+      "the_good": "Exceptional museum architecture that argues through arrangement rather than text. The glass floor over the excavated ancient neighbourhood is included at the entrance. Winter admission falls to 15,00 euros, and the museum runs free admission days including 6 March and 25 March.",
+      "the_downsides": "It is a second ticket on top of the Acropolis site itself. Peak season crowds build from mid-morning. The reduced rate does not fall in winter even though the general rate does.",
+      "best_for": "Anyone visiting the Acropolis, which is effectively everyone in Athens, and particularly visitors interested in the Parthenon Marbles question who want to see how the case is actually made.",
+      "skip_if": "You have half a day in Athens and have not yet been up to the Acropolis itself. The site comes first; this is the companion to it, not a substitute.",
+      "practical": "Go early or late in the day in summer. Do the Acropolis first and the museum second, because the gallery makes far more sense once you have stood on the hill. If your dates are flexible, the winter season from 1 November is 5 euros cheaper and considerably quieter.",
+      "tickets": "General admission is 20 euros with reduced admission at 10 euros in the summer season, 1 April to 31 October. In the winter season, 1 November to 31 March, general admission is 15,00 euros and reduced stays at 10,00 euros. Reduced and free tickets are obtained through specific channels rather than the general desk, and there are free admission days including 6 March and 25 March.",
+      "getting_there": "Akropoli station on Metro line 2 is directly outside the entrance. It is a short walk from the Plaka and from the pedestrianised Dionysiou Areopagitou street that runs below the Acropolis.",
+      "location_context": "Makrygianni, immediately south-east of the Acropolis rock, on the pedestrian street that circles the base of the hill. Plaka and Monastiraki are within fifteen minutes on foot.",
+      "time_needed": "Two hours. The Parthenon Gallery alone deserves forty-five minutes, and the ground-floor excavation is worth stopping for on the way in.",
+      "accessibility": "The museum is step-free with lifts to all levels, which is a marked contrast to the Acropolis site itself.",
+      "verdict": "Go, and go after you have climbed the hill rather than before. Twenty euros is fair for what is one of the best museum buildings of the century, and if you can travel in the winter season it is 15."
+    },
+    {
       "destination_slug": "barcelona-spain",
       "name": "Basilica de la Sagrada Familia",
       "type": "attraction",
@@ -262,6 +303,47 @@
       "location_context": "Passeig de Gracia in the Eixample, Barcelona's grand shopping boulevard, with Casa Batllo a few blocks south and the Sagrada Familia about twenty minutes east on foot.",
       "time_needed": "Around ninety minutes for the full route including the roof, apartment and attic.",
       "verdict": "Worth it for the roof, and best bought as the cheaper sunset slot. If you are only paying for one Gaudi building this trip, make it the Sagrada Familia and admire this one from the street."
+    },
+    {
+      "destination_slug": "barcelona-spain",
+      "name": "MACBA",
+      "type": "attraction",
+      "headline": "Fifteen Euros Inside, and the Best Free Show Is on the Plaza Outside",
+      "body": "MACBA charges 15,00 euros for a general admission entry ticket bought at the reception desk, and 13,50 euros for the same ticket bought online.\n\nThe museum is Richard Meier's white modernist block dropped into the Raval, one of the densest and most working-class quarters of the old city, and that collision is a large part of what the building means. The collection concentrates on Catalan and Spanish art from the mid-twentieth century onward, with strong holdings in conceptual and post-conceptual work.\n\nThe plaza outside is the part that made it internationally famous, and not for the art. Placa dels Angels has been one of the most filmed skate spots in the world for three decades. It costs nothing, it runs all day, and for a lot of visitors it is the better show.",
+      "what_great": "A serious contemporary collection with real depth in Catalan and Spanish art, in a Meier building worth seeing on its own. Booking online saves 1,50 euros. The plaza outside is free, permanently busy with skaters, and one of the genuinely characterful public spaces in the city.",
+      "what_ruined": "Contemporary art is divisive and this collection makes few concessions to visitors who are not already interested. Fifteen euros at the desk is avoidable by booking online, which not everyone realises. The Raval immediately around it is lively but noticeably rougher at night than the Gothic Quarter.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Four because the collection is strong on Catalan and Spanish contemporary work and the Meier building is a landmark in its own right. Value is four: 15 euros at the desk, 13,50 online.",
+      "meta_description": "MACBA costs 15 euros at the desk or 13.50 online. Barcelona's contemporary art museum, and the skate plaza that made it famous.",
+      "facts_checked": [
+        {
+          "fact": "A general admission entry ticket is 15,00 euros at the reception desk.",
+          "url": "https://www.macba.cat/en/visit",
+          "assert_text": "entry ticket at reception desk €15,00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "The same ticket bought online is 13,50 euros.",
+          "url": "https://www.macba.cat/en/visit",
+          "assert_text": "online entry ticket €13,50",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "The Museu d'Art Contemporani de Barcelona, in a purpose-built Richard Meier building on Placa dels Angels in the Raval, holding Catalan, Spanish and international art from the mid-twentieth century to now.",
+      "why_go": "For depth in Catalan and Spanish contemporary art that you will not find presented this way elsewhere, and for the building, which is a deliberate piece of urban intervention in a quarter that was not built for it.",
+      "the_good": "A collection with a genuine point of view rather than a survey. Online booking is 1,50 euros cheaper. The Meier building handles daylight beautifully. The free skate plaza outside is a Barcelona institution in its own right.",
+      "the_downsides": "Uncompromising contemporary programming that will not win over a sceptic. The full 15 euros only applies if you turn up without booking. The surrounding Raval is characterful by day and requires more awareness after dark.",
+      "best_for": "Visitors already interested in contemporary art, anyone who has done the Gaudi circuit and wants a different Barcelona, and photographers drawn to the plaza.",
+      "skip_if": "Your Barcelona list is Gaudi and the Gothic Quarter and you have two days. This is a third-day museum. Skip it if contemporary conceptual art actively irritates you, because that is most of what is here.",
+      "practical": "Book online to pay 13,50 rather than 15,00. Combine it with the CCCB next door, which shares the courtyard. The plaza is busiest with skaters in the late afternoon and evening, which is also the best time to sit and watch.",
+      "tickets": "A general admission entry ticket is 15,00 euros at the reception desk and 13,50 euros bought online. Friends of MACBA enter free.",
+      "getting_there": "Universitat on Metro lines 1 and 2, or Catalunya on lines 1 and 3, both about five minutes on foot. It is a ten-minute walk from La Rambla.",
+      "location_context": "Placa dels Angels in the Raval, west of La Rambla, in a dense multicultural quarter of the old city. The CCCB shares the same courtyard and the Boqueria market is ten minutes east.",
+      "time_needed": "Ninety minutes for the museum. Add as long as you like for the plaza, which costs nothing.",
+      "accessibility": "The Meier building is step-free with lift and ramp access throughout, including the signature spiral ramp.",
+      "verdict": "Worth it if contemporary art is your thing, and worth walking past even if it is not, because the plaza is free and is one of the liveliest corners of Barcelona. Book online and save the 1,50 euros."
     },
     {
       "destination_slug": "berlin-germany",
@@ -893,6 +975,47 @@
       "verdict": "One of the best-value great museums in Europe, and on Sundays it is almost free. Go early on a Sunday, never on a Monday, and give the Rubens rooms more time than you planned."
     },
     {
+      "destination_slug": "munich-germany",
+      "name": "Pinakothek der Moderne",
+      "type": "attraction",
+      "headline": "Ten Euros, One Euro on Sunday, and Four Museums Under One Roof",
+      "body": "The Pinakothek der Moderne charges 10 euro admission with 7 euro reduced, and 1 euro on Sundays. Children and young people under 18 receive free admission.\n\nThe Sunday rate is standing Bavarian policy across the state collections rather than a promotion, and it applies here exactly as it does at the Alte Pinakothek across the square.\n\nWhat makes this building unusual is that it houses four separate institutions: the modern art collection, the Neue Sammlung design museum, the architecture museum of the Technical University, and the state collection of works on paper. The design museum in the basement is the one most visitors underestimate and the one most of them end up talking about afterwards, because it covers everything from Bauhaus furniture to industrial design and a genuinely serious car collection.",
+      "what_great": "Ten euro for four museums, dropping to 1 euro on Sundays, with under-18s free. The Neue Sammlung design collection is world class and consistently surprises people who came for the paintings. The Stephan Braunfels rotunda is a fine piece of museum architecture in its own right.",
+      "what_ruined": "Four institutions under one roof means uneven signage and visitors missing whole sections, particularly the basement design museum. Closed Mondays. Sundays are busy for the obvious reason. The Kunstareal district around it is institutional and quiet, with little to do outside the museums.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four because combining four collections in one building is a strength and a scheduling problem in equal measure. Value is five: 10 euro standard, 1 euro on Sundays, free under 18.",
+      "meta_description": "The Pinakothek der Moderne costs 10 euro, 7 reduced, and 1 euro on Sundays, with under-18s free. Art, design, architecture and works on paper.",
+      "facts_checked": [
+        {
+          "fact": "Admission is 10 euro, 7 euro reduced, and 1 euro on Sundays.",
+          "url": "https://www.pinakothek-der-moderne.de/en/",
+          "assert_text": "admission prices 10 euro / reduced 7 euro sunday admission 1 euro",
+          "confidence": "verified on the museum's official site"
+        },
+        {
+          "fact": "Children and young people under 18 receive free admission.",
+          "url": "https://www.pinakothek-der-moderne.de/en/",
+          "assert_text": "children and young people under 18 receive free admission",
+          "confidence": "verified on the museum's official site"
+        }
+      ],
+      "what_it_is": "A museum in Munich's Kunstareal housing four collections in one Stephan Braunfels building: modern and contemporary art, the Neue Sammlung design museum, the Technical University's architecture museum, and the state collection of works on paper.",
+      "why_go": "For the Neue Sammlung, which is one of the strongest design collections anywhere and covers furniture, industrial design and vehicles, and for twentieth-century art shown alongside it rather than in isolation.",
+      "the_good": "Four museums for one 10 euro ticket, 1 euro on Sundays, free for under-18s. The design collection is exceptional and underrated. It sits two minutes from the Alte Pinakothek, so a full museum day needs no travel.",
+      "the_downsides": "The four-in-one arrangement confuses people and the basement design museum is regularly missed entirely. Closed on Mondays. Sunday is cheap and correspondingly crowded. The surrounding district has little life outside museum hours.",
+      "best_for": "Anyone interested in design or architecture as much as painting, budget travellers who can time a Sunday, and families given free under-18 entry.",
+      "skip_if": "You have one museum slot in Munich and prefer old masters, in which case the Alte Pinakothek across the square is the better ticket. Do not arrive on a Monday.",
+      "practical": "Go on a Sunday for the 1 euro rate but arrive at opening. Start in the basement with the Neue Sammlung, because that is the section people run out of time for. Combine with the Alte Pinakothek, two minutes away, for a full day.",
+      "tickets": "Admission is 10 euro with 7 euro reduced, and 1 euro on Sundays. Children and young people under 18 receive free admission. Tickets can be bought in advance through the museum webshop.",
+      "getting_there": "U2 to Theresienstrasse or Konigsplatz, or tram 27 to Pinakotheken. About twenty minutes on foot from Munich Hauptbahnhof.",
+      "location_context": "The Kunstareal in Maxvorstadt, sharing the district with the Alte Pinakothek, the Neue Pinakothek, the Brandhorst and the Glyptothek. Quiet, green and entirely institutional.",
+      "time_needed": "Two to three hours to do all four collections properly. Ninety minutes if you pick two.",
+      "accessibility": "The building is served by lifts throughout and the collections publish accessibility information for visitors with reduced mobility.",
+      "verdict": "The best-value modern museum in Munich, especially on a Sunday. Go for the design collection in the basement rather than only the paintings, and pair it with the Alte Pinakothek across the square."
+    },
+    {
       "destination_slug": "new-york-city-usa",
       "name": "Empire State Building",
       "type": "attraction",
@@ -1228,6 +1351,47 @@
       "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
       "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
       "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
+    },
+    {
+      "destination_slug": "stockholm-sweden",
+      "name": "Vasa Museum",
+      "type": "attraction",
+      "headline": "Two Hundred and Forty Krona for a Warship That Sank After Twenty Minutes",
+      "body": "The Vasa Museum charges 240 SEK for an adult, with a combination ticket including the Vrak museum at 359 SEK, and free admission for 0 to 18 year olds.\n\nThe Vasa was the pride of the Swedish navy and it sank on its maiden voyage in 1628, about twenty minutes after leaving the dock, in full view of the crowd that had come to watch it depart. It was too narrow, too tall and too heavily armed, and the first serious gust put water through the open gunports.\n\nIt then sat in the cold, brackish, low-oxygen water of Stockholm harbour for 333 years, which is exactly the wrong conditions for shipworm and exactly the right ones for oak. Raised in 1961, it is around 98 per cent original timber. Nothing else like it survives anywhere.",
+      "what_great": "A complete seventeenth-century warship, mostly original, standing ten storeys tall indoors. Free for everyone under 18, which makes it genuinely affordable for families. The museum is built around the ship on multiple levels so you see it from keel to rigging.",
+      "what_ruined": "The hall is deliberately dim and humidity-controlled to protect the timber, which makes photography hard and the space feel crowded faster than its size suggests. Two hundred and forty kronor is real money if you are also buying the Vrak combination. It is the busiest museum in Scandinavia in July and August.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five throughout. There is no other intact seventeenth-century warship on earth, under-18s are free, and 240 kronor is reasonable for the single most extraordinary object in Scandinavia.",
+      "meta_description": "The Vasa Museum costs 240 SEK for adults and is free for under-18s. A warship raised from the harbour, 98 per cent original.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 240 SEK, with a Vrak combination ticket at 359 SEK.",
+          "url": "https://www.vasamuseet.se/en",
+          "assert_text": "adult: 240 sek",
+          "confidence": "verified on the museum's official site"
+        },
+        {
+          "fact": "Admission is free for 0 to 18 year olds.",
+          "url": "https://www.vasamuseet.se/en",
+          "assert_text": "0-18 years: free admission",
+          "confidence": "verified on the museum's official site"
+        }
+      ],
+      "what_it_is": "A maritime museum on Djurgarden built around the warship Vasa, which sank on its maiden voyage in 1628, was raised in 1961, and survives around 98 per cent original.",
+      "why_go": "Because there is no other intact ship of this age anywhere. Photographs cannot convey the scale, and the carved stern in particular has to be seen from the upper galleries to make any sense.",
+      "the_good": "A unique object, presented well, on six levels so you can work up the hull from keel to stern castle. Free entry for everyone up to 18. The combination ticket with Vrak is valid for 72 hours rather than one day.",
+      "the_downsides": "Low light for conservation reasons makes it a poor photography museum. It is the most visited museum in Scandinavia and feels it in high summer. Djurgarden is a tram or ferry ride from the centre.",
+      "best_for": "Essentially every visitor to Stockholm, and particularly families given free entry for under-18s and children's fascination with the sheer size of it.",
+      "skip_if": "Almost nothing. If you are in Stockholm for one day and must choose, this beats the alternatives. Skip the Vrak combination unless you have a second day to use it.",
+      "practical": "Go at opening or in the last two hours; the middle of the day in summer is genuinely packed. Walk up to the top gallery first and work down, which reverses the standard flow. The combination ticket is valid 72 hours, so only buy it if you are staying that long.",
+      "tickets": "Adult admission is 240 SEK. A combination ticket with the Vrak museum is 359 SEK and is valid for 72 hours. Admission is free for 0 to 18 year olds.",
+      "getting_there": "Tram 7 from Sergels torg to Nordiska museet/Vasamuseet, or the Djurgarden ferry from Slussen, which is the more enjoyable approach.",
+      "location_context": "Djurgarden, the island park east of the centre, alongside the Nordiska Museet and a short walk from Skansen and the ABBA Museum. It is green, calm and entirely given over to museums and parkland.",
+      "time_needed": "Ninety minutes to two hours. The ship itself holds attention longer than people expect.",
+      "accessibility": "The museum is step-free with lifts serving all six levels.",
+      "verdict": "The best single thing to see in Stockholm and free for anyone under 18. Go early, start at the top and work down, and skip the Vrak combination unless you have three days."
     },
     {
       "destination_slug": "venice-italy",
