@@ -58,7 +58,14 @@ function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 
     // Travelers routinely type the city into the name themselves ("Skyline Gondola, Queenstown").
     // Appending it again would give "skyline-gondola-queenstown-queenstown", so only add the
     // destination when the name does not already carry it.
-    $nameSlug = slugify($name);
+    // A name can be mostly punctuation. slugify() drops every non-alphanumeric character, so the
+    // Hong Kong museum "M+" became the slug "m", giving /p/m-hong-kong: an unreadable URL for one
+    // of the more significant museums on the site. Symbols that carry the name have to be spoken
+    // before they are stripped. Done here rather than in slugify() because that helper generates
+    // destination, review, guide and forum slugs across the whole site, and this is a place-URL
+    // problem, not a sitewide one.
+    $spoken = strtr($name, ['+' => ' plus ', '&' => ' and ', '@' => ' at ']);
+    $nameSlug = slugify($spoken);
     $destSlug = slugify($destName);
     $base = str_contains($nameSlug, $destSlug) ? $nameSlug : $nameSlug . '-' . $destSlug;
     $base = mb_substr($base, 0, 80);

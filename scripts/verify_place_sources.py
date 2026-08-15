@@ -138,6 +138,9 @@ RETRY_PAUSE = 4.0
 # has signalled 403 or 429 gets more attempts, spaced by its widened interval.
 BACKOFF_RETRIES = 4
 
+# How long to leave a refusing host alone before the end-of-run retry pass.
+RETRY_PASS_COOLDOWN = 60.0
+
 # Requests to one host are serialised and spaced. Two places can cite the same museum, and two
 # facts on one page already share a fetch, but across a batch the same domain still gets hit
 # repeatedly. Firing those concurrently is what produced intermittent 403s that failed a publish
@@ -574,6 +577,10 @@ def main() -> int:
                          "the page, not that the fact is wrong. Use only when a human has read the "
                          "source and confirmed the copy; the blocked assertions are still printed "
                          "every run so the situation stays visible.")
+    ap.add_argument("--no-retry-pass", action="store_true",
+                    help="skip the end-of-run second attempt at sources that would not load. The "
+                         "retry pass is what recovers hosts that only serve a page after a long "
+                         "quiet gap, so skipping it makes those look permanently dead.")
     ap.add_argument("--strict", action="store_true",
                     help="also fail on UNCHECKED, the accepted blocks listed in blocked_sources.json. "
                          "Use this to audit what the registry is currently excusing.")
@@ -595,6 +602,34 @@ def main() -> int:
         return 1
 
     reports = [check_place(p) for p in places]
+
+    # Second pass, at the end, for transport failures only.
+    #
+    # Some hosts hand out roughly one page per long quiet period. No amount of in-request backoff
+    # buys that quiet, because the sweep itself is the traffic: royalcollection.org.uk served
+    # Holyroodhouse and then refused Buckingham for the rest of the run, and the bigger the dataset
+    # got, the more reliably it happened. Waiting once, after everything else has finished, gives
+    # the host the gap it actually wants and costs a minute on a run that already takes many.
+    #
+    # Only UNREACHABLE and BLOCKED are retried. A FAIL means the page loaded and the string is gone,
+    # which is a content answer; re-fetching it would just be hoping for a different truth.
+    retryable = {"UNREACHABLE", "BLOCKED"}
+    if not a.no_retry_pass:
+        stuck = [i for i, rep in enumerate(reports)
+                 if any(f["status"] in retryable for f in rep["facts"])]
+        if stuck:
+            print(f"\n{len(stuck)} place(s) had a source that would not load. Waiting "
+                  f"{RETRY_PASS_COOLDOWN:.0f}s and trying those once more.")
+            time.sleep(RETRY_PASS_COOLDOWN)
+            for i in stuck:
+                # No cache juggling needed: failures are never cached, so this re-fetches exactly
+                # the URLs that failed and reuses the cache for the facts that already passed.
+                retried = check_place(places[i])
+                # Keep the better answer per fact. A retry that fails again must not overwrite a
+                # PASS the first pass got on a different fact of the same place.
+                for old, new in zip(reports[i]["facts"], retried["facts"]):
+                    if old["status"] != "PASS" and new["status"] == "PASS":
+                        old.update(new)
 
     record_health([f for rep in reports for f in rep["facts"]])
 

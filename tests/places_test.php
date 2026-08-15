@@ -113,6 +113,15 @@ ok('same name elsewhere gets its own slug', $p2['slug'] === 'hotel-arts-lisbon',
 ok('slugs are unique',
    (int) q_one('SELECT COUNT(DISTINCT slug) n FROM places')['n'] === (int) q_one('SELECT COUNT(*) n FROM places')['n']);
 
+// A name carried by a symbol must survive slugging. Stripping every non-alphanumeric character
+// turned the Hong Kong museum "M+" into the slug "m", published as /p/m-hong-kong.
+$mplusSlug = q_one('SELECT slug FROM places WHERE id = ?', [rmt_place_resolve(1, 'attraction', 'M+', 2)])['slug'];
+ok('a symbol that carries the name is spoken, not stripped',
+   $mplusSlug === 'm-plus-barcelona', 'got ' . $mplusSlug);
+$ampSlug = q_one('SELECT slug FROM places WHERE id = ?', [rmt_place_resolve(1, 'attraction', 'Fish & Chips Museum', 2)])['slug'];
+ok('an ampersand becomes and',
+   $ampSlug === 'fish-and-chips-museum-barcelona', 'got ' . $ampSlug);
+
 // --- Aggregates ---------------------------------------------------------------------------------
 $stats = rmt_place_stats((int) $a['place_id']);
 ok('average is over community reviews only', $stats['c'] === 2 && (float) $stats['a'] === 3.0,

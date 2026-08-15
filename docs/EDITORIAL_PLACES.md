@@ -237,8 +237,11 @@ Work down this list before concluding an attraction cannot be sourced. Every ste
 least once, turned a "permanently unsourceable" verdict into a live page.
 
 1. **Is it slow rather than blocked?** Check the place on its own. If it passes alone and fails in a
-   sweep, it is pacing. The fetcher backs off per host automatically now, but a host that needs more
-   than 20 seconds between requests will still need thought.
+   sweep, it is pacing. The fetcher backs off per host automatically, and anything that would not
+   load gets one more attempt after the whole run has finished and the host has had a minute of
+   quiet. That end-of-run pass is what recovers hosts granting roughly one page per long gap, where
+   no amount of in-request backoff helps because the sweep itself is the traffic. `--no-retry-pass`
+   turns it off, which is only useful for reproducing a failure.
 2. **Is the URL simply wrong?** Run `--discover` on the site root. Roughly two thirds of "dead"
    sources in batch 7 were guessed paths that had never existed.
 3. **Is the navigation JavaScript-rendered?** Discovery falls back to the site's own sitemap, which

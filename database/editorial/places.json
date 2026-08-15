@@ -674,6 +674,47 @@
       "verdict": "Go first, not last. Three and a half thousand forint buys the context that makes the rest of Budapest legible, and the building is where the country's founding modern story is set."
     },
     {
+      "destination_slug": "buenos-aires-argentina",
+      "name": "MALBA",
+      "type": "attraction",
+      "headline": "Twelve Thousand Pesos, or Six Thousand If You Come on a Wednesday",
+      "body": "MALBA charges 12,000 pesos for general admission on Monday, Thursday, Friday, Saturday and Sunday, and 6,000 pesos for students, teachers and pensioners with accreditation. On Wednesdays general admission is 6,000 pesos. Children under 5 enter free.\n\nThe collection is Latin American art of the twentieth century, and it is the best of its kind: Frida Kahlo's Self-portrait with Monkey and Parrot, Diego Rivera, Tarsila do Amaral's Abaporu, Antonio Berni, Xul Solar. Argentina has a habit of exporting its artists, and this is where the argument for keeping them is made.\n\nThe building in Palermo is a clean, light 2001 design that does not fight the work, and there is a cinema on the first floor running during normal museum hours.",
+      "what_great": "The strongest twentieth-century Latin American collection anywhere, half price on Wednesdays, and a building that gets out of the way. The cinema programme is genuinely good and separately ticketed.",
+      "what_ruined": "The permanent collection is not large and can be walked in an hour. Argentine prices move fast, so anything printed about the cost is out of date quickly. Palermo puts it a taxi or a long walk from the centre.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Five for the collection, which has no equal in the region. Four for safety: Palermo is one of the safer parts of Buenos Aires but ordinary city caution applies. Five for value, particularly on a Wednesday.",
+      "meta_description": "MALBA in Buenos Aires costs 12,000 pesos general admission and 6,000 on Wednesdays. The best collection of twentieth-century Latin American art anywhere.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 12,000 pesos, and 6,000 pesos for students, teachers and pensioners with accreditation.",
+          "url": "https://malba.org.ar/visitar/",
+          "assert_text": "público general $12000",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "On Wednesdays general admission is 6,000 pesos.",
+          "url": "https://malba.org.ar/visitar/",
+          "assert_text": "miércoles público general $6000",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "The Museo de Arte Latinoamericano de Buenos Aires, in Palermo, holding twentieth-century Latin American painting and sculpture alongside temporary exhibitions and a cinema.",
+      "why_go": "Because Latin American modernism is treated here as a subject in its own right rather than a footnote to Europe, and because the Kahlo and the Abaporu are both in this building.",
+      "the_good": "A tightly chosen collection with no filler, half-price Wednesdays, a good cinema, and a building designed for looking at paintings.",
+      "the_downsides": "Small permanent collection. Prices change frequently with inflation. Not walkable from the centre. Closed Tuesdays.",
+      "best_for": "Anyone interested in modern art, and anyone who wants to understand what Argentina thinks of itself.",
+      "skip_if": "You have one day and it is a Recoleta cemetery and steak day. This wants unhurried attention.",
+      "practical": "Come on a Wednesday for half price. Check the cinema listing before you go, because the programme is better than most cinemas in the city. Combine it with the Botanical Garden and Palermo's parks, which are minutes away.",
+      "tickets": "General admission 12,000 pesos; students, teachers and pensioners with accreditation 6,000 pesos; under-5s free. On Wednesdays general admission is 6,000 pesos and concessions 3,000. Cinema tickets are priced separately at 8,000 pesos general.",
+      "getting_there": "Bus 67, 102 or 130 to Avenida Figueroa Alcorta, or a fifteen-minute taxi from the centre. The nearest subte stations are a long walk away.",
+      "location_context": "Palermo, on Figueroa Alcorta beside the parks, close to the Museo Nacional de Bellas Artes and the botanical garden, in the greenest part of the city.",
+      "time_needed": "Ninety minutes to two hours.",
+      "accessibility": "Step-free throughout with lifts to all floors, and free admission for people with disabilities.",
+      "verdict": "Go on a Wednesday for half price. The best Latin American collection anywhere, in a building that knows to stay quiet."
+    },
+    {
       "destination_slug": "copenhagen-denmark",
       "name": "Design Museum Denmark",
       "type": "attraction",
@@ -713,6 +754,47 @@
       "time_needed": "Ninety minutes to two hours, longer if the temporary exhibition interests you.",
       "accessibility": "Step-free access with lifts to the exhibition floors and accessible toilets.",
       "verdict": "The best ninety minutes in Copenhagen if you care at all about how objects are made. Free for under-18s, late on Thursdays, and the chair gallery alone justifies the hundred and forty kroner."
+    },
+    {
+      "destination_slug": "dubai-uae",
+      "name": "Museum of the Future",
+      "type": "attraction",
+      "headline": "A Hundred and Sixty-Nine Dirhams for a Building Pretending to Be a Museum",
+      "body": "The Museum of the Future charges 169 AED for an entry ticket for visitors aged four and over. It opens every day from 10:00 am to 7:00 pm, with last admission at 5:00 pm.\n\nThe building is the attraction: a silver torus covered in Arabic calligraphy, with a void through the middle and no visible columns. It is one of the genuinely striking pieces of architecture built anywhere this century, and Dubai knows it.\n\nInside is not a museum in any conventional sense. It is a sequence of immersive, theatrical sets about space stations, bioengineering and wellness, closer to a very expensive themed experience than to a collection. Whether that is worth 169 dirhams depends entirely on what you thought you were buying.",
+      "what_great": "The building, inside and out, is extraordinary and photographs badly compared to standing in it. The set design and production values are as high as anything in the world. Timed entry keeps it from becoming a crush.",
+      "what_ruined": "There is no collection, nothing old and nothing that will surprise a sceptic. A hundred and sixty-nine dirhams is a lot for roughly ninety minutes. It sells out days ahead, and the ticket is date and time specific with no flexibility.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four for an experience nowhere else does at this level. Five for safety in Dubai. Three for value: 169 dirhams for ninety minutes of theatre without a single object is a lot, however good the theatre is.",
+      "meta_description": "The Museum of the Future in Dubai costs 169 AED, open daily 10am to 7pm with last admission at 5pm. An extraordinary building around an experience, not a collection.",
+      "facts_checked": [
+        {
+          "fact": "An entry ticket for visitors aged four and over is 169 AED.",
+          "url": "https://museumofthefuture.ae/en/plan-your-visit",
+          "assert_text": "entry ticket (4 years old and above) aed 169",
+          "confidence": "verified on the museum's official plan your visit page"
+        },
+        {
+          "fact": "It opens every day from 10:00 am to 7:00 pm with last admission at 5:00 pm.",
+          "url": "https://museumofthefuture.ae/en/plan-your-visit",
+          "assert_text": "every day from 10:00 am to 7:00 pm (last admission 5:00 pm)",
+          "confidence": "verified on the museum's official plan your visit page"
+        }
+      ],
+      "what_it_is": "A themed immersive attraction on Sheikh Zayed Road in a torus-shaped building clad in Arabic calligraphy, presenting speculative futures across several staged floors.",
+      "why_go": "For the building, which is one of the most ambitious structures completed in the last decade, and for production values that no conventional museum can afford.",
+      "the_good": "Remarkable architecture, exceptional set and lighting design, timed entry that controls crowds, and a children's floor that genuinely works.",
+      "the_downsides": "No collection and no objects. Ninety minutes for 169 dirhams. Books out days in advance. The narrative is corporate optimism rather than anything challenging.",
+      "best_for": "Families, anyone interested in architecture, and first-time visitors to Dubai who want the city's self-image in concentrated form.",
+      "skip_if": "You want a museum in the ordinary sense, or you resent paying premium prices for something with nothing old in it.",
+      "practical": "Book several days ahead and take an early slot, when the light through the calligraphy is best. Allow ninety minutes. Photography is the point, so keep your phone charged.",
+      "tickets": "169 AED for visitors aged four and over. Tickets are date and time specific. All visitors, including those eligible for free entry, need a ticket.",
+      "getting_there": "Metro red line to Emirates Towers, then a five-minute covered walk. It sits directly on Sheikh Zayed Road.",
+      "location_context": "Sheikh Zayed Road in the Financial District, between the Emirates Towers and the DIFC, about ten minutes from the Burj Khalifa and Dubai Mall.",
+      "time_needed": "Ninety minutes to two hours.",
+      "accessibility": "Fully step-free with lifts throughout, and a dedicated accessible route between floors.",
+      "verdict": "Go for the building, not the content, and book days ahead. If you want objects and history, spend the 169 dirhams elsewhere."
     },
     {
       "destination_slug": "dublin-ireland",
@@ -884,6 +966,47 @@
       "verdict": "Worth it for Mary Queen of Scots' apartments, and clearly better value booked in advance than paid at the door. Make it the end of a Royal Mile walk and carry on into Holyrood Park afterwards, which costs nothing."
     },
     {
+      "destination_slug": "hong-kong",
+      "name": "M+",
+      "type": "attraction",
+      "headline": "A Hundred and Ninety Hong Kong Dollars, and the Roof Garden Is Free",
+      "body": "M+ charges HKD 190 for a standard ticket and HKD 100 for concessions. It is closed on Mondays, and the ground space and roof garden remain free to enter without a ticket.\n\nThe museum opened in 2021 in a Herzog and de Meuron building on the West Kowloon waterfront, and it is the most serious attempt anywhere to build a collection of twentieth and twenty-first century visual culture from Asia. Design, architecture, moving image and ink painting are treated as equals rather than as departments beneath painting.\n\nThe view is the other half of the ticket. The building faces the whole of Hong Kong Island across the harbour, and the LED facade on the north side turns the museum itself into part of the skyline it looks at.",
+      "what_great": "A genuinely new kind of collection, superbly installed, in one of the best museum buildings completed this century. The free roof garden and ground floor. Late Friday opening to 22:00.",
+      "what_ruined": "A hundred and ninety dollars is high by Hong Kong museum standards, where the public museums charge a fraction of it. Session-based ticketing means you commit to a time slot. Closed Mondays.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a collection and building that are both world class. Five for safety in West Kowloon. Four for value: the price is fair internationally but steep next to Hong Kong's other museums.",
+      "meta_description": "M+ in Hong Kong costs HKD 190 standard and HKD 100 concessions, closed Mondays. Asian visual culture in a Herzog and de Meuron building on the harbour.",
+      "facts_checked": [
+        {
+          "fact": "A standard ticket is HKD 190 and concessions are HKD 100.",
+          "url": "https://www.mplus.org.hk/en/get-tickets/",
+          "assert_text": "standard: hkd 190 concessions*: hkd 100",
+          "confidence": "verified on the museum's official tickets page"
+        },
+        {
+          "fact": "The museum is closed on Mondays.",
+          "url": "https://www.mplus.org.hk/en/get-tickets/",
+          "assert_text": "we are closed on mondays",
+          "confidence": "verified on the museum's official tickets page"
+        }
+      ],
+      "what_it_is": "A museum of twentieth and twenty-first century visual culture in the West Kowloon Cultural District, covering design, architecture, moving image and visual art with a particular focus on Asia.",
+      "why_go": "Because no other museum has tried to write this history, and because the building and the harbour view would be worth the trip even if the collection were ordinary, which it is not.",
+      "the_good": "An original and ambitious collection, exceptional installation, a free roof garden and ground floor, late Friday opening, and the best museum view in Asia.",
+      "the_downsides": "Expensive relative to Hong Kong's public museums. Timed session tickets. Closed Mondays. The West Kowloon district around it is still filling in.",
+      "best_for": "Anyone interested in design, film or contemporary art, and anyone who wants a view of the island skyline from the Kowloon side.",
+      "skip_if": "You have one day and want Victoria Peak and the Star Ferry. Those are the stronger call for a first visit.",
+      "practical": "Take a Friday night session and stay for the skyline after dark. The roof garden is free, so you can see the view without a ticket if the collection is not for you. Last entry to the galleries is thirty minutes before closing.",
+      "tickets": "Standard HKD 190, concessions HKD 100. A two-person adult and child combo is HKD 250 and a three-person combo HKD 400. Tickets are sold by session: morning, afternoon and, on Fridays, night.",
+      "getting_there": "MTR to Austin or Kowloon station, then a ten-minute walk through the West Kowloon Cultural District. The Star Ferry from Central lands at Tsim Sha Tsui, about twenty minutes away on foot.",
+      "location_context": "The West Kowloon Cultural District, a reclaimed waterfront strip facing Hong Kong Island, alongside the Hong Kong Palace Museum and the Xiqu Centre.",
+      "time_needed": "Two to three hours, plus time on the roof.",
+      "accessibility": "Step-free throughout with lifts to all levels and accessible routes to the roof garden.",
+      "verdict": "The best museum in Hong Kong and worth the hundred and ninety dollars. Take a Friday evening slot and finish on the free roof garden after dark."
+    },
+    {
       "destination_slug": "krakow-poland",
       "name": "Oskar Schindler's Enamel Factory",
       "type": "attraction",
@@ -1004,6 +1127,47 @@
       "time_needed": "Ninety minutes for the Ninomaru Palace and the main gardens. Two hours if you walk the full grounds.",
       "accessibility": "The grounds are largely flat, but the Ninomaru Palace route involves removing shoes and walking wooden corridors with steps, which limits access.",
       "verdict": "The best-value major site in Kyoto and the one that best explains how the country was actually governed. Go early, take the gardens as well as the palace, and reserve the Honmaru separately if you want it."
+    },
+    {
+      "destination_slug": "lima-peru",
+      "name": "Museo Larco",
+      "type": "attraction",
+      "headline": "Fifty Soles for Forty-Five Thousand Pots and an Open Storeroom",
+      "body": "Museo Larco charges 50 soles for general admission, 35 soles for over-60s, 25 soles for students and children aged 9 to 17, and 1 sol for children aged 3 to 8. Children under 3 enter free.\n\nThe collection is pre-Columbian, mostly Moche, and it is enormous. What makes the museum unusual is that it does not hide the rest: the visible storeroom holds around 45,000 catalogued pieces on open shelves, rack after rack, which conveys the scale of Peruvian ceramic production in a way no curated selection can.\n\nIt occupies an eighteenth-century mansion built on a seventh-century pyramid in Pueblo Libre, surrounded by gardens, and the restaurant on the terrace is one of the better meals in Lima.",
+      "what_great": "The visible storeroom, which almost no museum anywhere allows. Superb Moche portrait vessels and metalwork. Gardens, a genuinely good restaurant, and a building worth seeing on its own.",
+      "what_ruined": "Fifty soles is at the top of the Lima museum range. Pueblo Libre is a taxi ride from Miraflores and Barranco where most visitors stay. The erotic ceramics gallery is signposted in a way that guarantees crowds.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for the collection and the storeroom together. Four for safety: Pueblo Libre is fine but take a registered taxi rather than walking in after dark. Four for value: fifty soles is fair for what it holds.",
+      "meta_description": "Museo Larco in Lima costs 50 soles general admission, 25 for students. Pre-Columbian ceramics with a visible storeroom of some 45,000 pieces.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 50.00 soles.",
+          "url": "https://www.museolarco.org/visitanos/",
+          "assert_text": "entrada general: s/ 50.00",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Visitors over 60 pay 35.00 soles and students and children aged 9 to 17 pay 25.00 soles.",
+          "url": "https://www.museolarco.org/visitanos/",
+          "assert_text": "adultos mayores (+60 años): s/ 35.00",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A private museum of pre-Columbian art in Pueblo Libre, Lima, in an eighteenth-century mansion built over a pre-Columbian pyramid, holding one of the largest collections of Moche ceramics in the world.",
+      "why_go": "For the visible storeroom. Seeing 45,000 pieces on open racks changes what you understand about how much of this material exists, and no photograph of a museum case does that.",
+      "the_good": "An outstanding Moche collection, the open storeroom, the gold and silver gallery, gardens, and a terrace restaurant that is a destination in itself.",
+      "the_downsides": "Expensive for Lima. Away from the tourist districts. The erotic gallery draws a disproportionate share of the crowd and the giggling.",
+      "best_for": "Anyone going to Machu Picchu, who should come here first, and anyone interested in ceramics or ancient art.",
+      "skip_if": "You are in Lima for one night between flights. In that case eat in Miraflores instead.",
+      "practical": "Go before Cusco, not after: the context makes the sites far more legible. Book a time slot online. Leave time for the storeroom, which people rush and should not.",
+      "tickets": "General admission 50.00 soles, over-60s 35.00 soles, students and 9 to 17 year olds 25.00 soles, children 3 to 8 pay 1.00 sol, under-3s free. Online purchase requires choosing a time slot.",
+      "getting_there": "A fifteen to twenty minute taxi from Miraflores. There is no convenient metro; use a registered app taxi rather than the street.",
+      "location_context": "Pueblo Libre, a quiet residential district between the centre and the coast, away from the tourist strip and pleasant in daylight.",
+      "time_needed": "Two hours, including the storeroom.",
+      "accessibility": "Ramps and step-free routes serve the main galleries, though the historic mansion has some tight passages.",
+      "verdict": "Go before you fly to Cusco. Fifty soles for the best pre-Columbian collection in Peru, and the open storeroom is the thing you will still be describing to people afterwards."
     },
     {
       "destination_slug": "lisbon-portugal",
@@ -1303,6 +1467,170 @@
       "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing."
     },
     {
+      "destination_slug": "mexico-city-mexico",
+      "name": "Museo Frida Kahlo",
+      "type": "attraction",
+      "headline": "Three Hundred and Twenty Pesos, and You Cannot Buy It at the Door",
+      "body": "The Museo Frida Kahlo charges 320 pesos for general admission, 160 pesos for Mexican residents with official identification, 60 pesos for students and teachers with a valid card, and 30 pesos for seniors and children aged 6 to 12. There is no ticket office: everything is bought online.\n\nThe Casa Azul is the house Kahlo was born in, lived in with Diego Rivera, and died in, and it is kept as a house rather than converted into a gallery. The kitchen, the studio, the wheelchair at the easel and the bed with the mirror above it do more than any wall text.\n\nIt is closed on Mondays, opens at 11:00 on Wednesdays and at 10:00 on other days, and it is small, so the timed slots sell out well ahead.",
+      "what_great": "The house itself, preserved rather than staged. The studio and the bedroom, which are genuinely affecting. The garden, which is a rare quiet space in Coyoacan.",
+      "what_ruined": "Three hundred and twenty pesos is the highest museum price in Mexico City and roughly double what residents pay. No tickets at the door means an unplanned visit is impossible. The rooms are small and the timed slots still feel crowded.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for a house museum that could not be replaced. Five for safety in Coyoacan. Three for value: 320 pesos for a small house, with residents paying half, is a tourist price and reads as one.",
+      "meta_description": "The Museo Frida Kahlo in Mexico City costs 320 pesos, 160 for residents, and sells no tickets at the door. The Casa Azul, kept as a house.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 320 pesos, with no ticket sales at the door.",
+          "url": "https://www.museofridakahlo.org.mx/visita/",
+          "assert_text": "entrada general : $320 mxn",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "The museum is closed on Mondays and opens Tuesday 10:00 to 18:00.",
+          "url": "https://www.museofridakahlo.org.mx/visita/",
+          "assert_text": "lunes: cerrado martes: 10:00 – 18:00 h",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "The Casa Azul in Coyoacan, Frida Kahlo's family home, preserved as a house museum with her studio, personal effects, wardrobe and a small selection of her paintings.",
+      "why_go": "Because the house explains the paintings. The mirror above the bed, the corsets and the wheelchair at the easel make the work legible in a way a gallery hang never does.",
+      "the_good": "An intact artist's house, a beautiful garden, the reconstructed studio, and the wardrobe exhibition of her clothing and medical corsets.",
+      "the_downsides": "The most expensive museum ticket in the city, at double the resident rate. Online-only sales. Small rooms that fill instantly. Closed Mondays.",
+      "best_for": "Anyone with any interest in Kahlo, and anyone curious about how Mexico City's intellectual left lived in the 1930s and 1940s.",
+      "skip_if": "You cannot book in advance. Turning up without a ticket means not getting in, not queueing.",
+      "practical": "Book online days ahead and take the earliest slot. Combine it with the Museo Casa Estudio Diego Rivera and the Coyoacan market, both nearby. Wednesday opening is 11:00, not 10:00.",
+      "tickets": "General admission 320 pesos, Mexican residents with official ID 160 pesos, students and teachers with a valid card 60 pesos, seniors and children aged 6 to 12 30 pesos. Sold online only; there is no ticket office.",
+      "getting_there": "Metro line 3 to Coyoacan then a twenty-minute walk, or a taxi to Londres 247. Most visitors come by app taxi from the centre, about forty minutes.",
+      "location_context": "Coyoacan, a colonial village absorbed by the city, with cobbled streets, a market and plazas, and a very different pace from central Mexico City.",
+      "time_needed": "Ninety minutes including the garden.",
+      "accessibility": "The ground floor and garden are largely accessible; the upper studio is reached by stairs only.",
+      "verdict": "Book online days ahead or do not go. Expensive and small, and still one of the best house museums anywhere."
+    },
+    {
+      "destination_slug": "mexico-city-mexico",
+      "name": "Museo Nacional de Antropologia",
+      "type": "attraction",
+      "headline": "Two Hundred and Ten Pesos for the Best Archaeology Museum in the Americas",
+      "body": "The Museo Nacional de Antropologia charges 210 pesos for general admission and 105 pesos for Mexican nationals and foreign residents. It opens Tuesday to Sunday from 9:00 to 18:00.\n\nIt is the best museum of its kind anywhere in the Americas and it is not a close contest. The Aztec Sun Stone, the Olmec heads, the reconstructed tomb of Pakal from Palenque and a full-scale replica of the Bonampak murals are all here, arranged by culture around a courtyard with a vast concrete umbrella pouring water from a single column.\n\nThe building, by Pedro Ramirez Vazquez and finished in 1964, is as important as anything in it, and the upper floor on living indigenous cultures is the part almost everyone skips and should not.",
+      "what_great": "The Sun Stone, the Olmec heads and Pakal's tomb in one building. The courtyard and its fountain. Two hundred and ten pesos for a collection that would cost three times as much anywhere else.",
+      "what_ruined": "It is too large to see properly in a day and most people try. English labelling is inconsistent. It sits in Chapultepec, so the walk in from the road is longer than expected, and Sunday is free for nationals and correspondingly packed.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Five for a collection with no equal in the hemisphere. Four for safety, with normal Mexico City caution on the approach. Five for value: 210 pesos is roughly ten euros for a full day.",
+      "meta_description": "The Museo Nacional de Antropologia in Mexico City costs 210 pesos, 105 for residents, open Tuesday to Sunday 9:00 to 18:00. The Sun Stone and the Olmec heads.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 210.00 pesos, with 105.00 pesos for Mexican nationals and foreign residents.",
+          "url": "https://www.mna.inah.gob.mx/informacion_general.php",
+          "assert_text": "$210.00 mxn entrada general.",
+          "confidence": "verified on the museum's official information page"
+        },
+        {
+          "fact": "Opening hours are Tuesday to Sunday, 9:00 to 18:00.",
+          "url": "https://www.mna.inah.gob.mx/informacion_general.php",
+          "assert_text": "horario martes a domingo de 9:00 a 18:00 horas",
+          "confidence": "verified on the museum's official information page"
+        }
+      ],
+      "what_it_is": "Mexico's national museum of anthropology, in Chapultepec Park, holding the country's pre-Columbian archaeological collections on the ground floor and its living indigenous cultures upstairs.",
+      "why_go": "Because everything you will see at Teotihuacan, Palenque, Monte Alban and Chichen Itza is explained here, and because the Sun Stone in person is not the object the photographs suggest.",
+      "the_good": "An unrivalled collection, a masterpiece of a building, the Bonampak murals, the Pakal tomb reconstruction, and a price that is a fraction of the equivalent elsewhere.",
+      "the_downsides": "Far too big for one visit. Patchy English labelling. Crowded on Sundays when nationals enter free. The upper floor is quiet because most people run out of stamina.",
+      "best_for": "Every visitor to Mexico City, and essential before any trip to the archaeological sites.",
+      "skip_if": "Nothing, really. If time is short, do the Mexica and Maya halls and leave the rest.",
+      "practical": "Go on a weekday morning. Do the Mexica hall with the Sun Stone first, then Maya, then Teotihuacan, and accept that you will not see it all. Avoid Sunday unless crowds do not bother you.",
+      "tickets": "General admission 210.00 pesos; Mexican nationals and foreign residents 105.00 pesos. Sunday is free for Mexican nationals and residents. Parking is 50.00 pesos per hour.",
+      "getting_there": "Metro line 7 to Auditorio, then a ten-minute walk through the park, or line 1 to Chapultepec and a longer walk. Buses along Reforma stop outside.",
+      "location_context": "Chapultepec Park, the large forested park west of the centre, alongside the Rufino Tamayo museum and the Museo de Arte Moderno, with Chapultepec Castle on the hill nearby.",
+      "time_needed": "Half a day minimum, a full day if you intend to see the upper floor.",
+      "accessibility": "Step-free with ramps and lifts throughout both floors, and wheelchairs available to borrow.",
+      "verdict": "The best museum in Mexico and one of the best anywhere. Two hundred and ten pesos, a weekday morning, and start with the Sun Stone."
+    },
+    {
+      "destination_slug": "milan-italy",
+      "name": "Duomo di Milano",
+      "type": "attraction",
+      "headline": "Twenty-Two Euros to Walk on the Roof of the Cathedral",
+      "body": "The Duomo sells tickets by what you want to see. The complete visit, covering the cathedral interior, the terraces and the museum, starts from 22 euros full price and 11 euros reduced. A cathedral and museum ticket without the terraces starts from 8 euros full and 4 reduced, and the terraces alone start from 16 euros full and 8 reduced.\n\nThe terraces are the reason to pay the full price. You walk on the roof, among the flying buttresses and the 135 spires, close enough to see the carving on statues that were never meant to be looked at from below. There is no other cathedral in Europe where you can do this.\n\nThe interior is vast and dim and worth an hour, but the roof is what people remember for the rest of their lives.",
+      "what_great": "Walking on the roof among the spires, which nowhere else offers. A reduced price of 11 euros for the complete visit. The stained glass in the apse, which is the best in Italy.",
+      "what_ruined": "The ticket structure is genuinely confusing and there are at least five combinations. The queue for the terraces at midday in summer is brutal. Bare shoulders and knees are refused at the door and people arrive dressed for a hot day.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for the roof terraces, which are unique. Four for safety, only for pickpockets working the queue on the piazza. Four for value: 22 euros is fair but the tiered pricing invites mistakes.",
+      "meta_description": "The Duomo di Milano costs from 22 euros for the complete visit with terraces, 8 euros without. Walking on the cathedral roof among the spires.",
+      "facts_checked": [
+        {
+          "fact": "The complete visit, covering the cathedral interior, terraces and museum, starts from 22 euros full price and 11 euros reduced.",
+          "url": "https://ticket.duomomilano.it/en/biglietti-2/",
+          "assert_text": "from 22€ full price; 11€ reduced price",
+          "confidence": "verified on the cathedral's official ticket page"
+        },
+        {
+          "fact": "A ticket for the cathedral interior and the Duomo museum, without the terraces, starts from 8 euros full price and 4 euros reduced.",
+          "url": "https://ticket.duomomilano.it/en/biglietti-2/",
+          "assert_text": "from 8€ full price; 4€ reduced price",
+          "confidence": "verified on the cathedral's official ticket page"
+        }
+      ],
+      "what_it_is": "Milan's gothic cathedral, begun in 1386 and finished over six centuries, with an interior, a museum, an archaeological area and roof terraces open to visitors.",
+      "why_go": "The terraces. Walking among the spires and buttresses of a gothic cathedral roof is something almost no other building in Europe permits, and it changes how you see the front of it from the square.",
+      "the_good": "The roof walk, the apse windows, the sheer scale of the interior, and a museum that explains six centuries of construction.",
+      "the_downsides": "A confusing menu of ticket types. Long midday queues. A strict dress code enforced at the door. The lift to the terraces costs more than the stairs.",
+      "best_for": "Every visitor to Milan. If you buy one ticket in the city, buy this one.",
+      "skip_if": "You are afraid of heights or cannot manage stairs, in which case buy the cathedral and museum ticket and skip the terraces.",
+      "practical": "Buy the complete visit online and go to the terraces first thing or in the last two hours. Cover shoulders and knees or you will be turned away. Take the stairs if you are able: the queue is shorter than for the lift.",
+      "tickets": "Complete visit with terraces from 22 euros full, 11 reduced. Cathedral and museum from 8 euros full, 4 reduced. Terraces alone from 16 euros full, 8 reduced.",
+      "getting_there": "Metro lines 1 and 3 to Duomo, which surfaces directly onto the piazza.",
+      "location_context": "Piazza del Duomo, the exact centre of Milan, with the Galleria Vittorio Emanuele II on one side and the shopping streets radiating out from it.",
+      "time_needed": "Two hours for the complete visit, more if the queues are long.",
+      "accessibility": "The cathedral and museum are step-free; the terraces are reachable by lift, though the roof walk itself is uneven and has steps.",
+      "verdict": "Buy the complete visit, go up first, and cover your shoulders. The roof of the Duomo is the best twenty-two euros in Milan."
+    },
+    {
+      "destination_slug": "milan-italy",
+      "name": "Pinacoteca di Brera",
+      "type": "attraction",
+      "headline": "Twenty Euros, and Four If You Are Between Eighteen and Twenty-Five",
+      "body": "The Pinacoteca di Brera charges 20.00 euros for a full Grande Brera ticket and 4.00 euros reduced for visitors aged 18 to 25. Audioguides are 5.00 euros and radioguides 2.00 euros.\n\nThe collection is northern Italian painting at its peak: Piero della Francesca's Brera Madonna, Mantegna's Dead Christ seen from the soles of the feet, Raphael's Marriage of the Virgin, Caravaggio's Supper at Emmaus, Bellini, Tintoretto, Veronese. Any one of them would anchor a museum.\n\nIt shares a seventeenth-century palazzo with the art academy, so the courtyard is full of students, and the recently opened Palazzo Citterio next door extends the ticket into the twentieth century.",
+      "what_great": "The Mantegna and the Piero della Francesca in adjacent rooms. Four euros for anyone aged 18 to 25, which is close to a gift. Far quieter than the Duomo two streets away.",
+      "what_ruined": "Twenty euros is at the top of the Italian range for a picture gallery. The hang assumes you know your Renaissance schools. The Brera district around it is expensive enough that lunch afterwards costs as much as the ticket.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a collection of this quality. Five for safety in Brera. Four for value: fair at twenty euros, exceptional at four for the under-26s.",
+      "meta_description": "The Pinacoteca di Brera in Milan costs 20 euros full and 4 euros for 18 to 25 year olds. Mantegna, Piero della Francesca, Raphael and Caravaggio.",
+      "facts_checked": [
+        {
+          "fact": "A full Grande Brera ticket is 20.00 euros.",
+          "url": "https://pinacotecabrera.org/en/visit/entrances/",
+          "assert_text": "grande brera € 20,00 full",
+          "confidence": "verified on the gallery's official entrances page"
+        },
+        {
+          "fact": "A reduced Grande Brera ticket for visitors aged 18 to 25 is 4.00 euros.",
+          "url": "https://pinacotecabrera.org/en/visit/entrances/",
+          "assert_text": "grande brera € 4,00 reduced 18-25",
+          "confidence": "verified on the gallery's official entrances page"
+        }
+      ],
+      "what_it_is": "Milan's principal picture gallery, in the Palazzo Brera alongside the art academy, holding northern Italian painting from the fourteenth to the twentieth century, now extended into Palazzo Citterio.",
+      "why_go": "For Mantegna's Dead Christ and Piero della Francesca's Brera Madonna, two of the most radical paintings of the Italian Renaissance, hanging within a few metres of each other.",
+      "the_good": "An outstanding collection with genuine masterpieces rather than school pieces, a four euro ticket for 18 to 25 year olds, and far fewer people than the cathedral.",
+      "the_downsides": "Expensive at full price. Little help for a visitor who does not already know the period. Audioguides cost extra.",
+      "best_for": "Anyone who likes Renaissance painting, and anyone aged 18 to 25, for whom this is the best four euros in Milan.",
+      "skip_if": "Italian Renaissance painting leaves you cold. In that case the Museo del Novecento gives you the twentieth century instead.",
+      "practical": "Take the audioguide if the period is new to you; twenty euros without it is a lot of unexplained painting. Go on a weekday morning. The Palazzo Citterio extension is included, so leave time for it.",
+      "tickets": "Grande Brera full 20.00 euros, reduced 4.00 euros for 18 to 25 year olds. Audioguides 5.00 euros, radioguides 2.00 euros. School groups enter free with compulsory booking.",
+      "getting_there": "Metro line 2 to Lanza or line 3 to Montenapoleone, both a five-minute walk. It is ten minutes on foot from the Duomo.",
+      "location_context": "The Brera district, a grid of narrow streets north of the Duomo full of galleries, bars and the art academy, and one of the more pleasant parts of central Milan to walk in.",
+      "time_needed": "Two hours, three with Palazzo Citterio.",
+      "accessibility": "Lifts serve the gallery floors and the route through the collection is step-free.",
+      "verdict": "Go for the Mantegna. Twenty euros is fair, four euros for the under-26s is a bargain, and it is the quietest great gallery in Italy."
+    },
+    {
       "destination_slug": "munich-germany",
       "name": "Alte Pinakothek",
       "type": "attraction",
@@ -1424,6 +1752,88 @@
       "time_needed": "Two to three hours to do all four collections properly. Ninety minutes if you pick two.",
       "accessibility": "The building is served by lifts throughout and the collections publish accessibility information for visitors with reduced mobility.",
       "verdict": "The best-value modern museum in Munich, especially on a Sunday. Go for the design collection in the basement rather than only the paintings, and pair it with the Alte Pinakothek across the square."
+    },
+    {
+      "destination_slug": "new-orleans-usa",
+      "name": "National WWII Museum",
+      "type": "attraction",
+      "headline": "Twenty-Seven Dollars to Start, and the Packages Climb From There",
+      "body": "The National WWII Museum sells general admission starting at $27, an Essentials package starting at $36 that adds the Beyond All Boundaries 4D cinematic experience, and a Best Value package starting at $39 that adds the Freedom Theater experience as well.\n\nIt is the official museum of the Second World War in the United States and it occupies several buildings across a campus in the Warehouse District. The aircraft hanging in the Boeing Center, the D-Day exhibition and the Road to Berlin and Road to Tokyo galleries are all substantial, and the whole thing takes far longer than people plan for.\n\nThe presentation is unashamedly emotional, with personal dog tags issued at the entrance that follow one service member's story through the galleries. It works, and it is worth knowing in advance that it is designed to.",
+      "what_great": "Enormous scope for twenty-seven dollars, real aircraft and vehicles rather than models, and a dog tag device that turns a survey into one person's war. The campus is genuinely well organised.",
+      "what_ruined": "The upsell is relentless: three package tiers, extra experiences and a submarine simulator, all priced separately. It needs a full day and most visitors give it three hours. The tone is celebratory in a way that flattens some of the harder history.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for scale and execution. Five for safety in the Warehouse District. Four for value: twenty-seven dollars is fair, but the real cost is whichever package you end up buying.",
+      "meta_description": "The National WWII Museum in New Orleans starts at $27 general admission, $36 with the 4D film. Several buildings, real aircraft, and a full day of it.",
+      "facts_checked": [
+        {
+          "fact": "General admission starts at $27.",
+          "url": "https://www.nationalww2museum.org/buy-tickets",
+          "assert_text": "general admission starting at $27",
+          "confidence": "verified on the museum's official tickets page"
+        },
+        {
+          "fact": "The Essentials package, which adds the Beyond All Boundaries 4D experience, starts at $36.",
+          "url": "https://www.nationalww2museum.org/buy-tickets",
+          "assert_text": "essentials package starting at $36",
+          "confidence": "verified on the museum's official tickets page"
+        }
+      ],
+      "what_it_is": "The United States' official museum of the Second World War, on a multi-building campus in the New Orleans Warehouse District, covering the American war in Europe and the Pacific.",
+      "why_go": "For the scale and for the objects. Aircraft, landing craft and vehicles in the room with you, plus the best D-Day exhibition anywhere, given that the landing craft themselves were built in New Orleans.",
+      "the_good": "Several substantial buildings, genuine aircraft and vehicles, a strong D-Day gallery, and a personal dog tag that gives the visit a thread.",
+      "the_downsides": "Aggressive package upselling. Needs a full day. A celebratory register that avoids some of the harder questions. Popular enough that midday is crowded.",
+      "best_for": "Anyone with an interest in the Second World War, and families with teenagers.",
+      "skip_if": "You have half a day in New Orleans. The French Quarter and the Garden District are the better use of it.",
+      "practical": "Arrive at opening and plan a full day. Decide on the package before you get to the counter, because deciding at the desk is how people spend forty dollars they did not intend to. The 4D film is worth it once.",
+      "tickets": "General admission from $27, Essentials package from $36 including the Beyond All Boundaries 4D experience, Best Value package from $39 adding the Freedom Theater experience. Members enter free.",
+      "getting_there": "The St Charles or Riverfront streetcar to the Warehouse District, or a fifteen-minute walk from the French Quarter along Magazine Street.",
+      "location_context": "The Warehouse District, south-west of the French Quarter, an area of converted warehouses, galleries and restaurants that is quieter than the Quarter and easy to walk.",
+      "time_needed": "A full day. Four hours is the absolute minimum.",
+      "accessibility": "Fully step-free with lifts between all buildings and levels, and wheelchairs available to borrow.",
+      "verdict": "Give it a whole day, pick your package before you reach the desk, and start at opening. Twenty-seven dollars buys more museum than almost anywhere in the country."
+    },
+    {
+      "destination_slug": "new-orleans-usa",
+      "name": "New Orleans Museum of Art",
+      "type": "attraction",
+      "headline": "Eighteen Dollars if You Live Here, Twenty-Three if You Do Not, Free Under Twenty",
+      "body": "The New Orleans Museum of Art charges adults $18 for Louisiana residents and $23 for out-of-state visitors, with seniors aged 65 and up at $13 and $18 and university students with ID at $11 and $16. Youth aged 19 and under enter free regardless of where they live.\n\nThe collection is stronger than a city this size has any right to expect: French painting, a serious photography holding, Japanese and African art, and a decorative arts collection built on New Orleans money from the cotton and shipping years.\n\nThe Besthoff Sculpture Garden beside it is free, covers eleven acres of live oaks and lagoons in City Park, and is one of the best public spaces in the American South.",
+      "what_great": "Free for everyone aged 19 and under. The Besthoff Sculpture Garden, free and genuinely beautiful. A collection with real depth in photography and French painting.",
+      "what_ruined": "Out-of-state visitors pay five dollars more than residents for the same museum. City Park is a long way from the Quarter and the streetcar takes its time. The building is grand but the galleries are conventional.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Four for a good regional museum that is not a great one. Four for safety: City Park is fine in daylight, less so after dark. Five for value, given free entry under 20 and a free sculpture garden.",
+      "meta_description": "The New Orleans Museum of Art costs $23 for out-of-state adults, $18 for Louisiana residents, free under 20. The Besthoff Sculpture Garden is free.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is $18 for Louisiana residents and $23 for out-of-state visitors.",
+          "url": "https://noma.org/visit/visitor-information/",
+          "assert_text": "adults $18 $23",
+          "confidence": "verified on the museum's official visitor information page"
+        },
+        {
+          "fact": "Youth aged 19 and under enter free, both residents and out-of-state visitors.",
+          "url": "https://noma.org/visit/visitor-information/",
+          "assert_text": "youth ages 19 and under free free",
+          "confidence": "verified on the museum's official visitor information page"
+        }
+      ],
+      "what_it_is": "New Orleans' principal art museum, in City Park, holding European and American painting, photography, Japanese and African art and decorative arts, with an adjoining free sculpture garden.",
+      "why_go": "For the photography collection and the French rooms, and for the Besthoff Sculpture Garden, which is free and better than the museum's reputation suggests.",
+      "the_good": "Free under 20. A free eleven-acre sculpture garden under live oaks. Strong photography and decorative arts. A calm alternative to the Quarter.",
+      "the_downsides": "Two-tier pricing that charges visitors more. A long trip from the centre. Conventional gallery presentation. Closed on several holidays including Mardi Gras.",
+      "best_for": "Families, given free entry under 20, and anyone wanting a half day away from Bourbon Street.",
+      "skip_if": "You have two days in New Orleans. The WWII Museum and the city itself have the stronger claim.",
+      "practical": "Do the sculpture garden even if you skip the museum, because it is free and open separately. Take the Canal Street streetcar to City Park and allow half an hour each way.",
+      "tickets": "Adults $18 for Louisiana residents and $23 out-of-state; seniors 65 and up $13 and $18; active military with ID $13 and $18; university students with ID $11 and $16; youth 19 and under free. Members enter free. The Besthoff Sculpture Garden is free to all.",
+      "getting_there": "The Canal Street streetcar to City Park and Museum, which stops at the entrance, about twenty-five minutes from the French Quarter.",
+      "location_context": "City Park, a large park north of the centre with live oaks, lagoons and the sculpture garden, well away from the tourist districts.",
+      "time_needed": "Two hours for the museum, plus an hour for the sculpture garden.",
+      "accessibility": "Step-free with lifts throughout the museum, and the sculpture garden paths are level and paved.",
+      "verdict": "Go for the free sculpture garden and stay for the photography. Free under 20, and the out-of-state surcharge is the only irritating part."
     },
     {
       "destination_slug": "new-york-city-usa",
