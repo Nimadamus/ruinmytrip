@@ -63,11 +63,16 @@ _spec.loader.exec_module(_v)
 # as unsourceable. It was not: the price was on the page in a currency the regex could not see.
 # That silently capped coverage at western Europe. Trailing-symbol currencies (350 kr, 45 zl) are as
 # common as leading ones, so both orders are matched.
-_CURRENCY = r"kr|kr\.|dkk|sek|nok|isk|z[lł]|pln|k[cč]|czk|ft|huf|chf|sgd|aud|nzd|zar|krw|₩|₹|inr|thb|฿"
+_CURRENCY = (r"kr|kr\.|dkk|sek|nok|isk|z[lł]|pln|k[cč]|czk|ft|huf|chf|sgd|aud|nzd|zar|krw|₩|₹|inr"
+             r"|thb|฿|eur|gbp|usd|jpy|ils|₪|try|₺|ron|lei|bgn|hrk|rsd|uah|₴|mxn|brl|r\$|ars|clp|cop"
+             r"|pen|s/|egp|mad|dh|aed|sar|qar|myr|rm|idr|rp|php|₱|vnd|₫|twd|hkd|cny|rmb|元|円|원")
 PATTERNS = [
     ("money",
+     # Symbol first, optionally spaced: "€20", "€ 20,50", "£ 12.00".
      r"[€£$¥]\s?\d[\d.,]*"
-     r"|\d[\d.,]*\s?(?:euros?|yen|pounds?)\b"
+     # Amount then symbol, which most of continental Europe writes: "20,50 €", "12.00 £".
+     r"|\d[\d.,]*\s?[€£$¥]"
+     r"|\d[\d.,]*\s?(?:euros?|yen|pounds?|dollars?|francs?|krone[rn]?|kronor|zlotych|forint)\b"
      rf"|\d[\d.,]*\s?(?:{_CURRENCY})\b"
      rf"|\b(?:{_CURRENCY})\s?\d[\d.,]*"),
     ("free", r"free admission|free entry|admission is free|entry is free|no admission fee|free of charge"),
@@ -127,13 +132,47 @@ NAV_NOISE = ("shop", "membership", "member", "donate", "support-us", "school", "
 _HREF = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
+_SITEMAP_LOC = re.compile(r"<loc>\s*([^<\s]+)\s*</loc>", re.I)
+
+
+def discover_via_sitemap(root: str, limit: int) -> list[str]:
+    """Fall back to the site's own sitemap when its navigation is unreadable.
+
+    A JavaScript-rendered menu produces no <a href> for a plain fetch, so nav discovery finds
+    nothing and the site looks like it publishes no visitor information. Its sitemap is static XML
+    and lists the same pages. This is still the site telling us where its pages are, not guesswork.
+    """
+    import urllib.parse
+
+    split = urllib.parse.urlsplit(root)
+    base = f"{split.scheme}://{split.netloc}"
+    urls: list[tuple[int, str]] = []
+    for path in ("/sitemap.xml", "/sitemap_index.xml", "/sitemap-index.xml"):
+        ok, body = _v.fetch(base + path)
+        if not ok:
+            continue
+        for loc in _SITEMAP_LOC.findall(body)[:2000]:
+            low = loc.lower()
+            if any(n in low for n in NAV_NOISE):
+                continue
+            score = sum(1 for w in NAV_WORDS if w in low)
+            if score:
+                urls.append((score + (2 if "/en" in low else 0), loc))
+        if urls:
+            break
+    urls.sort(key=lambda kv: (-kv[0], len(kv[1])))
+    return [u for _, u in urls[:limit]]
+
+
 def discover(root: str, limit: int = 6) -> list[str]:
     """Return the most likely visitor-information URLs linked from a site's own navigation."""
     import urllib.parse
 
     ok, body = _v.fetch(root)
     if not ok:
-        return []
+        # A root that will not load is not proof the site is unusable: plenty of them redirect a
+        # bare domain oddly while their sitemap is served fine.
+        return discover_via_sitemap(root, limit)
     root_host = urllib.parse.urlsplit(root).netloc.lower().lstrip("www.")
 
     scored: dict[str, int] = {}
@@ -158,7 +197,8 @@ def discover(root: str, limit: int = 6) -> list[str]:
             score += 2
         scored[url] = max(scored.get(url, 0), score)
 
-    return [u for u, _ in sorted(scored.items(), key=lambda kv: (-kv[1], len(kv[0])))[:limit]]
+    found = [u for u, _ in sorted(scored.items(), key=lambda kv: (-kv[1], len(kv[0])))[:limit]]
+    return found or discover_via_sitemap(root, limit)
 
 
 def probe(url: str) -> dict:

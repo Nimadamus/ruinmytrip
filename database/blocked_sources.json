@@ -1,0 +1,23 @@
+{
+  "_comment": [
+    "Hosts that stopped answering automated fetches AFTER content citing them was written and",
+    "verified. A host belongs here only when a human has decided to keep the pages that cite it.",
+    "verify_place_sources.py reports their assertions as UNCHECKED rather than failing the run, and",
+    "prints the block on every run so it cannot quietly become permanent. --strict re-fails them.",
+    "",
+    "This file never reaches a reader. No page renders source status, because a source we cannot",
+    "re-fetch is not evidence that a price is wrong, and a warning on the page would tell a traveler",
+    "to distrust copy that nothing has contradicted.",
+    "",
+    "Do NOT add a host here to make a new page publishable. A source that never verified is not a",
+    "blocked source, it is an unsourced claim, and the attraction does not get a page.",
+    "",
+    "EXHAUST THE PIPELINE BEFORE ADDING ANYTHING HERE. royalcollection.org.uk was listed here for",
+    "about an hour on 2026-08-15, after every path on it and its rct.uk alias returned 403 and two",
+    "live pages were nearly retired over it. It was not blocked. It serves a page and then refuses",
+    "the next request seconds later, indefinitely, and the fixed 1.5s per-host gap could not satisfy",
+    "it. Adaptive per-host backoff made all six assertions pass on a cold run. The entry was deleted,",
+    "because an excuse that outlives its cause is how a fixable fault becomes permanent."
+  ],
+  "hosts": {}
+}

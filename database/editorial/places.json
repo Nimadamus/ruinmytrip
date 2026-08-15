@@ -260,6 +260,88 @@
     },
     {
       "destination_slug": "athens-greece",
+      "name": "Byzantine and Christian Museum",
+      "type": "attraction",
+      "headline": "Eight Euros for the Thousand Years Everyone Skips",
+      "body": "The Byzantine and Christian Museum charges 8 euros for a regular ticket and 4 euros reduced. It opens Monday 8:30 to 15:30 and is closed on Tuesdays.\n\nAthens sells itself on the classical fifth century, and then most visitors leave without noticing that the city spent the following thousand years as part of a Christian empire that produced its own extraordinary art. This is the museum for that millennium: icons, mosaics, carved marble, liturgical silver, and reconstructed church interiors.\n\nIt sits in the Villa Ilissia, a nineteenth-century mansion on Vasilissis Sofias, with most of the collection below ground in a purpose-built extension around a courtyard. Free admission runs on the first Sunday of the month from November to March.",
+      "what_great": "Eight euros, which is a third of what the Acropolis costs, for a collection nobody else in the world can match. Free for under-25s from the EU. The underground galleries are cool in summer, which matters in Athens.",
+      "what_ruined": "Byzantine art is an acquired taste and the museum does little to ease you in. It closes at 15:30 on most days, which catches people planning an afternoon. Tuesday closure is easy to walk into.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four for a superb collection presented with little hand-holding. Five for safety on Vasilissis Sofias. Five for value: eight euros in a city where the headline sites cost thirty.",
+      "meta_description": "The Byzantine and Christian Museum in Athens costs 8 euros, 4 reduced, and closes Tuesdays. A thousand years of Greek history most visitors skip.",
+      "facts_checked": [
+        {
+          "fact": "A regular ticket is 8 euros and a reduced ticket is 4 euros.",
+          "url": "https://www.byzantinemuseum.gr/en/visit/3/opening-hours-tickets",
+          "assert_text": "regular ticket: €8 reduced ticket: €4",
+          "confidence": "verified on the museum's official opening hours and tickets page"
+        },
+        {
+          "fact": "The museum opens Monday 8:30 to 15:30 and is closed on Tuesdays.",
+          "url": "https://www.byzantinemuseum.gr/en/visit/3/opening-hours-tickets",
+          "assert_text": "monday: 8:30-15:30 tuesday: closed",
+          "confidence": "verified on the museum's official opening hours and tickets page"
+        }
+      ],
+      "what_it_is": "A state museum on Vasilissis Sofias holding Greece's national collection of Byzantine and post-Byzantine art, from the fourth century to the nineteenth, in and beneath a nineteenth-century villa.",
+      "why_go": "Because the thousand years between the Parthenon and Greek independence are the part of Athens nobody explains, and this is where they are explained. The icons alone are worth the eight euros.",
+      "the_good": "A world-class collection at a fraction of Acropolis prices. Cool underground galleries. Reconstructed church interiors that give the objects their context. Free on the first Sunday of the month from November to March.",
+      "the_downsides": "Little introduction for a newcomer to Byzantine art. Early closing on most days. Closed Tuesdays. The mansion above ground is used mostly for offices and temporary shows.",
+      "best_for": "Anyone staying in Athens more than two days, and anyone interested in religious art, icons or the eastern empire.",
+      "skip_if": "You have one day and it is Acropolis day. This is the second or third visit, not the first.",
+      "practical": "Go in the morning, because most days end at 15:30. Combine it with the War Museum and the Benaki, which are both within a few minutes' walk along the same avenue.",
+      "tickets": "Regular 8 euros, reduced 4 euros. Free for EU citizens up to 25, and free for everyone on the first Sunday of each month from 1 November to 31 March and on a list of national dates.",
+      "getting_there": "Metro line 3 to Evangelismos, then two minutes on foot. It is a fifteen-minute walk from Syntagma along Vasilissis Sofias.",
+      "location_context": "Vasilissis Sofias, the embassy avenue running north-east from Syntagma, alongside the Benaki Museum, the War Museum and the National Gallery.",
+      "time_needed": "Ninety minutes to two hours.",
+      "accessibility": "The underground galleries are served by lifts and ramps and are largely step-free.",
+      "verdict": "Eight euros for the millennium Athens leaves out. Go in the morning, not the afternoon, and never on a Tuesday."
+    },
+    {
+      "destination_slug": "athens-greece",
+      "name": "Museum of Cycladic Art",
+      "type": "attraction",
+      "headline": "Twelve Euros for the Figurines That Made Modern Sculpture Possible",
+      "body": "The Museum of Cycladic Art charges 12 euros for general admission and 9 euros reduced or for group visits. It opens Monday, Wednesday, Friday and Saturday 10:00 to 17:00, Sunday 11:00 to 17:00 and Thursday 10:00 to 20:00, and is closed on Tuesdays.\n\nThe Cycladic figurines are the reason to come: flat, white, folded-arm marble figures made in the islands around 3000 BC, which look so much like twentieth-century sculpture that Brancusi, Modigliani and Moore all borrowed from them. Seeing several hundred in one place makes the debt obvious.\n\nThe museum also holds a good ancient Greek collection and a Cypriot one, and its temporary exhibitions are among the most ambitious in Athens.",
+      "what_great": "The largest collection of Cycladic art anywhere, beautifully lit and spaced. Free for under-18s. Thursday evening opening to 20:00 is the best slot in the week. The cafe in the glass atrium is genuinely good.",
+      "what_ruined": "Twelve euros for a fairly small permanent collection, and temporary exhibitions can push the ticket to 14. Closed Tuesdays. The Kolonaki setting means everything around it is expensive too.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because no other museum shows this material properly. Five for safety in Kolonaki. Four for value: twelve euros is fair but the permanent collection is compact.",
+      "meta_description": "The Museum of Cycladic Art in Athens costs 12 euros, 9 reduced, and closes Tuesdays. The marble figurines that modern sculptors spent a century borrowing from.",
+      "facts_checked": [
+        {
+          "fact": "General admission is 12 euros and reduced or group admission is 9 euros.",
+          "url": "https://cycladic.gr/en/episkeftheite-to-mouseio/",
+          "assert_text": "general admission: €12 reduced / group visit: €9",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Opening hours are Monday, Wednesday, Friday and Saturday 10:00 to 17:00, Sunday 11:00 to 17:00, Thursday 10:00 to 20:00.",
+          "url": "https://cycladic.gr/en/episkeftheite-to-mouseio/",
+          "assert_text": "monday, wednesday, friday, and saturday 10:00-17:00, sunday 11:00-17:00, thursday 10:00-20:00",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A private museum in Kolonaki holding the world's largest collection of Cycladic art, alongside ancient Greek and Cypriot collections and a strong temporary exhibition programme.",
+      "why_go": "The Cycladic figurines are the most surprising objects in Athens: five thousand years old and unmistakably modern. No other museum has anything like this many.",
+      "the_good": "Superb display and lighting, free entry for under-18s, late Thursday opening, ambitious temporary shows, and a good cafe in the atrium.",
+      "the_downsides": "Small permanent collection for the price. Closed Tuesdays. Temporary exhibitions carry a higher ticket. Kolonaki prices apply to everything nearby.",
+      "best_for": "Anyone interested in sculpture or modern art, who will recognise the borrowings immediately, and families given free entry for under-18s.",
+      "skip_if": "You are only interested in classical Athens. The National Archaeological Museum covers that far better.",
+      "practical": "Thursday evening is the quietest and longest slot. Start on the Cycladic floor before the tour groups arrive, then work down. Check whether a temporary exhibition is included before buying.",
+      "tickets": "General admission 12 euros, reduced or group visit 9 euros. Free for children under 18, Cycladic Friends members, and several categories including holders of a Hellenic Ministry free entry pass. Some temporary exhibitions are priced separately at 14 euros, 11 reduced.",
+      "getting_there": "Metro line 3 to Evangelismos, then a five-minute walk uphill, or a ten-minute walk from Syntagma through Kolonaki.",
+      "location_context": "Kolonaki, the smart shopping and embassy quarter below Lycabettus, five minutes from the Benaki Museum and ten from Syntagma.",
+      "time_needed": "Ninety minutes, or two hours with a temporary exhibition.",
+      "accessibility": "Step-free with lifts to all floors of both the main building and the Stathatos Mansion wing.",
+      "verdict": "Go on a Thursday evening for the figurines. Twelve euros is fair for the best collection of its kind anywhere, and it is free for under-18s."
+    },
+    {
+      "destination_slug": "athens-greece",
       "name": "National Archaeological Museum",
       "type": "attraction",
       "headline": "Twenty Euros for the Best Greek Collection on Earth, and Half of Athens Walks Past It",
@@ -922,6 +1004,47 @@
       "time_needed": "Ninety minutes for the Ninomaru Palace and the main gardens. Two hours if you walk the full grounds.",
       "accessibility": "The grounds are largely flat, but the Ninomaru Palace route involves removing shoes and walking wooden corridors with steps, which limits access.",
       "verdict": "The best-value major site in Kyoto and the one that best explains how the country was actually governed. Go early, take the gardens as well as the palace, and reserve the Honmaru separately if you want it."
+    },
+    {
+      "destination_slug": "lisbon-portugal",
+      "name": "Calouste Gulbenkian Museum",
+      "type": "attraction",
+      "headline": "Eighteen Euros for One Man's Astonishing Shopping",
+      "body": "The Calouste Gulbenkian Museum charges 18.00 euros for an all-inclusive ticket, 16.00 euros for the museum and CAM together, and 12.00 euros for CAM alone. It opens 10:00 to 18:00, until 21:00 on Saturdays, and is closed on Tuesdays.\n\nGulbenkian was an Armenian oil magnate who took five per cent of Iraqi petroleum in kind and spent it on whatever he liked for fifty years. The result is one of the best private collections ever assembled: Egyptian sculpture, Persian carpets, Chinese porcelain, Rembrandt, Rubens, Monet, and a room of Rene Lalique jewellery that is worth the ticket on its own.\n\nThe garden around it is one of the great modernist landscapes in Europe, free to enter, and full of Lisbon residents doing nothing in particular.",
+      "what_great": "A collection with no weak rooms, in a building that is a masterpiece of 1960s museum design. The Lalique room. A free garden that is a genuine public space. Saturday opening to 21:00.",
+      "what_ruined": "Eighteen euros is high for Lisbon, and the ticket tiers are confusing: the museum, the modern art centre and the combinations all cost different amounts. Closed Tuesdays. It is a metro ride from the tourist centre, which puts people off.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a collection and a building that are both exceptional. Five for safety in a quiet residential district. Four for value: excellent, but eighteen euros is a Lisbon premium and the ticket structure is needlessly complicated.",
+      "meta_description": "The Calouste Gulbenkian Museum in Lisbon costs 18 euros all inclusive, 16 with CAM, and closes Tuesdays. One oil magnate's fifty years of collecting.",
+      "facts_checked": [
+        {
+          "fact": "An all-inclusive ticket is 18.00 euros.",
+          "url": "https://gulbenkian.pt/en/useful-information/tickets/",
+          "assert_text": "all inclusive – 18,00 €",
+          "confidence": "verified on the foundation's official tickets page"
+        },
+        {
+          "fact": "A ticket covering the museum and the CAM modern art centre is 16.00 euros.",
+          "url": "https://gulbenkian.pt/en/useful-information/tickets/",
+          "assert_text": "museum and cam museum – 16,00 €",
+          "confidence": "verified on the foundation's official tickets page"
+        }
+      ],
+      "what_it_is": "The museum of the Calouste Gulbenkian Foundation in Avenidas Novas, holding the founder's private collection of ancient, Islamic, Asian and European art, alongside the CAM modern art centre and a large public garden.",
+      "why_go": "For range and quality that no other museum in Portugal comes near, and for the Lalique jewellery, which is the finest collection of it anywhere.",
+      "the_good": "Egyptian, Islamic, Chinese and European rooms all strong. The Lalique collection. A superb modernist building. A free garden. Late Saturday opening. Free entry to exhibitions on Sundays from 14:00.",
+      "the_downsides": "Confusing ticket tiers. Closed Tuesdays. Away from the tourist centre. Eighteen euros is steep for the city.",
+      "best_for": "Anyone who likes decorative arts, and anyone staying in Lisbon long enough to leave Baixa and Belem behind.",
+      "skip_if": "You have two days and have not yet seen Belem. The Jeronimos monastery has the stronger claim on a short trip.",
+      "practical": "Decide which ticket you want before you get to the desk. Saturday evening is the calmest slot. The garden is free, so it works as a break in the middle rather than a separate trip.",
+      "tickets": "All inclusive 18.00 euros, museum and CAM 16.00 euros, CAM alone 12.00 euros, CAM temporary exhibitions 8.00 euros. Discounts of 25 per cent for under-30s and 10 per cent for over-65s. Free entry on Sundays from 14:00.",
+      "getting_there": "Metro to Sao Sebastiao or Praca de Espanha, both a few minutes' walk. It is about fifteen minutes by metro from Baixa.",
+      "location_context": "Avenidas Novas, a twentieth-century residential and office district north of the centre, quiet and green and largely free of tourists.",
+      "time_needed": "Two to three hours for the founder's collection, longer with CAM and the garden.",
+      "accessibility": "Step-free throughout with lifts, and the garden paths are largely level.",
+      "verdict": "The best museum in Portugal. Work out which ticket you want before you arrive, go late on a Saturday, and give the free garden half an hour of its own."
     },
     {
       "destination_slug": "lisbon-portugal",
@@ -1720,6 +1843,129 @@
       "time_needed": "Two hours for the permanent exhibition.",
       "accessibility": "Step-free with lifts to all exhibition floors, and free entry for people with disabilities.",
       "verdict": "Worth the thirty-three hundred krona if you are in Reykjavik for more than a couple of days. Save it for the wet afternoon, which will arrive."
+    },
+    {
+      "destination_slug": "rome-italy",
+      "name": "Capitoline Museums",
+      "type": "attraction",
+      "headline": "Twenty Euros Fifty, and the Best View of the Forum Is Inside",
+      "body": "The Capitoline Museums charge 20.50 euros full price for non-residents and 15.00 euros reduced. They open every day from 9.30 to 19.30, with last admission an hour before closing.\n\nThese are the oldest public museums in the world, founded in 1471, and they sit on the Campidoglio in a square Michelangelo laid out. The collection is the one people picture when they picture Roman sculpture: the Capitoline Wolf, the Dying Gaul, the colossal fragments of Constantine, and the original equestrian Marcus Aurelius that stood outside for centuries.\n\nThe part nobody mentions is the Tabularium gallery, an ancient records office built into the hillside whose arches frame the Roman Forum. It is the best view of the Forum in Rome and it is included in the ticket.",
+      "what_great": "The Dying Gaul, the Constantine fragments and the real Marcus Aurelius. The Tabularium view over the Forum, which alone justifies the price. Open every day, which in Rome is rarer than it should be.",
+      "what_ruined": "Twenty euros fifty is a two-tier price: residents of Rome now enter free, so visitors pay for a museum locals do not. Labelling is thin in places and the layout across two palaces linked by an underground passage confuses people.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for the collection, the building and the Forum view together. Four for safety, purely for pickpockets on the approach from Piazza Venezia. Four for value: fair for what it holds, though the resident and non-resident split stings.",
+      "meta_description": "The Capitoline Museums in Rome cost 20.50 euros for non-residents, open daily 9.30 to 19.30. The oldest public museums in the world, with the best Forum view.",
+      "facts_checked": [
+        {
+          "fact": "Full price for non-residents is 20.50 euros and the reduced price for non-residents is 15.00 euros.",
+          "url": "https://www.museicapitolini.org/en/informazioni_pratiche/biglietti_e_videoguide",
+          "assert_text": "full price for non-residents € 20,50 reduced price for non-residents € 15,00",
+          "confidence": "verified on the museums' official tickets page"
+        },
+        {
+          "fact": "The museums open every day from 9.30 to 19.30.",
+          "url": "https://www.museicapitolini.org/en/informazioni_pratiche/orari_e_indirizzi",
+          "assert_text": "opening hours everyday 9.30-19.30",
+          "confidence": "verified on the museums' official opening hours page"
+        }
+      ],
+      "what_it_is": "The oldest public museums in the world, founded in 1471, in two palaces on the Campidoglio facing a square designed by Michelangelo, holding classical sculpture, the Capitoline Wolf and a picture gallery.",
+      "why_go": "For the sculpture that defines the popular image of Rome, and for the Tabularium gallery, whose arched windows look straight down the Forum. Nothing else gives you that view from inside a museum.",
+      "the_good": "The Dying Gaul, the Constantine fragments, the original Marcus Aurelius, the Tabularium view, Michelangelo's square outside, and daily opening.",
+      "the_downsides": "Non-residents pay while residents of Rome enter free. Thin labelling. A confusing two-building layout. Busy from mid-morning.",
+      "best_for": "Every visitor to Rome with any interest in the ancient city, and anyone who wants a Forum view without the Forum queue.",
+      "skip_if": "You have already booked the full Colosseum, Forum and Palatine circuit for the same day. Two sites of that density in one day is too much.",
+      "practical": "Go at opening or after 17:00. Find the Tabularium before you tire, because it is the thing you will remember. The underground passage between the two palaces is easy to miss and is the only link.",
+      "tickets": "Full price for non-residents 20.50 euros, reduced 15.00 euros. Residents of Rome and the metropolitan city enter free. Advance purchase at the ticket office carries a 1 euro pre-sale fee.",
+      "getting_there": "A five-minute walk up the cordonata from Piazza Venezia. The nearest metro is Colosseo on line B, about ten minutes away.",
+      "location_context": "The Campidoglio, the smallest of Rome's seven hills, between Piazza Venezia and the Forum, with the Vittoriano on one side and the Forum below on the other.",
+      "time_needed": "Two to three hours.",
+      "accessibility": "Lifts serve most galleries and there is step-free access from Via delle Tre Pile, though the cordonata approach is a ramped climb.",
+      "verdict": "The best museum in Rome that is not the Vatican, and the Tabularium view over the Forum is the single most underrated thing in the city. Go early or late."
+    },
+    {
+      "destination_slug": "rome-italy",
+      "name": "Museo Nazionale Romano",
+      "type": "attraction",
+      "headline": "Fifteen Euros for Four Museums and Almost No Queue",
+      "body": "The Museo Nazionale Romano charges 15.00 euros full price and 2.00 euros reduced. It opens Tuesday to Sunday from 9.00 to 19.00, with last admission at 18.00, and closes on Mondays.\n\nIt is not one building. The ticket covers Palazzo Massimo, Palazzo Altemps, the Baths of Diocletian and the Crypta Balbi, which between them hold the best Roman painting and sculpture in the city. The frescoes from the Villa of Livia at Palazzo Massimo, a whole garden painted around a room, are the finest surviving Roman wall painting anywhere.\n\nAnd almost nobody goes. Palazzo Massimo is two minutes from Termini station and is routinely empty while queues wrap around the Colosseum a mile away.",
+      "what_great": "Four museums on one ticket for fifteen euros. The Villa of Livia garden room. The Boxer at Rest. Genuine quiet in a city where nothing else is quiet. Two minutes from Termini.",
+      "what_ruined": "Almost all labelling is in Italian, and English support is minimal. The Crypta Balbi has been temporarily closed. Monday closure. The neighbourhood immediately around Termini is the least appealing part of central Rome.",
+      "rating": 5,
+      "safety_rating": 3,
+      "value_rating": 5,
+      "rating_rationale": "Five for the collection, which is world class and empty. Three for safety only because the streets around Termini attract pickpockets and are unpleasant after dark. Five for value: four museums and the best Roman frescoes in existence for fifteen euros.",
+      "meta_description": "The Museo Nazionale Romano costs 15 euros for four Rome museums, 2 reduced, closed Mondays. The best Roman frescoes in the city, with no queue.",
+      "facts_checked": [
+        {
+          "fact": "Full price admission is 15.00 euros and the reduced price is 2.00 euros.",
+          "url": "https://museonazionaleromano.it/orari-e-biglietti/",
+          "assert_text": "prezzo intero € 15.00 ridotto € 2.00",
+          "confidence": "verified on the museum's official opening hours and tickets page"
+        },
+        {
+          "fact": "It opens Tuesday to Sunday 9.00 to 19.00 with last admission at 18.00, and is closed on Mondays.",
+          "url": "https://museonazionaleromano.it/orari-e-biglietti/",
+          "assert_text": "dal martedì alla domenica (lunedì giorno di chiusura settimanale) 9.00 – 19.00. ultimo ingresso alle 18.00",
+          "confidence": "verified on the museum's official opening hours and tickets page"
+        }
+      ],
+      "what_it_is": "Italy's national museum of Roman antiquities, split across four sites in central Rome, all covered by one ticket: Palazzo Massimo, Palazzo Altemps, the Baths of Diocletian and the Crypta Balbi.",
+      "why_go": "The frescoes. The painted garden room from the Villa of Livia and the Villa Farnesina wall paintings at Palazzo Massimo are the best surviving Roman painting anywhere, and you will very likely have them to yourself.",
+      "the_good": "Four sites on one ticket, extraordinary frescoes and sculpture, almost no crowds, and a location two minutes from the main station.",
+      "the_downsides": "Italian-only labelling in most rooms. Crypta Balbi temporarily closed. Closed Mondays. The Termini surroundings are grim.",
+      "best_for": "Anyone on a second visit to Rome, and anyone who wants Roman art without queueing for it.",
+      "skip_if": "It is your first day in Rome and you have not yet seen the Forum. Start there instead.",
+      "practical": "Go to Palazzo Massimo first and take the top floor before anything else, because that is where the frescoes are. The ticket stays valid across the sites, so spread them over the days rather than forcing them into one.",
+      "tickets": "Full price 15.00 euros, reduced 2.00 euros, valid across all sites. Holders of participating museum cards pay 10.00 euros. A ticket for the Aula Ottagona alone is 5.00 euros. Free entry applies on the first Sunday of the month.",
+      "getting_there": "Palazzo Massimo is two minutes from Termini station on foot. Palazzo Altemps is near Piazza Navona, and the Baths of Diocletian are across the road from Termini.",
+      "location_context": "Palazzo Massimo and the Baths of Diocletian sit either side of Piazza dei Cinquecento in front of Termini; Palazzo Altemps is in the historic centre near Piazza Navona.",
+      "time_needed": "Two hours for Palazzo Massimo alone, a full day if you do all the open sites.",
+      "accessibility": "Palazzo Massimo and the Baths of Diocletian have lifts and step-free routes; Palazzo Altemps is a historic building with some limitations.",
+      "verdict": "The most underrated ticket in Rome. Fifteen euros, four museums, the best Roman frescoes in the world, and no queue. Start at Palazzo Massimo's top floor."
+    },
+    {
+      "destination_slug": "rome-italy",
+      "name": "Vatican Museums",
+      "type": "attraction",
+      "headline": "Twenty Euros at the Door, and Everyone Is Walking the Same Direction",
+      "body": "The Vatican Museums charge 20.00 euros for a full entry ticket without online booking and 10.00 euros reduced, with online booking adding a 5.00 euro skip-the-line fee. They open Monday to Saturday from 08.00 to 20.00, with final entry at 18.00, and on the last Sunday of the month from 09.00 to 14.00 with free entry.\n\nThe museums are seven kilometres of galleries ending in the Sistine Chapel, and almost everyone walks them in the same direction at the same pace. The Raphael Rooms, the map gallery and the Egyptian collection are all on the route, and all are treated by most visitors as an obstacle between the entrance and Michelangelo.\n\nThey are not. The Gallery of Maps is one of the most beautiful rooms in Europe, and the Raphael Rooms would be the main attraction of any other museum on earth.",
+      "what_great": "The Sistine Chapel, the Raphael Rooms and the Gallery of Maps in one ticket. Free entry on the last Sunday of the month. Early 08.00 opening, which is the only sensible time to arrive.",
+      "what_ruined": "The crowds are the worst of any museum in Europe and the one-way route means you cannot escape them. The Sistine Chapel is a slow shuffle with guards shouting for silence. Booking online costs 5 euros more, not less, which surprises everyone.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for a collection with no equal. Four for safety, for pickpockets in the queue and the crush inside. Four for value: twenty euros is fair for the contents, but the skip-the-line surcharge and the crowding take the edge off.",
+      "meta_description": "The Vatican Museums cost 20 euros at the door, 10 reduced, plus 5 euros to book online. Free on the last Sunday of the month. Open Monday to Saturday.",
+      "facts_checked": [
+        {
+          "fact": "A full entry ticket is 20.00 euros without online booking, and a reduced ticket is 10.00 euros.",
+          "url": "https://www.museivaticani.va/content/museivaticani/en/organizza-visita/tariffe-e-biglietti.html",
+          "assert_text": "full entry ticket € 20.00 (without online booking)",
+          "confidence": "verified on the Vatican Museums' official fares and tickets page"
+        },
+        {
+          "fact": "Opening is Monday to Saturday 08.00 to 20.00 with final entry at 18.00.",
+          "url": "https://www.museivaticani.va/content/museivaticani/en/info/orari-musei-vaticani.html",
+          "assert_text": "from monday to saturday 08.00 a.m. – 08.00 p.m. ( final entry 06.00 p.m. )",
+          "confidence": "verified on the Vatican Museums' official opening times page"
+        }
+      ],
+      "what_it_is": "The papal collections in Vatican City, running through some seven kilometres of galleries from Egyptian antiquities and classical sculpture to the Raphael Rooms and the Sistine Chapel.",
+      "why_go": "The Sistine Chapel ceiling and the Raphael Rooms are among the handful of things in Europe that genuinely have to be seen rather than reproduced. The classical sculpture court and the Gallery of Maps would each be a destination on their own.",
+      "the_good": "An unmatched collection, an 08.00 opening, free entry on the last Sunday of the month, and a route that takes in four or five world-class collections on the way to the chapel.",
+      "the_downsides": "Severe crowding on a fixed one-way route. Online booking costs 5 euros extra rather than less. The last-Sunday free day is so busy it is barely worth it. Closed most Sundays.",
+      "best_for": "Every visitor to Rome, at least once, and anyone interested in Renaissance painting.",
+      "skip_if": "You cannot arrive early and crowds ruin things for you. Between 11.00 and 15.00 in summer this is genuinely unpleasant.",
+      "practical": "Book the 08.00 slot and walk fast to the Sistine Chapel first, then double back for the Raphael Rooms and the maps when the crowd has moved past. Shoulders and knees must be covered or you will be turned away at the door.",
+      "tickets": "Full entry 20.00 euros without online booking, reduced 10.00 euros. Online booking adds a 5.00 euro skip-the-line fee. Free entry on the last Sunday of the month, 09.00 to 14.00, with final entry at 12.30.",
+      "getting_there": "Metro line A to Ottaviano, then a ten-minute walk around the Vatican wall to the museum entrance, which is not the same as the entrance to St Peter's.",
+      "location_context": "Viale Vaticano, on the north side of Vatican City, about fifteen minutes on foot from St Peter's Square around the outside of the walls.",
+      "time_needed": "Three hours at a brisk pace, and that is with skipping things.",
+      "accessibility": "Step-free routes and lifts are available throughout and wheelchairs can be borrowed free, though the distances involved are considerable.",
+      "verdict": "Unavoidable and worth it. Book the earliest slot, go straight to the Sistine Chapel, then walk back through the Raphael Rooms and the maps against the crowd."
     },
     {
       "destination_slug": "stockholm-sweden",

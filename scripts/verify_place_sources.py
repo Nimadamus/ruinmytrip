@@ -32,6 +32,7 @@ Exit code is 1 if any assertion fails or any source is unreachable, so it can ga
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
 import html
 import http.cookiejar
@@ -57,6 +58,16 @@ for _stream in (sys.stdout, sys.stderr):
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PLACES_JSON = os.path.join(HERE, "database", "editorial", "places.json")
+
+# Hosts a human has looked at and decided to keep citing even though a plain fetch can no longer
+# reach them. Curated by hand, committed, and read only by this script.
+#
+# Deliberately NOT under database/editorial/: publish_editorial.php globs that directory and expects
+# every file in it to be editorial content, so a config file there fails the publish outright.
+BLOCKED_SOURCES_JSON = os.path.join(HERE, "database", "blocked_sources.json")
+
+# Generated: when each source last verified successfully. Never edited by hand.
+SOURCE_HEALTH_JSON = os.path.join(HERE, ".cache", "source_health.json")
 
 UA = "RuinMyTrip/1.0 (+https://ruinmytrip.com; editorial fact verification)"
 TIMEOUT = 30
@@ -118,6 +129,15 @@ def decode(raw: bytes, header_charset: str | None) -> str:
 RETRIES = 2
 RETRY_PAUSE = 4.0
 
+# Retries for a host that has actually asked us to slow down.
+#
+# Two attempts is right for a transient blip. It is not enough for a host that grants roughly one
+# request per long window: royalcollection.org.uk verified fine when its page was checked alone, and
+# failed in a full sweep, because the sibling page citing the same host had just spent the
+# allowance. The batch, not the source, decided whether the fact could be checked. So a host that
+# has signalled 403 or 429 gets more attempts, spaced by its widened interval.
+BACKOFF_RETRIES = 4
+
 # Requests to one host are serialised and spaced. Two places can cite the same museum, and two
 # facts on one page already share a fetch, but across a batch the same domain still gets hit
 # repeatedly. Firing those concurrently is what produced intermittent 403s that failed a publish
@@ -125,17 +145,67 @@ RETRY_PAUSE = 4.0
 # not much slower; the same host is simply never hammered.
 MIN_HOST_INTERVAL = 1.5
 
+# Some hosts want a much wider gap than that, and say so only by refusing. royalcollection.org.uk
+# serves a page happily and then 403s the next request seconds later, indefinitely: it was recorded
+# as a dead source and two live pages were nearly retired over it, when the site had simply set a
+# rate a fixed interval could not satisfy. So the interval is per host and adaptive. A refusal
+# widens that host's gap for the rest of the run, a success narrows it back gradually, and nothing
+# changes for the hosts that never complain. Slowing down for a host that asks us to is the polite
+# behaviour anyway; the alternative was losing the source entirely.
+MAX_HOST_INTERVAL = 20.0
+HOST_BACKOFF_FACTOR = 4.0
+
 # Any real ticket or opening-hours page carries far more text than this. Anything shorter that still
 # came back 200 is an interstitial, a cookie wall or a soft block.
 MIN_PAGE_CHARS = 400
+
+# A soft block does not have to be short. Some protection layers serve a full-length page whose only
+# content is "turn on JavaScript" or "verify you are human". Length alone reads those as real pages,
+# so the asserted string is missing and the fact is reported FAIL, which says "this price is wrong"
+# about copy that is fine and sends someone off to correct an accurate number. These phrases mean we
+# were not shown the page, which is BLOCKED, not FAIL.
+_CHALLENGE_MARKERS = (
+    "enable javascript to continue",
+    "please enable javascript",
+    "verify you are human",
+    "are you a robot",
+    "checking your browser",
+    "access denied",
+    "request unsuccessful",
+    "attention required! | cloudflare",
+)
+
+
+def looks_like_challenge(text: str) -> bool:
+    head = text[:4000].lower()
+    return any(marker in head for marker in _CHALLENGE_MARKERS)
 _host_locks: dict[str, threading.Lock] = {}
 _host_last: dict[str, float] = {}
+_host_interval: dict[str, float] = {}
 _registry_lock = threading.Lock()
 
 
 def _host_lock(host: str) -> threading.Lock:
     with _registry_lock:
         return _host_locks.setdefault(host, threading.Lock())
+
+
+def _interval(host: str) -> float:
+    with _registry_lock:
+        return _host_interval.get(host, MIN_HOST_INTERVAL)
+
+
+def _slow_down(host: str) -> None:
+    with _registry_lock:
+        current = _host_interval.get(host, MIN_HOST_INTERVAL)
+        _host_interval[host] = min(MAX_HOST_INTERVAL, current * HOST_BACKOFF_FACTOR)
+
+
+def _speed_up(host: str) -> None:
+    with _registry_lock:
+        current = _host_interval.get(host, MIN_HOST_INTERVAL)
+        if current > MIN_HOST_INTERVAL:
+            _host_interval[host] = max(MIN_HOST_INTERVAL, current / 2)
 
 
 # On-disk page cache. This is the difference between a verifier that works at twenty places and one
@@ -193,8 +263,9 @@ def fetch(url: str) -> tuple[bool, str]:
     host = urllib.parse.urlsplit(url).netloc.lower()
     with _host_lock(host):
         gap = time.monotonic() - _host_last.get(host, 0.0)
-        if gap < MIN_HOST_INTERVAL:
-            time.sleep(MIN_HOST_INTERVAL - gap)
+        wait = _interval(host) - gap
+        if wait > 0:
+            time.sleep(wait)
         try:
             ok, body = _fetch_once(url)
         finally:
@@ -276,22 +347,88 @@ def _open(url: str, use_certifi: bool = False):
     return opener.open(req, timeout=TIMEOUT)
 
 
+def url_variants(url: str) -> list[str]:
+    """The same page, spelled the ways servers disagree about.
+
+    A source is not unreachable because it moved from www to the bare host, gained a trailing slash,
+    or redirects http to https without advertising it. Those are the same page, and treating them as
+    a dead source silently drops an attraction that was perfectly citable. Tried only after the URL
+    as written fails, so a working source costs nothing.
+    """
+    split = urllib.parse.urlsplit(url)
+    out = []
+
+    def add(scheme: str, netloc: str, path: str) -> None:
+        candidate = urllib.parse.urlunsplit((scheme, netloc, path, split.query, ""))
+        if candidate != url and candidate not in out:
+            out.append(candidate)
+
+    hosts = [split.netloc]
+    if split.netloc.startswith("www."):
+        hosts.append(split.netloc[4:])
+    else:
+        hosts.append("www." + split.netloc)
+
+    paths = [split.path]
+    if split.path.endswith("/"):
+        paths.append(split.path.rstrip("/") or "/")
+    elif split.path:
+        paths.append(split.path + "/")
+
+    for host in hosts:
+        for path in paths:
+            add(split.scheme, host, path)
+    if split.scheme == "http":
+        add("https", split.netloc, split.path)
+    return out
+
+
 def _fetch_once(url: str) -> tuple[bool, str]:
+    ok, detail = _fetch_exact(url)
+    if ok:
+        return True, detail
+    # Only spelling failures are worth re-spelling. A 403 is the host refusing us and a variant
+    # will be refused identically; retrying it just adds load to a site that already said no.
+    if detail.startswith("HTTP 4") and detail not in ("HTTP 404", "HTTP 410"):
+        return False, detail
+    for variant in url_variants(url):
+        ok, alt = _fetch_exact(variant)
+        if ok:
+            return True, alt
+    return False, detail
+
+
+def _fetch_exact(url: str) -> tuple[bool, str]:
+    host = urllib.parse.urlsplit(url).netloc.lower()
     last = "not attempted"
     use_certifi = False
-    for attempt in range(RETRIES):
+    attempt = 0
+    while attempt < max(RETRIES, BACKOFF_RETRIES if _interval(host) > MIN_HOST_INTERVAL else 0):
         if attempt:
-            time.sleep(RETRY_PAUSE)
+            time.sleep(max(RETRY_PAUSE, _interval(host)))
+        attempt += 1
         try:
             with _open(url, use_certifi) as r:
                 raw = r.read()
                 charset = r.headers.get_content_charset()
+            _speed_up(host)
             return True, decode(raw, charset)
         except urllib.error.HTTPError as e:
             last = f"HTTP {e.code}"
             # 404 and 410 are settled answers; retrying them just wastes time.
             if e.code in (404, 410):
                 break
+            # 403 and 429 are both "not so fast" from hosts that will serve the page at a slower
+            # rate. Widen this host's gap and try again rather than recording a dead source.
+            if e.code in (403, 429):
+                _slow_down(host)
+            # 429 usually says how long to wait. Honouring it is the difference between a source
+            # that works and one recorded as unreachable.
+            if e.code == 429:
+                try:
+                    time.sleep(min(30.0, float(e.headers.get("Retry-After", RETRY_PAUSE))))
+                except (TypeError, ValueError):
+                    pass
         except urllib.error.URLError as e:
             last = f"{type(e).__name__}: {e}"
             # Retry a chain-of-trust failure against certifi's roots rather than spending the
@@ -301,6 +438,67 @@ def _fetch_once(url: str) -> tuple[bool, str]:
         except Exception as e:  # network, DNS, timeout
             last = f"{type(e).__name__}: {e}"
     return False, last
+
+
+def load_blocked_hosts() -> dict[str, dict]:
+    """Hosts a human decided to keep citing after they stopped answering automated fetches.
+
+    The alternative was to fail every run forever, or to delete pages whose facts were checked when
+    they were written and have not been shown to be wrong. Neither is honest. A host listed here is
+    reported UNCHECKED with the date it last verified, every run, so the situation stays visible and
+    can be revisited, and it does not gate a publish of unrelated content.
+
+    Nothing here reaches a reader. No page renders a source status, and none should: a source we
+    cannot re-fetch is not a reason to warn a traveler about a price nobody has shown to be wrong.
+    """
+    try:
+        with open(BLOCKED_SOURCES_JSON, encoding="utf-8") as fh:
+            data = json.load(fh)
+    except FileNotFoundError:
+        return {}
+    return {h.lower(): meta for h, meta in (data.get("hosts") or {}).items()}
+
+
+_BLOCKED_HOSTS = load_blocked_hosts()
+
+
+def blocked_entry(url: str) -> dict | None:
+    host = urllib.parse.urlsplit(url).netloc.lower()
+    for candidate in (host, host[4:] if host.startswith("www.") else "www." + host):
+        if candidate in _BLOCKED_HOSTS:
+            return _BLOCKED_HOSTS[candidate]
+    return None
+
+
+def record_health(results: list[dict]) -> None:
+    """Remember when each source last verified, so 'never worked' stays distinguishable from 'broke'.
+
+    Without this, a source that 403s today is indistinguishable from one that was never citable, and
+    the only way to tell is to remember. That is exactly the judgement that gets lost between
+    batches, and getting it wrong means either deleting good pages or trusting stale ones.
+    """
+    today = datetime.date.today().isoformat()
+    try:
+        with open(SOURCE_HEALTH_JSON, encoding="utf-8") as fh:
+            health = json.load(fh)
+    except (FileNotFoundError, json.JSONDecodeError):
+        health = {}
+
+    for entry in results:
+        url = entry.get("url")
+        if not url:
+            continue
+        record = health.setdefault(url, {})
+        record["last_seen"] = today
+        record["last_status"] = entry["status"]
+        if entry["status"] == "PASS":
+            record["last_verified"] = today
+
+    os.makedirs(os.path.dirname(SOURCE_HEALTH_JSON), exist_ok=True)
+    tmp = SOURCE_HEALTH_JSON + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        json.dump(health, fh, indent=2, ensure_ascii=False, sort_keys=True)
+    os.replace(tmp, SOURCE_HEALTH_JSON)
 
 
 def check_place(place: dict) -> dict:
@@ -327,9 +525,22 @@ def check_place(place: dict) -> dict:
         else:
             ok, body = pages.get(url, (False, "not fetched"))
             text = normalise(body) if ok else ""
-            if not ok:
+            known_block = blocked_entry(url)
+            if not ok and known_block:
+                # A known, accepted block. Say so precisely rather than reporting it as a failure
+                # every run: the fact was checked when it was written and nothing suggests it moved.
+                entry["status"] = "UNCHECKED"
+                entry["detail"] = (
+                    f"{body}; host blocked to automated fetches since "
+                    f"{known_block.get('since', 'unknown')}, last verified "
+                    f"{known_block.get('last_verified', 'unknown')}"
+                )
+            elif not ok:
                 entry["status"] = "UNREACHABLE"
                 entry["detail"] = body
+            elif looks_like_challenge(text):
+                entry["status"] = "BLOCKED"
+                entry["detail"] = "page returned 200 but its content is a challenge or consent wall"
             elif len(text) < MIN_PAGE_CHARS:
                 # A 200 that returns almost nothing is a challenge or interstitial page, not the
                 # real one. Reporting that as FAIL would say "this fact is wrong" about copy that
@@ -363,6 +574,9 @@ def main() -> int:
                          "the page, not that the fact is wrong. Use only when a human has read the "
                          "source and confirmed the copy; the blocked assertions are still printed "
                          "every run so the situation stays visible.")
+    ap.add_argument("--strict", action="store_true",
+                    help="also fail on UNCHECKED, the accepted blocks listed in blocked_sources.json. "
+                         "Use this to audit what the registry is currently excusing.")
     a = ap.parse_args()
 
     global _cache_enabled, _cache_max_age
@@ -382,7 +596,9 @@ def main() -> int:
 
     reports = [check_place(p) for p in places]
 
-    counts = {"PASS": 0, "FAIL": 0, "BLOCKED": 0, "UNREACHABLE": 0, "INVALID": 0}
+    record_health([f for rep in reports for f in rep["facts"]])
+
+    counts = {"PASS": 0, "FAIL": 0, "BLOCKED": 0, "UNCHECKED": 0, "UNREACHABLE": 0, "INVALID": 0}
     for rep in reports:
         print(f"\n{rep['destination_slug']} / {rep['name']}")
         for f in rep["facts"]:
@@ -408,6 +624,12 @@ def main() -> int:
     elif counts["BLOCKED"]:
         print(f"\n{counts['BLOCKED']} BLOCKED assertion(s) ignored by --allow-blocked. "
               f"These are UNCHECKED, not verified.")
+    if counts["UNCHECKED"]:
+        print(f"\n{counts['UNCHECKED']} assertion(s) cite a host in {os.path.relpath(BLOCKED_SOURCES_JSON, HERE)}, "
+              f"which no longer answers automated fetches. They were verified when written and are "
+              f"UNCHECKED now, not failed. Use --strict to treat them as failures.")
+        if a.strict:
+            bad += counts["UNCHECKED"]
     if bad:
         print(f"\n{bad} assertion(s) did not pass. Fix the entry or correct the copy before publishing.")
     return 1 if bad else 0
