@@ -99,11 +99,17 @@ Known-blocked: metmuseum.org, moma.org, britishmuseum.org, musee-orsay.fr, hrp.o
 nationalgallery.org.uk, museodelprado.es, amnh.org, chateauversailles.fr. Colosseum and Vatican
 Museums fetch but publish no adult price.
 
-**royalcollection.org.uk went from known-good to blocked between batch 4 and batch 7.** Every path
-on it, and on its `rct.uk` alias, now returns 403 to a plain fetch. Two live pages cite it
-(Buckingham Palace State Rooms, Palace of Holyroodhouse); their prices were verified when written
-and cannot be re-checked now. This is the Stedelijk situation again, minus the reprieve: there is no
-second official host serving the same strings. Keep or retire is a judgement call, not a script's.
+**royalcollection.org.uk was NOT blocked, and this is the most useful lesson in this document.**
+Every path on it and on its `rct.uk` alias returned 403, it had been known-good in batches 2 and 4,
+and two live pages were an hour away from being retired over it. What the site actually does is
+serve a page and refuse the next request seconds later, indefinitely. The fixed 1.5-second per-host
+gap could not satisfy that, and in a full sweep the sibling page citing the same host spent the
+allowance first, so *the batch, not the source*, decided whether a fact could be checked. Per-host
+intervals are now adaptive and a host that has signalled gets more retries. Both pages verify on a
+cold sweep.
+
+**Before concluding a host is blocked, check whether it is merely slow.** A source that fails in a
+full sweep and passes when checked alone is a pacing problem every time.
 
 **A price the probe cannot see is not a price that is missing.** The money pattern originally knew
 only `€ £ $ ¥`, so every attraction priced in zloty, koruna, forint, krona, krone or franc came back
@@ -224,6 +230,44 @@ review site and an SEO farm.
   claiming a review count or looking empty.
 - **Internal links only point at pages with editorial behind them**, so cross-linking can never
   become a ring of empty doorway pages.
+
+## When a source stops answering
+
+Work down this list before concluding an attraction cannot be sourced. Every step below has, at
+least once, turned a "permanently unsourceable" verdict into a live page.
+
+1. **Is it slow rather than blocked?** Check the place on its own. If it passes alone and fails in a
+   sweep, it is pacing. The fetcher backs off per host automatically now, but a host that needs more
+   than 20 seconds between requests will still need thought.
+2. **Is the URL simply wrong?** Run `--discover` on the site root. Roughly two thirds of "dead"
+   sources in batch 7 were guessed paths that had never existed.
+3. **Is the navigation JavaScript-rendered?** Discovery falls back to the site's own sitemap, which
+   is static XML. This is what reached museonazionaleromano.it.
+4. **Is the price in a currency the probe can see?** It knows about thirty now, in both orders, but
+   check before believing "FETCHES, NOTHING TO ASSERT".
+5. **Is it a certificate or redirect problem?** Both are handled, but the error text is worth
+   reading rather than skimming.
+6. **Only then**, consider `database/blocked_sources.json`. A host listed there reports UNCHECKED
+   rather than failing, so one dead source cannot gate an unrelated publish. It ships empty on
+   purpose. Adding a host to it is a decision to keep pages whose facts can no longer be re-checked,
+   and it must never be used to get a *new* page published: a source that never verified is not a
+   blocked source, it is an unsourced claim.
+
+Nothing in that registry reaches a reader. No page renders source status, and none should. A source
+we cannot re-fetch is not evidence that a price is wrong, and a warning on the page would tell a
+traveler to distrust copy that nothing has contradicted.
+
+## Knowing what is actually covered
+
+```bash
+python scripts/verify_place_sources.py --no-cache --json .work/verify.json
+python scripts/coverage_report.py --verify .work/verify.json
+```
+
+Prints attraction and destination counts, how many places have all thirteen sections rather than the
+nine the validator demands, how many have a price assertion passing *right now*, and every place
+that is missing a section or has an assertion that did not pass. Run it at the end of a batch; the
+counts are what decide the next one.
 
 ## Scaling notes
 
