@@ -56,9 +56,20 @@ _spec = importlib.util.spec_from_file_location("_rmt_verify", os.path.join(HERE,
 _v = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_v)
 
-# What a traveler actually needs pinned down: what it costs, when it opens, whether it is free.
+# Currencies that are not the euro, the pound, the dollar or the yen.
+#
+# The original money pattern knew four symbols, which meant every attraction priced in zloty,
+# koruna, forint, krona, krone or franc came back "FETCHES, NOTHING TO ASSERT" and was written off
+# as unsourceable. It was not: the price was on the page in a currency the regex could not see.
+# That silently capped coverage at western Europe. Trailing-symbol currencies (350 kr, 45 zl) are as
+# common as leading ones, so both orders are matched.
+_CURRENCY = r"kr|kr\.|dkk|sek|nok|isk|z[lł]|pln|k[cč]|czk|ft|huf|chf|sgd|aud|nzd|zar|krw|₩|₹|inr|thb|฿"
 PATTERNS = [
-    ("money", r"[€£$¥]\s?\d[\d.,]*|\d[\d.,]*\s?(?:euros?|yen|pounds?)\b"),
+    ("money",
+     r"[€£$¥]\s?\d[\d.,]*"
+     r"|\d[\d.,]*\s?(?:euros?|yen|pounds?)\b"
+     rf"|\d[\d.,]*\s?(?:{_CURRENCY})\b"
+     rf"|\b(?:{_CURRENCY})\s?\d[\d.,]*"),
     ("free", r"free admission|free entry|admission is free|entry is free|no admission fee|free of charge"),
     ("hours", r"\b\d{1,2}[:.]\d{2}\s?(?:a\.?m\.?|p\.?m\.?)?\s?(?:to|-|–|until)\s?\d{1,2}[:.]\d{2}"),
     ("closed", r"closed on \w+|open all year|daily from \d"),
@@ -90,6 +101,66 @@ def candidates(text: str) -> dict[str, list[str]]:
     return out
 
 
+# Words that mark a visitor-information page, in the languages these sites are actually written in.
+# Guessing /en/visit is what produced 19 straight 404s in one batch: official sites publish prices
+# at /en/plan-your-visit, /besuch/preise, /bezoek/tickets, /zwiedzanie, and a dozen other shapes. The
+# site's own navigation already knows the answer, so ask it instead of guessing.
+NAV_WORDS = (
+    "visit visitor visiting plan-your-visit ticket tickets admission entry entrance price prices "
+    "opening-hours hours fees "
+    "besuch besuchen eintritt preise oeffnungszeiten öffnungszeiten "
+    "visita visitar entrada entradas horario horarios tarifa precios "
+    "visite billets tarifs horaires "
+    "biglietti orari prezzi ingresso "
+    "bezoek toegang openingstijden kaartjes "
+    "bilety zwiedzanie ceny godziny "
+    "priser oppettider öppettider besok besök "
+    "latogatas jegyarak vstupne navstevnici "
+    "kanransuru riyou"
+).split()
+
+# Pages that match a nav word but never carry a price: shops, memberships, donations, school groups.
+NAV_NOISE = ("shop", "membership", "member", "donate", "support-us", "school", "education", "press",
+             "job", "career", "privacy", "cookie", "newsletter", "gift", "wedding", "venue-hire",
+             "corporate", "accessib")
+
+_HREF = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
+
+
+def discover(root: str, limit: int = 6) -> list[str]:
+    """Return the most likely visitor-information URLs linked from a site's own navigation."""
+    import urllib.parse
+
+    ok, body = _v.fetch(root)
+    if not ok:
+        return []
+    root_host = urllib.parse.urlsplit(root).netloc.lower().lstrip("www.")
+
+    scored: dict[str, int] = {}
+    for href, anchor in _HREF.findall(body):
+        url = urllib.parse.urljoin(root, href.strip())
+        split = urllib.parse.urlsplit(url)
+        if split.scheme not in ("http", "https"):
+            continue
+        # Stay on the institution's own site. An off-site link is a reseller or a social account,
+        # and citing a reseller for a price is the one thing this whole pipeline exists to avoid.
+        if not split.netloc.lower().lstrip("www.").endswith(root_host):
+            continue
+        url = urllib.parse.urlunsplit(split._replace(fragment=""))
+        haystack = f"{split.path.lower()} {_v.normalise(anchor).lower()}"
+        if any(n in haystack for n in NAV_NOISE):
+            continue
+        score = sum(1 for w in NAV_WORDS if w in haystack)
+        if not score:
+            continue
+        # Prefer an English page: it is the one we can assert a readable string from.
+        if "/en" in split.path.lower():
+            score += 2
+        scored[url] = max(scored.get(url, 0), score)
+
+    return [u for u, _ in sorted(scored.items(), key=lambda kv: (-kv[1], len(kv[0])))[:limit]]
+
+
 def probe(url: str) -> dict:
     ok, body = _v.fetch(url)
     if not ok:
@@ -105,6 +176,11 @@ def main() -> int:
     ap.add_argument("--file", help="file with one URL per line; blank lines and # comments ignored")
     ap.add_argument("--json", help="write the full report here")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--discover", action="store_true",
+                    help="treat each URL as a site root: follow its own navigation to the visitor "
+                         "information pages, then probe those")
+    ap.add_argument("--discover-limit", type=int, default=6,
+                    help="max pages to follow per site root (default 6)")
     a = ap.parse_args()
 
     urls = list(a.urls)
@@ -118,6 +194,23 @@ def main() -> int:
     if not urls:
         print("no URLs given", file=sys.stderr)
         return 1
+
+    if a.discover:
+        roots = urls
+        with ThreadPoolExecutor(max_workers=min(a.workers, len(roots))) as pool:
+            found = list(pool.map(lambda r: (r, discover(r, a.discover_limit)), roots))
+        urls = []
+        for root, links in found:
+            if links:
+                print(f"{root}\n    " + "\n    ".join(links))
+            else:
+                print(f"{root}\n    (no visitor-information links found)")
+            urls.extend(links)
+        urls = list(dict.fromkeys(urls))
+        if not urls:
+            print("\nnothing discovered to probe", file=sys.stderr)
+            return 1
+        print(f"\ndiscovered {len(urls)} pages from {len(roots)} site roots; probing them\n")
 
     with ThreadPoolExecutor(max_workers=min(a.workers, len(urls))) as pool:
         reports = list(pool.map(probe, urls))

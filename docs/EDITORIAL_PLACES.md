@@ -59,7 +59,24 @@ build.
 
 ### 1. Pick candidates and probe the sources FIRST
 
-Write the candidate official URLs into a file, one per line, `#` for comments, then:
+**Do not guess ticket-page URLs. Give the script the site root and let it read the navigation.**
+
+```bash
+python scripts/probe_place_sources.py --discover --file roots.txt
+```
+
+Batch 7 began with 34 hand-guessed URLs like `example.org/en/visit`, and 19 of them were plain
+404s. Nothing was blocked and nothing was missing: official sites publish their prices at
+`/en/plan-your-visit`, `/besuch/preise`, `/bezoek/tickets`, `/en/article/visit-us,4993.html`, and a
+dozen other shapes nobody would guess. Re-running the same candidates in `--discover` mode, which
+follows each site's own navigation to its visitor-information pages, took the yield from **3 usable
+sources out of 34 to 65 out of 94**.
+
+`--discover` stays on the institution's own domain, so it can never wander onto a reseller, and it
+skips shop, membership, donation and schools pages, which match the same words and never carry an
+admission price. Use `--discover-limit` to follow more or fewer pages per root (default 6).
+
+Once you know the real URLs, probe them directly:
 
 ```bash
 python scripts/probe_place_sources.py --file candidates.txt
@@ -81,6 +98,18 @@ whitney.org, belvedere.at, tcd.ie, nms.ac.uk.
 Known-blocked: metmuseum.org, moma.org, britishmuseum.org, musee-orsay.fr, hrp.org.uk,
 nationalgallery.org.uk, museodelprado.es, amnh.org, chateauversailles.fr. Colosseum and Vatican
 Museums fetch but publish no adult price.
+
+**royalcollection.org.uk went from known-good to blocked between batch 4 and batch 7.** Every path
+on it, and on its `rct.uk` alias, now returns 403 to a plain fetch. Two live pages cite it
+(Buckingham Palace State Rooms, Palace of Holyroodhouse); their prices were verified when written
+and cannot be re-checked now. This is the Stedelijk situation again, minus the reprieve: there is no
+second official host serving the same strings. Keep or retire is a judgement call, not a script's.
+
+**A price the probe cannot see is not a price that is missing.** The money pattern originally knew
+only `€ £ $ ¥`, so every attraction priced in zloty, koruna, forint, krona, krone or franc came back
+"FETCHES, NOTHING TO ASSERT" and was written off as unsourceable. It was not. That single gap had
+been silently capping coverage at western Europe for four batches. If a page fetches and looks
+empty, check what currency it prices in before concluding anything.
 
 ### 2. Write the entry in `database/editorial/places.json`
 
@@ -136,6 +165,12 @@ Two encoding facts this script already handles, which cost real time to discover
   is what makes `tickets.hh.gr` verifiable at all.
 - Some sites serve a page and then **403 the next request seconds later**. That is rate limiting, so
   fetches are retried once after a pause. A source that fails twice is genuinely unusable.
+- **308 Permanent Redirect** is not handled by Python 3.10's redirect handler, so a site that simply
+  moved its page surfaced as UNUSABLE. The fetcher now follows it. Two official sources were written
+  off for this reason before it was fixed.
+- A TLS **"unable to get local issuer certificate"** failure is usually the platform trust store, not
+  a bad site. The fetcher retries once against certifi's roots. Certificates are still fully
+  validated; this is a different root list, not a bypass.
 
 Choosing a good `assert_text`: prefer a string that pins the number to its label, like
 `Adults: € 25. Visitors under 18: free.` over a bare `€25`. Matching is case-insensitive with

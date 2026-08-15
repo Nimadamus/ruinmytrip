@@ -38,6 +38,7 @@ import http.cookiejar
 import json
 import os
 import re
+import ssl
 import sys
 import threading
 import time
@@ -206,6 +207,32 @@ def fetch(url: str) -> tuple[bool, str]:
     return ok, body
 
 
+class _PermanentRedirect(urllib.request.HTTPRedirectHandler):
+    """Follow 308 Permanent Redirect.
+
+    Python 3.10's redirect handler knows 301, 302, 303 and 307 but not 308, so a 308 surfaces as an
+    HTTPError and the source reads as UNUSABLE. It is not: the site is telling us exactly where the
+    page moved. Two official sources (glyptoteket.dk, perlan.is) were written off for this reason
+    alone. 308 is 301 with the method preserved, and every fetch here is a GET, so the inherited
+    handler does the right thing once it is wired to the code.
+    """
+
+    def http_error_308(self, req, fp, code, msg, headers):
+        return self.http_error_301(req, fp, 301, msg, headers)
+
+    https_error_308 = http_error_308
+
+
+def _build_opener(cafile: str | None = None) -> urllib.request.OpenerDirector:
+    handlers: list = [
+        urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),
+        _PermanentRedirect(),
+    ]
+    if cafile:
+        handlers.append(urllib.request.HTTPSHandler(context=ssl.create_default_context(cafile=cafile)))
+    return urllib.request.build_opener(*handlers)
+
+
 # One opener with a cookie jar, shared across the run.
 #
 # Some official ticketing platforms will not serve a page until a session cookie exists. Greece's
@@ -213,20 +240,50 @@ def fetch(url: str) -> tuple[bool, str]:
 # /api/auth/ensure-token and, without somewhere to keep the cookie it sets, the redirect never
 # resolves and the source looks permanently unreachable. With a jar it returns 200 and the prices
 # are right there. That is a genuine official source recovered with ten lines and no browser.
-_opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+_opener = _build_opener()
+
+# Fallback trust store, built lazily.
+#
+# Several official sites (three Polish museums, tokyo's tnm.jp) fail with "unable to get local
+# issuer certificate" against Python's default store on Windows, which does not carry the full
+# Mozilla root set. certifi does. This is not a downgrade and emphatically NOT a verification
+# bypass: certificates are still fully validated, against a different and stricter-maintained list
+# of roots. A genuinely bad certificate still fails both ways.
+_certifi_opener: urllib.request.OpenerDirector | None = None
+_certifi_lock = threading.Lock()
 
 
-def _fetch_once(url: str) -> tuple[bool, str]:
+def _certifi_fallback() -> urllib.request.OpenerDirector | None:
+    global _certifi_opener
+    with _certifi_lock:
+        if _certifi_opener is None:
+            try:
+                import certifi
+            except ImportError:
+                return None
+            _certifi_opener = _build_opener(certifi.where())
+        return _certifi_opener
+
+
+def _open(url: str, use_certifi: bool = False):
+    opener = _certifi_fallback() if use_certifi else _opener
+    if opener is None:
+        raise ssl.SSLError("certifi is not installed")
     req = urllib.request.Request(
         url,
         headers={"User-Agent": UA, "Accept": "text/html,*/*", "Accept-Language": "en"},
     )
+    return opener.open(req, timeout=TIMEOUT)
+
+
+def _fetch_once(url: str) -> tuple[bool, str]:
     last = "not attempted"
+    use_certifi = False
     for attempt in range(RETRIES):
         if attempt:
             time.sleep(RETRY_PAUSE)
         try:
-            with _opener.open(req, timeout=TIMEOUT) as r:
+            with _open(url, use_certifi) as r:
                 raw = r.read()
                 charset = r.headers.get_content_charset()
             return True, decode(raw, charset)
@@ -235,7 +292,13 @@ def _fetch_once(url: str) -> tuple[bool, str]:
             # 404 and 410 are settled answers; retrying them just wastes time.
             if e.code in (404, 410):
                 break
-        except Exception as e:  # network, TLS, DNS, timeout
+        except urllib.error.URLError as e:
+            last = f"{type(e).__name__}: {e}"
+            # Retry a chain-of-trust failure against certifi's roots rather than spending the
+            # retry re-proving the same missing issuer.
+            if not use_certifi and "certificate verify failed" in str(e.reason):
+                use_certifi = True
+        except Exception as e:  # network, DNS, timeout
             last = f"{type(e).__name__}: {e}"
     return False, last
 

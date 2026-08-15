@@ -551,6 +551,88 @@
       "verdict": "The most important free site in Berlin and the one that asks the hardest question. Go in the evening when it is quieter, allow more time than you expect, and do not pair it with another Holocaust site on the same day."
     },
     {
+      "destination_slug": "budapest-hungary",
+      "name": "Hungarian National Museum",
+      "type": "attraction",
+      "headline": "Three and a Half Thousand Forint for the Building the Revolution Started On",
+      "body": "The Hungarian National Museum charges 3,500 HUF for a full-price adult ticket, with a discounted adult ticket for Hungarian and EEA citizens at 1,750 HUF. It opens Tuesday to Sunday from 10am to 6pm and is closed on Mondays.\n\nThis is the national collection, which in Hungary means the crown jewels of the story the country tells about itself: the coronation mantle, the Roman stones, the Ottoman centuries, the 1848 revolution, the twentieth century that kept happening to Hungary rather than being chosen by it.\n\nIt is also a building with a specific place in that story. Sandor Petofi is said to have recited the National Song from its steps on 15 March 1848, and whether or not he actually stood there, the country has decided he did. The steps are still where the national holiday happens.",
+      "what_great": "One coherent national narrative rather than a warehouse of objects, in a serious neoclassical building that is itself part of the history. The permanent exhibitions are free on the third Saturday of every month for Hungarian and EEA citizens. Rarely crowded compared to the thermal baths and the parliament.",
+      "what_ruined": "Labelling in English is thinner than in Hungarian, and some rooms assume you already know the outline of Hungarian history. The full-price ticket at 3,500 forint is double what an EEA citizen pays, which is legal and common in the region but still stings. Closed Mondays, which catches people.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a strong, coherent collection let down slightly by English labelling. Five for safety in a calm museum district. Four for value: 3,500 forint is fair, but the two-tier pricing means visitors pay twice what locals do.",
+      "meta_description": "The Hungarian National Museum costs 3,500 HUF for adults, open Tuesday to Sunday, 10am to 6pm. The national collection, in the building 1848 used as a stage.",
+      "facts_checked": [
+        {
+          "fact": "A full-price adult ticket is 3,500 HUF; the discounted adult ticket for Hungarian and EEA citizens is 1,750 HUF.",
+          "url": "https://mnm.hu/en/tickets",
+          "assert_text": "full price 3.500 huf",
+          "confidence": "verified on the museum's official ticket page"
+        },
+        {
+          "fact": "The museum is closed Mondays and open Tuesday to Sunday, 10:00am to 6:00pm.",
+          "url": "https://mnm.hu/en/tickets",
+          "assert_text": "monday: closed tuesday-sunday: 10:00am-6:00pm",
+          "confidence": "verified on the museum's official ticket page"
+        }
+      ],
+      "what_it_is": "Hungary's national museum, founded in 1802, holding the country's historical collections from the Roman period through the twentieth century in a neoclassical building on Muzeum korut.",
+      "why_go": "It is the single best place to get the shape of Hungarian history before you look at anything else in Budapest. The city makes far more sense afterwards, particularly the parts of it that were built to make a political point.",
+      "the_good": "A clear chronological run through a complicated national story, strong holdings on 1848 and on the Ottoman period, and a building that is part of the history it houses. Free on the third Saturday of the month for Hungarian and EEA citizens.",
+      "the_downsides": "English labelling thins out in places and assumes background knowledge. Non-EEA visitors pay double the local rate. It is closed on Mondays.",
+      "best_for": "Anyone who wants the context before the sightseeing, and anyone interested in 1848 or in how central European countries narrate their own past.",
+      "skip_if": "You have one day in Budapest and it is a baths-and-Danube day. This rewards an unhurried couple of hours, not a rushed thirty minutes.",
+      "practical": "Go on a weekday morning. Read the 1848 rooms properly even if you skim elsewhere, because they explain the steps outside. Allow time for the building itself.",
+      "tickets": "Full-price adult admission is 3,500 HUF. Hungarian and EEA citizens pay a discounted 1,750 HUF, and the permanent exhibitions are free to them on the third Saturday of each month. Group tickets for more than ten people are 3,000 HUF per person.",
+      "getting_there": "Metro line 3 or 4 to Kalvin ter, then a two-minute walk up Muzeum korut. It sits between the Jewish quarter and the river, so it folds easily into a walking day.",
+      "location_context": "Muzeum korut, on the edge of District VIII, with the university quarter on one side and Kalvin ter on the other. The garden in front is a genuine public space, busy with students in warm weather.",
+      "time_needed": "Two hours for the permanent exhibitions at a reasonable pace.",
+      "accessibility": "The main building has lifts serving the exhibition floors; the front steps are the ceremonial entrance rather than the accessible one.",
+      "verdict": "Go first, not last. Three and a half thousand forint buys the context that makes the rest of Budapest legible, and the building is where the country's founding modern story is set."
+    },
+    {
+      "destination_slug": "copenhagen-denmark",
+      "name": "Design Museum Denmark",
+      "type": "attraction",
+      "headline": "A Hundred and Forty Kroner for Why Your Chair Looks Like That",
+      "body": "Design Museum Denmark charges DKK 140 for adults, DKK 90 for under-27s and students with valid ID, and admits children under 18 free. It opens daily from 10.00 to 18.00, with late opening until 20.00 on Thursdays.\n\nThe museum is the answer to a question most visitors to Copenhagen arrive already asking: why does everything here look like that. The Danish Chair gallery alone lines up the twentieth century's most copied furniture in one long room, and seeing the originals in sequence makes the copies in every airport lounge on earth suddenly legible.\n\nIt is housed in an eighteenth-century former hospital in Frederiksstaden, a few minutes from Amalienborg, which gives the collection a set of calm rooms and a courtyard garden that most design museums would envy.",
+      "what_great": "The Danish Chair gallery, which is the clearest single exhibit about modern design anywhere. Free for under-18s. The building and its garden are worth the visit on their own, and the late Thursday opening is genuinely useful.",
+      "what_ruined": "A hundred and forty kroner is steep for a museum you can see in ninety minutes, and Copenhagen is expensive enough already. The collection is narrow by design, so if you are not interested in objects you will be finished quickly.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a museum that does one thing better than anyone else. Five for safety in Frederiksstaden. Four for value, because DKK 140 is a lot for ninety minutes even when those ninety minutes are excellent.",
+      "meta_description": "Design Museum Denmark costs DKK 140 for adults, free under 18, open daily 10.00 to 18.00. The Danish Chair gallery is the best design exhibit in Europe.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is DKK 140, under-27s and students pay DKK 90, and children under 18 are free.",
+          "url": "https://designmuseum.dk/en/besog-os/opening-hours-admission-2/",
+          "assert_text": "adults: dkk 140",
+          "confidence": "verified on the museum's official opening hours and admission page"
+        },
+        {
+          "fact": "The museum opens Monday to Sunday 10.00 to 18.00, and until 20.00 on Thursdays.",
+          "url": "https://designmuseum.dk/en/besog-os/opening-hours-admission-2/",
+          "assert_text": "monday – sunday: 10.00-18.00 thursday: 10.00-20.00",
+          "confidence": "verified on the museum's official opening hours and admission page"
+        }
+      ],
+      "what_it_is": "Denmark's national museum of design and applied arts, in a converted eighteenth-century hospital in Frederiksstaden, best known for its gallery of twentieth-century Danish chairs.",
+      "why_go": "Because Danish design is the thing Copenhagen is most famous for, and this is where you can see the originals rather than the version of them sold at every furniture chain in the world.",
+      "the_good": "The Danish Chair gallery. Free entry for under-18s. A calm building with a courtyard garden, late opening on Thursdays, and a shop that is actually good.",
+      "the_downsides": "Expensive for its size. Deliberately narrow in scope. If you are not curious about objects and how they are made, ninety minutes will feel like plenty.",
+      "best_for": "Anyone with an interest in furniture, industrial design or craft, and families, given free entry for under-18s.",
+      "skip_if": "You are indifferent to design objects. There is no broad art collection here to fall back on.",
+      "practical": "The ticket office closes an hour before the museum does. Thursday evening is the quietest slot. Combine it with Amalienborg and the harbour walk, which are both minutes away.",
+      "tickets": "Adults pay DKK 140. Under-27s and students with valid ID and student card pay DKK 90. Children under 18 enter free. Groups of ten or more pay DKK 110 per person.",
+      "getting_there": "A fifteen-minute walk from Kongens Nytorv metro, or a short walk north from Nyhavn past Amalienborg. Bus 1A stops nearby.",
+      "location_context": "Bredgade in Frederiksstaden, the eighteenth-century royal quarter, a few minutes from Amalienborg Palace and the Marble Church, and within easy walking distance of Nyhavn.",
+      "time_needed": "Ninety minutes to two hours, longer if the temporary exhibition interests you.",
+      "accessibility": "Step-free access with lifts to the exhibition floors and accessible toilets.",
+      "verdict": "The best ninety minutes in Copenhagen if you care at all about how objects are made. Free for under-18s, late on Thursdays, and the chair gallery alone justifies the hundred and forty kroner."
+    },
+    {
       "destination_slug": "dublin-ireland",
       "name": "Book of Kells Experience at Trinity College",
       "type": "attraction",
@@ -718,6 +800,47 @@
       "time_needed": "Ninety minutes to two hours including the abbey ruins and the gardens.",
       "accessibility": "Disabled visitors pay the child rate and an access companion enters free; the palace publishes detailed access information, and parts of the historic apartments are reached by stairs.",
       "verdict": "Worth it for Mary Queen of Scots' apartments, and clearly better value booked in advance than paid at the door. Make it the end of a Royal Mile walk and carry on into Holyrood Park afterwards, which costs nothing."
+    },
+    {
+      "destination_slug": "krakow-poland",
+      "name": "Oskar Schindler's Enamel Factory",
+      "type": "attraction",
+      "headline": "Sixty Zloty for the Factory, and It Is Not the Film You Remember",
+      "body": "Oskar Schindler's Enamel Factory, a branch of the Museum of Krakow, charges 60 PLN for a normal ticket and 45 PLN reduced, with a family ticket for up to four people at 120 PLN. It opens Monday 10:00 to 15:00 and Tuesday to Sunday 9:00 to 20:00, and closes on the first Tuesday of each month.\n\nThe common misconception is that this is a Schindler museum. It is not. The permanent exhibition is about Krakow under German occupation between 1939 and 1945, and the factory is the setting rather than the subject. Schindler's office is preserved, but the exhibition around it belongs to the city, not to him.\n\nThat turns out to be the better museum. It is built as a walk-through of occupied Krakow, street by street, with reconstructed interiors, and it is one of the most effective wartime exhibitions in Europe precisely because it refuses to make the story about one rescuer.",
+      "what_great": "An immersive, street-level reconstruction of an occupied city rather than a wall of text. Free admission on Mondays. Long opening hours in summer, to 20:00, which makes late afternoon a real option.",
+      "what_ruined": "It is small, dark and extremely popular, and timed slots sell out days ahead in summer. Sixty zloty is at the top of the Krakow museum range. Visitors expecting the film's story leave disappointed, and the crowding in the narrow reconstructed corridors is genuinely uncomfortable at peak times.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for one of the best-designed history exhibitions in central Europe. Five for safety in Zablocie. Four for value: 60 zloty is high locally, though free Mondays and the sheer quality of the exhibition offset it.",
+      "meta_description": "Schindler's Factory in Krakow costs 60 PLN, 45 PLN reduced, free on Mondays. The exhibition is about occupied Krakow, not the film.",
+      "facts_checked": [
+        {
+          "fact": "A normal ticket is 60 PLN and a reduced ticket is 45 PLN.",
+          "url": "https://muzeumkrakowa.pl/en/opening-hours-and-ticket-prices",
+          "assert_text": "normal ticket 60 pln reduced ticket 45 pln",
+          "confidence": "verified on the Museum of Krakow's official opening hours and ticket prices page"
+        },
+        {
+          "fact": "The branch opens Monday 10:00 to 15:00 and Tuesday to Sunday 9:00 to 20:00, and is closed on the first Tuesday of the month.",
+          "url": "https://muzeumkrakowa.pl/en/opening-hours-and-ticket-prices",
+          "assert_text": "monday 10:00 - 15:00 tuesday-sunday 9:00 - 20:00 first tuesday of the month closed",
+          "confidence": "verified on the Museum of Krakow's official opening hours and ticket prices page"
+        }
+      ],
+      "what_it_is": "A branch of the Museum of Krakow in Oskar Schindler's former enamelware factory in Zablocie, holding a permanent exhibition on Krakow under German occupation from 1939 to 1945.",
+      "why_go": "It is the most affecting account of the occupation anywhere in the city, and it does it by rebuilding the streets rather than by explaining them. Schindler's preserved office is a small part of a much larger story.",
+      "the_good": "Exceptional exhibition design, a genuine sense of walking through the occupied city, free entry on Mondays, and English-language guided tours at set times.",
+      "the_downsides": "Cramped, dark and heavily booked. Slots sell out in advance in summer. Expensive by Krakow standards. It is not the film, and people who come expecting it say so.",
+      "best_for": "Anyone interested in the Second World War in central Europe, and anyone who wants to understand the city beyond the Old Town.",
+      "skip_if": "You are travelling with young children, or you want the Schindler story specifically. Also skip it if you cannot book ahead in high season, because turning up is not a plan here.",
+      "practical": "Book online in advance and bring original ID matching the booking, which is checked. Last entry is ninety minutes before closing. Monday is free but cannot be booked ahead, so queue early.",
+      "tickets": "Normal 60 PLN, reduced 45 PLN, family ticket for up to four people 120 PLN. Free admission on Mondays, with tickets available only at the branch and in limited numbers.",
+      "getting_there": "Tram to Plac Bohaterow Getta then a ten-minute walk over the river into Zablocie, or a twenty-five-minute walk from the Old Town through Kazimierz.",
+      "location_context": "Zablocie, a post-industrial district across the Vistula from Kazimierz, now half warehouses and half new apartment blocks. The MOCAK contemporary art museum is next door.",
+      "time_needed": "Ninety minutes to two hours. The route is one way and takes as long as it takes.",
+      "accessibility": "Lifts serve the exhibition levels, though the reconstructed corridors are narrow and get congested.",
+      "verdict": "The best museum in Krakow and worth the sixty zloty, as long as you book ahead and arrive knowing it is about the city rather than about Schindler."
     },
     {
       "destination_slug": "kyoto-japan",
@@ -1099,6 +1222,47 @@
     },
     {
       "destination_slug": "munich-germany",
+      "name": "Deutsches Museum",
+      "type": "attraction",
+      "headline": "Sixteen Euros for the Largest Science Museum in the World",
+      "body": "The Deutsches Museum on the Museumsinsel charges 16 euros for a day ticket for adults aged 18 and over, 9 euros discounted with valid ID, and 33 euros for a family ticket covering up to two adults with their own children aged 17 and under.\n\nIt is, by the usual measures, the largest museum of science and technology in the world, and the collection runs from mining galleries in the basement to aircraft hanging from the ceiling. The mining exhibition is a full reconstructed pit you walk through underground, which is the part children remember for years.\n\nA long renovation has reopened in phases, so the museum you visit now is not the one in older guidebooks. Check what is open before you go, because whole departments have moved or are still behind hoardings.",
+      "what_great": "Genuine scale, with real aircraft, real ships and a walk-through mine rather than screens about them. Sixteen euros is remarkable value for the size of it. The family ticket at 33 euros makes a day out affordable.",
+      "what_ruined": "It is too big to see in a day and the phased renovation means sections close without much warning. Signage in English is inconsistent in the older halls, and the sheer volume of exhibits with limited interpretation can be numbing.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five across the board. It is the biggest museum of its kind on earth, it is entirely safe, and sixteen euros for a full day inside it is among the best value in western Europe.",
+      "meta_description": "The Deutsches Museum in Munich costs 16 euros for adults, 9 discounted and 33 for a family. The largest science and technology museum in the world.",
+      "facts_checked": [
+        {
+          "fact": "An adult day ticket is 16 euros and a family ticket is 33 euros.",
+          "url": "https://www.deutsches-museum.de/en/museum-island/visit/admission-and-tickets",
+          "assert_text": "day ticket €16",
+          "confidence": "verified on the museum's official admission and tickets page"
+        },
+        {
+          "fact": "A family ticket at 33 euros covers up to two adults with their own children aged 17 and under.",
+          "url": "https://www.deutsches-museum.de/en/museum-island/visit/admission-and-tickets",
+          "assert_text": "family ticket €33",
+          "confidence": "verified on the museum's official admission and tickets page"
+        }
+      ],
+      "what_it_is": "The world's largest museum of science and technology, on an island in the Isar in central Munich, covering mining, aviation, shipping, physics, chemistry and astronomy across many halls.",
+      "why_go": "For scale and for real objects. This is a museum of actual submarines, aircraft and machinery rather than a science centre of interactive panels, and there is nothing else quite this size.",
+      "the_good": "Enormous, cheap for what it is, and strong on genuine artefacts. The reconstructed mine is a highlight. Family ticket pricing is generous.",
+      "the_downsides": "Impossible to finish in one visit. The renovation has been running for years and closes sections in phases. English interpretation is patchy in the older galleries.",
+      "best_for": "Families, anyone technically minded, and rainy days, of which Munich has plenty.",
+      "skip_if": "You have half a day. This needs a proper commitment or it becomes a route march past things you do not have time to read about.",
+      "practical": "Check which departments are open before you go. Start with the mine, which gets busy, then pick two or three other halls rather than trying to walk everything. A one-euro coin is needed as a deposit for the lockers.",
+      "tickets": "Adult day ticket 16 euros, discounted 9 euros with valid ID, family ticket 33 euros for up to two adults with their own children aged 17 and under. An annual pass covering all three Munich sites is 50 euros, 25 reduced.",
+      "getting_there": "S-Bahn to Isartor then a five-minute walk across the bridge, or tram 16 to Deutsches Museum. It is a fifteen-minute walk from Marienplatz.",
+      "location_context": "Museumsinsel, an island in the Isar just south of the old centre, with the river on both sides and a pleasant walk north along the bank into the Altstadt.",
+      "time_needed": "Half a day minimum. A full day is easy, and regulars come back repeatedly.",
+      "accessibility": "Lifts serve the main exhibition levels and level 1 can be reached by stairs or lift; some historic halls remain harder to navigate.",
+      "verdict": "Sixteen euros for the largest science museum on earth is the best value in Munich. Check what is open, pick three halls, and do not try to see it all."
+    },
+    {
+      "destination_slug": "munich-germany",
       "name": "Pinakothek der Moderne",
       "type": "attraction",
       "headline": "Ten Euros, One Euro on Sunday, and Four Museums Under One Roof",
@@ -1476,6 +1640,170 @@
       "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
     },
     {
+      "destination_slug": "prague-czechia",
+      "name": "Jewish Museum in Prague",
+      "type": "attraction",
+      "headline": "Six Hundred Crowns for Six Sites and the Names on the Wall",
+      "body": "The Jewish Museum in Prague charges 600 CZK for adults, 400 CZK for students under 26, 200 CZK for children aged 7 to 15, and admits children under 6 free. The ticket covers the museum's sites in Josefov rather than a single building.\n\nThe Pinkas Synagogue is why people come and why they leave quiet. The walls carry the names of roughly 80,000 Czech and Moravian Jewish victims of the Holocaust, hand-painted, name after name, room after room. Upstairs are the drawings made by children held at Terezin.\n\nThe Old Jewish Cemetery, with its twelve thousand crowded headstones, and the Spanish Synagogue's Moorish interior are part of the same ticket. Josefov is small, so the whole circuit is walkable in an afternoon.",
+      "what_great": "One ticket covering several genuinely important sites in a compact quarter. The Pinkas Synagogue is among the most affecting memorials in Europe. The Spanish Synagogue is spectacular in an entirely different register.",
+      "what_ruined": "Six hundred crowns is a serious price in Prague terms, the circuit is busy for most of the year, and the narrow cemetery path funnels everyone into single file. The Old-New Synagogue is not included in the basic museum ticket, which surprises people.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for the sites themselves, which are essential. Five for safety in central Prague. Four for value, because 600 crowns is high locally even though it covers several buildings.",
+      "meta_description": "The Jewish Museum in Prague costs 600 CZK for adults and covers several sites in Josefov, including the Pinkas Synagogue memorial and the Old Jewish Cemetery.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 600 CZK and students under 26 pay 400 CZK.",
+          "url": "https://www.jewishmuseum.cz/informace/navstivte-nas-rozcestnik/vstupne/",
+          "assert_text": "dospělí 600 kč",
+          "confidence": "verified on the museum's official admission page"
+        },
+        {
+          "fact": "Children aged 7 to 15 pay 200 CZK.",
+          "url": "https://www.jewishmuseum.cz/informace/navstivte-nas-rozcestnik/vstupne/",
+          "assert_text": "děti 7-15 let 200 kč",
+          "confidence": "verified on the museum's official admission page"
+        }
+      ],
+      "what_it_is": "A museum spread across several historic synagogues and the Old Jewish Cemetery in Josefov, Prague's former Jewish quarter, documenting Bohemian and Moravian Jewish life and the Holocaust.",
+      "why_go": "The Pinkas Synagogue memorial and the Terezin children's drawings are among the most direct confrontations with the Holocaust available anywhere, and the surviving quarter around them is unusually intact.",
+      "the_good": "Several major sites on one ticket, all within a few minutes' walk. Exceptional memorial and exhibition content. The Spanish Synagogue's interior is astonishing on its own terms.",
+      "the_downsides": "Expensive by Prague standards. Crowded, with a one-way route through the cemetery that does not allow lingering. The Old-New Synagogue requires a separate or combined ticket.",
+      "best_for": "Anyone interested in central European Jewish history, and any visitor who wants Prague to be more than a pretty skyline.",
+      "skip_if": "You are travelling with young children who will find the Pinkas Synagogue distressing, or you have only a morning and want the castle.",
+      "practical": "Start at the Pinkas Synagogue early, before the tour groups, and let the cemetery follow it. The quarter is small enough that the order matters more than the timing. Dress respectfully; heads should be covered in the synagogues.",
+      "tickets": "Adults 600 CZK, students under 26 400 CZK, children 7 to 15 200 CZK, children under 6 free. The ticket covers the museum's sites in Josefov; the Old-New Synagogue is ticketed separately or in a combined ticket.",
+      "getting_there": "Metro line A to Staromestska, then two minutes on foot. Josefov sits immediately north of the Old Town Square.",
+      "location_context": "Josefov, the former Jewish quarter, wedged between the Old Town Square and the river. Much of it was rebuilt in the nineteenth century, which is why grand apartment buildings surround medieval synagogues.",
+      "time_needed": "Three hours for the full circuit at a pace that does the Pinkas Synagogue justice.",
+      "accessibility": "Access varies by site: the Spanish Synagogue and Pinkas Synagogue are largely step-free, the cemetery path is uneven cobble and gravel.",
+      "verdict": "Essential, and worth the six hundred crowns. Go to the Pinkas Synagogue first thing in the morning, read the walls slowly, and let everything else follow."
+    },
+    {
+      "destination_slug": "reykjavik-iceland",
+      "name": "National Museum of Iceland",
+      "type": "attraction",
+      "headline": "Thirty-Three Hundred Krona for Eleven Hundred Years in Two Hours",
+      "body": "The National Museum of Iceland charges 3,300 ISK for adults and 1,600 ISK for students and seniors, and admits children under 18 and people with disabilities free. It opens daily from 10:00 to 17:00.\n\nThe permanent exhibition, Making of a Nation, runs from the settlement in the ninth century to the present in one continuous line, which is the right structure for a country whose entire recorded history fits comfortably into a single hall. The Valthjofsstadur church door and the small bronze figure from Eyrarland are the objects people remember.\n\nIt is also the antidote to a Reykjavik trip that is otherwise entirely about landscape. Two hours here explains why the farms outside town look the way they do, and why Iceland spent so long being poor.",
+      "what_great": "One clear narrative rather than a maze, free for under-18s, and small enough to finish properly. The medieval carvings are world class, and the museum is calm even in high season.",
+      "what_ruined": "Thirty-three hundred krona is real money for a two-hour museum, though everything in Iceland costs this. The building is a plain 1950s block on the university edge of town, and the walk out is dull in bad weather.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a well-made national museum that is smaller than the price suggests. Five for safety anywhere in Reykjavik. Four for value: expensive in absolute terms, unremarkable by Icelandic standards, and free for under-18s.",
+      "meta_description": "The National Museum of Iceland costs 3,300 ISK for adults, free under 18, open daily 10:00 to 17:00. Eleven hundred years of history in one hall.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 3,300 ISK; students and seniors pay 1,600 ISK.",
+          "url": "https://www.thjodminjasafn.is/en/visit",
+          "assert_text": "adults 3300 isk students & seniors 1600 isk",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Children under 18 and people with disabilities are admitted free.",
+          "url": "https://www.thjodminjasafn.is/en/visit",
+          "assert_text": "free admission children under 18 and people with disabilities",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "Iceland's national museum, near the university in central Reykjavik, whose permanent exhibition traces the country from ninth-century settlement to the present.",
+      "why_go": "It is the only place that puts the landscape into a human timeline. Everything else in Iceland is geology; this is the eleven hundred years of people trying to live on it.",
+      "the_good": "A single coherent chronological exhibition, outstanding medieval woodcarving and metalwork, free entry for under-18s, and a calm, uncrowded museum in a town that gets very busy.",
+      "the_downsides": "Small for the price. An unlovely building. A fifteen-minute walk from the centre that is genuinely unpleasant in horizontal rain, which is most of the year.",
+      "best_for": "Anyone spending more than two days in Reykjavik, and families given free entry for under-18s.",
+      "skip_if": "You are in town for one night before a ring road trip. In that case the time is better spent outdoors.",
+      "practical": "Two hours is enough. Go on a wet day, which Iceland will provide. The cafe is closed at times, so do not plan lunch around it.",
+      "tickets": "Adults 3,300 ISK, students and seniors 1,600 ISK, free for children under 18 and for people with disabilities. Tickets can be bought online or at the door.",
+      "getting_there": "A fifteen-minute walk south-west from Hallgrimskirkja, past the pond and along Sudurgata, or bus 1, 3, 6, 12 or 14 to the university.",
+      "location_context": "Sudurgata, on the edge of the University of Iceland campus, a short walk from the Tjornin pond and the city hall, and about fifteen minutes from the main shopping street.",
+      "time_needed": "Two hours for the permanent exhibition.",
+      "accessibility": "Step-free with lifts to all exhibition floors, and free entry for people with disabilities.",
+      "verdict": "Worth the thirty-three hundred krona if you are in Reykjavik for more than a couple of days. Save it for the wet afternoon, which will arrive."
+    },
+    {
+      "destination_slug": "stockholm-sweden",
+      "name": "Moderna Museet",
+      "type": "attraction",
+      "headline": "A Hundred and Seventy Krona, Free Under Eighteen, and a Picasso on an Island",
+      "body": "Moderna Museet charges 170 SEK for a regular ticket and 140 SEK reduced, with free admission for those 18 and under. It opens daily at 10 and closes at 18.\n\nThe collection is much stronger than most visitors expect from a city of this size: Picasso, Matisse, Dali, Rauschenberg, and one of the better holdings of twentieth-century art in northern Europe. Niki de Saint Phalle's sculptures outside are a Stockholm landmark in their own right.\n\nIt sits on Skeppsholmen, a small island between Gamla Stan and Djurgarden, which means the approach is a walk over a bridge with the whole harbour laid out on either side. The building is unassuming and the setting does most of the work.",
+      "what_great": "A serious modern collection for a mid-sized capital, free for everyone 18 and under, and the best-sited museum in Stockholm. The harbour views from the island are free whether you go in or not.",
+      "what_ruined": "A hundred and seventy krona is not cheap, the permanent collection is smaller than the reputation suggests, and Skeppsholmen is a fifteen-minute walk from anywhere with a metro station.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a strong but compact modern collection. Five for safety on a quiet island. Four for value: 170 krona is fair for the quality, and free entry for under-18s helps families considerably.",
+      "meta_description": "Moderna Museet in Stockholm costs 170 SEK, 140 reduced, free for 18 and under. A strong modern collection on an island in the harbour.",
+      "facts_checked": [
+        {
+          "fact": "A regular ticket is 170 SEK and a reduced ticket is 140 SEK.",
+          "url": "https://www.modernamuseet.se/en/stockholm/visit-the-museum/plan-your-visit/",
+          "assert_text": "regular 170 sek reduced 140 sek",
+          "confidence": "verified on the museum's official plan your visit page"
+        },
+        {
+          "fact": "Admission is free for visitors 18 and under.",
+          "url": "https://www.modernamuseet.se/en/stockholm/visit-the-museum/plan-your-visit/",
+          "assert_text": "free admission for those 18 and under",
+          "confidence": "verified on the museum's official plan your visit page"
+        }
+      ],
+      "what_it_is": "Sweden's national museum of modern and contemporary art, on the island of Skeppsholmen in central Stockholm, holding twentieth-century European and American work alongside changing exhibitions.",
+      "why_go": "For a collection well above the weight of the city, and for the walk to it. Skeppsholmen is the calmest place in central Stockholm and the museum is the reason to go there.",
+      "the_good": "Picasso, Matisse, Dali and strong postwar American holdings. Free for under-18s. Niki de Saint Phalle's sculptures outside. A genuinely good restaurant with a harbour view.",
+      "the_downsides": "The permanent collection is compact and can be walked in an hour. No metro on the island. Pricey given the size.",
+      "best_for": "Anyone who likes twentieth-century art, and families, given free entry for under-18s.",
+      "skip_if": "You have one day and have not yet seen the Vasa. That is the stronger call for a single-day visit.",
+      "practical": "Walk over from Gamla Stan rather than taking a bus, because the approach is half the experience. The architecture museum shares the building if you want to extend the visit.",
+      "tickets": "Regular 170 SEK, reduced 140 SEK, free for those 18 and under and for Klubb Moderna members. Temporary exhibitions are included.",
+      "getting_there": "A fifteen-minute walk from Kungstradgarden metro across the Skeppsholmsbron bridge, or bus 65 which stops on the island.",
+      "location_context": "Skeppsholmen, a small former naval island between Gamla Stan and Djurgarden, quiet, green, and with the best harbour views in the central city.",
+      "time_needed": "Two hours including the temporary exhibition, or an hour for the collection alone.",
+      "accessibility": "Step-free entry with lifts throughout; the bridge approach is level.",
+      "verdict": "Worth the hundred and seventy krona for the collection and free for anyone under 18. Walk over the bridge from Gamla Stan and give the island an hour of its own."
+    },
+    {
+      "destination_slug": "stockholm-sweden",
+      "name": "Nationalmuseum",
+      "type": "attraction",
+      "headline": "A Hundred and Sixty Krona, or Eighty in the Last Hour",
+      "body": "Nationalmuseum charges SEK 160 for adults, SEK 80 in the last 60 minutes before closing, and admits visitors under the age of 20 free. The ground floor, which includes the shop and restaurant, is free to everyone.\n\nThis is Sweden's museum of art and design, reopened in 2018 after a long renovation that turned a dim nineteenth-century pile into one of the best-lit galleries in Europe. The Rembrandt and the Swedish eighteenth century are the strengths, along with a design collection that runs to the present day.\n\nThe last-hour ticket at half price is unusually honest pricing, and an hour is genuinely enough for a focused visit if you know which two rooms you want.",
+      "what_great": "Half price in the final hour, free under 20, and free access to the ground floor whether or not you buy a ticket. The post-renovation lighting and hanging are superb.",
+      "what_ruined": "A hundred and sixty krona is at the upper end for Stockholm. The building is large enough that a short visit feels rushed, and payment is card or Swish only, which catches cash-carrying visitors.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five for a beautifully rehung national collection. Five for safety on the central waterfront. Five for value, given free entry under 20, a free ground floor and a half-price last hour.",
+      "meta_description": "Nationalmuseum in Stockholm costs SEK 160 for adults, SEK 80 in the last hour, and is free under 20. Sweden's art and design collection.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is SEK 160, or SEK 80 in the last 60 minutes before closing.",
+          "url": "https://www.nationalmuseum.se/en/visit/admission-fees-and-tickets",
+          "assert_text": "adults: sek 160",
+          "confidence": "verified on the museum's official admission fees and tickets page"
+        },
+        {
+          "fact": "Admission is free for visitors under the age of 20.",
+          "url": "https://www.nationalmuseum.se/en/visit/admission-fees-and-tickets",
+          "assert_text": "free admission for visitors under the age of 20",
+          "confidence": "verified on the museum's official admission fees and tickets page"
+        }
+      ],
+      "what_it_is": "Sweden's national museum of art and design on Blasieholmen, opposite the royal palace, holding painting, sculpture and applied art from the sixteenth century to the present.",
+      "why_go": "The 2018 renovation transformed it. The Swedish eighteenth and nineteenth centuries are shown better here than anywhere, and the design galleries connect straight through to the furniture people come to Sweden to look at.",
+      "the_good": "Excellent lighting and hanging, a strong Rembrandt, a coherent design collection, half-price entry in the last hour, and a free ground floor with a very good restaurant.",
+      "the_downsides": "Expensive at full price. Too big for the hour that the discounted ticket buys. Card or Swish payment only.",
+      "best_for": "Anyone interested in European painting or in Scandinavian design, and anyone under 20, who gets in free.",
+      "skip_if": "You have already committed the day to Djurgarden. This deserves its own slot rather than a squeeze.",
+      "practical": "The last-hour ticket is half price and genuinely worth using if you are decisive. You still need a ticket even if you qualify for free entry. Bring a card; cash is not accepted.",
+      "tickets": "Adults SEK 160, SEK 80 in the last 60 minutes before closing, free for under-20s. Groups of ten or more pay SEK 110 per person. The ticket covers temporary exhibitions and the collection displays.",
+      "getting_there": "A ten-minute walk from Kungstradgarden metro along the waterfront, opposite the Grand Hotel and across the water from the royal palace.",
+      "location_context": "Blasieholmen, on the central waterfront between Kungstradgarden and Skeppsholmen, with the palace opposite and a five-minute walk to the Moderna Museet bridge.",
+      "time_needed": "Two to three hours, or one focused hour on the discounted last-hour ticket.",
+      "accessibility": "Fully step-free after the renovation, with lifts to all floors.",
+      "verdict": "The best-value major museum in Stockholm: free under 20, free on the ground floor, and half price in the last hour. Go for the Swedish rooms and the design galleries."
+    },
+    {
       "destination_slug": "stockholm-sweden",
       "name": "Vasa Museum",
       "type": "attraction",
@@ -1515,6 +1843,47 @@
       "time_needed": "Ninety minutes to two hours. The ship itself holds attention longer than people expect.",
       "accessibility": "The museum is step-free with lifts serving all six levels.",
       "verdict": "The best single thing to see in Stockholm and free for anyone under 18. Go early, start at the top and work down, and skip the Vrak combination unless you have three days."
+    },
+    {
+      "destination_slug": "tokyo-japan",
+      "name": "Tokyo National Museum",
+      "type": "attraction",
+      "headline": "A Thousand Yen for the Best Collection of Japanese Art in the World",
+      "body": "The Tokyo National Museum charges 1,000 yen for adults and 500 yen for university students for its collection exhibitions, and admits under-18s and over-70s free. It opens at 9:30 a.m. and closes at 5:00 p.m., with later Friday and Saturday hours.\n\nA thousand yen is roughly the price of a bowl of ramen, and it buys the largest and best collection of Japanese art anywhere: swords, screens, ceramics, Buddhist sculpture, and the National Treasure gallery in the Honkan, which rotates so that no two visits are quite the same.\n\nThe Horyuji Treasures building, a Taniguchi design of quiet concrete and glass, holds seventh-century objects in near darkness and is the part most visitors miss because it sits to the side of the main courtyard.",
+      "what_great": "The best Japanese collection on earth for a thousand yen. Free for under-18s and over-70s. Rotating National Treasures mean repeat visits are rewarded. The Horyuji Treasures building is superb and usually near empty.",
+      "what_ruined": "Special exhibitions are ticketed separately and often carry the queues. The site is large and spread across several buildings, so a full visit means a lot of walking. English labelling is good in the Honkan and thinner elsewhere.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five for the collection, which has no equal. Five for safety in Ueno Park. Five for value: a thousand yen for this is among the best museum prices in the world, and it is free for under-18s.",
+      "meta_description": "The Tokyo National Museum costs 1,000 yen for adults, free under 18 and over 70. The largest and best collection of Japanese art in the world.",
+      "facts_checked": [
+        {
+          "fact": "Collection exhibition admission is 1,000 yen for adults and 500 yen for university students.",
+          "url": "https://www.tnm.jp/modules/r_free_page/index.php?id=113",
+          "assert_text": "adults 1,000 yen university students 500 yen",
+          "confidence": "verified on the museum's official admission page"
+        },
+        {
+          "fact": "Visitors under 18 and over 70 are admitted free with proof of age.",
+          "url": "https://www.tnm.jp/modules/r_free_page/index.php?id=113",
+          "assert_text": "persons under 18 and over 70 free admission",
+          "confidence": "verified on the museum's official admission page"
+        }
+      ],
+      "what_it_is": "Japan's oldest and largest museum, in Ueno Park, holding the national collection of Japanese art and archaeology across several buildings including the Honkan and the Horyuji Treasures gallery.",
+      "why_go": "Because this is the collection every other museum of Japanese art borrows from. The National Treasure rotation, the sword gallery and the Buddhist sculpture are unmatched anywhere else.",
+      "the_good": "Extraordinary depth for a thousand yen, free for under-18s and over-70s, rotating displays that reward return visits, and the quiet Horyuji Treasures building.",
+      "the_downsides": "Special exhibitions cost extra and draw the crowds. The site is spread out. Labelling quality varies between buildings.",
+      "best_for": "Anyone with any interest in Japanese art, history or craft, and families given free entry for under-18s.",
+      "skip_if": "You have three days in Tokyo and want neon and food. This is a slow museum and rewards unhurried attention.",
+      "practical": "Start in the Honkan on the upper floor, which runs chronologically, then cross to the Horyuji Treasures before the crowds arrive. Skip the special exhibition unless it is one you specifically want. Later Friday and Saturday closing makes evenings viable.",
+      "tickets": "Adults 1,000 yen, university students 500 yen for the collection exhibitions. Under-18s, over-70s, and visitors with disabilities with one caregiver enter free. Special exhibitions require a separate ticket.",
+      "getting_there": "Ten minutes on foot from Ueno station, JR or metro, through the park past the fountain. Uguisudani station is slightly closer to the back entrance.",
+      "location_context": "The north end of Ueno Park, alongside the National Museum of Nature and Science and the Tokyo Metropolitan Art Museum, in a park that is Tokyo's densest concentration of cultural institutions.",
+      "time_needed": "Three hours for the Honkan and Horyuji Treasures, a full day if you take in the Toyokan as well.",
+      "accessibility": "Lifts and step-free routes serve the main buildings, and wheelchairs are available to borrow.",
+      "verdict": "A thousand yen for the finest collection of Japanese art anywhere. Do the Honkan upper floor and the Horyuji Treasures, and leave the special exhibition alone."
     },
     {
       "destination_slug": "venice-italy",
@@ -1561,6 +1930,47 @@
       "location_context": "Dorsoduro, on the south side of the Grand Canal at the Accademia bridge, in the quieter university quarter. The Peggy Guggenheim Collection and the Punta della Dogana are both a short walk east along the same bank.",
       "time_needed": "Two hours for the full collection at a reasonable pace. Ninety minutes if you go straight for the sixteenth century.",
       "verdict": "The best-value serious museum in Venice, and the calmest. Go in the morning, buy online, and if you are a young EU citizen the 2 euro rate makes this close to the easiest recommendation on the site."
+    },
+    {
+      "destination_slug": "venice-italy",
+      "name": "Palazzo Ducale",
+      "type": "attraction",
+      "headline": "Thirty-Five Euros at the Door, Thirty If You Book Online",
+      "body": "Palazzo Ducale charges 35.00 euros for a standard ticket and 15.00 euros reduced, dropping to 30.00 euros standard if bought online in advance. It opens 09:00 to 19:00 from 1 April to 31 October, with last admission at 18:00, and 09:00 to 18:00 in winter.\n\nThe ticket is not only for the palace. It covers the Musei di Piazza San Marco, so the Correr Museum and the archaeological museum come with it, which changes the value calculation considerably if you use them.\n\nInside, the sequence that matters is the Doge's apartments, the enormous Sala del Maggior Consiglio with Tintoretto's Paradise, and then the Bridge of Sighs into the prisons, walked in the direction the condemned walked. It is the best-preserved seat of a vanished republic in Europe.",
+      "what_great": "Five euros saved by booking online, and one ticket covering three museums on the square. Tintoretto's Paradise is the largest old master painting in the world and the room does it justice. The prison route is genuinely atmospheric.",
+      "what_ruined": "Thirty-five euros at the door is among the highest museum prices in Italy, and Piazza San Marco in July is a scrum from the moment it opens. The one-way route means you cannot go back for a second look, and the Bridge of Sighs is a two-second shuffle in a queue.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for the single most important building in Venice. Four for safety, purely for pickpocketing risk in the queues on the piazza. Four for value: expensive, but it covers three museums and the online price is meaningfully lower.",
+      "meta_description": "Palazzo Ducale in Venice costs 35 euros standard, 30 online, and covers the Musei di Piazza San Marco. Open 09:00 to 19:00 in summer.",
+      "facts_checked": [
+        {
+          "fact": "The standard ticket is 35.00 euros and the reduced ticket is 15.00 euros.",
+          "url": "https://palazzoducale.visitmuve.it/en/visitor-information/",
+          "assert_text": "standard 35,00 € 15,00 €",
+          "confidence": "verified on the palace's official visitor information page"
+        },
+        {
+          "fact": "Summer opening, from 1 April to 31 October, is 09:00 to 19:00 with last admission at 18:00.",
+          "url": "https://palazzoducale.visitmuve.it/en/visitor-information/",
+          "assert_text": "summer season 1 april - 31 october 09:00 - 19:00 last admission: 18:00",
+          "confidence": "verified on the palace's official visitor information page"
+        }
+      ],
+      "what_it_is": "The seat of the Doge and the government of the Venetian Republic for a thousand years, on Piazza San Marco, now a museum covering the state rooms, the armoury, the Bridge of Sighs and the prisons.",
+      "why_go": "It is the building the republic ran from, and it survives more or less intact. Tintoretto's Paradise and the Sala del Maggior Consiglio explain Venetian power more directly than any book about it.",
+      "the_good": "Genuinely magnificent state rooms, the largest old master painting in the world, the prisons and the Bridge of Sighs, and a ticket that also covers the Correr and the archaeological museum.",
+      "the_downsides": "Very expensive at the door. Extremely crowded in summer. A fixed one-way route with no backtracking. The Bridge of Sighs is a brief shuffle rather than a moment.",
+      "best_for": "Every first-time visitor to Venice, and anyone interested in how a maritime republic actually governed itself.",
+      "skip_if": "You are in Venice for a day and would rather spend it in the quieter sestieri. In that case the Accademia is a calmer use of the money.",
+      "practical": "Book online and save five euros, then arrive at opening. Use the Correr on the same ticket rather than letting it go to waste. Last admission is an hour before closing, which is not enough time to do the route properly.",
+      "tickets": "Standard 35.00 euros, reduced 15.00 euros, and 30.00 euros standard when purchased online in advance. The ticket includes the Musei di Piazza San Marco. Venetian residents and various categories enter free.",
+      "getting_there": "Vaporetto line 1 or 2 to San Marco or San Zaccaria, then a two-minute walk. From the railway station it is a forty-minute walk or a twenty-five-minute vaporetto ride.",
+      "location_context": "The eastern corner of Piazza San Marco, beside the basilica and facing the lagoon, which is the single most concentrated tourist site in Italy.",
+      "time_needed": "Two to three hours for the full route including the prisons.",
+      "accessibility": "Lifts serve most of the state rooms, but the prisons and Bridge of Sighs involve stairs and narrow passages that are not step-free.",
+      "verdict": "Book online, save the five euros, arrive at nine, and use the Correr on the same ticket. Expensive, unavoidable, and worth it."
     },
     {
       "destination_slug": "vienna-austria",
@@ -1695,6 +2105,170 @@
       "time_needed": "Ninety minutes to two hours for the Upper Belvedere. Add another hour if you walk the gardens and continue to the Lower Belvedere.",
       "accessibility": "The palace is served by lifts and the Belvedere publishes accessibility information for visitors with reduced mobility.",
       "verdict": "Worth the 23 euros for the Klimt rooms alone, and better value than it looks once you count the free gardens. Go early, and if you are under 19, or travelling with anyone who is, the arithmetic is even easier."
+    },
+    {
+      "destination_slug": "warsaw-poland",
+      "name": "Copernicus Science Centre",
+      "type": "attraction",
+      "headline": "Forty-Eight Zloty on a Weekday, Fifty at the Weekend",
+      "body": "The Copernicus Science Centre charges 48 zloty for a full-price exhibition ticket on weekdays and 50 zloty at weekends and on holidays, with reduced tickets at 34 and 36 zloty. Children under 2 enter free.\n\nIt is the best science centre in central Europe and it is not close. Around 450 hands-on exhibits across several floors, a high-voltage theatre with a genuine Tesla coil, a robotics gallery, and a planetarium that is ticketed separately.\n\nThe building sits on the Vistula embankment with a roof garden looking over the river, which makes it a rare Warsaw attraction that works as a half day out rather than a single stop.",
+      "what_great": "Enormous, genuinely hands-on, and priced within reach at 48 zloty. The high-voltage theatre is a real crowd-stopper. The riverside setting and roof garden are a bonus most science centres cannot offer.",
+      "what_ruined": "It is aimed squarely at children and is loud and busy accordingly, particularly at weekends and during school holidays. Tickets are timed and sell out. The planetarium costs extra on top.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four because adults without children will find it aimed elsewhere. Five for safety. Five for value: 48 zloty for 450 exhibits and half a day is excellent.",
+      "meta_description": "Copernicus Science Centre in Warsaw costs 48 zl on weekdays and 50 zl at weekends, with reduced tickets at 34 and 36 zl. Around 450 hands-on exhibits.",
+      "facts_checked": [
+        {
+          "fact": "A full-price exhibition ticket is 48 zloty on weekdays and 50 zloty at weekends and on holidays.",
+          "url": "https://www.kopernik.org.pl/en/visit/ticket-price",
+          "assert_text": "full-price weekdays 48 zł weekends and holidays 50 zł",
+          "confidence": "verified on the centre's official ticket price page"
+        },
+        {
+          "fact": "Reduced-price tickets are 34 zloty on weekdays and 36 zloty at weekends and on holidays.",
+          "url": "https://www.kopernik.org.pl/en/visit/ticket-price",
+          "assert_text": "reduced-price weekdays 34 zł weekends and holidays 36 zł",
+          "confidence": "verified on the centre's official ticket price page"
+        }
+      ],
+      "what_it_is": "A large hands-on science centre on the Vistula embankment in central Warsaw, with several themed galleries, a high-voltage theatre, a robotics section and a separately ticketed planetarium.",
+      "why_go": "It is the strongest family attraction in Poland and among the best science centres in Europe, and the price is a fraction of what the equivalent costs in western capitals.",
+      "the_good": "Around 450 exhibits that genuinely work, a memorable high-voltage show, long opening hours, a riverside roof garden, and honest weekday and weekend pricing.",
+      "the_downsides": "Noisy and crowded with school groups. Timed tickets sell out at weekends. The planetarium is an additional charge. Adults visiting alone are not the target audience.",
+      "best_for": "Families with children between about six and fifteen, and anyone travelling with teenagers who need a day that is not another church.",
+      "skip_if": "You are in Warsaw for the history. The Rising Museum and the old town will serve you better.",
+      "practical": "Book a weekday slot online if you can, which is both cheaper and quieter. Allow three hours minimum. Decide about the planetarium before you arrive, because it is a separate ticket and separate timing.",
+      "tickets": "Exhibition full price 48 zloty on weekdays and 50 zloty at weekends and holidays; reduced 34 and 36 zloty. Reduced rates cover pupils, students and PhD candidates under 26, seniors over 60 and people with a disability. Children under 2 enter free.",
+      "getting_there": "Metro line 2 to Centrum Nauki Kopernik, which surfaces directly outside, or a twenty-minute walk from the old town along the river.",
+      "location_context": "The Powisle riverside, below the escarpment that carries the old town, next to the university library roof garden and a short walk from the Vistula boulevards.",
+      "time_needed": "Three to four hours, longer with children who refuse to leave.",
+      "accessibility": "Step-free throughout with lifts to all galleries, and free entry for an assistant accompanying a person with a disability.",
+      "verdict": "The best family day in Warsaw and cheap for what it is. Book a weekday slot, allow three hours, and treat the planetarium as a separate decision."
+    },
+    {
+      "destination_slug": "warsaw-poland",
+      "name": "Warsaw Rising Museum",
+      "type": "attraction",
+      "headline": "Thirty-Five Zloty for Sixty-Three Days That Destroyed a City",
+      "body": "The Warsaw Rising Museum charges 35 PLN for a normal ticket and 30 PLN discounted, with a large family card ticket at 10 PLN per person. It opens Monday and Wednesday to Friday from 8am to 6pm, Saturday and Sunday from 10am to 6pm, and is closed on Tuesdays.\n\nThe museum covers the uprising of August and September 1944, when the Polish underground took on the German garrison expecting Soviet support that never came. Sixty-three days later the rising had failed and the city was systematically demolished in reprisal.\n\nThe design is deliberately overwhelming: a beating-heart soundtrack through the whole building, a walk-through sewer of the kind the insurgents used to move between districts, and a short film reconstructing the flight over the flattened city. It does not attempt neutrality and does not pretend to.",
+      "what_great": "Thirty-five zloty for one of the most powerful museums in Europe. The reconstructed sewer and the City of Ruins film are unforgettable. Opens at 8am on most weekdays, which no other major museum in Warsaw does.",
+      "what_ruined": "Dark, loud and emotionally heavy, and not remotely suitable for young children. The layout is confusing and easy to walk out of order. Closed on Tuesdays, which is not obvious to visitors used to Monday closures.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five for a museum that does something no other does. Five for safety in Wola. Five for value: 35 zloty is about seven euros for three hours of the best exhibition design in the region.",
+      "meta_description": "The Warsaw Rising Museum costs 35 PLN, 30 discounted, and is closed Tuesdays. Sixty-three days of the 1944 uprising, told without neutrality.",
+      "facts_checked": [
+        {
+          "fact": "A normal ticket is 35 PLN and a discounted ticket is 30 PLN.",
+          "url": "https://www.1944.pl/en/article/visit-us,4993.html",
+          "assert_text": "normal ticket - 35 pln discounted ticket - 30 pln",
+          "confidence": "verified on the museum's official visit page"
+        },
+        {
+          "fact": "Large family card holders pay 10 PLN per person, available at the box office.",
+          "url": "https://www.1944.pl/en/article/visit-us,4993.html",
+          "assert_text": "ticket for large family card holders - 10 pln / person",
+          "confidence": "verified on the museum's official visit page"
+        }
+      ],
+      "what_it_is": "A museum in a former tram power station in Wola devoted to the Warsaw Rising of 1944, its sixty-three days of fighting, and the destruction of the city that followed.",
+      "why_go": "It explains modern Warsaw. The reason the city is mostly postwar concrete and reconstructed old town is contained entirely in this building, and no account of Poland's twentieth century makes sense without it.",
+      "the_good": "Outstanding exhibition design, the walk-through sewer, the City of Ruins aerial film, early opening hours, and a price that puts it within reach of everyone.",
+      "the_downsides": "Emotionally punishing and unsuitable for young children. The route is not clearly linear. Closed Tuesdays. Busy with school groups in term time.",
+      "best_for": "Anyone visiting Warsaw for the first time, and anyone interested in the Second World War beyond the western front.",
+      "skip_if": "You are travelling with small children, or you want a light morning. This is neither.",
+      "practical": "Arrive at 8am on a weekday when it opens, which is genuinely quiet. Allow three hours. The audio guide hire is 13 PLN and worth it, because the labelling assumes context. Watch the City of Ruins film at the end, not the start.",
+      "tickets": "Normal 35 PLN, discounted 30 PLN, group ticket 35 PLN with a museum guide booked online, large family card holders 10 PLN per person at the box office. Audio guide hire is 13 PLN.",
+      "getting_there": "Tram to Muzeum Powstania Warszawskiego, or a twenty-minute walk west from Rondo Daszynskiego metro station.",
+      "location_context": "Wola, west of the centre, an area that was the site of the worst massacres of the rising and is now largely rebuilt offices and apartments.",
+      "time_needed": "Three hours. Two if you skip the film, which would be a mistake.",
+      "accessibility": "Lifts serve the main levels, though the sewer reconstruction is by its nature not accessible.",
+      "verdict": "The single most important museum in Warsaw and thirty-five zloty well spent. Arrive at eight, take the audio guide, and leave the afternoon free afterwards."
+    },
+    {
+      "destination_slug": "zurich-switzerland",
+      "name": "Kunsthaus Zurich",
+      "type": "attraction",
+      "headline": "Twenty-Four Francs for the Collection, Thirty-One if There Is a Big Show",
+      "body": "The Kunsthaus Zurich charges CHF 24 for adults for the collection and small exhibitions, or CHF 17 reduced, and CHF 31 for a major exhibition, CHF 22 reduced. Children and young people under 14 are admitted free.\n\nThe collection is the reason to come: the largest group of Munch outside Norway, a strong Giacometti holding, Hodler, and a Chipperfield extension that doubled the gallery space in 2021. Zurich Card holders get free admission to the collection.\n\nThe Chipperfield building and the original house face each other across Heimplatz and are linked underground, which means the museum is now large enough to need a plan rather than a wander.",
+      "what_great": "The Munch collection, which is the biggest outside Norway, and the Giacometti rooms. Free for under-14s. The Chipperfield extension is a genuinely good gallery building. Zurich Card includes the collection.",
+      "what_ruined": "Swiss prices: CHF 31 for a major show is among the highest in Europe. The two buildings are linked underground in a way that is easy to get wrong, and the cloakroom charges CHF 4 unless you bought online.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four for an excellent collection in a strong new building. Five for safety in central Zurich. Three for value, because even by Swiss standards CHF 24 to CHF 31 is a lot, softened only by free entry under 14.",
+      "meta_description": "Kunsthaus Zurich costs CHF 24 for the collection and CHF 31 for a major exhibition, free under 14. The largest Munch collection outside Norway.",
+      "facts_checked": [
+        {
+          "fact": "The collection and small exhibitions ticket is CHF 24 for adults and CHF 17 reduced.",
+          "url": "https://www.kunsthaus.ch/en/besuch-planen/besucherinfos/",
+          "assert_text": "the ticket for the collection and small exhibitions costs chf 24 for adults and chf 17 at a reduced rate",
+          "confidence": "verified on the museum's official visitor information page"
+        },
+        {
+          "fact": "A major exhibition ticket is CHF 31 for adults and CHF 22 reduced.",
+          "url": "https://www.kunsthaus.ch/en/besuch-planen/besucherinfos/",
+          "assert_text": "the ticket for a major exhibition costs chf 31 for adults and chf 22 at a reduced rate",
+          "confidence": "verified on the museum's official visitor information page"
+        }
+      ],
+      "what_it_is": "Zurich's principal art museum on Heimplatz, in two buildings linked underground, holding European art from the medieval period to the present with particular strength in Munch, Hodler and Giacometti.",
+      "why_go": "For the Munch rooms, which are the largest holding outside Norway, and for a Swiss collection that explains Hodler and Giacometti properly rather than in passing.",
+      "the_good": "Outstanding Munch and Giacometti, a well-made Chipperfield extension, free entry for under-14s, and inclusion in the Zurich Card for the collection.",
+      "the_downsides": "Expensive even for Switzerland. The two-building layout is confusing on a first visit. The cloakroom charges unless you bought your ticket online.",
+      "best_for": "Anyone with a serious interest in modern European painting, and holders of the Zurich Card, for whom the collection is free.",
+      "skip_if": "You are in Zurich for a day and the weather is good. The lake and the old town are the better call in that case.",
+      "practical": "Buy online, which makes the cloakroom free. Decide in advance whether you want the major exhibition, because the cheaper ticket does not include it. Start in the Chipperfield building and cross underground.",
+      "tickets": "Collection and small exhibitions CHF 24, reduced CHF 17. Major exhibition CHF 31, reduced CHF 22. Free for members and for children and young people under 14. Zurich Card holders enter the collection free.",
+      "getting_there": "Tram 3, 5, 8 or 9 to Kunsthaus, which stops on Heimplatz outside the door. It is a ten-minute walk uphill from Bellevue.",
+      "location_context": "Heimplatz, on the eastern edge of the old town below the university quarter, a short walk from the Grossmunster and the lake.",
+      "time_needed": "Two hours for the collection, three if a major exhibition is on.",
+      "accessibility": "Both buildings are step-free with lifts, and the underground passage between them is level.",
+      "verdict": "Go for the Munch rooms and buy online so the cloakroom is free. Twenty-four francs is steep but the collection earns it; skip the major exhibition unless it is one you came for."
+    },
+    {
+      "destination_slug": "zurich-switzerland",
+      "name": "Swiss National Museum",
+      "type": "attraction",
+      "headline": "Thirteen Francs, Which in Zurich Counts as Free",
+      "body": "The Swiss National Museum charges 13 CHF for adults and 10 CHF for concessions, and admits children up to 16 free. The Simply Zurich exhibition is free to everyone.\n\nThirteen francs is startling in a city where a coffee costs six. It buys the national historical collection, from prehistory through the Confederation to the present, in a purpose-built 1898 castle-like pile immediately behind the main station.\n\nThe 2016 extension by Christ and Gantenbein is the other reason to come: a raw concrete addition that folds into the old building and is one of the better pieces of recent Swiss architecture. The armoury and the historical rooms are the collection highlights.",
+      "what_great": "Thirteen francs in Zurich, free for under-16s, and free entry to the Simply Zurich exhibition. Directly behind the main station, so it works as an arrival or departure stop. The Christ and Gantenbein extension is worth seeing on its own.",
+      "what_ruined": "The permanent displays are dense and text-heavy, and the story of the Confederation assumes more prior knowledge than most visitors have. Closed Mondays. The park behind it is pleasant but small.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four for a solid national museum that is heavier going than it needs to be. Five for safety. Five for value, because 13 CHF is close to the cheapest cultural hour in Switzerland and under-16s are free.",
+      "meta_description": "The Swiss National Museum in Zurich costs 13 CHF for adults and is free for under-16s. National history in an 1898 pile behind the main station.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission is 13 CHF and concessions are 10 CHF.",
+          "url": "https://www.landesmuseum.ch/en/your-visit/tickets",
+          "assert_text": "adults 13 chf",
+          "confidence": "verified on the museum's official tickets page"
+        },
+        {
+          "fact": "Children up to 16 years are admitted free.",
+          "url": "https://www.landesmuseum.ch/en/your-visit/tickets",
+          "assert_text": "children up to 16 years free admission",
+          "confidence": "verified on the museum's official tickets page"
+        }
+      ],
+      "what_it_is": "Switzerland's national history museum, immediately behind Zurich main station, covering the country from prehistory to the present in an 1898 building with a 2016 concrete extension.",
+      "why_go": "It is the cheapest serious museum in one of the most expensive cities in the world, and the only place in Zurich that explains how the Confederation came together rather than assuming you know.",
+      "the_good": "Thirteen francs. Free for under-16s. A free Simply Zurich exhibition. Strong armoury and historical interiors, and an excellent modern extension. Two minutes from the station.",
+      "the_downsides": "Text-heavy displays that assume familiarity with Swiss history. Closed Mondays. Some galleries feel dated next to the new wing.",
+      "best_for": "Anyone with a few hours between trains, families given free entry under 16, and anyone curious about how Switzerland actually works.",
+      "skip_if": "You have one clear day and good weather. Uetliberg and the lake are the better use of it.",
+      "practical": "It is two minutes from the main station, so it is the ideal place to spend a long layover. Start with Simply Zurich, which is free, then decide whether to pay for the rest. Closed Mondays.",
+      "tickets": "Adults 13 CHF, concessions including pensioners, pupils and students 10 CHF, children up to 16 free. The Simply Zurich exhibition is free. An annual pass covering all Swiss National Museum sites is 35 CHF.",
+      "getting_there": "Two minutes on foot from Zurich Hauptbahnhof, out of the north end of the station and across the bridge.",
+      "location_context": "Platzspitz, the wedge of park where the Sihl meets the Limmat directly behind the main station, five minutes from Bahnhofstrasse.",
+      "time_needed": "Two hours, or one for the free Simply Zurich exhibition alone.",
+      "accessibility": "Step-free access with lifts throughout both the historic building and the extension.",
+      "verdict": "The best-value hours in Zurich by a distance. Thirteen francs, free under 16, free for the Simply Zurich exhibition, and two minutes from the platforms."
     }
   ]
 }
