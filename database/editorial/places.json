@@ -49,6 +49,46 @@
     },
     {
       "destination_slug": "amsterdam-netherlands",
+      "name": "De Kas",
+      "type": "restaurant",
+      "headline": "Fifty-Five Euros for Lunch Grown in the Greenhouse You Are Sitting In",
+      "body": "De Kas serves a three-course lunch at 55 euros, four courses at 67 and five at 76. There is no a la carte: you eat what was picked that morning.\n\nThe restaurant occupies a 1926 municipal nursery greenhouse in Frankendael park, with eight metres of glass overhead and the kitchen garden immediately outside. Most of the vegetables and herbs come from that garden or the restaurant's own land at Beemster, which is why the menu is written the same day rather than printed.\n\nIt is a twenty-minute tram ride east of the centre, which keeps it almost entirely free of the crowds that make eating in central Amsterdam a chore.",
+      "what_great": "A working greenhouse as a dining room, with the produce growing outside the glass. A menu genuinely dictated by the harvest. Far enough east that you are eating with locals rather than in a tourist queue.",
+      "what_ruined": "No a la carte and no menu published in advance, so dietary requirements need warning. Fifty-five euros before wine for lunch is a commitment. The greenhouse is hot on a summer afternoon, which is what greenhouses do.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a restaurant with a genuine idea, executed properly for twenty-five years. Five for safety in Frankendael. Four for value: it is a lot for lunch, and the room and the produce justify most of it.",
+      "meta_description": "De Kas in Amsterdam serves lunch at 55 euros for three courses, 67 for four, in a 1926 greenhouse with its own kitchen garden outside.",
+      "facts_checked": [
+        {
+          "fact": "Lunch is 55 euros for three courses, 67 for four and 76 for five.",
+          "url": "https://restaurantdekas.com/eng/menu",
+          "assert_text": "lunch menu 3 courses: € 55 menu 4 courses: € 67 menu 5 courses: € 76",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "There is no a la carte; the menu is set and changes with the harvest.",
+          "url": "https://restaurantdekas.com/eng/menu",
+          "assert_text": "menu winelist",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A set-menu restaurant in a restored 1926 nursery greenhouse in Frankendael park, east Amsterdam, cooking almost entirely from its own kitchen garden and farm.",
+      "why_go": "Because the distance between the garden and the plate is about thirty metres, and because eating under eight metres of glass in a park is a genuinely different evening from eating in the centre.",
+      "the_good": "The greenhouse itself, produce picked that morning, a kitchen garden you can walk through, and a location that keeps the tourist crush out.",
+      "the_downsides": "Set menu only. No advance menu. Hot in high summer. A tram ride from the centre.",
+      "best_for": "Anyone who cares about vegetables, and anyone wanting one good dinner away from the canal-belt crowds.",
+      "skip_if": "You want to choose your own dishes, or you are in Amsterdam for two nights and want to stay central.",
+      "practical": "Tell them about dietary requirements when booking, not on arrival, because the menu is fixed. Ask for a table in the greenhouse rather than the annexe. Walk through the kitchen garden before you sit down.",
+      "tickets": "Lunch 55 euros for three courses, 67 for four, 76 for five. Dinner is a five-course set menu. Reservations online and effectively required.",
+      "getting_there": "Tram 19 to Hogeweg, then five minutes on foot into Frankendael park. About twenty minutes from Centraal.",
+      "location_context": "Park Frankendael in Amsterdam-Oost, a residential district east of the centre with a country house, allotments and almost no tourists.",
+      "time_needed": "Two and a half hours.",
+      "verdict": "Worth the tram ride and the fifty-five euros. Book the greenhouse, warn them about diets in advance, and walk the garden first."
+    },
+    {
+      "destination_slug": "amsterdam-netherlands",
       "name": "Rijksmuseum",
       "type": "attraction",
       "headline": "Twenty-Five Euros, Free Under 18, and the Only Dutch Museum You Cannot Skip",
@@ -382,6 +422,46 @@
       "verdict": "The most underrated major museum in Europe and the best value in Athens. Go on your second day, head for the bronzes and the Mycenaean gold first, and allow more time than you planned."
     },
     {
+      "destination_slug": "athens-greece",
+      "name": "Ta Karamanlidika tou Fani",
+      "type": "restaurant",
+      "headline": "A Deli Counter With Tables, Open Until Eleven and Shut on Sundays",
+      "body": "Ta Karamanlidika tou Fani opens Monday to Saturday, restaurant 12:00 to 23:00 and retail 08:00 to 21:00, and closes on Sundays. Handmade mastiha halva is 9.00 euros on the shop side.\n\nIt is a charcuterie shop first and a restaurant second, which is the whole point: the pastirma, sausages and cheeses on the plates come off the counter you walked past, and the staff will cut and explain anything you point at.\n\nThe food is Anatolian Greek, from the Karamanlides of Cappadocia, and it is a different tradition from the taverna cooking most visitors eat. Order the pastirma with eggs and a plate of cheeses and stop trying to plan further than that.",
+      "what_great": "A working deli counter you order directly from. Anatolian Greek cooking you will not find in the tourist tavernas. Late restaurant hours and an early shop, so it works for lunch, dinner or a takeaway.",
+      "what_ruined": "Closed Sundays, which catches weekend visitors. It is small and busy and the tables are tight. Being next to the meat market means the surrounding streets are not pretty.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Five for genuinely distinctive food done well. Four for safety: the area around the central market is fine by day and scruffier at night. Five for value, which is excellent by any standard.",
+      "meta_description": "Ta Karamanlidika in Athens opens Monday to Saturday, restaurant 12:00 to 23:00, closed Sundays. A charcuterie counter with tables, and Anatolian Greek cooking.",
+      "facts_checked": [
+        {
+          "fact": "The restaurant is open Monday to Saturday 12:00 to 23:00, the shop 08:00 to 21:00, and it is closed on Sundays.",
+          "url": "https://www.karamanlidika.gr/en/meze-restaurant/",
+          "assert_text": "monday – saturday, restaurant: 12:00 – 23:00 | retail: 08:00 – 21:00. closed on sundays.",
+          "confidence": "verified on the restaurant's official page"
+        },
+        {
+          "fact": "Handmade mastiha halva is 9.00 euros.",
+          "url": "https://www.karamanlidika.gr/en/meze-restaurant/",
+          "assert_text": "handmade mastiha halva € 9.00",
+          "confidence": "verified on the restaurant's official page"
+        }
+      ],
+      "what_it_is": "A charcuterie shop and meze restaurant near the central market in Athens, serving Anatolian Greek food from the Karamanlides tradition alongside its own cured meats and cheeses.",
+      "why_go": "For food that is genuinely different from taverna cooking, cut from a counter in front of you by people who will happily explain what it is.",
+      "the_good": "Its own pastirma and sausages, an excellent cheese selection, staff who talk you through the counter, and prices that are honest for the quality.",
+      "the_downsides": "Closed Sundays. Cramped and busy. The market district is workmanlike rather than charming.",
+      "best_for": "Anyone tired of moussaka, and anyone who likes charcuterie enough to plan a meal around it.",
+      "skip_if": "You are vegetarian. The kitchen can manage, but you would be ordering around the entire reason to come.",
+      "practical": "Book for dinner or arrive early for lunch. Order from the counter as well as the menu. Buy halva or pastirma on the way out, because the shop is open later than most in Athens.",
+      "tickets": "A la carte, mid-range by Athens standards. Shop items priced separately, with handmade mastiha halva at 9.00 euros. Reservations advisable in the evening.",
+      "getting_there": "Metro line 1 or 2 to Omonia or Monastiraki, then a five to ten minute walk to Sokratous Street by the central market.",
+      "location_context": "Sokratous Street beside the Varvakios central market, a working commercial quarter between Omonia and Monastiraki, busy by day and quieter at night.",
+      "time_needed": "An hour and a half.",
+      "verdict": "The most interesting meal in central Athens and not expensive. Go Monday to Saturday, order off the counter, and buy something on the way out."
+    },
+    {
       "destination_slug": "barcelona-spain",
       "name": "Basilica de la Sagrada Familia",
       "type": "attraction",
@@ -640,6 +720,86 @@
       "verdict": "The most important free site in Berlin and the one that asks the hardest question. Go in the evening when it is quieter, allow more time than you expect, and do not pair it with another Holocaust site on the same day."
     },
     {
+      "destination_slug": "berlin-germany",
+      "name": "Zur letzten Instanz",
+      "type": "restaurant",
+      "headline": "Six Euros for Pickled Vegetables in Berlin's Oldest Restaurant",
+      "body": "Zur letzten Instanz charges 6 euros for pickled vegetables and 10 euros for matjes with yoghurt and red onion, which places it firmly in the ordinary-prices bracket for a restaurant that has been trading since 1621.\n\nIt claims to be the oldest restaurant in Berlin and the claim holds up better than most: the building is early seventeenth century, the tiled corner stove is original, and Napoleon, Beethoven and Chirac have all reportedly eaten here, which the restaurant mentions rather more often than necessary.\n\nThe cooking is straightforward Berlin food, and the reason to come is the room and the continuity rather than any culinary ambition.",
+      "what_great": "Four hundred years in the same building, with an original tiled stove and a genuinely old dining room. Normal prices, which for a restaurant with this much history is unusual. Two minutes from the medieval quarter.",
+      "what_ruined": "The cooking is solid rather than exciting. The historic-guest roll call is laid on thick. It is small, so a table needs booking, and the Nikolaiviertel around it is a postwar reconstruction that some find twee.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four for a genuinely historic room serving competent food. Five for safety in Mitte. Five for value: six euros for a starter in a four-hundred-year-old restaurant is unusually fair.",
+      "meta_description": "Zur letzten Instanz, Berlin's oldest restaurant since 1621, charges 6 euros for pickled vegetables and 10 for matjes. Come for the room.",
+      "facts_checked": [
+        {
+          "fact": "Pickled vegetables are 6 euros.",
+          "url": "https://zurletzteninstanz.com/menu/",
+          "assert_text": "eingelegtes gemüse 6€",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "Matjes with yoghurt and red onion is 10 euros.",
+          "url": "https://zurletzteninstanz.com/menu/",
+          "assert_text": "matjes, joghurt, rote zwiebel 10€",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A restaurant in the Nikolaiviertel in Mitte, trading since 1621 and generally described as the oldest in Berlin, serving traditional Berlin cooking in an early seventeenth-century building.",
+      "why_go": "For the room and the four centuries behind it, and because it costs no more than an ordinary Berlin restaurant to sit in one.",
+      "the_good": "A genuinely old dining room with its original tiled stove, ordinary prices, hearty Berlin cooking and a quiet corner location.",
+      "the_downsides": "Unambitious cooking. Heavy emphasis on famous former guests. Small, so booking is needed. The rebuilt quarter around it divides opinion.",
+      "best_for": "Anyone interested in old Berlin, and anyone wanting a traditional meal that is not a themed beer hall.",
+      "skip_if": "You are in Berlin for the modern food scene. Kreuzberg and Neukolln are where that is.",
+      "practical": "Book, because it is smaller than it looks. Sit in the front room with the stove rather than the back. Combine it with the Nikolaikirche two minutes away.",
+      "tickets": "A la carte, with starters from 6 euros. Reservations recommended, particularly at weekends.",
+      "getting_there": "U2 to Klosterstrasse, then three minutes on foot. It is ten minutes' walk from Alexanderplatz.",
+      "location_context": "Waisenstrasse on the edge of the Nikolaiviertel, Berlin's medieval quarter, rebuilt in the 1980s around a handful of genuinely old survivors, of which this is one.",
+      "time_needed": "An hour and a half.",
+      "verdict": "Go for the room and the four hundred years, not the cooking. At these prices that is an easy trade."
+    },
+    {
+      "destination_slug": "budapest-hungary",
+      "name": "Gundel",
+      "type": "restaurant",
+      "headline": "Fifteen Thousand Seven Hundred Forint for Dinner Next to the Zoo",
+      "body": "Gundel serves a two-course dinner at 15,700 forint, with a wine pairing at an extra 7,000. Lunch runs 11:30 to 18:00 and dinner every day 18:00 to 22:00, with Sunday lunch from 11:30 to 16:00.\n\nIt opened in 1894 beside the City Park and spent the twentieth century as the restaurant Hungary showed off to visitors, which is both its appeal and its problem. The dining room is enormous, formal and hung with paintings, and the service is old-school to a degree that has essentially vanished elsewhere in the city.\n\nThe Gundel palacsinta, a walnut and chocolate pancake invented here, is on every dessert menu in Hungary. This is where it comes from.",
+      "what_great": "A grand nineteenth-century dining room still working as one. The original Gundel pancake. Two courses for 15,700 forint, which for this room is less than it sounds. Next to the Szechenyi baths and the zoo.",
+      "what_ruined": "Formality that can tip into stiffness. It trades heavily on its own history. The City Park location means a metro ride from the centre, and the immediate surroundings are park rather than city.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a grand room serving genuinely good Hungarian cooking with some coasting on reputation. Five for safety in the City Park. Four for value: fair for the setting, not cheap by Budapest standards.",
+      "meta_description": "Gundel in Budapest serves a two-course dinner at 15,700 forint, dinner daily 18:00 to 22:00. The grand 1894 dining room by the City Park.",
+      "facts_checked": [
+        {
+          "fact": "A two-course dinner is 15,700 forint, with wine pairing an additional 7,000 forint.",
+          "url": "https://gundel.hu/en/menus/restaurant-menu/",
+          "assert_text": "2 course dinner 15 700 ft wine pairing + 7 000 ft",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "Lunch runs 11:30 to 18:00 and dinner 18:00 to 22:00, with Sunday lunch 11:30 to 16:00.",
+          "url": "https://gundel.hu/en/menus/restaurant-menu/",
+          "assert_text": "restaurant lunch menu 11:30-18:00 dinner menu 18:00-22:00",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A grand restaurant beside the City Park in Budapest, open since 1894, serving classical Hungarian cooking in a formal dining room next to the zoo and the Szechenyi baths.",
+      "why_go": "For the room, the continuity and the original Gundel pancake, and because a formal Hungarian dinner of this kind is otherwise close to extinct.",
+      "the_good": "A genuinely grand dining room, classical Hungarian cooking done properly, the original Gundel palacsinta, and a garden terrace in summer.",
+      "the_downsides": "Stiff service. A reputation it leans on. Away from the centre. Expensive for Budapest, though not for the setting.",
+      "best_for": "Anyone marking an occasion, and anyone combining dinner with the Szechenyi baths across the park.",
+      "skip_if": "You want the modern Budapest food scene, which is in District VII and is a different city entirely.",
+      "practical": "Book, and go for dinner rather than lunch when the room is lit properly. Order the palacsinta even if you are full. The baths are a five-minute walk if you are making an evening of it.",
+      "tickets": "Two-course dinner 15,700 forint, wine pairing an additional 7,000. A la carte also available. Reservations recommended.",
+      "getting_there": "Metro line 1 to Hosok tere or Szechenyi furdo, then a few minutes on foot into the City Park.",
+      "location_context": "Allatkerti korut in the City Park, between the zoo and the Szechenyi thermal baths, a fifteen-minute metro ride from the centre.",
+      "time_needed": "Two hours.",
+      "verdict": "Go for the room and the pancake. Book dinner rather than lunch, and pair it with the baths across the park."
+    },
+    {
       "destination_slug": "budapest-hungary",
       "name": "Hungarian National Museum",
       "type": "attraction",
@@ -787,6 +947,12 @@
           "url": "https://www.dangleterre.com/en/rooms-and-suites",
           "assert_text": "the address of d'angleterre is kongens nytorv 34,1050 copenhagen",
           "confidence": "verified on the hotel's official rooms and suites page"
+        },
+        {
+          "fact": "The hotel is fully wheelchair accessible, with accessible rooms and public areas and lifts to all floors.",
+          "url": "https://www.dangleterre.com/en/rooms-and-suites",
+          "assert_text": "the hotel consists of accessible rooms and public areas, and elevators run to all floors of the building",
+          "confidence": "verified on the hotel's official rooms and suites page"
         }
       ],
       "what_it_is": "A grand hotel on Kongens Nytorv in central Copenhagen, in operation since 1755, with 92 rooms and suites, a spa and a Michelin-starred restaurant.",
@@ -800,7 +966,8 @@
       "getting_there": "Metro to Kongens Nytorv, which surfaces on the square itself. It is twelve minutes from the airport on the metro, or about twenty by taxi.",
       "location_context": "Kongens Nytorv, the largest square in the old city, where Nyhavn, Stroget and the royal theatre meet. Central, busy and walkable to almost everything a first-time visitor wants.",
       "time_needed": "Two nights minimum to make the location pay for itself.",
-      "verdict": "The best-placed hotel in Copenhagen and priced accordingly. Worth it if walking everywhere matters to you, and hard to justify otherwise."
+      "verdict": "The best-placed hotel in Copenhagen and priced accordingly. Worth it if walking everywhere matters to you, and hard to justify otherwise.",
+      "accessibility": "Fully wheelchair accessible, with accessible rooms and public areas and lifts running to every floor of the building."
     },
     {
       "destination_slug": "copenhagen-denmark",
@@ -908,6 +1075,12 @@
           "url": "https://www.tcd.ie/visitors/book-of-kells/",
           "assert_text": "free of charge and they can bring up to 2 guests",
           "confidence": "verified on Trinity College Dublin's official visitor page"
+        },
+        {
+          "fact": "The Old Library is fully wheelchair accessible; staff arrange a guard to assist with the lift and all areas of the exhibition.",
+          "url": "https://www.tcd.ie/visitors/book-of-kells/",
+          "assert_text": "the old library is fully wheelchair accessible",
+          "confidence": "verified in the official visitor FAQ on the Trinity College site"
         }
       ],
       "what_it_is": "A ticketed route through Trinity College Dublin taking in a digital exhibition, the ninth-century illuminated Book of Kells displayed under glass, and the eighteenth-century Long Room of the Old Library.",
@@ -921,7 +1094,48 @@
       "getting_there": "Trinity College sits at the end of Grafton Street in the centre of Dublin. Trinity is a stop on the Luas green line, and Pearse Street and Tara Street stations are both a short walk.",
       "location_context": "Dead centre of Dublin, between Grafton Street and Dame Street, with the college grounds forming a quiet walled enclave in the middle of the city. Temple Bar is a few minutes west and is best treated with caution on price.",
       "time_needed": "About 90 minutes for the standard experience, which is what the ticket is timed against.",
-      "verdict": "Go for the Long Room and treat the manuscript as the historical anchor rather than the spectacle. Book ahead, take an early slot, and if you have any Trinity connection, use it, because the free entry extends to two guests."
+      "verdict": "Go for the Long Room and treat the manuscript as the historical anchor rather than the spectacle. Book ahead, take an early slot, and if you have any Trinity connection, use it, because the free entry extends to two guests.",
+      "accessibility": "The Old Library is fully wheelchair accessible, and so is the Pavilion, which is on one ground floor. Speak to staff on arrival and a library guard will take you through the lift and around the whole exhibition rather than a shortened route."
+    },
+    {
+      "destination_slug": "dublin-ireland",
+      "name": "Chapter One",
+      "type": "restaurant",
+      "headline": "Ninety-Five Euros for Lunch, a Hundred and Fifty for the Surprise",
+      "body": "Chapter One charges 95 euros for a three-course lunch and 150 euros for the surprise tasting menu, with an additional selection of artisan cheeses at 29 euros.\n\nIt sits in the basement of the Dublin Writers Museum on Parnell Square, which gives it low ceilings, thick walls and none of the glass-box quality that afflicts restaurants at this level. The cooking is French technique applied to Irish produce, and it has held Michelin recognition for over two decades.\n\nThe lunch menu is the value proposition here. Ninety-five euros is a great deal of money and is also roughly two thirds of what the same kitchen costs in the evening.",
+      "what_great": "Cooking at the top of the Irish market. A basement dining room with genuine atmosphere rather than designed neutrality. Lunch at 95 euros, which is the cheapest way into this kitchen.",
+      "what_ruined": "It is very expensive whichever menu you take. The cheese supplement at 29 euros on top of a 95 euro lunch is steep. Parnell Square north is a quieter and scruffier part of the city than the price suggests.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for the cooking and the room together. Four for safety: Parnell Square is fine but the north inner city warrants ordinary caution at night. Three for value, because 95 euros for lunch is a genuine expense however good it is.",
+      "meta_description": "Chapter One in Dublin charges 95 euros for a three-course lunch and 150 for the tasting menu, in the basement of the Writers Museum.",
+      "facts_checked": [
+        {
+          "fact": "A three-course lunch is 95 euros and the surprise tasting menu is 150 euros.",
+          "url": "https://chapteronerestaurant.com/lunch-menu/",
+          "assert_text": "lunch three course menu €95 surprise tasting menu €150",
+          "confidence": "verified on the restaurant's official lunch menu page"
+        },
+        {
+          "fact": "An additional selection of artisan cheeses is 29 euros.",
+          "url": "https://chapteronerestaurant.com/lunch-menu/",
+          "assert_text": "additional selection of artisan cheeses €29",
+          "confidence": "verified on the restaurant's official lunch menu page"
+        }
+      ],
+      "what_it_is": "A fine dining restaurant in the basement of the Dublin Writers Museum on Parnell Square, cooking French technique with Irish produce and long recognised by Michelin.",
+      "why_go": "Because it is the best restaurant in Dublin and has been for a long time, and because the lunch menu makes that reachable for about two thirds of the evening price.",
+      "the_good": "Serious cooking, an atmospheric basement dining room, Irish produce treated with French technique, and a lunch menu that is the sensible way in.",
+      "the_downsides": "Expensive at every level. Supplements add up quickly. The neighbourhood is quieter than the restaurant.",
+      "best_for": "Anyone wanting one exceptional meal in Ireland, and anyone who would rather spend at lunch than dinner.",
+      "skip_if": "You want a Dublin pub evening. That is a different and equally valid plan and costs a tenth as much.",
+      "practical": "Book lunch rather than dinner if the price matters, because it is the same kitchen. Book well ahead either way. Allow a full two and a half hours for the tasting menu.",
+      "tickets": "Three-course lunch 95 euros, surprise tasting menu 150 euros, artisan cheese selection an additional 29 euros. Reservations online and essential.",
+      "getting_there": "Ten minutes' walk north from O'Connell Bridge, or the Luas green line to Parnell.",
+      "location_context": "Parnell Square North, at the top of O'Connell Street, alongside the Writers Museum, the Hugh Lane gallery and the Garden of Remembrance.",
+      "time_needed": "Two to two and a half hours.",
+      "verdict": "The best meal in Ireland. Book lunch, not dinner, and skip the cheese supplement unless you are celebrating."
     },
     {
       "destination_slug": "dublin-ireland",
@@ -1409,6 +1623,18 @@
           "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
           "assert_text": "£1 tickets to buckingham palace",
           "confidence": "verified on the Royal Collection Trust's official page"
+        },
+        {
+          "fact": "The standard admission route is not step-free, and step-free access must be pre-booked with the specialist sales team.",
+          "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+          "assert_text": "the standard admission route is not step-free",
+          "confidence": "verified on the palace's official visit page"
+        },
+        {
+          "fact": "A free access companion ticket is available and can be booked online.",
+          "url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+          "assert_text": "we offer a free access companion ticket which can be booked online",
+          "confidence": "verified on the palace's official visit page"
         }
       ],
       "what_it_is": "The nineteen State Rooms at Buckingham Palace, the ceremonial rooms used for official entertaining by the monarch, opened to visitors during limited periods of the year.",
@@ -1422,7 +1648,8 @@
       "getting_there": "Green Park on the Jubilee, Piccadilly and Victoria lines, St James's Park on the Circle and District lines, and Victoria station are all within a short walk.",
       "location_context": "At the western end of St James's Park where The Mall meets Constitution Hill, with Green Park to the north and Victoria to the south. The park itself is free and is the better half of the surrounding area.",
       "time_needed": "Two to two and a half hours for the State Rooms with the audio guide, longer if a garden route is included in your ticket.",
-      "verdict": "Expensive, seasonal and worth it once if the interiors interest you. Book in advance to save the 4 pounds, check the opening dates before you plan around it, and check the 1 pound benefits ticket if it might apply to you."
+      "verdict": "Expensive, seasonal and worth it once if the interiors interest you. Book in advance to save the 4 pounds, check the opening dates before you plan around it, and check the 1 pound benefits ticket if it might apply to you.",
+      "accessibility": "Partly accessible, and the palace is direct about the limit: the standard admission route is not step-free. Step-free access has to be pre-booked through the specialist sales team, as does accessible parking, which needs at least three full working days' notice. A free access companion ticket can be booked online."
     },
     {
       "destination_slug": "london-uk",
@@ -2138,6 +2365,86 @@
     },
     {
       "destination_slug": "new-york-city-usa",
+      "name": "Grand Central Oyster Bar",
+      "type": "restaurant",
+      "headline": "Oysters Under the Vaulted Tiles, Weekdays Until Half Nine",
+      "body": "The Grand Central Oyster Bar is at 89 East 42nd Street on the lower level of Grand Central Terminal, and opens Monday to Friday from 11:30am to 9:30pm.\n\nIt has been there since the terminal opened in 1913, under Rafael Guastavino's tiled vaults, which are the reason to sit at the counter rather than in the dining room. The whispering gallery outside the entrance is the same tilework and is free.\n\nThe menu is enormous and inconsistent. Order oysters, the pan roast, and very little else, and it is one of the best lunches in Manhattan.",
+      "what_great": "Guastavino's tiled vaults, which are worth the visit alone. A raw bar with dozens of varieties listed by origin. The pan roast, made in a steam kettle at the counter in front of you.",
+      "what_ruined": "The menu runs to pages and much of it is ordinary. Prices have crept well above what the room implies. It is inside a commuter terminal, so the noise and the churn at 6pm are considerable.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four for the room and the raw bar. Five for safety inside Grand Central. Three for value: oysters and the pan roast justify it, and a great deal of the rest of the menu does not.",
+      "meta_description": "The Grand Central Oyster Bar sits on the lower level of Grand Central Terminal, open weekdays 11:30am to 9:30pm. Order oysters and the pan roast.",
+      "facts_checked": [
+        {
+          "fact": "It is open Monday to Friday, 11:30am to 9:30pm.",
+          "url": "https://www.oysterbarny.com/menu/",
+          "assert_text": "mon - fri 11:30am-9:30pm",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "It is at 89 East 42nd Street, on the lower level of Grand Central Terminal.",
+          "url": "https://www.oysterbarny.com/menu/",
+          "assert_text": "42nd st, new york, ny 10017 grand central terminal, lower level",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A seafood restaurant and raw bar on the lower level of Grand Central Terminal, open since 1913, under vaulted Guastavino tilework.",
+      "why_go": "For the room, which is one of the great interiors in New York, and for a raw bar that lists its oysters by bed rather than by colour.",
+      "the_good": "The tiled vaults, a serious oyster list, the pan roast made at the counter, and a lunch that fits neatly around a train.",
+      "the_downsides": "An unwieldy menu with plenty of filler. Prices above what the setting suggests. Loud and hectic at commuter hours.",
+      "best_for": "Anyone passing through Grand Central, and anyone who wants oysters without a downtown scene attached.",
+      "skip_if": "You want a quiet dinner. This is a terminal restaurant and behaves like one.",
+      "practical": "Sit at the counter, not in the dining room, because the counter is where the vaults and the kettles are. Order oysters and a pan roast and stop there. Go at 2pm to avoid both rushes.",
+      "tickets": "A la carte, with market prices on the raw bar. No reservations at the counter; the dining room takes them.",
+      "getting_there": "Inside Grand Central Terminal, lower level. Subway 4, 5, 6, 7 and S to Grand Central-42nd Street.",
+      "location_context": "The lower dining concourse of Grand Central Terminal in Midtown East, directly beneath the main concourse and beside the whispering gallery.",
+      "time_needed": "An hour.",
+      "verdict": "Sit at the counter, order oysters and the pan roast, and ignore the rest of the menu. The room is worth it on its own."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
+      "name": "Katz's Delicatessen",
+      "type": "restaurant",
+      "headline": "Open Eight Until Eleven, and Straight Through the Weekend",
+      "body": "Katz's Delicatessen opens Monday to Thursday from 8:00 am to 11:00 pm, and runs continuously from 8:00 am Friday to 11:00 pm Sunday. It has been on the corner of Houston and Ludlow since 1888.\n\nThe system is the thing people get wrong. You are handed a ticket at the door, you take it to a carver at the counter, you tip the carver, and you keep the ticket until you leave. Losing it is expensive. The tables at the back have waiter service and a longer wait.\n\nOrder the pastrami on rye. Everything else on that enormous menu exists, and none of it is why anyone has been queueing here for a hundred and thirty-seven years.",
+      "what_great": "Pastrami cured on the premises for weeks and cut by hand in front of you. Open continuously from Friday morning to Sunday night, which almost nothing else does. A room that has not been redesigned into something else.",
+      "what_ruined": "Expensive for a sandwich, and it has become a destination as much as a deli. The ticket system baffles first-timers and losing the ticket carries a penalty. Queues run down the block at weekend lunchtimes.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for the pastrami, which genuinely is the best version of the thing. Four for safety on a busy Lower East Side corner. Three for value: the sandwich costs what a full meal costs elsewhere, and it does feed two.",
+      "meta_description": "Katz's Delicatessen in New York opens 8am to 11pm Monday to Thursday and runs continuously through the weekend. Take a ticket, tip the carver.",
+      "facts_checked": [
+        {
+          "fact": "It is open Monday to Thursday, 8:00 am to 11:00 pm.",
+          "url": "https://katzsdelicatessen.com/address",
+          "assert_text": "monday - thursday: 8:00 am - 11:00 pm",
+          "confidence": "verified on the deli's official address and hours page"
+        },
+        {
+          "fact": "It runs continuously from 8:00 am Friday to 11:00 pm Sunday.",
+          "url": "https://katzsdelicatessen.com/address",
+          "assert_text": "open friday 8:00 am - sunday 11:00 pm",
+          "confidence": "verified on the deli's official address and hours page"
+        }
+      ],
+      "what_it_is": "A Jewish delicatessen on the corner of East Houston and Ludlow on the Lower East Side, open since 1888, curing and hand-carving its own pastrami.",
+      "why_go": "For the pastrami on rye, which is the reference version, and for a room that has resisted every temptation to become something more fashionable.",
+      "the_good": "Pastrami cured for weeks in house and carved by hand, weekend opening around the clock, and the counter system once you understand it.",
+      "the_downsides": "Very expensive for a sandwich. Long queues. A confusing ticket system with a penalty for losing it. Heavily touristed.",
+      "best_for": "Any first visit to New York, and anyone who wants to understand what the fuss about pastrami actually is.",
+      "skip_if": "You are vegetarian, or you object on principle to queueing for food.",
+      "practical": "Take a ticket at the door and do not lose it. Go to the counter rather than the table service, tip the carver a couple of dollars and you will get a taste while you wait. Share one sandwich between two.",
+      "tickets": "A la carte. No reservations. Counter service by ticket, table service at the back.",
+      "getting_there": "Subway F to Second Avenue, then two minutes on foot. It is on the corner of East Houston Street and Ludlow Street.",
+      "location_context": "The Lower East Side at the Houston Street boundary, an area of bars and boutiques now, with this and a handful of other survivors from when it was not.",
+      "time_needed": "An hour, longer if the queue is out the door.",
+      "verdict": "Take a ticket, go to the counter, tip the carver, order pastrami on rye and share it. Ignore the rest of the menu entirely."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
       "name": "New York Botanical Garden",
       "type": "attraction",
       "headline": "Thirty-Five Dollars, Free to New Yorkers on Wednesdays, and Worth the Train",
@@ -2631,6 +2938,46 @@
     },
     {
       "destination_slug": "rome-italy",
+      "name": "Roscioli",
+      "type": "restaurant",
+      "headline": "Twenty Euros a Head Just to Hold the Table",
+      "body": "Roscioli charges a 20.00 euro deposit per person at booking, and works in fixed shifts: 12:30, 12:45, 14:30 and 14:45 for lunch, and 19:00, 21:30 and 21:45 for dinner. Those are the only slots that exist.\n\nIt is a salumeria first, a wine bar second and a restaurant third, all in one narrow room lined floor to ceiling with cured meat, cheese and bottles. The carbonara is the dish people book for, and the burrata and the cured meats are the reason to come back.\n\nThe rigidity is the price of a room this small being this popular. Book weeks ahead, take the shift you are given, and do not plan anything for the ninety minutes afterwards.",
+      "what_great": "One of the great deli counters in Europe, doubling as the larder for the kitchen. Carbonara that deserves the reputation. A wine list far deeper than the room suggests.",
+      "what_ruined": "A 20 euro per person deposit and fixed shifts, which is a lot of commitment for lunch. Tight, loud and cramped. It books out weeks ahead, and the shift system means you eat quickly whether you want to or not.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Five for the food and the counter. Four for safety in the Campo de' Fiori area, which attracts pickpockets. Four for value: not cheap, and the quality of the ingredients is visibly where the money goes.",
+      "meta_description": "Roscioli in Rome charges a 20 euro per person booking deposit and serves in fixed shifts from 12:30. Book weeks ahead for the carbonara.",
+      "facts_checked": [
+        {
+          "fact": "A deposit of 20.00 euros per person is charged at booking.",
+          "url": "https://www.salumeriaroscioli.com/en/pages/prenota",
+          "assert_text": "a sum of €20,00 will be charged for each person booked",
+          "confidence": "verified on the restaurant's official reservations page"
+        },
+        {
+          "fact": "Service runs in fixed shifts: 12:30, 12:45, 14:30 and 14:45 for lunch, 19:00, 21:30 and 21:45 for dinner.",
+          "url": "https://www.salumeriaroscioli.com/en/pages/prenota",
+          "assert_text": "12:30 - 12:45 - 14:30 - 14:45 for lunch and 19:00 - 21:30 - 21:45 for dinner",
+          "confidence": "verified on the restaurant's official reservations page"
+        }
+      ],
+      "what_it_is": "A salumeria, wine bar and restaurant on Via dei Giubbonari near Campo de' Fiori, serving Roman classics from a room lined with its own cured meats and cheeses.",
+      "why_go": "For the carbonara and the counter. The ingredients are the point, and you are sitting inside the shop that sources them.",
+      "the_good": "An outstanding deli counter, a carbonara that lives up to the noise around it, a deep wine list, and cured meats and cheeses you can buy on the way out.",
+      "the_downsides": "A 20 euro per person deposit. Rigid shifts. Cramped and loud. Fully booked weeks in advance.",
+      "best_for": "Anyone who cares about ingredients, and anyone willing to plan a Rome meal weeks ahead.",
+      "skip_if": "You want to eat spontaneously, or a shift system and a deposit put you off before you have tasted anything.",
+      "practical": "Book weeks ahead and expect the deposit to be taken. Take the earliest lunch shift, which is the calmest. Buy something from the counter as you leave, because that is half the reason the food tastes the way it does.",
+      "tickets": "A la carte with a 20.00 euro per person booking deposit, deductible from the bill. Fixed seating shifts only, booked online.",
+      "getting_there": "Bus or tram to Largo di Torre Argentina, then five minutes on foot. There is no convenient metro.",
+      "location_context": "Via dei Giubbonari, a narrow shopping street running from Campo de' Fiori towards the Tiber, in the dense old centre.",
+      "time_needed": "An hour and a half, which is what the shift allows.",
+      "verdict": "Book weeks ahead, take the deposit on the chin, order the carbonara and buy cheese on the way out."
+    },
+    {
+      "destination_slug": "rome-italy",
       "name": "Vatican Museums",
       "type": "attraction",
       "headline": "Twenty Euros at the Door, and Everyone Is Walking the Same Direction",
@@ -2669,6 +3016,46 @@
       "time_needed": "Three hours at a brisk pace, and that is with skipping things.",
       "accessibility": "Step-free routes and lifts are available throughout and wheelchairs can be borrowed free, though the distances involved are considerable.",
       "verdict": "Unavoidable and worth it. Book the earliest slot, go straight to the Sistine Chapel, then walk back through the Raphael Rooms and the maps against the crowd."
+    },
+    {
+      "destination_slug": "stockholm-sweden",
+      "name": "Ekstedt",
+      "type": "restaurant",
+      "headline": "Two Thousand Nine Hundred Krona, All of It Cooked Over Fire",
+      "body": "Ekstedt charges 2,900 SEK for the set menu, with a wine pairing at 2,300 SEK and a selected wine pairing at 3,800.\n\nThere is no gas and no electricity in the kitchen. Everything is cooked over birch wood: a fire pit, a wood-fired oven, a cast iron pan set into the flames and a birch-smoked flue. That constraint is the entire concept and it is not a gimmick, because it changes what the food tastes like in ways you notice immediately.\n\nThe dining room is small, dark and centred on the open kitchen, so you watch the fire being worked all evening.",
+      "what_great": "A kitchen with no gas or electricity, which produces flavours no conventional restaurant gets near. An open fire you sit and watch. A set menu that is genuinely a single idea followed through.",
+      "what_ruined": "Two thousand nine hundred krona before wine, and the pairings roughly double it. Small, so it books out. Everything tastes of smoke to some degree, which is the point and will not suit everyone.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for a restaurant with a genuine and rigorously followed idea. Five for safety in Ostermalm. Three for value: it is a special-occasion price, and the pairings push it to a very steep total.",
+      "meta_description": "Ekstedt in Stockholm charges 2,900 SEK for the set menu, 2,300 for wine pairing. Everything is cooked over birch wood, with no gas or electricity.",
+      "facts_checked": [
+        {
+          "fact": "The set menu is 2,900 SEK with a wine pairing at 2,300 SEK.",
+          "url": "https://ekstedt.nu/menu/",
+          "assert_text": "set menu sek 2.900 | wine pairing sek 2.300",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "A selected wine pairing is 3,800 SEK.",
+          "url": "https://ekstedt.nu/menu/",
+          "assert_text": "selected wine pairing sek 3.800",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A tasting-menu restaurant in Ostermalm, Stockholm, cooking entirely over birch wood in a fire pit, wood oven, flame-set cast iron pan and smoking flue, with no gas or electricity in the kitchen.",
+      "why_go": "Because the constraint produces food you cannot get elsewhere, and because watching a professional kitchen work an open fire for three hours is genuinely absorbing.",
+      "the_good": "A single rigorous idea carried through every course, an open fire in the room, and flavours that no conventional kitchen reproduces.",
+      "the_downsides": "Very expensive, more so with pairings. Small and heavily booked. Pervasive smoke, which is the concept rather than a fault but is not for everyone.",
+      "best_for": "Anyone who cooks, anyone interested in technique, and anyone treating one dinner as the event of the trip.",
+      "skip_if": "Smoke-forward food does not appeal, or you want to choose your own dishes. Neither is possible here.",
+      "practical": "Book well ahead and ask for a seat facing the kitchen. Skip the upgraded pairing unless wine is the point; the standard pairing is well matched. Allow three hours.",
+      "tickets": "Set menu 2,900 SEK, wine pairing 2,300 SEK, selected wine pairing 3,800 SEK, juice pairing also offered. Reservations online.",
+      "getting_there": "Metro to Ostermalmstorg, then five minutes on foot. Humlegardsgatan runs off Stureplan.",
+      "location_context": "Humlegardsgatan in Ostermalm, the smart district north-east of the centre, near Stureplan and the Humlegarden park.",
+      "time_needed": "Three hours.",
+      "verdict": "Worth it once if fire-cooked food interests you at all. Sit facing the kitchen, take the standard pairing, and expect to smell of birch smoke afterwards."
     },
     {
       "destination_slug": "stockholm-sweden",

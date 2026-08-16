@@ -308,6 +308,16 @@ def main() -> int:
     ap.add_argument("--discover", action="store_true",
                     help="treat each URL as a site root: follow its own navigation to the visitor "
                          "information pages, then probe those")
+    ap.add_argument("--from-places", action="store_true",
+                    help="probe the URLs the places file ALREADY cites, instead of discovering new "
+                         "ones. Nav discovery only finds facts that live on their own page, and "
+                         "plenty do not: d'Angleterre's wheelchair access is an FAQ accordion on "
+                         "the rooms page we were already citing. Cheap, because those pages are "
+                         "usually cached already.")
+    ap.add_argument("--places-file",
+                    default=os.path.join(os.path.dirname(HERE), "database", "editorial", "places.json"),
+                    help="places file for --from-places")
+    ap.add_argument("--slug", help="with --from-places, limit to one destination_slug")
     ap.add_argument("--mode", choices=sorted(MODES), default="visit",
                     help="what to hunt for. 'visit' finds ticket prices and opening hours; "
                          "'access' finds step-free routes, lifts and wheelchair provision, which "
@@ -320,6 +330,14 @@ def main() -> int:
     _mode = a.mode
 
     urls = list(a.urls)
+    if a.from_places:
+        with open(a.places_file, encoding="utf-8") as fh:
+            for place in json.load(fh).get("places", []):
+                if a.slug and place.get("destination_slug") != a.slug:
+                    continue
+                for fact in place.get("facts_checked") or []:
+                    if fact.get("url"):
+                        urls.append(fact["url"])
     if a.file:
         with open(a.file, encoding="utf-8") as fh:
             for line in fh:
