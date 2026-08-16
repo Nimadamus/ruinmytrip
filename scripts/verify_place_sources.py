@@ -139,7 +139,14 @@ RETRY_PAUSE = 4.0
 BACKOFF_RETRIES = 4
 
 # How long to leave a refusing host alone before the end-of-run retry pass.
-RETRY_PASS_COOLDOWN = 60.0
+#
+# Sixty seconds was enough at 70 places and not at 105. royalcollection.org.uk passes 5 of 5 when
+# checked alone and fails 5 of 5 in a full sweep, every time, which is the signature of a host that
+# wants a longer quiet period than the run itself leaves it. The cooldown has to scale with how hard
+# the sweep hit the host, not with a number chosen when the dataset was smaller. Three minutes costs
+# nothing on a run that already takes twenty, and it buys back real verification rather than
+# excusing the source in blocked_sources.json, which would stop checking facts that are checkable.
+RETRY_PASS_COOLDOWN = 180.0
 
 # Requests to one host are serialised and spaced. Two places can cite the same museum, and two
 # facts on one page already share a fetch, but across a batch the same domain still gets hit

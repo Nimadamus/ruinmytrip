@@ -2318,6 +2318,46 @@
       "verdict": "Go for the Mantegna. Twenty euros is fair, four euros for the under-26s is a bargain, and it is the quietest great gallery in Italy."
     },
     {
+      "destination_slug": "milan-italy",
+      "name": "Ratana",
+      "type": "restaurant",
+      "headline": "Eighty-Five Euros for the Tasting Menu, Twenty-Four for the Working Lunch",
+      "body": "Ratana charges 85 euros for the tasting menu without drinks, with a three-glass wine pairing at 25 euros. At lunch it serves the schiscetta: a single dish with a glass of wine, water and coffee for 24 euros, changing daily.\n\nSchiscetta is the Milanese word for the packed lunch factory workers carried, and using it for a 24 euro set lunch in a restaurant of this standing is a deliberate joke that also happens to be the best value in the neighbourhood.\n\nThe kitchen cooks Milanese and Lombard dishes properly rather than reinterpreting them out of recognition: risotto giallo, mondeghili, cotoletta. The building is a converted early twentieth-century railway house with a garden, wedged among the Porta Nuova towers.",
+      "what_great": "A serious Lombard kitchen with a 24 euro lunch, which is a genuine anomaly in this part of Milan. A garden in a district made of glass towers. Risotto and mondeghili cooked as they are supposed to be.",
+      "what_ruined": "The evening tasting menu at 85 euros plus pairings adds up quickly. It books out, particularly for the garden. Porta Nuova is a business district, so the surroundings are corporate rather than characterful.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for cooking traditional Lombard food at a high level without museum-ing it. Five for safety in Porta Nuova. Four for value: the lunch is excellent value, the tasting menu is a fair Milan price.",
+      "meta_description": "Ratana in Milan charges 85 euros for its tasting menu and 24 euros for the daily schiscetta lunch with wine, water and coffee.",
+      "facts_checked": [
+        {
+          "fact": "The tasting menu is 85 euros without drinks.",
+          "url": "https://www.ratana.it/menu",
+          "assert_text": "degustazione (no bevande) €85",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "A three-glass wine pairing is 25 euros.",
+          "url": "https://www.ratana.it/menu",
+          "assert_text": "abbinamento vini 3 calici €25",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A Lombard restaurant in a converted railway building with a garden in Porta Nuova, Milan, cooking traditional Milanese dishes alongside a tasting menu and a daily set lunch.",
+      "why_go": "For Milanese cooking taken seriously, and for a 24 euro lunch in a district where that price normally buys a sandwich.",
+      "the_good": "Proper risotto giallo, mondeghili and cotoletta, a daily schiscetta lunch at 24 euros with wine included, and a garden under the Porta Nuova towers.",
+      "the_downsides": "The evening tasting menu plus pairings is a real bill. Books out, especially the garden. A business-district setting.",
+      "best_for": "Anyone who wants to eat Milanese food rather than international fine dining, and anyone in the city on business at lunchtime.",
+      "skip_if": "You are staying near the Duomo and do not want to travel. It is a metro ride north.",
+      "practical": "Take the schiscetta at lunch if the evening prices are too much: it is the same kitchen for a quarter of the money. Book the garden in advance in warm weather. The dish changes daily, so do not go with a fixed idea.",
+      "tickets": "Tasting menu 85 euros without drinks, three-glass wine pairing 25 euros. The schiscetta lunch is 24 euros including a glass of wine, water and coffee. A la carte also available. Reservations online.",
+      "getting_there": "Metro line 5 to Isola, or line 2 and 5 to Garibaldi, both about five minutes on foot.",
+      "location_context": "Via Gaetano de Castillia in Porta Nuova, beside the Biblioteca degli Alberi park and under the Bosco Verticale towers, with the Isola district behind.",
+      "time_needed": "An hour at lunch, two and a half for the tasting menu.",
+      "verdict": "Go at lunch for the schiscetta, which is the same kitchen at a quarter of the price. Book the garden if the weather is on your side."
+    },
+    {
       "destination_slug": "munich-germany",
       "name": "Alte Pinakothek",
       "type": "attraction",
@@ -3739,6 +3779,46 @@
       "time_needed": "Ninety minutes to two hours. The ship itself holds attention longer than people expect.",
       "accessibility": "The museum is step-free with lifts serving all six levels.",
       "verdict": "The best single thing to see in Stockholm and free for anyone under 18. Go early, start at the top and work down, and skip the Vrak combination unless you have three days."
+    },
+    {
+      "destination_slug": "tokyo-japan",
+      "name": "Ginza Kyubey",
+      "type": "restaurant",
+      "headline": "Eight Thousand Two Hundred and Fifty Yen for Lunch at the Counter",
+      "body": "Ginza Kyubey serves lunch nigiri sets at the counter: the Oribe at 8,250 yen for ten pieces of sushi with rolls and soup, and the Karatsu at 11,000 yen for eleven pieces with rolls, soup and dessert.\n\nIt opened in 1935 and is the sushi restaurant that made Ginza sushi a category. The counter is the whole experience: the chef works in front of you, hands each piece across individually, and the pace is set by the chef rather than by you.\n\nLunch is the way in. The same counter in the evening costs several times as much, and for a first experience of a Ginza sushi-ya the lunch sets teach you the same things for a fraction of the money.",
+      "what_great": "A 1935 institution with counter service by chefs who have done nothing else for decades. Lunch sets from 8,250 yen, which for Ginza sushi of this standing is remarkable. English is spoken and the staff are used to visitors.",
+      "what_ruined": "It is still expensive by any normal measure, and the evening bill is in another bracket entirely. The counter is formal and the pace is not yours to set. Booking is needed and the popular slots go early.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for sushi at the top of the craft with a counter you can actually get into. Five for safety in Ginza. Four for value: the lunch sets are genuinely fair for what they are, and nothing here is cheap.",
+      "meta_description": "Ginza Kyubey serves lunch nigiri at the counter from 8,250 yen for ten pieces. A 1935 Ginza sushi-ya where lunch is the affordable way in.",
+      "facts_checked": [
+        {
+          "fact": "The Oribe lunch set is 8,250 yen for ten pieces of sushi with rolls and soup.",
+          "url": "https://www.kyubey.jp/en/shoplist/ginza",
+          "assert_text": "10 pieces of sushi, rolls, soup 8,250yen",
+          "confidence": "verified on the restaurant's official Ginza page"
+        },
+        {
+          "fact": "The Karatsu lunch set is 11,000 yen for eleven pieces with rolls, soup and dessert.",
+          "url": "https://www.kyubey.jp/en/shoplist/ginza",
+          "assert_text": "11 pieces of sushi, rolls, soup, dessert 11,000yen",
+          "confidence": "verified on the restaurant's official Ginza page"
+        }
+      ],
+      "what_it_is": "A sushi restaurant in Ginza, Tokyo, open since 1935, serving counter nigiri across several floors with set lunches and a considerably more expensive evening service.",
+      "why_go": "Because it is the Ginza sushi counter that other Ginza sushi counters descend from, and because lunch makes that reachable rather than aspirational.",
+      "the_good": "Counter service by long-serving chefs, lunch sets from 8,250 yen, staff comfortable with foreign visitors, and a room that has been doing this since 1935.",
+      "the_downsides": "Expensive in absolute terms and far more so in the evening. A formal counter where the chef sets the pace. Needs booking.",
+      "best_for": "Anyone wanting one proper sushi experience in Tokyo without a three-month reservation battle or a six-figure yen bill.",
+      "skip_if": "You want conveyor-belt sushi or a casual meal. This is neither, and the formality is part of what you are paying for.",
+      "practical": "Book lunch rather than dinner, and ask for the counter rather than a table, because the counter is the entire point. Eat each piece as it is handed to you rather than waiting. Do not add soy sauce to pieces the chef has already brushed.",
+      "tickets": "Lunch nigiri sets from 8,250 yen for ten pieces to 11,000 yen for eleven with dessert. Evening service is substantially more. Reservations recommended.",
+      "getting_there": "Ginza station on the Ginza, Marunouchi and Hibiya lines, about five minutes on foot. Also close to Higashi-Ginza on the Asakusa line.",
+      "location_context": "Ginza, Tokyo's traditional luxury shopping district, a few minutes from the Kabukiza theatre and the Ginza crossing.",
+      "time_needed": "An hour at lunch.",
+      "verdict": "Book the counter at lunch. Eight thousand yen for sushi of this order, in this room, is the best value fine dining in Tokyo."
     },
     {
       "destination_slug": "tokyo-japan",
