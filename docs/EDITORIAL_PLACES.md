@@ -260,6 +260,66 @@ Nothing in that registry reaches a reader. No page renders source status, and no
 we cannot re-fetch is not evidence that a price is wrong, and a warning on the page would tell a
 traveler to distrust copy that nothing has contradicted.
 
+## Hotels and restaurants
+
+The four probe modes exist because these are four different searches, and using the wrong
+vocabulary silently caps coverage every time:
+
+| mode | finds | use it for |
+|---|---|---|
+| `visit` | ticket prices, opening hours | attractions |
+| `dine` | menus, prices, reservations, service hours | restaurants |
+| `stay` | room counts, check-in times, amenities, policies | hotels |
+| `access` | step-free routes, lifts, wheelchair loans, companion tickets | any type |
+
+Hunting for "tickets" and "admission" across twenty official restaurant sites found four usable
+pages. `--mode dine` on the same list found twelve. The site was never the limit.
+
+`--from-places` re-probes the URLs a place already cites, in any mode, instead of discovering new
+ones. Use it before concluding a source does not publish something: three accessibility facts were
+sitting in FAQ accordions on pages already in `facts_checked`, where no navigation crawl can reach
+them.
+
+### Hotel rates are not asserted, on purpose
+
+**Never publish a nightly rate we cannot verify.** Every hotel site probed publishes promotions
+rather than a rate card: "from EUR 180" attached to a three-night minimum, "from 56 EUR/night" on a
+group site covering another country, "50 pounds dining credit". Asserting any of those states a
+price the traveler will not be charged, and it goes stale within the week.
+
+A hotel page does not need a rate to be worth publishing. It needs durable, sourced structure:
+rooms and suites, neighbourhood, check-in and check-out if explicitly published, amenities,
+policies, accessibility, and the official booking URL. Those facts hold for years, which is exactly
+what an assertion needs.
+
+Where the rate is unknown, say so and point at the booking source. Do not leave a blank that reads
+like an oversight, and do not fill it with a number from a comparison site.
+
+**Two traps specific to hotels:**
+
+- **Group sites drift.** `--discover` follows same-domain links, and a chain's navigation leads to
+  its other properties. A probe aimed at Pestana Palace in Lisbon came back with Pestana Orlando,
+  and one aimed at Hotel Borg in Reykjavik came back on a sibling hotel's page. For a hotel that
+  belongs to a group, probe the exact property URL and do not use `--discover`.
+- **Booking widgets look like facts.** "check in / check out" next to a date picker is a form
+  label, not a published check-in time. Only assert a time when the page states one.
+
+### Getting hotel pricing at scale, later
+
+Investigated 2026-08-15, and none of it is a scrape:
+
+- **Booking.com Demand API** — the developer portal exists and states it is for partners and
+  developers; it requires sign-in, so terms and access could not be read without an account.
+- **Expedia Partner Solutions** — a partner programme with a certification path for implementers.
+- **Travelpayouts** — an open-signup travel affiliate platform advertising hotel programmes.
+- **Amadeus Self-Service** — `developers.amadeus.com` resolves, but the documentation is
+  JavaScript-rendered and `test.api.amadeus.com` and `api.amadeus.com` did not resolve from this
+  machine, so nothing about its endpoints or free tier was verified here. Check from another network
+  before relying on it.
+
+All four need an account, and two need commercial approval, so picking one is a decision rather than
+a task. Until then, live rates stay out and hotel pages stand on structure.
+
 ## Knowing what is actually covered
 
 ```bash

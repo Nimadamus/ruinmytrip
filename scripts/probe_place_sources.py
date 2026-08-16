@@ -179,6 +179,25 @@ HOSPITALITY_NAV_NOISE = ("job", "career", "privacy", "cookie", "newsletter", "pr
                          "vacancies", "franchise", "supplier", "gift-card", "giftcard", "e-shop",
                          "webshop", "online-shop")
 
+# Hotels do not publish a rate card, and demanding one was keeping useful pages unwritten.
+#
+# What they DO publish, durably, is structure: how many rooms and suites, when check-in and
+# check-out are, what is on site, what the policies are. Those facts stay true for years, which is
+# exactly what an assertion needs, whereas "from EUR 180" is a promotion that expires. So the stay
+# hunt looks for structure and leaves live pricing to a booking source.
+STAY_PATTERNS = [
+    ("rooms", r"\d{1,4}\s+(?:guest\s+)?(?:rooms|bedrooms|suites|keys)"
+              r"|\d{1,4}\s+(?:zimmer|chambres|habitaciones|camere|quartos)"),
+    ("check-in", r"check[- ]?in[^.]{0,40}?\d{1,2}[:.]?\d{0,2}\s?(?:a\.?m\.?|p\.?m\.?|h|:00)?"
+                 r"|check[- ]?out[^.]{0,40}?\d{1,2}[:.]?\d{0,2}\s?(?:a\.?m\.?|p\.?m\.?|h|:00)?"),
+    ("amenities", r"swimming pool|indoor pool|rooftop (?:bar|pool|terrace)|spa|sauna|fitness (?:centre|center|room)"
+                  r"|michelin[- ]star|restaurant on site|24[- ]hour (?:reception|concierge)|valet parking"),
+    ("policy", r"pets are (?:welcome|allowed|not)|no pets|smoke[- ]free|non[- ]smoking"
+               r"|free (?:wifi|wi-fi)|cancellation (?:policy|up to)"),
+    ("access", r"wheelchair accessible|accessible rooms?|step[- ]free|barrier[- ]free|lifts? to all floors"
+               r"|elevators? (?:run |serve )?to all floors"),
+]
+
 # The access hunt is the inverse: what is noise for prices is the target here, and vice versa.
 ACCESS_NAV_WORDS = (
     "accessibility accessible access disabled-access wheelchair disability mobility step-free "
@@ -207,7 +226,7 @@ MODES = {
     "visit": (NAV_WORDS, NAV_NOISE, PATTERNS),
     "access": (ACCESS_NAV_WORDS, ACCESS_NAV_NOISE, ACCESS_PATTERNS),
     "dine": (DINE_NAV_WORDS, HOSPITALITY_NAV_NOISE, PATTERNS),
-    "stay": (STAY_NAV_WORDS, HOSPITALITY_NAV_NOISE, PATTERNS),
+    "stay": (STAY_NAV_WORDS, HOSPITALITY_NAV_NOISE, STAY_PATTERNS),
 }
 _mode = "visit"
 

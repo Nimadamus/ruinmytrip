@@ -1221,6 +1221,46 @@
     },
     {
       "destination_slug": "edinburgh-scotland",
+      "name": "Ondine",
+      "type": "restaurant",
+      "headline": "Thirty Pounds for Six Oysters, Two Minutes From the Royal Mile",
+      "body": "Ondine charges 30 pounds for six Cumbrae oysters with firecracker dressing and 35 pounds for crispy oysters with buffalo hot sauce, which tells you most of what you need to know about both the kitchen and the bill.\n\nIt is a seafood restaurant on the first floor of a building on George IV Bridge, a two-minute walk from the Royal Mile, and it has been the serious fish option in Edinburgh for well over a decade. Scottish shellfish is the point: langoustines, oysters, crab, and whatever the day boats landed.\n\nSit at the horseshoe crustacean bar rather than at a table. It is the same menu, the view is of the kitchen, and you can order two dishes without feeling you have under-committed.",
+      "what_great": "Scottish shellfish handled by people who know what to do with it. A crustacean bar you can eat at properly rather than perch at. Close enough to the Royal Mile to be convenient and one floor up, so it is quiet.",
+      "what_ruined": "Expensive, and shellfish prices climb quickly once you start adding. Being on the first floor makes it easy to walk past. It fills with the festival crowd in August, when booking becomes essential rather than advisable.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for the best seafood cooking in the city. Five for safety in the Old Town. Three for value: thirty pounds for six oysters is a real price, and the quality is genuinely there.",
+      "meta_description": "Ondine in Edinburgh charges 30 pounds for six Cumbrae oysters and 35 for crispy oysters. Scottish shellfish, two minutes from the Royal Mile.",
+      "facts_checked": [
+        {
+          "fact": "Six Cumbrae oysters with firecracker dressing are 30 pounds.",
+          "url": "https://www.ondinerestaurant.co.uk/menus/",
+          "assert_text": "oysters (6) cumbrae firecracker dressing £30",
+          "confidence": "verified on the restaurant's official menus page"
+        },
+        {
+          "fact": "Crispy oysters with buffalo hot sauce are 35 pounds.",
+          "url": "https://www.ondinerestaurant.co.uk/menus/",
+          "assert_text": "crispy oysters buffalo hot sauce £35",
+          "confidence": "verified on the restaurant's official menus page"
+        }
+      ],
+      "what_it_is": "A seafood restaurant on the first floor of a George IV Bridge building in Edinburgh's Old Town, cooking Scottish shellfish and day-boat fish around a horseshoe crustacean bar.",
+      "why_go": "Because Scotland lands some of the best shellfish in Europe and most of it leaves the country. This is where it stays.",
+      "the_good": "Excellent oysters and langoustines, a crustacean bar worth sitting at, a short menu that changes with the landings, and a first-floor room that stays calm.",
+      "the_downsides": "Prices climb fast. Easy to miss from the street. Very busy through the August festival.",
+      "best_for": "Anyone who likes shellfish, and anyone wanting one properly good meal without leaving the Old Town.",
+      "skip_if": "You do not eat seafood. The menu has alternatives and none of them are the reason to come.",
+      "practical": "Book, especially in August. Ask for the crustacean bar rather than a table. The set lunch is the cheaper way in if the a la carte prices give you pause.",
+      "tickets": "A la carte, with oysters from 30 pounds for six. A set lunch and pre-theatre menu are usually available at lower prices. Reservations online.",
+      "getting_there": "A five-minute walk from Waverley station up Cockburn Street, or two minutes from the Royal Mile at the George IV Bridge junction.",
+      "location_context": "George IV Bridge in the Old Town, beside the National Library and a short walk from Greyfriars Kirkyard and the Grassmarket.",
+      "time_needed": "An hour and a half.",
+      "verdict": "The best seafood in Edinburgh. Book the crustacean bar, order oysters and langoustines, and take the set lunch if the evening prices are too much."
+    },
+    {
+      "destination_slug": "edinburgh-scotland",
       "name": "Palace of Holyroodhouse",
       "type": "attraction",
       "headline": "Twenty-Two in Advance, Twenty-Six at the Door, and Mary Queen of Scots' Bedchamber",
@@ -1428,6 +1468,46 @@
       "time_needed": "Ninety minutes for the Ninomaru Palace and the main gardens. Two hours if you walk the full grounds.",
       "accessibility": "The grounds are largely flat, but the Ninomaru Palace route involves removing shoes and walking wooden corridors with steps, which limits access.",
       "verdict": "The best-value major site in Kyoto and the one that best explains how the country was actually governed. Go early, take the gardens as well as the palace, and reserve the Honmaru separately if you want it."
+    },
+    {
+      "destination_slug": "lima-peru",
+      "name": "Central",
+      "type": "restaurant",
+      "headline": "Two Services a Day, and Both of Them Book Out Months Ahead",
+      "body": "Central serves Monday to Saturday, lunch from 12:45 to 13:30 and dinner from 19:00 to 20:30. Those windows are seating times, not opening hours: you arrive inside them or you do not eat.\n\nThe restaurant is organised by altitude. Each course comes from a specific elevation of Peru, from below sea level to high Andes, and the menu is presented as a vertical cross-section of the country. It is a conceit that could be unbearable and is not, because the ingredients genuinely do not appear anywhere else.\n\nIt has spent years at or near the top of the World's 50 Best list, which means reservations open months ahead and close quickly.",
+      "what_great": "A tasting menu organised around Peruvian ecosystems, using ingredients that essentially never leave the country. Two tightly controlled services a day, so nothing is rushed. In Barranco, which is the best neighbourhood in Lima to be in anyway.",
+      "what_ruined": "Booking months in advance is not optional. The seating windows are narrow and fixed. It is very expensive by any standard and by Peruvian standards it is extraordinary. The altitude framing can feel like a lecture if you are not in the mood.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for a restaurant doing something no one else is attempting. Four for safety in Barranco, which is fine with normal city sense. Three for value: it is a major expense, defensible once.",
+      "meta_description": "Central in Lima serves Monday to Saturday, lunch 12:45 to 13:30 and dinner 19:00 to 20:30. A tasting menu organised by Peruvian altitude.",
+      "facts_checked": [
+        {
+          "fact": "Lunch service runs Monday to Saturday from 12:45 to 13:30.",
+          "url": "https://www.centralrestaurante.com.pe/en/reservations",
+          "assert_text": "monday to saturday lunch 12:45 - 13:30",
+          "confidence": "verified on the restaurant's official reservations page"
+        },
+        {
+          "fact": "Dinner service runs from 19:00 to 20:30.",
+          "url": "https://www.centralrestaurante.com.pe/en/reservations",
+          "assert_text": "dinner 19:00 - 20:30",
+          "confidence": "verified on the restaurant's official reservations page"
+        }
+      ],
+      "what_it_is": "A tasting-menu restaurant in Barranco, Lima, whose courses are organised by the altitude their ingredients come from, spanning Peruvian ecosystems from the ocean floor to the high Andes.",
+      "why_go": "For ingredients that do not travel and a structure that teaches you something about the country while you eat. It is the most ambitious restaurant in South America and it earns the description.",
+      "the_good": "An idea followed through completely, ingredients unavailable anywhere else, tightly run services, and a Barranco setting worth arriving early for.",
+      "the_downsides": "Months-ahead booking. Narrow fixed seatings. Very expensive. The concept is delivered with some ceremony.",
+      "best_for": "Anyone building a trip around food, and anyone curious about Peru beyond ceviche and pisco sours.",
+      "skip_if": "You cannot book far ahead, or you would rather eat at five cevicherias for the same money, which is a completely defensible choice in Lima.",
+      "practical": "Book months in advance, and take lunch if you would rather have the afternoon than the evening. Arrive inside the seating window, because it is enforced. Walk Barranco before or after; it is the reason to be in that part of the city.",
+      "tickets": "Tasting menu with optional pairings, booked online. Services are Monday to Saturday only, lunch 12:45 to 13:30 and dinner 19:00 to 20:30.",
+      "getting_there": "A taxi from Miraflores takes about ten minutes and from central Lima about thirty. Use an app taxi rather than the street.",
+      "location_context": "Barranco, the coastal bohemian district south of Miraflores, with cliffs over the Pacific, street art and the best bar scene in the city.",
+      "time_needed": "Three hours.",
+      "verdict": "Book months ahead or do not plan on it. The most interesting meal in South America, and lunch is the easier service to get."
     },
     {
       "destination_slug": "lima-peru",
@@ -3711,6 +3791,46 @@
       "time_needed": "Two hours, or one for the free Simply Zurich exhibition alone.",
       "accessibility": "Step-free access with lifts throughout both the historic building and the extension.",
       "verdict": "The best-value hours in Zurich by a distance. Thirteen francs, free under 16, free for the Simply Zurich exhibition, and two minutes from the platforms."
+    },
+    {
+      "destination_slug": "zurich-switzerland",
+      "name": "Zeughauskeller",
+      "type": "restaurant",
+      "headline": "Open Daily From Half Eleven Until Eleven, Sundays Included",
+      "body": "The Zeughauskeller is open daily from 11.30 am to 11.00 pm, Sundays included, and serves hot meals all day from 11.30 to 22.00. In a city where a great many kitchens close between services and most things shut on Sunday, that is the single most useful fact about it.\n\nThe building is a sixteenth-century arsenal and it still looks like one: a vaulted hall, long shared tables, halberds and armour on the walls, and a cannon. The food is Swiss and German in the substantial sense, and the Kalbsgeschnetzeltes and the metre-long sausages are what people order.\n\nIt is two minutes from Paradeplatz, which means it is surrounded by banks and is one of very few places in that part of Zurich where a normal person can eat without booking.",
+      "what_great": "Open every day from 11.30 to 23.00 with hot food throughout, which solves the Zurich Sunday problem outright. A genuine sixteenth-century arsenal hall. Walk-ins are normal.",
+      "what_ruined": "Loud, busy and full of tourists at peak times. Swiss prices apply, so a plate of veal and rosti is not cheap. Shared tables are the norm, which not everyone enjoys.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a genuinely historic hall serving solid Swiss food reliably. Five for safety by Paradeplatz. Four for value: expensive in absolute terms, fair for Zurich, and the portions are serious.",
+      "meta_description": "The Zeughauskeller in Zurich opens daily 11.30am to 11pm with hot meals until 10pm, Sundays included. A sixteenth-century arsenal hall by Paradeplatz.",
+      "facts_checked": [
+        {
+          "fact": "It is open daily from 11.30 am to 11.00 pm, including Sundays.",
+          "url": "https://www.zeughauskeller.ch/en/dynasite.cfm?dsmid=503664",
+          "assert_text": "open daily from 11.30 am to 11.00 pm also on sundays",
+          "confidence": "verified on the restaurant's official opening hours page"
+        },
+        {
+          "fact": "Hot meals are served all day from 11.30 to 22.00.",
+          "url": "https://www.zeughauskeller.ch/en/dynasite.cfm?dsmid=503664",
+          "assert_text": "hot meals all day from 11.30-22.00h",
+          "confidence": "verified on the restaurant's official opening hours page"
+        }
+      ],
+      "what_it_is": "A large traditional restaurant in a sixteenth-century arsenal building off Paradeplatz in central Zurich, serving Swiss and German food at long shared tables.",
+      "why_go": "For a substantial Swiss meal at almost any hour, in a genuinely old hall, without a reservation. In central Zurich that combination is close to unique.",
+      "the_good": "Daily opening with hot food from 11.30 to 22.00, an arsenal hall complete with armour and a cannon, big portions, and walk-in seating.",
+      "the_downsides": "Noisy and heavily touristed. Swiss prices. Shared tables. The cooking is reliable rather than refined.",
+      "best_for": "First-time visitors, groups, and anyone stuck in Zurich on a Sunday when much of the city is closed.",
+      "skip_if": "You want a quiet dinner or modern Swiss cooking. Neither is on offer here.",
+      "practical": "Walk in rather than book, and go slightly off peak if you want a table to yourself. The mid-afternoon is the best time to see the hall properly. Order the Kalbsgeschnetzeltes with rosti.",
+      "tickets": "A la carte, no set menu. Reservations possible but not necessary outside peak evenings.",
+      "getting_there": "Tram to Paradeplatz, then two minutes on foot down Bahnhofstrasse and left into In Gassen.",
+      "location_context": "In Gassen, just off Paradeplatz in the banking district, a couple of minutes from Bahnhofstrasse and ten from the Grossmunster.",
+      "time_needed": "An hour and a half.",
+      "verdict": "The most useful restaurant in Zurich: open every day, all afternoon, no booking, in a sixteenth-century arsenal. Go mid-afternoon and order the veal."
     }
   ]
 }
