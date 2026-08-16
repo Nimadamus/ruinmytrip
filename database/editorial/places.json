@@ -1349,6 +1349,46 @@
     },
     {
       "destination_slug": "krakow-poland",
+      "name": "Miod Malina",
+      "type": "restaurant",
+      "headline": "Forty-Eight Zloty for Crostini, Open Until Half Ten",
+      "body": "Miod Malina charges 48 zloty for crostini misti and 72 zloty for spicy prawns. It opens Monday to Thursday 13:00 to 21:30 and Friday to Sunday 12:00 to 22:00.\n\nThe name means honey raspberry, and the room is exactly what that suggests: small, warm, hand-painted, and about as far from a themed pierogi hall as Krakow gets. The cooking is Polish with a strong Italian streak, which sounds like a compromise and is in fact the house style, done deliberately for two decades.\n\nIt is on Grodzka, the street running from the main square to Wawel, which means it is in the middle of everything and still needs booking.",
+      "what_great": "Polish-Italian cooking done with conviction rather than as a hedge. A small hand-painted room with actual atmosphere. On Grodzka, so it fits into any Old Town day without a detour.",
+      "what_ruined": "Small, so tables go quickly and walk-ins are optimistic. Prices are at the upper end for Krakow. The Grodzka location means the street outside is a constant procession of tour groups.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a restaurant with a clear identity, cooking well for twenty years. Five for safety in the Old Town. Four for value: not cheap locally, and the quality is plainly there.",
+      "meta_description": "Miod Malina in Krakow charges 48 zloty for crostini and opens Monday to Thursday 13:00 to 21:30. Polish-Italian cooking on Grodzka.",
+      "facts_checked": [
+        {
+          "fact": "Crostini misti are 48 zloty.",
+          "url": "https://miodmalina.pl/menu/",
+          "assert_text": "crostini misti 48 zł",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "It opens Monday to Thursday 13:00 to 21:30 and Friday to Sunday 12:00 to 22:00.",
+          "url": "https://miodmalina.pl/menu/",
+          "assert_text": "poniedziałek - czwartek 13:00 - 21:30 piątek - niedziela 12:00 - 22:00",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A small Polish-Italian restaurant on Grodzka in Krakow's Old Town, between the main square and Wawel, open for two decades.",
+      "why_go": "For Polish cooking that has absorbed an Italian kitchen rather than resisting it, in a room that feels like somebody's house instead of a tourist hall.",
+      "the_good": "A distinctive kitchen, a hand-painted dining room, a location on the route between the square and the castle, and long weekend hours.",
+      "the_downsides": "Very small. Books out. Upper-end Krakow prices. A busy street outside.",
+      "best_for": "Anyone who wants a proper dinner in the Old Town without a folk show attached.",
+      "skip_if": "You are after classic milk-bar Polish food at milk-bar prices, which Krakow does very well elsewhere.",
+      "practical": "Book, particularly at weekends. Go early in the week if you want the room quiet. The courtyard tables are the ones to ask for in summer.",
+      "tickets": "A la carte, with starters from 48 zloty. Reservations by phone or online and strongly advised.",
+      "getting_there": "On Grodzka, a five-minute walk south from the Main Market Square towards Wawel.",
+      "location_context": "Grodzka Street in the Old Town, on the Royal Route between the market square and Wawel castle.",
+      "time_needed": "An hour and a half.",
+      "verdict": "Book ahead and go early in the week. The most likeable dining room in the Old Town, and the Italian streak is the point rather than a compromise."
+    },
+    {
+      "destination_slug": "krakow-poland",
       "name": "Oskar Schindler's Enamel Factory",
       "type": "attraction",
       "headline": "Sixty Zloty for the Factory, and It Is Not the Film You Remember",
@@ -2362,6 +2402,46 @@
     },
     {
       "destination_slug": "new-orleans-usa",
+      "name": "Cochon",
+      "type": "restaurant",
+      "headline": "Sixteen Dollars for Shrimp Stew, Fifteen for Fried Alligator",
+      "body": "Cochon charges $16 for shrimp stew with tasso, wilted greens and pecan rice calas, and $15 for fried alligator with chili garlic mayonnaise. Wood-fired oysters are on the same list.\n\nThe restaurant is Cajun rather than Creole, which is the distinction most visitors never get straight: this is country southern Louisiana cooking, built on the whole pig, smoke and fire, rather than the French-inflected city food of the Quarter.\n\nIt is in the Warehouse District, a few minutes from the WWII Museum, and the room is plain brick and wood with an open kitchen. Nothing about it is decorative.",
+      "what_great": "Genuine Cajun cooking rather than the Creole the Quarter serves. A wood-fired oven that gets used properly. Small plates that let you order across the menu without committing to one heavy entree.",
+      "what_ruined": "It is loud, and the hard surfaces make it louder. Booking is needed and the popular slots go early. Prices have climbed with the neighbourhood.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for the best Cajun cooking in the city. Five for safety in the Warehouse District. Four for value: sixteen dollars a small plate adds up, and the cooking justifies it.",
+      "meta_description": "Cochon in New Orleans charges $16 for shrimp stew and $15 for fried alligator. Cajun cooking in the Warehouse District, not Creole.",
+      "facts_checked": [
+        {
+          "fact": "Shrimp stew with tasso, wilted greens and pecan rice calas is $16.",
+          "url": "https://cochonrestaurant.com/menus/lunch-and-dinner/",
+          "assert_text": "shrimp stew, tasso, wilted greens, pecan rice calas $16",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "Fried alligator with chili garlic mayonnaise is $15.",
+          "url": "https://cochonrestaurant.com/menus/lunch-and-dinner/",
+          "assert_text": "fried alligator with chili garlic mayonnaise $15",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A Cajun restaurant in the New Orleans Warehouse District, cooking whole-hog southern Louisiana food over wood, with an open kitchen and a butcher shop next door.",
+      "why_go": "Because it is Cajun rather than Creole, and almost everything a visitor eats in New Orleans is the latter. The difference is the whole reason to come.",
+      "the_good": "Wood-fired cooking, whole-pig butchery, small plates that let you range across the menu, and a butcher shop next door selling the same charcuterie.",
+      "the_downsides": "Loud. Needs booking. Prices have risen with the district. Not the place for a quiet conversation.",
+      "best_for": "Anyone who has already eaten in the Quarter and wants to understand what the other Louisiana tradition tastes like.",
+      "skip_if": "You are vegetarian. The kitchen is built around the pig and does not pretend otherwise.",
+      "practical": "Book ahead. Order across the small plates rather than one entree each. Combine it with the WWII Museum, which is a few minutes away.",
+      "tickets": "A la carte, small plates from around $15. Reservations online and recommended.",
+      "getting_there": "The St Charles streetcar to the Warehouse District, or a fifteen-minute walk from the French Quarter along Magazine Street.",
+      "location_context": "Tchoupitoulas Street in the Warehouse District, near the WWII Museum and the galleries, quieter than the Quarter and easy to walk.",
+      "time_needed": "An hour and a half.",
+      "verdict": "The Cajun counterweight to a week of Creole. Book ahead, order small plates across the menu, and go before or after the WWII Museum."
+    },
+    {
+      "destination_slug": "new-orleans-usa",
       "name": "National WWII Museum",
       "type": "attraction",
       "headline": "Twenty-Seven Dollars to Start, and the Packages Climb From There",
@@ -2728,6 +2808,86 @@
     },
     {
       "destination_slug": "paris-france",
+      "name": "Au Pied de Cochon",
+      "type": "restaurant",
+      "headline": "Nineteen Ninety for Two Courses, Served Around the Clock",
+      "body": "Au Pied de Cochon offers a two-course menu at 19.90 euros and three courses at 26.00 euros, drinks not included.\n\nIt opened in 1947 to feed the porters of Les Halles, the wholesale market that stood here until 1971, and it has essentially never shut since. That is the reason to know about it: when everything else in central Paris has closed, this has not.\n\nThe house dish is the pig's trotter, breadcrumbed and grilled, which is more work than most people expect and worth ordering once. The onion soup is the other thing the market porters were eating at four in the morning.",
+      "what_great": "Open when nothing else is, which in central Paris is a genuinely rare property. A two-course menu at 19.90 euros a few steps from the Louvre. Onion soup and trotters done the way the market made them.",
+      "what_ruined": "It is squarely on the tourist circuit now, and the service moves accordingly. The room is bright and busy at all hours. The trotter divides opinion sharply, and nobody should order it expecting a chop.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Four for a brasserie that still does its historic job. Four for safety: Les Halles at night attracts the usual city problems. Four for value: 19.90 euros for two courses in the first arrondissement is genuinely good.",
+      "meta_description": "Au Pied de Cochon in Paris serves two courses at 19.90 euros and three at 26.00. Open around the clock since 1947, by the old Les Halles.",
+      "facts_checked": [
+        {
+          "fact": "A two-course menu is 19.90 euros, drinks not included.",
+          "url": "https://www.pieddecochon.com/en/menus/",
+          "assert_text": "starter + main course or main course + dessert 19,90 eur",
+          "confidence": "verified on the restaurant's official menus page"
+        },
+        {
+          "fact": "A three-course menu is 26.00 euros.",
+          "url": "https://www.pieddecochon.com/en/menus/",
+          "assert_text": "starter + main course + dessert 26,00 eur",
+          "confidence": "verified on the restaurant's official menus page"
+        }
+      ],
+      "what_it_is": "A brasserie by the site of the old Les Halles market in the first arrondissement, open since 1947 and famous for serving through the night.",
+      "why_go": "For the hours. It is the reliable answer to being hungry in central Paris at an hour when the city has otherwise given up, and the two-course menu is fair for the location.",
+      "the_good": "Round-the-clock service, a 19.90 euro two-course menu, proper onion soup, and the grilled trotter the place is named for.",
+      "the_downsides": "Firmly on the tourist trail. Brisk service. Bright and noisy. The trotter is not for everyone.",
+      "best_for": "Late arrivals, early departures, and anyone who wants an old-fashioned brasserie dish done properly.",
+      "skip_if": "You want a quiet, considered Parisian dinner. This is a market brasserie and behaves like one.",
+      "practical": "Go late or very early, when the room is at its most characteristic. Order the onion soup. Try the trotter once, and know that it is mostly skin, fat and gelatine on the bone.",
+      "tickets": "Two courses 19.90 euros, three courses 26.00 euros, drinks extra. A la carte also available. Reservations possible but rarely necessary.",
+      "getting_there": "Metro 4 to Les Halles or 1 to Louvre-Rivoli, both about five minutes away. Rue Coquilliere runs off the top of the Forum des Halles.",
+      "location_context": "Rue Coquilliere in the first arrondissement, on the site of the old wholesale market, between the Louvre and the Bourse.",
+      "time_needed": "An hour and a half.",
+      "verdict": "The answer to being hungry in Paris at three in the morning, and a fair 19.90 euro menu at any hour. Order the onion soup."
+    },
+    {
+      "destination_slug": "paris-france",
+      "name": "Brasserie Lipp",
+      "type": "restaurant",
+      "headline": "Thirteen Euros for Sardines, and the Room Has Not Changed",
+      "body": "Brasserie Lipp charges 13.00 euros for vintage sardines and 13.50 euros for herring fillets with potatoes in oil, which is roughly what a starter costs anywhere on that stretch of Saint-Germain and considerably less than the address suggests.\n\nIt opened in 1880 and the ground-floor room, with its painted ceramic tiles, mirrors and mahogany, is intact. It spent the twentieth century as the canteen of French political and literary life, and the seating hierarchy that went with that has never entirely gone away: the ground floor is where people want to be, and upstairs is where tourists are put.\n\nThe cooking is brasserie standards, competently done. Nobody has ever come here primarily for the food.",
+      "what_great": "An 1880 room that has not been redesigned, with the original tiling and mirrors. Starters at 13 euros in the heart of Saint-Germain. Choucroute and herring done exactly as they have been for a century.",
+      "what_ruined": "The seating politics are real and being sent upstairs feels like what it is. Service can be curt to visitors. The cooking is reliable rather than a reason to travel.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for an intact historic brasserie serving decent food. Five for safety in Saint-Germain. Four for value: 13 euros for a starter here is fair, and you are paying for the room.",
+      "meta_description": "Brasserie Lipp in Paris charges 13.00 euros for sardines and 13.50 for herring. An intact 1880 room on Boulevard Saint-Germain.",
+      "facts_checked": [
+        {
+          "fact": "Vintage sardines are 13.00 euros.",
+          "url": "https://www.brasserielipp.fr/en/menus/",
+          "assert_text": "sardines millésimées 13,00 eur",
+          "confidence": "verified on the brasserie's official menus page"
+        },
+        {
+          "fact": "Herring fillets with potatoes in oil are 13.50 euros.",
+          "url": "https://www.brasserielipp.fr/en/menus/",
+          "assert_text": "filets de harengs, pommes à l’huile 13,50 eur",
+          "confidence": "verified on the brasserie's official menus page"
+        }
+      ],
+      "what_it_is": "A brasserie on Boulevard Saint-Germain, open since 1880, with an intact tiled and mirrored ground-floor room long associated with French political and literary life.",
+      "why_go": "For the room, which is one of the last unmodernised brasserie interiors in Paris, and for the choucroute, which is the dish it has always been known for.",
+      "the_good": "An intact nineteenth-century interior, fair starter prices for the area, classic brasserie cooking, and a Saint-Germain address opposite the Deux Magots and the Flore.",
+      "the_downsides": "Visitors are routinely seated upstairs. Service can be cool. The food is good rather than remarkable.",
+      "best_for": "Anyone interested in Parisian institutions, and anyone who wants choucroute in the room that made it famous.",
+      "skip_if": "Being seated in the lesser room would spoil the evening for you. It is a real risk and not worth pretending otherwise.",
+      "practical": "Ask for the ground floor and be prepared to be told no. Go at an off hour to improve your chances. Order the choucroute or the herring.",
+      "tickets": "A la carte, starters from 13.00 euros. Reservations taken, though the ground floor is allocated on arrival.",
+      "getting_there": "Metro 4 to Saint-Germain-des-Pres, which surfaces directly outside.",
+      "location_context": "Boulevard Saint-Germain in the sixth, opposite the Cafe de Flore and Les Deux Magots, in the middle of the Left Bank literary quarter.",
+      "time_needed": "Two hours.",
+      "verdict": "Come for the 1880 room and the choucroute, ask for the ground floor, and do not expect the food to be the story."
+    },
+    {
+      "destination_slug": "paris-france",
       "name": "Eiffel Tower",
       "type": "attraction",
       "headline": "The Ticket You Choose Matters More Than the Tower",
@@ -2772,6 +2932,46 @@
       "time_needed": "Two to three hours including security and queueing for a second-floor visit, nearer four for the summit. Seeing it from underneath and from Trocadero takes about an hour and costs nothing.",
       "accessibility": "Lifts serve the first and second floors, and disabled visitors pay the child rate of 6,00 euros to the second floor and 9,20 to the summit. Summit access is more limited because the upper lift is smaller.",
       "verdict": "Go, take the second floor, and skip the summit unless the extra height genuinely matters to you. Everything people hate about this visit is a queueing and pricing problem rather than a problem with the tower, and both are solved by booking the right ticket direct."
+    },
+    {
+      "destination_slug": "paris-france",
+      "name": "Le Procope",
+      "type": "restaurant",
+      "headline": "Twenty-Six Fifty for Two Courses in the Oldest Cafe in Paris",
+      "body": "Le Procope serves a two-course menu at 26.50 euros and three courses at 33.50 euros, available Monday to Saturday from midday to 6pm.\n\nIt opened in 1686, which makes it the oldest cafe in Paris still trading, and the list of people who used it reads like a syllabus: Voltaire, Rousseau, Diderot, Benjamin Franklin, Danton, Robespierre. Napoleon's hat is in a case by the stairs.\n\nThe rooms are red, mirrored and hung with portraits, and the cooking is classic French done to a standard that will not surprise anyone. What you are buying is three hundred and forty years of continuity, at a set-menu price that makes it accessible.",
+      "what_great": "The oldest cafe in Paris, still working, with a set menu at 26.50 euros that makes the history affordable. Rooms full of genuine period detail. Open through the afternoon, when much of Paris is not.",
+      "what_ruined": "It is a heavily touristed institution and the cooking reflects that. The set menu is lunch-and-early-evening only. The Napoleon's hat display leans into the museum register rather more than necessary.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for a genuinely historic room serving decent classic food. Five for safety in Saint-Germain. Four for value: 26.50 euros for two courses in a 1686 dining room is a fair trade.",
+      "meta_description": "Le Procope in Paris serves two courses at 26.50 euros and three at 33.50, midday to 6pm. The oldest cafe in Paris, open since 1686.",
+      "facts_checked": [
+        {
+          "fact": "A two-course menu is 26.50 euros.",
+          "url": "https://www.procope.com/en/menus/",
+          "assert_text": "starter - main course or main course - dessert 26,50 eur",
+          "confidence": "verified on the restaurant's official menus page"
+        },
+        {
+          "fact": "A three-course menu is 33.50 euros.",
+          "url": "https://www.procope.com/en/menus/",
+          "assert_text": "starter - main course - dessert 33,50 eur",
+          "confidence": "verified on the restaurant's official menus page"
+        }
+      ],
+      "what_it_is": "A restaurant on Rue de l'Ancienne Comedie in the sixth arrondissement, trading since 1686 and generally recognised as the oldest cafe in Paris.",
+      "why_go": "For three hundred and forty years of continuous trading in the same rooms, and because the set menu makes that a lunch rather than an occasion.",
+      "the_good": "The oldest cafe in Paris, period rooms with real detail, an affordable set menu, and afternoon service when much of the city closes between shifts.",
+      "the_downsides": "Touristed, with cooking to match. The set menu does not run in the evening. Some of the display verges on theme-park.",
+      "best_for": "Anyone interested in the Enlightenment, and anyone who wants a historic Paris meal without a hundred-euro bill.",
+      "skip_if": "You want the best French food in the sixth. That is elsewhere, and cheaper.",
+      "practical": "Go for the set menu between midday and 6pm, which is when it is available and when the rooms are lightest. Ask to see the upstairs rooms. Book at weekends.",
+      "tickets": "Two courses 26.50 euros, three courses 33.50 euros, Monday to Saturday midday to 6pm. A la carte at other times. Reservations recommended.",
+      "getting_there": "Metro 4 or 10 to Odeon, then two minutes on foot down Rue de l'Ancienne Comedie.",
+      "location_context": "Rue de l'Ancienne Comedie in the sixth, in the lanes between Odeon and Saint-Germain, a few minutes from the Seine.",
+      "time_needed": "Two hours.",
+      "verdict": "Take the 26.50 euro set menu at lunch and walk the rooms afterwards. You are paying for 1686, and at that price it is worth it."
     },
     {
       "destination_slug": "paris-france",
@@ -2934,6 +3134,46 @@
     },
     {
       "destination_slug": "prague-czechia",
+      "name": "Cafe Savoy",
+      "type": "restaurant",
+      "headline": "Five Hundred and Thirty-Five Crowns for Breakfast Under a Neo-Renaissance Ceiling",
+      "body": "Cafe Savoy charges 535 CZK for the continental breakfast and opens Monday to Friday 08:00 to 22:00, Saturday and Sunday 09:00 to 22:00, and 09:00 to 22:00 on public holidays.\n\nThe ceiling is the reason to come. It is a neo-Renaissance original from 1893, restored rather than replaced, and it is the finest room of its kind in Prague that you can sit in without buying a concert ticket.\n\nBreakfast is what the Savoy is known for, and it is served from opening. The bakery counter by the door sells the same pastries to take away, which is the cheap way to sample the kitchen if the sit-down price is more than you want to spend.",
+      "what_great": "An 1893 neo-Renaissance ceiling, properly restored. Breakfast from 08:00 on weekdays, which in Prague is unusually early for a room of this quality. A bakery counter selling the same pastries to take out.",
+      "what_ruined": "Five hundred and thirty-five crowns for a continental breakfast is a Prague-expensive price. It is popular enough that weekend mornings mean queueing. Mala Strana puts it across the river from the Old Town.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for the room and the baking together. Five for safety in Mala Strana. Four for value: expensive for Prague, and the ceiling and the pastry make the case.",
+      "meta_description": "Cafe Savoy in Prague charges 535 CZK for continental breakfast and opens 08:00 weekdays. An 1893 neo-Renaissance ceiling in Mala Strana.",
+      "facts_checked": [
+        {
+          "fact": "The continental breakfast is 535 CZK.",
+          "url": "https://cafesavoy.ambi.cz/en/menu",
+          "assert_text": "535 kč continental breakfast",
+          "confidence": "verified on the cafe's official menu page"
+        },
+        {
+          "fact": "It opens Monday to Friday 08:00 to 22:00 and Saturday to Sunday 09:00 to 22:00.",
+          "url": "https://cafesavoy.ambi.cz/en/menu",
+          "assert_text": "mon – fri 08:00 – 22:00 sat – sun 09:00 – 22:00",
+          "confidence": "verified on the cafe's official menu page"
+        }
+      ],
+      "what_it_is": "A grand cafe in Mala Strana, Prague, under a restored 1893 neo-Renaissance ceiling, with a bakery counter and a breakfast menu served from opening.",
+      "why_go": "For the ceiling and the breakfast, in that order. It is the best-preserved cafe interior in the city that functions as an ordinary cafe rather than a monument.",
+      "the_good": "A restored 1893 ceiling, early weekday opening, serious baking, and a takeaway counter for the same pastries at a fraction of the sit-down bill.",
+      "the_downsides": "Expensive by Prague standards. Weekend queues. Across the river from the Old Town, though that is also part of its appeal.",
+      "best_for": "Anyone who values a breakfast room, and anyone walking between the Charles Bridge and Petrin who wants a reason to stop.",
+      "skip_if": "You want cheap Czech food. This is a Viennese-style grand cafe and priced accordingly.",
+      "practical": "Go on a weekday morning when it opens at 08:00, which is the only time the room is calm. Look up before you order. Use the bakery counter if the sit-down price is more than you want to pay.",
+      "tickets": "A la carte, continental breakfast 535 CZK. Reservations taken and worth making at weekends.",
+      "getting_there": "Tram to Ujezd, then two minutes on foot. It is about ten minutes' walk from the Charles Bridge.",
+      "location_context": "Vitezna Street in Mala Strana, at the Ujezd end below Petrin hill, across the river from the National Theatre.",
+      "time_needed": "An hour.",
+      "verdict": "Go at eight on a weekday for breakfast and look at the ceiling. If the price stings, buy pastry at the counter instead."
+    },
+    {
+      "destination_slug": "prague-czechia",
       "name": "Jewish Museum in Prague",
       "type": "attraction",
       "headline": "Six Hundred Crowns for Six Sites and the Names on the Wall",
@@ -2972,6 +3212,46 @@
       "time_needed": "Three hours for the full circuit at a pace that does the Pinkas Synagogue justice.",
       "accessibility": "Access varies by site: the Spanish Synagogue and Pinkas Synagogue are largely step-free, the cemetery path is uneven cobble and gravel.",
       "verdict": "Essential, and worth the six hundred crowns. Go to the Pinkas Synagogue first thing in the morning, read the walls slowly, and let everything else follow."
+    },
+    {
+      "destination_slug": "reykjavik-iceland",
+      "name": "Grillmarkadurinn",
+      "type": "restaurant",
+      "headline": "Fifteen Hundred and Ninety Krona for Olives, Which Tells You the Rest",
+      "body": "Grillmarkadurinn charges 1,590 ISK for marinated olives and 2,290 ISK for honey milk bread with whipped butter, arctic thyme and lava salt. Those are the snacks, and they set the tone for the bill.\n\nThe kitchen grills over charcoal and lava stone, and the Icelandic ingredients are the point: lamb, langoustine, arctic char, and game in season. The dining room is dark wood, leather and stone, in a 1912 building on Laekjargata a couple of minutes from the parliament.\n\nIceland is expensive and this is expensive within Iceland, so go knowing that. What you get for it is the most consistently good grill cooking in the country.",
+      "what_great": "Charcoal and lava-stone grilling done seriously, with Icelandic lamb and seafood that genuinely do not travel. A handsome room. Central enough to walk to from anywhere downtown.",
+      "what_ruined": "Very expensive even by Reykjavik standards, and the snack prices are a warning shot. It books out in summer. The dark, heavy room is not to every taste.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for the cooking and the ingredients. Five for safety in central Reykjavik. Three for value: this is a top-end price in one of the most expensive countries in the world.",
+      "meta_description": "Grillmarkadurinn in Reykjavik charges 1,590 ISK for olives and 2,290 for honey milk bread. Charcoal and lava-stone grilling downtown.",
+      "facts_checked": [
+        {
+          "fact": "Marinated olives are 1,590 ISK.",
+          "url": "https://www.grillmarkadurinn.is/en/kvoldsedill",
+          "assert_text": "1.590 isk",
+          "confidence": "verified on the restaurant's official evening menu page"
+        },
+        {
+          "fact": "Honey milk bread with whipped butter, arctic thyme and lava salt is 2,290 ISK.",
+          "url": "https://www.grillmarkadurinn.is/en/kvoldsedill",
+          "assert_text": "2.290 isk",
+          "confidence": "verified on the restaurant's official evening menu page"
+        }
+      ],
+      "what_it_is": "A grill restaurant on Laekjargata in central Reykjavik, cooking Icelandic lamb, seafood and game over charcoal and lava stone in a 1912 building.",
+      "why_go": "For Icelandic ingredients cooked over fire by people who do it properly, which is the one thing worth spending money on in a country where everything costs a lot.",
+      "the_good": "Charcoal and lava-stone grilling, excellent lamb and langoustine, a handsome room, and a central location you can walk to.",
+      "the_downsides": "Expensive even for Iceland. Books out in high season. A dark, heavy dining room.",
+      "best_for": "Anyone spending one evening eating well in Reykjavik, and anyone who wants Icelandic lamb done right.",
+      "skip_if": "You are budgeting carefully. Reykjavik has excellent soup and hot dogs for a tiny fraction of this.",
+      "practical": "Book ahead in summer. Order lamb or langoustine rather than the international dishes. The snacks are priced as a course, so treat them that way.",
+      "tickets": "A la carte with a tasting menu available. Snacks from 1,590 ISK. Reservations online and advisable.",
+      "getting_there": "Central, on Laekjargata, five minutes on foot from Hallgrimskirkja or the harbour.",
+      "location_context": "Laekjargata in central Reykjavik, beside the old parliament and Austurvollur square, in the middle of the walkable downtown.",
+      "time_needed": "Two hours.",
+      "verdict": "The best grill in Iceland and priced like it. Book ahead, order the lamb, and treat the snacks as a course rather than a nibble."
     },
     {
       "destination_slug": "reykjavik-iceland",
