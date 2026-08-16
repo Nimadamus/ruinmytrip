@@ -453,6 +453,12 @@
           "url": "https://www.lapedrera.com/en/home",
           "assert_text": "general admission at sunset from €25",
           "confidence": "verified on the building's official site"
+        },
+        {
+          "fact": "There is a priority accessible entrance on Passeig de Gracia 92, and a wheelchair loan service is available.",
+          "url": "https://www.lapedrera.com/en/accessibility/",
+          "assert_text": "a wheelchair loan service is available",
+          "confidence": "verified on the building's official accessibility page"
         }
       ],
       "what_it_is": "Casa Mila, known as La Pedrera, an apartment building on Passeig de Gracia completed by Antoni Gaudi in 1912, with a stone facade, a reconstructed period apartment, a parabolic-arched attic and a sculptural roof terrace.",
@@ -466,7 +472,8 @@
       "getting_there": "Diagonal on Metro lines 3 and 5 is immediately outside. Passeig de Gracia on lines 2, 3 and 4 is a few minutes south.",
       "location_context": "Passeig de Gracia in the Eixample, Barcelona's grand shopping boulevard, with Casa Batllo a few blocks south and the Sagrada Familia about twenty minutes east on foot.",
       "time_needed": "Around ninety minutes for the full route including the roof, apartment and attic.",
-      "verdict": "Worth it for the roof, and best bought as the cheaper sunset slot. If you are only paying for one Gaudi building this trip, make it the Sagrada Familia and admire this one from the street."
+      "verdict": "Worth it for the roof, and best bought as the cheaper sunset slot. If you are only paying for one Gaudi building this trip, make it the Sagrada Familia and admire this one from the street.",
+      "accessibility": "Step-free throughout via a priority accessible entrance on Passeig de Gracia 92, with lifts, ramps and adapted bathrooms. A wheelchair loan service is available, and visitor services staff guide wheelchair users through the route, including the roof terrace where the surface is uneven."
     },
     {
       "destination_slug": "barcelona-spain",
@@ -1451,6 +1458,18 @@
           "url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
           "assert_text": "Adults 65+ £28",
           "confidence": "verified on the abbey's official prices page"
+        },
+        {
+          "fact": "The abbey has step-free access, hearing loops and audio guides.",
+          "url": "https://www.westminster-abbey.org/accessibility/",
+          "assert_text": "westminster abbey is open to all, with step-free access, hearing loops, audio guides",
+          "confidence": "verified on the abbey's official accessibility page"
+        },
+        {
+          "fact": "Mobility aids including manual wheelchairs can be borrowed by visitors.",
+          "url": "https://www.westminster-abbey.org/accessibility/",
+          "assert_text": "mobility aids, including manual wheelchairs, are available for visitors to borrow",
+          "confidence": "verified on the abbey's official accessibility page"
         }
       ],
       "what_it_is": "A royal church in Westminster, the coronation site of English and British monarchs since 1066, the burial place of many of them, and home to Poets' Corner. It is a working church as well as a visitor attraction.",
@@ -1464,7 +1483,8 @@
       "getting_there": "Westminster on the Circle, District and Jubilee lines is a two-minute walk. St James's Park on the Circle and District lines is a similar distance from the other side.",
       "location_context": "Westminster, directly beside the Houses of Parliament and across from Parliament Square. The area is dense with government buildings and heavy with tour groups, and it is a short walk along the river to the London Eye.",
       "time_needed": "Ninety minutes to two hours for the full route with the audio guide. Less if you are moving briskly, but the routing makes it hard to go much faster than the crowd allows.",
-      "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing."
+      "verdict": "Extraordinary building, uncomfortable price. Worth it once if English history or literature matters to you, and best experienced early in the day before the route jams. If money is tight, go to a service instead and see the same interior for nothing.",
+      "accessibility": "Step-free access throughout the main route, with hearing loops and audio guides. Mobility aids including manual wheelchairs can be borrowed free of charge, and a lift gives step-free wheelchair access to the galleries. The cloisters are the exception, reached by ten steps and a steep ramp. The nearest step-free Underground station is Westminster."
     },
     {
       "destination_slug": "mexico-city-mexico",
@@ -2077,6 +2097,12 @@
           "url": "https://www.louvre.fr/en/visit/hours-admission",
           "assert_text": "€6.00",
           "confidence": "verified on the museum's official hours and admission page"
+        },
+        {
+          "fact": "Wheelchairs, folding stools, canes, rolling chairs and sensory bags are lent free of charge in exchange for identification.",
+          "url": "https://www.louvre.fr/en/visit/accessibility",
+          "assert_text": "folding stools, wheelchairs, canes, multifunctional rolling chairs, sensory bags and other accessibility equipment are available, free of charge in exchange for a piece of id",
+          "confidence": "verified on the museum's official accessibility page"
         }
       ],
       "what_it_is": "The former royal palace of the Louvre, now the most visited art museum in the world, holding everything from Egyptian and Near Eastern antiquities to European painting up to the mid-1800s.",
@@ -2090,7 +2116,8 @@
       "getting_there": "Palais-Royal Musee du Louvre on Metro lines 1 and 7 feeds directly into the Carrousel entrance, usually the fastest way in. Louvre-Rivoli on line 1 is a short walk.",
       "location_context": "The 1st arrondissement, on the Right Bank between the Tuileries and the Palais-Royal. This is the centre of tourist Paris, so the immediate surroundings are convenient, expensive and not especially representative of the city.",
       "time_needed": "Three hours is a realistic focused visit. A full day is possible, but most people stop absorbing anything after about four hours. Two visits of two hours beat one visit of four.",
-      "verdict": "Still the best museum collection on earth and still the easiest to visit badly. Decide what you are there for before you go in, use a non-Pyramid entrance, and if you are outside the EEA, know you are paying 32,00 euros and plan the visit to be worth it."
+      "verdict": "Still the best museum collection on earth and still the easiest to visit badly. Decide what you are there for before you go in, use a non-Pyramid entrance, and if you are outside the EEA, know you are paying 32,00 euros and plan the visit to be worth it.",
+      "accessibility": "The lobby beneath the pyramid is reached by escalator or by the central lift, known as the tube, and the museum lends accessibility equipment free of charge in exchange for identification: folding stools, wheelchairs, canes, multifunctional rolling chairs and sensory bags. Staff in the assistance area will plan a route for your visit, which is worth doing given the distances involved."
     },
     {
       "destination_slug": "paris-france",
@@ -2117,6 +2144,18 @@
           "url": "https://www.paris-pantheon.fr/en/",
           "assert_text": "free admission for under 26-year-old residents of the eu",
           "confidence": "verified on the monument's official site"
+        },
+        {
+          "fact": "A platform lift serves both levels of the nave.",
+          "url": "https://www.paris-pantheon.fr/en/visit/visitors-with-disabilities/offre-adaptee-aux-visiteurs-en-mobilite-reduite",
+          "assert_text": "un élévateur permet de visiter les deux niveaux de la nef",
+          "confidence": "verified on the monument's official reduced-mobility page"
+        },
+        {
+          "fact": "The panorama and the descent to the crypt are not accessible to wheelchair users.",
+          "url": "https://www.paris-pantheon.fr/en/visit/visitors-with-disabilities/offre-adaptee-aux-visiteurs-en-mobilite-reduite",
+          "assert_text": "est non accessible aux personnes en fauteuil",
+          "confidence": "verified on the monument's official reduced-mobility page"
         }
       ],
       "what_it_is": "A neoclassical building on the Montagne Sainte-Genevieve, begun as a church and converted during the Revolution into a secular mausoleum for national figures, with a crypt, a working Foucault pendulum and a seasonal dome colonnade.",
@@ -2130,7 +2169,8 @@
       "getting_there": "RER B to Luxembourg is the closest station. Cardinal Lemoine and Maubert-Mutualite on Metro line 10 are both a short walk.",
       "location_context": "The Latin Quarter in the 5th arrondissement, on the hill above the Luxembourg gardens, surrounded by the Sorbonne and a dense student quarter. The gardens, the Rue Mouffetard market and Saint-Etienne-du-Mont are all within a few minutes.",
       "time_needed": "About an hour for the nave and crypt, ninety minutes with the dome climb.",
-      "verdict": "Better than its reputation, mainly because of the pendulum and the crypt rather than the architecture. Sixteen euros is fair, under-26 EU residents should simply go, and check the dome is open before you build a visit around it."
+      "verdict": "Better than its reputation, mainly because of the pendulum and the crypt rather than the architecture. Sixteen euros is fair, under-26 EU residents should simply go, and check the dome is open before you build a visit around it.",
+      "accessibility": "Partly accessible, and the monument says so plainly. The entrance and ticket office are reached by a fixed ramp to the right of the building or by eleven exterior steps, and a platform lift serves both levels of the nave. The crypt and the panorama are not wheelchair accessible: the site has around 200 steps in total, the descent to the crypt is a spiral of 41 steps in winter or a monumental stair of 38 in summer, and the toilets are reached by steps only."
     },
     {
       "destination_slug": "paris-france",
@@ -2157,6 +2197,18 @@
           "url": "https://www.sainte-chapelle.fr/en/",
           "assert_text": "22€",
           "confidence": "verified on the monument's official site"
+        },
+        {
+          "fact": "A ramp serves the ground floor and a lift reaches the upper chapel, taking two wheelchair users at a time.",
+          "url": "https://www.sainte-chapelle.fr/en/visit/visitors-with-disabilities/offer-adapted-to-visitors-with-reduced-mobility",
+          "assert_text": "access ramp on the ground floor of the monument. access to the upper chapel by elevator (two people in wheelchairs at the same time)",
+          "confidence": "verified on the monument's official reduced-mobility page"
+        },
+        {
+          "fact": "There are no accessible toilets; a wheelchair is available on loan and assistance dogs are allowed.",
+          "url": "https://www.sainte-chapelle.fr/en/visit/visitors-with-disabilities/offer-adapted-to-visitors-with-reduced-mobility",
+          "assert_text": "no accessible toilets. loan of wheelchair. guide and assistance dogs allowed.",
+          "confidence": "verified on the monument's official reduced-mobility page"
         }
       ],
       "what_it_is": "A royal chapel completed in the 1240s inside the medieval palace complex on the Ile de la Cite, built to house relics and engineered so the upper chapel's walls are almost entirely glass rather than stone.",
@@ -2170,7 +2222,8 @@
       "getting_there": "Cite on Metro line 4 is essentially at the door. Saint-Michel Notre-Dame on RER B and C and Metro line 4 is a short walk across the river.",
       "location_context": "On the Ile de la Cite in the 1st arrondissement, inside the old royal palace precinct now largely occupied by the Palais de Justice, a few minutes from Notre-Dame and directly beside the Conciergerie.",
       "time_needed": "Forty-five minutes to an hour, and that includes sitting in the upper chapel for a while, which is the correct way to do it.",
-      "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back."
+      "verdict": "One of the few places where a high price for a single room is defensible. Check the forecast, go when the sun is out, and give yourself time to sit rather than photograph. If the sky is flat grey, spend the 22 euros elsewhere and come back.",
+      "accessibility": "An access ramp serves the ground floor and a lift reaches the upper chapel, taking two wheelchair users at a time. A wheelchair is available on loan and guide and assistance dogs are allowed. There are no accessible toilets and no reserved parking. Disabled visitors and their companions are admitted free on presentation of valid proof."
     },
     {
       "destination_slug": "prague-czechia",
@@ -2572,6 +2625,18 @@
           "url": "https://www.gallerieaccademia.it/en/visit",
           "assert_text": "under 18s: free",
           "confidence": "verified on the gallery's official visit page"
+        },
+        {
+          "fact": "Barrier-free access is from the right side of the museum on Calle della Carita.",
+          "url": "https://www.gallerieaccademia.it/en/visit/museum-accessibility/",
+          "assert_text": "barrier-free access is available from the right side of the museum, on calle della carità",
+          "confidence": "verified on the gallery's official accessibility page"
+        },
+        {
+          "fact": "Between rooms XXII and XXIV on the first floor there are no lifting platforms, interrupting the accessible route.",
+          "url": "https://www.gallerieaccademia.it/en/visit/museum-accessibility/",
+          "assert_text": "between rooms xxii and xxiv on the first floor there are no lifting platforms, interrupting the accessible route",
+          "confidence": "verified on the gallery's official accessibility page"
         }
       ],
       "what_it_is": "The state gallery of Venetian art, in the former Scuola della Carita and adjoining convent at the southern foot of the Accademia bridge, holding Venetian painting from the fourteenth to the eighteenth century.",
@@ -2585,7 +2650,8 @@
       "getting_there": "Vaporetto line 1 or 2 to Accademia, which stops at the foot of the bridge outside. It is about a twenty-minute walk from Piazza San Marco across the Accademia bridge.",
       "location_context": "Dorsoduro, on the south side of the Grand Canal at the Accademia bridge, in the quieter university quarter. The Peggy Guggenheim Collection and the Punta della Dogana are both a short walk east along the same bank.",
       "time_needed": "Two hours for the full collection at a reasonable pace. Ninety minutes if you go straight for the sixteenth century.",
-      "verdict": "The best-value serious museum in Venice, and the calmest. Go in the morning, buy online, and if you are a young EU citizen the 2 euro rate makes this close to the easiest recommendation on the site."
+      "verdict": "The best-value serious museum in Venice, and the calmest. Go in the morning, buy online, and if you are a young EU citizen the 2 euro rate makes this close to the easiest recommendation on the site.",
+      "accessibility": "Barrier-free entry is on the right side of the museum, on Calle della Carita, with lifts to the first floor and lifting platforms beyond. The route is not complete: between rooms XXII and XXIV on the first floor there are no lifting platforms, which interrupts the accessible route. Worth checking on arrival which sections are reachable that day."
     },
     {
       "destination_slug": "venice-italy",
@@ -2653,6 +2719,18 @@
           "url": "https://www.hofburg-wien.at/en",
           "assert_text": "children (from age 6): € 12,00",
           "confidence": "verified on the Hofburg's official site"
+        },
+        {
+          "fact": "All exhibition areas are accessible via ramps, mobile wheelchair rails and a lift.",
+          "url": "https://www.hofburg-wien.at/en/visitor-information/barrier-free-access",
+          "assert_text": "all exhibition areas are accessible via ramps, mobile wheelchair rails and via elevator",
+          "confidence": "verified on the palace's official barrier-free access page"
+        },
+        {
+          "fact": "Wheelchairs can be borrowed free of charge on deposit of identification.",
+          "url": "https://www.hofburg-wien.at/en/visitor-information/barrier-free-access",
+          "assert_text": "wheelchairs can be obtained free of charge upon deposit of an id",
+          "confidence": "verified on the palace's official barrier-free access page"
         }
       ],
       "what_it_is": "The winter residence of the Habsburgs in central Vienna, now a visitor route through the Imperial Apartments, the Sisi Museum devoted to Empress Elisabeth, and the Silver Collection of the imperial household.",
@@ -2666,7 +2744,8 @@
       "getting_there": "U3 to Herrengasse or U1 and U3 to Stephansplatz, both a short walk. Trams 1, 2, D and 71 stop on the Ring at Burgring.",
       "location_context": "Dead centre of Vienna inside the Ring, between the Michaelerplatz and the Heldenplatz, with the Spanish Riding School in the same complex and the Kunsthistorisches Museum across the Ringstrasse.",
       "time_needed": "About 60 minutes for the standard route, which is what the fixed admission times are built around. Ninety minutes if you read everything in the Sisi Museum.",
-      "verdict": "Better than it sounds, mostly because the Sisi Museum refuses to play along with the myth it exists to explain. Book a time slot, allow an hour, and treat the gift shop as a separate and less honest experience."
+      "verdict": "Better than it sounds, mostly because the Sisi Museum refuses to play along with the myth it exists to explain. Book a time slot, allow an hour, and treat the gift shop as a separate and less honest experience.",
+      "accessibility": "All exhibition areas are reachable by ramp, mobile wheelchair rails and lift, and wheelchairs can be borrowed free of charge against a deposit of identification. Accessible parking is on Heldenplatz."
     },
     {
       "destination_slug": "vienna-austria",

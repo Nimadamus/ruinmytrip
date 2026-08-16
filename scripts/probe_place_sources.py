@@ -80,14 +80,32 @@ PATTERNS = [
     ("closed", r"closed on \w+|open all year|daily from \d"),
 ]
 
+# Access facts are a different search from price facts, and they matter more.
+#
+# A wrong price costs a traveler a few euros of surprise. A wrong access claim sends a wheelchair
+# user across a city to a building they cannot get into, so these sections were left empty rather
+# than written from memory. Filling them needs the same assert-a-string discipline the prices get,
+# which needs a pattern that can see access language rather than currency.
+ACCESS_PATTERNS = [
+    ("step-free", r"step[- ]free|barrier[- ]free|wheelchair accessible|fully accessible"
+                  r"|accessible entrance|level access|barrierefrei|sans obstacle"),
+    ("lift", r"\blifts?\b|\belevators?\b|\bascenseur|\baufzug|\bramp(?:s|ed)?\b"),
+    ("wheelchair", r"wheelchairs? (?:are |can be |available|loan|hire|provided|on request)"
+                   r"|manual wheelchairs?|fauteuil roulant|rollstuhl"),
+    ("not-accessible", r"not (?:wheelchair )?accessible|no lift|no elevator|stairs only"
+                       r"|cannot be accessed|unable to access|steps only"),
+    ("companion", r"(?:carer|companion|assistant|helper|escort)s? (?:go |are |enter |admitted )?free"
+                  r"|free (?:of charge )?for (?:a )?(?:carer|companion|assistant)"),
+]
+
 CONTEXT_BEFORE = 75
 CONTEXT_AFTER = 45
 MAX_PER_KIND = 4
 
 
-def candidates(text: str) -> dict[str, list[str]]:
+def candidates(text: str, patterns=None) -> dict[str, list[str]]:
     out: dict[str, list[str]] = {}
-    for kind, pat in PATTERNS:
+    for kind, pat in (patterns or PATTERNS):
         found, seen = [], set()
         for m in re.finditer(pat, text, re.I):
             start = max(0, m.start() - CONTEXT_BEFORE)
@@ -129,10 +147,47 @@ NAV_NOISE = ("shop", "membership", "member", "donate", "support-us", "school", "
              "job", "career", "privacy", "cookie", "newsletter", "gift", "wedding", "venue-hire",
              "corporate", "accessib")
 
+# The access hunt is the inverse: what is noise for prices is the target here, and vice versa.
+ACCESS_NAV_WORDS = (
+    "accessibility accessible access disabled-access wheelchair disability mobility step-free "
+    "barrier-free visually-impaired hearing "
+    "barrierefrei barrierefreiheit zugaenglichkeit rollstuhl "
+    "accessibilite accessibilité handicap mobilite mobilité "
+    "accesibilidad accesible discapacidad movilidad "
+    "accessibilita accessibilità disabili "
+    "toegankelijkheid rolstoel "
+    "tillganglighet tillgänglighet"
+).split()
+
+ACCESS_NAV_NOISE = ("shop", "donate", "job", "career", "privacy", "cookie", "newsletter",
+                    "press", "wedding", "venue-hire", "corporate", "web-accessibility",
+                    "accessibility-statement", "digital-accessibility")
+
 _HREF = re.compile(r"<a\b[^>]*href=[\"']([^\"'#]+)[\"'][^>]*>(.*?)</a>", re.I | re.S)
 
 
 _SITEMAP_LOC = re.compile(r"<loc>\s*([^<\s]+)\s*</loc>", re.I)
+
+# What the run is hunting for. Prices and access facts live on different pages, described by
+# opposite vocabularies: an accessibility page is noise when you want a ticket price, and a ticket
+# page rarely says whether there is a lift.
+MODES = {
+    "visit": (NAV_WORDS, NAV_NOISE, PATTERNS),
+    "access": (ACCESS_NAV_WORDS, ACCESS_NAV_NOISE, ACCESS_PATTERNS),
+}
+_mode = "visit"
+
+
+def mode_words():
+    return MODES[_mode][0]
+
+
+def mode_noise():
+    return MODES[_mode][1]
+
+
+def mode_patterns():
+    return MODES[_mode][2]
 
 
 def discover_via_sitemap(root: str, limit: int) -> list[str]:
@@ -153,9 +208,9 @@ def discover_via_sitemap(root: str, limit: int) -> list[str]:
             continue
         for loc in _SITEMAP_LOC.findall(body)[:2000]:
             low = loc.lower()
-            if any(n in low for n in NAV_NOISE):
+            if any(n in low for n in mode_noise()):
                 continue
-            score = sum(1 for w in NAV_WORDS if w in low)
+            score = sum(1 for w in mode_words() if w in low)
             if score:
                 urls.append((score + (2 if "/en" in low else 0), loc))
         if urls:
@@ -187,9 +242,9 @@ def discover(root: str, limit: int = 6) -> list[str]:
             continue
         url = urllib.parse.urlunsplit(split._replace(fragment=""))
         haystack = f"{split.path.lower()} {_v.normalise(anchor).lower()}"
-        if any(n in haystack for n in NAV_NOISE):
+        if any(n in haystack for n in mode_noise()):
             continue
-        score = sum(1 for w in NAV_WORDS if w in haystack)
+        score = sum(1 for w in mode_words() if w in haystack)
         if not score:
             continue
         # Prefer an English page: it is the one we can assert a readable string from.
@@ -207,7 +262,7 @@ def probe(url: str) -> dict:
         return {"url": url, "ok": False, "detail": body, "candidates": {}}
     text = _v.normalise(body)
     return {"url": url, "ok": True, "detail": f"{len(body) // 1024}KB",
-            "candidates": candidates(text)}
+            "candidates": candidates(text, mode_patterns())}
 
 
 def main() -> int:
@@ -219,9 +274,16 @@ def main() -> int:
     ap.add_argument("--discover", action="store_true",
                     help="treat each URL as a site root: follow its own navigation to the visitor "
                          "information pages, then probe those")
+    ap.add_argument("--mode", choices=sorted(MODES), default="visit",
+                    help="what to hunt for. 'visit' finds ticket prices and opening hours; "
+                         "'access' finds step-free routes, lifts and wheelchair provision, which "
+                         "live on different pages described by an opposite vocabulary.")
     ap.add_argument("--discover-limit", type=int, default=6,
                     help="max pages to follow per site root (default 6)")
     a = ap.parse_args()
+
+    global _mode
+    _mode = a.mode
 
     urls = list(a.urls)
     if a.file:
