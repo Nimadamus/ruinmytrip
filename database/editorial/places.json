@@ -1673,6 +1673,46 @@
       "verdict": "The best 1.60 euros in Lisbon. Walk past the queue, sit in the back, and eat them warm."
     },
     {
+      "destination_slug": "lisbon-portugal",
+      "name": "Pestana Palace Lisboa",
+      "type": "hotel",
+      "headline": "A Hundred and Ninety Rooms Inside a Listed National Monument",
+      "body": "Pestana Palace Lisboa has 190 rooms and suites. Check-in is from 3:00 p.m. and check-out until 12:00 p.m. Nightly rates are not published as a fixed figure and move with season and availability, so treat the current rate as something to request rather than something we can quote.\n\nThe hotel is a nineteenth-century palace in Alcantara, classified as a national monument, with a domed entrance hall, a monumental staircase and French-style gardens that are part of the listing. There is a swimming pool, the Casa do Lago restaurant and a spa in the grounds.\n\nIt is a genuine palace rather than a hotel styled as one, which is the distinction that matters here and the reason the public rooms are worth walking through even if you are not staying.",
+      "what_great": "An actual listed palace with gardens, not a pastiche. A hundred and ninety rooms, so it has the staffing of a full resort. A pool and spa in the grounds, which almost nothing central in Lisbon offers.",
+      "what_ruined": "Alcantara is west of the centre, so everything is a taxi or a tram ride. The scale means it can feel more like a resort than a city hotel. No published rate card, so budgeting means asking.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a listed palace running properly as a hotel. Five for safety in Alcantara. Four for value: less central than the price implies, and you get gardens and a pool that no central hotel can match.",
+      "meta_description": "Pestana Palace Lisboa has 190 rooms and suites in a listed 19th-century palace, check-in from 3pm. Rates are not published; ask the hotel.",
+      "facts_checked": [
+        {
+          "fact": "The hotel has 190 rooms and suites, in a palace classified as a national monument.",
+          "url": "https://www.pestana.com/en/hotel/pestana-palace/rooms",
+          "assert_text": "190 rooms and suites",
+          "confidence": "verified on the hotel's official rooms page"
+        },
+        {
+          "fact": "Check-in is from 3:00 p.m. and check-out until 12:00 p.m.",
+          "url": "https://www.pestana.com/en/hotel/pestana-palace/rooms",
+          "assert_text": "check-in at pestana palace is from 3:00 p.m., and check-out is until 12:00 p.m.",
+          "confidence": "verified on the hotel's official rooms page"
+        }
+      ],
+      "what_it_is": "A 190-room hotel in a nineteenth-century palace in Alcantara, Lisbon, classified as a national monument, with French-style gardens, a swimming pool and a spa.",
+      "why_go": "Because it is a real palace with the listing to prove it, and because the gardens and pool give you somewhere to be in the afternoon that central Lisbon hotels cannot offer.",
+      "the_good": "A listed nineteenth-century palace, gardens that form part of the monument, a pool, a spa, and the staffing that 190 rooms supports.",
+      "the_downsides": "West of the centre, so you commute in. Resort-scale rather than intimate. No published rates.",
+      "best_for": "Travelers who want space and grounds rather than a central address, and anyone with a car or an unhurried itinerary.",
+      "skip_if": "You want to walk to Baixa and Alfama from your door. Stay in Chiado or Baixa instead.",
+      "practical": "Ask for a room facing the gardens. Walk the public rooms and the staircase whether or not your room looks onto them. Budget for taxis into the centre, or use the tram from Alcantara.",
+      "tickets": "Nightly rates are not published as a fixed figure and vary by season and availability. Check current rates with the hotel's official booking page rather than a comparison site.",
+      "getting_there": "About fifteen minutes by taxi from Baixa, or tram 15E to Alcantara and a short walk uphill. Roughly twenty-five minutes from the airport.",
+      "location_context": "Alcantara, west of the centre between Belem and the bridge, a former industrial district now holding LX Factory and the docks nightlife.",
+      "time_needed": "Three nights, given the distance from the centre.",
+      "verdict": "A genuine palace with gardens and a pool, at the cost of a central address. Ask for a garden-facing room and request the rate directly."
+    },
+    {
       "destination_slug": "london-uk",
       "name": "Buckingham Palace State Rooms",
       "type": "attraction",
@@ -2485,6 +2525,46 @@
     },
     {
       "destination_slug": "new-york-city-usa",
+      "name": "Hotel Chelsea",
+      "type": "hotel",
+      "headline": "Two Hundred Square Feet, and More History Than Any Room in New York",
+      "body": "Rooms at the Hotel Chelsea start small: the Petite Chelsea is a queen bed at 200 sq ft, about 19 sq m. Accessible rooms are larger, with a king bed at approximately 450 sq ft, and are booked by emailing the hotel rather than online. Nightly rates are not published as a fixed figure.\n\nThe building on West 23rd Street housed Dylan Thomas, Patti Smith, Leonard Cohen, Janis Joplin and Sid Vicious, and spent a decade closed for a restoration that was widely expected to sand all of that away. It did not: the staircase, the ironwork and a good deal of the art survived.\n\nThere is a lobby bar, El Quijote next door, and a Japanese restaurant in the building, which between them mean you need not leave in the evening.",
+      "what_great": "A building with a genuine claim on twentieth-century culture, restored rather than gutted. The staircase and the lobby art. El Quijote, which reopened with the hotel and is worth a table on its own.",
+      "what_ruined": "Standard rooms are genuinely small at 200 sq ft. The history draws people who want to look rather than stay, so the lobby is busy. No published rates, and accessible rooms cannot be booked online at all.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four for a restoration that kept what mattered. Five for safety in Chelsea. Three for value: Manhattan pricing for a small room, bought largely for the address and the history.",
+      "meta_description": "The Hotel Chelsea's Petite rooms are 200 sq ft; accessible rooms are about 450 sq ft and booked by email. Rates are not published.",
+      "facts_checked": [
+        {
+          "fact": "The Petite Chelsea room has a queen bed and is 200 sq ft, about 19 sq m.",
+          "url": "https://www.hotelchelsea.com/accommodations",
+          "assert_text": "petite chelsea queen bed • 200 sq ft/19 sq m",
+          "confidence": "verified on the hotel's official accommodations page"
+        },
+        {
+          "fact": "Accessible rooms have a king bed and are approximately 450 sq ft, and are booked by email rather than online.",
+          "url": "https://www.hotelchelsea.com/accommodations",
+          "assert_text": "accessible rooms king bed • approximately 450 sq ft / 42 sq m",
+          "confidence": "verified on the hotel's official accommodations page"
+        }
+      ],
+      "what_it_is": "A landmark hotel on West 23rd Street in Chelsea, Manhattan, reopened after a long restoration, with rooms from 200 sq ft, a lobby bar, El Quijote and a Japanese restaurant in the building.",
+      "why_go": "For the building. Very few hotels anywhere have this much cultural history still legible in the fabric, and the restoration kept the staircase, the ironwork and the art rather than replacing them.",
+      "the_good": "A genuinely historic building handled with care, the staircase and lobby art, El Quijote next door, and a Chelsea address within walking distance of the High Line and the Village.",
+      "the_downsides": "Small standard rooms. A lobby that functions partly as a tourist attraction. No published rates, and accessible rooms require emailing to book.",
+      "best_for": "Anyone with an interest in twentieth-century music, writing or art, and anyone who would rather stay somewhere specific than somewhere large.",
+      "skip_if": "You need space, or you want a quiet anonymous hotel. Neither describes this building.",
+      "practical": "Book above the Petite category if 200 sq ft sounds tight, because it is. Accessible rooms have to be arranged by email, so allow time. Eat at El Quijote at least once.",
+      "tickets": "Nightly rates are not published as a fixed figure and vary with season and demand. Check current rates on the hotel's official booking page. Accessible rooms are booked by emailing the hotel.",
+      "getting_there": "Subway 1 to 23rd Street, or C and E to 23rd Street, both a few minutes away. It is on West 23rd between Seventh and Eighth.",
+      "location_context": "West 23rd Street in Chelsea, walking distance to the High Line, Chelsea Market, the gallery district and the West Village.",
+      "time_needed": "Two to three nights.",
+      "verdict": "Stay for the building, and book a category above Petite. The restoration kept what mattered, which almost no one expected."
+    },
+    {
+      "destination_slug": "new-york-city-usa",
       "name": "Katz's Delicatessen",
       "type": "restaurant",
       "headline": "Open Eight Until Eleven, and Straight Through the Weekend",
@@ -2974,6 +3054,46 @@
       "time_needed": "Two to three hours.",
       "accessibility": "Lifts serve most galleries and there is step-free access from Via delle Tre Pile, though the cordonata approach is a ramped climb.",
       "verdict": "The best museum in Rome that is not the Vatican, and the Tabularium view over the Forum is the single most underrated thing in the city. Go early or late."
+    },
+    {
+      "destination_slug": "rome-italy",
+      "name": "Hassler Roma",
+      "type": "hotel",
+      "headline": "Eighty-Two Rooms at the Top of the Spanish Steps",
+      "body": "The Hassler Roma has 82 rooms and suites and sits directly at the top of the Spanish Steps. Its rooftop restaurant, Imago, holds a Michelin star. Nightly rates are not published as a fixed figure and vary with season.\n\nThe position is the entire proposition. You walk out of the door onto the top of the Steps, with the whole city below and Villa Borghese behind you, and the Via Condotti shopping street running down to the Corso. Nothing else in Rome is placed like this.\n\nEighty-two rooms is small for a hotel of this standing, which is why the service is the other thing people remember.",
+      "what_great": "The single best address in Rome, at the top of the Spanish Steps. A Michelin-starred rooftop restaurant with a view over the city. Eighty-two rooms, small enough that staff know who you are.",
+      "what_ruined": "Among the most expensive hotels in Italy, with no published rate card. The Spanish Steps are one of the busiest spots in the city, so stepping outside means stepping into a crowd. Rooms vary considerably in size and outlook at similar prices.",
+      "rating": 5,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Five for the hotel and its position. Four for safety, only because the Spanish Steps attract pickpockets. Three for value: a top-of-market Rome price bought almost entirely for the address, which is at least genuinely unmatched.",
+      "meta_description": "The Hassler Roma has 82 rooms at the top of the Spanish Steps, with the Michelin-starred Imago on the roof. Rates are not published.",
+      "facts_checked": [
+        {
+          "fact": "The hotel has 82 rooms and suites.",
+          "url": "https://www.hotelhasslerroma.com/en/",
+          "assert_text": "offers 82 rooms and suites",
+          "confidence": "verified on the hotel's official site"
+        },
+        {
+          "fact": "Its rooftop restaurant Imago holds a Michelin star.",
+          "url": "https://www.hotelhasslerroma.com/en/",
+          "assert_text": "panoramic michelin-starred restaurant imàgo",
+          "confidence": "verified on the hotel's official site"
+        }
+      ],
+      "what_it_is": "An 82-room independent luxury hotel at the top of the Spanish Steps in Rome, with the Michelin-starred Imago restaurant on the roof and an all-day dining room.",
+      "why_go": "For the address, which no other hotel in Rome can offer, and for a rooftop dining room with a view over the whole historic centre.",
+      "the_good": "The top of the Spanish Steps as a front door, a Michelin-starred rooftop restaurant, only 82 rooms so service is personal, and Villa Borghese behind you for morning walks.",
+      "the_downsides": "Extremely expensive with no published rates. Crowds outside the door all day. Room sizes and outlooks vary more than the pricing suggests.",
+      "best_for": "Travelers for whom position is the point, and anyone marking a significant occasion in Rome.",
+      "skip_if": "Crowds outside your hotel would spoil it, or you would rather spend the difference on a week in Trastevere.",
+      "practical": "Ask specifically about the room's size and outlook when booking, because they differ substantially. Book Imago separately and early. Use the Villa Borghese side for a quiet way out in the morning.",
+      "tickets": "Nightly rates are not published as a fixed figure and vary by season and availability. Check current rates on the hotel's official booking page; Imago takes restaurant reservations separately.",
+      "getting_there": "Metro line A to Spagna, which surfaces at the foot of the Steps, then the lift or the climb. About forty minutes from Fiumicino by taxi.",
+      "location_context": "Piazza Trinita dei Monti at the top of the Spanish Steps, between Villa Borghese and the Via Condotti shopping streets, in the heart of the historic centre.",
+      "time_needed": "Three nights.",
+      "verdict": "The best address in Rome and priced like it. Ask about the specific room before booking, and get a table at Imago while you are at it."
     },
     {
       "destination_slug": "rome-italy",
