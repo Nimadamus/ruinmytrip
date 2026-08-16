@@ -249,7 +249,7 @@ function place_show(array $a): void {
     $nearby = rmt_place_nearby($id, (int)$p['destination_id']);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
 
-    $ld = ['@context'=>'https://schema.org', '@type'=>'TouristAttraction', 'name'=>$p['name'],
+    $ld = ['@context'=>'https://schema.org', '@type'=>rmt_place_schema_type((string) $p['type']), 'name'=>$p['name'],
            'url'=>$canonical,
            'address'=>['@type'=>'PostalAddress','addressLocality'=>$p['dest_name'],'addressCountry'=>$p['dest_country']]];
     if ($ed && !empty($ed['what_it_is'])) $ld['description'] = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 300, '…');
@@ -283,7 +283,7 @@ function place_show(array $a): void {
     }
 
     view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby'), [
-        'title' => $p['name'].', '.$p['dest_name'].' — review, tips and is it worth visiting | RuinMyTrip',
+        'title' => $p['name'].', '.$p['dest_name'].' — '.rmt_place_title_question((string) $p['type']).' | RuinMyTrip',
         'description' => $desc,
         'canonical' => $canonical,
         'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($p['dest_hero']),

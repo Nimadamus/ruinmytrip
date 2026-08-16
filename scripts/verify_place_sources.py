@@ -414,7 +414,14 @@ def _fetch_exact(url: str) -> tuple[bool, str]:
             with _open(url, use_certifi) as r:
                 raw = r.read()
                 charset = r.headers.get_content_charset()
+                ctype = (r.headers.get_content_type() or "").lower()
             _speed_up(host)
+            # A PDF menu decoded as text is not a page, it is noise that happens to contain digits
+            # next to currency symbols. Two restaurant PDFs came back from a probe looking like
+            # price candidates, and an assertion written against that noise would "pass" forever
+            # while meaning nothing. Only markup is a source.
+            if ctype and not (ctype.startswith("text/") or "html" in ctype or "xml" in ctype):
+                return False, f"not a web page (Content-Type: {ctype})"
             return True, decode(raw, charset)
         except urllib.error.HTTPError as e:
             last = f"HTTP {e.code}"

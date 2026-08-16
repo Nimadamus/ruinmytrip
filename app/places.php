@@ -254,6 +254,49 @@ const RMT_PLACE_EDITORIAL_SECTIONS = [
     'verdict'          => 'The RuinMyTrip verdict',
 ];
 
+/**
+ * The same thirteen columns, headed the way the thing being described is actually talked about.
+ *
+ * A hotel page under the heading "Tickets and reservations" and "How long to allow" reads as an
+ * attraction template with a hotel dropped into it, which is exactly how a bolted-on second
+ * database announces itself. The columns do not change, because splitting the schema per type would
+ * fork every query, aggregate and honesty rule in this file for a cosmetic gain. Only the words
+ * change.
+ */
+function rmt_place_editorial_sections(string $type = 'attraction'): array {
+    $s = RMT_PLACE_EDITORIAL_SECTIONS;
+    if ($type === 'hotel') {
+        $s['why_go']        = 'Why travelers stay here';
+        $s['tickets']       = 'Rates and booking';
+        $s['time_needed']   = 'How long to stay';
+        $s['skip_if']       = 'Consider staying elsewhere if';
+        $s['the_downsides'] = 'Downsides';
+    } elseif ($type === 'restaurant') {
+        $s['why_go']        = 'Why travelers eat here';
+        $s['tickets']       = 'Prices and reservations';
+        $s['time_needed']   = 'How long to allow';
+        $s['skip_if']       = 'Consider eating elsewhere if';
+        $s['the_downsides'] = 'Downsides';
+    }
+    return $s;
+}
+
+/**
+ * The schema.org type for a place. A restaurant marked up as a TouristAttraction is simply wrong,
+ * and search engines read this markup literally.
+ */
+function rmt_place_schema_type(string $type): string {
+    return ['hotel' => 'Hotel', 'restaurant' => 'Restaurant'][$type] ?? 'TouristAttraction';
+}
+
+/** The question the page title promises to answer. Nobody asks whether a hotel is worth visiting. */
+function rmt_place_title_question(string $type): string {
+    return [
+        'hotel'      => 'review, tips and is it worth staying',
+        'restaurant' => 'review, tips and is it worth eating at',
+    ][$type] ?? 'review, tips and is it worth visiting';
+}
+
 /** Structured editorial for a place, or null when the team has not written one. */
 function rmt_place_editorial(int $placeId): ?array {
     $row = q_one('SELECT * FROM place_editorial WHERE place_id = ?', [$placeId]);

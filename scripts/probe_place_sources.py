@@ -147,6 +147,38 @@ NAV_NOISE = ("shop", "membership", "member", "donate", "support-us", "school", "
              "job", "career", "privacy", "cookie", "newsletter", "gift", "wedding", "venue-hire",
              "corporate", "accessib")
 
+# Restaurants and hotels do not talk about "tickets" or "admission", and hunting for those words
+# found 4 usable pages across 20 official venue sites. They publish under menu, carte, speisekarte,
+# reservations, rooms, rates. Same failure class as guessing /en/visit: the vocabulary, not the
+# site, was the limit.
+DINE_NAV_WORDS = (
+    "menu menus carte lacarte food drinks wine lunch dinner brunch breakfast reservation "
+    "reservations booking book book-a-table opening hours prices restaurant bar cafe "
+    "speisekarte getraenke getränke reservierung oeffnungszeiten öffnungszeiten preise "
+    "cartes reserver réserver horaires tarifs "
+    "carta reservas horarios precios comer "
+    "menu prenota prenotazioni orari prezzi "
+    "ementa reservas horarios "
+    "jidelni-listek rezervace "
+    "etlap asztalfoglalas"
+).split()
+
+STAY_NAV_WORDS = (
+    "rooms room suites accommodation stay rates prices booking book reservation reserve "
+    "offers packages facilities amenities hotel guest-rooms "
+    "zimmer suiten uebernachten übernachten preise buchen reservierung ausstattung "
+    "chambres suites tarifs reserver réserver sejour séjour "
+    "habitaciones alojamiento tarifas reservar "
+    "camere alloggio tariffe prenota "
+    "quartos alojamento reservas"
+).split()
+
+# Menus and rate pages are the target here, so "shop" and "gift" still are not, but "restaurant"
+# and "bar" very much are.
+HOSPITALITY_NAV_NOISE = ("job", "career", "privacy", "cookie", "newsletter", "press", "recruit",
+                         "vacancies", "franchise", "supplier", "gift-card", "giftcard", "e-shop",
+                         "webshop", "online-shop")
+
 # The access hunt is the inverse: what is noise for prices is the target here, and vice versa.
 ACCESS_NAV_WORDS = (
     "accessibility accessible access disabled-access wheelchair disability mobility step-free "
@@ -174,6 +206,8 @@ _SITEMAP_LOC = re.compile(r"<loc>\s*([^<\s]+)\s*</loc>", re.I)
 MODES = {
     "visit": (NAV_WORDS, NAV_NOISE, PATTERNS),
     "access": (ACCESS_NAV_WORDS, ACCESS_NAV_NOISE, ACCESS_PATTERNS),
+    "dine": (DINE_NAV_WORDS, HOSPITALITY_NAV_NOISE, PATTERNS),
+    "stay": (STAY_NAV_WORDS, HOSPITALITY_NAV_NOISE, PATTERNS),
 }
 _mode = "visit"
 

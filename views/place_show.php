@@ -55,7 +55,7 @@
       <p class="hint" style="margin:.5rem 0 0"><?= e(rmt_editorial_disclosure()) ?></p>
     </div></div>
 
-    <?php foreach (RMT_PLACE_EDITORIAL_SECTIONS as $col => $heading): ?>
+    <?php foreach (rmt_place_editorial_sections((string) $p['type']) as $col => $heading): ?>
       <?php $val = trim((string) ($ed[$col] ?? '')); if ($val === '') continue; ?>
       <section style="margin:0 0 22px">
         <h2 style="font-size:1.05rem;margin:0 0 6px"><?= e($heading) ?></h2>

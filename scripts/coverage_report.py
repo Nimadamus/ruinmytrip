@@ -97,7 +97,11 @@ def main() -> int:
             problems.append((key, ", ".join(f"{k}={v}" for k, v in sorted(counts.items())
                                             if k not in ("PASS", "PRICE_PASS"))))
 
-    print(f"attractions:            {len(places)}")
+    by_type = collections.Counter(p.get("type", "attraction") for p in places)
+    print(f"places:                 {len(places)}")
+    for t in ("attraction", "hotel", "restaurant", "experience"):
+        if by_type.get(t):
+            print(f"  {t + 's:':22}{by_type[t]}")
     print(f"destinations covered:   {len(by_dest)}")
     print(f"complete editorial:     {len(complete)} of {len(places)} have all {len(SECTIONS)} sections")
     if status:

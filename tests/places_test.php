@@ -122,6 +122,34 @@ $ampSlug = q_one('SELECT slug FROM places WHERE id = ?', [rmt_place_resolve(1, '
 ok('an ampersand becomes and',
    $ampSlug === 'fish-and-chips-museum-barcelona', 'got ' . $ampSlug);
 
+// --- Type-aware presentation ------------------------------------------------------------------
+// A restaurant marked up as a TouristAttraction is simply wrong, and search engines read this
+// literally. A hotel page headed "Tickets and reservations" is how a bolted-on second database
+// announces itself. The columns are shared on purpose; only the words and the markup change.
+ok('schema type follows the place type',
+   rmt_place_schema_type('hotel') === 'Hotel'
+   && rmt_place_schema_type('restaurant') === 'Restaurant'
+   && rmt_place_schema_type('attraction') === 'TouristAttraction'
+   && rmt_place_schema_type('experience') === 'TouristAttraction');
+
+$hotelSections = rmt_place_editorial_sections('hotel');
+$restSections  = rmt_place_editorial_sections('restaurant');
+$attrSections  = rmt_place_editorial_sections('attraction');
+ok('a hotel does not sell tickets', $hotelSections['tickets'] === 'Rates and booking',
+   'got ' . $hotelSections['tickets']);
+ok('a restaurant does not sell tickets', $restSections['tickets'] === 'Prices and reservations',
+   'got ' . $restSections['tickets']);
+ok('an attraction keeps its original headings', $attrSections === RMT_PLACE_EDITORIAL_SECTIONS);
+ok('every type renders the same columns',
+   array_keys($hotelSections) === array_keys(RMT_PLACE_EDITORIAL_SECTIONS)
+   && array_keys($restSections) === array_keys(RMT_PLACE_EDITORIAL_SECTIONS));
+ok('an unknown type falls back rather than breaking',
+   array_keys(rmt_place_editorial_sections('experience')) === array_keys(RMT_PLACE_EDITORIAL_SECTIONS));
+ok('the title question suits the type',
+   str_contains(rmt_place_title_question('hotel'), 'staying')
+   && str_contains(rmt_place_title_question('restaurant'), 'eating')
+   && str_contains(rmt_place_title_question('attraction'), 'visiting'));
+
 // --- Aggregates ---------------------------------------------------------------------------------
 $stats = rmt_place_stats((int) $a['place_id']);
 ok('average is over community reviews only', $stats['c'] === 2 && (float) $stats['a'] === 3.0,

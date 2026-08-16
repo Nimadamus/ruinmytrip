@@ -763,6 +763,86 @@
       "verdict": "The best ninety minutes in Copenhagen if you care at all about how objects are made. Free for under-18s, late on Thursdays, and the chair gallery alone justifies the hundred and forty kroner."
     },
     {
+      "destination_slug": "copenhagen-denmark",
+      "name": "Hotel d'Angleterre",
+      "type": "hotel",
+      "headline": "Ninety-Two Rooms on the Best Square in Copenhagen",
+      "body": "Hotel d'Angleterre has 92 rooms including 55 suites, and sits at Kongens Nytorv 34 in the historic centre. Rates are not published as a fixed figure and move with season and availability, so treat any number quoted elsewhere with suspicion.\n\nIt has been a hotel since 1755 and occupies the whole north side of Kongens Nytorv, which is the square Nyhavn runs off and where the metro, the royal theatre and Stroget all meet. If you want to walk everywhere in Copenhagen, this is the address that makes that true.\n\nWhat you are paying for is position and the standard of a properly staffed grand hotel: a Michelin-starred restaurant on site, a spa in the basement, and a concierge who will actually be useful.",
+      "what_great": "The best-placed hotel in Copenhagen, with Nyhavn, the metro and the shopping street all within two minutes. Ninety-two rooms, large enough to be properly staffed and small enough to be attentive.",
+      "what_ruined": "Very expensive, and the published rates are promotional rather than a real price list, so budgeting means getting a quote. Kongens Nytorv is a working square with traffic and, in summer, a constant flow of people. Grand-hotel formality is not to everyone's taste.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for the hotel and its position. Five for safety on Kongens Nytorv. Three for value: a top-of-market price in an expensive city, defensible for the location and not otherwise.",
+      "meta_description": "Hotel d'Angleterre in Copenhagen has 92 rooms and 55 suites at Kongens Nytorv 34, on the square Nyhavn runs off. Rates move with season.",
+      "facts_checked": [
+        {
+          "fact": "The hotel has 92 rooms, including 55 suites.",
+          "url": "https://www.dangleterre.com/en/rooms-and-suites",
+          "assert_text": "our 92 luxury hotel rooms - including an exceptional collection of 55 suites",
+          "confidence": "verified on the hotel's official rooms and suites page"
+        },
+        {
+          "fact": "The address is Kongens Nytorv 34, 1050 Copenhagen.",
+          "url": "https://www.dangleterre.com/en/rooms-and-suites",
+          "assert_text": "the address of d'angleterre is kongens nytorv 34,1050 copenhagen",
+          "confidence": "verified on the hotel's official rooms and suites page"
+        }
+      ],
+      "what_it_is": "A grand hotel on Kongens Nytorv in central Copenhagen, in operation since 1755, with 92 rooms and suites, a spa and a Michelin-starred restaurant.",
+      "why_go": "For the address. Nyhavn, Stroget, the metro and the royal theatre are all within a couple of minutes, which in a city best seen on foot is worth more than any amenity.",
+      "the_good": "An unbeatable position, a properly staffed grand hotel, 55 suites out of 92 rooms, an on-site spa and a Michelin-starred dining room.",
+      "the_downsides": "Top-of-market pricing with no published rate card. A busy square outside. A degree of formality that suits some travelers and not others.",
+      "best_for": "Travelers who want to walk everywhere and are willing to pay for the location, and anyone marking an occasion.",
+      "skip_if": "You are in Copenhagen to cycle, eat cheaply and see the neighbourhoods. Vesterbro and Norrebro will serve you better and for far less.",
+      "practical": "Ask for a room facing the square rather than the courtyard if noise is not a concern, because the view is the point. Rates are quoted rather than listed, so book direct and compare.",
+      "tickets": "Rates are not published as a fixed figure and vary by season and availability. Book direct through the hotel or ask for a quote, and treat any single advertised number as promotional.",
+      "getting_there": "Metro to Kongens Nytorv, which surfaces on the square itself. It is twelve minutes from the airport on the metro, or about twenty by taxi.",
+      "location_context": "Kongens Nytorv, the largest square in the old city, where Nyhavn, Stroget and the royal theatre meet. Central, busy and walkable to almost everything a first-time visitor wants.",
+      "time_needed": "Two nights minimum to make the location pay for itself.",
+      "verdict": "The best-placed hotel in Copenhagen and priced accordingly. Worth it if walking everywhere matters to you, and hard to justify otherwise."
+    },
+    {
+      "destination_slug": "copenhagen-denmark",
+      "name": "Noma",
+      "type": "restaurant",
+      "headline": "Four and a Half Thousand Kroner Before You Order a Drink",
+      "body": "Noma charges 4,500 DKK for the menu, with a wine pairing at 2,000 DKK and a juice pairing at 1,500 DKK. It serves Wednesday to Saturday from 17:00 to 23:00 and is closed Sunday, Monday and Tuesday.\n\nThat is roughly 600 euros a head with wine, which makes this one of the most expensive meals in Europe and the single largest line on most people's Copenhagen budget. What it buys is the restaurant that rewrote what Nordic food is, across three seasonal menus a year: ocean, vegetable and forest.\n\nReservations open to a newsletter list rather than a booking page, in seasonal releases that go in minutes. If you are reading this hoping to eat next week, you will not be eating next week.",
+      "what_great": "The most influential restaurant of the last twenty years, still cooking at that level. Three genuinely different menus across the year. Service that is warm rather than reverent, which at this price is rarer than the food.",
+      "what_ruined": "Four and a half thousand kroner before drinks, and the pairings add another two thousand. Booking is a newsletter lottery, not a reservation system. Closed three days a week. Refshaleoen is a taxi or a long cycle from the centre.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 2,
+      "rating_rationale": "Five for the cooking, which is as good as it is claimed to be. Five for safety. Two for value: it is defensible as a once-in-a-lifetime meal and indefensible as an ordinary one, and pretending otherwise would be dishonest at 4,500 kroner.",
+      "meta_description": "Noma in Copenhagen charges 4,500 DKK for the menu, 2,000 DKK wine pairing, and serves Wednesday to Saturday. Booking is a newsletter lottery.",
+      "facts_checked": [
+        {
+          "fact": "The menu is 4,500 DKK, with a wine pairing at 2,000 DKK and a juice pairing at 1,500 DKK.",
+          "url": "https://noma.dk/reservations/",
+          "assert_text": "menu 4.500 dkk wine pairing 2.000 dkk juice pairing 1.500 dkk",
+          "confidence": "verified on the restaurant's official reservations page"
+        },
+        {
+          "fact": "Service is Wednesday to Saturday 17:00 to 23:00; Sunday, Monday and Tuesday are closed.",
+          "url": "https://noma.dk/reservations/",
+          "assert_text": "reservations wednesday - saturday 17:00 – 23:00 sunday, monday, tuesday closed",
+          "confidence": "verified on the restaurant's official reservations page"
+        }
+      ],
+      "what_it_is": "A tasting-menu restaurant in a purpose-built complex on Refshaleoen, Copenhagen, serving three seasonal menus a year built almost entirely on Nordic ingredients and fermentation.",
+      "why_go": "Because it is the restaurant that changed how the rest of them cook, and it is still doing the thing rather than trading on having done it.",
+      "the_good": "Cooking at the top of the profession, three distinct menus across a year, an unusually relaxed dining room for the price, and a kitchen you walk through as part of the meal.",
+      "the_downsides": "The price. The booking lottery. Three closed days a week. A location that needs planning to reach.",
+      "best_for": "Anyone treating one meal as the reason for the trip, and anyone who follows restaurant cooking closely enough to care about the difference.",
+      "skip_if": "You want a great dinner in Copenhagen rather than this specific dinner. The city has a dozen excellent restaurants at a fifth of the price.",
+      "practical": "Join the newsletter well before you travel, because that is the only way to know when a season's tables are released. Allow four hours. Refshaleoen is a taxi, a harbour bus, or a twenty-minute cycle from the centre.",
+      "tickets": "Menu 4,500 DKK per person. Wine pairing 2,000 DKK, juice pairing 1,500 DKK. Reservations are released seasonally to the newsletter list rather than sold from a booking page.",
+      "getting_there": "Harbour bus 991 or 992 to Refshaleoen, a taxi from the centre in about fifteen minutes, or a cycle across the harbour bridges.",
+      "location_context": "Refshaleoen, a former shipyard on the eastern harbour that is now the city's most interesting industrial quarter, with Reffen street food and Copenhagen Contemporary nearby.",
+      "time_needed": "Four hours for the menu.",
+      "verdict": "Worth it once if a single meal can be the reason for the trip, and not worth it otherwise. Join the newsletter months ahead or do not plan on eating here at all."
+    },
+    {
       "destination_slug": "dubai-uae",
       "name": "Museum of the Future",
       "type": "attraction",
@@ -1259,6 +1339,46 @@
       "verdict": "The best aquarium in Europe and worth the trip out, provided you book the midday slot rather than the opening one. It is a second-day Lisbon attraction, not a substitute for Belem or the old city."
     },
     {
+      "destination_slug": "lisbon-portugal",
+      "name": "Pasteis de Belem",
+      "type": "restaurant",
+      "headline": "One Euro Sixty for the Custard Tart Everyone Else Is Copying",
+      "body": "Pasteis de Belem sells its pastel de nata at 1.60 euros each and 9.60 euros for a packet of six. There is no reservation and no way to skip the queue except to sit down.\n\nThis is the original. The recipe came from the Jeronimos monastery next door in 1837, it has not left the family since, and the shop still makes them behind a door only a handful of people are allowed through. Everywhere else in Portugal sells a pastel de nata; this is the one they are all approximating.\n\nThe queue outside is for takeaway. The rooms inside, which run back much further than the frontage suggests, are usually quicker and let you eat them at the correct temperature, which is straight out of the oven, dusted with cinnamon.",
+      "what_great": "One euro sixty for something genuinely singular. Warm from the oven, which is a different object from the cold ones sold elsewhere. The tiled back rooms seat hundreds and most tourists never look past the takeaway queue.",
+      "what_ruined": "The takeaway queue is long and visible and pulls people into it unnecessarily. It is in Belem, a tram ride from the centre, and the whole area is heaving by mid-morning. A packet of six is a commitment.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Five all round. It is the original, it costs 1.60 euros, and the difference between one of these warm and a supermarket nata is not subtle.",
+      "meta_description": "Pasteis de Belem in Lisbon sells its custard tarts at 1.60 euros each, 9.60 for six. Skip the takeaway queue and sit in the back rooms instead.",
+      "facts_checked": [
+        {
+          "fact": "A single pastel de Belem is 1.60 euros.",
+          "url": "https://pasteisdebelem.pt/menu/?lang=en",
+          "assert_text": "€ 1,60 single",
+          "confidence": "verified on the shop's official digital menu"
+        },
+        {
+          "fact": "A packet of six is 9.60 euros.",
+          "url": "https://pasteisdebelem.pt/menu/?lang=en",
+          "assert_text": "€ 9,60 packet of 6",
+          "confidence": "verified on the shop's official digital menu"
+        }
+      ],
+      "what_it_is": "The pastry shop in Belem that has made the original pastel de nata to the Jeronimos monastery recipe since 1837, with a takeaway counter and a warren of tiled dining rooms behind it.",
+      "why_go": "Because every other custard tart in the world is a copy of this one, and because eating them warm rather than cold is the entire point and is only reliably possible here.",
+      "the_good": "The tarts themselves, the price, the enormous tiled back rooms, and the fact that a 190-year-old recipe is still being made on the premises rather than shipped in.",
+      "the_downsides": "Crowds. A queue that is longer than it needs to be because people join it by default. Belem is a trip in itself. Table service can be brisk to the point of curt.",
+      "best_for": "Everyone, honestly, and particularly anyone combining it with the Jeronimos monastery two minutes away.",
+      "skip_if": "You have no interest in pastry and no plans in Belem. Otherwise there is no argument for skipping it.",
+      "practical": "Ignore the takeaway queue and walk inside to the back rooms, which are much larger than they look and usually faster. Order them warm, add cinnamon and icing sugar from the shakers on the table, and eat them immediately.",
+      "tickets": "1.60 euros for a single pastel, 9.60 euros for a packet of six. No reservations; walk in and sit down.",
+      "getting_there": "Tram 15E from Praca da Figueira to Belem, about twenty-five minutes, or the train from Cais do Sodre to Belem station.",
+      "location_context": "Rua de Belem, directly across from the Jeronimos monastery and a few minutes from the Belem tower and the Coach Museum.",
+      "time_needed": "Twenty minutes standing, forty-five if you sit.",
+      "verdict": "The best 1.60 euros in Lisbon. Walk past the queue, sit in the back, and eat them warm."
+    },
+    {
       "destination_slug": "london-uk",
       "name": "Buckingham Palace State Rooms",
       "type": "attraction",
@@ -1344,6 +1464,86 @@
       "time_needed": "Two hours is a good visit. Ninety minutes is enough if you pick two galleries. Because it is free there is no penalty in leaving early and returning another day.",
       "accessibility": "Step-free access is available and the museum publishes detailed access information; the tunnel route from South Kensington station avoids the street crossing entirely.",
       "verdict": "One of the best-value attractions in Europe by the simple measure that it costs nothing and is world class. Book the free ticket, skip the main hall crush, and treat it as two short visits rather than one long one."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "Rules",
+      "type": "restaurant",
+      "headline": "Twelve Pounds for Soup in the Oldest Restaurant in London",
+      "body": "Rules charges 5.75 pounds each for Poole rock oysters and 11.95 pounds for chilled leek and potato soup, which places it firmly in the expensive-but-not-absurd bracket for central London.\n\nIt opened in 1798 and has never moved or closed, which makes it the oldest restaurant in London. The dining rooms are dark red, hung floor to ceiling with prints, cartoons and taxidermy, and they look exactly like the idea of an English restaurant that England exports.\n\nThe kitchen is serious about game, which is the reason to come between August and January: grouse, partridge, woodcock and venison from the restaurant's own estate in the Pennines. Order that, not the steak.",
+      "what_great": "Two and a quarter centuries in the same rooms, and they look it in the best way. Genuinely good game from their own estate in season. A bar upstairs that most diners never find.",
+      "what_ruined": "Prices are high for what is fundamentally traditional cooking. The dining room is dark and closely packed. It is in Covent Garden, so the surrounding streets are a tourist crush from noon onwards, and the dress code is stricter than most visitors expect.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four for the room and the game cookery, which are both genuinely good. Five for safety. Three for value: you are paying a premium for the history, and that is a fair trade only if the history is what you came for.",
+      "meta_description": "Rules in London, open since 1798, charges 5.75 for oysters and 11.95 for soup. Come for the game between August and January, not the steak.",
+      "facts_checked": [
+        {
+          "fact": "Poole rock oysters are 5.75 pounds each.",
+          "url": "https://rules.co.uk/our-menus/",
+          "assert_text": "poole rock oysters £5.75 each",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "Chilled leek and potato soup is 11.95 pounds.",
+          "url": "https://rules.co.uk/our-menus/",
+          "assert_text": "chilled leek & potato soup £11.95",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "London's oldest restaurant, open in Covent Garden since 1798, serving traditional British cooking with a particular emphasis on game from its own estate in the Pennines.",
+      "why_go": "For game, in season, cooked by people who have been doing it longer than anyone else, in a room that has been doing it since before Trafalgar.",
+      "the_good": "Estate game from August to January, a dining room that is a genuine period piece rather than a reconstruction, and an upstairs cocktail bar that is far quieter than the restaurant.",
+      "the_downsides": "Expensive for traditional cooking. Cramped and dark. Covent Garden crowds outside. A dress code that turns people away at the door.",
+      "best_for": "Anyone who wants game, and anyone who wants one properly old-fashioned English meal without it being a theme restaurant.",
+      "skip_if": "You are vegetarian, or you would rather eat something modern. Both are entirely reasonable positions here.",
+      "practical": "Book, and go in game season if you can choose. Jackets are expected and trainers are not welcome. The upstairs bar takes walk-ins when the dining room is full.",
+      "tickets": "A la carte. Oysters 5.75 pounds each, soup 11.95 pounds, mains considerably more. Reservations strongly recommended and taken online.",
+      "getting_there": "Covent Garden or Leicester Square Underground, both about five minutes on foot. Maiden Lane is a side street off Southampton Street.",
+      "location_context": "Maiden Lane in Covent Garden, a quiet lane one street back from the Strand, minutes from the opera house and the theatres.",
+      "time_needed": "Two hours for dinner.",
+      "verdict": "Come for the game between August and January and book ahead. Outside that season it is a beautiful room charging a premium for competent traditional cooking."
+    },
+    {
+      "destination_slug": "london-uk",
+      "name": "St John",
+      "type": "restaurant",
+      "headline": "Bring Your Own Wine for Thirty-Two Pounds Corkage",
+      "body": "St John serves lunch Monday to Sunday from 12.00pm to 3pm, a bar menu from 3pm to 5pm, and supper from 5.30pm, and it charges 32 pounds corkage for a bottle you bring yourself, 42 for sparkling or dessert wine and 84 for a magnum of champagne.\n\nThe restaurant opened in 1994 and effectively invented what the world now calls modern British cooking: bone marrow and parsley salad, offal treated as a first-class ingredient, and a whiteboard menu rewritten twice a day. Everything is spare, whitewashed and deliberately unglamorous.\n\nThe menus do not go online until 11.00am for lunch and 5.00pm for supper, because they are written that morning. That is not a marketing conceit, it is the reason the food is good.",
+      "what_great": "A restaurant that changed British cooking and still cooks the same way. Roast bone marrow and parsley salad, which is the single most influential plate of food in modern Britain. Corkage, which almost nowhere at this level offers.",
+      "what_ruined": "The room is bright, white and loud, which people either love or find punishing. The menu is genuinely offal-heavy and does not apologise. Smithfield is dead quiet at night, so the walk to and from it is bleak.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for a restaurant that is both historically important and still excellent. Five for safety. Four for value: not cheap, but corkage and honest portions make it far better value than its reputation suggests.",
+      "meta_description": "St John in London serves lunch 12 to 3 and supper from 5.30pm, and charges 32 pounds corkage. The restaurant that invented modern British cooking.",
+      "facts_checked": [
+        {
+          "fact": "Corkage is 32 pounds for a bottle of wine, 42 for sparkling or dessert wine, and 84 for a magnum of champagne.",
+          "url": "https://stjohnrestaurant.com/a/restaurants/bread-and-wine",
+          "assert_text": "we charge £32 for a bottle, £42 for sparkling or dessert wine bottles",
+          "confidence": "verified on the restaurant's official page"
+        },
+        {
+          "fact": "Lunch runs Monday to Sunday 12.00pm to 3pm, with last seating at 3pm.",
+          "url": "https://stjohnrestaurant.com/a/restaurants/bread-and-wine",
+          "assert_text": "lunch monday - sunday: 12.00pm - 3pm (last seating)",
+          "confidence": "verified on the restaurant's official page"
+        }
+      ],
+      "what_it_is": "A restaurant near Smithfield market, open since 1994, serving whole-animal British cooking from a menu rewritten twice a day in a converted smokehouse.",
+      "why_go": "Because this is where modern British food started, and because it is one of the very few genuinely influential restaurants that has not drifted into being a museum of itself.",
+      "the_good": "Bone marrow and parsley salad. A menu rewritten twice daily. Corkage at 32 pounds. Bread and eccles cakes good enough that people come only for those.",
+      "the_downsides": "A hard, bright, loud room. Heavily offal-focused. Smithfield at night is deserted. Booking is needed well ahead for supper.",
+      "best_for": "Anyone curious about British cooking beyond the clichés, and anyone with a good bottle at home worth the corkage.",
+      "skip_if": "Offal is a hard no for you. The menu can be navigated around it, but you would be ordering the least interesting third of it.",
+      "practical": "Check the menu online after 11.00am for lunch or 5.00pm for supper, because it is not written before then. Bring a bottle: 32 pounds corkage on a good wine beats almost any list in London. The bar takes walk-ins.",
+      "tickets": "A la carte, with prices in the mid range for central London. Corkage 32 pounds a bottle, 42 for sparkling or dessert wine, 64 for magnums of wine, 84 for magnums of champagne. Book ahead for supper.",
+      "getting_there": "Farringdon station, five minutes on foot. St John Street runs north from Smithfield market.",
+      "location_context": "Smithfield, on the edge of the City, beside the old meat market. Busy by day with market and office trade, and very quiet after dark.",
+      "time_needed": "Two hours.",
+      "verdict": "Bring a bottle, check the menu after 11am, and order the bone marrow. The most important restaurant in Britain and still one of the best."
     },
     {
       "destination_slug": "london-uk",
@@ -1731,6 +1931,46 @@
       "time_needed": "Half a day minimum. A full day is easy, and regulars come back repeatedly.",
       "accessibility": "Lifts serve the main exhibition levels and level 1 can be reached by stairs or lift; some historic halls remain harder to navigate.",
       "verdict": "Sixteen euros for the largest science museum on earth is the best value in Munich. Check what is open, pick three halls, and do not try to see it all."
+    },
+    {
+      "destination_slug": "munich-germany",
+      "name": "Hofbrauhaus",
+      "type": "restaurant",
+      "headline": "Open Every Day From Eleven Until Midnight, and Everyone Knows It",
+      "body": "The Hofbrauhaus opens every day from 11.00 to 0.00, with the kitchen closing at 22.00 and last serving at 23.30. There is no reservation for the main hall and no closed day in the year.\n\nIt is the most famous beer hall in the world, founded as the ducal brewery in 1589, and on any given evening the ground floor holds around a thousand people, a brass band, and a queue at the door. Regulars have lockers for their personal steins along one wall, which tells you the place is not purely a tourist exhibit, though it is substantially one.\n\nThe food is Bavarian and competent rather than good. The beer, served in litre Mass, is the reason to be there, along with the noise, which is considerable.",
+      "what_great": "Open every single day until midnight, which in Munich matters more than it sounds. Litre steins, a live band, and a genuine 400-year-old institution. Free to walk in and look even if you do not sit down.",
+      "what_ruined": "The food is the weakest part and priced as though it were not. It is overwhelmingly tourists, and the staff process them accordingly. Loud to the point where conversation is work, and finding a table on a summer evening can take half an hour.",
+      "rating": 3,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Three because it is an institution worth seeing that is no longer a good restaurant. Four for safety, with the usual caution around very drunk crowds late on. Three for value: the beer is fairly priced, the food is not.",
+      "meta_description": "The Hofbrauhaus in Munich opens daily 11.00 to midnight, kitchen closes 22.00. Go for the beer hall and the band, not for the food.",
+      "facts_checked": [
+        {
+          "fact": "It is open every day from 11.00 to 0.00.",
+          "url": "https://www.hofbraeuhaus.de/en/opening-hours/",
+          "assert_text": "we are there for you every day from 11.00-0.00",
+          "confidence": "verified on the beer hall's official opening hours page"
+        },
+        {
+          "fact": "The kitchen closes at 22.00 and last serving is 23.30.",
+          "url": "https://www.hofbraeuhaus.de/en/opening-hours/",
+          "assert_text": "kitchen closes: 22.00 last serving: 23.30",
+          "confidence": "verified on the beer hall's official opening hours page"
+        }
+      ],
+      "what_it_is": "Munich's state-owned beer hall on the Platzl, founded as the ducal brewery in 1589, with a thousand-seat ground floor hall, a brass band and Bavarian food.",
+      "why_go": "To stand inside the building every other beer hall in the world is imitating, and to drink a Mass while a band plays. It is a spectacle, and it is honest about being one.",
+      "the_good": "Daily opening until midnight, litre steins, the band, the sheer scale of the room, and the regulars' stein lockers on the wall.",
+      "the_downsides": "Mediocre, overpriced food. Overwhelmingly tourist trade. Extremely loud. Long waits for a table in summer.",
+      "best_for": "First-time visitors to Munich, and groups, who suit the long shared tables far better than couples do.",
+      "skip_if": "You want a good Bavarian meal. Augustiner-Keller and the Viktualienmarkt beer garden both do the food better with a fraction of the crowd.",
+      "practical": "Go for a late morning or mid-afternoon beer when the hall is calm enough to look at. Eat elsewhere. Shared tables are the norm, so ask before sitting down at one.",
+      "tickets": "No reservation for the main hall; walk in and find a table. Upper floors take group bookings. Beer is sold by the Mass, a full litre.",
+      "getting_there": "S-Bahn or U-Bahn to Marienplatz, then a three-minute walk east to the Platzl.",
+      "location_context": "The Platzl, a small square in the old town two minutes from Marienplatz, surrounded by souvenir shops and the Hotel Platzl.",
+      "time_needed": "An hour for a beer, two if you eat.",
+      "verdict": "Worth one beer for the room and the band. Eat somewhere else, and go in the afternoon when you can actually see the place."
     },
     {
       "destination_slug": "munich-germany",
@@ -2696,6 +2936,46 @@
     },
     {
       "destination_slug": "vienna-austria",
+      "name": "Figlmuller",
+      "type": "restaurant",
+      "headline": "The Schnitzel Bigger Than the Plate, at Two Addresses Five Minutes Apart",
+      "body": "Figlmuller has two branches in the old town. Backerstrasse 6 is open daily 11:30am to 11:30pm with the kitchen running to 10pm, and Wollzeile 5 is open daily 11am to 10:30pm.\n\nThe schnitzel is the point: pounded until it overhangs the plate on every side, fried in a succession of pans, and served with potato salad rather than anything hot. It is pork rather than veal, which purists complain about and which is stated plainly on the menu.\n\nThe Wollzeile branch, down a covered passage, is the original and the more crowded. Backerstrasse is larger, later, and easier to get into, and the schnitzel is identical.",
+      "what_great": "A genuinely enormous, genuinely well-made schnitzel. Two branches five minutes apart, which doubles your chance of a table. Open daily, which in Vienna is not a given.",
+      "what_ruined": "Queues at Wollzeile that people join without realising the other branch exists. It is pork, not veal, so anyone expecting a Wiener Schnitzel in the strict sense should order accordingly. Service is efficient in the way of a place that turns tables fast.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Four for doing one thing extremely well. Five for safety in the old town. Four for value: not cheap, but the portion genuinely feeds two people who are not especially hungry.",
+      "meta_description": "Figlmuller in Vienna is open daily, Backerstrasse to 11:30pm and Wollzeile to 10:30pm. The schnitzel overhangs the plate, and it is pork.",
+      "facts_checked": [
+        {
+          "fact": "The Backerstrasse branch at Backerstrasse 6 is open daily 11:30am to 11:30pm, with the kitchen to 10pm.",
+          "url": "https://www.figlmueller.at/en/reservations/",
+          "assert_text": "bäckerstraße 6, 1010 vienna open daily 11:30am – 11:30pm kitchen daily 11:30am – 10pm",
+          "confidence": "verified on the restaurant's official reservations page"
+        },
+        {
+          "fact": "The Wollzeile branch at Wollzeile 5 is open daily 11am to 10:30pm.",
+          "url": "https://www.figlmueller.at/en/reservations/",
+          "assert_text": "wollzeile 5, 1010 vienna open daily 11am – 10:30pm",
+          "confidence": "verified on the restaurant's official reservations page"
+        }
+      ],
+      "what_it_is": "A Viennese schnitzel house with two branches in the first district, serving a pounded, plate-overhanging pork schnitzel with potato salad since 1905.",
+      "why_go": "For the schnitzel, which is the version of the dish Vienna is famous for and is done here at a scale that is genuinely funny the first time it arrives.",
+      "the_good": "An excellent, enormous schnitzel. Two branches within five minutes of each other. Daily opening, late at Backerstrasse. Potato salad that is better than it needs to be.",
+      "the_downsides": "Queues at the original branch. Pork rather than veal. Brisk table-turning. The dining rooms are tight.",
+      "best_for": "Any first visit to Vienna, and anyone happy to share, because one schnitzel is close to two portions.",
+      "skip_if": "You specifically want veal Wiener Schnitzel, in which case Figlmuller sells that too but it is not what the queue is for.",
+      "practical": "Book, or go to Backerstrasse rather than Wollzeile, which is larger and open later for the same food. Order one schnitzel between two if you also want a starter.",
+      "tickets": "A la carte, no set menu. Reservations taken online for both branches and strongly advised in the evening.",
+      "getting_there": "U1 or U3 to Stephansplatz, then two to five minutes on foot. Wollzeile is reached through a covered passage off the street.",
+      "location_context": "The first district, immediately east of St Stephen's cathedral, in the dense grid of lanes between Stephansplatz and the Ringstrasse.",
+      "time_needed": "An hour and a half.",
+      "verdict": "Go to the Backerstrasse branch, not the queue at Wollzeile, and share one schnitzel unless you are very hungry."
+    },
+    {
+      "destination_slug": "vienna-austria",
       "name": "Hofburg Imperial Palace",
       "type": "attraction",
       "headline": "Twenty Euros for the Sisi Myth, Told Better Than You Expect",
@@ -2746,6 +3026,46 @@
       "time_needed": "About 60 minutes for the standard route, which is what the fixed admission times are built around. Ninety minutes if you read everything in the Sisi Museum.",
       "verdict": "Better than it sounds, mostly because the Sisi Museum refuses to play along with the myth it exists to explain. Book a time slot, allow an hour, and treat the gift shop as a separate and less honest experience.",
       "accessibility": "All exhibition areas are reachable by ramp, mobile wheelchair rails and lift, and wheelchairs can be borrowed free of charge against a deposit of identification. Accessible parking is on Heldenplatz."
+    },
+    {
+      "destination_slug": "vienna-austria",
+      "name": "Hotel Sacher Vienna",
+      "type": "hotel",
+      "headline": "Behind the Opera, With the Cafe Open Until Eleven",
+      "body": "Cafe Sacher Vienna is open Monday to Sunday from 7 am to 11 pm, and the hotel's Rote Bar restaurant runs Monday to Sunday from 12 pm to 12 am. Room rates are not published as a fixed list and move with the season.\n\nThe hotel sits directly behind the State Opera, which is the reason to stay here rather than anywhere else at the price: you can leave a performance and be in your room in ninety seconds. The Sachertorte is made on the premises and sold in boxes at the door, which produces a permanent queue that has nothing to do with the hotel.\n\nRooms are heavily traditional, red and gilt and oil paintings, and the hotel does not apologise for it. Anyone hoping for Scandinavian restraint should book elsewhere.",
+      "what_great": "Ninety seconds from the State Opera. A cafe open from 7 am to 11 pm, which covers both a pre-opera coffee and a post-opera slice. Service in the old European style, done properly.",
+      "what_ruined": "The cake queue outside is constant and can make arriving with luggage awkward. The decoration is maximalist and dark. Among the most expensive hotels in Vienna and, as with all of them, no fixed rate is published.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Five for the hotel and the position behind the opera. Five for safety in the first district. Three for value: you are paying for the address and the name, both of which are real, neither of which is cheap.",
+      "meta_description": "Hotel Sacher Vienna sits behind the State Opera, with Cafe Sacher open daily 7 am to 11 pm and the Rote Bar from noon to midnight.",
+      "facts_checked": [
+        {
+          "fact": "Cafe Sacher Vienna is open Monday to Sunday, 7 am to 11 pm.",
+          "url": "https://www.sacher.com/en/vienna/",
+          "assert_text": "café sacher vienna : monday to sunday: 7 am to 11 pm",
+          "confidence": "verified on the hotel's official Vienna page"
+        },
+        {
+          "fact": "The Rote Bar restaurant is open Monday to Sunday, 12 pm to 12 am.",
+          "url": "https://www.sacher.com/en/vienna/",
+          "assert_text": "restaurant rote bar : monday to sunday: 12 pm to 12 am",
+          "confidence": "verified on the hotel's official Vienna page"
+        }
+      ],
+      "what_it_is": "A grand hotel on Philharmoniker Strasse directly behind the Vienna State Opera, open since 1876, with its own cafe, the Rote Bar restaurant and the original Sachertorte made on site.",
+      "why_go": "For the opera. Being ninety seconds from the door of the Staatsoper changes what an evening performance costs you in time and logistics, and nothing else at this level is as close.",
+      "the_good": "The position behind the opera, a cafe open sixteen hours a day, the Rote Bar, and a level of traditional service that has largely disappeared elsewhere.",
+      "the_downsides": "A permanent cake queue at the door. Dense traditional decoration that reads as heavy to modern eyes. Top-of-market pricing with no published rate card.",
+      "best_for": "Anyone going to the opera, and anyone who wants Vienna's imperial register rather than its modern one.",
+      "skip_if": "You want contemporary design or a quiet arrival. The seventh district has better-value hotels with more space.",
+      "practical": "Use the Philharmoniker Strasse entrance rather than pushing through the cake queue. If you are going to the opera, book dinner in the Rote Bar before rather than after, because the kitchen is busiest at the interval.",
+      "tickets": "Room rates are not published as a fixed list and vary with season and availability. Cafe Sacher and the Rote Bar are open to non-residents and take reservations.",
+      "getting_there": "U1, U2 or U4 to Karlsplatz, then three minutes on foot, or trams 1, 2, 71 and D to Oper. From the airport, the City Airport Train to Wien Mitte then one metro stop.",
+      "location_context": "Philharmoniker Strasse in the first district, wedged between the State Opera and the Albertina, two minutes from the Hofburg and five from Stephansplatz.",
+      "time_needed": "Two nights, or one if you are here for a single performance.",
+      "verdict": "Stay here if you are going to the opera and the price is survivable. The address is doing most of the work, and the address is genuinely worth it."
     },
     {
       "destination_slug": "vienna-austria",
