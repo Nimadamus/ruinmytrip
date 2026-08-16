@@ -463,6 +463,46 @@
     },
     {
       "destination_slug": "barcelona-spain",
+      "name": "7 Portes",
+      "type": "restaurant",
+      "headline": "Sixteen Euros for Ensaladilla Rusa in a Room From 1836",
+      "body": "7 Portes charges 16.00 euros for ensaladilla rusa and 16.50 euros for escalivada, with the house tapas selection for two at 37.00 euros.\n\nIt opened in 1836 and has the seven doors along the front that give it its name. The floor is chequered marble, the walls are hung with brass plaques marking where particular regulars sat, and the room has been serving without interruption for nearly two centuries.\n\nRice is the reason to come. The paellas and arroz dishes are the house speciality and each day of the week has its own, which is worth checking before you choose a date rather than after.",
+      "what_great": "A dining room continuously open since 1836, with the original marble and the regulars' plaques still on the walls. Rice dishes that change by the day of the week. Long hours, so a late lunch is genuinely possible.",
+      "what_ruined": "It is on the tourist circuit near the port and the service can be brisk about it. Portions are large and priced accordingly. The room is grand rather than intimate, and on a busy night it is loud.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 4,
+      "rating_rationale": "Four for a genuinely historic room doing rice properly. Four for safety: the Port Vell area attracts pickpockets. Four for value: 16 euros for a starter is fair in central Barcelona and the rice portions are substantial.",
+      "meta_description": "7 Portes in Barcelona charges 16.00 euros for ensaladilla rusa and 16.50 for escalivada. Open since 1836, with a different rice dish each day.",
+      "facts_checked": [
+        {
+          "fact": "Ensaladilla rusa is 16.00 euros.",
+          "url": "https://www.7portes.com/en/restaurant-7-portes-menu/",
+          "assert_text": "ensaladilla rusa 16,00€",
+          "confidence": "verified on the restaurant's official menu page"
+        },
+        {
+          "fact": "Escalivada is 16.50 euros.",
+          "url": "https://www.7portes.com/en/restaurant-7-portes-menu/",
+          "assert_text": "escalivada 16,50€",
+          "confidence": "verified on the restaurant's official menu page"
+        }
+      ],
+      "what_it_is": "A Catalan restaurant on Passeig d'Isabel II near Port Vell in Barcelona, open since 1836, known for rice dishes and a marble-floored dining room hung with regulars' plaques.",
+      "why_go": "For rice cooked by a kitchen that has been doing it since 1836, in a room that has never closed. The daily rice rotation means the dish changes with the day rather than the season.",
+      "the_good": "An intact nineteenth-century dining room, a different rice dish every day, generous portions, and service from midday through to late.",
+      "the_downsides": "Touristed, and the service reflects it. Large portions at prices to match. Loud when full.",
+      "best_for": "Anyone who wants paella done seriously rather than off a laminated photo menu on the Ramblas.",
+      "skip_if": "You want modern Catalan cooking. El Born and Gracia do that far better.",
+      "practical": "Check which rice runs on which day before choosing when to go. Book, particularly at weekends. One rice between two people is usually enough with a starter each.",
+      "tickets": "A la carte, starters from 16.00 euros, house tapas selection for two at 37.00 euros. Reservations online and advisable.",
+      "getting_there": "Metro line 4 to Barceloneta or line 3 to Drassanes, both about five minutes on foot. It faces the Passeig d'Isabel II near the port.",
+      "location_context": "Passeig d'Isabel II beside Port Vell, on the edge of El Born and a few minutes from the Barceloneta seafront.",
+      "time_needed": "Two hours.",
+      "verdict": "Check the rice of the day, book, and share one between two. A room from 1836 that still cooks rather than trading on the date."
+    },
+    {
+      "destination_slug": "barcelona-spain",
       "name": "Basilica de la Sagrada Familia",
       "type": "attraction",
       "headline": "Finished at Last, and Priced Like It Knows",
@@ -839,6 +879,46 @@
       "time_needed": "Two hours for the permanent exhibitions at a reasonable pace.",
       "accessibility": "The main building has lifts serving the exhibition floors; the front steps are the ceremonial entrance rather than the accessible one.",
       "verdict": "Go first, not last. Three and a half thousand forint buys the context that makes the rest of Budapest legible, and the building is where the country's founding modern story is set."
+    },
+    {
+      "destination_slug": "buenos-aires-argentina",
+      "name": "Cafe Tortoni",
+      "type": "restaurant",
+      "headline": "Open Eight Until Nine, Every Day, Since 1858",
+      "body": "Cafe Tortoni is at Avenida de Mayo 825 and opens Monday to Sunday from 08:00 to 21:00. It was inaugurated in 1858, which makes it the oldest cafe in Argentina.\n\nThe interior is the point: French-style, with marble tables, stained glass, mirrored panels and busts of the writers and musicians who used it. Borges and Carlos Gardel both drank here, and the cafe has never been shy about saying so.\n\nIt is unquestionably a tourist stop now, with a queue at the door on most afternoons. Go early, order coffee and churros with chocolate, and the room does the rest.",
+      "what_great": "The oldest cafe in the country, open every day from eight in the morning. An intact nineteenth-century French interior with stained glass and marble. Tango shows in the back room in the evenings.",
+      "what_ruined": "The queue on Avenida de Mayo is real and often long. Service is stretched. Prices are high for Buenos Aires and the food is beside the point, which nobody tells you before you order.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Four for a genuinely preserved nineteenth-century room. Four for safety: Avenida de Mayo is central and busy, with normal city caution after dark. Three for value: you pay a premium for the address and the food is ordinary.",
+      "meta_description": "Cafe Tortoni at Avenida de Mayo 825 opens daily 08:00 to 21:00. Argentina's oldest cafe, inaugurated in 1858, with a permanent queue.",
+      "facts_checked": [
+        {
+          "fact": "It opens Monday to Sunday, 08:00 to 21:00.",
+          "url": "https://www.cafetortoni.com.ar/index.php/cafe-hoy",
+          "assert_text": "lunes - domingo 08:00 - 21:00",
+          "confidence": "verified on the cafe's official site"
+        },
+        {
+          "fact": "It was inaugurated in 1858 and is at Avenida de Mayo 825.",
+          "url": "https://www.cafetortoni.com.ar/index.php/cafe-hoy",
+          "assert_text": "inaugurado en 1858. av. de mayo 825",
+          "confidence": "verified on the cafe's official site"
+        }
+      ],
+      "what_it_is": "A French-style cafe on Avenida de Mayo in central Buenos Aires, opened in 1858 and the oldest in Argentina, with a preserved interior and an evening tango programme.",
+      "why_go": "For the room. Nineteenth-century Buenos Aires survives here more completely than almost anywhere else in the city, and it is open from eight in the morning.",
+      "the_good": "An intact 1858 interior, daily opening from 08:00, tango in the back room, and coffee with churros that suits the setting.",
+      "the_downsides": "Long queues most afternoons. Stretched service. Expensive for the city and the food is unremarkable.",
+      "best_for": "Any first visit to Buenos Aires, and anyone who would rather see the city's nineteenth century than read about it.",
+      "skip_if": "Queueing for a coffee is not how you want to spend an hour. Plenty of notable cafes nearby have no queue at all.",
+      "practical": "Go at opening, around eight, which is the only reliable way to avoid the queue. Order coffee and churros with chocolate. The tango show is ticketed separately and books ahead.",
+      "tickets": "A la carte cafe prices, above the city average. The evening tango show in the back room is ticketed separately.",
+      "getting_there": "Subte line A to Piedras or Avenida de Mayo, both a couple of minutes away. It is a ten-minute walk from Plaza de Mayo.",
+      "location_context": "Avenida de Mayo between the Casa Rosada and Congreso, a grand boulevard of Beaux-Arts buildings in the administrative centre.",
+      "time_needed": "An hour.",
+      "verdict": "Go at eight in the morning and skip the queue entirely. You are there for the room, not the menu, and the room is worth it."
     },
     {
       "destination_slug": "buenos-aires-argentina",
@@ -3700,6 +3780,46 @@
       "time_needed": "Three hours for the Honkan and Horyuji Treasures, a full day if you take in the Toyokan as well.",
       "accessibility": "Lifts and step-free routes serve the main buildings, and wheelchairs are available to borrow.",
       "verdict": "A thousand yen for the finest collection of Japanese art anywhere. Do the Honkan upper floor and the Horyuji Treasures, and leave the special exhibition alone."
+    },
+    {
+      "destination_slug": "venice-italy",
+      "name": "Antiche Carampane",
+      "type": "restaurant",
+      "headline": "Thirty-Five Euros a Head if You Do Not Turn Up",
+      "body": "Antiche Carampane charges a no-show and late-cancellation penalty of 35 euros per person, and tables booked for the first evening seating at 7:30 p.m. are held only until 9:30 p.m. Those two policies tell you exactly how the restaurant runs.\n\nIt is a small fish restaurant hidden in the lanes of San Polo, so hard to find that its own sign reads that you do not arrive here by chance. There is no tourist menu, no pizza and no lagoon-view terrace, which in Venice is a statement of intent.\n\nWhat there is instead is the day's catch, cooked simply, in a dining room of about a dozen tables. Book well ahead and give yourself time to get lost on the way.",
+      "what_great": "Fish bought that morning and cooked without decoration. A dozen tables, so the kitchen can actually cook rather than assemble. A location so awkward that the passing tourist trade never finds it.",
+      "what_ruined": "A 35 euro per person no-show penalty and a two-hour table limit on the early seating. Genuinely hard to find, even with a map. Small enough that booking weeks ahead is normal, and it closes for a summer holiday.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five for the best fish cooking in Venice at this scale. Five for safety in San Polo. Four for value: not cheap, and set against the tourist traps around San Marco it is excellent.",
+      "meta_description": "Antiche Carampane in Venice charges a 35 euro per person no-show penalty and holds 7:30pm tables until 9:30pm. A dozen tables of day-boat fish.",
+      "facts_checked": [
+        {
+          "fact": "A penalty of 35 euros per person applies to a no-show or late cancellation.",
+          "url": "https://www.antichecarampane.com/en/cucina",
+          "assert_text": "a penalty of 35€ per person will be applied",
+          "confidence": "verified on the restaurant's official booking conditions"
+        },
+        {
+          "fact": "Tables booked for the first evening seating at 7:30 p.m. are held only until 9:30 p.m.",
+          "url": "https://www.antichecarampane.com/en/cucina",
+          "assert_text": "tables reserved for the first evening seating at 7:30 p.m. are only available until 9:30 p.m.",
+          "confidence": "verified on the restaurant's official booking conditions"
+        }
+      ],
+      "what_it_is": "A small fish restaurant in the lanes of San Polo, Venice, serving the day's catch across about a dozen tables, with no tourist menu and no pizza.",
+      "why_go": "Because it is the antidote to everything wrong with eating in Venice: it is small, hard to find, cooks what the boats brought, and refuses the entire tourist-menu apparatus.",
+      "the_good": "Day-boat fish cooked simply, a tiny dining room, a kitchen that has been consistent for decades, and a location that filters out passing trade.",
+      "the_downsides": "A 35 euro per person no-show charge. A time limit on the early seating. Very hard to find. Books out weeks ahead and shuts for a summer holiday.",
+      "best_for": "Anyone who wants one serious meal in Venice, and anyone who has been burned by a menu turistico already.",
+      "skip_if": "You cannot book ahead, or you want a canal view. This has neither availability nor a view.",
+      "practical": "Book weeks ahead and confirm, because the no-show charge is real. Allow twenty minutes to find it and expect to get lost anyway. Take the second seating if you want an unhurried evening.",
+      "tickets": "A la carte. Booking required, with a 35 euro per person penalty for a no-show or late cancellation. The 7:30 p.m. seating runs until 9:30 p.m.",
+      "getting_there": "Vaporetto to San Silvestro or Rialto Mercato, then ten minutes through the lanes of San Polo. Follow the address rather than the general direction.",
+      "location_context": "Rio Terra delle Carampane in San Polo, in the dense lanes behind the Rialto market, well away from the San Marco crowds.",
+      "time_needed": "Two hours, or the length of your seating.",
+      "verdict": "Book weeks ahead, allow time to get lost, and take the later seating. The best fish in Venice and the least interested in tourists."
     },
     {
       "destination_slug": "venice-italy",
