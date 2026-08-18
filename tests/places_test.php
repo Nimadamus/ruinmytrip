@@ -35,7 +35,7 @@ function authors_fill(array &$rows, string $idField = 'user_id'): void {}
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)');
-$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT)');
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, hero_url TEXT)');
 $pdo->exec('CREATE TABLE places (id INTEGER PRIMARY KEY AUTOINCREMENT, destination_id INT NOT NULL,
               slug TEXT UNIQUE NOT NULL, name TEXT NOT NULL, name_key TEXT NOT NULL,
               type TEXT NOT NULL DEFAULT \'attraction\', created_by INT, status TEXT NOT NULL DEFAULT \'active\',
@@ -264,6 +264,48 @@ ok('nearby returns only places that have editorial',
    count($near) === 1 && (int) $near[0]['id'] === (int) $a['place_id']);
 ok('nearby excludes the place you are already on',
    count(array_filter($near, fn($n) => (int) $n['id'] === (int) $c['place_id'])) === 0);
+
+// --- Explicit binding from a place page -------------------------------------------------------
+// A review started on /p/{slug} carries that place's id. The id is a shortcut, never an authority:
+// these cases pin down exactly when it is honoured, because a binding trusted too far files
+// somebody's review under a place they never visited.
+$arts = rmt_place_by_id((int) $a['place_id']);
+ok('a place can be loaded by id with its destination joined',
+   $arts !== null && $arts['name'] === 'Hotel Arts' && $arts['dest_name'] === 'Barcelona');
+ok('an unknown id is null, not a fatal', rmt_place_by_id(999999) === null);
+ok('a non-positive id is null', rmt_place_by_id(0) === null);
+
+$pdo->exec("UPDATE places SET status='hidden' WHERE id = " . (int) $d['place_id']);
+ok('a hidden place cannot be bound to', rmt_place_by_id((int) $d['place_id']) === null);
+$pdo->exec("UPDATE places SET status='active' WHERE id = " . (int) $d['place_id']);
+
+ok('the binding holds for the name as stored',
+   rmt_place_bound_id((int) $a['place_id'], 1, 'Hotel Arts') === (int) $a['place_id']);
+ok('the binding holds through the same shallow normalisation as resolution',
+   rmt_place_bound_id((int) $a['place_id'], 1, '  the hotel arts. ') === (int) $a['place_id']);
+ok('the binding is refused when the destination was changed',
+   rmt_place_bound_id((int) $a['place_id'], 2, 'Hotel Arts') === null);
+ok('the binding is refused when the name was changed to another place',
+   rmt_place_bound_id((int) $a['place_id'], 1, 'Hotel Arts Bistro') === null);
+ok('the binding is refused for an id that does not exist',
+   rmt_place_bound_id(999999, 1, 'Hotel Arts') === null);
+ok('the binding is refused with no destination',
+   rmt_place_bound_id((int) $a['place_id'], null, 'Hotel Arts') === null);
+
+// The whole point: a name the writer never retyped lands on the page they started from, and a name
+// they did change falls through to ordinary resolution instead of hijacking the bound row.
+$bind = static function (int $postedPlaceId, int $destId, string $type, string $name, int $uid) {
+    return rmt_place_bound_id($postedPlaceId, $destId, $name)
+        ?? rmt_place_resolve($destId, $type, $name, $uid);
+};
+ok('a bound submission counts on the place page it came from',
+   $bind((int) $a['place_id'], 1, 'hotel', 'Hotel Arts', 3) === (int) $a['place_id']);
+ok('an edited name resolves normally rather than to the bound place',
+   $bind((int) $a['place_id'], 1, 'restaurant', 'Hotel Arts Bistro', 3) === (int) $c['place_id']);
+$fresh = $bind((int) $a['place_id'], 1, 'restaurant', 'Some Place Nobody Has Reviewed', 3);
+ok('a name with no page yet still starts one',
+   $fresh !== null && $fresh !== (int) $a['place_id']
+   && q_one('SELECT name FROM places WHERE id = ?', [$fresh])['name'] === 'Some Place Nobody Has Reviewed');
 
 echo $fails ? "\n$fails FAILED\n" : "\nAll places tests passed.\n";
 exit($fails ? 1 : 0);

@@ -40,7 +40,7 @@
   <?php endif; ?>
 
   <p style="margin:0 0 26px">
-    <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$p['destination_id'])) ?>">Write a review</a>
+    <a class="btn btn-accent" href="<?= e(url('review/new?place='.(int)$p['id'])) ?>">Write a review</a>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
   </p>
 
@@ -123,7 +123,7 @@
     <div class="empty-cta" style="margin-bottom:50px">
       <h3>Be the first to review <?= e($p['name']) ?>.</h3>
       <p class="muted" style="margin:0">The bad parts are the useful parts. Say what it actually cost and what you wish you had known.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$p['destination_id'])) ?>">Share your experience</a></p>
+      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new?place='.(int)$p['id'])) ?>">Share your experience</a></p>
     </div>
   <?php endif; ?>
 

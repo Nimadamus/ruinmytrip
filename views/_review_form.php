@@ -3,10 +3,29 @@
  * Shared review form fields — used by both /review/new and /review/{id}/edit so the two can
  * never drift apart.
  * @var array $dests  @var ?array $r  previous input or the existing row
+ * @var ?array $boundPlace  set when the review was started from a place page
  */
 $val = static fn(string $k, $d = '') => e((string) ($r[$k] ?? $d));
 $sel = static fn(string $k, $v) => (string) ($r[$k] ?? '') === (string) $v ? ' selected' : '';
+$bp  = $boundPlace ?? null;
 ?>
+<?php if ($bp): /* Bound to one place: what is being reviewed is settled, so it is stated rather than
+                   asked. The three identity fields ride along as hidden inputs and the server still
+                   re-checks them against the place id (rmt_place_bound_id) before trusting either. */ ?>
+<div class="card" style="margin:0 0 18px"><div class="card-body">
+  <p class="muted" style="margin:0 0 4px;font-size:.9rem">You are reviewing</p>
+  <p style="margin:0;font-size:1.15rem;font-weight:600"><?= e($bp['name']) ?></p>
+  <p class="muted" style="margin:2px 0 0;font-size:.92rem">
+    <?= e(rmt_place_type_label($bp['type'])) ?> in <?= e($bp['dest_name']) ?>, <?= e($bp['dest_country']) ?>
+    &middot; <a href="<?= e(url(ltrim(rmt_place_path($bp), '/'))) ?>">see its page</a>
+    &middot; <a href="<?= e(url('review/new')) ?>">review something else</a>
+  </p>
+</div></div>
+<input type="hidden" name="place_id" value="<?= (int) $bp['id'] ?>">
+<input type="hidden" name="destination_id" value="<?= (int) $bp['destination_id'] ?>">
+<input type="hidden" name="subject_type" value="<?= e($bp['type']) ?>">
+<input type="hidden" name="subject_name" value="<?= e($bp['name']) ?>">
+<?php else: ?>
 <label for="destination_id">Destination</label>
 <?php /* datalist gives type-ahead search over destinations with no JS and no extra request. */ ?>
 <input list="dest-options" id="dest-search" placeholder="Start typing — Kyoto, Lisbon, Banff…"
@@ -47,6 +66,7 @@ $sel = static fn(string $k, $v) => (string) ($r[$k] ?? '') === (string) $v ? ' s
   <?php endforeach; ?>
 </datalist>
 <p class="hint" id="place-hint" style="margin:4px 0 0"></p>
+<?php endif; ?>
 
 <label for="visited_on">When was your trip?</label>
 <input type="date" id="visited_on" name="visited_on" max="<?= date('Y-m-d') ?>" value="<?= $val('visited_on') ?>">

@@ -125,6 +125,28 @@ function rmt_place_by_slug(string $slug): ?array {
                    WHERE p.slug = ? AND p.status = ?', [$slug, 'active']);
 }
 
+/** One place with its destination, by id. */
+function rmt_place_by_id(int $id): ?array {
+    if ($id <= 0) return null;
+    return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country, d.hero_url dest_hero
+                    FROM places p JOIN destinations d ON d.id = p.destination_id
+                   WHERE p.id = ? AND p.status = ?', [$id, 'active']);
+}
+
+/**
+ * A review written from a place page carries that place's id in a hidden field, so the writer never
+ * has to retype a name and hope the resolver matches it.
+ *
+ * The id alone is not trusted. It only holds when the submitted destination and name still describe
+ * that same row -- a tampered form must not file a review under an unrelated place, and a writer who
+ * genuinely edited the name meant a different place, which then resolves the ordinary way.
+ */
+function rmt_place_bound_id(int $postedId, ?int $destId, string $name): ?int {
+    $p = rmt_place_by_id($postedId);
+    if (!$p || !$destId || (int) $p['destination_id'] !== $destId) return null;
+    return rmt_place_name_key($name) === $p['name_key'] ? (int) $p['id'] : null;
+}
+
 /** Canonical path for a place. */
 function rmt_place_path(array $p): string { return '/p/' . $p['slug']; }
 

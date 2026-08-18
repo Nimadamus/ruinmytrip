@@ -51,7 +51,8 @@
     <div class="empty-cta" style="margin-top:22px">
       <h2 style="margin:0 0 6px;font-size:1.15rem">Been to <?= e($r['dest_name'] ?: $r['subject_name']) ?>? This page needs you more than it needs us.</h2>
       <p class="muted" style="margin:0 0 14px">A first-hand review outranks desk research every time, and yours will sit above this one.</p>
-      <a class="btn btn-accent" href="<?= e(url('review/new'.($r['destination_id'] ? '?destination='.(int)$r['destination_id'] : ''))) ?>">Share your experience</a>
+      <a class="btn btn-accent" href="<?= e(url('review/new'.(!empty($r['place_id']) ? '?place='.(int)$r['place_id']
+                                     : ($r['destination_id'] ? '?destination='.(int)$r['destination_id'] : '')))) ?>">Share your experience</a>
     </div>
   <?php endif; ?>
 

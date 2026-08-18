@@ -1424,9 +1424,21 @@ function review_new_form(array $a): void {
     // A "Share your experience" link from a destination page should not dump the writer back
     // into an empty type-ahead they have to re-search -- that extra step is exactly the kind of
     // friction that keeps a real review from ever getting written.
+    // A review started from a place page is bound to that place outright: its destination, type and
+    // exact name are filled in and locked, so the one thing that decides which page the review lands
+    // on is not left to the writer re-spelling a name in a free-text box.
+    $bound = rmt_place_by_id((int) input('place'));
+    if ($bound) {
+        $r = ['destination_id' => (int) $bound['destination_id'],
+              'subject_type'   => $bound['type'],
+              'subject_name'   => $bound['name']];
+        view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound],
+             ['title'=>'Review '.$bound['name'].' — RuinMyTrip']);
+        return;
+    }
     $preselect = (int) input('destination');
     $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions()],
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null],
          ['title'=>'Write a review — RuinMyTrip']);
 }
 
@@ -1435,8 +1447,12 @@ function review_create(array $a): void {
     if (!rmt_submit_ok('review_new', input('_submit'))) {
         flash('That review was already submitted.'); redirect('/'); return;
     }
+    // Re-renders below must keep the place binding, or a writer who tripped one validation error
+    // would be handed back the unbound form and lose the page they started from.
+    $bound = rmt_place_by_id((int) input('place_id'));
+    $opts  = static fn(array $extra) => $extra + ['dests'=>all_dests(), 'placeOptions'=>$bound ? [] : rmt_place_suggestions(), 'boundPlace'=>$bound];
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
-        view('review_new', ['dests'=>all_dests(), 'errors'=>['You are posting very fast. Try again later.'], 'r'=>null, 'placeOptions'=>rmt_place_suggestions()],
+        view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>null]),
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $isDraft = input('action') === 'draft';
@@ -1448,7 +1464,7 @@ function review_create(array $a): void {
     }
     $v = rmt_review_validate($_POST, $isDraft);
     if (!$v['ok']) {
-        view('review_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'r'=>$_POST, 'placeOptions'=>rmt_place_suggestions()],
+        view('review_new', $opts(['errors'=>$v['errors'], 'r'=>$_POST]),
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $d = $v['data'];
@@ -1457,7 +1473,8 @@ function review_create(array $a): void {
     // Resolve what was reviewed to a real place row so every review of the same hotel collects on
     // one page. Returns null for destination-level reviews and for drafts with no name yet — the
     // column is nullable and the review renders from subject_name either way.
-    $placeId = rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)$me['id']);
+    $placeId = ($bound ? rmt_place_bound_id((int)$bound['id'], $d['destination_id'], $d['subject_name']) : null)
+        ?? rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)$me['id']);
     $id = (int) q_run("INSERT INTO reviews
         (user_id,destination_id,place_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
          visited_on,safety_rating,value_rating,verified,status,created_at,updated_at)
