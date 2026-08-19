@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups */ ?>
 <div class="wrap">
   <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -99,6 +99,40 @@
         <?php endforeach; ?>
       </div>
     </div></div>
+  <?php endif; ?>
+
+  <?php if ($hostedMeetups): ?>
+    <?php /* Public. The host is already named on the meetup page and on the index, and this is
+             where somebody deciding whether to go and meet a stranger will look for it. */ ?>
+    <h2 style="margin-top:30px">Hosting</h2>
+    <div class="grid g-2">
+      <?php foreach ($hostedMeetups as $hm): ?>
+        <article class="card"><div class="card-body">
+          <?php if ($hm['dest_name']): ?><span class="chip"><?= e($hm['dest_name']) ?></span><?php endif; ?>
+          <h3 style="margin:.4rem 0 .2rem;font-size:1.05rem">
+            <a href="<?= e(url('meetup/'.(int)$hm['id'])) ?>"><?= e($hm['title']) ?></a></h3>
+          <p class="muted" style="margin:0"><?= e(date('l, M j, Y · g:ia', strtotime((string)$hm['date_start']))) ?></p>
+          <div class="meta-row"><?= (int)$hm['going'] ?> going<?php if ((int)$hm['capacity'] > 0): ?> of <?= (int)$hm['capacity'] ?><?php endif; ?></div>
+        </div></article>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($isMe && $attendingMeetups): ?>
+    <?php /* Only ever rendered on your own profile. Each going-list is already public on its own
+             meetup page, but a per-person list of everywhere somebody will physically be over the
+             next month is a different thing, and this site does not build that for strangers. */ ?>
+    <h2 style="margin-top:30px">Going to <span class="muted" style="font-weight:400;font-size:1rem">(only you can see this)</span></h2>
+    <div class="grid g-2">
+      <?php foreach ($attendingMeetups as $am): ?>
+        <article class="card"><div class="card-body">
+          <?php if ($am['dest_name']): ?><span class="chip"><?= e($am['dest_name']) ?></span><?php endif; ?>
+          <h3 style="margin:.4rem 0 .2rem;font-size:1.05rem">
+            <a href="<?= e(url('meetup/'.(int)$am['id'])) ?>"><?= e($am['title']) ?></a></h3>
+          <p class="muted" style="margin:0"><?= e(date('l, M j, Y · g:ia', strtotime((string)$am['date_start']))) ?></p>
+        </div></article>
+      <?php endforeach; ?>
+    </div>
   <?php endif; ?>
 
   <h2 style="margin-top:24px">Trips</h2>

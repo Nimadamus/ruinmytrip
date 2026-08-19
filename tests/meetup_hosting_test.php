@@ -132,6 +132,39 @@ ok('a logged-out visitor may not', !rmt_meetup_can_edit($m, null));
 // meetup out from under them is a different power and this is not where it lives.
 ok('an admin may not edit it here', !rmt_meetup_can_edit($m, ['id' => 12, 'role' => 'admin']));
 
+// --- What a profile shows, and to whom ---------------------------------------------------------
+// Hosting is public; attending is not. Each going-list is already public on its own meetup page,
+// but a per-person list of everywhere somebody will physically be over the next month is a
+// different thing and this site does not build that for strangers.
+q_run("INSERT INTO meetups (id,host_id,destination_id,title,description,date_start,capacity,safety_ack,status,created_at)
+       VALUES (3,10,1,'Cancelled one','plan',?,0,1,'cancelled',?)", [$future, date('Y-m-d H:i:s')]);
+q_run("INSERT INTO meetups (id,host_id,destination_id,title,description,date_start,capacity,safety_ack,status,created_at)
+       VALUES (4,10,1,'Already happened','plan',?,0,1,'published',?)", [$past, date('Y-m-d H:i:s')]);
+
+$hosted = rmt_meetups_hosted_upcoming(10);
+$hostedIds = array_map(static fn(array $r) => (int) $r['id'], $hosted);
+ok('hosting lists upcoming published meetups', in_array(1, $hostedIds, true) && in_array(2, $hostedIds, true));
+ok('a cancelled meetup is not something you are hosting', !in_array(3, $hostedIds, true));
+ok('a meetup that already happened is not upcoming', !in_array(4, $hostedIds, true));
+ok('hosting carries its going count for the card', isset($hosted[0]['going']));
+ok('somebody who hosts nothing has an empty list', rmt_meetups_hosted_upcoming(999) === []);
+
+// user 21 RSVPed to meetup 1 further up; 41 RSVPs to the cancelled and the past one only.
+q_run("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (3,41,'going')");
+q_run("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (4,41,'going')");
+$att = array_map(static fn(array $r) => (int) $r['id'], rmt_meetups_attending_upcoming(21));
+ok('attending lists what that user RSVPed to', $att === [1], 'got=' . implode(',', $att));
+ok('attending excludes cancelled and past meetups', rmt_meetups_attending_upcoming(41) === []);
+ok('attending is per user, not shared', rmt_meetups_attending_upcoming(999) === []);
+
+// The privacy rule itself lives in the controller and the template, so both are pinned.
+$profileSrc = file_get_contents(BASE_PATH . '/app/controllers.php');
+ok('the controller only loads the attending list for the profile owner',
+   (bool) preg_match('/\$attendingMeetups = \$isMe \?/', $profileSrc));
+$view = file_get_contents(BASE_PATH . '/views/profile.php');
+ok('the template renders the attending list only for the profile owner',
+   (bool) preg_match('/if \(\$isMe && \$attendingMeetups\)/', $view));
+
 // --- The controller keeps its guards -----------------------------------------------------------
 $src = file_get_contents(BASE_PATH . '/app/controllers.php');
 $body = static function (string $name) use ($src): string {

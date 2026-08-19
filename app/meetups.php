@@ -110,3 +110,36 @@ function rmt_meetup_is_past(array $m): bool {
     $ts = strtotime((string) ($m['date_start'] ?? ''));
     return $ts !== false && $ts < time();
 }
+
+/**
+ * Meetups this user is hosting that have not happened yet.
+ *
+ * Public, because the host is already named on the meetup page and on the index -- this only puts
+ * it where somebody deciding whether to go and meet a stranger will actually look for it.
+ * Cancelled ones are left out: a called-off meetup is not something you are hosting.
+ */
+function rmt_meetups_hosted_upcoming(int $userId, int $limit = 10): array {
+    return q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
+                         (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id = m.id AND r.status = 'going') going
+                    FROM meetups m LEFT JOIN destinations d ON d.id = m.destination_id
+                   WHERE m.host_id = ? AND m.status = 'published' AND m.date_start >= ?
+                   ORDER BY m.date_start LIMIT " . max(1, $limit),
+                 [$userId, date('Y-m-d H:i:s')]);
+}
+
+/**
+ * Meetups this user has RSVPed to and that have not happened yet.
+ *
+ * Shown to the owner of the profile and to nobody else. Each individual going-list is already
+ * public on its own meetup page, but a per-person list of everywhere they will physically be over
+ * the next month is a different thing entirely, and this site does not build that for strangers.
+ */
+function rmt_meetups_attending_upcoming(int $userId, int $limit = 10): array {
+    return q_all("SELECT m.*, d.name dest_name, d.slug dest_slug
+                    FROM meetup_rsvps r
+                    JOIN meetups m ON m.id = r.meetup_id AND m.status = 'published'
+                    LEFT JOIN destinations d ON d.id = m.destination_id
+                   WHERE r.user_id = ? AND r.status = 'going' AND m.date_start >= ?
+                   ORDER BY m.date_start LIMIT " . max(1, $limit),
+                 [$userId, date('Y-m-d H:i:s')]);
+}

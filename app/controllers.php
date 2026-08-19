@@ -327,10 +327,15 @@ function profile(array $a): void {
     $compliments = rmt_compliments_received($uid);
     $myCompliments = ($me && !$isMe) ? rmt_compliments_sent_by((int)$me['id'], $uid) : [];
 
+    // Hosting is public: the host is already named on the meetup page and the index, and somebody
+    // deciding whether to meet a stranger looks here. Attending is NOT -- see rmt_meetups_* .
+    $hostedMeetups = rmt_meetups_hosted_upcoming($uid);
+    $attendingMeetups = $isMe ? rmt_meetups_attending_upcoming($uid) : [];
+
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist'), [
+    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -1124,7 +1129,13 @@ function meetup_show(array $a): void {
     $going = count($rsvps);
     $isFull = rmt_meetup_is_full($m, $going);
     $isPast = rmt_meetup_is_past($m);
-    view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast'), [
+    // A stranger deciding whether to turn up should be able to see who is asking without leaving
+    // the page. Every number here is a live count of things the host actually posted -- there is
+    // no self-declared reputation on this site and there is not going to be one.
+    $hostStats = rmt_profile_stats((int) $m['host_id']);
+    $hostBadges = rmt_user_badges((int) $m['host_id']);
+    $hostSince = q_one('SELECT created_at FROM users WHERE id=?', [(int)$m['host_id']])['created_at'] ?? null;
+    view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast','hostStats','hostBadges','hostSince'), [
         'title'=>$m['title'].' — RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')],['name'=>$m['title'],'url'=>url('meetup/'.$m['id'])]],

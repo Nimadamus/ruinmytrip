@@ -1,4 +1,4 @@
-<?php /** @var array $m @var array $rsvps @var ?array $me @var bool $mine @var bool $isHost @var int $going @var bool $isFull @var bool $isPast */ ?>
+<?php /** @var array $m @var array $rsvps @var ?array $me @var bool $mine @var bool $isHost @var int $going @var bool $isFull @var bool $isPast @var array $hostStats @var array $hostBadges @var ?string $hostSince */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('meetups')) ?>">Meetups</a> / <?= e($m['title']) ?></p></div>
 <div class="wrap" style="max-width:820px">
   <span class="chip"><?= e($m['dest_name']) ?></span>
@@ -47,6 +47,32 @@
     <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('report?target_type=meetup&target_id='.$m['id'])) ?>">⚑ Report</a>
   </div>
+
+  <?php /* Who is asking. Every number is a live count of things the host actually posted; there is
+           no self-declared reputation on this site. Shown here rather than only on the profile
+           because deciding whether to go and meet a stranger happens on this page. */ ?>
+  <div class="card" style="margin:22px 0"><div class="card-body">
+    <p class="eyebrow" style="margin:0 0 8px">Your host</p>
+    <p style="margin:0 0 .3rem">
+      <a href="<?= e(url('u/'.$m['host']['username'])) ?>"><strong>@<?= e($m['host']['username']) ?></strong></a>
+      <?php if ($hostSince): ?><span class="muted"> · member since <?= e(date('M Y', strtotime($hostSince))) ?></span><?php endif; ?>
+    </p>
+    <p class="muted" style="margin:0">
+      <?= (int)$hostStats['reviews'] ?> <?= (int)$hostStats['reviews'] === 1 ? 'review' : 'reviews' ?> ·
+      <?= (int)$hostStats['trips'] ?> <?= (int)$hostStats['trips'] === 1 ? 'trip' : 'trips' ?> ·
+      <?= (int)$hostStats['followers'] ?> <?= (int)$hostStats['followers'] === 1 ? 'follower' : 'followers' ?>
+    </p>
+    <?php if ($hostBadges): ?>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem">
+        <?php foreach ($hostBadges as $b): ?><span class="chip"><?= e($b['name']) ?></span><?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+    <?php /* Said plainly rather than dressed up as a score. A thin profile is not proof of
+             anything bad, and a full one is not proof of anything good. */ ?>
+    <?php if ((int)$hostStats['reviews'] === 0 && (int)$hostStats['trips'] === 0): ?>
+      <p class="hint" style="margin:.5rem 0 0">This host has not posted anything on RuinMyTrip yet. That is not a red flag on its own, but meet in public and tell someone your plans.</p>
+    <?php endif; ?>
+  </div></div>
 
   <h2>Going (<?= $going ?><?php if ((int)$m['capacity'] > 0): ?> of <?= (int)$m['capacity'] ?><?php endif; ?>)</h2>
   <div class="tag-list">
