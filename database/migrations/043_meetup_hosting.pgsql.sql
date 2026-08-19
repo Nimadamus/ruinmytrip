@@ -1,0 +1,21 @@
+-- Hosting a meetup.
+--
+-- The meetups table has been complete since the beginning -- host_id, capacity, safety_ack,
+-- visibility, status -- and /meetups, /meetup/{id} and RSVP have all worked. There has simply
+-- never been a route that creates one, so the only meetups that could exist were the ones seeded
+-- into the database. A page that says "when a traveler hosts one, it shows up here" while no
+-- traveler can host one is a promise the site cannot keep.
+--
+-- Two additive columns-worth of work, no new table:
+--
+-- `updated_at` so an edit is recorded, matching guides/trips/collections. Left NULL on existing
+-- rows: they have never been edited, and stamping them with today would say they had.
+--
+-- An index on (status, date_start) because /meetups is exactly `WHERE status='published' ORDER BY
+-- date_start` and had nothing to use for either half.
+--
+-- `status` gains one more value in application code, not in the schema: 'cancelled'. A cancelled
+-- meetup keeps its page and says so, rather than 404ing on the people who had already RSVPed and
+-- are holding the link.
+ALTER TABLE meetups ADD COLUMN IF NOT EXISTS updated_at TEXT;
+CREATE INDEX IF NOT EXISTS idx_meetups_status_date ON meetups(status, date_start);

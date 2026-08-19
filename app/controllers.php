@@ -1099,7 +1099,9 @@ function meetups_index(array $a): void {
                       WHERE m.status='published' ORDER BY m.date_start");
     $hosts = authors_by_ids(array_column($meetups, 'host_id'));
     foreach ($meetups as &$m) $m['host'] = $hosts[(int)$m['host_id']] ?? null; unset($m);
-    view('meetups_index', compact('meetups'), [
+    $me = current_user();
+    $canHost = can_host_meetups($me);
+    view('meetups_index', compact('meetups', 'me', 'canHost'), [
         'title'=>'Public travel meetups — RuinMyTrip',
         'description'=>'Optional, public, safety-first travel meetups. Meet fellow travelers in a destination — never dating, never precise location sharing.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')]],
@@ -1109,18 +1111,135 @@ function meetups_index(array $a): void {
 function meetup_show(array $a): void {
     $m = q_one("SELECT m.*, d.name dest_name, d.slug dest_slug FROM meetups m
                 LEFT JOIN destinations d ON d.id=m.destination_id WHERE m.id=?", [(int)$a['id']]);
-    if (!$m || $m['status']!=='published') not_found();
+    // A cancelled meetup still renders. People RSVPed to it and are holding the link; 404ing them
+    // tells them nothing, and "it vanished" is the worst version of "it is off".
+    if (!$m || !in_array($m['status'], RMT_MEETUP_STATUSES, true)) not_found();
     $m['host'] = author((int)$m['host_id']);
     $rsvps = q_all("SELECT r.*, u.username, p.avatar_url, p.display_name FROM meetup_rsvps r
                     JOIN users u ON u.id=r.user_id LEFT JOIN profiles p ON p.user_id=u.id
                     WHERE r.meetup_id=? AND r.status='going'", [(int)$m['id']]);
     $me = current_user();
     $mine = $me ? (bool) q_one('SELECT 1 FROM meetup_rsvps WHERE meetup_id=? AND user_id=?', [(int)$m['id'],(int)$me['id']]) : false;
-    view('meetup_show', compact('m','rsvps','me','mine'), [
+    $isHost = rmt_meetup_can_edit($m, $me);
+    $going = count($rsvps);
+    $isFull = rmt_meetup_is_full($m, $going);
+    $isPast = rmt_meetup_is_past($m);
+    view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast'), [
         'title'=>$m['title'].' — RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')],['name'=>$m['title'],'url'=>url('meetup/'.$m['id'])]],
     ]);
+}
+
+/**
+ * GET /meetup/new -- the form. 18+ only, the same gate RSVP already applies, checked here too so
+ * somebody under 18 is told before writing the whole thing rather than after submitting it.
+ */
+function meetup_new_form(array $a): void {
+    require_login();
+    if (!can_host_meetups(current_user())) {
+        flash('You must be 18+ to host a meetup.');
+        redirect('/meetups');
+    }
+    view('meetup_new', ['dests' => all_dests(), 'errors' => [], 'm' => []], [
+        'title' => 'Host a meetup — RuinMyTrip',
+        'description' => 'Host a public, optional, safety-first travel meetup in a destination.',
+    ]);
+}
+
+function meetup_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    if (!can_host_meetups($me)) { flash('You must be 18+ to host a meetup.'); redirect('/meetups'); }
+
+    $opts = ['title' => 'Host a meetup — RuinMyTrip'];
+    if (!rmt_submit_ok('meetup_new', input('_submit'))) {
+        flash('That meetup was already created.'); redirect('/meetups'); return;
+    }
+    if (!rmt_rate_ok('meetup_create', (string) $me['id'], 5, 3600)) {
+        view('meetup_new', ['dests'=>all_dests(), 'errors'=>['You are creating meetups very fast. Try again later.'], 'm'=>$_POST], $opts);
+        return;
+    }
+    $v = rmt_meetup_validate($_POST);
+    if (!$v['ok']) {
+        view('meetup_new', ['dests'=>all_dests(), 'errors'=>$v['errors'], 'm'=>$_POST], $opts);
+        return;
+    }
+    $d = $v['data'];
+    $id = (int) q_run("INSERT INTO meetups (host_id,destination_id,title,description,date_start,date_end,
+                                            visibility,capacity,safety_ack,status,created_at)
+                       VALUES (?,?,?,?,?,?, 'public', ?,?, 'published', ?)",
+        [(int)$me['id'], $d['destination_id'], $d['title'], $d['description'], $d['date_start'],
+         $d['date_end'], $d['capacity'], $d['safety_ack'], date('Y-m-d H:i:s')]);
+
+    // The host is going. Leaving them out means a brand new meetup reads "0 going" while the
+    // person who organised it is standing there, and it makes capacity off by one.
+    try {
+        db()->prepare("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (?,?, 'going')")
+            ->execute([$id, (int)$me['id']]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+    }
+    flash('Meetup published. Share the link with anyone you want there.');
+    redirect('/meetup/' . $id);
+}
+
+function meetup_edit_form(array $a): void {
+    require_login();
+    $m = q_one('SELECT * FROM meetups WHERE id=?', [(int)$a['id']]);
+    if (!$m) not_found();
+    if (!rmt_meetup_can_edit($m, current_user())) forbidden('That is not your meetup.');
+    view('meetup_edit', ['m' => $m, 'dests' => all_dests(), 'errors' => []], ['title' => 'Edit meetup — RuinMyTrip']);
+}
+
+function meetup_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $m = q_one('SELECT * FROM meetups WHERE id=?', [(int)$a['id']]);
+    if (!$m) not_found();
+    if (!rmt_meetup_can_edit($m, current_user())) forbidden('That is not your meetup.');
+
+    // The stored start is passed through so a meetup that has already happened can still be
+    // corrected. Only a CHANGED date has to be in the future.
+    $v = rmt_meetup_validate($_POST, (string) $m['date_start']);
+    if (!$v['ok']) {
+        view('meetup_edit', ['m' => array_merge($m, $_POST), 'dests' => all_dests(), 'errors' => $v['errors']],
+             ['title' => 'Edit meetup — RuinMyTrip']);
+        return;
+    }
+    $d = $v['data'];
+    // Capacity is not allowed to drop below the people already holding a place. Nobody gets
+    // silently un-invited by a number, and there is no un-RSVP-someone-else action on this site.
+    $going = rmt_meetup_going_count((int) $m['id']);
+    if ($d['capacity'] > 0 && $d['capacity'] < $going) {
+        view('meetup_edit', ['m' => array_merge($m, $_POST), 'dests' => all_dests(),
+             'errors' => ["$going people have already RSVPed. Capacity cannot be lower than that."]],
+             ['title' => 'Edit meetup — RuinMyTrip']);
+        return;
+    }
+    db()->prepare('UPDATE meetups SET destination_id=?, title=?, description=?, date_start=?, date_end=?,
+                                      capacity=?, updated_at=? WHERE id=?')
+        ->execute([$d['destination_id'], $d['title'], $d['description'], $d['date_start'], $d['date_end'],
+                   $d['capacity'], date('Y-m-d H:i:s'), (int)$m['id']]);
+    flash('Meetup updated.');
+    redirect('/meetup/' . (int)$m['id']);
+}
+
+/**
+ * POST /meetup/{id}/cancel -- called off, not deleted.
+ *
+ * Guides and trips soft-delete to 'removed' and disappear. A meetup cannot: people have arranged
+ * their day around it and are holding the link. It keeps its page, says plainly that it is
+ * cancelled, and drops out of the index. That is the difference between withdrawing something you
+ * wrote and calling off something other people are turning up to.
+ */
+function meetup_cancel(array $a): void {
+    require_login(); csrf_check();
+    $m = q_one('SELECT * FROM meetups WHERE id=?', [(int)$a['id']]);
+    if (!$m) not_found();
+    if (!rmt_meetup_can_edit($m, current_user())) forbidden('That is not your meetup.');
+    db()->prepare("UPDATE meetups SET status='cancelled', updated_at=? WHERE id=?")
+        ->execute([date('Y-m-d H:i:s'), (int)$m['id']]);
+    flash('Meetup cancelled. Everyone who RSVPed can still see the page and that it is off.');
+    redirect('/meetup/' . (int)$m['id']);
 }
 
 function going_index(array $a): void {
@@ -2024,8 +2143,16 @@ function meetup_rsvp(array $a): void {
     if (!can_host_meetups($me)) { flash('You must be 18+ to RSVP to meetups.'); redirect('/meetup/'.(int)$a['id']); }
     $mid=(int)$a['id']; $m=q_one('SELECT * FROM meetups WHERE id=?', [$mid]); if(!$m) not_found();
     $has = q_one('SELECT 1 FROM meetup_rsvps WHERE meetup_id=? AND user_id=?', [$mid,(int)$me['id']]);
+    // Withdrawing is always allowed -- including from something cancelled or in the past, because
+    // being stuck on the going list of a meetup you are not attending is the annoying direction of
+    // this check. Only joining is gated.
     if ($has) db()->prepare('DELETE FROM meetup_rsvps WHERE meetup_id=? AND user_id=?')->execute([$mid,(int)$me['id']]);
     else {
+        if ($m['status'] === 'cancelled') { flash('That meetup was cancelled.'); redirect('/meetup/'.$mid); }
+        if (rmt_meetup_is_past($m))       { flash('That meetup has already happened.'); redirect('/meetup/'.$mid); }
+        // Capacity was a published number nothing enforced: a meetup that said 8 accepted forty.
+        // Checked here rather than only in the template, because the button is not the door.
+        if (rmt_meetup_is_full($m))       { flash('That meetup is full.'); redirect('/meetup/'.$mid); }
         // Same double-click race as react_action/follow_action: the (meetup_id,user_id) primary
         // key stops a duplicate RSVP row, but without this catch the loser of the race got an
         // uncaught PDOException (500 page) instead of a no-op. This one was missed when the other
