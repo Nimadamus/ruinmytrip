@@ -30,6 +30,24 @@
           <?php else: ?>
             <b><?= e($who) ?></b> <?= e($verb) ?> <?= e($noun) ?> that is no longer available.
           <?php endif; ?>
+        <?php elseif (in_array($n['type'], RMT_MEETUP_NOTIFY_TYPES, true)):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
+          $title = q_one('SELECT title FROM meetups WHERE id=?', [(int)$n['target_id']])['title'] ?? null;
+          $what = $title ? '"' . $title . '"' : 'your meetup';
+          /* Worded so the important half survives being skim-read in a list: cancelled and moved
+             lead with what happened to the plan, not with who did it. */
+          $line = [
+            'meetup_rsvp'      => $who . ' is going to ' . ($title ? $what : 'your meetup') . '.',
+            'meetup_changed'   => 'The time changed for ' . ($title ? $what : 'a meetup you are going to') . '.',
+            'meetup_cancelled' => 'Cancelled: ' . ($title ? $what : 'a meetup you were going to') . '.',
+          ][$n['type']];
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+          <?php else: ?>
+            <b><?= e($line) ?></b>
+          <?php endif; ?>
         <?php elseif ($n['type']==='message'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id'], (int)$me['id']);

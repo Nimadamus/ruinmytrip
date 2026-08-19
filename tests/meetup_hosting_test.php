@@ -165,6 +165,39 @@ $view = file_get_contents(BASE_PATH . '/views/profile.php');
 ok('the template renders the attending list only for the profile owner',
    (bool) preg_match('/if \(\$isMe && \$attendingMeetups\)/', $view));
 
+// --- Telling the other people involved ---------------------------------------------------------
+// This half was missing entirely: a host had no idea anyone had signed up, and an attendee found
+// out the time had moved by turning up. A meetup costs somebody their afternoon.
+$pdo->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL,
+              type TEXT NOT NULL, actor_id INT, target_type TEXT, target_id INT,
+              created_at TEXT NOT NULL, read_at TEXT)');
+
+ok('the going list can exclude one person', rmt_meetup_going_user_ids(1, 21) === [22, 23],
+   implode(',', rmt_meetup_going_user_ids(1, 21)));
+ok('excluding nobody returns everyone', count(rmt_meetup_going_user_ids(1)) === 3);
+
+ok('an rsvp notifies the host', rmt_meetup_notify([10], 'meetup_rsvp', 21, 1) === 1);
+ok('a cancellation notifies every attendee',
+   rmt_meetup_notify(rmt_meetup_going_user_ids(1, 10), 'meetup_cancelled', 10, 1) === 3);
+// Nobody is told about their own action -- the host who cancels does not get "cancelled".
+ok('the actor is never notified of their own action', rmt_meetup_notify([10, 21], 'meetup_changed', 10, 1) === 1);
+ok('a duplicated recipient is only told once', rmt_meetup_notify([22, 22, 22], 'meetup_changed', 10, 1) === 1);
+// An unrecognised type would write a row the notifications page can only render as raw text.
+ok('an unknown type writes nothing', rmt_meetup_notify([21], 'meetup_exploded', 10, 1) === 0);
+ok('every row written is a meetup notification',
+   (int) q_one("SELECT COUNT(*) c FROM notifications WHERE target_type <> 'meetup'")['c'] === 0);
+ok('no row was written for the unknown type',
+   (int) q_one("SELECT COUNT(*) c FROM notifications WHERE type = 'meetup_exploded'")['c'] === 0);
+
+// Only a move in TIME notifies. A typo fix must not ping everybody who RSVPed.
+$before = ['date_start' => $future, 'date_end' => $later];
+ok('a title-only edit is not a time change',
+   !rmt_meetup_time_changed($before, ['date_start' => $future, 'date_end' => $later]));
+ok('moving the start is a time change',
+   rmt_meetup_time_changed($before, ['date_start' => $past, 'date_end' => $later]));
+ok('moving the end is a time change',
+   rmt_meetup_time_changed($before, ['date_start' => $future, 'date_end' => null]));
+
 // --- The controller keeps its guards -----------------------------------------------------------
 $src = file_get_contents(BASE_PATH . '/app/controllers.php');
 $body = static function (string $name) use ($src): string {
@@ -192,6 +225,13 @@ ok('meetup_cancel(): cancels rather than deleting',
 ok('meetup_rsvp(): refuses a cancelled meetup', strpos($body('meetup_rsvp'), "'cancelled'") !== false);
 ok('meetup_rsvp(): refuses one that already happened', strpos($body('meetup_rsvp'), 'rmt_meetup_is_past') !== false);
 ok('meetup_rsvp(): enforces capacity on the server', strpos($body('meetup_rsvp'), 'rmt_meetup_is_full') !== false);
+
+ok('meetup_rsvp(): tells the host somebody signed up',
+   strpos($body('meetup_rsvp'), 'meetup_rsvp') !== false && strpos($body('meetup_rsvp'), 'rmt_meetup_notify') !== false);
+ok('meetup_cancel(): tells everyone who was going',
+   strpos($body('meetup_cancel'), "'meetup_cancelled'") !== false);
+ok('meetup_edit_submit(): only tells people when the time moved',
+   strpos($body('meetup_edit_submit'), 'rmt_meetup_time_changed') !== false);
 
 $routes = file_get_contents(BASE_PATH . '/public/index.php');
 foreach (['meetup_new_form', 'meetup_create', 'meetup_edit_form', 'meetup_edit_submit', 'meetup_cancel'] as $fn) {

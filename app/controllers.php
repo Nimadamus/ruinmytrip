@@ -1230,7 +1230,16 @@ function meetup_edit_submit(array $a): void {
                                       capacity=?, updated_at=? WHERE id=?')
         ->execute([$d['destination_id'], $d['title'], $d['description'], $d['date_start'], $d['date_end'],
                    $d['capacity'], date('Y-m-d H:i:s'), (int)$m['id']]);
-    flash('Meetup updated.');
+    // Only a move in TIME notifies. Fixing a typo in the title should not ping everybody who
+    // RSVPed; moving the start by three hours has to, or they arrive to an empty corner.
+    $told = 0;
+    if (rmt_meetup_time_changed($m, $d)) {
+        $told = rmt_meetup_notify(rmt_meetup_going_user_ids((int)$m['id'], (int)$m['host_id']),
+                                  'meetup_changed', (int)$m['host_id'], (int)$m['id']);
+    }
+    flash($told > 0
+        ? "Meetup updated. $told " . ($told === 1 ? 'person has' : 'people have') . ' been told the time changed.'
+        : 'Meetup updated.');
     redirect('/meetup/' . (int)$m['id']);
 }
 
@@ -1249,7 +1258,12 @@ function meetup_cancel(array $a): void {
     if (!rmt_meetup_can_edit($m, current_user())) forbidden('That is not your meetup.');
     db()->prepare("UPDATE meetups SET status='cancelled', updated_at=? WHERE id=?")
         ->execute([date('Y-m-d H:i:s'), (int)$m['id']]);
-    flash('Meetup cancelled. Everyone who RSVPed can still see the page and that it is off.');
+    // Told, not left to find out by turning up. This is the whole reason the page stays readable.
+    $told = rmt_meetup_notify(rmt_meetup_going_user_ids((int)$m['id'], (int)$m['host_id']),
+                              'meetup_cancelled', (int)$m['host_id'], (int)$m['id']);
+    flash($told > 0
+        ? "Meetup cancelled. $told " . ($told === 1 ? 'person has' : 'people have') . ' been notified.'
+        : 'Meetup cancelled. Everyone who RSVPed can still see the page and that it is off.');
     redirect('/meetup/' . (int)$m['id']);
 }
 
@@ -2170,6 +2184,9 @@ function meetup_rsvp(array $a): void {
         // three toggle actions were fixed.
         try {
             db()->prepare("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (?,?, 'going')")->execute([$mid,(int)$me['id']]);
+            // The host had no way of knowing anyone had signed up. Only on a new row, so the
+            // loser of a double-tap race does not send a second notification for one RSVP.
+            rmt_meetup_notify([(int)$m['host_id']], 'meetup_rsvp', (int)$me['id'], $mid);
         } catch (\PDOException $e) {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         }

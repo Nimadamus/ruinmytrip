@@ -143,3 +143,47 @@ function rmt_meetups_attending_upcoming(int $userId, int $limit = 10): array {
                    ORDER BY m.date_start LIMIT " . max(1, $limit),
                  [$userId, date('Y-m-d H:i:s')]);
 }
+
+/** The three things that happen to a meetup which the other people involved need told about. */
+const RMT_MEETUP_NOTIFY_TYPES = ['meetup_rsvp', 'meetup_changed', 'meetup_cancelled'];
+
+/** Everyone currently going, except one person (normally the host, who is doing the thing). */
+function rmt_meetup_going_user_ids(int $meetupId, int $exceptUserId = 0): array {
+    $rows = q_all("SELECT user_id FROM meetup_rsvps WHERE meetup_id = ? AND status = 'going'", [$meetupId]);
+    $ids = array_map(static fn(array $r) => (int) $r['user_id'], $rows);
+    return array_values(array_filter($ids, static fn(int $id) => $id !== $exceptUserId));
+}
+
+/**
+ * Tell people something happened to a meetup.
+ *
+ * This is the half that was missing from meetups entirely: a host had no idea anyone had signed
+ * up, and an attendee found out the time had moved, or that it was off, by turning up. A meetup is
+ * the one thing here that costs somebody their afternoon, so the notification is not a nicety.
+ *
+ * Silently ignores an unknown type rather than writing a row the notifications page cannot render
+ * into anything but "meetup_whatever from @someone".
+ */
+function rmt_meetup_notify(array $userIds, string $type, int $actorId, int $meetupId): int {
+    if (!in_array($type, RMT_MEETUP_NOTIFY_TYPES, true)) return 0;
+    $sent = 0;
+    $now = date('Y-m-d H:i:s');
+    foreach (array_unique(array_map('intval', $userIds)) as $uid) {
+        if ($uid <= 0 || $uid === $actorId) continue;   // nobody is told about their own action
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at)
+               VALUES (?,?,?,?,?,?)', [$uid, $type, $actorId, 'meetup', $meetupId, $now]);
+        $sent++;
+    }
+    return $sent;
+}
+
+/**
+ * Did an edit move the meetup in time?
+ *
+ * Only the when matters here. Fixing a typo in the title should not fire a notification at
+ * everybody who RSVPed; moving the start by three hours absolutely should.
+ */
+function rmt_meetup_time_changed(array $before, array $after): bool {
+    return (string) ($before['date_start'] ?? '') !== (string) ($after['date_start'] ?? '')
+        || (string) ($before['date_end'] ?? '')   !== (string) ($after['date_end'] ?? '');
+}
