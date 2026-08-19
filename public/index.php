@@ -17,6 +17,8 @@ $routes = [
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/places$#', 'destination_places'],
     ['GET',  '#^/p/(?<slug>[a-z0-9\-]+)$#',    'place_show'],
     ['POST', '#^/destination/save$#',          'destination_save_action'],
+    ['POST', '#^/place/save$#',                'place_save_action'],
+    ['GET',  '#^/saved$#',                     'saved_index'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_form'],
     ['POST', '#^/u/(?<username>[A-Za-z0-9_]+)/edit$#',      'profile_edit_submit'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/followers$#', 'profile_followers'],

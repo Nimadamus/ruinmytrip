@@ -247,6 +247,8 @@ function place_show(array $a): void {
 
     $ed = rmt_place_editorial($id);
     $nearby = rmt_place_nearby($id, (int)$p['destination_id']);
+    $saved = rmt_place_is_saved($id, $me ? (int) $me['id'] : null);
+    $saveCount = rmt_place_save_count($id);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
 
     $ld = ['@context'=>'https://schema.org', '@type'=>rmt_place_schema_type((string) $p['type']), 'name'=>$p['name'],
@@ -282,7 +284,7 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby'), [
+    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby','saved','saveCount'), [
         'title' => $p['name'].', '.$p['dest_name'].' — '.rmt_place_title_question((string) $p['type']).' | RuinMyTrip',
         'description' => $desc,
         'canonical' => $canonical,
@@ -1747,7 +1749,8 @@ function react_action(array $a): void {
         // table's (user_id,target_type,target_id) primary key stops a duplicate row, but the
         // loser previously surfaced as an uncaught PDOException (500 page) instead of just no-op'ing
         // into the same end state the winner already produced.
-        try { db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id) VALUES (?,?,?)")->execute([(int)$me['id'],$tt,$tid]); }
+        try { db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id" . ($kind === 'save' ? ',created_at' : '') . ") VALUES (?,?,?" . ($kind === 'save' ? ',?' : '') . ")")
+                  ->execute($kind === 'save' ? [(int)$me['id'],$tt,$tid,date('Y-m-d H:i:s')] : [(int)$me['id'],$tt,$tid]); }
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
     }
     redirect(input('return','/'));
@@ -1775,12 +1778,115 @@ function destination_save_action(array $a): void {
         db()->prepare("DELETE FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?")->execute([$uid, $did]);
     } else {
         try {
-            db()->prepare("INSERT INTO saves (user_id,target_type,target_id) VALUES (?, 'destination', ?)")->execute([$uid, $did]);
+            db()->prepare("INSERT INTO saves (user_id,target_type,target_id,created_at) VALUES (?, 'destination', ?, ?)")
+                ->execute([$uid, $did, date('Y-m-d H:i:s')]);
         } catch (\PDOException $e) {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         }
     }
     redirect(input('return', '/'));
+}
+
+/**
+ * POST /place/save -- collect a place, or un-collect it. Same toggle shape and the same reasoning
+ * as destination_save_action above: places are global rows shared by everyone, not user-owned
+ * drafts, so rmt_can_interact()'s ownership/visibility model does not apply to them.
+ *
+ * Only an active place can be saved. A hidden one is not something a visitor can see, and a save
+ * is a public-facing count, so it must not be possible to run one up on a page nobody can reach.
+ */
+function place_save_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $pid = (int) input('place_id');
+    $p   = $pid ? rmt_place_by_id($pid) : null;      // rmt_place_by_id already filters status='active'
+
+    // `return` comes from the request, so it is normalised to a same-origin path before it is
+    // followed -- an absolute URL to another host would turn this button into an open redirect.
+    // Nothing posted means the place's own page, which is where the button lives.
+    $posted = trim((string) input('return'));
+    $return = $posted !== '' ? rmt_safe_return_path($posted) : ($p ? rmt_place_path($p) : '/');
+
+    if (!$p) redirect($return);
+
+    if (!rmt_rate_ok('react', (string) $me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect($return);
+    }
+
+    $uid = (int) $me['id'];
+    if (rmt_place_is_saved($pid, $uid)) {
+        db()->prepare('DELETE FROM saves WHERE user_id=? AND target_type=? AND target_id=?')
+            ->execute([$uid, RMT_SAVE_PLACE, $pid]);
+        flash('Removed from your saved places.');
+    } else {
+        // The primary key (user_id,target_type,target_id) already makes a second row impossible.
+        // A double-tap -- easy on mobile -- races two requests that both read "not saved"; the
+        // loser must land on the same end state as the winner, not on a 500.
+        try {
+            db()->prepare('INSERT INTO saves (user_id,target_type,target_id,created_at) VALUES (?,?,?,?)')
+                ->execute([$uid, RMT_SAVE_PLACE, $pid, date('Y-m-d H:i:s')]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+        flash('Saved. Find it any time under Saved.');
+    }
+    redirect($return);
+}
+
+/**
+ * GET /saved -- everything this user has collected, in one place.
+ *
+ * Three groups because they answer three different questions: places are specific spots to go to,
+ * destinations are the older "want to visit" bucket list, and the reading list is saved writing.
+ * Until now only the destination bucket had anywhere to appear (buried on the profile) and a saved
+ * guide or blog post was effectively write-only -- the save button worked and the save was never
+ * shown back to the person who made it.
+ *
+ * Unpublished and deleted targets fall out via each join's status filter, so a list never links
+ * to something the reader cannot open.
+ */
+function saved_index(array $a): void {
+    require_login(); $me = current_user(); $uid = (int) $me['id'];
+
+    $places = rmt_saved_places($uid);
+
+    $dests = q_all("SELECT d.id, d.slug, d.name, d.country, s.created_at saved_at
+                      FROM saves s JOIN destinations d ON d.id = s.target_id
+                     WHERE s.user_id = ? AND s.target_type = 'destination'
+                     ORDER BY COALESCE(s.created_at,'') DESC, d.name", [$uid]);
+
+    // One row shape for every kind of saved writing, so the view renders a single list instead of
+    // five near-identical blocks. Each query names its own kind and builds its own canonical path.
+    $reading = [];
+    $sources = [
+        "SELECT 'guide' kind, g.title, '/g/' || g.slug AS path, s.created_at saved_at, g.user_id
+           FROM saves s JOIN guides g ON g.id = s.target_id AND g.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'guide'",
+        "SELECT 'blog_post' kind, b.title, '/blog/' || b.slug AS path, s.created_at saved_at, b.user_id
+           FROM saves s JOIN blog_posts b ON b.id = s.target_id AND b.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'blog_post'",
+        "SELECT 'collection' kind, c.title, '/c/' || c.slug AS path, s.created_at saved_at, c.user_id
+           FROM saves s JOIN collections c ON c.id = s.target_id AND c.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'collection'",
+        "SELECT 'trip' kind, t.title, '/trip/' || t.id || '/' || t.slug AS path, s.created_at saved_at, t.user_id
+           FROM saves s JOIN trips t ON t.id = s.target_id AND t.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'trip'",
+        "SELECT 'review' kind, COALESCE(NULLIF(r.title,''), r.subject_name) title,
+               '/review/' || r.id AS path, s.created_at saved_at, r.user_id
+           FROM saves s JOIN reviews r ON r.id = s.target_id AND r.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'review'",
+    ];
+    foreach ($sources as $sql) foreach (q_all($sql, [$uid]) as $row) $reading[] = $row;
+    // Sorted in PHP: five separate queries cannot be ordered against each other in SQL without a
+    // UNION that would have to agree on column types across drivers for no real gain at this size.
+    usort($reading, static fn(array $x, array $y) => strcmp((string)($y['saved_at'] ?? ''), (string)($x['saved_at'] ?? '')));
+    authors_fill($reading);
+
+    view('saved', compact('me', 'places', 'dests', 'reading'), [
+        'title' => 'Saved — RuinMyTrip',
+        'description' => 'The places, destinations and travel writing you have saved on RuinMyTrip.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Saved','url'=>url('saved')]],
+    ]);
 }
 
 /**

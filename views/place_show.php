@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -39,10 +39,32 @@
     </p>
   <?php endif; ?>
 
-  <p style="margin:0 0 26px">
+  <?php /* Actions wrap on a narrow screen instead of overflowing, and the save control is a real
+           form (a POST toggle), which cannot live inside a <p>. A logged-out visitor still sees the
+           button: it links to sign-in carrying this page as the return, so the intent survives the
+           detour instead of the control simply being missing. */ ?>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 <?= $saveCount > 0 ? '8px' : '26px' ?>">
     <a class="btn btn-accent" href="<?= e(url('review/new?place='.(int)$p['id'])) ?>">Write a review</a>
+    <?php if ($me): ?>
+      <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
+        <?= csrf_field() ?>
+        <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
+        <input type="hidden" name="return" value="<?= e(rmt_place_path($p)) ?>">
+        <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?>"
+                aria-pressed="<?= $saved ? 'true' : 'false' ?>">
+          <?= $saved ? '★ Saved' : '☆ Save' ?>
+        </button>
+      </form>
+    <?php else: ?>
+      <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode(rmt_place_path($p)))) ?>">☆ Save</a>
+    <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
-  </p>
+  </div>
+  <?php /* Zero is not announced. "0 travelers saved this" is a fact about nobody caring and it is
+           the first thing a new page would say about itself. */ ?>
+  <?php if ($saveCount > 0): ?>
+    <p class="hint" style="margin:0 0 26px"><?= $saveCount ?> <?= $saveCount === 1 ? 'traveler has' : 'travelers have' ?> saved this</p>
+  <?php endif; ?>
 
   <?php /* Structured editorial. Only sections with content render, so a page never pads itself with
            headings that say nothing. Every claim here is sourced; the list is printed at the end. */ ?>

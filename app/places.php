@@ -147,6 +147,47 @@ function rmt_place_bound_id(int $postedId, ?int $destId, string $name): ?int {
     return rmt_place_name_key($name) === $p['name_key'] ? (int) $p['id'] : null;
 }
 
+/**
+ * Saving a place: the same polymorphic `saves` table every other save already uses, with
+ * target_type 'place'. Nothing here caches a count -- a saved-count is a claim about how many
+ * people did something, so it is always a live COUNT, never a stored counter that can drift.
+ */
+const RMT_SAVE_PLACE = 'place';
+
+/** How many travelers have saved this place. */
+function rmt_place_save_count(int $placeId): int {
+    return (int) (q_one('SELECT COUNT(*) c FROM saves WHERE target_type = ? AND target_id = ?',
+                        [RMT_SAVE_PLACE, $placeId])['c'] ?? 0);
+}
+
+/** Has this user saved this place? False for a logged-out visitor, who has no saves at all. */
+function rmt_place_is_saved(int $placeId, ?int $userId): bool {
+    if (!$userId) return false;
+    return (bool) q_one('SELECT 1 FROM saves WHERE user_id = ? AND target_type = ? AND target_id = ?',
+                        [$userId, RMT_SAVE_PLACE, $placeId]);
+}
+
+/**
+ * One user's saved places, newest save first.
+ *
+ * Hidden places are dropped by the join on status: a place that has been taken down must not keep
+ * showing up on somebody's list as a link to a 404. The save row itself is left alone -- if the
+ * place is restored the save is still there, which is the honest behaviour for something the user
+ * chose and never unchose.
+ *
+ * created_at is NULL on saves made before it existed, so the sort coalesces it to '' and those
+ * rows land at the end rather than in a random position.
+ */
+function rmt_saved_places(int $userId): array {
+    return q_all("SELECT p.id, p.slug, p.name, p.type, s.created_at saved_at,
+                         d.name dest_name, d.slug dest_slug, d.country dest_country
+                    FROM saves s
+                    JOIN places p ON p.id = s.target_id AND p.status = 'active'
+                    JOIN destinations d ON d.id = p.destination_id
+                   WHERE s.user_id = ? AND s.target_type = ?
+                   ORDER BY COALESCE(s.created_at, '') DESC, p.id DESC", [$userId, RMT_SAVE_PLACE]);
+}
+
 /** Canonical path for a place. */
 function rmt_place_path(array $p): string { return '/p/' . $p['slug']; }
 
