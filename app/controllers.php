@@ -1866,11 +1866,51 @@ const RMT_INTERACT_TARGETS = [
  * the interaction endpoints never checked. Proven before this fix: @snoop landed a comment and a
  * like on a draft they could not view.
  */
+/**
+ * Which column names the owner, for each interactable type.
+ *
+ * Meetups call theirs `host_id`. Everything else uses `user_id`, and the code that reads an owner
+ * assumed that everywhere -- so `SELECT user_id FROM meetups` threw a PDOException, which is a 500
+ * page, on every attempt to comment on or like a meetup. Confirmed locally before this fix:
+ * rmt_can_interact('meetup', 1, $user) threw SQLSTATE[HY000] no such column: user_id.
+ */
+const RMT_INTERACT_OWNER_COLUMN = ['meetup' => 'host_id'];
+
+function rmt_interact_owner_column(string $tt): string {
+    return RMT_INTERACT_OWNER_COLUMN[$tt] ?? 'user_id';
+}
+
+/** The id of whoever owns $tt#$tid, or 0 if there is no such row or no such type. */
+function rmt_content_owner_id(string $tt, int $tid): int {
+    $table = RMT_INTERACT_TARGETS[$tt] ?? null;
+    if (!$table || $tid < 1) return 0;
+    $col = rmt_interact_owner_column($tt);
+    return (int) (q_one("SELECT {$col} AS owner_id FROM {$table} WHERE id = ?", [$tid])['owner_id'] ?? 0);
+}
+
+/**
+ * Is $userId blocked from ADDING an interaction to $tt#$tid?
+ *
+ * rmt_is_blocked() is symmetric: it does not matter who blocked whom, the two of them have stopped
+ * interacting. Following, complimenting and messaging already honoured that. Commenting, liking,
+ * saving, voting and RSVPing did not, so a block stopped somebody sending you a message and left
+ * them free to turn up in the comments under your review -- or at your meetup.
+ *
+ * Only the ADD direction is gated. Someone who liked your review before you blocked them must
+ * still be able to unlike it, and someone who RSVPed must still be able to withdraw; being stuck
+ * holding an interaction you cannot take back is the wrong way for this to fail.
+ */
+function rmt_blocked_from(int $userId, string $tt, int $tid): bool {
+    $owner = rmt_content_owner_id($tt, $tid);
+    return $owner > 0 && $owner !== $userId && rmt_is_blocked($userId, $owner);
+}
+
 function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
     $table = RMT_INTERACT_TARGETS[$tt] ?? null;
     if (!$table || $tid < 1) return false;
 
-    $row = q_one("SELECT user_id, status FROM {$table} WHERE id = ?", [$tid]);
+    $col = rmt_interact_owner_column($tt);
+    $row = q_one("SELECT {$col} AS user_id, status FROM {$table} WHERE id = ?", [$tid]);
     if (!$row) return false;                       // must exist — no ghost interactions
     if (($row['status'] ?? '') === 'published') return true;
     if (!$user) return false;
@@ -1892,8 +1932,10 @@ function react_action(array $a): void {
     }
 
     $has = q_one("SELECT 1 FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?", [(int)$me['id'],$tt,$tid]);
+    // Un-liking and un-saving stay open either way; only the add branch below is gated.
     if ($has) db()->prepare("DELETE FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?")->execute([(int)$me['id'],$tt,$tid]);
     else {
+        if (rmt_blocked_from((int)$me['id'], $tt, $tid)) redirect(rmt_return_to());
         // A double-click can fire two near-simultaneous requests that both see $has as false; the
         // table's (user_id,target_type,target_id) primary key stops a duplicate row, but the
         // loser previously surfaced as an uncaught PDOException (500 page) instead of just no-op'ing
@@ -2059,6 +2101,7 @@ function review_vote_action(array $a): void {
     if (!$r) redirect(rmt_return_to());
     // Voting your own review up is not a signal from another traveler — it's not one at all.
     if ((int) $r['user_id'] === (int) $me['id']) redirect(rmt_return_to());
+    if (rmt_blocked_from((int) $me['id'], 'review', $rid)) redirect(rmt_return_to());
 
     if (!rmt_rate_ok('review_vote', (string) $me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
@@ -2123,6 +2166,11 @@ function comment_action(array $a): void {
     $body = trim((string) input('body'));
 
     if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(rmt_return_to());
+    // A block stopped somebody messaging you and left them free to turn up in your comments.
+    if (rmt_blocked_from((int)$me['id'], $tt, $tid)) {
+        flash('You cannot comment on that.');
+        redirect(rmt_return_to());
+    }
     // An over-limit comment used to be silently truncated at 2000 chars (mb_substr) with no
     // indication to the author -- silent data loss instead of the validation error every other
     // body-length limit in the app (trip/guide/review) gives.
@@ -2144,7 +2192,7 @@ function comment_action(array $a): void {
     // Tell the content's author someone commented (follows and compliments already notified, but
     // comments never did). Skip self-comments; @mentions in the body ping their own recipients,
     // minus the author if they were both mentioned and would get this comment notification.
-    $owner = (int) (q_one('SELECT user_id FROM ' . RMT_INTERACT_TARGETS[$tt] . ' WHERE id=?', [$tid])['user_id'] ?? 0);
+    $owner = rmt_content_owner_id($tt, $tid);
     if ($owner && $owner !== (int)$me['id']) {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
@@ -2173,6 +2221,11 @@ function meetup_rsvp(array $a): void {
     // this check. Only joining is gated.
     if ($has) db()->prepare('DELETE FROM meetup_rsvps WHERE meetup_id=? AND user_id=?')->execute([$mid,(int)$me['id']]);
     else {
+        // A meetup is the one place a block has to hold physically: it puts the two of them in
+        // the same spot. Withdrawing above is still allowed; only joining is refused.
+        if (rmt_blocked_from((int)$me['id'], 'meetup', $mid)) {
+            flash('You cannot RSVP to that meetup.'); redirect('/meetup/'.$mid);
+        }
         if ($m['status'] === 'cancelled') { flash('That meetup was cancelled.'); redirect('/meetup/'.$mid); }
         if (rmt_meetup_is_past($m))       { flash('That meetup has already happened.'); redirect('/meetup/'.$mid); }
         // Capacity was a published number nothing enforced: a meetup that said 8 accepted forty.
