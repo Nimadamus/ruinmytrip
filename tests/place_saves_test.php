@@ -168,7 +168,7 @@ ok('place_save_action(): swallows only duplicate-key codes', strpos($body, "'230
    && strpos($body, "'23505'") !== false && strpos($body, 'throw $e;') !== false);
 
 ok('place_save_action(): normalises the return path instead of following it raw',
-   strpos($body, 'rmt_safe_return_path') !== false);
+   strpos($body, 'rmt_return_to') !== false);
 
 // rmt_place_by_id is the whole status check: if it ever stopped filtering, a hidden place would
 // become savable and the count on an unreachable page could be run up.

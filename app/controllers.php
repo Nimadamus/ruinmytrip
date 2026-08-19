@@ -1666,17 +1666,17 @@ function review_delete(array $a): void {
 function follow_action(array $a): void {
     require_login(); csrf_check(); $me=current_user();
     $target=(int)input('user_id');
-    if (!$target || $target===(int)$me['id']) redirect(input('return','/'));
+    if (!$target || $target===(int)$me['id']) redirect(rmt_return_to());
     // The target must be a real, active user. Without this, following a bogus id throws an
     // uncaught FK violation (500) — which also happens naturally if the followee deleted their
     // account between the page loading and the click.
     if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$target])) {
-        flash('That traveler is no longer available.'); redirect(input('return','/'));
+        flash('That traveler is no longer available.'); redirect(rmt_return_to());
     }
-    if (rmt_is_blocked((int)$me['id'], $target)) redirect(input('return','/'));
+    if (rmt_is_blocked((int)$me['id'], $target)) redirect(rmt_return_to());
     // Follows create notifications, so cap them to blunt notification-spam.
     if (!rmt_rate_ok('follow', (string)$me['id'], 120, 3600)) {
-        flash('You are doing that very fast. Try again shortly.'); redirect(input('return','/'));
+        flash('You are doing that very fast. Try again shortly.'); redirect(rmt_return_to());
     }
     $exists = q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$target]);
     if ($exists) db()->prepare('DELETE FROM follows WHERE follower_id=? AND followee_id=?')->execute([(int)$me['id'],$target]);
@@ -1688,12 +1688,12 @@ function follow_action(array $a): void {
             q_run('INSERT INTO follows (follower_id,followee_id,created_at) VALUES (?,?,?)', [(int)$me['id'],$target,date('Y-m-d H:i:s')]);
         } catch (\PDOException $e) {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
-            redirect(input('return','/'));
+            redirect(rmt_return_to());
         }
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$target,'follow',(int)$me['id'],'user',(int)$me['id'],date('Y-m-d H:i:s')]);
     }
-    redirect(input('return','/'));
+    redirect(rmt_return_to());
 }
 
 /**
@@ -1736,10 +1736,10 @@ function react_action(array $a): void {
     $tt   = (string) input('target_type');
     $tid  = (int) input('target_id');
 
-    if (!rmt_can_interact($tt, $tid, $me)) redirect(input('return', '/'));
+    if (!rmt_can_interact($tt, $tid, $me)) redirect(rmt_return_to());
     if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
-        redirect(input('return', '/'));
+        redirect(rmt_return_to());
     }
 
     $has = q_one("SELECT 1 FROM $tbl WHERE user_id=? AND target_type=? AND target_id=?", [(int)$me['id'],$tt,$tid]);
@@ -1753,7 +1753,7 @@ function react_action(array $a): void {
                   ->execute($kind === 'save' ? [(int)$me['id'],$tt,$tid,date('Y-m-d H:i:s')] : [(int)$me['id'],$tt,$tid]); }
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
     }
-    redirect(input('return','/'));
+    redirect(rmt_return_to());
 }
 
 /**
@@ -1767,10 +1767,10 @@ function react_action(array $a): void {
 function destination_save_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $did = (int) input('destination_id');
-    if (!$did || !dest_by_id($did)) redirect(input('return', '/'));
+    if (!$did || !dest_by_id($did)) redirect(rmt_return_to());
     if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
-        redirect(input('return', '/'));
+        redirect(rmt_return_to());
     }
     $uid = (int) $me['id'];
     $has = q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $did]);
@@ -1784,7 +1784,7 @@ function destination_save_action(array $a): void {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         }
     }
-    redirect(input('return', '/'));
+    redirect(rmt_return_to());
 }
 
 /**
@@ -1800,11 +1800,8 @@ function place_save_action(array $a): void {
     $pid = (int) input('place_id');
     $p   = $pid ? rmt_place_by_id($pid) : null;      // rmt_place_by_id already filters status='active'
 
-    // `return` comes from the request, so it is normalised to a same-origin path before it is
-    // followed -- an absolute URL to another host would turn this button into an open redirect.
     // Nothing posted means the place's own page, which is where the button lives.
-    $posted = trim((string) input('return'));
-    $return = $posted !== '' ? rmt_safe_return_path($posted) : ($p ? rmt_place_path($p) : '/');
+    $return = rmt_return_to($p ? rmt_place_path($p) : '/');
 
     if (!$p) redirect($return);
 
@@ -1906,17 +1903,17 @@ function review_vote_action(array $a): void {
     $rid  = (int) $a['id'];
     $type = (string) input('vote_type');
 
-    if (!in_array($type, RMT_REVIEW_VOTE_TYPES, true)) redirect(input('return', '/'));
-    if (!rmt_can_interact('review', $rid, $me)) redirect(input('return', '/'));
+    if (!in_array($type, RMT_REVIEW_VOTE_TYPES, true)) redirect(rmt_return_to());
+    if (!rmt_can_interact('review', $rid, $me)) redirect(rmt_return_to());
 
     $r = q_one('SELECT user_id FROM reviews WHERE id=?', [$rid]);
-    if (!$r) redirect(input('return', '/'));
+    if (!$r) redirect(rmt_return_to());
     // Voting your own review up is not a signal from another traveler — it's not one at all.
-    if ((int) $r['user_id'] === (int) $me['id']) redirect(input('return', '/'));
+    if ((int) $r['user_id'] === (int) $me['id']) redirect(rmt_return_to());
 
     if (!rmt_rate_ok('review_vote', (string) $me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
-        redirect(input('return', '/'));
+        redirect(rmt_return_to());
     }
 
     $has = q_one('SELECT 1 FROM review_votes WHERE review_id=? AND user_id=? AND vote_type=?', [$rid, (int) $me['id'], $type]);
@@ -1929,11 +1926,11 @@ function review_vote_action(array $a): void {
                   [$rid, (int) $me['id'], $type, date('Y-m-d H:i:s')]);
         } catch (\PDOException $e) {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
-            redirect(input('return', '/'));
+            redirect(rmt_return_to());
         }
         rmt_award_badges((int) $r['user_id']); // votes received can newly qualify the author for Elite Traveler
     }
-    redirect(input('return', '/'));
+    redirect(rmt_return_to());
 }
 
 /**
@@ -1946,15 +1943,15 @@ function compliment_action(array $a): void {
     $toId = (int) input('user_id');
     $type = (string) input('type');
 
-    if (!isset(RMT_COMPLIMENT_TYPES[$type])) redirect(input('return', '/'));
-    if (!$toId || $toId === (int) $me['id']) redirect(input('return', '/'));
+    if (!isset(RMT_COMPLIMENT_TYPES[$type])) redirect(rmt_return_to());
+    if (!$toId || $toId === (int) $me['id']) redirect(rmt_return_to());
     if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$toId])) {
-        flash('That traveler is no longer available.'); redirect(input('return', '/'));
+        flash('That traveler is no longer available.'); redirect(rmt_return_to());
     }
-    if (rmt_is_blocked((int) $me['id'], $toId)) redirect(input('return', '/'));
+    if (rmt_is_blocked((int) $me['id'], $toId)) redirect(rmt_return_to());
     if (!rmt_rate_ok('compliment', (string) $me['id'], 40, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
-        redirect(input('return', '/'));
+        redirect(rmt_return_to());
     }
 
     try {
@@ -1967,7 +1964,7 @@ function compliment_action(array $a): void {
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         flash('You already sent that compliment.');
     }
-    redirect(input('return', '/'));
+    redirect(rmt_return_to());
 }
 
 function comment_action(array $a): void {
@@ -1976,20 +1973,20 @@ function comment_action(array $a): void {
     $tid  = (int) input('target_id');
     $body = trim((string) input('body'));
 
-    if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(input('return','/'));
+    if ($body === '' || !rmt_can_interact($tt, $tid, $me)) redirect(rmt_return_to());
     // An over-limit comment used to be silently truncated at 2000 chars (mb_substr) with no
     // indication to the author -- silent data loss instead of the validation error every other
     // body-length limit in the app (trip/guide/review) gives.
     if (mb_strlen($body) > 2000) {
         flash('That comment is too long (2000 characters max). Please shorten it and try again.');
-        redirect(input('return','/'));
+        redirect(rmt_return_to());
     }
     if (!rmt_submit_ok('comment_'.$tt.'_'.$tid, input('_submit'))) {
-        flash('That comment was already posted.'); redirect(input('return','/'));
+        flash('That comment was already posted.'); redirect(rmt_return_to());
     }
     if (!rmt_rate_ok('comment', (string)$me['id'], 30, 3600)) {
         flash('You are commenting very fast. Try again shortly.');
-        redirect(input('return','/'));
+        redirect(rmt_return_to());
     }
 
     q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
@@ -2004,7 +2001,7 @@ function comment_action(array $a): void {
             [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
     }
     rmt_notify_mentions($tt, $tid, (int)$me['id'], [$owner], $body);
-    redirect(input('return','/'));
+    redirect(rmt_return_to());
 }
 
 /** POST /comment/{id}/delete — author only. Soft delete, same as reviews and trips. */
@@ -2014,7 +2011,7 @@ function comment_delete(array $a): void {
     if (!$c) not_found();
     if ((int)$c['user_id'] !== (int)$me['id']) { forbidden('That is not your comment.'); }
     db()->prepare("UPDATE comments SET status='removed' WHERE id=?")->execute([(int)$c['id']]);
-    redirect(input('return','/'));
+    redirect(rmt_return_to());
 }
 
 function meetup_rsvp(array $a): void {

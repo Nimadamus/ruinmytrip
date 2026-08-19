@@ -164,9 +164,9 @@ function block_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $target = (int) input('user_id');
     $meId = (int) $me['id'];
-    if (!$target || $target === $meId) redirect(input('return', '/'));
+    if (!$target || $target === $meId) redirect(rmt_return_to());
     if (!q_one("SELECT 1 FROM users WHERE id=? AND status='active'", [$target])) {
-        flash('That traveler is no longer available.'); redirect(input('return', '/'));
+        flash('That traveler is no longer available.'); redirect(rmt_return_to());
     }
     try {
         q_run('INSERT INTO blocks (blocker_id, blocked_id) VALUES (?,?)', [$meId, $target]);
@@ -176,15 +176,15 @@ function block_action(array $a): void {
     db()->prepare('DELETE FROM follows WHERE (follower_id=? AND followee_id=?) OR (follower_id=? AND followee_id=?)')
         ->execute([$meId, $target, $target, $meId]);
     flash('Blocked. They can no longer message or follow you, and you will not see each other in follow lists.');
-    redirect(input('return', '/'));
+    redirect(rmt_return_to());
 }
 
 /** POST /unblock — target user_id. */
 function unblock_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $target = (int) input('user_id');
-    if (!$target) redirect(input('return', '/'));
+    if (!$target) redirect(rmt_return_to());
     db()->prepare('DELETE FROM blocks WHERE blocker_id=? AND blocked_id=?')->execute([(int) $me['id'], $target]);
     flash('Unblocked.');
-    redirect(input('return', '/'));
+    redirect(rmt_return_to());
 }

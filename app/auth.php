@@ -61,6 +61,24 @@ function rmt_safe_return_path(string $path): string {
     return $path;
 }
 
+/**
+ * Where a POST-only action endpoint sends the browser when it is done.
+ *
+ * Every one of these forms carries its own `return` field naming the page the button was pressed
+ * on, and every one of them used to be followed verbatim. That is an open redirect: a link to
+ * ruinmytrip.com/... that lands the visitor on somebody else's site, wearing our domain in the
+ * link they clicked. It is the standard way a phishing page borrows a trusted host.
+ *
+ * The value is normalised through rmt_safe_return_path(), which strips our own origin and rejects
+ * anything that is not a same-origin path, so a hostile value ends up somewhere harmless on this
+ * site instead of off it. An absent value falls back to $fallback rather than to /feed, so an
+ * endpoint that knows where the user was can say so.
+ */
+function rmt_return_to(string $fallback = '/'): string {
+    $posted = trim((string) input('return'));
+    return $posted === '' ? $fallback : rmt_safe_return_path($posted);
+}
+
 function require_role(string ...$roles): void {
     $u = current_user();
     if (!$u || !in_array($u['role'], $roles, true)) { forbidden('You are not authorized to view this page.'); }
