@@ -168,6 +168,36 @@ function rmt_place_is_saved(int $placeId, ?int $userId): bool {
 }
 
 /**
+ * Saved state for a whole page of places at once, as [place_id => true].
+ *
+ * The single-place helpers are right for a place page, which asks about one row. A list asking
+ * them per card is one query per place, which is how a browse page quietly becomes slow as the
+ * catalogue grows. Two batched queries answer any page size.
+ */
+function rmt_saved_place_map(?int $userId, array $placeIds): array {
+    $ids = array_values(array_unique(array_map('intval', $placeIds)));
+    if (!$userId || !$ids) return [];
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $rows = q_all("SELECT target_id FROM saves WHERE user_id = ? AND target_type = ? AND target_id IN ($in)",
+                  array_merge([$userId, RMT_SAVE_PLACE], $ids));
+    $out = [];
+    foreach ($rows as $r) $out[(int) $r['target_id']] = true;
+    return $out;
+}
+
+/** Save counts for a whole page of places at once, as [place_id => count]. Places with none are omitted. */
+function rmt_place_save_counts(array $placeIds): array {
+    $ids = array_values(array_unique(array_map('intval', $placeIds)));
+    if (!$ids) return [];
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $rows = q_all("SELECT target_id, COUNT(*) c FROM saves WHERE target_type = ? AND target_id IN ($in)
+                   GROUP BY target_id", array_merge([RMT_SAVE_PLACE], $ids));
+    $out = [];
+    foreach ($rows as $r) $out[(int) $r['target_id']] = (int) $r['c'];
+    return $out;
+}
+
+/**
  * One user's saved places, newest save first.
  *
  * Hidden places are dropped by the join on status: a place that has been taken down must not keep

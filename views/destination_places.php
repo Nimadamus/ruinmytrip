@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $places @var array $counts @var int $total @var string $type @var string $label */ ?>
+<?php /** @var array $d @var array $places @var array $counts @var int $total @var string $type @var string $label @var ?array $me @var array $savedMap @var array $saveCounts */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($d['name']) ?></a> / Places</p>
   <h1 style="margin-top:6px"><?= e($label) ?> in <?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
@@ -29,6 +29,7 @@
     </div>
   <?php endif; ?>
 
+  <?php $listPath = '/d/' . $d['slug'] . '/places' . ($type !== '' ? '?type=' . $type : ''); ?>
   <div class="grid" style="gap:14px;padding-bottom:50px">
     <?php foreach ($places as $p): $c = (int)$p['review_count']; ?>
       <article class="card"><div class="card-body">
@@ -59,6 +60,26 @@
             No published reviews yet
           <?php endif; ?>
         </p>
+        <?php /* Collecting happens here, not only on the place page: a browser comparing eight
+                 restaurants should not have to open and leave eight pages to keep three of them.
+                 Returns to this exact list, filter and all. */ ?>
+        <?php $isSaved = !empty($savedMap[(int)$p['id']]); $sc = (int) ($saveCounts[(int)$p['id']] ?? 0); ?>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:.6rem 0 0">
+          <?php if ($me): ?>
+            <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
+              <?= csrf_field() ?>
+              <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
+              <input type="hidden" name="return" value="<?= e($listPath) ?>">
+              <button class="btn <?= $isSaved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"
+                      aria-pressed="<?= $isSaved ? 'true' : 'false' ?>"><?= $isSaved ? '★ Saved' : '☆ Save' ?></button>
+            </form>
+          <?php else: ?>
+            <a class="btn btn-ghost btn-sm" href="<?= e(url('login?return=' . rawurlencode($listPath))) ?>">☆ Save</a>
+          <?php endif; ?>
+          <?php if ($sc > 0): ?>
+            <span class="hint"><?= $sc ?> saved</span>
+          <?php endif; ?>
+        </div>
       </div></article>
     <?php endforeach; ?>
   </div>

@@ -140,6 +140,29 @@ ok('an undated save sorts last, not randomly', (int) $legacy[0]['id'] === 2 && (
    'order=' . implode(',', array_map(static fn(array $r) => (string) $r['id'], $legacy)));
 ok('an undated save still counts', rmt_place_save_count(1) === 2);
 
+// --- The batched lookups a browse page uses ---------------------------------------------------
+// A list page asking the single-place helpers per card is one query per place. These two answer a
+// whole page, and they have to agree with the single-place helpers exactly or the browse page and
+// the place page will disagree about the same row in front of the same user.
+$pageIds = [1, 2, 3, 4];
+$map = rmt_saved_place_map(1, $pageIds);
+ok('the batched map marks exactly what that user saved',
+   array_keys($map) === array_values(array_filter($pageIds, static fn(int $i) => rmt_place_is_saved($i, 1))),
+   'map=' . implode(',', array_keys($map)));
+ok('the batched map is empty for a logged-out visitor', rmt_saved_place_map(null, $pageIds) === []);
+ok('the batched map is empty with no places asked about', rmt_saved_place_map(1, []) === []);
+ok('the batched map never leaks a save that belongs to somebody else', !array_diff_key(rmt_saved_place_map(2, $pageIds), array_flip([1, 2])));
+
+$counts = rmt_place_save_counts($pageIds);
+ok('the batched counts agree with the single-place count',
+   ($counts[1] ?? 0) === rmt_place_save_count(1) && ($counts[2] ?? 0) === rmt_place_save_count(2),
+   'batched=' . json_encode($counts));
+ok('a place nobody saved is simply absent, not zero-padded',
+   !array_key_exists(999, rmt_place_save_counts([1, 999])));
+ok('the batched counts are empty with no places asked about', rmt_place_save_counts([]) === []);
+// A place id repeated on the page (it cannot be, but the helper must not care) must not double.
+ok('a repeated id is counted once', (rmt_place_save_counts([1, 1, 1])[1] ?? 0) === rmt_place_save_count(1));
+
 // --- Paths on the reading list ----------------------------------------------------------------
 // Every one of these is checked against public/index.php's route table by eye; a wrong prefix here
 // is a link that 404s from a page the user built themselves, which is the worst place for one.

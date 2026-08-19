@@ -217,7 +217,12 @@ function destination_places(array $a): void {
     $counts = rmt_place_type_counts($id);
     $total = array_sum($counts);
     $label = $type === '' ? 'Places' : rmt_place_type_label($type, true);
-    view('destination_places', compact('d','places','counts','total','type','label'), [
+    // Two batched lookups for the whole page, never one per card.
+    $me = current_user();
+    $ids = array_map(static fn(array $p) => (int) $p['id'], $places);
+    $savedMap = rmt_saved_place_map($me ? (int) $me['id'] : null, $ids);
+    $saveCounts = rmt_place_save_counts($ids);
+    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts'), [
         'title' => $label.' in '.$d['name'].', '.$d['country'].' — reviewed by travelers | RuinMyTrip',
         'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', rated by travelers who actually went.',
         'og_image' => abs_url($d['hero_url']),
