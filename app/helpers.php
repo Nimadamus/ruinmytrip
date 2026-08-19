@@ -11,6 +11,25 @@ function url(string $path = ''): string {
 
 function redirect(string $path): never { header('Location: ' . $path); exit; }
 
+/**
+ * Canonical path for one saved item. Kept out of SQL so a URL is never assembled by the
+ * database (`||` concatenates on Postgres and SQLite but is logical OR on MySQL), and kept here
+ * rather than in the controller so it can be unit tested on its own.
+ *
+ * A trip or review whose slug went missing still gets a working link: both routes take the slug as
+ * an optional trailing segment, so dropping it is a shorter URL, not a broken one.
+ */
+function rmt_saved_path(string $kind, int $id, string $slug): string {
+    return match ($kind) {
+        'guide'      => '/g/' . $slug,
+        'blog_post'  => '/blog/' . $slug,
+        'collection' => '/c/' . $slug,
+        'trip'       => '/trip/' . $id . ($slug !== '' ? '/' . $slug : ''),
+        'review'     => '/review/' . $id . ($slug !== '' ? '/' . $slug : ''),
+        default      => '/',
+    };
+}
+
 function slugify(string $s): string {
     $s = strtolower(trim($s));
     $s = preg_replace('/[^a-z0-9]+/', '-', $s);

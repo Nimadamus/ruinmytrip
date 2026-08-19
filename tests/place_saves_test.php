@@ -140,6 +140,20 @@ ok('an undated save sorts last, not randomly', (int) $legacy[0]['id'] === 2 && (
    'order=' . implode(',', array_map(static fn(array $r) => (string) $r['id'], $legacy)));
 ok('an undated save still counts', rmt_place_save_count(1) === 2);
 
+// --- Paths on the reading list ----------------------------------------------------------------
+// Every one of these is checked against public/index.php's route table by eye; a wrong prefix here
+// is a link that 404s from a page the user built themselves, which is the worst place for one.
+ok('a saved guide links to /g/{slug}',      rmt_saved_path('guide', 7, 'kyoto-in-four-days') === '/g/kyoto-in-four-days');
+ok('a saved post links to /blog/{slug}',    rmt_saved_path('blog_post', 7, 'why-i-left') === '/blog/why-i-left');
+ok('a saved collection links to /c/{slug}', rmt_saved_path('collection', 7, 'best-beaches') === '/c/best-beaches');
+ok('a saved trip links to /trip/{id}/{slug}',   rmt_saved_path('trip', 7, 'three-weeks') === '/trip/7/three-weeks');
+ok('a saved review links to /review/{id}/{slug}', rmt_saved_path('review', 7, 'never-again') === '/review/7/never-again');
+// Both routes take the slug as an optional trailing segment, so a missing slug is a shorter URL
+// rather than a broken one ending in a bare slash.
+ok('a trip with no slug still gets a working link',   rmt_saved_path('trip', 7, '') === '/trip/7');
+ok('a review with no slug still gets a working link', rmt_saved_path('review', 7, '') === '/review/7');
+ok('an unknown kind never invents a path',            rmt_saved_path('spaceship', 7, 'x') === '/');
+
 // --- The controller keeps its guards ----------------------------------------------------------
 $src = file_get_contents(BASE_PATH . '/app/controllers.php');
 $start = strpos($src, 'function place_save_action(');

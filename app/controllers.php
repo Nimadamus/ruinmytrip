@@ -1855,28 +1855,35 @@ function saved_index(array $a): void {
                      WHERE s.user_id = ? AND s.target_type = 'destination'
                      ORDER BY COALESCE(s.created_at,'') DESC, d.name", [$uid]);
 
-    // One row shape for every kind of saved writing, so the view renders a single list instead of
-    // five near-identical blocks. Each query names its own kind and builds its own canonical path.
+    // Each query returns the same three columns -- kind, title, and the id/slug the path is built
+    // from -- so the view renders one list instead of five near-identical blocks. The path itself is
+    // assembled in PHP: SQL string concatenation is not portable (`||` concatenates on Postgres and
+    // SQLite but is logical OR on MySQL), and a URL built by the database is a URL nothing tests.
     $reading = [];
     $sources = [
-        "SELECT 'guide' kind, g.title, '/g/' || g.slug AS path, s.created_at saved_at, g.user_id
+        "SELECT 'guide' kind, g.title, g.id, g.slug, s.created_at saved_at, g.user_id
            FROM saves s JOIN guides g ON g.id = s.target_id AND g.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'guide'",
-        "SELECT 'blog_post' kind, b.title, '/blog/' || b.slug AS path, s.created_at saved_at, b.user_id
+        "SELECT 'blog_post' kind, b.title, b.id, b.slug, s.created_at saved_at, b.user_id
            FROM saves s JOIN blog_posts b ON b.id = s.target_id AND b.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'blog_post'",
-        "SELECT 'collection' kind, c.title, '/c/' || c.slug AS path, s.created_at saved_at, c.user_id
+        "SELECT 'collection' kind, c.title, c.id, c.slug, s.created_at saved_at, c.user_id
            FROM saves s JOIN collections c ON c.id = s.target_id AND c.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'collection'",
-        "SELECT 'trip' kind, t.title, '/trip/' || t.id || '/' || t.slug AS path, s.created_at saved_at, t.user_id
+        "SELECT 'trip' kind, t.title, t.id, t.slug, s.created_at saved_at, t.user_id
            FROM saves s JOIN trips t ON t.id = s.target_id AND t.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'trip'",
-        "SELECT 'review' kind, COALESCE(NULLIF(r.title,''), r.subject_name) title,
-               '/review/' || r.id AS path, s.created_at saved_at, r.user_id
+        "SELECT 'review' kind, COALESCE(NULLIF(r.title,''), r.subject_name) title, r.id, r.slug,
+                s.created_at saved_at, r.user_id
            FROM saves s JOIN reviews r ON r.id = s.target_id AND r.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'review'",
     ];
-    foreach ($sources as $sql) foreach (q_all($sql, [$uid]) as $row) $reading[] = $row;
+    foreach ($sources as $sql) {
+        foreach (q_all($sql, [$uid]) as $row) {
+            $row['path'] = rmt_saved_path((string) $row['kind'], (int) $row['id'], (string) ($row['slug'] ?? ''));
+            $reading[] = $row;
+        }
+    }
     // Sorted in PHP: five separate queries cannot be ordered against each other in SQL without a
     // UNION that would have to agree on column types across drivers for no real gain at this size.
     usort($reading, static fn(array $x, array $y) => strcmp((string)($y['saved_at'] ?? ''), (string)($x['saved_at'] ?? '')));
