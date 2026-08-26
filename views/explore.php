@@ -24,6 +24,13 @@
       <p class="callout" style="margin:-10px 0 24px">No traveler ratings yet, so this list is still A to Z. Official reviews never fill the ranking.</p>
     <?php endif; ?>
   <?php endif; ?>
+  <?php if (!empty($countries)): ?>
+    <div class="tag-row" style="margin:-6px 0 18px">
+      <?php foreach ($countries as $co): ?>
+        <a class="chip" href="<?= e(url('in/'.rmt_country_slug((string)$co['country']))) ?>"><?= e($co['country']) ?> <span class="muted"><?= (int)$co['n'] ?></span></a>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
   <?php if (!empty($topTags)): ?>
     <div class="tag-row" style="margin:-14px 0 24px">
       <?php foreach ($topTags as $t): ?>

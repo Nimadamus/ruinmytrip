@@ -62,6 +62,7 @@ check('home is in', in_array('https://example.test/', $locs, true), true);
 check('travelers directory is in', in_array('https://example.test/travelers', $locs, true), true);
 check('founding page is in', in_array('https://example.test/founding', $locs, true), true);
 check('destination is in', in_array('https://example.test/d/barcelona-spain', $locs, true), true);
+check('country hub is in', in_array('https://example.test/in/spain', $locs, true), true);
 check('guide is in', in_array('https://example.test/g/barcelona-spain-travel-guide', $locs, true), true);
 check('empty meetups is out', in_array('https://example.test/meetups', $locs, true), false);
 check('empty blog index is out', in_array('https://example.test/blog', $locs, true), false);

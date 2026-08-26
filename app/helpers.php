@@ -44,6 +44,18 @@ function slugify(string $s): string {
     return trim((string)$s, '-') ?: 'item';
 }
 
+function rmt_country_slug(string $country): string {
+    return slugify($country);
+}
+
+/** Canonical country name for a slug, or null. */
+function rmt_country_from_slug(string $slug): ?string {
+    foreach (q_all('SELECT DISTINCT country FROM destinations WHERE country IS NOT NULL AND country <> \'\'') as $r) {
+        if (rmt_country_slug((string) $r['country']) === $slug) return (string) $r['country'];
+    }
+    return null;
+}
+
 function old(string $k, $default = '') { return $_SESSION['_old'][$k] ?? $default; }
 function flash(?string $msg = null): ?string {
     if ($msg !== null) { $_SESSION['_flash'] = $msg; return null; }

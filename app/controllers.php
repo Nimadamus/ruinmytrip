@@ -123,11 +123,31 @@ function explore(array $a): void {
     };
     $dests = q_all($sql, $args);
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
+    $countries = q_all('SELECT country, COUNT(*) n FROM destinations WHERE country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY country');
     $topTags = rmt_top_tags(14);
-    view('explore', compact('dests','cats','qs','cat','sort','topTags'), [
+    view('explore', compact('dests','cats','qs','cat','sort','topTags','countries'), [
         'title' => 'Explore destinations: 2026 costs, taxes and tickets | RuinMyTrip',
         'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
+    ]);
+}
+
+function country_show(array $a): void {
+    $country = rmt_country_from_slug((string) ($a['slug'] ?? ''));
+    if (!$country) not_found();
+    $slug = rmt_country_slug($country);
+    $dests = q_all('SELECT * FROM destinations WHERE country = ? ORDER BY name', [$country]);
+    if (!$dests) not_found();
+    $guides = q_all("SELECT g.*, d.name dest_name FROM guides g JOIN destinations d ON d.id=g.destination_id
+                     WHERE d.country = ? AND g.status='published' ORDER BY g.id DESC", [$country]);
+    authors_fill($guides);
+    $n = count($dests);
+    view('country_show', compact('country','slug','dests','guides'), [
+        'title' => $country.' 2026: costs, tickets, taxes and what nearly ruins it | RuinMyTrip',
+        'description' => $n.' destination'.($n===1?'':'s').' in '.$country.' with 2026 prices, tourist taxes, tickets and the friction that catches visitors off guard.',
+        'og_image' => abs_url($dests[0]['hero_url'] ?? ''),
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
+                          ['name'=>$country,'url'=>url('in/'.$slug)]],
     ]);
 }
 
@@ -193,7 +213,9 @@ function destination(array $a): void {
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
-        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
+                          ['name'=>$d['country'],'url'=>url('in/'.rmt_country_slug((string)$d['country']))],
+                          ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
             'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
             'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']],

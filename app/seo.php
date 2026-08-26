@@ -133,6 +133,9 @@ function rmt_sitemap_entries(): array {
         }
     }
 
+    foreach (q_all('SELECT DISTINCT country FROM destinations WHERE country IS NOT NULL AND country <> \'\'') as $c) {
+        $add('in/'.rmt_country_slug((string) $c['country']));
+    }
     foreach (q_all('SELECT slug FROM destinations') as $d) $add('/d/'.$d['slug']);
 
     foreach (q_all("SELECT DISTINCT d.slug FROM destinations d

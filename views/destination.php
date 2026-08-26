@@ -1,6 +1,6 @@
 <?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
-  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($d['name']) ?></p>
+  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('in/'.rmt_country_slug((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
     <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
     <div class="overlay">
