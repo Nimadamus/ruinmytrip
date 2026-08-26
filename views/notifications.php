@@ -48,6 +48,15 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='going'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $href = rmt_notification_target_url('going', (int)$n['target_id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> shared upcoming travel dates.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> shared upcoming travel dates.
+          <?php endif; ?>
         <?php elseif ($n['type']==='message'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id'], (int)$me['id']);

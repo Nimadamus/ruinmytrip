@@ -15,7 +15,7 @@ check() { # path expected
 
 echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
-for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going /tags \
+for p in / /explore /travelers /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /login /register /terms /privacy /guidelines /safety /affiliate \
          /editorial-policy /sitemap.xml /robots.txt \
          /blog /blog/tourist-taxes-2026 /blog/amsterdam-tourist-tax-2026 \
@@ -33,6 +33,7 @@ check /d/marrakech-morocco 200
 echo "-- negative (expect 404 / auth 302) --"
 check /this-page-does-not-exist 404
 check /feed 302   # logged out -> /login
+check /welcome 302
 echo "-- content / DB connectivity --"
 if curl -s ${INSECURE} "$BASE/" | grep -q "Honest 2026 travel intel"; then echo "  OK   homepage rendered (DB reachable)"; else echo "  FAIL homepage content / DB"; fail=$((fail+1)); fi
 if curl -s ${INSECURE} "$BASE/sitemap.xml" | grep -q "/meetups"; then echo "  FAIL sitemap lists empty /meetups"; fail=$((fail+1)); else echo "  OK   sitemap omits empty /meetups"; fi

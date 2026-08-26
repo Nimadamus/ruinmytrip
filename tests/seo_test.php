@@ -59,6 +59,7 @@ check('place title does not claim traveler reviews', str_contains($pt, 'reviewed
 echo "\n-- sitemap --\n";
 $locs = array_column(rmt_sitemap_entries(), 'loc');
 check('home is in', in_array('https://example.test/', $locs, true), true);
+check('travelers directory is in', in_array('https://example.test/travelers', $locs, true), true);
 check('destination is in', in_array('https://example.test/d/barcelona-spain', $locs, true), true);
 check('guide is in', in_array('https://example.test/g/barcelona-spain-travel-guide', $locs, true), true);
 check('empty meetups is out', in_array('https://example.test/meetups', $locs, true), false);

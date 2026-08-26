@@ -20,6 +20,7 @@ require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/meetups.php';
+require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/profiles.php';
 require BASE_PATH . '/app/tags.php';
 require BASE_PATH . '/app/mentions.php';

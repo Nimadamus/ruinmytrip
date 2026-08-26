@@ -90,6 +90,23 @@
     </div></div>
   <?php endif; ?>
 
+  <?php if (!empty($plans)): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px"><?= $isMe ? 'Your upcoming trips' : 'Upcoming trips' ?></p>
+      <ul class="list-plain" style="margin:0">
+        <?php foreach ($plans as $pl): ?>
+          <li style="padding:6px 0;border-bottom:1px solid var(--line)">
+            <a href="<?= e(url('d/'.$pl['dest_slug'])) ?>"><?= e($pl['dest_name']) ?></a>
+            <span class="muted"> · <?= e(date('M j', strtotime((string)$pl['date_from']))) ?> – <?= e(date('M j, Y', strtotime((string)$pl['date_to']))) ?></span>
+            <?php if ($isMe && $pl['visibility'] !== 'public'): ?>
+              <span class="hint"> · <?= $pl['visibility'] === 'followers' ? 'followers' : 'only you' ?></span>
+            <?php endif; ?>
+          </li>
+        <?php endforeach; ?>
+      </ul>
+    </div></div>
+  <?php endif; ?>
+
   <?php if ($wishlist): ?>
     <div class="card" style="margin:18px 0"><div class="card-body">
       <p class="eyebrow" style="margin:0 0 8px">Want to visit</p>

@@ -1,5 +1,5 @@
 <?php /** @var array $items @var array $me */
-$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection'];
+$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going"];
 ?>
 <div class="wrap" style="max-width:760px">
   <h1 style="margin-top:24px">Your feed</h1>
@@ -9,9 +9,10 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
     <a class="btn btn-ghost btn-sm" href="<?= e(url('review/new')) ?>">Write a review</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('guide/new')) ?>">Write a guide</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('blog/new')) ?>">Write a blog post</a>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('going')) ?>">Share dates</a>
   </div>
   <?php if (!$items): ?>
-    <div class="callout">You're not following anyone yet. <a href="<?= e(url('explore')) ?>">Explore destinations</a> and find travelers to follow.</div>
+    <div class="callout">You're not following anyone yet. <a href="<?= e(url('travelers')) ?>">Find travelers</a> or <a href="<?= e(url('explore')) ?>">explore destinations</a>.</div>
   <?php endif; ?>
   <?php foreach ($items as $it): ?>
     <article class="card" style="margin-bottom:18px">

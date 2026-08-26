@@ -1,13 +1,21 @@
-<?php /** @var array $rows */ $me = current_user(); ?>
+<?php /** @var array $rows @var ?array $me @var array $dests */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Who's going</p>
   <h1>Who's going</h1>
-  <div class="callout"><b>Destination + date range only.</b> RuinMyTrip never shows precise or real-time location. Share your plans only if you choose to, and control who sees them in <a href="<?= e($me?url('settings'):url('register')) ?>">settings</a>.</div>
+  <div class="callout"><b>Destination + date range only.</b> RuinMyTrip never shows precise or real-time location. Share your plans only if you choose to, and control who sees them.</div>
+
+  <?php if ($me): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <?php $current = null; $lockDestId = 0; include __DIR__.'/_going_form.php'; ?>
+    </div></div>
+  <?php else: ?>
+    <p style="margin:16px 0"><a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free to share dates</a></p>
+  <?php endif; ?>
+
   <?php if (!$rows): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
       <h3>Nobody's shared public travel plans yet.</h3>
-      <p class="muted" style="margin:0">When a traveler shares where they're headed, you'll see the destination and date range here — never a precise location. In the meantime, see where travelers are headed.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('explore')) ?>">Explore destinations</a></p>
+      <p class="muted" style="margin:0">When a traveler shares where they're headed, you'll see the destination and date range here — never a precise location.</p>
     </div>
   <?php else: ?>
     <div class="grid g-2" style="padding:14px 0 50px">

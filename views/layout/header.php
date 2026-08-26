@@ -37,6 +37,7 @@
         <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
       </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>
+      <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('discover')) ?>">Discover</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
       <a href="<?= e(url('collections')) ?>">Collections</a>

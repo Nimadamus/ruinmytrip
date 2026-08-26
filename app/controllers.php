@@ -163,14 +163,13 @@ function destination(array $a): void {
     $guides = q_all("SELECT g.* FROM guides g WHERE g.destination_id=? AND g.status='published' ORDER BY g.id DESC", [$id]);
     authors_fill($guides);
     $meetups = q_all("SELECT m.* FROM meetups m WHERE m.destination_id=? AND m.status='published' ORDER BY m.date_start", [$id]);
-    $going = q_all("SELECT g.*, u.username, p.avatar_url, p.display_name FROM going g
-                    JOIN users u ON u.id=g.user_id LEFT JOIN profiles p ON p.user_id=u.id
-                    WHERE g.destination_id=? AND g.visibility='public' ORDER BY g.date_from", [$id]);
     // Community score only. An editorial rating is the site's own opinion and must never be
     // presented, or marked up for search engines, as traveler consensus.
     $avg = rmt_community_avg($id);
     $avgByCategory = rmt_community_avg_by_category($id);
     $me = current_user();
+    $going = rmt_going_list_for_destination($id, $me);
+    $myGoing = $me ? rmt_going_for_user_dest((int)$me['id'], $id) : null;
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
     $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
     // Top places teaser: the destination page shows the best-rated few, /d/{slug}/places has them all.
@@ -182,7 +181,7 @@ function destination(array $a): void {
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
     $relatedPosts = rmt_blog_posts_for_destination((string) $d['slug']);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -336,11 +335,12 @@ function profile(array $a): void {
     // deciding whether to meet a stranger looks here. Attending is NOT -- see rmt_meetups_* .
     $hostedMeetups = rmt_meetups_hosted_upcoming($uid);
     $attendingMeetups = $isMe ? rmt_meetups_attending_upcoming($uid) : [];
+    $plans = rmt_going_list_for_profile($uid, $me);
 
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups'), [
+    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -496,7 +496,30 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections);
+    if ($scopeUid !== null) {
+        $goingSql = "(g.user_id=? OR (
+                        g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?)
+                        AND (g.visibility='public' OR g.visibility='followers')
+                     ))";
+        $goingArgs = [$scopeUid, $scopeUid];
+    } else {
+        $goingSql = "g.visibility='public'";
+        $goingArgs = [];
+    }
+    $goings = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug FROM going g
+                     JOIN destinations d ON d.id=g.destination_id
+                     WHERE $goingSql
+                     ORDER BY g.created_at DESC, g.id DESC LIMIT $limitEach", $goingArgs);
+    foreach ($goings as &$row) {
+        $row['kind'] = 'going';
+        $row['title'] = 'Heading to '.$row['dest_name'];
+        $row['cover_url'] = null;
+        $row['feed_url'] = url('d/'.$row['dest_slug']);
+        $row['feed_excerpt'] = date('M j', strtotime((string)$row['date_from'])).' – '.date('M j, Y', strtotime((string)$row['date_to'])).'. Destination and dates only.';
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -1278,15 +1301,117 @@ function meetup_cancel(array $a): void {
 }
 
 function going_index(array $a): void {
+    $me = current_user();
+    [$visSql, $visArgs] = rmt_going_visibility_sql('g', $me);
     $rows = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url, p.display_name
                    FROM going g JOIN destinations d ON d.id=g.destination_id JOIN users u ON u.id=g.user_id
                    LEFT JOIN profiles p ON p.user_id=u.id
-                   WHERE g.visibility='public' ORDER BY g.date_from");
-    view('going_index', compact('rows'), [
+                   WHERE u.status='active' AND $visSql
+                   ORDER BY g.date_from", $visArgs);
+    $dests = all_dests();
+    view('going_index', compact('rows','me','dests'), [
         'title'=>"Who's going — find travelers by destination & date | RuinMyTrip",
         'description'=>'Discover travelers heading to the same destination in your date range. Destination and date-range only — never precise location.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>"Who's going",'url'=>url('going')]],
     ]);
+}
+
+function going_save(array $a): void {
+    require_verified_email();
+    csrf_check();
+    $me = current_user();
+    if (!rmt_rate_ok('going', (string)$me['id'], 30, 3600)) {
+        flash('You are posting plans very fast. Try again shortly.');
+        redirect(rmt_return_to('/going'));
+    }
+    $v = rmt_going_validate($_POST);
+    if (!$v['ok']) {
+        flash($v['errors'][0]);
+        redirect(rmt_return_to('/going'));
+    }
+    $prev = rmt_going_for_user_dest((int)$me['id'], (int)$v['data']['destination_id']);
+    $gid = rmt_going_upsert((int)$me['id'], $v['data']);
+    if ($v['data']['visibility'] === 'public' && (!$prev || $prev['visibility'] !== 'public')) {
+        rmt_going_notify_followers((int)$me['id'], $gid, 'public');
+    }
+    flash('Saved. Destination and dates only — never a precise location.');
+    $d = dest_by_id((int)$v['data']['destination_id']);
+    redirect($d ? '/d/'.$d['slug'] : '/going');
+}
+
+function going_delete(array $a): void {
+    require_login();
+    csrf_check();
+    $me = current_user();
+    $did = (int) input('destination_id');
+    if ($did > 0) rmt_going_delete((int)$me['id'], $did);
+    flash('Plan removed.');
+    $d = $did ? dest_by_id($did) : null;
+    redirect($d ? '/d/'.$d['slug'] : '/going');
+}
+
+function travelers_index(array $a): void {
+    $people = q_all("SELECT u.id, u.username, u.role, p.display_name, p.bio, p.home_city, p.avatar_url,
+                        (SELECT COUNT(*) FROM reviews r WHERE r.user_id=u.id AND r.status='published') AS reviews,
+                        (SELECT COUNT(*) FROM trips t WHERE t.user_id=u.id AND t.status='published') AS trips
+                     FROM users u LEFT JOIN profiles p ON p.user_id=u.id
+                     WHERE u.status='active' AND u.role <> ?
+                     ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80", [RMT_EDITORIAL_ROLE]);
+    view('travelers_index', ['people'=>$people, 'me'=>current_user()], [
+        'title' => 'Travelers on RuinMyTrip',
+        'description' => 'Real traveler profiles on RuinMyTrip. Follow people whose trips and reviews you trust.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
+    ]);
+}
+
+function welcome_form(array $a): void {
+    require_login();
+    $me = current_user();
+    $dests = q_all('SELECT id, slug, name, country FROM destinations ORDER BY name');
+    $saved = [];
+    foreach (q_all("SELECT target_id FROM saves WHERE user_id=? AND target_type='destination'", [(int)$me['id']]) as $r) {
+        $saved[(int)$r['target_id']] = true;
+    }
+    view('welcome', compact('dests','saved','me'), [
+        'title' => 'Start your traveler profile — RuinMyTrip',
+        'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
+    ]);
+}
+
+function welcome_submit(array $a): void {
+    require_login();
+    csrf_check();
+    $me = current_user();
+    $uid = (int)$me['id'];
+    $wants = array_slice(array_unique(array_map('intval', (array)($_POST['want'] ?? []))), 0, 12);
+    $now = date('Y-m-d H:i:s');
+    foreach ($wants as $did) {
+        if ($did < 1 || !dest_by_id($did)) continue;
+        $has = q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $did]);
+        if ($has) continue;
+        try {
+            db()->prepare("INSERT INTO saves (user_id,target_type,target_id,created_at) VALUES (?,'destination',?,?)")
+               ->execute([$uid, $did, $now]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+    }
+    if (trim((string)($_POST['date_from'] ?? '')) !== '' || trim((string)($_POST['date_to'] ?? '')) !== '') {
+        if (!email_is_verified($me)) {
+            flash('Confirm your email before sharing travel dates.');
+            redirect('/verify-email');
+        }
+        $v = rmt_going_validate($_POST);
+        if ($v['ok']) {
+            $gid = rmt_going_upsert($uid, $v['data']);
+            rmt_going_notify_followers($uid, $gid, $v['data']['visibility']);
+        } else {
+            flash($v['errors'][0]);
+            redirect('/welcome');
+        }
+    }
+    flash('Profile started. Add a trip or a review whenever you are ready.');
+    redirect('/feed');
 }
 
 function leaderboard(array $a): void {
@@ -2351,7 +2476,7 @@ function verify_email_confirm(array $a): void {
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$row['user_id'];
     flash('Email confirmed. Welcome to RuinMyTrip.');
-    redirect('/feed');
+    redirect('/welcome');
 }
 
 /** POST /verify-email/resend */

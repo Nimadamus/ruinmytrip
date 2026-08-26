@@ -16,6 +16,8 @@
             <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
             <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
           </form>
+        <?php else: ?>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('register')) ?>">Join to save this</a>
         <?php endif; ?>
         <?php if ($wantCount > 0): ?>
           <p class="hint" style="color:#e8eef5;margin:.4rem 0 0"><?= $wantCount ?> <?= $wantCount === 1 ? 'traveler wants' : 'travelers want' ?> to visit</p>
@@ -248,7 +250,7 @@
       <div class="card" style="margin-top:18px"><div class="card-body">
         <h3>Who's going</h3>
         <p class="hint">Destination + date range only. Never precise location.</p>
-        <?php if (!$going): ?><p class="muted">No travelers listed yet.</p><?php endif; ?>
+        <?php if (!$going): ?><p class="muted">No travelers listed yet. Be the first.</p><?php endif; ?>
         <ul class="list-plain">
           <?php foreach ($going as $g): ?>
             <li class="meta-row" style="justify-content:flex-start">
@@ -257,6 +259,11 @@
             </li>
           <?php endforeach; ?>
         </ul>
+        <?php if ($me): ?>
+          <?php $dests = [['id'=>$d['id'],'name'=>$d['name'],'country'=>$d['country']]]; $current = $myGoing; $lockDestId = (int)$d['id']; include __DIR__.'/_going_form.php'; ?>
+        <?php else: ?>
+          <a class="btn btn-accent btn-sm btn-block" style="margin-top:10px" href="<?= e(url('register')) ?>">Join to share dates</a>
+        <?php endif; ?>
         <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('going')) ?>">See who's going</a>
       </div></div>
 

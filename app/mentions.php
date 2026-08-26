@@ -108,6 +108,9 @@ function rmt_notification_target_url(string $type, int $id, int $forUserId = 0):
         case 'meetup':
             $r = q_one('SELECT id FROM meetups WHERE id=?', [$id]);
             return $r ? url('meetup/' . (int)$r['id']) : null;
+        case 'going':
+            $r = q_one("SELECT d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?", [$id]);
+            return $r ? url('d/' . $r['slug']) : url('going');
         case 'user':
             $r = q_one("SELECT username FROM users WHERE id=? AND status='active'", [$id]);
             return $r ? url('u/' . $r['username']) : null;
