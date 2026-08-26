@@ -65,9 +65,10 @@ function home(array $a): void {
                                             WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $stat_editorial_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
                                             WHERE r.status='published' AND u.role = ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
+    $stat_travelers = (int)(q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
     $latestPosts = q_all("SELECT slug, title, summary, cover_url, category, created_at FROM blog_posts WHERE status='published' ORDER BY created_at DESC, id DESC LIMIT 3");
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','taxPost','latestPosts'), [
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts'), [
         'title' => 'RuinMyTrip — 2026 travel costs, tourist taxes, tickets and honest reviews',
         'description' => 'What a trip actually costs in 2026: tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
@@ -181,7 +182,14 @@ function destination(array $a): void {
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
     $relatedPosts = rmt_blog_posts_for_destination((string) $d['slug']);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts'), [
+    $been = $me ? (bool) rmt_visit_get((int)$me['id'], $id) : false;
+    $beenCount = rmt_visit_count($id);
+    $beenPeople = rmt_visits_for_destination($id, 8);
+    $wantPeople = rmt_wanters_for_destination($id, 8);
+    $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
+                       LEFT JOIN profiles p ON p.user_id=u.id
+                       WHERE c.target_type='destination' AND c.target_id=? AND c.status='published' ORDER BY c.id", [$id]);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts','been','beenCount','beenPeople','wantPeople','comments'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -336,11 +344,12 @@ function profile(array $a): void {
     $hostedMeetups = rmt_meetups_hosted_upcoming($uid);
     $attendingMeetups = $isMe ? rmt_meetups_attending_upcoming($uid) : [];
     $plans = rmt_going_list_for_profile($uid, $me);
+    $beenPlaces = rmt_visits_for_user($uid);
 
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans'), [
+    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans','beenPlaces'), [
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -1985,12 +1994,13 @@ function follow_action(array $a): void {
  * reaches a table name is never taken raw from the request.
  */
 const RMT_INTERACT_TARGETS = [
-    'trip'       => 'trips',
-    'review'     => 'reviews',
-    'guide'      => 'guides',
-    'meetup'     => 'meetups',
-    'blog_post'  => 'blog_posts',
-    'collection' => 'collections',
+    'trip'        => 'trips',
+    'review'      => 'reviews',
+    'guide'       => 'guides',
+    'meetup'      => 'meetups',
+    'blog_post'   => 'blog_posts',
+    'collection'  => 'collections',
+    'destination' => 'destinations',
 ];
 
 /**
@@ -2017,6 +2027,7 @@ function rmt_interact_owner_column(string $tt): string {
 
 /** The id of whoever owns $tt#$tid, or 0 if there is no such row or no such type. */
 function rmt_content_owner_id(string $tt, int $tid): int {
+    if ($tt === 'destination') return 0; // destinations are not owned by a member
     $table = RMT_INTERACT_TARGETS[$tt] ?? null;
     if (!$table || $tid < 1) return 0;
     $col = rmt_interact_owner_column($tt);
@@ -2043,6 +2054,11 @@ function rmt_blocked_from(int $userId, string $tt, int $tid): bool {
 function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
     $table = RMT_INTERACT_TARGETS[$tt] ?? null;
     if (!$table || $tid < 1) return false;
+    // Destinations are global rows with no owner/status. Talking on a city page is the
+    // social action that exists before anyone has written a trip or review.
+    if ($tt === 'destination') {
+        return (bool) q_one('SELECT id FROM destinations WHERE id = ?', [$tid]);
+    }
 
     $col = rmt_interact_owner_column($tt);
     $row = q_one("SELECT {$col} AS user_id, status FROM {$table} WHERE id = ?", [$tid]);
@@ -2082,14 +2098,31 @@ function react_action(array $a): void {
     redirect(rmt_return_to());
 }
 
-/**
- * POST /destination/save — a "want to visit" bucket list, toggled on/off. Kept outside
- * react_action/RMT_INTERACT_TARGETS deliberately: destinations are global editorial rows with no
- * user_id/status columns (they are never a draft, never owned by a user), so the generic
- * rmt_can_interact() ownership/visibility check does not apply and would need a special case for
- * the one content type it was never meant to cover. Reuses the same `saves` table other saves
- * already use, just with target_type='destination'.
- */
+/** POST /destination/been — self-asserted "I've been". Not a review, not a rating. */
+function destination_been_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    if (rmt_is_editorial($me)) { flash('Editorial accounts do not stamp visits.'); redirect(rmt_return_to()); }
+    $did = (int) input('destination_id');
+    if (!$did || !dest_by_id($did)) redirect(rmt_return_to());
+    if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(rmt_return_to());
+    }
+    $on = rmt_visit_toggle((int)$me['id'], $did);
+    flash($on ? "Marked as a place you've been. This is not a review and is not a rating." : 'Removed the been stamp.');
+    redirect(rmt_return_to());
+}
+
+function founding(array $a): void {
+    $n = (int) (q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
+    $left = max(0, 100 - $n);
+    view('founding', compact('n','left'), [
+        'title' => 'Founding Traveler — first 100 reviewers on RuinMyTrip',
+        'description' => 'Join RuinMyTrip as one of the first 100 travelers to publish a review and earn the Founding Traveler badge. No fake members. No invented reviews.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Founding Traveler','url'=>url('founding')]],
+    ]);
+}
+
 function destination_save_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $did = (int) input('destination_id');

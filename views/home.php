@@ -14,11 +14,12 @@
       <?php if ($taxPost): ?>
         <a class="btn btn-ghost" href="<?= e(url('blog/'.$taxPost['slug'])) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">2026 tourist taxes</a>
       <?php endif; ?>
+      <a class="btn btn-ghost" href="<?= e(url('founding')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">Founding Traveler</a>
     </p>
     <div class="hero-stats">
       <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
       <div><b><?= (int)$stat_editorial_reviews ?></b><span>Researched reviews</span></div>
-      <div><b>0</b><span>Fake ones</span></div>
+      <div><b><?= (int)($stat_travelers ?? 0) ?></b><span><?= (int)($stat_travelers ?? 0) === 1 ? 'Traveler' : 'Travelers' ?></span></div>
     </div>
   </div>
 </section>
@@ -151,5 +152,6 @@
 <section class="block"><div class="wrap" style="text-align:center;background:linear-gradient(120deg,var(--ink),var(--brand));color:#fff;border-radius:24px;padding:56px 24px">
   <h2 style="color:#fff;font-size:2rem">Been there? Correct us.</h2>
   <p style="color:#dfe9f2;max-width:48ch;margin:0 auto 20px">Prices move. A first-hand review is worth more than desk research, and we will show it next to ours.</p>
-  <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write the first traveler review</a>
+  <a class="btn btn-accent" href="<?= e(url('founding')) ?>">Become a Founding Traveler</a>
+      <a class="btn btn-ghost" href="<?= e(url('review/new')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">Write a review</a>
 </div></section>

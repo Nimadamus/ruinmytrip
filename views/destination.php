@@ -11,16 +11,27 @@
       </div>
       <div style="margin-left:auto;text-align:right">
         <?php if ($me): ?>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <form method="post" action="<?= e(url('destination/been')) ?>">
+            <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
+            <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
+            <button class="btn <?= !empty($been) ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= !empty($been) ? "Been ✓" : "I've been" ?></button>
+          </form>
           <form method="post" action="<?= e(url('destination/save')) ?>">
             <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
             <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
             <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
           </form>
+          </div>
         <?php else: ?>
-          <a class="btn btn-ghost btn-sm" href="<?= e(url('register')) ?>">Join to save this</a>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('register')) ?>">Join to mark been / want</a>
         <?php endif; ?>
-        <?php if ($wantCount > 0): ?>
-          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0"><?= $wantCount ?> <?= $wantCount === 1 ? 'traveler wants' : 'travelers want' ?> to visit</p>
+        <?php if ($wantCount > 0 || !empty($beenCount)): ?>
+          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0">
+            <?php if (!empty($beenCount)): ?><?= (int)$beenCount ?> been here<?php endif; ?>
+            <?php if (!empty($beenCount) && $wantCount > 0): ?> · <?php endif; ?>
+            <?php if ($wantCount > 0): ?><?= $wantCount ?> <?= $wantCount === 1 ? 'wants' : 'want' ?> to visit<?php endif; ?>
+          </p>
         <?php endif; ?>
       </div>
     </div>
@@ -86,6 +97,27 @@
           </div>
         <?php endforeach; ?>
       </div>
+    </div></div>
+  <?php endif; ?>
+
+  <?php if (!empty($beenPeople) || !empty($wantPeople)): ?>
+    <div class="card" style="margin-top:12px"><div class="card-body">
+      <?php if (!empty($beenPeople)): ?>
+        <p class="rs-label" style="margin:0 0 8px">Been here</p>
+        <div class="meta-row" style="flex-wrap:wrap;margin:0 0 10px">
+          <?php foreach ($beenPeople as $bp): ?>
+            <a href="<?= e(url('u/'.$bp['username'])) ?>" title="@<?= e($bp['username']) ?>"><img class="avatar" src="<?= e(avatar_url($bp['avatar_url']??null)) ?>" alt=""></a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <?php if (!empty($wantPeople)): ?>
+        <p class="rs-label" style="margin:0 0 8px">Want to visit</p>
+        <div class="meta-row" style="flex-wrap:wrap;margin:0">
+          <?php foreach ($wantPeople as $wp): ?>
+            <a href="<?= e(url('u/'.$wp['username'])) ?>" title="@<?= e($wp['username']) ?>"><img class="avatar" src="<?= e(avatar_url($wp['avatar_url']??null)) ?>" alt=""></a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
     </div></div>
   <?php endif; ?>
 
@@ -230,6 +262,18 @@
             </div></a></article>
         <?php endforeach; ?>
       </div>
+
+      <p style="margin:18px 0 0">
+        <button class="btn btn-ghost btn-sm" type="button" data-copy="<?= e(url('d/'.$d['slug'])) ?>">Copy link</button>
+      </p>
+
+      <?php
+        $targetType = 'destination'; $targetId = (int)$d['id']; $ownerId = 0;
+        $returnUrl = url('d/'.$d['slug']);
+        $likeCount = 0; $saveCount = 0; $liked = false; $saved = $saved ?? false;
+        $showActionsBar = false;
+        include __DIR__ . '/_engagement.php';
+      ?>
     </div>
 
     <aside>

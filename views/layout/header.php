@@ -38,6 +38,7 @@
       </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <a href="<?= e(url('founding')) ?>">Founding</a>
       <a href="<?= e(url('discover')) ?>">Discover</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
       <a href="<?= e(url('collections')) ?>">Collections</a>

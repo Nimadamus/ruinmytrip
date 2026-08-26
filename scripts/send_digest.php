@@ -51,6 +51,16 @@ foreach ($recipients as $u) {
                              LEFT JOIN users u2 ON u2.id = r.user_id
                              WHERE f.follower_id = ? AND r.status = 'published' AND r.created_at > ?
                              ORDER BY r.created_at DESC LIMIT 5", [$uid, $since]);
+    $watchedReviews = q_all("SELECT r.id, r.title, r.subject_name, r.slug, d.name dest_name
+                             FROM reviews r JOIN saves s ON s.target_type='destination' AND s.target_id=r.destination_id
+                             LEFT JOIN destinations d ON d.id=r.destination_id
+                             JOIN users ru ON ru.id=r.user_id
+                             WHERE s.user_id = ? AND r.status='published' AND ru.role <> 'editorial'
+                               AND r.created_at > ? AND r.user_id <> ?
+                             ORDER BY r.created_at DESC LIMIT 5", [$uid, $since, $uid]);
+    foreach ($watchedReviews as $wr) {
+        $followedReviews[] = $wr + ['username' => ($wr['dest_name'] ?? 'a destination')];
+    }
 
     if ($followerCount === 0 && $votes === 0 && $compliments === 0 && !$followedReviews) {
         $skippedEmpty++;

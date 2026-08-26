@@ -20,6 +20,7 @@
       <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>
       <a href="<?= e(url('safety')) ?>">Meetup Safety</a>
       <a href="<?= e(url('register')) ?>">Create an account</a>
+      <a href="<?= e(url('founding')) ?>">Founding Traveler</a>
     </div>
     <div>
       <h4>Legal</h4>

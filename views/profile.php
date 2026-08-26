@@ -90,6 +90,18 @@
     </div></div>
   <?php endif; ?>
 
+  <?php if (!empty($beenPlaces)): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px">Been</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <?php foreach ($beenPlaces as $b): ?>
+          <a class="chip" href="<?= e(url('d/'.$b['slug'])) ?>"><?= e($b['name']) ?></a>
+        <?php endforeach; ?>
+      </div>
+      <p class="hint" style="margin:8px 0 0">Self-asserted. Not a review and not a rating.</p>
+    </div></div>
+  <?php endif; ?>
+
   <?php if (!empty($plans)): ?>
     <div class="card" style="margin:18px 0"><div class="card-body">
       <p class="eyebrow" style="margin:0 0 8px"><?= $isMe ? 'Your upcoming trips' : 'Upcoming trips' ?></p>

@@ -21,10 +21,14 @@
   </form>
 
   <?php if (!$rows): ?>
-    <p class="muted">
-      No ranked reviewers yet<?= $dest ? ' for '.e($dest['name']) : '' ?>. Be the first to
-      <a href="<?= e(url('review/new')) ?>">post a review</a>.
-    </p>
+    <div class="empty-cta">
+      <h3>No ranked reviewers yet<?= $dest ? ' for '.e($dest['name']) : '' ?>.</h3>
+      <p class="muted" style="margin:0">The board stays empty until a traveler publishes a review. Editorial ratings do not count. First 100 reviewers earn Founding Traveler.</p>
+      <p style="margin:16px 0 0">
+        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a review</a>
+        <a class="btn btn-ghost" href="<?= e(url('founding')) ?>">How founding works</a>
+      </p>
+    </div>
   <?php endif; ?>
 
   <div class="grid" style="gap:12px;padding-bottom:50px">
