@@ -1,12 +1,15 @@
 <?php /** @var array $p @var ?array $me @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('blog')) ?>">Blog</a> / <?= e($p['title']) ?></p></div>
 <div class="wrap prose">
+  <?php $isEd = rmt_is_editorial($p); ?>
   <span class="chip"><?= e(ucfirst($p['category'])) ?></span>
+  <?php if ($isEd): ?><?= rmt_editorial_badge() ?><?php endif; ?>
   <h1><?= e($p['title']) ?></h1>
-  <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>">@<?= e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>
-  <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e($p['cover_url']) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
+  <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>
+  <?php if ($isEd): ?><div class="callout"><?= e(rmt_editorial_disclosure()) ?></div><?php endif; ?>
+  <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e(abs_url($p['cover_url'])) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($p['summary']) ?></p>
-  <div style="white-space:pre-wrap"><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
+  <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $p['body'] : rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>

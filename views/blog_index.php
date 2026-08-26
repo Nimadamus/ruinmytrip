@@ -3,7 +3,7 @@
   <div class="section-head">
     <div>
       <h1>Blog</h1>
-      <p class="muted">Travel tips, safety notes, budget breakdowns and real stories, written by the RuinMyTrip community.</p>
+      <p class="muted">2026 tourist taxes, ticket prices and travel rules, researched from official sources, plus stories from travelers who actually went.</p>
     </div>
     <a class="btn btn-accent btn-sm" href="<?= e(url($me ? 'blog/new' : 'register')) ?>">Write a post</a>
   </div>

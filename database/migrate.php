@@ -16,6 +16,8 @@ require BASE_PATH . '/app/loadconfig.php';
 $GLOBALS['config'] = rmt_load_config();
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/editorial.php';
+require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/migrator.php';
 require BASE_PATH . '/database/seed.php';
 
@@ -47,6 +49,14 @@ try {
     } else {
         fwrite(STDOUT, "migrate: seed skipped (users={$count})\n");
     }
+
+    try {
+        $bn = rmt_upsert_editorial_blog();
+        fwrite(STDOUT, "migrate: editorial blog upserted ({$bn} changed)\n");
+    } catch (Throwable $e) {
+        fwrite(STDOUT, "migrate: editorial blog skipped (" . $e->getMessage() . ")\n");
+    }
+
     fwrite(STDOUT, "migrate: done\n");
 } catch (Throwable $e) {
     fwrite(STDERR, "migrate FAILED: " . $e->getMessage() . "\n");

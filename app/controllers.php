@@ -45,27 +45,30 @@ function home(array $a): void {
     $stories = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                       LEFT JOIN destinations d ON d.id=t.destination_id
                       WHERE t.status='published' ORDER BY t.created_at DESC, t.id DESC LIMIT 4");
-    $reviews = q_all("SELECT r.*, d.slug dest_slug FROM reviews r
-                      LEFT JOIN destinations d ON d.id=r.destination_id
-                      WHERE r.status='published' ORDER BY r.verified DESC, r.id DESC LIMIT 4");
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug FROM meetups m
                       LEFT JOIN destinations d ON d.id=m.destination_id
                       WHERE m.status='published' ORDER BY m.date_start ASC LIMIT 3");
     $guides = q_all("SELECT g.*, d.name dest_name FROM guides g
                      LEFT JOIN destinations d ON d.id=g.destination_id
-                     WHERE g.status='published' ORDER BY g.id DESC LIMIT 3");
+                     WHERE g.status='published' ORDER BY g.id DESC LIMIT 6");
+    // Homepage reviews are destination-level: place reviews belong on /p/ pages, and the
+    // query-shaped titles (tourist tax, tickets, what nearly ruins it) are the destination ones.
+    $reviews = q_all("SELECT r.*, d.slug dest_slug FROM reviews r
+                      LEFT JOIN destinations d ON d.id=r.destination_id
+                      WHERE r.status='published' AND r.place_id IS NULL
+                      ORDER BY r.id DESC LIMIT 4");
     authors_fill($stories);
     authors_fill($reviews);
     authors_fill($guides);
-    // Real total, not count($trending) — $trending is LIMIT 6 and would print "6" forever.
     $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
-    // Real community total (editorial excluded). Drives the homepage copy: while it is 0 the page
-    // says so plainly rather than dressing editorial content up as community activity.
     $stat_community_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
                                             WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews'), [
-        'title' => 'RuinMyTrip — Real trips, honest reviews, safe travel meetups',
-        'description' => 'Join a trustworthy travel community. Share trips, review destinations and stays, follow travelers you trust, and find safe public meetups — RuinMyTrip.',
+    $stat_editorial_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
+                                            WHERE r.status='published' AND u.role = ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
+    $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','taxPost'), [
+        'title' => 'RuinMyTrip — 2026 travel costs, tourist taxes, tickets and honest reviews',
+        'description' => 'What a trip actually costs in 2026: tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
             'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']]),
     ]);
@@ -120,7 +123,7 @@ function explore(array $a): void {
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $topTags = rmt_top_tags(14);
     view('explore', compact('dests','cats','qs','cat','sort','topTags'), [
-        'title' => 'Explore destinations — RuinMyTrip',
+        'title' => 'Explore destinations: 2026 costs, taxes and tickets | RuinMyTrip',
         'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
     ]);
@@ -178,7 +181,7 @@ function destination(array $a): void {
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
     view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount'), [
-        'title' => $d['name'].', '.$d['country'].' — travel guide, reviews & meetups | RuinMyTrip',
+        'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
@@ -223,8 +226,8 @@ function destination_places(array $a): void {
     $savedMap = rmt_saved_place_map($me ? (int) $me['id'] : null, $ids);
     $saveCounts = rmt_place_save_counts($ids);
     view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts'), [
-        'title' => $label.' in '.$d['name'].', '.$d['country'].' — reviewed by travelers | RuinMyTrip',
-        'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', rated by travelers who actually went.',
+        'title' => $label.' in '.$d['name'].' 2026: tickets, prices and reviews | RuinMyTrip',
+        'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', '.$d['country'].', with current 2026 prices and official reviews.',
         'og_image' => abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],['name'=>'Places','url'=>url('d/'.$d['slug'].'/places')]],
@@ -290,7 +293,7 @@ function place_show(array $a): void {
     }
 
     view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby','saved','saveCount'), [
-        'title' => $p['name'].', '.$p['dest_name'].' — '.rmt_place_title_question((string) $p['type']).' | RuinMyTrip',
+        'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
         'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($p['dest_hero']),
@@ -594,8 +597,8 @@ function reviews_index(array $a): void {
     }
     authors_fill($reviews);
     view('reviews_index', compact('reviews','mine','cat','sort','me'), [
-        'title'=>$mine ? 'Your reviews — RuinMyTrip' : 'Traveler reviews — RuinMyTrip',
-        'description'=>'Honest traveler reviews of destinations, hotels, restaurants, attractions and experiences.',
+        'title'=>$mine ? 'Your reviews — RuinMyTrip' : '2026 destination reviews: taxes, tickets, what nearly ruins it | RuinMyTrip',
+        'description'=>'Honest 2026 reviews of destinations, hotels, restaurants and attractions: current prices, tourist taxes, and the part that nearly ruins the trip.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')]],
     ]);
 }
@@ -605,8 +608,8 @@ function guides_index(array $a): void {
                      WHERE g.status='published' ORDER BY g.id DESC");
     authors_fill($guides);
     view('guides_index', compact('guides'), [
-        'title'=>'Travel guides & itineraries — RuinMyTrip',
-        'description'=>'Detailed, traveler-written guides and day-by-day itineraries you can trust.',
+        'title'=>'2026 travel guides: costs, tickets, tourist taxes and scams | RuinMyTrip',
+        'description'=>'Practical 2026 city guides with current tourist taxes, ticket prices, transit fares and the friction that catches visitors off guard.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Guides','url'=>url('guides')]],
     ]);
 }
@@ -770,8 +773,8 @@ function blog_index(array $a): void {
     $posts = q_all($sql, $args);
     authors_fill($posts);
     view('blog_index', ['posts'=>$posts,'cat'=>(string)$cat], [
-        'title'=>'Blog — RuinMyTrip',
-        'description'=>'Travel tips, safety notes, budget breakdowns and real stories from the RuinMyTrip community.',
+        'title'=>'2026 travel notes: tourist taxes, ticket prices and rules | RuinMyTrip',
+        'description'=>'Current 2026 tourist taxes, ticket prices, access fees and travel rules, plus stories from travelers who actually went.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')]],
     ]);
 }
@@ -790,12 +793,17 @@ function blog_show(array $a): void {
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'blog_post',$pid]);
     $tags = rmt_tags_for('blog_post', $pid);
+    $isEd = rmt_is_editorial($p);
+    $ld = ['@context'=>'https://schema.org','@type'=>'Article','headline'=>$p['title'],
+           'description'=>$p['summary'],'datePublished'=>$p['created_at'],
+           'url'=>url('blog/'.$p['slug'])];
+    if ($isEd) $ld['author'] = ['@type'=>'Organization','name'=>rmt_editorial_name()];
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags'), [
-        'title' => $p['title'].' — RuinMyTrip Blog',
+        'title' => $p['title'].' | RuinMyTrip',
         'description' => $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')],['name'=>$p['title'],'url'=>url('blog/'.$p['slug'])]],
-        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$p['title'],'datePublished'=>$p['created_at']]),
+        'jsonld' => jsonld($ld),
     ]);
 }
 
@@ -2656,38 +2664,13 @@ function readyz(array $a): void {
 /* ---------- sitemap ---------- */
 function sitemap(array $a): void {
     header('Content-Type: application/xml; charset=utf-8');
-    $urls = [url(), url('explore'), url('discover'), url('reviews'), url('guides'), url('collections'), url('blog'), url('meetups'), url('going'),
-             url('leaderboard'), url('tags'), url('editorial-policy'), url('terms'), url('privacy'),
-             url('guidelines'), url('affiliate'), url('safety')];
-    foreach (rmt_top_tags(100) as $t) $urls[] = url('tag/'.$t['name']);
-    foreach (q_all('SELECT slug FROM destinations') as $d) $urls[] = url('d/'.$d['slug']);
-    // Only destinations with at least one real traveler photo get a /photos page indexed --
-    // an empty gallery is thin content, not a page worth ranking.
-    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
-                    WHERE EXISTS (SELECT 1 FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=d.id AND t.status='published')
-                       OR EXISTS (SELECT 1 FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=d.id AND r.status='published')") as $d) {
-        $urls[] = url('d/'.$d['slug'].'/photos');
-    }
-    // Places index pages, and only places that actually have a published review on them. A place
-    // whose reviews are all drafts is a real row but an empty page, and thin pages do not belong
-    // in the sitemap (same rule the /photos galleries follow above).
-    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d JOIN places p ON p.destination_id=d.id
-                    WHERE p.status='active'") as $d) $urls[] = url('d/'.$d['slug'].'/places');
-    foreach (q_all("SELECT DISTINCT p.slug FROM places p JOIN reviews r ON r.place_id=p.id
-                    WHERE p.status='active' AND r.status='published'") as $p) $urls[] = url('p/'.$p['slug']);
-    foreach (q_all("SELECT id,slug FROM trips WHERE status='published'") as $t) $urls[] = url('trip/'.$t['id'].'/'.$t['slug']);
-    foreach (q_all("SELECT slug FROM guides WHERE status='published'") as $g) $urls[] = url('g/'.$g['slug']);
-    foreach (q_all("SELECT slug FROM collections WHERE status='published'") as $c) $urls[] = url('c/'.$c['slug']);
-    foreach (q_all("SELECT slug FROM blog_posts WHERE status='published'") as $bp) $urls[] = url('blog/'.$bp['slug']);
-    // Published reviews only — drafts/hidden/removed are never listed. Rows missing a slug
-    // (pre-Phase-4) fall back to a generated one so the URL still resolves.
-    foreach (q_all("SELECT id, slug, title, subject_name FROM reviews WHERE status='published'") as $rv) {
-        $urls[] = url('review/'.$rv['id'].'/'.($rv['slug'] ?: rmt_review_slug($rv)));
-    }
-    foreach (q_all("SELECT username FROM users WHERE status='active'") as $u) $urls[] = url('u/'.$u['username']);
     echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
     echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-    foreach ($urls as $u) echo '  <url><loc>'.e($u).'</loc></url>'."\n";
+    foreach (rmt_sitemap_entries() as $row) {
+        echo '  <url><loc>'.e($row['loc']).'</loc>';
+        if (!empty($row['lastmod'])) echo '<lastmod>'.e($row['lastmod']).'</lastmod>';
+        echo "</url>\n";
+    }
     echo '</urlset>';
 }
 

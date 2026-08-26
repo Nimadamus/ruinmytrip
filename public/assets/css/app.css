@@ -108,6 +108,10 @@ textarea{min-height:140px;resize:vertical}
 .prose{max-width:720px;margin:0 auto}
 .prose h2{margin-top:1.6em}
 .prose p{margin:0 0 1em}
+.prose table{width:100%;border-collapse:collapse;margin:0 0 1.4em;font-size:.92rem}
+.prose th,.prose td{border:1px solid var(--line);padding:.5rem .6rem;text-align:left;vertical-align:top}
+.prose th{background:var(--ink);color:#fff;font-weight:600}
+.prose tr:nth-child(even) td{background:#f3f6f8}
 .article-hero{width:100%;max-height:440px;object-fit:cover;border-radius:18px;margin:18px 0}
 
 /* profile */

@@ -99,7 +99,7 @@ function rmt_review_slug(array $r): string {
     $base = trim((string) ($r['title'] ?: $r['subject_name'] ?: ''));
     $slug = slugify($base);
     if ($slug === '') $slug = 'review';
-    return mb_substr($slug, 0, 70);
+    return rtrim(mb_substr($slug, 0, 70), '-');
 }
 
 /** Canonical path for a review. */

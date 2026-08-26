@@ -53,8 +53,8 @@ if (!$files) fail("no editorial content found in {$dir}");
 $items = $placeItems = [];
 foreach ($files as $f) {
     $json = json_decode((string) file_get_contents($f), true);
-    if (!is_array($json) || (!isset($json['destinations']) && !isset($json['places']))) {
-        fail("malformed JSON (needs a 'destinations' or 'places' key): {$f}");
+    if (!is_array($json) || (!isset($json['destinations']) && !isset($json['places']) && !isset($json['posts']))) {
+        fail("malformed JSON (needs a 'destinations', 'places' or 'posts' key): {$f}");
     }
     foreach ($json['destinations'] ?? [] as $d) $items[] = $d + ['_file' => basename($f)];
     foreach ($json['places'] ?? [] as $p) $placeItems[] = $p + ['_file' => basename($f)];
@@ -399,6 +399,13 @@ try {
                  array_merge([$pid, $meta ?: null], $args, [$srcJson, $now, $now]));
             out('    editorial sections created (' . count(array_filter($vals)) . ' of ' . count($cols) . ')');
         }
+    }
+
+    if ($apply) {
+        $bn = rmt_upsert_editorial_blog();
+        out("editorial blog upserted ({$bn} changed)");
+    } else {
+        out('would upsert ' . count(rmt_editorial_blog_items()) . ' editorial blog posts');
     }
 
     if ($apply) { $pdo->commit(); out('COMMITTED.'); }

@@ -17,7 +17,8 @@ echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
 for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /login /register /terms /privacy /guidelines /safety /affiliate \
-         /editorial-policy /sitemap.xml /robots.txt; do check "$p" 200; done
+         /editorial-policy /sitemap.xml /robots.txt \
+         /blog /blog/tourist-taxes-2026 /b7c4e91a2d8f4e0c9a1b6d5f3e8c2a70.txt; do check "$p" 200; done
 echo "-- editorial layer (expect 200) --"
 # These exist on any correctly published instance. They deliberately do NOT reference the demo
 # seed, which no longer exists anywhere: a smoke test that only passes against fabricated
@@ -29,7 +30,8 @@ echo "-- negative (expect 404 / auth 302) --"
 check /this-page-does-not-exist 404
 check /feed 302   # logged out -> /login
 echo "-- content / DB connectivity --"
-if curl -s ${INSECURE} "$BASE/" | grep -q "Trending now"; then echo "  OK   homepage rendered (DB reachable)"; else echo "  FAIL homepage content / DB"; fail=$((fail+1)); fi
+if curl -s ${INSECURE} "$BASE/" | grep -q "Honest 2026 travel intel"; then echo "  OK   homepage rendered (DB reachable)"; else echo "  FAIL homepage content / DB"; fail=$((fail+1)); fi
+if curl -s ${INSECURE} "$BASE/sitemap.xml" | grep -q "/meetups"; then echo "  FAIL sitemap lists empty /meetups"; fail=$((fail+1)); else echo "  OK   sitemap omits empty /meetups"; fi
 if curl -s ${INSECURE} "$BASE/sitemap.xml" | grep -q "<loc>"; then echo "  OK   sitemap has URLs"; else echo "  FAIL sitemap empty"; fail=$((fail+1)); fi
 # Editorial content must be labelled wherever it renders. If this ever stops matching, the
 # labelling has regressed and the site is passing off its own writing as a traveler's.
