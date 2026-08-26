@@ -17,7 +17,7 @@
 <meta name="theme-color" content="#0f1b2d">
 <link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="RuinMyTrip" href="<?= e(url('feed.xml')) ?>">
-<link rel="stylesheet" href="<?= e(url('assets/css/app.css')) ?>">
+<link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
 </head>

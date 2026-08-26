@@ -9,6 +9,14 @@ function url(string $path = ''): string {
     return rtrim((string)cfg('app_url'), '/') . '/' . ltrim($path, '/');
 }
 
+/** Public asset URL with mtime cache-bust. */
+function rmt_asset(string $rel): string {
+    $rel = ltrim($rel, '/');
+    $file = BASE_PATH . '/public/' . $rel;
+    $v = is_file($file) ? (string) filemtime($file) : '1';
+    return url($rel) . '?v=' . $v;
+}
+
 function redirect(string $path): never { header('Location: ' . $path); exit; }
 
 /**

@@ -18,6 +18,12 @@
     </select>
     <button class="btn btn-primary" type="submit">Search</button>
   </form>
+  <?php if ($sort === 'rating'): ?>
+    <?php $hasTravelerRating = false; foreach ($dests as $dx) { if ($dx['avg_rating'] !== null) { $hasTravelerRating = true; break; } } ?>
+    <?php if (!$hasTravelerRating): ?>
+      <p class="callout" style="margin:-10px 0 24px">No traveler ratings yet, so this list is still A to Z. Official reviews never fill the ranking.</p>
+    <?php endif; ?>
+  <?php endif; ?>
   <?php if (!empty($topTags)): ?>
     <div class="tag-row" style="margin:-14px 0 24px">
       <?php foreach ($topTags as $t): ?>
@@ -33,7 +39,7 @@
         <img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name']) ?>">
         <div class="card-body">
           <span class="chip"><?= e($d['category']) ?></span>
-          <?php if ((int)$d['editorial'] > 0): ?><?= rmt_editorial_badge('review') ?><?php endif; ?>
+          <?php if ((int)$d['editorial'] > 0): ?><?= rmt_editorial_badge('review', false) ?><?php endif; ?>
           <?php if ($d['avg_rating'] !== null): ?><span class="stars" style="font-size:.85rem"><?= stars((int)round((float)$d['avg_rating'])) ?></span><?php endif; ?>
           <h3><?= e($d['name']) ?>, <?= e($d['country']) ?></h3>
           <p class="muted"><?= e($d['summary']) ?></p>

@@ -58,10 +58,13 @@ function rmt_editorial_name(): string {
  * The label chip. Reviews say "Official Review" because that is what the reader is looking at;
  * everything else says "Editorial".
  */
-function rmt_editorial_badge(string $kind = 'editorial'): string {
+function rmt_editorial_badge(string $kind = 'editorial', bool $link = true): string {
     $text = $kind === 'review' ? 'Official Review' : 'Editorial';
-    return '<a class="ed-badge" href="' . e(url('editorial-policy')) . '"'
-         . ' title="Written by the RuinMyTrip team, not a community member. Read the editorial policy.">'
+    $title = 'Written by the RuinMyTrip team, not a community member. Read the editorial policy.';
+    if (!$link) {
+        return '<span class="ed-badge" title="' . e($title) . '">' . e($text) . '</span>';
+    }
+    return '<a class="ed-badge" href="' . e(url('editorial-policy')) . '" title="' . e($title) . '">'
          . e($text) . '</a>';
 }
 

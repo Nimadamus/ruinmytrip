@@ -33,7 +33,7 @@
         <img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt="<?= e($g['title']) ?>">
         <div class="card-body">
           <?php if ($g['dest_name']): ?><span class="chip"><?= e($g['dest_name']) ?></span><?php endif; ?>
-          <?php if (rmt_is_editorial($g)): ?><?= rmt_editorial_badge() ?><?php endif; ?>
+          <?php if (rmt_is_editorial($g)): ?><?= rmt_editorial_badge('editorial', false) ?><?php endif; ?>
           <?php if ($g['premium']): ?><span class="chip" style="background:#fef3c7;color:#92400e">Premium</span><?php endif; ?>
           <h3><?= e($g['title']) ?></h3>
           <p class="muted"><?= e(mb_strimwidth($g['summary'],0,110,'…')) ?></p>

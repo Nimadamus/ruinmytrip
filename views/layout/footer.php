@@ -38,6 +38,6 @@
     © <?= date('Y') ?> RuinMyTrip · Travel boldly, travel safe · <a href="<?= e(url('safety')) ?>">Safety first</a>
   </div>
 </footer>
-<script src="<?= e(url('assets/js/app.js')) ?>" defer></script>
+<script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
 </body>
 </html>

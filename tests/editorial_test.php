@@ -86,6 +86,7 @@ $badge = rmt_editorial_badge('review');
 check('review badge says Official Review', str_contains($badge, 'Official Review'), true);
 check('badge links to the policy',         str_contains($badge, '/editorial-policy'), true);
 check('generic badge says Editorial',      str_contains(rmt_editorial_badge(), 'Editorial'), true);
+check('unlinked badge is not an <a>',      str_contains(rmt_editorial_badge('review', false), '<a '), false);
 check('disclosure denies a personal trip',
       str_contains(rmt_editorial_disclosure(), 'not from a personal trip'), true);
 check('disclosure denies community counting',
