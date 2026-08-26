@@ -1,4 +1,4 @@
-<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost */ ?>
+<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts */ ?>
 <section class="hero">
   <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1900&q=80&auto=format&fit=crop')"></div>
   <div class="hero-inner">
@@ -43,6 +43,24 @@
     <?php endif; ?>
   </div>
 </div></section>
+
+<?php if (!empty($latestPosts)): ?>
+<section class="block"><div class="wrap">
+  <div class="section-head"><div><p class="eyebrow">2026 prices</p><h2>What it costs right now</h2></div>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('blog')) ?>">All notes</a></div>
+  <div class="grid g-3">
+    <?php foreach ($latestPosts as $bp): ?>
+      <article class="card"><a href="<?= e(url('blog/'.$bp['slug'])) ?>">
+        <?php if ($bp['cover_url']): ?><img class="card-media" loading="lazy" src="<?= e(abs_url($bp['cover_url'])) ?>" alt="<?= e($bp['title']) ?>"><?php endif; ?>
+        <div class="card-body">
+          <span class="chip"><?= e(ucfirst((string)$bp['category'])) ?></span>
+          <h3><?= e($bp['title']) ?></h3>
+          <p class="muted"><?= e(mb_strimwidth((string)$bp['summary'],0,120,'…')) ?></p>
+        </div></a></article>
+    <?php endforeach; ?>
+  </div>
+</div></section>
+<?php endif; ?>
 
 <section class="block"><div class="wrap">
   <div class="section-head"><div><p class="eyebrow">Trending now</p><h2>Destinations we researched</h2></div>

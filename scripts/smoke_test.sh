@@ -20,7 +20,9 @@ for p in / /explore /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /editorial-policy /sitemap.xml /robots.txt \
          /blog /blog/tourist-taxes-2026 /blog/amsterdam-tourist-tax-2026 \
          /blog/kyoto-lodging-tax-2026 /blog/edinburgh-visitor-levy-2026 \
-         /b7c4e91a2d8f4e0c9a1b6d5f3e8c2a70.txt; do check "$p" 200; done
+         /blog/anne-frank-house-tickets-2026 /blog/sagrada-familia-tickets-2026 \
+         /blog/barcelona-tourist-tax-2026 \
+         /b7c4e91a2d8f4e0c9a1b6d5f3e8c2a70.txt /google415ee1e6530e2d0f.html; do check "$p" 200; done
 echo "-- editorial layer (expect 200) --"
 # These exist on any correctly published instance. They deliberately do NOT reference the demo
 # seed, which no longer exists anywhere: a smoke test that only passes against fabricated
