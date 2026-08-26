@@ -6,11 +6,13 @@ $from = $current['date_from'] ?? '';
 $to = $current['date_to'] ?? '';
 $vis = $current['visibility'] ?? 'public';
 ?>
-<form method="post" action="<?= e(url('going')) ?>" style="margin:12px 0 0">
+<form method="post" action="<?= e(url('going')) ?>" class="going-form" style="margin:12px 0 0">
   <?= csrf_field() ?>
   <input type="hidden" name="return" value="<?= e(rmt_current_url()) ?>">
-  <p style="margin:0 0 10px"><b><?= $current ? 'Update your dates' : "Share that you're going" ?></b></p>
+  <p style="margin:0 0 8px"><b><?= $current ? 'Update your dates' : "I'm going" ?></b></p>
+  <?php if ($lockDestId < 1): ?>
   <p class="hint" style="margin:0 0 12px">Destination and a date range only. Never a street, hotel, or live location.</p>
+  <?php endif; ?>
   <?php if ($lockDestId > 0): ?>
     <input type="hidden" name="destination_id" value="<?= $lockDestId ?>">
   <?php else: ?>

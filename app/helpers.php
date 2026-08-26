@@ -104,7 +104,7 @@ function view(string $name, array $data = [], array $meta = []): void {
         'title' => cfg('app_name'),
         'description' => 'RuinMyTrip — a trustworthy travel community for real trips, honest reviews, and safe meetups.',
         'canonical' => rmt_current_url(),
-        'og_image' => url('assets/img/og-default.svg'),
+        'og_image' => url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg'),
         'jsonld' => null,
         'breadcrumbs' => [],
     ], $meta);

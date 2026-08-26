@@ -37,17 +37,10 @@
         <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
       </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('founding')) ?>">Founding</a>
-      <a href="<?= e(url('discover')) ?>">Discover</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
-      <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
-      <a href="<?= e(url('tags')) ?>">Topics</a>
-      <a href="<?= e(url('reviews')) ?>">Reviews</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a>
-      <a href="<?= e(url('going')) ?>">Who's going</a>
-      <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
+      <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <a href="<?= e(url('going')) ?>">Going</a>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
         <a href="<?= e(url('saved')) ?>">Saved</a>
@@ -56,7 +49,6 @@
         <?php if (in_array($me['role'],['admin','mod'],true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">@<?= e($me['username']) ?></a>
         <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
-        <a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a>
       <?php else: ?>
         <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
         <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a>

@@ -12,8 +12,12 @@
       <a href="<?= e(url('guides')) ?>">Guides & itineraries</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
+      <a href="<?= e(url('discover')) ?>">Discover</a>
+      <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
+      <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
+      <a href="<?= e(url('tags')) ?>">Topics</a>
     </div>
     <div>
       <h4>Community</h4>

@@ -1,6 +1,6 @@
 <?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts */ ?>
 <section class="hero">
-  <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1900&q=80&auto=format&fit=crop')"></div>
+  <div class="hero-bg" style="background-image:url('<?= e(url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg')) ?>')"></div>
   <div class="hero-inner">
     <p class="eyebrow" style="color:#7dd3c8">Honest 2026 travel intel</p>
     <h1>What it actually costs. What nearly ruins it.</h1>

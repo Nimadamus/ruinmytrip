@@ -1,5 +1,5 @@
 <?php /** @var int $n @var int $left */ $me = current_user(); ?>
-<section class="hero" style="min-height:auto;padding:48px 0">
+<section class="hero founding-hero">
   <div class="hero-inner">
     <p class="eyebrow" style="color:#7dd3c8">The first 100</p>
     <h1>Founding Traveler</h1>
