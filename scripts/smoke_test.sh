@@ -17,7 +17,8 @@ echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
 for p in / /explore /travelers /founding /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /login /register /terms /privacy /guidelines /safety /affiliate \
-         /editorial-policy /sitemap.xml /robots.txt /in/japan \
+         /editorial-policy /sitemap.xml /robots.txt /in/japan /start \
+         /d/san-francisco-usa /d/manaus-brazil /d/buzios-brazil \
          /blog /blog/tourist-taxes-2026 /blog/amsterdam-tourist-tax-2026 \
          /blog/kyoto-lodging-tax-2026 /blog/edinburgh-visitor-levy-2026 \
          /blog/anne-frank-house-tickets-2026 /blog/sagrada-familia-tickets-2026 \

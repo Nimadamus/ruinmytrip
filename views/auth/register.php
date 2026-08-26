@@ -1,7 +1,7 @@
 <?php /** @var array $errors */ ?>
 <div class="wrap"><div class="form-card">
   <h1>Join RuinMyTrip</h1>
-  <p class="muted">Build your traveler profile. Share trips, reviews, and guides.</p>
+  <p class="muted">Build your traveler profile. Share trips, reviews, and guides. The first 100 people who publish a review get Founding Traveler. <a href="<?= e(url('start')) ?>">How launch works</a>.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('register')) ?>"><?= csrf_field() ?>
     <label for="username">Username</label>

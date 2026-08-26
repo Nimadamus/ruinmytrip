@@ -25,6 +25,7 @@
       <a href="<?= e(url('safety')) ?>">Meetup Safety</a>
       <a href="<?= e(url('register')) ?>">Create an account</a>
       <a href="<?= e(url('founding')) ?>">Founding Traveler</a>
+      <a href="<?= e(url('start')) ?>">How to start</a>
     </div>
     <div>
       <h4>Legal</h4>

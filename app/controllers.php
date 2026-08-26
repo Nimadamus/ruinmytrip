@@ -2135,6 +2135,14 @@ function destination_been_action(array $a): void {
     redirect(rmt_return_to());
 }
 
+function start_page(array $a): void {
+    view('start', [], [
+        'title' => 'How to launch RuinMyTrip: join, stamp cities, write a review',
+        'description' => 'The site is already live. Create an account, confirm email, mark cities you have been to, and publish one honest review. That is the launch.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Start','url'=>url('start')]],
+    ]);
+}
+
 function founding(array $a): void {
     $n = (int) (q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $left = max(0, 100 - $n);

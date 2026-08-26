@@ -89,6 +89,7 @@ function rmt_sitemap_entries(): array {
     $add('/explore');
     $add('/travelers');
     $add('/founding');
+    $add('/start');
     $add('/guides');
     $add('/reviews');
     $add('/editorial-policy');
