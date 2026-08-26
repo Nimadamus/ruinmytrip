@@ -17,6 +17,7 @@ require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/reviews.php';
 require BASE_PATH . '/app/seo.php';
+require BASE_PATH . '/app/editorial_blog.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)');
@@ -26,7 +27,7 @@ $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, place_id INT, slug TEXT, title TEXT, subject_name TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT)");
 $pdo->exec("CREATE TABLE guides (id INTEGER PRIMARY KEY, slug TEXT, status TEXT, created_at TEXT)");
-$pdo->exec("CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, slug TEXT, status TEXT, created_at TEXT)");
+$pdo->exec("CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, status TEXT)");
 $pdo->exec("CREATE TABLE going (id INTEGER PRIMARY KEY, visibility TEXT)");
@@ -66,10 +67,16 @@ check('empty leaderboard is out', in_array('https://example.test/leaderboard', $
 check('empty going is out', in_array('https://example.test/going', $locs, true), false);
 check('discover in when editorial content exists', in_array('https://example.test/discover', $locs, true), true);
 
-$pdo->exec("INSERT INTO blog_posts (slug,status,created_at) VALUES ('tourist-taxes-2026','published','2026-08-26')");
+$pdo->exec("INSERT INTO blog_posts (slug,title,summary,body,status,created_at) VALUES ('tourist-taxes-2026','Taxes','sum','See <a href=\"/d/barcelona-spain\">Barcelona</a>','published','2026-08-26')");
 $locs = array_column(rmt_sitemap_entries(), 'loc');
 check('blog index in once a post exists', in_array('https://example.test/blog', $locs, true), true);
 check('blog post is in', in_array('https://example.test/blog/tourist-taxes-2026', $locs, true), true);
+
+echo "\n-- destination related posts --\n";
+$rel = rmt_blog_posts_for_destination('barcelona-spain');
+check('related post found via /d/slug in body', count($rel) === 1 && $rel[0]['slug'] === 'tourist-taxes-2026', true);
+check('unrelated slug is empty', rmt_blog_posts_for_destination('kyoto-japan'), []);
+check('junk slug rejected', rmt_blog_posts_for_destination('../etc'), []);
 
 $withMod = array_values(array_filter(rmt_sitemap_entries(), static fn($r) => $r['loc'] === 'https://example.test/g/barcelona-spain-travel-guide'));
 check('guide lastmod is a date', $withMod && $withMod[0]['lastmod'] === '2026-08-01', true);

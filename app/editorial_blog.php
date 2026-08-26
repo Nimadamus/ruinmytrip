@@ -66,3 +66,19 @@ function rmt_upsert_editorial_blog(): int {
     }
     return $written;
 }
+
+/**
+ * Published blog posts that actually mention this destination. Used on /d/{slug} so the
+ * 2026 tax/ticket notes get internal links from the city pages they describe, not a
+ * hand-maintained mapping that can drift.
+ */
+function rmt_blog_posts_for_destination(string $slug): array {
+    $slug = trim($slug);
+    if ($slug === '' || !preg_match('/^[a-z0-9\-]+$/', $slug)) return [];
+    return q_all(
+        "SELECT slug, title, summary FROM blog_posts
+         WHERE status = 'published' AND body LIKE ?
+         ORDER BY id DESC LIMIT 6",
+        ['%/d/'.$slug.'%']
+    );
+}

@@ -180,7 +180,8 @@ function destination(array $a): void {
             (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
             (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
         [$id, $id])['c'] ?? 0);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount'), [
+    $relatedPosts = rmt_blog_posts_for_destination((string) $d['slug']);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),

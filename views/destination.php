@@ -25,6 +25,17 @@
   </div>
   <?= rmt_photo_credit_html($d) ?>
 
+  <?php if (!empty($relatedPosts)): ?>
+    <div class="callout" style="margin-top:16px">
+      <p style="margin:0 0 8px"><b>2026 costs for <?= e($d['name']) ?></b></p>
+      <ul style="margin:0;padding-left:1.2em">
+        <?php foreach ($relatedPosts as $rp): ?>
+          <li><a href="<?= e(url('blog/'.$rp['slug'])) ?>"><?= e($rp['title']) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+  <?php endif; ?>
+
   <?php /* Two ratings, never blended. The community score is what travelers said; the editorial
             score is the site's own research-based assessment and is labelled as such. */ ?>
   <div class="card" style="margin-top:18px"><div class="card-body">
