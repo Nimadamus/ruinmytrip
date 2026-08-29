@@ -102,8 +102,16 @@ section.block{padding:56px 0}
 .form-card{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow)}
 .form-wide{max-width:760px}
 label{display:block;font-weight:600;margin:14px 0 6px;color:var(--ink)}
-input[type=text],input[type=email],input[type=password],input[type=date],input[type=number],input[type=url],select,textarea{
+/* A search box is a text field. type=search was missing from this list, which left every search
+   input outside the nav and hero at browser default -- 21px tall, 13px type, an inset bevel. That
+   included the only control on /contribute, the page whose entire purpose is starting a review,
+   and the box on the search results page. The nav and hero keep their own pill styling: their
+   rules are restated below so they still win, since they would otherwise lose on source order at
+   equal specificity. */
+input[type=text],input[type=email],input[type=password],input[type=date],input[type=number],input[type=url],input[type=search],select,textarea{
   width:100%;padding:.65rem .85rem;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;background:#fff}
+.nav-search input,.nav-search-mobile input{padding:.55rem 1rem;border-radius:999px;font-size:.95rem}
+.hero-search input{border:0;padding:.7rem 1.1rem;font-size:1rem;border-radius:999px}
 textarea{min-height:140px;resize:vertical}
 .errors{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:12px 16px;border-radius:12px;margin-bottom:16px}
 .errors ul{margin:0;padding-left:18px}
