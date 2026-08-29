@@ -307,7 +307,11 @@ function place_show(array $a): void {
     $typeLabel = rmt_place_type_label((string) $p['type']);
 
     $ed = rmt_place_editorial($id);
-    $nearby = rmt_place_nearby($id, (int)$p['destination_id']);
+    // What is actually near this place, by distance, when we hold its coordinates. The older
+    // list -- editorially covered places sharing a destination row -- stays as the fallback for a
+    // place we have not located yet, so nothing regresses for the ones still unenriched.
+    $nearbyGeo = rmt_places_nearby($p, '', 6);
+    $nearby = $nearbyGeo ?: rmt_place_nearby($id, (int)$p['destination_id']);
     $saved = rmt_place_is_saved($id, $me ? (int) $me['id'] : null);
     $saveCount = rmt_place_save_count($id);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
@@ -352,7 +356,7 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,

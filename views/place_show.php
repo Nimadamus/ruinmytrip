@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -286,13 +286,21 @@
            can never become a ring of empty pages pointing at each other. */ ?>
   <?php if ($nearby): ?>
     <section style="margin:0 0 50px">
-      <h2 style="font-size:1.1rem;margin:0 0 10px">Also in <?= e($p['dest_name']) ?></h2>
+      <?php /* Headed by what it is: a distance list when we know where things are, and the older
+               "also in this city" list when we do not. Saying "Nearby" about places we only know
+               share a city would be a claim we cannot support. */ ?>
+      <h2 style="font-size:1.1rem;margin:0 0 10px">
+        <?= $nearbyGeo ? 'Nearby' : 'Also in ' . e($p['dest_name']) ?>
+      </h2>
       <div class="grid" style="gap:12px">
         <?php foreach ($nearby as $n): ?>
           <article class="card"><div class="card-body">
             <span class="eyebrow" style="text-transform:capitalize"><?= e(rmt_place_type_label((string)$n['type'])) ?></span>
             <h3 style="margin:.25rem 0 .2rem;font-size:1.02rem">
               <a href="<?= e(url('p/'.$n['slug'])) ?>"><?= e($n['name']) ?></a>
+              <?php if (isset($n['distance_m'])): ?>
+                <span class="hint" style="font-weight:400"><?= e(rmt_distance_label((int) $n['distance_m'])) ?> away</span>
+              <?php endif; ?>
             </h3>
             <?php if (!empty($n['meta_description'])): ?>
               <p class="muted" style="margin:0;font-size:.93rem"><?= e((string)$n['meta_description']) ?></p>

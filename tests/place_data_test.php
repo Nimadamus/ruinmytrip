@@ -278,6 +278,36 @@ check('setting a new cover clears the old one',
       (int) $pdo->query('SELECT COUNT(*) FROM place_photos WHERE place_id=1 AND is_cover=1')->fetchColumn(), 1);
 check('the new cover is the one returned', rmt_place_cover_url(1), rmt_media_url('ccc.jpg'));
 
+echo "\n-- nearby, by distance --\n";
+// Two points about 1.1km apart in Lisbon, one 40km north, and one with no coordinates at all.
+db()->exec("INSERT INTO places (id,destination_id,slug,name,name_key,type,status,created_at,lat,lng) VALUES
+    (10,1,'near-a','Near A','near a','restaurant','active','2026-08-01',41.7205,-9.1350),
+    (11,1,'near-b','Near B','near b','attraction','active','2026-08-01',41.7305,-9.1350),
+    (12,1,'far-one','Far One','far one','restaurant','active','2026-08-01',42.0805,-9.1350),
+    (13,1,'no-coords','No Coords','no coords','restaurant','active','2026-08-01',NULL,NULL)");
+
+$anchor = rmt_place_by_slug('near-a');
+$near = rmt_places_nearby($anchor, '', 6);
+check('a place about a kilometre away is nearby', array_column($near, 'slug'), ['near-b']);
+check('...with a real distance attached',
+      ($near[0]['distance_m'] ?? 0) > 900 && ($near[0]['distance_m'] ?? 0) < 1300, true);
+check('a place 40km away is not "nearby"', in_array('far-one', array_column($near, 'slug'), true), false);
+check('a place with no coordinates is absent, not guessed onto the map',
+      in_array('no-coords', array_column($near, 'slug'), true), false);
+check('the anchor does not list itself', in_array('near-a', array_column($near, 'slug'), true), false);
+check('a type filter applies', rmt_places_nearby($anchor, 'restaurant', 6), []);
+check('an anchor with no coordinates returns nothing rather than a city list',
+      rmt_places_nearby(rmt_place_by_slug('no-coords'), '', 6), []);
+
+check('distance is measured, not estimated',
+      (int) round(rmt_geo_distance_m(41.7205, -9.1350, 41.7305, -9.1350) / 10) * 10, 1110);
+check('the same point is zero away', (int) rmt_geo_distance_m(38.72, -9.13, 38.72, -9.13), 0);
+check('metres read the way a person says them', rmt_distance_label(220), '200 m');
+check('under a hundred is not false precision', rmt_distance_label(40), 'under 100 m');
+check('kilometres get one decimal', rmt_distance_label(1440), '1.4 km');
+
+db()->exec("DELETE FROM places WHERE id IN (10,11,12,13)");
+
 echo "\n-- structured data --\n";
 $p = rmt_place_by_slug('ramiro-lisbon');
 $ld = rmt_place_schema_attributes($p, $hours);

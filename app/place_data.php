@@ -707,3 +707,87 @@ function rmt_place_schema_attributes(array $p, array $hours = []): array {
 
     return $out;
 }
+
+/* ===========================================================================
+ * Nearby, by actual distance
+ * ======================================================================== */
+
+/** Metres between two coordinates. Haversine on a spherical earth: good to ~0.5% at city scale. */
+function rmt_geo_distance_m(float $lat1, float $lng1, float $lat2, float $lng2): float {
+    $r = 6371000.0;
+    $p1 = deg2rad($lat1);
+    $p2 = deg2rad($lat2);
+    $dp = deg2rad($lat2 - $lat1);
+    $dl = deg2rad($lng2 - $lng1);
+    $a = sin($dp / 2) ** 2 + cos($p1) * cos($p2) * sin($dl / 2) ** 2;
+    return $r * 2 * atan2(sqrt($a), sqrt(1 - $a));
+}
+
+/** How far the module will look. Beyond this it is not "nearby", it is "also in this country". */
+const RMT_NEARBY_RADII_M = [1500, 5000, 15000];
+
+/**
+ * Places near a place, by distance rather than by sharing a destination row.
+ *
+ * The rules that keep this honest:
+ *
+ *   - it needs coordinates. A place without them is absent from the list rather than guessed onto
+ *     the map at its city's centre, which would put every unenriched venue in a false huddle.
+ *   - it widens rather than pads. 1.5km first, then 5km, then 15km, stopping as soon as there are
+ *     enough. If a quiet town yields two results, the module shows two. Filling a row with a
+ *     restaurant forty minutes away is worse than a short list.
+ *   - the query is a bounding box first and a distance sort second. The box uses the (lat,lng)
+ *     index and is cheap; the trigonometry runs over the handful of rows it returns, not the table.
+ *
+ * @param string $type '' for any, otherwise one of RMT_PLACE_TYPES
+ * @return list<array<string,mixed>> each with distance_m
+ */
+function rmt_places_nearby(array $place, string $type = '', int $limit = 6): array {
+    $co = rmt_place_normalize_coords($place['lat'] ?? null, $place['lng'] ?? null);
+    if (!$co) return [];
+    [$lat, $lng] = $co;
+
+    foreach (RMT_NEARBY_RADII_M as $radius) {
+        // Degrees of latitude are constant; degrees of longitude shrink towards the poles, so the
+        // box has to be widened by 1/cos(lat) or it is too narrow in Reykjavik and too wide at the
+        // equator. cos() is floored so a coordinate near a pole cannot divide by zero.
+        $dLat = $radius / 111320.0;
+        $dLng = $radius / (111320.0 * max(0.15, cos(deg2rad($lat))));
+
+        $args = [(int) $place['id'], $lat - $dLat, $lat + $dLat, $lng - $dLng, $lng + $dLng];
+        $typeSql = '';
+        if (in_array($type, RMT_PLACE_TYPES, true)) { $typeSql = ' AND p.type = ?'; $args[] = $type; }
+
+        $rows = q_all(
+            "SELECT p.id, p.slug, p.name, p.type, p.lat, p.lng, p.category_id,
+                    d.name dest_name, d.slug dest_slug
+               FROM places p JOIN destinations d ON d.id = p.destination_id
+              WHERE p.status = 'active' AND p.id <> ?
+                AND p.lat IS NOT NULL AND p.lng IS NOT NULL
+                AND p.lat BETWEEN ? AND ? AND p.lng BETWEEN ? AND ?" . $typeSql . "
+              LIMIT 200", $args);
+
+        $out = [];
+        foreach ($rows as $r) {
+            $d = rmt_geo_distance_m($lat, $lng, (float) $r['lat'], (float) $r['lng']);
+            if ($d > $radius) continue;          // the box is square; the radius is not
+            $r['distance_m'] = (int) round($d);
+            $out[] = $r;
+        }
+        usort($out, static fn($a, $b) => $a['distance_m'] <=> $b['distance_m']);
+
+        // Enough to be worth a heading, or widen and look again.
+        $isLast = $radius === RMT_NEARBY_RADII_M[count(RMT_NEARBY_RADII_M) - 1];
+        if (count($out) >= min($limit, 3) || $isLast) {
+            return array_slice($out, 0, $limit);
+        }
+    }
+    return [];
+}
+
+/** "220 m" / "1.4 km". Rounded the way a person would say it, never to false precision. */
+function rmt_distance_label(int $metres): string {
+    if ($metres < 100)  return 'under 100 m';
+    if ($metres < 1000) return (int) (round($metres / 50) * 50) . ' m';
+    return number_format($metres / 1000, 1) . ' km';
+}
