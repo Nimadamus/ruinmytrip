@@ -136,6 +136,9 @@ function view(string $name, array $data = [], array $meta = []): void {
         'canonical' => rmt_current_url(),
         'og_image' => url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg'),
         'jsonld' => null,
+        // Indexable unless a page says otherwise. A page type that has not earned a place in the
+        // index says 'noindex,follow': invisible to the index, still crawled for its links.
+        'robots' => 'index, follow',
         'breadcrumbs' => [],
     ], $meta);
     $__view = BASE_PATH . '/views/' . $name . '.php';

@@ -22,6 +22,8 @@ require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/place_data.php';
+require BASE_PATH . '/app/search_suggest.php';
+require BASE_PATH . '/app/neighborhoods.php';
 require BASE_PATH . '/app/destination_modules.php';
 
 // authors_fill() lives in controllers.php; the shape of the recent-review rows is what matters.
@@ -47,6 +49,9 @@ $pdo->exec("CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT, u
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/047_place_attributes.sqlite.sql'));
 // The fallback row prefers places we have written about, so it joins place_editorial.
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/041_place_editorial.sqlite.sql'));
+// Neighborhood browsing prefers canonical areas and falls back to raw text; the fallback is what
+// this fixture exercises, and it still needs the tables the preferred path reads.
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/055_neighborhoods.sqlite.sql'));
 
 $pdo->exec("INSERT INTO users (id,username,role,status) VALUES
     (1,'a','user','active'),(2,'b','user','active'),(3,'c','user','active'),(4,'d','user','active'),

@@ -227,14 +227,27 @@ function rmt_destination_recent_reviews(int $destId, int $limit = 5): array {
 /**
  * Neighborhoods a destination's places actually sit in, with counts.
  *
- * Read from the places themselves, never invented, and only ones with more than one place behind
- * them: a "neighborhood" naming exactly one venue is that venue's address, not an area worth
- * offering as a way to browse. No neighborhood pages exist yet and these do not link to any; this
- * is the entity relationship arriving before the routes that will use it.
+ * Canonical areas first, raw text only as a fallback.
  *
- * @return list<array{name:string,places:int}>
+ * A destination whose areas have been given identity browses by identity: the row links to a page,
+ * every spelling of an area counts once, and a borough is not offered as a neighborhood. A
+ * destination nobody has curated yet still gets the old behaviour -- raw strings grouped exactly
+ * as they arrived -- because the alternative is showing nothing while waiting for a human, and the
+ * raw grouping was never wrong, only unmergeable.
+ *
+ * Either way the counts are counts of real places, and an area with one place is not a way to
+ * browse a city: it is that venue's address.
+ *
+ * @return list<array{name:string,places:int,slug?:string,local_name?:?string}>
  */
 function rmt_destination_neighborhoods(int $destId, int $limit = 12): array {
+    $canonical = rmt_nb_for_destination($destId, $limit);
+    if ($canonical) {
+        foreach ($canonical as &$c) $c['places'] = (int) $c['places'];
+        unset($c);
+        return $canonical;
+    }
+
     $rows = q_all(
         "SELECT p.neighborhood name, COUNT(*) places
            FROM places p

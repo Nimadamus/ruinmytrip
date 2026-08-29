@@ -268,15 +268,22 @@
       <?php endif; ?>
 
       <?php /* Neighborhoods a place actually sits in, never invented, and only ones with more than
-               one place behind them. They do not link anywhere yet: the entity relationship is
-               arriving before the routes that will use it. */ ?>
+               one place behind them. An area that has been given canonical identity carries a slug
+               and becomes a link; raw grouped text has nowhere to point and stays a plain chip,
+               which is the honest difference between "we know this area" and "we have seen this
+               string". */ ?>
       <?php if (!empty($discovery['neighborhoods'])): ?>
         <section style="margin:0 0 30px">
           <div class="section-rule"><h2>Neighborhoods</h2></div>
           <div class="chip-row">
             <?php foreach ($discovery['neighborhoods'] as $nb): ?>
-              <span class="chip"><?= e((string) $nb['name']) ?>
-                <span class="chip-count"><?= (int) $nb['places'] ?></span></span>
+              <?php if (!empty($nb['slug'])): ?>
+                <a class="chip" href="<?= e(url('d/' . $d['slug'] . '/n/' . $nb['slug'])) ?>"><?= e((string) $nb['name']) ?>
+                  <span class="chip-count"><?= (int) $nb['places'] ?></span></a>
+              <?php else: ?>
+                <span class="chip"><?= e((string) $nb['name']) ?>
+                  <span class="chip-count"><?= (int) $nb['places'] ?></span></span>
+              <?php endif; ?>
             <?php endforeach; ?>
           </div>
         </section>

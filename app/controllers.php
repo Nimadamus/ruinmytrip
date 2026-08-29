@@ -250,6 +250,45 @@ function destination_photos(array $a): void {
  * An unknown ?type is treated as "all" rather than 404ing: the filter is a view preference, and a
  * stale bookmark should show the page, not an error.
  */
+/**
+ * GET /d/<city>/n/<area> - one neighborhood.
+ *
+ * NOINDEX for now, deliberately. The page is real and useful and every link on it is crawlable,
+ * but whether an area has enough behind it to deserve a place in the index is a question with an
+ * answer -- density, uniqueness, real inventory -- and that answer belongs in one central rule
+ * rather than in this function. Until that rule exists, the honest default for a new page type is
+ * to be discoverable by people and invisible to the index.
+ */
+function neighborhood_show(array $a): void {
+    $d = q_one("SELECT * FROM destinations WHERE slug = ?", [(string) $a['slug']]);
+    if (!$d) { not_found(); return; }
+    $nb = rmt_nb_find((int) $d['id'], (string) $a['nb']);
+    if (!$nb) { not_found(); return; }
+
+    $byType = rmt_nb_type_counts((int) $nb['id']);
+    $total  = array_sum($byType);
+    $type   = (string) input('type');
+    if ($type !== '' && !isset($byType[$type])) $type = '';      // a filter that returns nothing is not offered
+    $places = rmt_nb_places((int) $nb['id'], $type ?: null);
+    // Two batched lookups for the whole page, never one per card -- the same shape the browse page
+    // uses, so the cards here cannot drift from the cards there.
+    $me = current_user();
+    $ids = array_map(static fn(array $p) => (int) $p['id'], $places);
+    $savedMap = rmt_saved_place_map($me ? (int) $me['id'] : null, $ids);
+    $saveCounts = rmt_place_save_counts($ids);
+
+    view('neighborhood', [
+        'd' => $d, 'nb' => $nb, 'byType' => $byType, 'total' => $total,
+        'type' => $type === '' ? null : $type, 'places' => $places,
+        'me' => $me, 'savedMap' => $savedMap, 'saveCounts' => $saveCounts,
+    ], [
+        'title' => $nb['canonical_name'] . ' in ' . $d['name'] . ' — RuinMyTrip',
+        'description' => 'Places in ' . $nb['canonical_name'] . ', ' . $d['name'] . ': hotels, restaurants and things to do, with what we actually know about each.',
+        'robots' => 'noindex,follow',
+        'canonical' => url('d/' . $d['slug'] . '/n/' . $nb['slug']),
+    ]);
+}
+
 function destination_places(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int) $d['id'];

@@ -17,6 +17,16 @@ if [ -f "$PROPOSAL" ]; then
   php /var/www/html/scripts/apply_place_enrichment.php --file "$PROPOSAL" --apply     || echo "entrypoint: place enrichment reported errors, continuing"
 fi
 
+# Give neighborhoods their canonical identity, then attach places whose raw area text matches a
+# known alias exactly. Runs AFTER enrichment because enrichment is what writes the raw text in the
+# first place. Idempotent in both halves: an area that already exists is updated rather than
+# duplicated, an alias already recorded is skipped, and a place is only ever attached when its
+# neighborhood_id is still null -- so a restart re-runs it and changes nothing.
+NBSEED=/var/www/html/database/neighborhoods.json
+if [ -f "$NBSEED" ]; then
+  php /var/www/html/scripts/seed_neighborhoods.php --apply   || echo "entrypoint: neighborhood seed reported errors, continuing"
+fi
+
 # Keep the autocomplete index in step: fill any missing normalised names and seed destination
 # aliases. Idempotent and fast, and it has to run AFTER enrichment, because enrichment is what
 # may have just changed a place's name.

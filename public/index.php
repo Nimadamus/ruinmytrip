@@ -16,6 +16,7 @@ $routes = [
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)$#',    'destination'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/photos$#', 'destination_photos'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/places$#', 'destination_places'],
+    ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/n/(?<nb>[a-z0-9\-]+)$#', 'neighborhood_show'],
     ['GET',  '#^/p/(?<slug>[a-z0-9\-]+)$#',    'place_show'],
     ['POST', '#^/destination/save$#',          'destination_save_action'],
     ['POST', '#^/destination/been$#',          'destination_been_action'],

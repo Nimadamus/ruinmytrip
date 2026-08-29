@@ -1,0 +1,132 @@
+{
+  "_": "Curated neighborhood identity. Every entry was written against the raw values our own places actually carry, and every alias is a name the area genuinely goes by -- a local-language form, an English exonym, or the administrative wording a source emits. Nothing here is invented to fill a browse module: an area with one place still gets an entity and simply is not offered as a way to browse. kind records what a thing IS: a borough is not a neighborhood and a comune is not a neighborhood, so Manhattan, Municipio Roma I and Venezia-Murano-Burano are kept, labelled, and left out of neighborhood browsing rather than dressed up. Re-applying this file changes nothing that is already correct.",
+  "destinations": {
+    "amsterdam-netherlands": [
+      {"name": "Amsterdam-Zuid", "aliases": ["Zuid", "South", "Amsterdam Zuid"]},
+      {"name": "Centrum", "aliases": ["Amsterdam-Centrum", "City Centre", "Binnenstad"]},
+      {"name": "Amsterdam-Oost", "aliases": ["Oost", "East", "Amsterdam Oost"]}
+    ],
+    "athens-greece": [
+      {"name": "Petralona", "local_name": "Πετράλωνα", "aliases": ["Ano Petralona", "Άνω Πετράλωνα"]},
+      {"name": "Kolonaki", "local_name": "Κολωνάκι", "aliases": ["Συνοικία Κολωνακίου", "Kolonaki Square"]},
+      {"name": "Mouseio", "local_name": "Μουσείο", "aliases": ["Museum Quarter"]},
+      {"name": "Psyri", "local_name": "Ψυρρή", "aliases": ["Psiri", "Psirri"]}
+    ],
+    "barcelona-spain": [
+      {"name": "Ciutat Vella", "aliases": ["Old Town", "Casco Antiguo", "Ciutat Vella District"]},
+      {"name": "Eixample", "aliases": ["l'Eixample", "L'Eixample", "Ensanche"]}
+    ],
+    "berlin-germany": [
+      {"name": "Kreuzberg", "aliases": ["Friedrichshain-Kreuzberg", "Berlin-Kreuzberg"]},
+      {"name": "Mitte", "aliases": ["Berlin-Mitte", "Central Berlin"]}
+    ],
+    "budapest-hungary": [
+      {"name": "Palotanegyed", "aliases": ["Palace Quarter", "Palotanegyed Quarter"]}
+    ],
+    "buenos-aires-argentina": [
+      {"name": "Monserrat", "aliases": ["Montserrat"]},
+      {"name": "Palermo", "aliases": ["Palermo Barrio"]}
+    ],
+    "copenhagen-denmark": [
+      {"name": "Indre By", "aliases": ["Inner City", "City Centre", "Copenhagen K"]},
+      {"name": "Amagerbro", "aliases": ["Amager Bro"]}
+    ],
+    "dubai-uae": [
+      {"name": "Trade Centre 1", "kind": "administrative", "aliases": ["Trade Center 1", "Trade Centre First"]}
+    ],
+    "edinburgh-scotland": [
+      {"name": "Abbeyhill", "aliases": []}
+    ],
+    "hong-kong": [
+      {"name": "Yau Ma Tei", "local_name": "油麻地", "aliases": ["Yaumatei", "Yau Ma Tei District"]}
+    ],
+    "krakow-poland": [
+      {"name": "Stare Miasto", "aliases": ["Old Town", "Krakow Old Town"]},
+      {"name": "Podgórze", "aliases": ["Podgorze"]}
+    ],
+    "kyoto-japan": [
+      {"name": "Nakagyo Ward", "kind": "district", "local_name": "中京区", "aliases": ["Nakagyo-ku", "Nakagyo"]},
+      {"name": "Kita Ward", "kind": "district", "local_name": "北区", "aliases": ["Kita-ku", "Kita"]}
+    ],
+    "lima-peru": [
+      {"name": "Barranco", "aliases": ["Barranco District"]},
+      {"name": "Pueblo Libre", "aliases": []}
+    ],
+    "lisbon-portugal": [
+      {"name": "Parque das Nações", "aliases": ["Parque das Nacoes", "Park of Nations", "Expo"]},
+      {"name": "Campo Pequeno", "aliases": []},
+      {"name": "Santo Amaro", "aliases": []},
+      {"name": "São Francisco Xavier", "aliases": ["Sao Francisco Xavier"]}
+    ],
+    "london-uk": [
+      {"name": "Covent Garden", "aliases": []},
+      {"name": "Clerkenwell", "aliases": []},
+      {"name": "Southwark", "aliases": []},
+      {"name": "Victoria", "aliases": ["Victoria, Westminster"]},
+      {"name": "Brompton", "aliases": ["Knightsbridge and Brompton"]},
+      {"name": "West Smithfield", "aliases": ["Smithfield"]},
+      {"name": "Millbank", "aliases": []}
+    ],
+    "mexico-city-mexico": [
+      {"name": "Coyoacán", "aliases": ["Coyoacan"]},
+      {"name": "Polanco", "aliases": []}
+    ],
+    "milan-italy": [
+      {"name": "Municipio 1", "kind": "administrative", "aliases": ["Municipio I", "Zona 1"]},
+      {"name": "Municipio 9", "kind": "administrative", "aliases": ["Municipio IX", "Zona 9"]}
+    ],
+    "munich-germany": [
+      {"name": "Maxvorstadt", "aliases": []},
+      {"name": "Altstadt", "aliases": ["Old Town", "Altstadt-Lehel", "Munich Old Town"]},
+      {"name": "Isarvorstadt", "aliases": ["Ludwigsvorstadt-Isarvorstadt"]}
+    ],
+    "new-orleans-usa": [
+      {"name": "French Quarter", "aliases": ["Vieux Carré", "Vieux Carre"]},
+      {"name": "Faubourg St. John", "aliases": ["Faubourg St John", "Bayou St. John"]}
+    ],
+    "new-york-city-usa": [
+      {"name": "Manhattan", "kind": "borough", "aliases": ["New York County"]},
+      {"name": "The Bronx", "kind": "borough", "aliases": ["Bronx", "Bronx County"]}
+    ],
+    "paris-france": [
+      {"name": "1st Arrondissement", "local_name": "1er arrondissement", "aliases": ["Paris 1er Arrondissement", "1er", "Louvre", "Arrondissement du Louvre"]},
+      {"name": "5th Arrondissement", "local_name": "5e arrondissement", "aliases": ["Paris 5e Arrondissement", "5e", "Panthéon", "Latin Quarter"]},
+      {"name": "6th Arrondissement", "local_name": "6e arrondissement", "aliases": ["Paris 6e Arrondissement", "6e", "Luxembourg", "Saint-Germain-des-Prés"]},
+      {"name": "7th Arrondissement", "local_name": "7e arrondissement", "aliases": ["Paris 7e Arrondissement", "7e", "Palais-Bourbon"]}
+    ],
+    "prague-czechia": [
+      {"name": "Smíchov", "aliases": ["Smichov"]},
+      {"name": "Josefov", "aliases": ["Jewish Quarter"]}
+    ],
+    "reykjavik-iceland": [
+      {"name": "Miðborg", "aliases": ["Midborg", "City Centre", "Downtown Reykjavik", "101 Reykjavik"]}
+    ],
+    "rome-italy": [
+      {"name": "Municipio Roma I", "kind": "administrative", "aliases": ["Municipio I", "Municipio 1", "Roma Municipio I"]}
+    ],
+    "stockholm-sweden": [
+      {"name": "Östermalm", "aliases": ["Ostermalm"]},
+      {"name": "Norrmalm", "aliases": []},
+      {"name": "Djurgården", "aliases": ["Djurgarden"]},
+      {"name": "Skeppsholmen", "aliases": []}
+    ],
+    "tokyo-japan": [
+      {"name": "Ginza", "local_name": "銀座", "aliases": ["Ginza 8", "Ginza 8-chome", "Ginza Eight"]}
+    ],
+    "venice-italy": [
+      {"name": "Venezia-Murano-Burano", "kind": "administrative", "aliases": ["Venezia Murano Burano", "Municipalità di Venezia-Murano-Burano"]}
+    ],
+    "vienna-austria": [
+      {"name": "Innere Stadt", "aliases": ["Inner City", "1st District", "Vienna Old Town"]},
+      {"name": "Landstraße", "kind": "district", "aliases": ["Katastralgemeinde Landstraße", "Landstrasse", "3rd District"]},
+      {"name": "Wieden", "aliases": ["4th District"]}
+    ],
+    "warsaw-poland": [
+      {"name": "Śródmieście", "aliases": ["Srodmiescie", "Midtown", "City Centre", "Downtown Warsaw"]},
+      {"name": "Wola", "aliases": []}
+    ],
+    "zurich-switzerland": [
+      {"name": "Altstadt", "aliases": ["Old Town", "Zürich Altstadt", "Kreis 1"]}
+    ]
+  }
+}

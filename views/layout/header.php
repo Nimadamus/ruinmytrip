@@ -6,7 +6,10 @@
 <title><?= e($__meta['title']) ?></title>
 <meta name="description" content="<?= e($__meta['description']) ?>">
 <link rel="canonical" href="<?= e($__meta['canonical']) ?>">
-<meta name="robots" content="index, follow">
+<?php /* One robots tag, and one place that decides what it says. It was hardcoded to
+         "index, follow" on every page including the ones that should never be indexed; a page
+         type that has not earned a place in the index now says so from its controller. */ ?>
+<meta name="robots" content="<?= e((string) ($__meta['robots'] ?? 'index, follow')) ?>">
 <meta property="og:type" content="website">
 <meta property="og:title" content="<?= e($__meta['title']) ?>">
 <meta property="og:description" content="<?= e($__meta['description']) ?>">
