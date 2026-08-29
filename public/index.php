@@ -123,6 +123,8 @@ $routes = [
     ['GET',  '#^/admin/destinations$#',         'admin_destinations_report'],
     ['GET',  '#^/admin/suggestions$#',          'admin_suggestions'],
     ['GET',  '#^/admin/funnel$#',               'admin_funnel'],
+    ['GET',  '#^/admin/moderation$#',           'admin_moderation'],
+    ['POST', '#^/admin/moderation/act$#',       'admin_moderation_act'],
     ['POST', '#^/admin/suggestions/resolve$#',  'admin_suggestions_resolve'],
     ['GET',  '#^/admin/place/(?<id>\d+)$#',     'admin_place_form'],
     ['POST', '#^/admin/place/(?<id>\d+)$#',     'admin_place_save'],

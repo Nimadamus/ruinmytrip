@@ -3122,12 +3122,41 @@ function admin_funnel(array $a): void {
     if (!in_array($days, [1, 7, 30, 0], true)) $days = 30;
     view('admin_funnel', [
         'days'      => $days,
+        'board'     => rmt_community_scoreboard(),
         'steps'     => rmt_funnel_steps($days),
         'byAuth'    => rmt_funnel_by_auth($days),
         'bySource'  => rmt_funnel_by_source($days),
         'failures'  => rmt_funnel_failures($days),
         'counts'    => rmt_funnel_counts($days),
     ], ['title' => 'Contribution funnel — RuinMyTrip admin']);
+}
+
+/**
+ * GET /admin/moderation — the queue, with enough of each item to decide on it.
+ *
+ * Reports about the same thing are grouped: five reports about one review is one decision. The
+ * count is information, never a rule.
+ */
+function admin_moderation(array $a): void {
+    require_role('admin', 'mod');
+    view('admin_moderation', [
+        'queue'   => rmt_moderation_queue(100),
+        'history' => rmt_moderation_history(40),
+    ], ['title' => 'Moderation queue — RuinMyTrip admin']);
+}
+
+/**
+ * POST /admin/moderation/act — act on something without a report attached.
+ *
+ * A moderator who finds spam themselves should not have to report it first in order to remove it.
+ * Same single path, same log.
+ */
+function admin_moderation_act(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $res = rmt_moderate((int) current_user()['id'], (string) input('target_type'),
+                        (int) input('target_id'), (string) input('action'), null, (string) input('note'));
+    flash($res['ok'] ? 'Done, and recorded.' : ($res['error'] ?? 'That could not be done.'));
+    redirect('/admin/moderation');
 }
 
 /** GET /admin/suggestions — places travelers have asked us to add. */
@@ -3302,19 +3331,27 @@ function admin_resolve(array $a): void {
     $rep = q_one('SELECT * FROM reports WHERE id=?', [$rid]);
     if (!$rep) redirect('/admin');
 
-    $tt = (string) $rep['target_type'];
-    $table = RMT_REPORT_TARGETS[$tt] ?? null;
+    // One path for every moderation decision, so every one of them is logged. Nothing here reads
+    // a report count and nothing reads a rating: volume is not a verdict and criticism is not a
+    // violation.
+    if (!in_array($action, RMT_MOD_ACTIONS, true)) $action = 'dismiss';
+    $res = rmt_moderate((int) $me['id'], (string) $rep['target_type'], (int) $rep['target_id'],
+                        $action, $rid, (string) input('note'));
+    if (!$res['ok']) { flash($res['error'] ?? 'That could not be done.'); redirect('/admin'); }
 
-    // 'user' has no status column of this kind; suspending an account is a separate action.
-    if ($table && $tt !== 'user' && in_array($action, ['hide','restore'], true)) {
-        $newStatus = $action === 'hide' ? 'hidden' : 'published';
-        db()->prepare("UPDATE {$table} SET status=? WHERE id=?")->execute([$newStatus, (int)$rep['target_id']]);
-    }
-    db()->prepare("UPDATE reports SET status='resolved', resolved_by=? WHERE id=?")
-        ->execute([(int)$me['id'], $rid]);
-    flash($action === 'hide' ? 'Content hidden and report resolved.'
-         : ($action === 'restore' ? 'Content restored and report resolved.' : 'Report dismissed.'));
-    redirect('/admin');
+    // Every open report about the same thing is settled by the one decision -- a moderator should
+    // not have to press the same button five times for five reports of one review.
+    db()->prepare("UPDATE reports SET status='resolved', resolved_by=?
+                    WHERE status='open' AND target_type=? AND target_id=?")
+        ->execute([(int)$me['id'], (string) $rep['target_type'], (int) $rep['target_id']]);
+
+    flash(match ($action) {
+        'hide'    => 'Content hidden and the reports resolved.',
+        'remove'  => 'Content removed and the reports resolved.',
+        'restore' => 'Content restored and the reports resolved.',
+        default   => 'Reports dismissed. Nothing was changed.',
+    });
+    redirect('/admin/moderation');
 }
 
 /* ---------- media ---------- */

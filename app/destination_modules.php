@@ -414,6 +414,60 @@ function rmt_destination_place_fallback(int $destId, int $limit = RMT_MODULE_SIZ
     return $rows;
 }
 
+
+/**
+ * The growth scoreboard: what the community actually is, right now.
+ *
+ * One place for the numbers that decide whether this is a review site yet. Every one of them
+ * counts real rows and excludes the editorial account, so a zero here means zero -- which is what
+ * it currently says, and the point of the view is that it keeps saying so until it is not true.
+ *
+ * @return array<string,int|string|null>
+ */
+function rmt_community_scoreboard(): array {
+    $one = static fn(string $sql, array $a = []): int => (int) (q_one($sql, $a)['c'] ?? 0);
+    $ed = RMT_EDITORIAL_ROLE;
+
+    return [
+        'reviews' => $one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id
+                            WHERE r.status = 'published' AND u.role <> ?", [$ed]),
+        'reviewers' => $one("SELECT COUNT(DISTINCT r.user_id) c FROM reviews r JOIN users u ON u.id = r.user_id
+                              WHERE r.status = 'published' AND u.role <> ?", [$ed]),
+        'places_reviewed' => $one("SELECT COUNT(*) c FROM (
+                                     SELECT p.id FROM places p
+                                       JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
+                                       JOIN users u ON u.id = r.user_id AND u.role <> ?
+                                      WHERE p.status = 'active' GROUP BY p.id) t", [$ed]),
+        'places_rankable' => $one("SELECT COUNT(*) c FROM (
+                                     SELECT p.id FROM places p
+                                       JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
+                                       JOIN users u ON u.id = r.user_id AND u.role <> ?
+                                      WHERE p.status = 'active'
+                                      GROUP BY p.id HAVING COUNT(*) >= " . RMT_TOP_MIN_REVIEWS . ") t", [$ed]),
+        'destinations_active' => $one("SELECT COUNT(DISTINCT r.destination_id) c FROM reviews r
+                                         JOIN users u ON u.id = r.user_id
+                                        WHERE r.status = 'published' AND u.role <> ?
+                                          AND r.destination_id IS NOT NULL", [$ed]),
+        'photos' => $one("SELECT COUNT(*) c FROM review_photos rp
+                            JOIN reviews r ON r.id = rp.review_id AND r.status = 'published'
+                            JOIN users u ON u.id = r.user_id AND u.role <> ?", [$ed]),
+        'reviews_7d' => $one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id
+                               WHERE r.status = 'published' AND u.role <> ? AND r.created_at >= ?",
+                             [$ed, date('Y-m-d H:i:s', strtotime('-7 days'))]),
+        'reviews_30d' => $one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id
+                                WHERE r.status = 'published' AND u.role <> ? AND r.created_at >= ?",
+                              [$ed, date('Y-m-d H:i:s', strtotime('-30 days'))]),
+        // Acquisition readiness: who could legitimately be told the site exists. Counts only --
+        // nothing here sends anything, and nothing here reads an address.
+        'users' => $one('SELECT COUNT(*) c FROM users'),
+        'users_verified' => $one('SELECT COUNT(*) c FROM users WHERE email_verified_at IS NOT NULL'),
+        'users_active' => $one("SELECT COUNT(*) c FROM users WHERE status = 'active'"),
+        'last_community_review' => (string) (q_one(
+            "SELECT MAX(r.created_at) t FROM reviews r JOIN users u ON u.id = r.user_id
+              WHERE r.status = 'published' AND u.role <> ?", [$ed])['t'] ?? ''),
+    ];
+}
+
 /**
  * Per-destination completeness, for deciding where the data is strong enough to build on.
  *

@@ -85,7 +85,7 @@
     <div>
       <p class="eyebrow">Trusted reviews</p><h2>What nearly ruins the trip</h2>
       <?php if ($stat_community_reviews === 0 && $reviews): ?>
-        <p class="muted">Everything below is an <b>editorial review</b>, researched and labelled as such. There are no traveler reviews yet, and we are not going to invent any. <a href="<?= e(url('review/new')) ?>">Yours would be the first.</a></p>
+        <p class="muted">Everything below is an <b>editorial review</b>, researched and labelled as such. There are no traveler reviews yet, and we are not going to invent any. <a data-review-cta="home" href="<?= e(url('contribute')) ?>">Yours would be the first.</a></p>
       <?php endif; ?>
       <div class="grid" style="gap:14px">
         <?php foreach ($reviews as $r): ?>
@@ -104,11 +104,15 @@
           </div></div>
         <?php endforeach; ?>
         <?php if (!$reviews): ?>
-          <p class="muted">No reviews yet. The first honest one can be yours.</p>
+          <p class="muted">No reviews yet. <a data-review-cta="home" href="<?= e(url('contribute')) ?>">The first honest one can be yours.</a></p>
         <?php endif; ?>
       </div>
       <p style="margin-top:16px">
-        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Share your experience</a>
+        <?php /* Points at /contribute rather than the bare form: somebody arriving from the
+                 homepage has a trip in mind, not a URL, and the contribution page is built for
+                 exactly that. Tagged so the funnel can say whether the homepage produces reviews
+                 rather than only clicks. */ ?>
+        <a class="btn btn-accent" data-review-cta="home" href="<?= e(url('contribute')) ?>">Share your experience</a>
         <a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a>
       </p>
     </div>

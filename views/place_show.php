@@ -275,10 +275,29 @@
         <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem"><a href="<?= e($href) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></h3>
         <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
         <div class="meta-row" style="justify-content:space-between">
-          <span>@<?= e($r['author']['username'] ?? 'traveler') ?> · <?= e(ago((string)$r['created_at'])) ?><?php if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?> found this useful<?php endif; ?><?php if (rmt_review_is_stale($r)): ?> · <span class="hint">⏳ may be outdated</span><?php endif; ?></span>
-          <?php if (rmt_review_can_edit($r, $me)): ?>
-            <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
-          <?php endif; ?>
+          <?php /* Reviewer identity links to the profile: a review is somebody's, and the social
+                   graph is what makes it worth more than an anonymous score. Traveler type shows
+                   only when they supplied one -- it is optional and stays optional. The useful
+                   count appears only when somebody has voted; "0 found this useful" on every card
+                   is noise that makes a young page look ignored. */ ?>
+          <span>
+            <?php if (!empty($r['author']['username'])): ?>
+              <a href="<?= e(url('u/'.$r['author']['username'])) ?>">@<?= e((string) $r['author']['username']) ?></a>
+            <?php else: ?>@traveler<?php endif; ?>
+            · <?= e(ago((string)$r['created_at'])) ?><?php
+            if (!empty($r['traveler_type']) && rmt_traveler_type_label((string) $r['traveler_type'])): ?> · <?= e((string) rmt_traveler_type_label((string) $r['traveler_type'])) ?><?php endif; ?><?php
+            if (!empty($r['useful_count'])): ?> · 👍 <?= (int)$r['useful_count'] ?> found this useful<?php endif; ?><?php
+            if (rmt_review_is_stale($r)): ?> · <span class="hint">⏳ may be outdated</span><?php endif; ?>
+          </span>
+          <span style="display:flex;gap:8px;align-items:center">
+            <?php if (rmt_review_can_edit($r, $me)): ?>
+              <a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Edit</a>
+            <?php elseif ($me): ?>
+              <?php /* Present but quiet. Reporting creates a moderation item and changes nothing on
+                       its own -- no threshold hides a review, and criticism is not a violation. */ ?>
+              <a class="hint" href="<?= e(url('report?target_type=review&target_id='.(int)$r['id'])) ?>">Report</a>
+            <?php endif; ?>
+          </span>
         </div>
       </div></article>
     <?php endforeach; ?>

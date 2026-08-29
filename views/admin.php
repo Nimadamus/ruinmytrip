@@ -3,7 +3,10 @@
   <h1 style="margin-top:24px">Moderation dashboard</h1>
   <p style="margin:.4rem 0 18px"><a class="btn btn-ghost" href="<?= e(url('admin/places')) ?>">Edit places</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/search')) ?>">Search report</a>
-    <a class="btn btn-ghost" href="<?= e(url('admin/destinations')) ?>">Destination data</a></p>
+    <a class="btn btn-ghost" href="<?= e(url('admin/destinations')) ?>">Destination data</a>
+    <a class="btn btn-ghost" href="<?= e(url('admin/moderation')) ?>">Moderation queue</a>
+    <a class="btn btn-ghost" href="<?= e(url('admin/funnel')) ?>">Contribution funnel</a>
+    <a class="btn btn-ghost" href="<?= e(url('admin/suggestions')) ?>">Suggested places</a></p>
   <div class="grid g-4" style="margin:18px 0 30px">
     <?php foreach (['users'=>'Users','trips'=>'Trips','reviews'=>'Reviews','open_reports'=>'Open reports'] as $k=>$label): ?>
       <div class="card"><div class="card-body"><p class="eyebrow"><?= e($label) ?></p><b style="font-size:1.8rem"><?= (int)$stats[$k] ?></b></div></div>

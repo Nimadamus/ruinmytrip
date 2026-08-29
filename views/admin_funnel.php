@@ -1,4 +1,4 @@
-<?php /** @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Contribution funnel</h1>
@@ -12,6 +12,60 @@
       <a href="<?= e(url('admin/funnel') . '?days=' . $d) ?>"<?= $d === $days ? ' style="font-weight:700"' : '' ?>><?= e($lbl) ?></a>
     <?php endforeach; ?>
   </p>
+
+  <?php
+  /* The scoreboard. Whether this is a review site yet is one number, and it is the first thing on
+     the page rather than something to scroll for. */
+  $published = (int) ($counts['review_publish_success'] ?? 0);
+  $clicks    = (int) ($counts['review_cta_click'] ?? 0);
+  ?>
+  <section class="card" style="margin:0 0 20px"><div class="card-body">
+    <h2 style="margin:0 0 4px;font-size:1.05rem">Community scoreboard</h2>
+    <p class="hint" style="margin:0 0 12px">
+      Real rows only, editorial excluded. A zero here means zero &mdash; the number does not move
+      until a traveler writes something.
+    </p>
+    <div class="grid g-2" style="gap:4px 24px">
+      <?php foreach ([
+        'reviews'             => 'Community reviews',
+        'reviewers'           => 'Unique reviewers',
+        'places_reviewed'     => 'Places with a review',
+        'places_rankable'     => 'Places with ' . RMT_TOP_MIN_REVIEWS . '+ reviews',
+        'destinations_active' => 'Destinations with activity',
+        'photos'              => 'Community photos',
+        'reviews_7d'          => 'Reviews, last 7 days',
+        'reviews_30d'         => 'Reviews, last 30 days',
+      ] as $k => $label): ?>
+        <p style="margin:2px 0;font-size:.94rem">
+          <span class="muted"><?= e($label) ?></span>
+          <strong style="float:right"><?= (int) $board[$k] ?></strong>
+        </p>
+      <?php endforeach; ?>
+    </div>
+    <p style="margin:12px 0 0;font-size:.94rem">
+      <span class="muted">CTA to published</span>
+      <strong style="float:right">
+        <?= $clicks > 0 ? (int) round($published * 100 / $clicks) . '%' : '&mdash;' ?>
+      </strong>
+    </p>
+    <?php if (!empty($board['last_community_review'])): ?>
+      <p class="hint" style="margin:8px 0 0">Last community review: <?= e(substr((string) $board['last_community_review'], 0, 16)) ?>.</p>
+    <?php endif; ?>
+  </div></section>
+
+  <section class="card" style="margin:0 0 20px"><div class="card-body">
+    <h2 style="margin:0 0 4px;font-size:1.05rem">Who could be told</h2>
+    <p class="hint" style="margin:0 0 10px">
+      Counts only. Nothing here sends anything and nothing here reads an address; it exists so an
+      acquisition decision is made against a real number rather than a guess.
+    </p>
+    <p style="margin:2px 0;font-size:.94rem"><span class="muted">Registered accounts</span>
+      <strong style="float:right"><?= (int) $board['users'] ?></strong></p>
+    <p style="margin:2px 0;font-size:.94rem"><span class="muted">Active</span>
+      <strong style="float:right"><?= (int) $board['users_active'] ?></strong></p>
+    <p style="margin:2px 0;font-size:.94rem"><span class="muted">Email confirmed</span>
+      <strong style="float:right"><?= (int) $board['users_verified'] ?></strong></p>
+  </div></section>
 
   <?php $top = max(1, (int) ($steps[0]['count'] ?? 0)); ?>
   <section class="card" style="margin:0 0 20px"><div class="card-body">
