@@ -44,7 +44,9 @@ are respected below; do not remove either.
 from __future__ import annotations
 
 import argparse
+import io
 import json
+import os
 import re
 import sys
 import time
@@ -52,6 +54,11 @@ import unicodedata
 import urllib.parse
 import urllib.request
 from difflib import SequenceMatcher
+
+# Place names are not ASCII and a Windows console is not UTF-8. Printing 'Vítězná' must not
+# kill a batch halfway through, leaving half a proposal file and no clear reason why.
+if hasattr(sys.stdout, 'buffer'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 NOMINATIM = 'https://nominatim.openstreetmap.org/search'
 UA = 'RuinMyTrip/1.0 place enrichment (nj2121@gmail.com)'
@@ -67,7 +74,20 @@ def fold(s: str) -> str:
 
 
 def similarity(a: str, b: str) -> float:
-    return SequenceMatcher(None, fold(a), fold(b)).ratio()
+    """How alike two names are, ignoring word order.
+
+    Word order matters to a reader and not to identity: "Kyubey Ginza" and "Ginza Kyubey" are one
+    restaurant, and a straight sequence ratio scores them 0.50. Take the better of the sequence
+    ratio and the same ratio over sorted tokens, so a reordering costs nothing and a genuinely
+    different name still scores low.
+    """
+    fa, fb = fold(a), fold(b)
+    if not fa or not fb:
+        return 0.0
+    direct = SequenceMatcher(None, fa, fb).ratio()
+    sorted_a = ' '.join(sorted(fa.split()))
+    sorted_b = ' '.join(sorted(fb.split()))
+    return max(direct, SequenceMatcher(None, sorted_a, sorted_b).ratio())
 
 
 def query(name: str, city: str, country: str) -> list[dict]:
@@ -75,6 +95,13 @@ def query(name: str, city: str, country: str) -> list[dict]:
         'q': '%s, %s, %s' % (name, city, country),
         'format': 'jsonv2', 'limit': '5',
         'addressdetails': '1', 'extratags': '1', 'namedetails': '1',
+        # Ask in English. Without this Nominatim answers in the local language and every geography
+        # check fails on an exonym: Athens is returned as Athina, Copenhagen as Kobenhavn, Vienna
+        # as Wien, Kyoto in Japanese. Those are the same cities, and refusing them was the check
+        # comparing an English name to a local one and calling the difference a discrepancy.
+        # Street names still come back local where there is no English form, which is correct: a
+        # traveler looking for the door needs the name on the door.
+        'accept-language': 'en',
     })
     req = urllib.request.Request(NOMINATIM + '?' + params, headers={'User-Agent': UA})
     with urllib.request.urlopen(req, timeout=40) as r:
@@ -153,10 +180,58 @@ def parse_opening_hours(raw: str):
             o, c = [t.strip() for t in span.strip().split('-')]
             o, c = ('0' + o if len(o) == 4 else o), ('0' + c if len(c) == 4 else c)
             if c == '24:00':
-                c = '00:00'
+                # Midnight as a closing time. "00:00-24:00" is OSM for open all day, which an
+                # interval with equal ends cannot express; 23:59 is accurate to the minute and is
+                # what a venue open around the clock is shown as everywhere else. Any other span
+                # ending at 24:00 simply closes at midnight.
+                c = '23:59' if o == '00:00' else '00:00'
             for d in days:
                 intervals.append({'day_of_week': d, 'opens': o, 'closes': c})
     return intervals, None
+
+
+# What OSM calls the kinds of thing we hold. A match whose OSM class cannot be the kind of place we
+# are enriching is wrong however well the name scores -- "Pestana Palace Lisboa Tesla Destination
+# Charger" is a near-perfect string match for a hotel and is a car charger.
+OSM_TYPES_FOR = {
+    'hotel': {'hotel', 'hostel', 'guest_house', 'motel', 'resort', 'apartment', 'chalet',
+              'alpine_hut', 'camp_site', 'caravan_site', 'building', 'yes', 'house', 'apartments'},
+    'restaurant': {'restaurant', 'cafe', 'bar', 'pub', 'fast_food', 'bakery', 'biergarten',
+                   'ice_cream', 'food_court', 'nightclub', 'building', 'yes'},
+    'attraction': {'museum', 'attraction', 'artwork', 'gallery', 'viewpoint', 'monument',
+                   'memorial', 'castle', 'ruins', 'church', 'cathedral', 'chapel', 'mosque',
+                   'synagogue', 'temple', 'place_of_worship', 'park', 'garden', 'zoo',
+                   'aquarium', 'theme_park', 'beach', 'theatre', 'arts_centre', 'library',
+                   'archaeological_site', 'historic', 'building', 'yes', 'tower', 'bridge',
+                   'square', 'marketplace', 'city_gate', 'fort', 'palace', 'manor'},
+    'experience': {'attraction', 'tour', 'travel_agency', 'boat_rental', 'ferry_terminal',
+                   'water_park', 'spa', 'sauna', 'building', 'yes'},
+}
+
+# OSM classes that are never any kind of place we hold, whatever they are called.
+NEVER = {'charging_station', 'parking', 'bus_stop', 'bus_station', 'atm', 'bicycle_parking',
+         'toilets', 'waste_basket', 'fuel', 'post_box', 'bench', 'street_lamp', 'traffic_signals'}
+
+
+def type_verdict(osm_type_tag: str, our_type: str):
+    """(verdict, reason) for whether an OSM result can be the kind of place we are enriching.
+
+    Three outcomes, because two were not enough. NEVER is a hard veto: a charging station is not a
+    hotel however well the name reads, and that is the case this check exists for. An unexpected
+    class is a different thing entirely -- OSM tags a patisserie shop=pastry and a pasta bar
+    shop=pasta, and both are places you eat. Refusing those was the check being wrong, not strict.
+    So an unrecognised class costs confidence and is recorded, and a name that matches strongly
+    still survives it.
+    """
+    t = (osm_type_tag or '').lower()
+    if not t:
+        return 'ok', None                       # nothing to judge on; the score decides
+    if t in NEVER:
+        return 'never', 'candidate is a %s, which is never a place we list' % t
+    allowed = OSM_TYPES_FOR.get(our_type)
+    if allowed and t not in allowed:
+        return 'unexpected', 'OSM tags this %s, which is not a usual %s' % (t, our_type)
+    return 'ok', None
 
 
 def propose(cand: dict) -> dict:
@@ -171,13 +246,17 @@ def propose(cand: dict) -> dict:
 
     try:
         results = query(name, city, country)
-    except Exception as e:                                   # a failed lookup is a finding
-        out['notes'].append('lookup failed: %s' % e)
+    except Exception as e:
+        # A failed lookup is a finding and it gets a name. Anything that leaves a place unenriched
+        # has to land in a queue with a reason on it, or the queue is just a list of things that
+        # did not work.
         out['confidence'] = 0.0
+        out['refusal'] = {'reason': 'lookup_failed', 'detail': str(e)[:200]}
         return out
     if not results:
-        out['notes'].append('no OSM match')
         out['confidence'] = 0.0
+        out['refusal'] = {'reason': 'no_external_match',
+                          'detail': 'OpenStreetMap returned nothing for this name in this city'}
         return out
 
     # Score every candidate on name similarity, and prefer one whose city agrees with ours.
@@ -191,8 +270,13 @@ def propose(cand: dict) -> dict:
 
     best, best_score = None, 0.0
     for r in results:
-        names = [r.get('name') or '', (r.get('namedetails') or {}).get('name:en') or '',
-                 (r.get('display_name') or '').split(',')[0]]
+        # Every name OSM records for the object, in any language, plus what the display name
+        # leads with. A place is the same entity whether the map calls it Duomo di Milano or
+        # Milan Cathedral, and asking in English means we are often handed the exonym.
+        nd = r.get('namedetails') or {}
+        names = [r.get('name') or '', (r.get('display_name') or '').split(',')[0]]
+        names += [v for k, v in nd.items() if isinstance(v, str) and v
+                  and not k.endswith(':prefix') and 'wikidata' not in k]
         score = max((similarity(o, n) for o in ours for n in names if n), default=0.0)
         addr = r.get('address') or {}
         got_city = addr.get('city') or addr.get('town') or addr.get('village') or addr.get('municipality') or ''
@@ -202,11 +286,50 @@ def propose(cand: dict) -> dict:
             best, best_score = r, score
 
     if best is None:
-        out['notes'].append('no scoreable match')
         out['confidence'] = 0.0
+        out['refusal'] = {'reason': 'no_match', 'detail': 'nothing in the results could be scored'}
         return out
 
     out['confidence'] = round(min(best_score, 1.0), 3)
+    out['osm_class'] = '%s/%s' % (best.get('category'), best.get('type'))
+
+    # Classify a refusal rather than just failing it. "ambiguous name" and "the map says this is a
+    # car park" need different fixes, and a queue of things labelled "failed" is not a queue.
+    verdict, why = type_verdict(str(best.get('type') or ''), cand.get('type', ''))
+    if verdict == 'unexpected':
+        out['confidence'] = round(max(0.0, out['confidence'] - 0.10), 3)
+        out['notes'].append(why)
+
+    addr = best.get('address') or {}
+    # A city is not only what Nominatim calls `city`. London's Ritz is in "City of Westminster",
+    # Mexico City is "Ciudad de Mexico", Venice is "Venezia". Refusing those was the check being
+    # wrong about administrative naming, not the data being wrong about geography -- so compare
+    # against every level of the returned hierarchy, and against the full display name.
+    levels = [addr.get(k) or '' for k in ('city', 'town', 'village', 'municipality', 'city_district',
+                                          'county', 'state_district', 'state', 'region', 'suburb')]
+    hay = fold(best.get('display_name') or '')
+    needle = fold(city)
+    geo_ok = (not city) or (needle and needle in hay) or any(
+        lv and similarity(city, lv) > 0.6 for lv in levels)
+
+    runners_up = sum(1 for r in results if r is not best
+                     and max((similarity(o, r.get('name') or '') for o in ours), default=0) > 0.85)
+
+    if verdict == 'never':
+        out['refusal'] = {'reason': 'type_mismatch', 'detail': why}
+    elif not geo_ok:
+        out['refusal'] = {'reason': 'geographic_inconsistency',
+                          'detail': 'we say %s, the match is in %s'
+                                    % (city, (best.get('display_name') or '?')[:80])}
+    elif out['confidence'] < 0.80 and runners_up:
+        out['refusal'] = {'reason': 'ambiguous_name',
+                          'detail': '%d other results score nearly as well' % runners_up}
+    elif out['confidence'] < 0.80:
+        out['refusal'] = {'reason': 'low_confidence',
+                          'detail': 'best match "%s" scored %.2f' % (best.get('name') or '?', out['confidence'])}
+    if out.get('refusal', {}).get('reason') == 'type_mismatch':
+        out['confidence'] = 0.0          # the name is irrelevant once the kind is wrong
+
     out['osm'] = {'type': best.get('osm_type'), 'id': best.get('osm_id'),
                   'name': best.get('name'), 'display_name': best.get('display_name')}
     out['source_url'] = 'https://www.openstreetmap.org/%s/%s' % (best.get('osm_type'), best.get('osm_id'))
@@ -254,28 +377,63 @@ def main() -> int:
     ap.add_argument('--candidates', required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--sleep', type=float, default=1.1, help='seconds between Nominatim calls')
+    # Batching is not a convenience. A hundred lookups applied in one go is a hundred chances to
+    # write something wrong before anybody has looked at the first one.
+    ap.add_argument('--offset', type=int, default=0)
+    ap.add_argument('--limit', type=int, default=0, help='0 = all remaining')
+    ap.add_argument('--only', default='',
+                    help='comma-separated slugs, for re-running the ones a human just fixed')
+    ap.add_argument('--append', action='store_true',
+                    help='merge into an existing --out file by slug instead of replacing it')
     args = ap.parse_args()
 
     cands = json.load(open(args.candidates, encoding='utf-8'))
+    if args.only:
+        wanted = {x.strip() for x in args.only.split(',') if x.strip()}
+        cands = [c for c in cands if c['slug'] in wanted]
+    cands = cands[args.offset:]
+    if args.limit:
+        cands = cands[:args.limit]
     proposals = []
     for i, c in enumerate(cands):
         p = propose(c)
         fields = ', '.join(sorted(p['fields'])) or 'nothing'
         print('%-38s conf=%.2f  %s%s' % (c['slug'], p['confidence'], fields,
                                          '  +hours' if p.get('hours') else ''))
+        if p.get('refusal'):
+            print('    REFUSED [%s] %s' % (p['refusal']['reason'], p['refusal']['detail']))
         for n in p['notes']:
             print('    note: %s' % n)
         proposals.append(p)
         if i + 1 < len(cands):
             time.sleep(args.sleep)          # Nominatim usage policy: max 1 request/second
 
+    existing = []
+    if args.append and os.path.exists(args.out):
+        try:
+            existing = json.load(open(args.out, encoding='utf-8')).get('places', [])
+        except Exception as e:
+            print('could not read %s to append to (%s); writing fresh' % (args.out, e))
+    # A later batch wins for a slug it re-proposed; everything else is carried through untouched.
+    merged = {p['slug']: p for p in existing}
+    for p in proposals:
+        merged[p['slug']] = p
+
     doc = {'generated_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
            'source': 'openstreetmap/nominatim', 'attribution': ATTRIBUTION,
-           'places': proposals}
+           'places': sorted(merged.values(), key=lambda p: p['slug'])}
     with open(args.out, 'w', encoding='utf-8') as f:
         json.dump(doc, f, indent=2, ensure_ascii=False)
         f.write('\n')
-    print('\nwrote %s (%d places)' % (args.out, len(proposals)))
+    reasons = {}
+    for p in proposals:
+        if p.get('refusal'):
+            reasons[p['refusal']['reason']] = reasons.get(p['refusal']['reason'], 0) + 1
+    ok = len(proposals) - sum(reasons.values())
+    print('\n%d proposed, %d refused%s' % (ok, sum(reasons.values()),
+          (': ' + ', '.join('%s=%d' % kv for kv in sorted(reasons.items()))) if reasons else ''))
+    print('wrote %s (%d places in file, %d from this batch)'
+          % (args.out, len(doc['places']), len(proposals)))
     return 0
 
 

@@ -1,333 +1,264 @@
 {
-  "generated_at": "2026-08-29T16:35:22Z",
+  "generated_at": "2026-08-29T18:15:56Z",
   "source": "openstreetmap/nominatim",
   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
   "places": [
     {
-      "slug": "hotel-sacher-vienna",
-      "name": "Hotel Sacher Vienna",
-      "city": "Vienna",
+      "slug": "7-portes-barcelona",
+      "name": "7 Portes",
+      "city": "Barcelona",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
       "fields": {
-        "street_address": "Albertinaplatz",
-        "postal_code": "1010",
-        "neighborhood": "Innere Stadt",
-        "lat": "48.2040427",
-        "lng": "16.3697708",
-        "phone": "+43 1 514560",
-        "website_url": "https://www.sacher.com/hotel-sacher-wien/",
-        "timezone": "Europe/Vienna"
+        "street_address": "Passeig d'Isabel II 14",
+        "postal_code": "08003",
+        "neighborhood": "Old Town",
+        "lat": "41.3821717",
+        "lng": "2.1832472",
+        "phone": "+34 933 19 30 33",
+        "website_url": "https://7portes.com/catala/index2.php",
+        "timezone": "Europe/Madrid"
       },
       "notes": [
         "timezone supplied by hand; Nominatim does not return one"
       ],
       "confidence": 1.0,
-      "osm": {
-        "type": "way",
-        "id": 628990501,
-        "name": "Hotel Sacher",
-        "display_name": "Hotel Sacher, Albertinaplatz, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Wien, 1010, Österreich"
-      },
-      "source_url": "https://www.openstreetmap.org/way/628990501"
-    },
-    {
-      "slug": "hassler-roma-rome",
-      "name": "Hotel Hassler",
-      "city": "Rome",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "Piazza della Trinità dei Monti 6",
-        "postal_code": "00187",
-        "neighborhood": "Municipio Roma I",
-        "lat": "41.9059856",
-        "lng": "12.4836915",
-        "timezone": "Europe/Rome"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
       "osm": {
         "type": "node",
-        "id": 2442830197,
-        "name": "Hotel Hassler",
-        "display_name": "Hotel Hassler, 6, Piazza della Trinità dei Monti, Campo Marzio, Municipio Roma I, Roma, Roma Capitale, Lazio, 00187, Italia"
+        "id": 1192702494,
+        "name": "7 Portes",
+        "display_name": "7 Portes, 14, Passeig d'Isabel II, la Ribera, Sant Pere, Santa Caterina i la Ribera, Old Town, Barcelona, Barcelonès, Barcelona, Catalonia, 08003, Spain"
       },
-      "source_url": "https://www.openstreetmap.org/node/2442830197"
-    },
-    {
-      "slug": "hotel-d-angleterre-copenhagen",
-      "name": "Hotel d'Angleterre",
-      "city": "Copenhagen",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "Hovedvagtsgade",
-        "postal_code": "1103",
-        "neighborhood": "Indre By",
-        "lat": "55.6805544",
-        "lng": "12.5842804",
-        "phone": "+45 33120095",
-        "website_url": "http://www.dangleterre.dk/",
-        "timezone": "Europe/Copenhagen"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 1.0,
-      "osm": {
-        "type": "way",
-        "id": 133045890,
-        "name": "Hotel d’Angleterre",
-        "display_name": "Hotel d’Angleterre, Hovedvagtsgade, Gammelholm, Indre By, København, Københavns Kommune, Region Hovedstaden, 1103, Danmark"
-      },
-      "source_url": "https://www.openstreetmap.org/way/133045890"
-    },
-    {
-      "slug": "pestana-palace-lisboa-lisbon",
-      "name": "Pestana Palace Lisboa",
-      "city": "Lisbon",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "Rua Jau",
-        "postal_code": "1300-245",
-        "neighborhood": "Santo Amaro",
-        "lat": "38.7035332",
-        "lng": "-9.1866758",
-        "website_url": "https://www.tesla.com/pt_PT/findus/list/chargers/Portugal",
-        "timezone": "Europe/Lisbon"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 0.768,
-      "osm": {
-        "type": "node",
-        "id": 8198583025,
-        "name": "Pestana Palace Lisboa Tesla Destination Charger",
-        "display_name": "Pestana Palace Lisboa Tesla Destination Charger, Rua Jau, Santo Amaro, Alcântara, Lisboa, 1300-245, Portugal"
-      },
-      "source_url": "https://www.openstreetmap.org/node/8198583025"
-    },
-    {
-      "slug": "hotel-chelsea-new-york-city",
-      "name": "Hotel Chelsea",
-      "city": "New York City",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "222 West 23rd Street",
-        "postal_code": "10011",
-        "neighborhood": "Manhattan",
-        "lat": "40.7443742",
-        "lng": "-73.9968175",
-        "timezone": "America/New_York"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 1.0,
-      "osm": {
-        "type": "node",
-        "id": 2325990473,
-        "name": "Hotel Chelsea",
-        "display_name": "Hotel Chelsea, 222, West 23rd Street, Chelsea District, Manhattan Community Board 4, Manhattan, New York County, New York, 10011, United States"
-      },
-      "source_url": "https://www.openstreetmap.org/node/2325990473"
-    },
-    {
-      "slug": "le-procope-paris",
-      "name": "Le Procope",
-      "city": "Paris",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "Rue de l'Ancienne Comédie",
-        "postal_code": "75006",
-        "neighborhood": "Paris 6e Arrondissement",
-        "lat": "48.8530584",
-        "lng": "2.3387505",
-        "phone": "+33 1 40 46 79 00",
-        "website_url": "https://www.procope.com",
-        "timezone": "Europe/Paris"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 1.0,
-      "osm": {
-        "type": "node",
-        "id": 2386622236,
-        "name": "Le Procope",
-        "display_name": "Le Procope, Rue de l'Ancienne Comédie, Quartier de la Monnaie, Paris 6e Arrondissement, Paris, Île-de-France, France métropolitaine, 75006, France"
-      },
-      "source_url": "https://www.openstreetmap.org/node/2386622236",
+      "source_url": "https://www.openstreetmap.org/node/1192702494",
       "hours": [
         {
           "day_of_week": 0,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 1,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 2,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 3,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 4,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 5,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         },
         {
           "day_of_week": 6,
-          "opens": "12:00",
-          "closes": "00:00"
+          "opens": "13:00",
+          "closes": "01:00"
         }
       ],
-      "hours_raw": "12:00-24:00"
+      "hours_raw": "Mo-Su 13:00-01:00"
     },
     {
-      "slug": "gundel-budapest",
-      "name": "Gundel",
-      "city": "Budapest",
+      "slug": "acropolis-museum-athens",
+      "name": "Acropolis Museum",
+      "city": "Athens",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
       "fields": {
-        "street_address": "Fő út",
-        "postal_code": "1087",
-        "neighborhood": "Kerepesdűlő",
-        "lat": "47.4959533",
-        "lng": "19.0899134",
-        "timezone": "Europe/Budapest"
+        "street_address": "Διονυσίου Αρεοπαγίτου 15",
+        "postal_code": "117 42",
+        "neighborhood": "Πετράλωνα",
+        "lat": "37.9685331",
+        "lng": "23.7284706",
+        "phone": "+30 21 0900 0900",
+        "website_url": "https://www.theacropolismuseum.gr/",
+        "timezone": "Europe/Athens"
       },
       "notes": [
         "timezone supplied by hand; Nominatim does not return one"
       ],
-      "confidence": 0.782,
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
       "osm": {
-        "type": "node",
-        "id": 6421186843,
-        "name": "Gundel Károly",
-        "display_name": "Gundel Károly, Fő út, Kerepesdűlő, VIII. kerület, Budapest, Közép-Magyarország, 1087, Magyarország"
+        "type": "way",
+        "id": 983921252,
+        "name": "Acropolis Museum",
+        "display_name": "Acropolis Museum, 15, Διονυσίου Αρεοπαγίτου, Anafiotika, Πετράλωνα, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 117 42, Greece"
       },
-      "source_url": "https://www.openstreetmap.org/node/6421186843"
+      "source_url": "https://www.openstreetmap.org/way/983921252",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Mo 08:00-16:00; Tu-Th, Sa-Su 08:00-20:00; Fr 08:00-22:00"
     },
     {
-      "slug": "au-pied-de-cochon-paris",
-      "name": "Au Pied de Cochon",
-      "city": "Paris",
+      "slug": "acropolis-of-athens",
+      "name": "Acropolis of Athens",
+      "city": "Athens",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
       "fields": {
-        "street_address": "Rue Coquillière",
-        "postal_code": "75001",
-        "neighborhood": "Paris 1er Arrondissement",
-        "lat": "48.8634885",
-        "lng": "2.3437958",
-        "phone": "+33 1 40 13 77 00",
-        "website_url": "https://www.pieddecochon.com/",
-        "timezone": "Europe/Paris"
+        "street_address": "Παναθηναίων",
+        "postal_code": "105 55",
+        "neighborhood": "Πετράλωνα",
+        "lat": "37.9716894",
+        "lng": "23.7263197",
+        "timezone": "Europe/Athens"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/attraction",
+      "osm": {
+        "type": "relation",
+        "id": 4423249,
+        "name": "Acropolis",
+        "display_name": "Acropolis, Παναθηναίων, Anafiotika, Πετράλωνα, 3rd District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 105 55, Greece"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/4423249"
+    },
+    {
+      "slug": "alte-pinakothek-munich",
+      "name": "Alte Pinakothek",
+      "city": "Munich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Barer Straße 27",
+        "postal_code": "80333",
+        "neighborhood": "Maxvorstadt",
+        "lat": "48.1482838",
+        "lng": "11.5699796",
+        "phone": "+49 89 2380 5216",
+        "website_url": "https://www.pinakothek.de/de/alte-pinakothek",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 4647135,
+        "name": "Alte Pinakothek",
+        "display_name": "Alte Pinakothek, 27, Barer Straße, Kunstareal, Maxvorstadt, Munich, Bavaria, 80333, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/way/4647135",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "20:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "20:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Tu,We 10:00-20:30; Th-Su 10:00-18:00"
+    },
+    {
+      "slug": "anne-frank-house-amsterdam",
+      "name": "Anne Frank House",
+      "city": "Amsterdam",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "267 Prinsengracht",
+        "postal_code": "1016 GV",
+        "neighborhood": "Centrum",
+        "lat": "52.3751558",
+        "lng": "4.8840807",
+        "phone": "+31 20 556 7100",
+        "website_url": "https://www.annefrank.org/",
+        "timezone": "Europe/Amsterdam"
       },
       "notes": [
         "timezone supplied by hand; Nominatim does not return one",
-        "opening_hours not stored (unsupported syntax: 24/7): 24/7"
+        "opening_hours not stored (unsupported syntax: ph): Mo-Su,PH 09:00-22:00 open \"Online tickets only\"; Jan 01 12:00-22:00; Apr 27 09:00-17:00; May 04 09:00-17:00; 2026 Sep 20 09:00-17:00; 2026 Sep 21 off; 2026 Nov 07 09:00-18:30; Dec 25 09:00-17:00; Dec 31 09:00-17:00"
       ],
       "confidence": 1.0,
+      "osm_class": "tourism/museum",
       "osm": {
-        "type": "node",
-        "id": 1678050141,
-        "name": "Au Pied de Cochon",
-        "display_name": "Au Pied de Cochon, Rue Coquillière, Quartier Les Halles, Paris 1er Arrondissement, Paris, Île-de-France, France métropolitaine, 75001, France"
+        "type": "way",
+        "id": 601081859,
+        "name": "Anne Frank House",
+        "display_name": "Anne Frank House, 267, Prinsengracht, Grachtengordel, Centrum, Amsterdam, North Holland, Netherlands, 1016 GV, Netherlands"
       },
-      "source_url": "https://www.openstreetmap.org/node/1678050141"
-    },
-    {
-      "slug": "cafe-savoy-prague",
-      "name": "Cafe Savoy",
-      "city": "Prague",
-      "source": "osm",
-      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
-      "fields": {
-        "street_address": "Vítězná 124/5",
-        "postal_code": "150 00",
-        "neighborhood": "Smíchov",
-        "lat": "50.0809258",
-        "lng": "14.4072158",
-        "phone": "+420 257 311 562",
-        "website_url": "https://cafesavoy.ambi.cz/",
-        "timezone": "Europe/Prague"
-      },
-      "notes": [
-        "timezone supplied by hand; Nominatim does not return one"
-      ],
-      "confidence": 1.0,
-      "osm": {
-        "type": "node",
-        "id": 332442885,
-        "name": "Café Savoy",
-        "display_name": "Café Savoy, 124/5, Vítězná, Smíchov, Praha 5, obvod Praha 5, Praha, 150 00, Česko"
-      },
-      "source_url": "https://www.openstreetmap.org/node/332442885",
-      "hours": [
-        {
-          "day_of_week": 0,
-          "opens": "08:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 1,
-          "opens": "08:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 2,
-          "opens": "08:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 3,
-          "opens": "08:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 4,
-          "opens": "08:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 5,
-          "opens": "09:00",
-          "closes": "22:00"
-        },
-        {
-          "day_of_week": 6,
-          "opens": "09:00",
-          "closes": "22:00"
-        }
-      ],
-      "hours_raw": "Mo-Fr 08:00-22:00; Sa,Su 09:00-22:00"
+      "source_url": "https://www.openstreetmap.org/way/601081859"
     },
     {
       "slug": "antiche-carampane-venice",
-      "name": "Antiche Carampane",
+      "name": "Trattoria Antiche Carampane",
       "city": "Venice",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
@@ -344,12 +275,13 @@
       "notes": [
         "timezone supplied by hand; Nominatim does not return one"
       ],
-      "confidence": 0.773,
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
       "osm": {
         "type": "way",
         "id": 228612578,
         "name": "Trattoria Antiche Carampane",
-        "display_name": "Trattoria Antiche Carampane, Corte de Ca Bollani, San Polo, Venezia-Murano-Burano, Murano, Venezia, Veneto, 30125, Italia"
+        "display_name": "Trattoria Antiche Carampane, Corte de Ca Bollani, San Polo, Venezia-Murano-Burano, Murano, Venice, Venezia, Veneto, 30125, Italy"
       },
       "source_url": "https://www.openstreetmap.org/way/228612578",
       "hours": [
@@ -407,35 +339,440 @@
       "hours_raw": "Tu-Sa 12:30-14:30,19:30-22:00"
     },
     {
-      "slug": "warsaw-rising-museum",
-      "name": "Warsaw Rising Museum",
-      "city": "Warsaw",
+      "slug": "au-pied-de-cochon-paris",
+      "name": "Au Pied de Cochon",
+      "city": "Paris",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
       "fields": {
-        "street_address": "Grzybowska 79",
-        "postal_code": "00-844",
-        "neighborhood": "Wola",
-        "lat": "52.2321024",
-        "lng": "20.9813775",
-        "phone": "+48 22 539 79 05",
-        "website_url": "https://1944.pl/",
-        "timezone": "Europe/Warsaw"
+        "street_address": "Rue Coquillière",
+        "postal_code": "75001",
+        "neighborhood": "1st Arrondissement",
+        "lat": "48.8634885",
+        "lng": "2.3437958",
+        "phone": "+33 1 40 13 77 00",
+        "website_url": "https://www.pieddecochon.com/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: 24/7): 24/7"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 1678050141,
+        "name": "Au Pied de Cochon",
+        "display_name": "Au Pied de Cochon, Rue Coquillière, Quartier Les Halles, 1st Arrondissement, Paris, Ile-de-France, Metropolitan France, 75001, France"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1678050141"
+    },
+    {
+      "slug": "basilica-de-la-sagrada-familia-barcelona",
+      "name": "Basilica de la Sagrada Familia",
+      "city": "Barcelona",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Carrer de Mallorca",
+        "postal_code": "08013",
+        "neighborhood": "l'Eixample",
+        "lat": "41.4035046",
+        "lng": "2.1744283",
+        "phone": "+34932080414",
+        "website_url": "https://sagradafamilia.org/",
+        "timezone": "Europe/Madrid"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: ph): Nov-Feb: Mo-Sa 09:00-18:00,Su 10:30-18:00; Mar-Oct: Mo-Fr 09:00-19:00,Sa 09:00-18:00,Su 10:30-19:00; Apr-Sep: Mo-Fr 09:00-20:00,Sa 09:00-18:00,Su 10:30-20:00; Dec 25,Dec 26,Jan 01,Jan 06 09:00-14:00; PH off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
+      "osm": {
+        "type": "relation",
+        "id": 9194723,
+        "name": "Basilica of the Holy Family",
+        "display_name": "Basilica of the Holy Family, Carrer de Mallorca, la Sagrada Família, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08013, Spain"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/9194723"
+    },
+    {
+      "slug": "berlinische-galerie",
+      "name": "Berlinische Galerie",
+      "city": "Berlin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Alte Jakobstraße 124-128",
+        "postal_code": "10969",
+        "neighborhood": "Kreuzberg",
+        "lat": "52.5039063",
+        "lng": "13.3982331",
+        "phone": "+49 30 78902-600",
+        "website_url": "https://berlinischegalerie.de/",
+        "timezone": "Europe/Berlin"
       },
       "notes": [
         "timezone supplied by hand; Nominatim does not return one"
       ],
       "confidence": 1.0,
+      "osm_class": "tourism/museum",
       "osm": {
         "type": "way",
-        "id": 167109428,
-        "name": "Muzeum Powstania Warszawskiego",
-        "display_name": "Muzeum Powstania Warszawskiego, 79, Grzybowska, Czyste, Wola, Warszawa, województwo mazowieckie, 00-844, Polska"
+        "id": 33743630,
+        "name": "Berlinische Galerie",
+        "display_name": "Berlinische Galerie, 124-128, Alte Jakobstraße, Ritterkiez, Luisenstadt, Kreuzberg, Friedrichshain-Kreuzberg, Berlin, 10969, Germany"
       },
-      "source_url": "https://www.openstreetmap.org/way/167109428",
+      "source_url": "https://www.openstreetmap.org/way/33743630",
       "hours": [
         {
           "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo, We-Su 10:00-18:00"
+    },
+    {
+      "slug": "book-of-kells-experience-at-trinity-college-dublin",
+      "name": "Old Library Trinity College",
+      "city": "Dublin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {},
+      "notes": [],
+      "confidence": 0.0,
+      "refusal": {
+        "reason": "no_external_match",
+        "detail": "OpenStreetMap returned nothing for this name in this city"
+      }
+    },
+    {
+      "slug": "brasserie-lipp-paris",
+      "name": "Brasserie Lipp",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "151 Boulevard Saint-Germain",
+        "postal_code": "75006",
+        "neighborhood": "6th Arrondissement",
+        "lat": "48.8537528",
+        "lng": "2.3324105",
+        "phone": "+33145485391",
+        "website_url": "https://www.brasserielipp.fr/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 251652824,
+        "name": "Brasserie Lipp",
+        "display_name": "Brasserie Lipp, 151, Boulevard Saint-Germain, Quartier de Saint-Germain-des-Prés, 6th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75006, France"
+      },
+      "source_url": "https://www.openstreetmap.org/node/251652824",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "02:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "02:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 09:00-02:00"
+    },
+    {
+      "slug": "buckingham-palace-state-rooms-london",
+      "name": "Buckingham Palace",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Buckingham Gate",
+        "postal_code": "SW1A 1AA",
+        "neighborhood": "Victoria",
+        "lat": "51.5008349",
+        "lng": "-0.1430045",
+        "phone": "+44 20 7766 7300",
+        "website_url": "https://www.royalcollection.org.uk/visit/the-state-rooms-buckingham-palace",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/attraction",
+      "osm": {
+        "type": "relation",
+        "id": 5208404,
+        "name": "Buckingham Palace",
+        "display_name": "Buckingham Palace, Buckingham Gate, Victoria, City of Westminster, Greater London, England, SW1A 1AA, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/5208404",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:30"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-17:30"
+    },
+    {
+      "slug": "byzantine-and-christian-museum-athens",
+      "name": "Byzantine and Christian Museum",
+      "city": "Athens",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Βασιλίσσης Σοφίας 22",
+        "postal_code": "106 75",
+        "neighborhood": "Συνοικία Κολωνακίου",
+        "lat": "37.9749821",
+        "lng": "23.7446810",
+        "phone": "+30 213 2139500",
+        "website_url": "http://www.byzantinemuseum.gr",
+        "timezone": "Europe/Athens"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 318587297,
+        "name": "Byzantine and Christian Museum",
+        "display_name": "Byzantine and Christian Museum, 22, Βασιλίσσης Σοφίας, Kolonaki, Συνοικία Κολωνακίου, 2nd District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 75, Greece"
+      },
+      "source_url": "https://www.openstreetmap.org/way/318587297",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "16:00"
+        }
+      ],
+      "hours_raw": "Mo,We-Su 09:00-16:00"
+    },
+    {
+      "slug": "cafe-savoy-prague",
+      "name": "Cafe Savoy",
+      "city": "Prague",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Vítězná 124/5",
+        "postal_code": "150 00",
+        "neighborhood": "Smíchov",
+        "lat": "50.0809258",
+        "lng": "14.4072158",
+        "phone": "+420 257 311 562",
+        "website_url": "https://cafesavoy.ambi.cz/",
+        "timezone": "Europe/Prague"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 332442885,
+        "name": "Café Savoy",
+        "display_name": "Café Savoy, 124/5, Vítězná, Smíchov, Praha 5, obvod Praha 5, Prague, 150 00, Czechia"
+      },
+      "source_url": "https://www.openstreetmap.org/node/332442885",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Mo-Fr 08:00-22:00; Sa,Su 09:00-22:00"
+    },
+    {
+      "slug": "cafe-tortoni-buenos-aires",
+      "name": "Cafe Tortoni",
+      "city": "Buenos Aires",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Avenida de Mayo 829",
+        "postal_code": "C1002AAT",
+        "neighborhood": "Monserrat",
+        "lat": "-34.6086934",
+        "lng": "-58.3781432",
+        "phone": "+54 11 4342 4328",
+        "website_url": "https://www.cafetortoni.com.ar/",
+        "timezone": "America/Argentina/Buenos_Aires"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/cafe",
+      "osm": {
+        "type": "node",
+        "id": 340141702,
+        "name": "Café Tortoni",
+        "display_name": "Café Tortoni, 829, Avenida de Mayo, Monserrat, Buenos Aires, Comuna 1, Autonomous City of Buenos Aires, C1002AAT, Argentina"
+      },
+      "source_url": "https://www.openstreetmap.org/node/340141702",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
           "opens": "08:00",
           "closes": "18:00"
         },
@@ -455,8 +792,61 @@
           "closes": "18:00"
         },
         {
-          "day_of_week": 1,
-          "closed": true
+          "day_of_week": 5,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 08:00-18:00"
+    },
+    {
+      "slug": "calouste-gulbenkian-museum-lisbon",
+      "name": "Calouste Gulbenkian Museum",
+      "city": "Lisbon",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Percurso do Lago",
+        "postal_code": "1050-078",
+        "neighborhood": "Campo Pequeno",
+        "lat": "38.7378228",
+        "lng": "-9.1535149",
+        "phone": "+351 217 823 461",
+        "website_url": "https://gulbenkian.pt/museu/",
+        "timezone": "Europe/Lisbon"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 17036063,
+        "name": "Calouste Gulbenkian Museum",
+        "display_name": "Calouste Gulbenkian Museum, Percurso do Lago, Campo Pequeno, Avenidas Novas, Lisbon, 1050-078, Portugal"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/17036063",
+      "hours": [
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
         },
         {
           "day_of_week": 5,
@@ -467,9 +857,371 @@
           "day_of_week": 6,
           "opens": "10:00",
           "closes": "18:00"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
         }
       ],
-      "hours_raw": "Mo,We-Fr 08:00-18:00; Tu off; Sa-Su 10:00-18:00"
+      "hours_raw": "We-Mo 10:00-18:00"
+    },
+    {
+      "slug": "capitoline-museums-rome",
+      "name": "Capitoline Museums",
+      "city": "Rome",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Via del Teatro di Marcello",
+        "postal_code": "00186",
+        "neighborhood": "Municipio Roma I",
+        "lat": "41.8926663",
+        "lng": "12.4822010",
+        "phone": "+39 06 0608",
+        "website_url": "https://www.museicapitolini.org/",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo-Su 09:30-19:30; Dec 24,31 09:30-14:00; Jan 01 off; May 01 off; Dec 25 off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 9909127,
+        "name": "Capitoline Museums",
+        "display_name": "Capitoline Museums, Via del Teatro di Marcello, Campitelli, Municipio Roma I, Rome, Roma Capitale, Lazio, 00186, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/9909127"
+    },
+    {
+      "slug": "central-lima",
+      "name": "Central",
+      "city": "Lima",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Pedro de Osma Avenue 301",
+        "postal_code": "15042",
+        "neighborhood": "Barranco",
+        "lat": "-12.1525709",
+        "lng": "-77.0225397",
+        "website_url": "https://www.centralrestaurante.com.pe",
+        "timezone": "America/Lima"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 6228532187,
+        "name": "Central",
+        "display_name": "Central, 301, Pedro de Osma Avenue, Barranco, Province of Lima, Lima Metropolitan Area, Lima, 15042, Peru"
+      },
+      "source_url": "https://www.openstreetmap.org/node/6228532187"
+    },
+    {
+      "slug": "chapter-one-dublin",
+      "name": "Chapter One",
+      "city": "Dublin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "16 Parnell Square North",
+        "postal_code": "D01 E7C1",
+        "lat": "53.3543759",
+        "lng": "-6.2639223",
+        "timezone": "Europe/Dublin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 4419601490,
+        "name": "Chapter One",
+        "display_name": "Chapter One, 16, Parnell Square North, Rotunda B ED, Dublin, County Dublin, Leinster, D01 E7C1, Ireland"
+      },
+      "source_url": "https://www.openstreetmap.org/node/4419601490"
+    },
+    {
+      "slug": "cochon-new-orleans",
+      "name": "Cochon",
+      "city": "New Orleans",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "930 Tchoupitoulas Street",
+        "postal_code": "70130",
+        "neighborhood": "French Quarter",
+        "lat": "29.9422594",
+        "lng": "-90.0672516",
+        "timezone": "America/Chicago"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 3348469218,
+        "name": "Cochon",
+        "display_name": "Cochon, 930, Tchoupitoulas Street, Warehouse District, Lower Garden District, French Quarter, New Orleans, Orleans Parish, Louisiana, 70130, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/3348469218"
+    },
+    {
+      "slug": "copernicus-science-centre-warsaw",
+      "name": "Copernicus Science Centre",
+      "city": "Warsaw",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Wybrzeże Kościuszkowskie 20",
+        "postal_code": "00-390",
+        "neighborhood": "Midtown",
+        "lat": "52.2417760",
+        "lng": "21.0286002",
+        "phone": "+48 22 596 41 00",
+        "website_url": "https://www.kopernik.org.pl/",
+        "timezone": "Europe/Warsaw"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 504034835,
+        "name": "Copernicus Science Centre",
+        "display_name": "Copernicus Science Centre, 20, Wybrzeże Kościuszkowskie, Powiśle-Skarpa, Powiśle, Midtown, Warsaw, Masovian Voivodeship, 00-390, Poland"
+      },
+      "source_url": "https://www.openstreetmap.org/way/504034835",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Tu-Su 10:00-20:00"
+    },
+    {
+      "slug": "de-kas-amsterdam",
+      "name": "De Kas",
+      "city": "Amsterdam",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "3 Kamerlingh Onneslaan",
+        "postal_code": "1097 DE",
+        "neighborhood": "Oost",
+        "lat": "52.3522924",
+        "lng": "4.9305718",
+        "phone": "+31 20 462 4562",
+        "website_url": "https://restaurantdekas.com",
+        "timezone": "Europe/Amsterdam"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 2830233516,
+        "name": "De Kas",
+        "display_name": "De Kas, 3, Kamerlingh Onneslaan, Oost, Amsterdam, North Holland, Netherlands, 1097 DE, Netherlands"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2830233516",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "13:45"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "18:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "18:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "18:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "18:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "18:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "18:00",
+          "closes": "21:00"
+        }
+      ],
+      "hours_raw": "Mo-Sa 12:00-13:45,18:00-21:00"
+    },
+    {
+      "slug": "design-museum-denmark-copenhagen",
+      "name": "Design Museum Denmark",
+      "city": "Copenhagen",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Bredgade",
+        "postal_code": "1265",
+        "neighborhood": "Indre By",
+        "lat": "55.6863742",
+        "lng": "12.5944077",
+        "phone": "+45 3318 5656",
+        "website_url": "https://designmuseum.dk",
+        "timezone": "Europe/Copenhagen"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 5693118,
+        "name": "Danish Museum of Art & Design",
+        "display_name": "Danish Museum of Art & Design, Bredgade, Frederiksstaden, Indre By, Copenhagen, Copenhagen Municipality, Capital Region of Denmark, 1265, Denmark"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/5693118",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Tu-We, Fr-Su 10:00-18:00; Th 10:00-20:00"
+    },
+    {
+      "slug": "deutsches-museum-munich",
+      "name": "Deutsches Museum",
+      "city": "Munich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Museumsinsel 1",
+        "postal_code": "80538",
+        "neighborhood": "Isarvorstadt",
+        "lat": "48.1300409",
+        "lng": "11.5829090",
+        "phone": "+49 89 2179-1",
+        "website_url": "https://www.deutsches-museum.de/",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo-Su 09:00-17:00; May 1 off; Nov 1 off; Dec 24,25,31 off; Jan 1 off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 3866522,
+        "name": "German Museum",
+        "display_name": "German Museum, 1, Museumsinsel, Gärtnerplatz, Isarvorstadt, Ludwigsvorstadt-Isarvorstadt, Munich, Bavaria, 80538, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/3866522"
     },
     {
       "slug": "duomo-di-milano",
@@ -491,11 +1243,12 @@
         "timezone supplied by hand; Nominatim does not return one"
       ],
       "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
       "osm": {
         "type": "relation",
         "id": 18017026,
-        "name": "Duomo di Milano",
-        "display_name": "Duomo di Milano, 1_33051, Cinque Vie, Duomo, Municipio 1, Milano, Rodano, Milano, Lombardia, 20122, Italia"
+        "name": "Milan Cathedral",
+        "display_name": "Milan Cathedral, 1_33051, Cinque Vie, Duomo, Municipio 1, Milan, Rodano, Milan, Lombardy, 20122, Italy"
       },
       "source_url": "https://www.openstreetmap.org/relation/18017026",
       "hours": [
@@ -538,6 +1291,2497 @@
       "hours_raw": "Mo-Su 08:00-19:00"
     },
     {
+      "slug": "eiffel-tower-paris",
+      "name": "Eiffel Tower",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "5 Avenue Anatole France",
+        "postal_code": "75007",
+        "neighborhood": "7th Arrondissement",
+        "lat": "48.8582599",
+        "lng": "2.2945006",
+        "website_url": "https://www.toureiffel.paris/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): 09:30-23:45; Jun 21-Sep 02: 09:00-00:45; Jul 14,Jul 15 off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "man_made/tower",
+      "osm": {
+        "type": "way",
+        "id": 5013364,
+        "name": "Eiffel Tower",
+        "display_name": "Eiffel Tower, 5, Avenue Anatole France, Quartier du Gros-Caillou, 7th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75007, France"
+      },
+      "source_url": "https://www.openstreetmap.org/way/5013364"
+    },
+    {
+      "slug": "ekstedt-stockholm",
+      "name": "Ekstedt",
+      "city": "Stockholm",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Humlegårdsgatan",
+        "postal_code": "114 46",
+        "neighborhood": "Östermalm",
+        "lat": "59.3367361",
+        "lng": "18.0748442",
+        "phone": "+4686111210",
+        "website_url": "https://ekstedt.nu/",
+        "timezone": "Europe/Stockholm"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 1962273874,
+        "name": "Ekstedt",
+        "display_name": "Ekstedt, Humlegårdsgatan, Östermalm, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 114 46, Sweden"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1962273874",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "closed": true
+        },
+        {
+          "day_of_week": 1,
+          "opens": "17:30",
+          "closes": "01:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "17:30",
+          "closes": "01:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "17:30",
+          "closes": "01:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "17:00",
+          "closes": "01:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "15:30",
+          "closes": "01:00"
+        }
+      ],
+      "hours_raw": "Mo off; Tu-Th 17:30-01:00; Fr 17:00-01:00; Sa 15:30-01:00"
+    },
+    {
+      "slug": "empire-state-building-new-york-city",
+      "name": "Empire State Building",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "350 5th Avenue",
+        "postal_code": "10118",
+        "neighborhood": "Manhattan",
+        "lat": "40.7484421",
+        "lng": "-73.9856589",
+        "phone": "+1-212-736-3100",
+        "website_url": "https://www.esbnyc.com/explore",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "office/yes",
+      "osm": {
+        "type": "way",
+        "id": 34633854,
+        "name": "Empire State Building",
+        "display_name": "Empire State Building, 350, 5th Avenue, Koreatown, Manhattan Community Board 5, Manhattan, New York County, New York, 10118, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/way/34633854",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "00:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 09:00-24:00"
+    },
+    {
+      "slug": "epic-the-irish-emigration-museum-dublin",
+      "name": "EPIC The Irish Emigration Museum",
+      "city": "Dublin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Custom House Quay",
+        "lat": "53.3482653",
+        "lng": "-6.2479785",
+        "phone": "+353 1 906 0861",
+        "website_url": "https://epicchq.com/",
+        "timezone": "Europe/Dublin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "node",
+        "id": 4427119837,
+        "name": "EPIC The Irish Emigration Museum",
+        "display_name": "EPIC The Irish Emigration Museum, Custom House Quay, North Dock C Ward 1986, Dublin, County Dublin, Leinster, Ireland"
+      },
+      "source_url": "https://www.openstreetmap.org/node/4427119837",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:45"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:45"
+        }
+      ],
+      "hours_raw": "10:00-18:45"
+    },
+    {
+      "slug": "figlmuller-vienna",
+      "name": "Figlmuller",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Bäckerstraße 6",
+        "postal_code": "1010",
+        "neighborhood": "Innere Stadt",
+        "lat": "48.2092948",
+        "lng": "16.3755253",
+        "phone": "+43 1 5121760",
+        "website_url": "https://www.figlmueller.at",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 3707663429,
+        "name": "Figlmüller",
+        "display_name": "Figlmüller, 6, Bäckerstraße, Stubenviertel, Katastralgemeinde Innere Stadt, Innere Stadt, Vienna, 1010, Austria"
+      },
+      "source_url": "https://www.openstreetmap.org/node/3707663429",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "11:00",
+          "closes": "22:30"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:00",
+          "closes": "22:30"
+        }
+      ],
+      "hours_raw": "Mo-Su 11:00-22:30"
+    },
+    {
+      "slug": "gallerie-dell-accademia-venice",
+      "name": "Gallerie dell'Accademia",
+      "city": "Venice",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Campo de la Carità 1050",
+        "postal_code": "30123",
+        "neighborhood": "Venezia-Murano-Burano",
+        "lat": "45.4313662",
+        "lng": "12.3280919",
+        "phone": "+39 041 522 2247",
+        "website_url": "https://www.gallerieaccademia.it/en",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "node",
+        "id": 895805118,
+        "name": "Accademia Gallery",
+        "display_name": "Accademia Gallery, 1050, Campo de la Carità, Dorsoduro, Venezia-Murano-Burano, Lido, Venice, Venezia, Veneto, 30123, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/node/895805118",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:15",
+          "closes": "19:15"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "08:15",
+          "closes": "14:00"
+        }
+      ],
+      "hours_raw": "Tu-Su 08:15-19:15; Mo 08:15-14:00"
+    },
+    {
+      "slug": "ginza-kyubey-tokyo",
+      "name": "Ginza Kyubey",
+      "city": "Tokyo",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "postal_code": "104-0061",
+        "neighborhood": "Ginza 8",
+        "lat": "35.6684966",
+        "lng": "139.7612739",
+        "website_url": "https://www.kyubey.jp/",
+        "timezone": "Asia/Tokyo"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 1519676364,
+        "name": "Kyubey Ginza",
+        "display_name": "Kyubey Ginza, 6, Ginza 8, Ginza, Chuo, Tokyo, 104-0061, Japan"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1519676364"
+    },
+    {
+      "slug": "grand-central-oyster-bar-new-york-city",
+      "name": "Grand Central Oyster Bar",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "89 East 42nd Street",
+        "postal_code": "10168",
+        "neighborhood": "Manhattan",
+        "lat": "40.7524188",
+        "lng": "-73.9773429",
+        "website_url": "https://www.oysterbarny.com/",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 6920037989,
+        "name": "Grand Central Oyster Bar and Restaurant",
+        "display_name": "Grand Central Oyster Bar and Restaurant, 89, East 42nd Street, Midtown, Manhattan Community Board 5, Manhattan, New York County, New York, 10168, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/6920037989"
+    },
+    {
+      "slug": "grillmarkadurinn-reykjavik",
+      "name": "Grillmarkadurinn",
+      "city": "Reykjavik",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Lækjargata 22b",
+        "postal_code": "101",
+        "neighborhood": "Miðborg",
+        "lat": "64.1471522",
+        "lng": "-21.9373009",
+        "timezone": "Atlantic/Reykjavik"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 1470766368,
+        "name": "Grillmarkaðurinn",
+        "display_name": "Grillmarkaðurinn, 22b, Lækjargata, Miðbær, Miðborg, Reykjavik, Capital Region, 101, Iceland"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1470766368"
+    },
+    {
+      "slug": "gundel-budapest",
+      "name": "Gundel Etterem",
+      "city": "Budapest",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Gundel Károly út 4",
+        "postal_code": "1146",
+        "neighborhood": "City Park",
+        "lat": "47.5174498",
+        "lng": "19.0770866",
+        "phone": "+36 1 889 8111",
+        "website_url": "https://www.gundel.hu/",
+        "timezone": "Europe/Budapest"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "way",
+        "id": 25227262,
+        "name": "Gundel Restaurant",
+        "display_name": "Gundel Restaurant, 4, Gundel Károly út, City Park, 14th district, Budapest, Central Hungary, 1146, Hungary"
+      },
+      "source_url": "https://www.openstreetmap.org/way/25227262",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "11:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:30",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 11:30-22:00"
+    },
+    {
+      "slug": "hassler-roma-rome",
+      "name": "Hotel Hassler",
+      "city": "Rome",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Piazza della Trinità dei Monti 6",
+        "postal_code": "00187",
+        "neighborhood": "Municipio Roma I",
+        "lat": "41.9059856",
+        "lng": "12.4836915",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/hotel",
+      "osm": {
+        "type": "node",
+        "id": 2442830197,
+        "name": "Hotel Hassler",
+        "display_name": "Hotel Hassler, 6, Piazza della Trinità dei Monti, Campo Marzio, Municipio Roma I, Rome, Roma Capitale, Lazio, 00187, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2442830197"
+    },
+    {
+      "slug": "hofbrauhaus-munich",
+      "name": "Hofbrauhaus",
+      "city": "Munich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Platzl 9",
+        "postal_code": "80331",
+        "neighborhood": "Old Town",
+        "lat": "48.1376334",
+        "lng": "11.5799788",
+        "phone": "+49 89 290136-100",
+        "website_url": "https://www.hofbraeuhaus.de/",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 11829267544,
+        "name": "Hofbräuhaus am Platzl",
+        "display_name": "Hofbräuhaus am Platzl, 9, Platzl, Graggenauerviertel, Old Town, Munich, Bavaria, 80331, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/node/11829267544",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "11:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:00",
+          "closes": "00:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 11:00-24:00"
+    },
+    {
+      "slug": "hofburg-imperial-palace-vienna",
+      "name": "Hofburg Imperial Palace",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Führichgasse",
+        "postal_code": "1010",
+        "neighborhood": "Innere Stadt",
+        "lat": "48.2063293",
+        "lng": "16.3656259",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "historic/castle",
+      "osm": {
+        "type": "relation",
+        "id": 3898175,
+        "name": "Hofburg Palace",
+        "display_name": "Hofburg Palace, Führichgasse, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Vienna, 1010, Austria"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/3898175"
+    },
+    {
+      "slug": "hotel-chelsea-new-york-city",
+      "name": "Hotel Chelsea",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "222 West 23rd Street",
+        "postal_code": "10011",
+        "neighborhood": "Manhattan",
+        "lat": "40.7443742",
+        "lng": "-73.9968175",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/hotel",
+      "osm": {
+        "type": "node",
+        "id": 2325990473,
+        "name": "Hotel Chelsea",
+        "display_name": "Hotel Chelsea, 222, West 23rd Street, Chelsea District, Manhattan Community Board 4, Manhattan, New York County, New York, 10011, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2325990473"
+    },
+    {
+      "slug": "hotel-d-angleterre-copenhagen",
+      "name": "Hotel d'Angleterre",
+      "city": "Copenhagen",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Hovedvagtsgade",
+        "postal_code": "1103",
+        "neighborhood": "Indre By",
+        "lat": "55.6805544",
+        "lng": "12.5842804",
+        "phone": "+45 33120095",
+        "website_url": "http://www.dangleterre.dk/",
+        "timezone": "Europe/Copenhagen"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/hotel",
+      "osm": {
+        "type": "way",
+        "id": 133045890,
+        "name": "Hotel d’Angleterre",
+        "display_name": "Hotel d’Angleterre, Hovedvagtsgade, Gammelholm, Indre By, Copenhagen, Copenhagen Municipality, Capital Region of Denmark, 1103, Denmark"
+      },
+      "source_url": "https://www.openstreetmap.org/way/133045890"
+    },
+    {
+      "slug": "hotel-sacher-vienna",
+      "name": "Hotel Sacher Vienna",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Albertinaplatz",
+        "postal_code": "1010",
+        "neighborhood": "Innere Stadt",
+        "lat": "48.2040427",
+        "lng": "16.3697708",
+        "phone": "+43 1 514560",
+        "website_url": "https://www.sacher.com/hotel-sacher-wien/",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/hotel",
+      "osm": {
+        "type": "way",
+        "id": 628990501,
+        "name": "Hotel Sacher",
+        "display_name": "Hotel Sacher, Albertinaplatz, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Vienna, 1010, Austria"
+      },
+      "source_url": "https://www.openstreetmap.org/way/628990501"
+    },
+    {
+      "slug": "hungarian-national-museum-budapest",
+      "name": "Hungarian National Museum",
+      "city": "Budapest",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Múzeum körút 14-16",
+        "postal_code": "1088",
+        "neighborhood": "Palotanegyed",
+        "lat": "47.4911841",
+        "lng": "19.0628837",
+        "phone": "+36 1 338 2122",
+        "website_url": "http://mnm.hu/",
+        "timezone": "Europe/Budapest"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 12963,
+        "name": "Hungarian National Museum",
+        "display_name": "Hungarian National Museum, 14-16, Múzeum körút, Palotanegyed, 8th district, Budapest, Central Hungary, 1088, Hungary"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/12963",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Tu-Su 10:00-18:00"
+    },
+    {
+      "slug": "jewish-museum-berlin",
+      "name": "Jewish Museum Berlin",
+      "city": "Berlin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Lindenstraße 9-14",
+        "postal_code": "10969",
+        "neighborhood": "Kreuzberg",
+        "lat": "52.5018716",
+        "lng": "13.3962089",
+        "phone": "+49 30 25993300",
+        "website_url": "https://www.jmberlin.de/",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 302942554,
+        "name": "Jewish Museum",
+        "display_name": "Jewish Museum, 9-14, Lindenstraße, Zeitungsviertel, Kreuzberg, Friedrichshain-Kreuzberg, Berlin, 10969, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/way/302942554",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-18:00"
+    },
+    {
+      "slug": "jewish-museum-in-prague",
+      "name": "Jewish Museum Prague",
+      "city": "Prague",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "U Staré školy 141/1",
+        "postal_code": "110 00",
+        "neighborhood": "Josefov",
+        "lat": "50.0902854",
+        "lng": "14.4211001",
+        "website_url": "https://www.jewishmuseum.cz/",
+        "timezone": "Europe/Prague"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "node",
+        "id": 1269502274,
+        "name": "Jewish Museum",
+        "display_name": "Jewish Museum, 141/1, U Staré školy, Josefov, obvod Praha 1, Prague, 110 00, Czechia"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1269502274"
+    },
+    {
+      "slug": "katz-s-delicatessen-new-york-city",
+      "name": "Katz's Delicatessen",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "205 East Houston Street",
+        "postal_code": "10002",
+        "neighborhood": "Manhattan",
+        "lat": "40.7223431",
+        "lng": "-73.9873530",
+        "phone": "+1-212-254-2246",
+        "website_url": "https://www.katzsdelicatessen.com",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 1915398676,
+        "name": "Katz's Delicatessen",
+        "display_name": "Katz's Delicatessen, 205, East Houston Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1915398676",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "22:15"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "22:15"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "22:15"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "22:15"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "00:00",
+          "closes": "23:59"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "00:00",
+          "closes": "22:15"
+        }
+      ],
+      "hours_raw": "Mo-Th 08:00-22:15; Fr 08:00-24:00; Sa 00:00-24:00; Su 00:00-22:15"
+    },
+    {
+      "slug": "kinkaku-ji-kyoto",
+      "name": "Kinkaku-ji",
+      "city": "Kyoto",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "postal_code": "603-8361",
+        "neighborhood": "Kita Ward",
+        "lat": "35.0395293",
+        "lng": "135.7295373",
+        "website_url": "https://www.shokoku-ji.jp/kinkakuji/",
+        "timezone": "Asia/Tokyo"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
+      "osm": {
+        "type": "way",
+        "id": 98115917,
+        "name": "Kinkaku-ji",
+        "display_name": "Kinkaku-ji, Kinkakuji-chō, 馬喰町, Kita Ward, Kyoto, Kyoto Prefecture, 603-8361, Japan"
+      },
+      "source_url": "https://www.openstreetmap.org/way/98115917",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 09:00-17:00"
+    },
+    {
+      "slug": "kunst-haus-wien-vienna",
+      "name": "KunstHausWien",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Untere Weißgerberstraße",
+        "postal_code": "1030",
+        "neighborhood": "Katastralgemeinde Landstraße",
+        "lat": "48.2110903",
+        "lng": "16.3933193",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: \"): \"temporarily closed\""
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/gallery",
+      "osm": {
+        "type": "way",
+        "id": 342113776,
+        "name": "Art House Vienna",
+        "display_name": "Art House Vienna, Untere Weißgerberstraße, Weißgerber, Katastralgemeinde Landstraße, Landstraße, Vienna, 1030, Austria"
+      },
+      "source_url": "https://www.openstreetmap.org/way/342113776"
+    },
+    {
+      "slug": "kunsthaus-zurich",
+      "name": "Kunsthaus Zurich",
+      "city": "Zurich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Heimplatz 1",
+        "postal_code": "8001",
+        "neighborhood": "Altstadt",
+        "lat": "47.3702241",
+        "lng": "8.5479797",
+        "website_url": "https://www.kunsthaus.ch/",
+        "timezone": "Europe/Zurich"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: ph): Tu-Su 10:00-18:00; Th 10:00-20:00; PH 10:00-18:00"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 3768127,
+        "name": "Kunsthaus",
+        "display_name": "Kunsthaus, 1, Heimplatz, Hochschulen, Altstadt, Zurich, District Zurich, Zurich, 8001, Switzerland"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/3768127"
+    },
+    {
+      "slug": "la-pedrera-casa-mila-barcelona",
+      "name": "La Pedrera (Casa Mila)",
+      "city": "Barcelona",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Carrer de Provença 261-265",
+        "postal_code": "08008",
+        "neighborhood": "l'Eixample",
+        "lat": "41.3953996",
+        "lng": "2.1617621",
+        "website_url": "https://www.lapedrera.com/ca/home",
+        "timezone": "Europe/Madrid"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mar 01-Nov 04: 09:00-20:30,21:00-23:00; Nov 05-Feb 28: 09:00-18:30,19:00-21:00"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/artwork",
+      "osm": {
+        "type": "relation",
+        "id": 8974896,
+        "name": "La Pedrera - Casa Milà",
+        "display_name": "La Pedrera - Casa Milà, 261-265, Carrer de Provença, la Dreta de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08008, Spain"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/8974896"
+    },
+    {
+      "slug": "le-procope-paris",
+      "name": "Le Procope",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rue de l'Ancienne Comédie",
+        "postal_code": "75006",
+        "neighborhood": "6th Arrondissement",
+        "lat": "48.8530584",
+        "lng": "2.3387505",
+        "phone": "+33 1 40 46 79 00",
+        "website_url": "https://www.procope.com",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 2386622236,
+        "name": "Le Procope",
+        "display_name": "Le Procope, Rue de l'Ancienne Comédie, Quartier de la Monnaie, 6th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75006, France"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2386622236",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "12:00",
+          "closes": "00:00"
+        }
+      ],
+      "hours_raw": "12:00-24:00"
+    },
+    {
+      "slug": "louvre-museum-paris",
+      "name": "Louvre Museum",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Lefuel Court",
+        "postal_code": "75001",
+        "neighborhood": "1st Arrondissement",
+        "lat": "48.8611473",
+        "lng": "2.3380277",
+        "phone": "+33 1 40 20 52 29",
+        "website_url": "https://www.louvre.fr",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo,Th,Sa-Su 09:00-18:00; Tu off; We,Fr 09:00-21:00; Jan 01,May 01,Dec 25 off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 7515426,
+        "name": "Louvre Museum",
+        "display_name": "Louvre Museum, Lefuel Court, Saint-Germain-l'Auxerrois, 1st Arrondissement, Paris, Ile-de-France, Metropolitan France, 75001, France"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/7515426"
+    },
+    {
+      "slug": "m-plus-hong-kong",
+      "name": "M+",
+      "city": "Hong Kong",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Museum Drive 38",
+        "neighborhood": "Yau Ma Tei",
+        "lat": "22.3010537",
+        "lng": "114.1591472",
+        "website_url": "https://www.westk.hk/tc/venue/mplus",
+        "timezone": "Asia/Hong_Kong"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: \"): Tu-Su 10:00-18:00 open \"Last Entry 30m prior\"; Fr 10:00-22:00 open \"Last Entry 30m prior\""
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 549702815,
+        "name": "M+",
+        "display_name": "M+, 38, Museum Drive, West Kowloon, Yau Ma Tei, Yau Tsim Mong District, Kowloon, Hong Kong, China"
+      },
+      "source_url": "https://www.openstreetmap.org/way/549702815"
+    },
+    {
+      "slug": "macba-barcelona",
+      "name": "MACBA",
+      "city": "Barcelona",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Carrer de Montalegre",
+        "postal_code": "08001",
+        "neighborhood": "Old Town",
+        "lat": "41.3831012",
+        "lng": "2.1667659",
+        "phone": "+34934120810",
+        "website_url": "https://www.macba.cat/",
+        "timezone": "Europe/Madrid"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: ph): Mo,We-Fr 11:00-19:30; Sa 10:00-20:00; Su,PH 10:00-15:00"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 36930946,
+        "name": "Barcelona Museum of Contemporary Art",
+        "display_name": "Barcelona Museum of Contemporary Art, Carrer de Montalegre, el Raval, Old Town, Barcelona, Barcelonès, Barcelona, Catalonia, 08001, Spain"
+      },
+      "source_url": "https://www.openstreetmap.org/way/36930946"
+    },
+    {
+      "slug": "malba-buenos-aires",
+      "name": "MALBA",
+      "city": "Buenos Aires",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Avenida Presidente Figueroa Alcorta 3415",
+        "postal_code": "C1425CLA",
+        "neighborhood": "Palermo",
+        "lat": "-34.5768817",
+        "lng": "-58.4033919",
+        "phone": "+54 11 4808-6500",
+        "website_url": "https://malba.org.ar/",
+        "timezone": "America/Argentina/Buenos_Aires"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 23621021,
+        "name": "Museo de Arte Latinoamericano de Buenos Aires (MALBA)",
+        "display_name": "Museo de Arte Latinoamericano de Buenos Aires (MALBA), 3415, Avenida Presidente Figueroa Alcorta, Barrio Parque, Palermo, Buenos Aires, Comuna 14, Autonomous City of Buenos Aires, C1425CLA, Argentina"
+      },
+      "source_url": "https://www.openstreetmap.org/way/23621021",
+      "hours": [
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "12:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:00",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Th-Mo 12:00-20:00; We 11:00-20:00"
+    },
+    {
+      "slug": "miod-malina-krakow",
+      "name": "Miod Malina",
+      "city": "Krakow",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Grodzka 40",
+        "postal_code": "31-044",
+        "neighborhood": "Stare Miasto",
+        "lat": "50.0580860",
+        "lng": "19.9382121",
+        "phone": "+48 12 430 04 11",
+        "website_url": "https://miodmalina.pl/",
+        "timezone": "Europe/Warsaw"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 4161938189,
+        "name": "Miód Malina",
+        "display_name": "Miód Malina, 40, Grodzka, Old Town, Stare Miasto, Old Town, Krakow, Lesser Poland Voivodeship, 31-044, Poland"
+      },
+      "source_url": "https://www.openstreetmap.org/node/4161938189",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "12:00",
+          "closes": "23:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 12:00-23:00"
+    },
+    {
+      "slug": "moderna-museet-stockholm",
+      "name": "Moderna Museet",
+      "city": "Stockholm",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Slupskjulsvägen",
+        "postal_code": "111 49",
+        "neighborhood": "Skeppsholmen",
+        "lat": "59.3263494",
+        "lng": "18.0840004",
+        "website_url": "https://www.modernamuseet.se/",
+        "timezone": "Europe/Stockholm"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "node",
+        "id": 29898032,
+        "name": "Modern Art Museum",
+        "display_name": "Modern Art Museum, Slupskjulsvägen, Skeppsholmen, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 111 49, Sweden"
+      },
+      "source_url": "https://www.openstreetmap.org/node/29898032",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "closed": true
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo off; Tu,Fr 10:00-20:00; We-Th,Sa-Su 10:00-18:00"
+    },
+    {
+      "slug": "museo-frida-kahlo-mexico-city",
+      "name": "Museo Frida Kahlo",
+      "city": "Mexico City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Calle Ignacio Allende 247",
+        "postal_code": "04100",
+        "neighborhood": "Coyoacán",
+        "lat": "19.3551412",
+        "lng": "-99.1623564",
+        "phone": "+52 55 55545999",
+        "website_url": "http://www.museofridakahlo.org.mx/",
+        "timezone": "America/Mexico_City"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 176482295,
+        "name": "Frida Kahlo Museum",
+        "display_name": "Frida Kahlo Museum, 247, Calle Ignacio Allende, Colonia Del Carmen, Coyoacán, Mexico City, Coyoacán, Mexico City, 04100, Mexico"
+      },
+      "source_url": "https://www.openstreetmap.org/way/176482295",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:45"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "17:45"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:45"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:45"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:45"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:00",
+          "closes": "17:45"
+        }
+      ],
+      "hours_raw": "Tu, Th-Su 10:00-17:45; We 11:00-17:45"
+    },
+    {
+      "slug": "museo-larco-lima",
+      "name": "Museo Larco",
+      "city": "Lima",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Simon Bolivar Avenue 1515",
+        "postal_code": "15084",
+        "neighborhood": "Pueblo Libre",
+        "lat": "-12.0727847",
+        "lng": "-77.0709002",
+        "phone": "+511 4611835",
+        "website_url": "https://www.museolarco.org/",
+        "timezone": "America/Lima"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 387071625,
+        "name": "Larco Herrera Museum",
+        "display_name": "Larco Herrera Museum, 1515, Simon Bolivar Avenue, Pueblo Libre, Province of Lima, Lima Metropolitan Area, Lima, 15084, Peru"
+      },
+      "source_url": "https://www.openstreetmap.org/way/387071625",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "19:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 09:00-19:00"
+    },
+    {
+      "slug": "museo-nacional-de-antropologia-mexico-city",
+      "name": "Museo Nacional de Antropologia",
+      "city": "Mexico City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Plaza de acceso",
+        "postal_code": "11560",
+        "neighborhood": "Polanco",
+        "lat": "19.4261524",
+        "lng": "-99.1866516",
+        "website_url": "https://mna.inah.gob.mx/",
+        "timezone": "America/Mexico_City"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 433756023,
+        "name": "Museo Nacional de Antropología",
+        "display_name": "Museo Nacional de Antropología, Plaza de acceso, 1a. Sección del Bosque de Chapultepec, Polanco, Mexico City, Miguel Hidalgo, Mexico City, 11560, Mexico"
+      },
+      "source_url": "https://www.openstreetmap.org/way/433756023",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:00"
+        }
+      ],
+      "hours_raw": "Tu-Sa 09:00-18:00; Su 10:00-17:00"
+    },
+    {
+      "slug": "museo-nazionale-romano-rome",
+      "name": "Museo Nazionale Romano",
+      "city": "Rome",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Piazza di Sant'Apollinare 46",
+        "postal_code": "00186",
+        "neighborhood": "Municipio Roma I",
+        "lat": "41.9011978",
+        "lng": "12.4728382",
+        "phone": "+39 06 39967700",
+        "website_url": "https://www.museonazionaleromano.beniculturali.it",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "node",
+        "id": 677476578,
+        "name": "Museo Nazionale Romano",
+        "display_name": "Museo Nazionale Romano, 46, Piazza di Sant'Apollinare, Ponte, Municipio Roma I, Rome, Roma Capitale, Lazio, 00186, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/node/677476578",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "19:45"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "19:45"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "19:45"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "19:45"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "19:45"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "19:45"
+        }
+      ],
+      "hours_raw": "Tu-Su 09:00-19:45"
+    },
+    {
+      "slug": "museum-of-cycladic-art-athens",
+      "name": "Museum of Cycladic Art",
+      "city": "Athens",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Νεοφύτου Δούκα 4",
+        "postal_code": "106 74",
+        "neighborhood": "Συνοικία Κολωνακίου",
+        "lat": "37.9756970",
+        "lng": "23.7423066",
+        "phone": "+30 210 7228321-3",
+        "website_url": "http://www.cycladic.gr/",
+        "timezone": "Europe/Athens"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 220890927,
+        "name": "Museum of Cycladic Art",
+        "display_name": "Museum of Cycladic Art, 4, Νεοφύτου Δούκα, Kolonaki, Συνοικία Κολωνακίου, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 74, Greece"
+      },
+      "source_url": "https://www.openstreetmap.org/way/220890927",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 1,
+          "closed": true
+        }
+      ],
+      "hours_raw": "Mo,We,Fr,Sa 10:00-17:00; Th 10:00-20:00; Su 11:00-17:00; Tu off"
+    },
+    {
+      "slug": "museum-of-the-future-dubai",
+      "name": "Museum of the Future",
+      "city": "Dubai",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Sheikh Zayed Road (north)",
+        "neighborhood": "Trade Centre 1",
+        "lat": "25.2191545",
+        "lng": "55.2818746",
+        "phone": "+9718002071",
+        "website_url": "https://museumofthefuture.ae/",
+        "timezone": "Asia/Dubai"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 1054289435,
+        "name": "Museum Of The Future",
+        "display_name": "Museum Of The Future, Sheikh Zayed Road (north), Sheikh Zayed Road, Trade Centre 1, Trade Centre, Dubai, Dubai Emirate, United Arab Emirates"
+      },
+      "source_url": "https://www.openstreetmap.org/way/1054289435",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "21:30"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "21:30"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-21:30"
+    },
+    {
+      "slug": "national-archaeological-museum-athens",
+      "name": "National Archaeological Museum",
+      "city": "Athens",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Πατησίων 44",
+        "postal_code": "106 82",
+        "neighborhood": "Μουσείο",
+        "lat": "37.9890123",
+        "lng": "23.7329577",
+        "phone": "+30 213 2144800",
+        "website_url": "https://namuseum.gr/",
+        "timezone": "Europe/Athens"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: easter): Nov 01-Mar 31 08:30-15:30; Nov 01-Mar 31,Apr 01-May 13,May 14-Oct 31 Tu 13:00-20:00; Apr 01-May 13 09:00-16:00; May 14-Oct 31 08:00-20:00; Jan 01 off; Mar 25 off; May 01 off; Dec 25-26 off \"Orthodox Easter off\""
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 2828,
+        "name": "National Archaeological Museum",
+        "display_name": "National Archaeological Museum, 44, Πατησίων, Μουσείο, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 82, Greece"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/2828"
+    },
+    {
+      "slug": "national-museum-of-iceland-reykjavik",
+      "name": "National Museum of Iceland",
+      "city": "Reykjavik",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Suðurgata 41",
+        "postal_code": "102",
+        "neighborhood": "Miðborg",
+        "lat": "64.1419542",
+        "lng": "-21.9481629",
+        "phone": "+354 530-2200",
+        "website_url": "http://www.natmus.is",
+        "timezone": "Atlantic/Reykjavik"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 6180675,
+        "name": "National Museum of Iceland",
+        "display_name": "National Museum of Iceland, 41, Suðurgata, Háskóli, Miðborg, Reykjavik, Capital Region, 102, Iceland"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/6180675",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-17:00"
+    },
+    {
+      "slug": "national-museum-of-scotland-edinburgh",
+      "name": "National Museum of Scotland",
+      "city": "Edinburgh",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Chambers Street",
+        "postal_code": "EH1 1JF",
+        "neighborhood": "Abbeyhill",
+        "lat": "55.9470714",
+        "lng": "-3.1893355",
+        "phone": "+44300 123 6789",
+        "website_url": "https://www.nms.ac.uk/national-museum-of-scotland",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo-Su 10:00-17:00; Jan 01 12:00-17:00; Dec 25 off; Dec 26 12:00-17:00"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 467226683,
+        "name": "National Museum of Scotland",
+        "display_name": "National Museum of Scotland, Chambers Street, Abbeyhill, Old Town, City of Edinburgh, Scotland, EH1 1JF, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/467226683"
+    },
+    {
+      "slug": "national-wwii-museum-new-orleans",
+      "name": "National WWII Museum",
+      "city": "New Orleans",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {},
+      "notes": [],
+      "confidence": 0.0,
+      "refusal": {
+        "reason": "no_external_match",
+        "detail": "OpenStreetMap returned nothing for this name in this city"
+      }
+    },
+    {
+      "slug": "nationalmuseum-stockholm",
+      "name": "Nationalmuseum",
+      "city": "Stockholm",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Södra Blasieholmshamnen",
+        "postal_code": "111 48",
+        "neighborhood": "Norrmalm",
+        "lat": "59.3284983",
+        "lng": "18.0781214",
+        "phone": "+46 8 519 543 00",
+        "website_url": "https://www.nationalmuseum.se",
+        "timezone": "Europe/Stockholm"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 24968329,
+        "name": "National Museum of Fine Arts",
+        "display_name": "National Museum of Fine Arts, Södra Blasieholmshamnen, Norrmalm, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 111 48, Sweden"
+      },
+      "source_url": "https://www.openstreetmap.org/way/24968329",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "closed": true
+        },
+        {
+          "day_of_week": 1,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "11:00",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Mo off; Tu-We,Fr-Su 11:00-17:00; Th 11:00-20:00"
+    },
+    {
+      "slug": "natural-history-museum-london",
+      "name": "Natural History Museum",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Cromwell Road",
+        "postal_code": "SW7 5BD",
+        "neighborhood": "Brompton",
+        "lat": "51.4965109",
+        "lng": "-0.1760019",
+        "website_url": "https://www.nhm.ac.uk/",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 24436446,
+        "name": "Natural History Museum",
+        "display_name": "Natural History Museum, Cromwell Road, Brompton, Royal Borough of Kensington and Chelsea, Greater London, England, SW7 5BD, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/24436446",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:30"
+        }
+      ],
+      "hours_raw": "10:00-17:30"
+    },
+    {
+      "slug": "new-orleans-museum-of-art",
+      "name": "New Orleans Museum of Art",
+      "city": "New Orleans",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "1 Collins Diboll Circle",
+        "postal_code": "70019",
+        "neighborhood": "Faubourg St. John",
+        "lat": "29.9864338",
+        "lng": "-90.0934343",
+        "phone": "+1 504 658 4100",
+        "website_url": "https://noma.org/",
+        "timezone": "America/Chicago"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 325825515,
+        "name": "New Orleans Museum of Art",
+        "display_name": "New Orleans Museum of Art, 1, Collins Diboll Circle, Faubourg St. John, New Orleans, Orleans Parish, Louisiana, 70019, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/way/325825515",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 0,
+          "closed": true
+        }
+      ],
+      "hours_raw": "Tu,Th-Su 10:00-17:00; We 12:00-19:00; Mo off"
+    },
+    {
+      "slug": "new-york-botanical-garden-new-york-city",
+      "name": "New York Botanical Garden",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "2900 Southern Boulevard",
+        "postal_code": "10458",
+        "neighborhood": "The Bronx",
+        "lat": "40.8622431",
+        "lng": "-73.8771541",
+        "phone": "+1 718-817-8700",
+        "website_url": "https://www.nybg.org/",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "leisure/garden",
+      "osm": {
+        "type": "way",
+        "id": 38839186,
+        "name": "New York Botanical Garden",
+        "display_name": "New York Botanical Garden, 2900, Southern Boulevard, The Bronx, Bronx County, New York, 10458, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/way/38839186",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Tu-Su 10:00-18:00"
+    },
+    {
+      "slug": "nijo-castle-kyoto",
+      "name": "Nijo Castle",
+      "city": "Kyoto",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Matsuyamachi street",
+        "postal_code": "602-8145",
+        "neighborhood": "Nakagyo Ward",
+        "lat": "35.0140076",
+        "lng": "135.7485369",
+        "website_url": "https://nijo-jocastle.city.kyoto.lg.jp/",
+        "timezone": "Asia/Tokyo"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/attraction",
+      "osm": {
+        "type": "way",
+        "id": 57111281,
+        "name": "Nijō Castle",
+        "display_name": "Nijō Castle, Matsuyamachi street, Samamatsucho, Nakagyo Ward, Kyoto, Kyoto Prefecture, 602-8145, Japan"
+      },
+      "source_url": "https://www.openstreetmap.org/way/57111281",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:45",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:45",
+          "closes": "17:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 08:45-17:00"
+    },
+    {
+      "slug": "noma-copenhagen",
+      "name": "Noma",
+      "city": "Copenhagen",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Bjørnekloen",
+        "postal_code": "1441",
+        "neighborhood": "Amagerbro",
+        "lat": "55.6825096",
+        "lng": "12.6107888",
+        "phone": "+45 32963297",
+        "website_url": "https://noma.dk/",
+        "timezone": "Europe/Copenhagen"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 5416925514,
+        "name": "Noma",
+        "display_name": "Noma, Bjørnekloen, Freetown Christiania, Holmen, Amagerbro, Copenhagen, Copenhagen Municipality, Capital Region of Denmark, 1441, Denmark"
+      },
+      "source_url": "https://www.openstreetmap.org/node/5416925514",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "17:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "17:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "17:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:30",
+          "closes": "17:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "18:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 5,
+          "closed": true
+        },
+        {
+          "day_of_week": 6,
+          "closed": true
+        },
+        {
+          "day_of_week": 0,
+          "closed": true
+        }
+      ],
+      "hours_raw": "Tu-Th 17:00-23:00; Fr 12:30-17:30,18:00-23:30; Sa-Mo off"
+    },
+    {
+      "slug": "oceanario-de-lisboa-lisbon",
+      "name": "Oceanario de Lisboa",
+      "city": "Lisbon",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Esplanada Dom Carlos I",
+        "postal_code": "1990-005",
+        "neighborhood": "Parque das Nações",
+        "lat": "38.7635196",
+        "lng": "-9.0937161",
+        "phone": "+351 218 917 000",
+        "website_url": "https://oceanario.pt/",
+        "timezone": "Europe/Lisbon"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/aquarium",
+      "osm": {
+        "type": "way",
+        "id": 1016189633,
+        "name": "Oceanário de Lisboa",
+        "display_name": "Oceanário de Lisboa, Esplanada Dom Carlos I, Parque das Nações, Lisbon, 1990-005, Portugal"
+      },
+      "source_url": "https://www.openstreetmap.org/way/1016189633"
+    },
+    {
+      "slug": "ondine-edinburgh",
+      "name": "Ondine Oyster and Grill",
+      "city": "Edinburgh",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {},
+      "notes": [],
+      "confidence": 0.0,
+      "refusal": {
+        "reason": "no_external_match",
+        "detail": "OpenStreetMap returned nothing for this name in this city"
+      }
+    },
+    {
+      "slug": "one-world-observatory-new-york-city",
+      "name": "One World Observatory",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Fulton Street",
+        "postal_code": "10048",
+        "neighborhood": "Manhattan",
+        "lat": "40.7129490",
+        "lng": "-74.0130438",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/viewpoint",
+      "osm": {
+        "type": "node",
+        "id": 4097207416,
+        "name": "One World Observatory",
+        "display_name": "One World Observatory, Fulton Street, Battery Park City, Lower Manhattan, Manhattan, New York County, New York, 10048, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/4097207416"
+    },
+    {
+      "slug": "oskar-schindler-s-enamel-factory-krakow",
+      "name": "Oskar Schindler's Enamel Factory",
+      "city": "Krakow",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Lipowa 4",
+        "postal_code": "30-702",
+        "neighborhood": "Podgórze",
+        "lat": "50.0474554",
+        "lng": "19.9617094",
+        "website_url": "https://muzeumkrakowa.pl/oddzialy/fabryka-emalia-oskara-schindlera",
+        "timezone": "Europe/Warsaw"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 136648568,
+        "name": "Oskar Schindler's Enamel Factory",
+        "display_name": "Oskar Schindler's Enamel Factory, 4, Lipowa, Zabłocie, Podgórze, Krakow, Lesser Poland Voivodeship, 30-702, Poland"
+      },
+      "source_url": "https://www.openstreetmap.org/way/136648568",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "15:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "19:00"
+        }
+      ],
+      "hours_raw": "Mo 10:00-15:00; Tu-Su 09:00-19:00"
+    },
+    {
       "slug": "palace-of-holyroodhouse-edinburgh",
       "name": "Palace of Holyroodhouse",
       "city": "Edinburgh",
@@ -558,13 +3802,166 @@
         "opening_hours not stored (seasonal rule): Nov 01-Mar 29 09:30-16:30; Mar 31-Oct 31 09:30-18:00"
       ],
       "confidence": 1.0,
+      "osm_class": "historic/castle",
       "osm": {
         "type": "relation",
         "id": 16769442,
         "name": "Palace of Holyroodhouse",
-        "display_name": "Palace of Holyroodhouse, Canongate, Holyrood, Abbeyhill, Old Town, City of Edinburgh, Alba / Scotland, EH8 8DX, United Kingdom"
+        "display_name": "Palace of Holyroodhouse, Canongate, Holyrood, Abbeyhill, Old Town, City of Edinburgh, Scotland, EH8 8DX, United Kingdom"
       },
       "source_url": "https://www.openstreetmap.org/relation/16769442"
+    },
+    {
+      "slug": "palazzo-ducale-venice",
+      "name": "Palazzo Ducale",
+      "city": "Venice",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Molo di Palazzo Ducale",
+        "postal_code": "30124",
+        "neighborhood": "Venezia-Murano-Burano",
+        "lat": "45.4342108",
+        "lng": "12.3405920",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Apr 01-Oct 31 08:30-19:00; Nov 01-Mar 31 08:30-17:30"
+      ],
+      "confidence": 1.0,
+      "osm_class": "building/yes",
+      "osm": {
+        "type": "way",
+        "id": 138803915,
+        "name": "Doge's Palace",
+        "display_name": "Doge's Palace, Molo di Palazzo Ducale, San Marco, Venezia-Murano-Burano, Lido, Venice, Venezia, Veneto, 30124, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/way/138803915"
+    },
+    {
+      "slug": "pantheon-paris",
+      "name": "Pantheon",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Place du Panthéon",
+        "postal_code": "75005",
+        "neighborhood": "5th Arrondissement",
+        "lat": "48.8461947",
+        "lng": "2.3460507",
+        "website_url": "https://www.paris-pantheon.fr/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo-Su 10:00-18:00; Apr 1-Sep 30: Mo-Su 10:00-18:30; Jan 1,May 1,Dec 25: off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/attraction",
+      "osm": {
+        "type": "way",
+        "id": 16407465,
+        "name": "Pantheon",
+        "display_name": "Pantheon, Place du Panthéon, Quartier de la Sorbonne, 5th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75005, France"
+      },
+      "source_url": "https://www.openstreetmap.org/way/16407465"
+    },
+    {
+      "slug": "pasteis-de-belem-lisbon",
+      "name": "Pasteis de Belem",
+      "city": "Lisbon",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rua de Belém 84-92",
+        "postal_code": "1300-085",
+        "neighborhood": "São Francisco Xavier",
+        "lat": "38.6974795",
+        "lng": "-9.2033202",
+        "phone": "+351 21 363 7423",
+        "website_url": "https://pasteisdebelem.pt",
+        "timezone": "Europe/Lisbon"
+      },
+      "notes": [
+        "OSM tags this pastry, which is not a usual restaurant",
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 0.9,
+      "osm_class": "shop/pastry",
+      "osm": {
+        "type": "node",
+        "id": 398922337,
+        "name": "Pastéis de Belém",
+        "display_name": "Pastéis de Belém, 84-92, Rua de Belém, São Francisco Xavier, Belém, Lisbon, 1300-085, Portugal"
+      },
+      "source_url": "https://www.openstreetmap.org/node/398922337",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:00",
+          "closes": "21:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 08:00-21:00"
+    },
+    {
+      "slug": "pestana-palace-lisboa-lisbon",
+      "name": "Pestana Palace Hotel",
+      "city": "Lisbon",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rua Jau",
+        "postal_code": "1300-245",
+        "neighborhood": "Santo Amaro",
+        "lat": "38.7040470",
+        "lng": "-9.1871503",
+        "timezone": "Europe/Lisbon"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/hotel",
+      "osm": {
+        "type": "way",
+        "id": 579539846,
+        "name": "Pestana Palace Hotel",
+        "display_name": "Pestana Palace Hotel, Rua Jau, Santo Amaro, Alcântara, Lisbon, 1300-245, Portugal"
+      },
+      "source_url": "https://www.openstreetmap.org/way/579539846"
     },
     {
       "slug": "pinacoteca-di-brera-milan",
@@ -587,41 +3984,1301 @@
         "opening_hours not stored (seasonal rule): Tu-Su 09:30-18:30; Mo, Jan 1, May 1, Dec 25 off"
       ],
       "confidence": 1.0,
+      "osm_class": "tourism/museum",
       "osm": {
         "type": "node",
         "id": 1029667846,
         "name": "Pinacoteca di Brera",
-        "display_name": "Pinacoteca di Brera, 28, Via Brera, Borgonuovo, Cerchia dei Navigli, Municipio 1, Milano, Rodano, Milano, Lombardia, 20121, Italia"
+        "display_name": "Pinacoteca di Brera, 28, Via Brera, Borgonuovo, Cerchia dei Navigli, Municipio 1, Milan, Rodano, Milan, Lombardy, 20121, Italy"
       },
       "source_url": "https://www.openstreetmap.org/node/1029667846"
     },
     {
-      "slug": "pantheon-paris",
-      "name": "Pantheon",
+      "slug": "pinakothek-der-moderne-munich",
+      "name": "Pinakothek der Moderne",
+      "city": "Munich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Barer Straße 40",
+        "postal_code": "80333",
+        "neighborhood": "Maxvorstadt",
+        "lat": "48.1471604",
+        "lng": "11.5722272",
+        "phone": "+49 89 238 053 60",
+        "website_url": "https://www.pinakothek-der-moderne.de/",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 10053440,
+        "name": "Pinakothek der Moderne",
+        "display_name": "Pinakothek der Moderne, 40, Barer Straße, Kunstareal, Maxvorstadt, Munich, Bavaria, 80333, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/way/10053440",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Tu-We, Fr-Su 10:00-18:00; Th 10:00-20:00"
+    },
+    {
+      "slug": "ratana-milan",
+      "name": "Ratana",
+      "city": "Milan",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Via Pastrengo",
+        "postal_code": "20100",
+        "neighborhood": "Municipio 9",
+        "lat": "45.4864716",
+        "lng": "9.1882286",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "OSM tags this pasta, which is not a usual restaurant",
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 0.9,
+      "osm_class": "shop/pasta",
+      "osm": {
+        "type": "node",
+        "id": 12826150834,
+        "name": "Ratana'",
+        "display_name": "Ratana', Via Pastrengo, Isola, Municipio 9, Milan, Rodano, Milan, Lombardy, 20100, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/node/12826150834"
+    },
+    {
+      "slug": "rijksmuseum-amsterdam",
+      "name": "Rijksmuseum",
+      "city": "Amsterdam",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Hobbemastraat",
+        "postal_code": "1071 ZC",
+        "neighborhood": "Zuid",
+        "lat": "52.3598431",
+        "lng": "4.8850395",
+        "website_url": "https://www.rijksmuseum.nl/",
+        "timezone": "Europe/Amsterdam"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 29989787,
+        "name": "Rijksmuseum",
+        "display_name": "Rijksmuseum, Hobbemastraat, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 ZC, Netherlands"
+      },
+      "source_url": "https://www.openstreetmap.org/way/29989787",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 09:00-17:00"
+    },
+    {
+      "slug": "roscioli-rome",
+      "name": "Roscioli",
+      "city": "Rome",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Via Buonarroti 48",
+        "postal_code": "00185",
+        "neighborhood": "Municipio Roma I",
+        "lat": "41.8941094",
+        "lng": "12.5028572",
+        "phone": "+39 06 4467146",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "shop/bakery",
+      "osm": {
+        "type": "node",
+        "id": 4386822104,
+        "name": "Roscioli",
+        "display_name": "Roscioli, 48, Via Buonarroti, Esquilino, Municipio Roma I, Rome, Roma Capitale, Lazio, 00185, Italy"
+      },
+      "source_url": "https://www.openstreetmap.org/node/4386822104",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "07:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "07:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "07:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "07:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "07:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "07:30",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Mo-Sa 07:30-20:00"
+    },
+    {
+      "slug": "rules-london",
+      "name": "Rules",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "34-35 Maiden Lane",
+        "postal_code": "WC2E 7LB",
+        "neighborhood": "Covent Garden",
+        "lat": "51.5108285",
+        "lng": "-0.1231906",
+        "phone": "+44 20 7836 5314",
+        "website_url": "https://rules.co.uk/",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "way",
+        "id": 558928361,
+        "name": "Rules",
+        "display_name": "Rules, 34-35, Maiden Lane, St Clement Danes, Covent Garden, City of Westminster, Greater London, England, WC2E 7LB, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/558928361",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "23:30"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "12:00",
+          "closes": "22:30"
+        }
+      ],
+      "hours_raw": "Mo-Sa 12:00-23:30; Su 12:00-22:30"
+    },
+    {
+      "slug": "sainte-chapelle-paris",
+      "name": "Sainte-Chapelle",
       "city": "Paris",
       "source": "osm",
       "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
       "fields": {
-        "street_address": "Place du Panthéon",
-        "postal_code": "75005",
-        "neighborhood": "Paris 5e Arrondissement",
-        "lat": "48.8461947",
-        "lng": "2.3460507",
-        "website_url": "https://www.paris-pantheon.fr/",
+        "street_address": "8 Boulevard du Palais",
+        "postal_code": "75001",
+        "neighborhood": "1st Arrondissement",
+        "lat": "48.8553933",
+        "lng": "2.3449941",
+        "phone": "+33153406080",
+        "website_url": "http://sainte-chapelle.monuments-nationaux.fr/",
         "timezone": "Europe/Paris"
       },
       "notes": [
         "timezone supplied by hand; Nominatim does not return one",
-        "opening_hours not stored (seasonal rule): Mo-Su 10:00-18:00; Apr 1-Sep 30: Mo-Su 10:00-18:30; Jan 1,May 1,Dec 25: off"
+        "opening_hours not stored (seasonal rule): Jan-Mar 09:00-17:00; Apr-Sep 09:00-19:00; Oct-Dec 09:00-17:00"
       ],
       "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
+      "osm": {
+        "type": "relation",
+        "id": 3344870,
+        "name": "Sainte-Chapelle",
+        "display_name": "Sainte-Chapelle, 8, Boulevard du Palais, Saint-Germain-l'Auxerrois, 1st Arrondissement, Paris, Ile-de-France, Metropolitan France, 75001, France"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/3344870"
+    },
+    {
+      "slug": "st-john-london",
+      "name": "St John",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "26 St. John Street",
+        "postal_code": "EC1M 4AY",
+        "neighborhood": "Clerkenwell",
+        "lat": "51.5204809",
+        "lng": "-0.1012748",
+        "phone": "+44 20 3301 8069",
+        "website_url": "https://stjohnrestaurant.com/",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
       "osm": {
         "type": "way",
-        "id": 16407465,
-        "name": "Panthéon",
-        "display_name": "Panthéon, Place du Panthéon, Quartier de la Sorbonne, Paris 5e Arrondissement, Paris, Île-de-France, France métropolitaine, 75005, France"
+        "id": 97175538,
+        "name": "St. John",
+        "display_name": "St. John, 26, St. John Street, Farringdon, Clerkenwell, London Borough of Islington, Greater London, England, EC1M 4AY, United Kingdom"
       },
-      "source_url": "https://www.openstreetmap.org/way/16407465"
+      "source_url": "https://www.openstreetmap.org/way/97175538"
+    },
+    {
+      "slug": "st-paul-s-cathedral-london",
+      "name": "St Paul's Cathedral",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "St Paul's Churchyard",
+        "postal_code": "EC4M 8AD",
+        "neighborhood": "West Smithfield",
+        "lat": "51.5137872",
+        "lng": "-0.0984506",
+        "website_url": "https://www.stpauls.co.uk/",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
+      "osm": {
+        "type": "way",
+        "id": 369161987,
+        "name": "St Paul's Cathedral",
+        "display_name": "St Paul's Cathedral, St Paul's Churchyard, West Smithfield, St Paul's, City of London, Greater London, England, EC4M 8AD, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/369161987",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:30",
+          "closes": "16:00"
+        }
+      ],
+      "hours_raw": "Mo-Sa 08:30-16:00"
+    },
+    {
+      "slug": "stedelijk-museum-amsterdam",
+      "name": "Stedelijk Museum",
+      "city": "Amsterdam",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "10 Museumplein",
+        "postal_code": "1071 DJ",
+        "neighborhood": "Zuid",
+        "lat": "52.3579003",
+        "lng": "4.8798598",
+        "phone": "+31 20 573 2911",
+        "website_url": "https://www.stedelijk.nl/",
+        "timezone": "Europe/Amsterdam"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 44508819,
+        "name": "Stedelijk Museum Amsterdam",
+        "display_name": "Stedelijk Museum Amsterdam, 10, Museumplein, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 DJ, Netherlands"
+      },
+      "source_url": "https://www.openstreetmap.org/way/44508819",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-18:00"
+    },
+    {
+      "slug": "swiss-national-museum-zurich",
+      "name": "Landesmuseum Zurich",
+      "city": "Zurich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Museumstrasse 2",
+        "postal_code": "8021",
+        "neighborhood": "Altstadt",
+        "lat": "47.3792397",
+        "lng": "8.5407019",
+        "phone": "+41 44 218 65 11",
+        "website_url": "https://www.landesmuseum.ch",
+        "timezone": "Europe/Zurich"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 4281153,
+        "name": "Landesmuseum",
+        "display_name": "Landesmuseum, 2, Museumstrasse, City, Altstadt, Zurich, District Zurich, Zurich, 8021, Switzerland"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/4281153",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "19:00"
+        }
+      ],
+      "hours_raw": "Tu-We, Fr-Su 10:00-17:00; Th 10:00-19:00"
+    },
+    {
+      "slug": "ta-karamanlidika-tou-fani-athens",
+      "name": "Karamanlidika",
+      "city": "Athens",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Σωκράτους 1",
+        "postal_code": "105 54",
+        "neighborhood": "Psyri",
+        "lat": "37.9801400",
+        "lng": "23.7256935",
+        "phone": "+30 210 3254 184",
+        "website_url": "https://www.karamanlidika.gr/",
+        "timezone": "Europe/Athens"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 3684553557,
+        "name": "Karamanlidika",
+        "display_name": "Karamanlidika, 1, Σωκράτους, Psyri, Plaka, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 105 54, Greece"
+      },
+      "source_url": "https://www.openstreetmap.org/node/3684553557",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 6,
+          "closed": true
+        }
+      ],
+      "hours_raw": "Mo-Sa 12:00-23:00; Su off"
+    },
+    {
+      "slug": "tate-modern-london",
+      "name": "Tate Modern",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Bankside",
+        "postal_code": "SE1 9TG",
+        "neighborhood": "Southwark",
+        "lat": "51.5074293",
+        "lng": "-0.0993416",
+        "phone": "+44 20 7887 8888",
+        "website_url": "https://www.tate.org.uk/visit/tate-modern",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/arts_centre",
+      "osm": {
+        "type": "way",
+        "id": 24642569,
+        "name": "Tate Modern",
+        "display_name": "Tate Modern, Bankside, Borough Market, Bankside, Southwark, London Borough of Southwark, Greater London, England, SE1 9TG, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/24642569",
+      "hours": [
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "21:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "21:00"
+        }
+      ],
+      "hours_raw": "Su-Th 10:00-18:00; Fr-Sa 10:00-21:00"
+    },
+    {
+      "slug": "tokyo-national-museum",
+      "name": "Tokyo National Museum",
+      "city": "Tokyo",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "postal_code": "110-8712",
+        "neighborhood": "Ueno Park",
+        "lat": "35.7190448",
+        "lng": "139.7759676",
+        "phone": "+81 3-3822-1111",
+        "website_url": "https://www.tnm.jp/",
+        "timezone": "Asia/Tokyo"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 33439660,
+        "name": "Tokyo National Museum",
+        "display_name": "Tokyo National Museum, 9, Ueno Park, Taito, Tokyo, 110-8712, Japan"
+      },
+      "source_url": "https://www.openstreetmap.org/way/33439660",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:30",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:30",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:30",
+          "closes": "17:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:30",
+          "closes": "20:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:30",
+          "closes": "20:00"
+        }
+      ],
+      "hours_raw": "Mo, We-Th 09:30-17:00; Fr-Su 09:30-20:00"
+    },
+    {
+      "slug": "topography-of-terror-berlin",
+      "name": "Topography of Terror",
+      "city": "Berlin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Niederkirchnerstraße 8",
+        "postal_code": "10963",
+        "neighborhood": "Kreuzberg",
+        "lat": "52.5062137",
+        "lng": "13.3841548",
+        "phone": "+49 30 2545090",
+        "website_url": "https://www.topographie.de/",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: ph): Mo-Su,PH 10:00-20:00; Jan 01,Dec 24,Dec 31 off"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 24368681,
+        "name": "Topography of Terror",
+        "display_name": "Topography of Terror, 8, Niederkirchnerstraße, Friedrichstadt, Kreuzberg, Mitte, Berlin, 10963, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/way/24368681"
+    },
+    {
+      "slug": "upper-belvedere-vienna",
+      "name": "Upper Belvedere",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Prinz-Eugen-Straße 27",
+        "postal_code": "1030",
+        "neighborhood": "Wieden",
+        "lat": "48.1915415",
+        "lng": "16.3808882",
+        "phone": "+43 1 795570",
+        "website_url": "https://www.belvedere.at/",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 5887599,
+        "name": "Upper Belvedere",
+        "display_name": "Upper Belvedere, 27, Prinz-Eugen-Straße, Wieden, Katastralgemeinde Landstraße, Landstraße, Vienna, 1030, Austria"
+      },
+      "source_url": "https://www.openstreetmap.org/way/5887599",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:00-18:00"
+    },
+    {
+      "slug": "van-gogh-museum-amsterdam",
+      "name": "Van Gogh Museum",
+      "city": "Amsterdam",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "7 Paulus Potterstraat",
+        "postal_code": "1071 CX",
+        "neighborhood": "Zuid",
+        "lat": "52.3583673",
+        "lng": "4.8810900",
+        "phone": "+31 20 570 5200",
+        "website_url": "https://www.vangoghmuseum.nl/",
+        "timezone": "Europe/Amsterdam"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "relation",
+        "id": 6577680,
+        "name": "Van Gogh Museum",
+        "display_name": "Van Gogh Museum, 7, Paulus Potterstraat, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 CX, Netherlands"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/6577680",
+      "hours": [
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 0,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:00",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Sa-Th 09:00-18:00; Fr 09:00-22:00"
+    },
+    {
+      "slug": "vasa-museum-stockholm",
+      "name": "Vasa Museum",
+      "city": "Stockholm",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Galärvarvsvägen",
+        "postal_code": "115 21",
+        "neighborhood": "Djurgården",
+        "lat": "59.3280594",
+        "lng": "18.0913656",
+        "phone": "+46 8 51954800",
+        "website_url": "https://vasamuseet.se",
+        "timezone": "Europe/Stockholm"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 27288534,
+        "name": "Vasa Museum",
+        "display_name": "Vasa Museum, Galärvarvsvägen, Djurgårdsstaden, Djurgården, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 115 21, Sweden"
+      },
+      "source_url": "https://www.openstreetmap.org/way/27288534",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:30",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 08:30-18:00"
+    },
+    {
+      "slug": "vatican-museums-rome",
+      "name": "Vatican Museums",
+      "city": "Vatican City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Octagonal Courtyard",
+        "postal_code": "00120",
+        "neighborhood": "Vatican City",
+        "lat": "41.9049610",
+        "lng": "12.4546617",
+        "phone": "+39 06 6988 4676",
+        "website_url": "https://www.museivaticani.va",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 255959482,
+        "name": "Vatican Museums",
+        "display_name": "Vatican Museums, Octagonal Courtyard, Vatican City, 00120, Vatican City"
+      },
+      "source_url": "https://www.openstreetmap.org/way/255959482"
+    },
+    {
+      "slug": "warsaw-rising-museum",
+      "name": "Warsaw Rising Museum",
+      "city": "Warsaw",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Grzybowska 79",
+        "postal_code": "00-844",
+        "neighborhood": "Wola",
+        "lat": "52.2321024",
+        "lng": "20.9813775",
+        "phone": "+48 22 539 79 05",
+        "website_url": "https://1944.pl/",
+        "timezone": "Europe/Warsaw"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 167109428,
+        "name": "Warsaw Rising Museum",
+        "display_name": "Warsaw Rising Museum, 79, Grzybowska, Czyste, Wola, Warsaw, Masovian Voivodeship, 00-844, Poland"
+      },
+      "source_url": "https://www.openstreetmap.org/way/167109428",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "closed": true
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo,We-Fr 08:00-18:00; Tu off; Sa-Su 10:00-18:00"
+    },
+    {
+      "slug": "westminster-abbey-london",
+      "name": "Westminster Abbey",
+      "city": "London",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "20 Dean's Yard",
+        "postal_code": "SW1P 3PA",
+        "neighborhood": "Millbank",
+        "lat": "51.4993990",
+        "lng": "-0.1273910",
+        "website_url": "https://www.westminster-abbey.org/",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/place_of_worship",
+      "osm": {
+        "type": "way",
+        "id": 364313092,
+        "name": "Westminster Abbey",
+        "display_name": "Westminster Abbey, 20, Dean's Yard, Westminster, Millbank, City of Westminster, Greater London, England, SW1P 3PA, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/way/364313092",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "09:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "09:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "09:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "09:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "09:30",
+          "closes": "16:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:30",
+          "closes": "16:00"
+        }
+      ],
+      "hours_raw": "Mo-Sa 09:30-16:00"
+    },
+    {
+      "slug": "whitney-museum-of-american-art-new-york-city",
+      "name": "Whitney Museum of American Art",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "99 Gansevoort Street",
+        "postal_code": "10014",
+        "neighborhood": "Manhattan",
+        "lat": "40.7396451",
+        "lng": "-74.0089210",
+        "phone": "+1-212-570-3600",
+        "website_url": "https://www.whitney.org/",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "tourism/museum",
+      "osm": {
+        "type": "way",
+        "id": 288749896,
+        "name": "Whitney Museum of American Art",
+        "display_name": "Whitney Museum of American Art, 99, Gansevoort Street, Meatpacking District, Manhattan, New York County, New York, 10014, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/way/288749896",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:30",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "closed": true
+        },
+        {
+          "day_of_week": 4,
+          "opens": "10:30",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 10:30-18:00; Tu off; Fr 10:30-22:00"
+    },
+    {
+      "slug": "zeughauskeller-zurich",
+      "name": "Zeughauskeller",
+      "city": "Zurich",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Bahnhofstrasse 28a",
+        "postal_code": "8001",
+        "neighborhood": "Altstadt",
+        "lat": "47.3703727",
+        "lng": "8.5399233",
+        "phone": "+41 44 220 15 15",
+        "website_url": "https://www.zeughauskeller.ch/",
+        "timezone": "Europe/Zurich"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 105459350,
+        "name": "Zeughauskeller",
+        "display_name": "Zeughauskeller, 28a, Bahnhofstrasse, Lindenhof, Altstadt, Zurich, District Zurich, Zurich, 8001, Switzerland"
+      },
+      "source_url": "https://www.openstreetmap.org/node/105459350",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "11:30",
+          "closes": "23:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "11:30",
+          "closes": "23:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 11:30-23:00"
+    },
+    {
+      "slug": "zur-letzten-instanz-berlin",
+      "name": "Zur letzten Instanz",
+      "city": "Berlin",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Waisenstraße 14-16",
+        "postal_code": "10179",
+        "neighborhood": "Mitte",
+        "lat": "52.5174527",
+        "lng": "13.4137758",
+        "phone": "+49 30 2425528",
+        "website_url": "http://www.zurletzteninstanz.de",
+        "timezone": "Europe/Berlin"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (rule not understood: Mo-Sa 17:30+): Mo-Sa 17:30+"
+      ],
+      "confidence": 1.0,
+      "osm_class": "amenity/restaurant",
+      "osm": {
+        "type": "node",
+        "id": 411728139,
+        "name": "Zur Letzten Instanz",
+        "display_name": "Zur Letzten Instanz, 14-16, Waisenstraße, Klosterviertel, Spandauer Vorstadt, Mitte, Berlin, 10179, Germany"
+      },
+      "source_url": "https://www.openstreetmap.org/node/411728139"
     }
   ]
 }

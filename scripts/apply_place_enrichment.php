@@ -72,7 +72,7 @@ $say('min-confidence=' . $minConf . ($overwrite ? '  overwrite=YES' : '  overwri
 $say(str_repeat('-', 78));
 
 $stats = ['places' => 0, 'skipped_missing' => 0, 'skipped_conf' => 0,
-          'fields_set' => 0, 'conflicts' => 0, 'hours_set' => 0, 'errors' => 0];
+          'fields_set' => 0, 'conflicts' => 0, 'hours_set' => 0, 'hours_kept' => 0, 'errors' => 0];
 
 foreach ($doc['places'] as $prop) {
     $slug = (string) ($prop['slug'] ?? '');
@@ -92,8 +92,21 @@ foreach ($doc['places'] as $prop) {
         continue;
     }
 
+    // Source precedence. A value confirmed by the business or taken off its own site outranks a
+    // map, and a re-run must never quietly demote it -- not even with --overwrite, which exists to
+    // correct a bad import, not to overrule a better source. Filling EMPTY fields is still allowed:
+    // an owner who gave us hours did not thereby forbid us knowing the postcode.
+    $trusted = ['owner', 'official_site'];
+    $incoming = (string) ($prop['source'] ?? 'osm');
+    $holdsBetter = in_array((string) ($place['data_source'] ?? ''), $trusted, true)
+                   && !in_array($incoming, $trusted, true);
+
     $stats['places']++;
     $say(sprintf('PLACE %-40s conf=%.2f  %s', $slug, $conf, (string) ($prop['source_url'] ?? '')));
+    if ($holdsBetter) {
+        $say(sprintf('      · already sourced from %s; %s may fill blanks but not overwrite',
+             (string) $place['data_source'], $incoming));
+    }
 
     $write = [];
     foreach (ENRICHABLE as $f) {
@@ -102,15 +115,28 @@ foreach ($doc['places'] as $prop) {
         $cur = $place[$f] ?? null;
         $curStr = $cur === null ? '' : (string) $cur;
 
+        // Coordinates are stored rounded to six decimals (about 11cm). OSM hands back seven, so a
+        // straight string compare called every single re-run a conflict and would have made the
+        // whole tool look non-idempotent. Round the incoming value the same way it will be stored
+        // before comparing anything.
+        if (($f === 'lat' || $f === 'lng') && is_numeric($new)) {
+            $new = rtrim(rtrim(number_format((float) $new, 6, '.', ''), '0'), '.');
+            if ($curStr !== '' && is_numeric($curStr)) {
+                $curStr = rtrim(rtrim(number_format((float) $curStr, 6, '.', ''), '0'), '.');
+            }
+        }
+
         if ($curStr === '') {
             $say(sprintf('      + %-16s %s', $f, $new));
             $write[$f] = $new;
             $stats['fields_set']++;
-        } elseif (rtrim($curStr, '0') === rtrim($new, '0') || $curStr === $new) {
+        } elseif ($curStr === $new) {
             $say(sprintf('      = %-16s unchanged', $f));
         } else {
             $stats['conflicts']++;
-            if ($overwrite) {
+            if ($overwrite && $holdsBetter) {
+                $say(sprintf('      ! %-16s kept: %s outranks %s', $f, (string) $place['data_source'], $incoming));
+            } elseif ($overwrite) {
                 $say(sprintf('      ! %-16s OVERWRITE  %s  ->  %s', $f, $curStr, $new));
                 $write[$f] = $new;
                 $stats['fields_set']++;
@@ -126,17 +152,22 @@ foreach ($doc['places'] as $prop) {
         unset($write['lat'], $write['lng']);
     }
 
-    if ($write && !empty($prop['source_url'])) {
-        $write['data_source'] = (string) ($prop['source'] ?? 'osm');
+    // Only restamp provenance when this run is what filled something, and never downgrade a
+    // better source's label just because a map agreed with it.
+    if ($write && !empty($prop['source_url']) && !$holdsBetter) {
+        $write['data_source'] = $incoming;
         $write['data_source_url'] = (string) $prop['source_url'];
     }
 
     $hours = (array) ($prop['hours'] ?? []);
     $existingHours = rmt_place_hours((int) $place['id']);
-    $doHours = $hours && (!$existingHours || $overwrite);
+    $doHours = $hours && (!$existingHours || ($overwrite && !$holdsBetter));
     if ($hours && $existingHours && !$overwrite) {
-        $say('      ! hours already set, keeping them (' . count($existingHours) . ' intervals)');
-        $stats['conflicts']++;
+        // Counted separately from a field conflict. Declining to overwrite hours we already hold
+        // is the normal state of every re-run, and folding it into "conflicts" made a clean
+        // idempotent pass look like it had found 62 disagreements.
+        $say('      · hours already set, keeping them (' . count($existingHours) . ' intervals)');
+        $stats['hours_kept']++;
     } elseif ($doHours) {
         $say(sprintf('      + %-16s %d intervals  (%s)', 'hours', count($hours),
              (string) ($prop['hours_raw'] ?? '')));
@@ -177,9 +208,9 @@ foreach ($doc['places'] as $prop) {
 }
 
 $say(str_repeat('-', 78));
-$say(sprintf('%d places processed, %d fields %s, %d hour sets, %d conflicts kept, %d skipped (missing %d, low confidence %d), %d errors',
+$say(sprintf('%d places processed, %d fields %s, %d hour sets (%d already had hours), %d field conflicts kept, %d skipped (missing %d, low confidence %d), %d errors',
     $stats['places'], $stats['fields_set'], $apply ? 'written' : 'proposed', $stats['hours_set'],
-    $stats['conflicts'], $stats['skipped_missing'] + $stats['skipped_conf'],
+    $stats['hours_kept'], $stats['conflicts'], $stats['skipped_missing'] + $stats['skipped_conf'],
     $stats['skipped_missing'], $stats['skipped_conf'], $stats['errors']));
 if (!$apply) $say('Nothing was written. Re-run with --apply once the diff above looks right.');
 

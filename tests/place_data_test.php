@@ -197,6 +197,67 @@ check('Sunday is unknown, not closed',             rmt_place_open_now($hours, $t
 check('Saturday 01:00 is answerable via Friday night', rmt_place_open_now($hours, $tz, $at('2026-09-05 01:00')), true);
 check('Saturday 03:00 is a real closed, not unknown',  rmt_place_open_now($hours, $tz, $at('2026-09-05 03:00')), false);
 
+echo "\n-- open now, edge by edge --\n";
+// Every one of these is a case where a plausible implementation says the wrong thing to somebody
+// standing outside a door. Monday 12:00-15:00 and 19:00-23:30, Tuesday closed, Friday 21:00-02:00.
+$edge = [
+    ['day_of_week' => 0, 'opens' => '12:00', 'closes' => '15:00', 'closed' => false],
+    ['day_of_week' => 0, 'opens' => '19:00', 'closes' => '23:30', 'closed' => false],
+    ['day_of_week' => 1, 'opens' => null,    'closes' => null,    'closed' => true],
+    ['day_of_week' => 4, 'opens' => '21:00', 'closes' => '02:00', 'closed' => false],
+];
+$lis = 'Europe/Lisbon';
+$when = static fn(string $t) => new DateTimeImmutable($t, new DateTimeZone('Europe/Lisbon'));
+
+check('exactly at opening is open',        rmt_place_open_now($edge, $lis, $when('2026-08-31 12:00')), true);
+check('one minute before opening is not',  rmt_place_open_now($edge, $lis, $when('2026-08-31 11:59')), false);
+check('exactly at closing is closed',      rmt_place_open_now($edge, $lis, $when('2026-08-31 15:00')), false);
+check('one minute before closing is open', rmt_place_open_now($edge, $lis, $when('2026-08-31 14:59')), true);
+check('between two same-day intervals is closed', rmt_place_open_now($edge, $lis, $when('2026-08-31 17:00')), false);
+check('the second interval opens too',     rmt_place_open_now($edge, $lis, $when('2026-08-31 19:30')), true);
+
+check('an explicitly closed day is closed', rmt_place_open_now($edge, $lis, $when('2026-09-01 13:00')), false);
+check('a day with no row at all is UNKNOWN, not closed',
+      rmt_place_open_now($edge, $lis, $when('2026-09-02 13:00')), null);
+check('Sunday is unknown too', rmt_place_open_now($edge, $lis, $when('2026-09-06 13:00')), null);
+
+check('an overnight interval is open before midnight', rmt_place_open_now($edge, $lis, $when('2026-09-04 23:00')), true);
+check('...and after midnight on the next day',         rmt_place_open_now($edge, $lis, $when('2026-09-05 01:30')), true);
+check('...and closed once it ends',                    rmt_place_open_now($edge, $lis, $when('2026-09-05 02:00')), false);
+check('Saturday is answerable only because Friday spills into it',
+      rmt_place_open_now($edge, $lis, $when('2026-09-05 03:00')), false);
+
+check('no timezone means unknown', rmt_place_open_now($edge, null, $when('2026-08-31 13:00')), null);
+check('an empty timezone means unknown', rmt_place_open_now($edge, '', $when('2026-08-31 13:00')), null);
+check('a junk timezone means unknown', rmt_place_open_now($edge, 'Mars/Olympus', $when('2026-08-31 13:00')), null);
+check('no hours means unknown', rmt_place_open_now([], $lis, $when('2026-08-31 13:00')), null);
+
+// The venue's clock is the only clock that matters. 12:30 UTC is 13:30 in Lisbon and 08:30 in
+// New York, and the same instant is inside opening hours in one and hours before them in the other.
+$noon_utc = new DateTimeImmutable('2026-08-31 12:30', new DateTimeZone('UTC'));
+check('open in Lisbon at that instant',   rmt_place_open_now($edge, 'Europe/Lisbon', $noon_utc), true);
+check('not yet open in New York',         rmt_place_open_now($edge, 'America/New_York', $noon_utc), false);
+// 12:30 UTC is 21:30 on the same Monday in Tokyo, inside the evening service.
+check('open in Tokyo, in its own evening', rmt_place_open_now($edge, 'Asia/Tokyo', $noon_utc), true);
+
+// A day of the week is read in the venue's zone, not the server's. 23:30 UTC on a Sunday is
+// already Monday in Tokyo, and Monday is a day this venue is open.
+$sun_late = new DateTimeImmutable('2026-08-30 22:00', new DateTimeZone('UTC'));
+// In Lisbon it is still Sunday, a day this venue has no row for, so the answer is "we do not
+// know". In Tokyo it is Monday morning: a day we DO know, before opening, so the answer is a
+// definite "closed". Same instant, two kinds of answer, and the difference is the point.
+check('a Sunday in Lisbon is unknown', rmt_place_open_now($edge, 'Europe/Lisbon', $sun_late), null);
+check('the same instant is a known Monday in Tokyo',
+      rmt_place_open_now($edge, 'Asia/Tokyo', $sun_late), false);
+
+// DST. Europe/Lisbon leaves summer time at 02:00 on 2026-10-25, so 01:30 UTC that morning is
+// 01:30 local (already back on WET) and the Friday-night interval has ended.
+$open247 = [['day_of_week' => 6, 'opens' => '00:00', 'closes' => '23:59', 'closed' => false]];
+check('an all-day interval covers the whole day',
+      rmt_place_open_now($open247, $lis, $when('2026-10-25 03:00')), true);
+check('...including right at the DST fold',
+      rmt_place_open_now($open247, $lis, new DateTimeImmutable('2026-10-25 01:30', new DateTimeZone('UTC'))), true);
+
 echo "\n-- photos --\n";
 $pdo->exec("INSERT INTO reviews (id,user_id,destination_id,place_id,slug,title,body,rating,subject_name,status,created_at)
             VALUES (10,1,1,1,'ramiro-is-worth-it','Worth it','Body',5,'Ramiro','published','2026-08-02')");

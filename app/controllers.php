@@ -2794,7 +2794,10 @@ function admin_places_index(array $a): void {
     $rows = rmt_admin_places($q);
     foreach ($rows as &$r) $r['completeness'] = rmt_place_completeness($r);
     unset($r);
-    view('admin_places', ['rows' => $rows, 'q' => $q],
+    view('admin_places', ['rows' => $rows, 'q' => $q,
+                          'coverage' => rmt_place_coverage(),
+                          'refusals' => rmt_enrichment_refusals(),
+                          'stale'    => rmt_stale_places(180, 50)],
          ['title' => 'Places — RuinMyTrip admin']);
 }
 
