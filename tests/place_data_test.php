@@ -245,6 +245,26 @@ check('...but still carries the city it is in', $bare['address']['addressLocalit
 check('a bare place shows no facts panel',
       rmt_place_has_address(rmt_place_by_slug('bare-place-lisbon')), false);
 
+echo "\n-- driver parity --\n";
+// The two migration files describe the same tables on two engines. When they disagree about a
+// storage class the difference does not show up locally at all: it shows up as a 500 in
+// production, which is exactly how 048 came to exist ("operator does not exist: boolean =
+// integer"). These assertions fail on the machine, before the deploy.
+$pg = file_get_contents(BASE_PATH . '/database/migrations/048_place_flags_integer.pgsql.sql');
+check('postgres stores closed as an integer',   (bool) preg_match('/closed\s+SMALLINT/i', $pg), true);
+check('postgres stores is_cover as an integer', (bool) preg_match('/is_cover\s+SMALLINT/i', $pg), true);
+check('no boolean flag survives in postgres',   (bool) preg_match('/(closed|is_cover)\s+BOOLEAN/i', $pg), false);
+check('the cover index compares against 1',     str_contains($pg, 'WHERE is_cover = 1'), true);
+check('048 refuses to run on non-empty tables', str_contains($pg, 'RAISE EXCEPTION'), true);
+
+// A flag read back as the string 'f' must not be true. (bool) 'f' is.
+check("'f' reads as false", rmt_place_flag('f'), false);
+check("'0' reads as false", rmt_place_flag('0'), false);
+check("'t' reads as true",  rmt_place_flag('t'), true);
+check("'1' reads as true",  rmt_place_flag('1'), true);
+check('0 reads as false',   rmt_place_flag(0), false);
+check('true reads as true', rmt_place_flag(true), true);
+
 echo "\n-- helpers --\n";
 check('tel href strips formatting', rmt_place_tel_href('+351 21 885-1024'), '+351218851024');
 check('map url points at the pin',

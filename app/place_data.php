@@ -359,9 +359,24 @@ function rmt_place_hours(int $placeId): array {
                     ORDER BY day_of_week, sort, opens', [$placeId]);
     foreach ($rows as &$r) {
         $r['day_of_week'] = (int) $r['day_of_week'];
-        $r['closed'] = (bool) $r['closed'];
+        $r['closed'] = rmt_place_flag($r['closed']);
     }
     return $rows;
+}
+
+/**
+ * Read a stored 0/1 flag as a bool.
+ *
+ * Not a plain (bool) cast. A driver that hands a flag back as the string 'f' would make
+ * (bool) $v true, and the value that gets misread here is "this place is closed on Tuesday" —
+ * printed to a reader as "Open now". Migration 048 made both drivers store an integer; this is the
+ * belt to that migration's braces.
+ */
+function rmt_place_flag($v): bool {
+    if (is_bool($v)) return $v;
+    if (is_int($v))  return $v !== 0;
+    $s = strtolower(trim((string) $v));
+    return $s === '1' || $s === 't' || $s === 'true';
 }
 
 /**
