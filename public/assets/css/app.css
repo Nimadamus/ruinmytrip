@@ -87,17 +87,14 @@ section.block{padding:56px 0}
 .dest-hero{position:relative;color:#fff;border-radius:22px;overflow:hidden;margin-top:24px}
 .dest-hero img{height:340px;width:100%;object-fit:cover}
 .dest-hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(15,27,45,.85));display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:28px;flex-wrap:wrap}
-/* The hero row wraps, but a flex item will not shrink below its own content, so on a 390px
-   screen the action beside the city name ran to x=540 and .dest-hero clipped it: a call to
-   action cut in half by the edge of the phone. Measured, not spotted -- it looks deliberate
-   in a screenshot. */
-.dest-hero .overlay > *{min-width:0;max-width:100%}
+/* The hero puts the city name and an action on one row with flex-wrap. On a 390px screen the
+   action ended up at x=544 with the hero, which is overflow:hidden, cutting it in half.
+   min-width:0 was the wrong fix and made it worse: an item that can shrink to zero never triggers
+   a wrap, so it stayed on the line and simply overhung. Below 520px the row becomes a column,
+   which is what "these do not fit side by side" actually means. */
 @media (max-width:520px){
-  .dest-hero .overlay{padding:18px;gap:10px}
-  /* .btn is white-space:nowrap everywhere, which is right for a two-word button and wrong
-     for "Join to mark been / want" on a 390px screen: min-width:0 lets the CONTAINER
-     shrink, and the button inside it still refuses to break, so it overhung and the hero
-     clipped it. Only inside the hero, only on small screens. */
+  .dest-hero .overlay{flex-direction:column;align-items:flex-start;justify-content:flex-end;
+    padding:18px;gap:10px}
   .dest-hero .overlay .btn{white-space:normal;text-align:center}
 }
 .dest-hero h1{color:#fff;margin:0}
