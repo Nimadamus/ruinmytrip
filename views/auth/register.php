@@ -1,6 +1,12 @@
 <?php /** @var array $errors */ ?>
 <div class="wrap"><div class="form-card">
+  <?php /* The place they were on their way to review, so the interruption explains itself. */ ?>
+  <?php $rp = rmt_return_place_name((string) ($return ?? '')); ?>
   <h1>Join RuinMyTrip</h1>
+  <?php if ($rp !== null): ?>
+    <p class="muted">Create an account and we will take you straight back to your review of
+      <b><?= e($rp) ?></b>. It takes a moment and your review is kept while you do it.</p>
+  <?php endif; ?>
   <p class="muted">Build your traveler profile. Share trips, reviews, and guides. The first 100 people who publish a review get Founding Traveler. <a href="<?= e(url('start')) ?>">How launch works</a>.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('register')) ?>"><?= csrf_field() ?>

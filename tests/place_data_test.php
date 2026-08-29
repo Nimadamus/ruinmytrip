@@ -388,5 +388,18 @@ check('tel href strips formatting', rmt_place_tel_href('+351 21 885-1024'), '+35
 check('map url points at the pin',
       str_contains(rmt_place_map_url(38.7205, -9.135), 'mlat=38.7205'), true);
 
+/* ------------------------------------------------------- return context
+   The sign-in page that interrupts a review has to be able to say which review. Nothing from the
+   URL is ever echoed: the name comes from our own row or the line is not shown at all. */
+check('return context: names the place', rmt_return_place_name('/review/new?place=1'), 'Ramiro');
+check('return context: unknown id shows nothing', rmt_return_place_name('/review/new?place=99999'), null);
+check('return context: no id shows nothing', rmt_return_place_name('/review/new'), null);
+check('return context: empty path shows nothing', rmt_return_place_name(''), null);
+check('return context: an unrelated path shows nothing', rmt_return_place_name('/settings?place=1'), null);
+// A crafted return path must not become a way to print arbitrary text on the sign-in page.
+check('return context: injected name is ignored',
+      rmt_return_place_name('/review/new?place=1&name=<script>alert(1)</script>'), 'Ramiro');
+check('return context: non-numeric id shows nothing', rmt_return_place_name('/review/new?place=abc'), null);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

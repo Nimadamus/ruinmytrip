@@ -1,7 +1,13 @@
 <?php /** @var array $errors @var string $return */ ?>
 <div class="wrap"><div class="form-card">
+<?php /* The place they were on their way to review, so the interruption explains itself. */ ?>
+  <?php $rp = rmt_return_place_name((string) ($return ?? '')); ?>
   <h1>Welcome back</h1>
-  <p class="muted">Sign in to your RuinMyTrip account.</p>
+  <?php if ($rp !== null): ?>
+    <p class="muted">Sign in and we will take you straight back to your review of <b><?= e($rp) ?></b>.</p>
+  <?php else: ?>
+    <p class="muted">Sign in to your RuinMyTrip account.</p>
+  <?php endif; ?>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('login')) ?>"><?= csrf_field() ?>
     <input type="hidden" name="return" value="<?= e($return ?? '') ?>">

@@ -224,6 +224,29 @@ function rmt_saved_places(int $userId): array {
 function rmt_place_path(array $p): string { return '/p/' . $p['slug']; }
 
 /**
+ * The place a visitor was on their way to review, for a page that interrupted them.
+ *
+ * An anonymous traveler who picks a place on /contribute is sent to sign in, and the sign-in page
+ * used to say only "Welcome back". The return path was carried correctly the whole time, so the
+ * flow worked -- but the person could no longer see WHY they were being asked for a password, one
+ * step after choosing somewhere specific to write about. On a site whose first job is getting a
+ * stranger to finish their first review, that is the worst possible moment to look generic.
+ *
+ * Reads the id out of an already-validated internal return path and asks the database for the
+ * name. Nothing from the URL is ever displayed: the name comes from our own row, or nothing does.
+ */
+function rmt_return_place_name(string $return): ?string {
+    if ($return === '' || !str_starts_with($return, '/review/new')) return null;
+    $qs = parse_url($return, PHP_URL_QUERY);
+    if (!is_string($qs) || $qs === '') return null;
+    parse_str($qs, $args);
+    $id = (int) ($args['place'] ?? 0);
+    if ($id <= 0) return null;
+    $row = q_one("SELECT name FROM places WHERE id = ? AND status = 'active'", [$id]);
+    return $row ? (string) $row['name'] : null;
+}
+
+/**
  * Community rating for one place: published reviews from real members only, editorial excluded by
  * role exactly as rmt_community_avg() does for destinations.
  *
