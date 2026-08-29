@@ -50,6 +50,9 @@
     input.setAttribute('aria-autocomplete', 'list');
     input.setAttribute('autocomplete', 'off');
 
+    var reviewTarget = form.getAttribute('data-suggest-target') === 'review';
+    var reviewBase = form.getAttribute('data-review-url') || '/review/new';
+
     var options = [];        // the flat list of selectable rows, in visual order
     var active = -1;
     var timer = null;
@@ -116,6 +119,12 @@
 
         group.items.forEach(function (item) {
           var row = el('a', 'suggest-item');
+          // On the contribution page a suggestion is the start of a review, not a page to read:
+          // picking a place there goes straight to writing about it. Everywhere else the
+          // suggestion goes where it says it goes.
+          if (reviewTarget && item.type === 'place' && item.id) {
+            item = Object.assign({}, item, { url: reviewBase + '?place=' + encodeURIComponent(item.id) });
+          }
           row.id = panel.id + '-opt-' + n;
           row.setAttribute('role', 'option');
           row.setAttribute('aria-selected', 'false');

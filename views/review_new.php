@@ -3,7 +3,9 @@
   <h1>Write a review</h1>
   <p class="muted">Be specific and fair. Real experiences help other travelers.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
-  <form method="post" enctype="multipart/form-data" action="<?= e(url('review/new')) ?>"><?= csrf_field() ?>
+  <?php $draftKey = 'new-' . (int) ($boundPlace['id'] ?? 0) . '-' . (int) ($r['destination_id'] ?? 0); ?>
+  <form method="post" enctype="multipart/form-data" action="<?= e(url('review/new')) ?>"
+        data-review-draft="<?= e($draftKey) ?>"><?= csrf_field() ?>
     <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('review_new')) ?>">
     <?php include __DIR__ . '/_review_form.php'; ?>
 

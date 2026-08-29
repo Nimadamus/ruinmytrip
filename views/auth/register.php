@@ -4,6 +4,10 @@
   <p class="muted">Build your traveler profile. Share trips, reviews, and guides. The first 100 people who publish a review get Founding Traveler. <a href="<?= e(url('start')) ?>">How launch works</a>.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('register')) ?>"><?= csrf_field() ?>
+    <?php /* Where the visitor was headed before they needed an account -- usually a review they
+             were about to write. Carried through the form so a validation error does not lose it
+             either. */ ?>
+    <input type="hidden" name="return" value="<?= e((string) ($return ?? '')) ?>">
     <label for="username">Username</label>
     <input type="text" id="username" name="username" value="<?= e(input('username')) ?>" required pattern="[A-Za-z0-9_]{3,24}" autocomplete="username">
     <label for="email">Email</label>

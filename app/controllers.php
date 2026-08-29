@@ -1840,6 +1840,81 @@ function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
     return $errors;
 }
 
+/**
+ * GET /contribute — a way in for somebody who has a trip in their head rather than a URL.
+ *
+ * Most reviews will start from a place page. This is for the rest: a traveler who just got back
+ * and wants to write about four things, none of which they are currently looking at. Without it,
+ * the only path to writing is remembering how to find each place first, and that is enough
+ * friction to lose the review.
+ */
+function contribute_page(array $a): void {
+    $me = current_user();
+    $myReviews = $me ? (int) (q_one("SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
+                                    [(int) $me['id']])['c'] ?? 0) : 0;
+    // Destinations that actually have places in them, biggest first. Not a "popular" list: we have
+    // no popularity signal worth the name yet, and inventing one would be the first lie on a page
+    // whose whole purpose is honest contribution.
+    $recentDestinations = q_all(
+        "SELECT d.slug, d.name,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active') places
+           FROM destinations d
+          ORDER BY places DESC, d.name
+          LIMIT 12");
+    $recentDestinations = array_values(array_filter($recentDestinations, static fn($r) => (int) $r['places'] > 0));
+
+    view('contribute', compact('me', 'recentDestinations', 'myReviews'), [
+        'title' => 'Review a place you went to — RuinMyTrip',
+        'description' => 'Write about a hotel, restaurant or attraction you actually visited. Real traveler reviews, not imported listings.',
+    ]);
+}
+
+/**
+ * POST /contribute/suggest-place — a traveler tells us about a place we do not have.
+ *
+ * Creates a QUEUE ROW, never a place. Nothing here becomes public, nothing becomes indexable, and
+ * nothing skips the deduplication that keeps one venue on one page. A suggestion that matches
+ * something we already hold is answered with that page instead, on the spot, because the person
+ * wanting to review the Louvre under a slightly different name should be writing their review a
+ * second later rather than waiting on a queue.
+ */
+function contribute_suggest_place(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+
+    if (!rmt_rate_ok('suggest_place', (string) $me['id'], 10, 3600)) {
+        flash('That is a lot of suggestions at once. Try again a bit later.');
+        redirect('/contribute');
+    }
+
+    $name = trim((string) input('name'));
+    $city = trim((string) input('city'));
+    $type = (string) input('type');
+    if (!in_array($type, RMT_PLACE_TYPES, true)) $type = 'attraction';
+    $website = rmt_place_normalize_website((string) input('website_url'));
+
+    if ($name === '' || $city === '' || mb_strlen($name) > 200 || mb_strlen($city) > 120) {
+        flash('Tell us at least the name and the city.');
+        redirect('/contribute');
+    }
+
+    // Already here under this or a near name? Send them to it rather than into a queue.
+    $key = rmt_place_name_key($name);
+    $existing = q_one("SELECT p.slug FROM places p JOIN destinations d ON d.id = p.destination_id
+                        WHERE p.status = 'active' AND p.name_key = ? AND LOWER(d.name) = LOWER(?)",
+                      [$key, $city]);
+    if ($existing) {
+        flash('We already have that one — here it is.');
+        redirect('/review/new?place=' . (int) (q_one('SELECT id FROM places WHERE slug = ?', [$existing['slug']])['id'] ?? 0));
+    }
+
+    q_run("INSERT INTO place_suggestions (name, city, type, website_url, suggested_by, status, created_at)
+           VALUES (?,?,?,?,?,'pending',?)",
+          [$name, $city, $type, $website, (int) $me['id'], date('Y-m-d H:i:s')]);
+    flash('Thanks — we will check it and add it. Places are added by hand, so it is not instant.');
+    redirect('/contribute');
+}
+
 function review_new_form(array $a): void {
     require_login();
     // A "Share your experience" link from a destination page should not dump the writer back
@@ -1878,12 +1953,13 @@ function review_create(array $a): void {
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
     $isDraft = input('action') === 'draft';
-    // Publishing requires a confirmed email; saving a private draft does not, so an unverified
-    // user can still write and keep their work.
-    if (!$isDraft && !email_is_verified($me)) {
-        flash('Confirm your email to publish. Your draft tools still work in the meantime.');
-        redirect('/verify-email');
-    }
+    // Publishing requires a confirmed email. It used to redirect to the verification page here,
+    // which threw away everything the person had just written -- and it did it to the one group
+    // that matters most, somebody publishing their FIRST review minutes after signing up. Now the
+    // review is saved as their draft and they are told so; confirming the address and pressing
+    // publish is all that is left.
+    $holdForVerification = !$isDraft && !email_is_verified($me);
+    if ($holdForVerification) $isDraft = true;
     $v = rmt_review_validate($_POST, $isDraft);
     // Aspect ratings are parsed against the category being submitted, not against whatever the
     // browser happened to render, and a malformed set stops the save alongside any other error.
@@ -1929,10 +2005,17 @@ function review_create(array $a): void {
     // Badges are evaluated against real activity, never granted by hand.
     if (!$isDraft) rmt_award_badges((int)$me['id']);
 
-    $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Review published.';
+    $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Your review is live.';
+    if ($holdForVerification) {
+        $msg = 'Saved as a draft — nothing was lost. Confirm your email address and you can publish it.';
+    }
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
-    redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug);
+    // ?published=1 asks the review page for the "what next" panel. Landing on your own review and
+    // being shown two useful things to do next is the difference between one review and a habit;
+    // a bare redirect back to the page is where a first-time contributor stops.
+    if ($holdForVerification) redirect('/verify-email');
+    redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug.'?published=1');
 }
 
 /**
@@ -1996,7 +2079,10 @@ function review_show(array $a): void {
     // No robots directive: a draft/hidden review 404s for anyone but its author (see
     // rmt_review_can_view), so crawlers cannot reach it. Access control, not noindex.
     $aspectValues = rmt_review_aspect_values((int)$r['id']);
-    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues'), [
+    // Shown once, straight after publishing, and only to the person who wrote it.
+    $justPublished = input('published') === '1' && $me && (int) $me['id'] === (int) $r['user_id']
+                     && $r['status'] === 'published';
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished'), [
         'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
@@ -2023,10 +2109,9 @@ function review_edit_submit(array $a): void {
     if (!rmt_review_can_edit($r, current_user())) { forbidden('That is not your review.'); }
 
     $isDraft = input('action') === 'draft';
-    if (!$isDraft && !email_is_verified(current_user())) {
-        flash('Confirm your email to publish this review.');
-        redirect('/verify-email');
-    }
+    // Same rule as creating one: hold it as a draft rather than discarding the edit.
+    $holdForVerification = !$isDraft && !email_is_verified(current_user());
+    if ($holdForVerification) $isDraft = true;
     $v = rmt_review_validate($_POST, $isDraft);
     $asp = rmt_review_parse_aspects($_POST, (string) ($_POST['subject_type'] ?? ''));
     if (!$v['ok'] || !$asp['ok']) {
@@ -2074,9 +2159,12 @@ function review_edit_submit(array $a): void {
     }
 
     if ($status === 'published') rmt_award_badges((int)current_user()['id']);
-    $msg = 'Review updated.';
+    $msg = $holdForVerification
+        ? 'Saved as a draft — your changes are kept. Confirm your email address and you can publish it.'
+        : 'Review updated.';
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
+    if ($holdForVerification) redirect('/verify-email');
     redirect($status === 'draft' ? '/reviews?mine=1' : '/review/'.(int)$r['id'].'/'.$slug);
 }
 
@@ -2586,21 +2674,45 @@ function login_submit(array $a): void {
     if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect($return); }
     view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in — RuinMyTrip']);
 }
-function register_form(array $a): void { if (is_logged_in()) redirect('/feed'); view('auth/register', ['errors'=>[]], ['title'=>'Join RuinMyTrip']); }
+/**
+ * GET /register
+ *
+ * Carries `return` the way /login does. Somebody who clicked "Write a review" on a place page and
+ * had no account was being handed a signup form that had forgotten which place they meant, and
+ * landed on the email-verification page afterwards with no way back to it. Intent that survives a
+ * sign-in and not a sign-up is intent lost for exactly the people we most need: the ones who have
+ * never written a review here before.
+ */
+function register_form(array $a): void {
+    if (is_logged_in()) redirect('/feed');
+    view('auth/register', ['errors' => [], 'return' => rmt_safe_return_path((string) input('return'))],
+         ['title' => 'Join RuinMyTrip']);
+}
 function register_submit(array $a): void {
     csrf_check();
+    $return = rmt_safe_return_path((string) input('return'));
     if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
-        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.']],
+        view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.'], 'return'=>$return],
              ['title'=>'Join RuinMyTrip']); return;
     }
     $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
     if ($r['ok']) {
-        flash(($r['mail_ok'] ?? false)
+        $mailed = (bool) ($r['mail_ok'] ?? false);
+        // Somebody who came here to write a review goes back to writing it. Publishing still needs
+        // a confirmed email, and the flash says so rather than the redirect silently deciding it:
+        // being bounced to a verification page you did not ask for, from a form you were halfway
+        // through, is how a first review stops being written.
+        $heading = $mailed
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
-            : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link below.');
+            : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link from /verify-email.';
+        if ($return !== '' && $return !== '/feed') {
+            flash($heading . ' You can write now and save a draft; confirming lets you publish.');
+            redirect($return);
+        }
+        flash($heading);
         redirect('/verify-email');
     }
-    view('auth/register', ['errors'=>$r['errors']], ['title'=>'Join RuinMyTrip']);
+    view('auth/register', ['errors'=>$r['errors'], 'return'=>$return], ['title'=>'Join RuinMyTrip']);
 }
 function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
 
@@ -2927,6 +3039,33 @@ function admin_destinations_report(array $a): void {
     unset($r);
     usort($rows, static fn($x, $y) => [$y['ready'], $y['places']] <=> [$x['ready'], $x['places']]);
     view('admin_destinations', ['rows' => $rows], ['title' => 'Destinations — RuinMyTrip admin']);
+}
+
+/** GET /admin/suggestions — places travelers have asked us to add. */
+function admin_suggestions(array $a): void {
+    require_role('admin', 'mod');
+    $rows = q_all("SELECT ps.*, u.username FROM place_suggestions ps
+                    LEFT JOIN users u ON u.id = ps.suggested_by
+                    ORDER BY (ps.status = 'pending') DESC, ps.created_at DESC LIMIT 200");
+    view('admin_suggestions', ['rows' => $rows], ['title' => 'Suggested places — RuinMyTrip admin']);
+}
+
+/**
+ * POST /admin/suggestions/resolve — mark one handled.
+ *
+ * Deliberately does NOT create the place. Adding it is a decision with a destination, a type, a
+ * name and a dedupe check behind it, and that is what the place editor is for; a one-click "accept"
+ * here would be exactly the unreviewed entity creation the queue exists to prevent.
+ */
+function admin_suggestions_resolve(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $id = (int) input('id');
+    $status = (string) input('status');
+    if (!in_array($status, ['pending', 'added', 'rejected', 'duplicate'], true)) $status = 'pending';
+    q_run('UPDATE place_suggestions SET status = ?, resolved_by = ?, resolved_at = ? WHERE id = ?',
+          [$status, (int) current_user()['id'], date('Y-m-d H:i:s'), $id]);
+    flash('Suggestion marked ' . $status . '.');
+    redirect('/admin/suggestions');
 }
 
 /** GET /admin/place/{id} — the editor. */

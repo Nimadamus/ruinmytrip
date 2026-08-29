@@ -11,6 +11,7 @@
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('guides')) ?>">Guides & itineraries</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
+      <a href="<?= e(url('contribute')) ?>">Write a review</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
       <a href="<?= e(url('discover')) ?>">Discover</a>
       <a href="<?= e(url('collections')) ?>">Collections</a>
@@ -41,5 +42,6 @@
 </footer>
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>
+<script src="<?= e(rmt_asset('assets/js/review-draft.js')) ?>" defer></script>
 </body>
 </html>

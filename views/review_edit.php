@@ -8,7 +8,8 @@
     <?php else: ?>Changes go live as soon as you save.<?php endif; ?>
   </p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
-  <form method="post" enctype="multipart/form-data" action="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>"><?= csrf_field() ?>
+  <form method="post" enctype="multipart/form-data" action="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>"
+        data-review-draft="edit-<?= (int) $r['id'] ?>"><?= csrf_field() ?>
     <?php include __DIR__ . '/_review_form.php'; ?>
 
     <?php if (!empty($photos)): ?>
