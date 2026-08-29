@@ -86,9 +86,18 @@ function rmt_search_has_trigram(): bool {
     return $has;
 }
 
-/** LIKE with the pattern's own wildcards escaped, so a query of "100%" is not a wildcard. */
+/**
+ * LIKE with the pattern's own wildcards escaped, so a query of "100%" is not a wildcard.
+ *
+ * The escape character is '!' and not the usual backslash, deliberately. PDO parses a statement
+ * itself to find placeholders and walks quoted strings so it does not find one inside a literal.
+ * Given ESCAPE with a backslash it can read that backslash as escaping the closing quote, decide
+ * the string is still open, and swallow every following ? into it. That surfaces as
+ * "Invalid parameter number: parameter was not defined", it took /suggest down on Postgres, and it
+ * passed locally on SQLite. A backslash has no business in a LIKE clause when any character will do.
+ */
 function rmt_search_like(string $norm): string {
-    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $norm);
+    return str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $norm);
 }
 
 /* ===========================================================================
@@ -225,7 +234,7 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
                 (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                 NULL AS alias_hit
            FROM destinations d
-          WHERE d.name_norm LIKE ? ESCAPE '\\'
+          WHERE d.name_norm LIKE ? ESCAPE '!'
           ORDER BY d.name LIMIT " . ($limit * 3), [$like . '%']);
 
     $seen = array_column($rows, null, 'id');
@@ -235,7 +244,7 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
                            (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                            a.alias_norm AS alias_hit
                       FROM search_aliases a JOIN destinations d ON d.id = a.entity_id
-                     WHERE a.entity_type = 'destination' AND a.alias_norm LIKE ? ESCAPE '\\'
+                     WHERE a.entity_type = 'destination' AND a.alias_norm LIKE ? ESCAPE '!'
                      LIMIT " . ($limit * 2), [$like . '%']) as $r) {
         if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
     }
@@ -278,7 +287,7 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
                    (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                    NULL AS alias_hit
               FROM places p JOIN destinations d ON d.id = p.destination_id
-             WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '\\'
+             WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!'
              ORDER BY p.name LIMIT " . ($limit * 3);
     $rows = q_all($sql, [$like . '%']);
     $seen = array_column($rows, null, 'id');
@@ -299,7 +308,7 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
                       FROM search_aliases a
                       JOIN places p ON p.id = a.entity_id AND p.status = 'active'
                       JOIN destinations d ON d.id = p.destination_id
-                     WHERE a.entity_type = 'place' AND a.alias_norm LIKE ? ESCAPE '\\'
+                     WHERE a.entity_type = 'place' AND a.alias_norm LIKE ? ESCAPE '!'
                      LIMIT " . ($limit * 2), [$like . '%']) as $r) {
         if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
     }
@@ -342,7 +351,7 @@ function rmt_suggest_users(string $qNorm, int $limit): array {
                           (SELECT COUNT(*) FROM reviews r WHERE r.user_id = u.id AND r.status = 'published') review_count
                      FROM users u LEFT JOIN profiles p ON p.user_id = u.id
                     WHERE u.status = 'active'
-                      AND (LOWER(u.username) LIKE ? ESCAPE '\\' OR LOWER(COALESCE(p.display_name, '')) LIKE ? ESCAPE '\\')
+                      AND (LOWER(u.username) LIKE ? ESCAPE '!' OR LOWER(COALESCE(p.display_name, '')) LIKE ? ESCAPE '!')
                     ORDER BY u.username LIMIT " . ($limit * 2), [$like . '%', $like . '%']);
     $out = [];
     foreach ($rows as $r) {
@@ -423,13 +432,13 @@ function rmt_suggest_fuzzy_portable(string $table, string $qNorm, int $limit): a
         ? q_all("SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm,
                         (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                         NULL AS alias_hit
-                   FROM destinations d WHERE d.name_norm LIKE ? ESCAPE '\\' LIMIT 300", [$like])
+                   FROM destinations d WHERE d.name_norm LIKE ? ESCAPE '!' LIMIT 300", [$like])
         : q_all("SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
                         d.name dest_name, d.country dest_country,
                         (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                         NULL AS alias_hit
                    FROM places p JOIN destinations d ON d.id = p.destination_id
-                  WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '\\' LIMIT 300", [$like]);
+                  WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!' LIMIT 300", [$like]);
 
     $qLen = mb_strlen($qNorm);
     $allowed = $qLen <= 5 ? 1 : ($qLen <= 10 ? 2 : 3);

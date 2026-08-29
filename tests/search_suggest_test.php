@@ -186,7 +186,13 @@ check('a percent is not a wildcard', rmt_search_suggest('%')['count'], 0);
 check('an underscore is not a wildcard', rmt_search_suggest('_')['count'], 0);
 check('a wildcard cannot list the table',
       rmt_search_suggest(str_repeat('%', 5))['count'], 0);
-check('escaping is applied',         rmt_search_like('100%_x'), '100\\%\\_x');
+check('escaping is applied',         rmt_search_like('100%_x'), '100!%!_x');
+// The escape character is '!' because a backslash in the SQL confuses PDO's own placeholder
+// parser on Postgres: it can read the backslash as escaping the closing quote, think the string
+// is still open, and swallow the following ? -- which is how /suggest 500'd in production while
+// every local test passed.
+check('the escape char escapes itself', rmt_search_like('a!b'), 'a!!b');
+check('a backslash is left alone',      rmt_search_like('a\\b'), 'a\\b');
 
 echo "\n-- logging --\n";
 rmt_search_log('kyoto ryokan', 0);
