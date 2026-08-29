@@ -282,8 +282,13 @@ function rmt_destination_discovery(int $destId, int $size = RMT_MODULE_SIZE): ar
     $top = [];
     foreach ($rank['top'] as $type => $list) $top[$type] = $decorate($list);
 
+    // With no community reviews there is nothing to rank, and a destination page that lists none
+    // of its own places is worse than one that lists them plainly.
+    $fallback = ($top || $rank['most_reviewed']) ? [] : rmt_destination_place_fallback($destId, $size);
+
     return [
         'top'           => $top,
+        'fallback'      => $fallback,
         'highest_rated' => $decorate($rank['highest_rated']),
         'most_reviewed' => $decorate($rank['most_reviewed']),
         'qualified'     => $rank['qualified'],
@@ -292,6 +297,40 @@ function rmt_destination_discovery(int $destId, int $size = RMT_MODULE_SIZE): ar
         'neighborhoods' => rmt_destination_neighborhoods($destId),
         'counts'        => rmt_place_type_counts($destId),
     ];
+}
+
+/**
+ * The places we cover in a destination, for when the ranked rows have nothing to show.
+ *
+ * Every ranking module here is gated on community reviews, and a destination with none of them
+ * lost its links to its own places when those modules replaced the old flat list. That is a
+ * regression in exactly the internal linking this work was supposed to strengthen, and it is the
+ * normal state of a young destination rather than an edge case.
+ *
+ * So: no ranking, no "top", no implied endorsement. Just the places, ones we have written about
+ * first, so a page with no reviews yet still leads somewhere.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_destination_place_fallback(int $destId, int $limit = RMT_MODULE_SIZE): array {
+    $rows = q_all(
+        "SELECT p.id, p.slug, p.name, p.type, p.category_id, p.neighborhood, p.price_level,
+                CASE WHEN pe.place_id IS NULL THEN 1 ELSE 0 END no_editorial
+           FROM places p
+           LEFT JOIN place_editorial pe ON pe.place_id = p.id
+          WHERE p.destination_id = ? AND p.status = 'active'
+          ORDER BY no_editorial, p.name
+          LIMIT " . max(1, $limit), [$destId]);
+
+    $covers = rmt_place_cover_map(array_column($rows, 'id'));
+    $catNames = rmt_category_name_map(array_map(static fn($r) => (int) ($r['category_id'] ?? 0), $rows));
+    foreach ($rows as &$r) {
+        $r['cover_url'] = $covers[(int) $r['id']] ?? null;
+        $r['category_name'] = $catNames[(int) ($r['category_id'] ?? 0)] ?? null;
+        unset($r['no_editorial']);
+    }
+    unset($r);
+    return $rows;
 }
 
 /**

@@ -45,6 +45,8 @@ $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id 
             place_id INT, rating INT, title TEXT, body TEXT, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT, url TEXT, storage_key TEXT, caption TEXT, sort INT, created_at TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/047_place_attributes.sqlite.sql'));
+// The fallback row prefers places we have written about, so it joins place_editorial.
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/041_place_editorial.sqlite.sql'));
 
 $pdo->exec("INSERT INTO users (id,username,role,status) VALUES
     (1,'a','user','active'),(2,'b','user','active'),(3,'c','user','active'),(4,'d','user','active'),
@@ -173,6 +175,25 @@ check('cards carry no cover when there is no photograph',
       $disc['highest_rated'][0]['cover_url'], null);
 check('cards carry a category name only when one is set',
       $disc['highest_rated'][0]['category_name'], null);
+
+echo "\n-- a destination with no community reviews still links to its places --\n";
+// This is the normal state of a young destination, not an edge case, and it was a regression:
+// the ranked rows replaced a flat list, so a page with no reviews listed none of its own places.
+db()->exec("INSERT INTO destinations (id,slug,name,country) VALUES (3,'new-town','New Town','Nowhere')");
+db()->exec("INSERT INTO places (id,destination_id,slug,name,name_key,type,status,created_at) VALUES
+    (20,3,'unreviewed-inn','Unreviewed Inn','unreviewed inn','hotel','active','2026-08-01'),
+    (21,3,'unreviewed-cafe','Unreviewed Cafe','unreviewed cafe','restaurant','active','2026-08-01')");
+
+$fresh = rmt_destination_discovery(3);
+check('nothing is ranked', $fresh['top'], []);
+check('...and nothing claims to be highest rated', $fresh['highest_rated'], []);
+check('but the places are still listed',
+      array_column($fresh['fallback'], 'slug'), ['unreviewed-cafe', 'unreviewed-inn']);
+check('the browse counts are still real', $fresh['counts']['hotel'] ?? null, 1);
+
+// And once a destination HAS rankings, the fallback stays out of the way rather than repeating them.
+$paris = rmt_destination_discovery(1);
+check('a destination with rankings shows no fallback row', $paris['fallback'], []);
 
 echo "\n-- the readiness report --\n";
 $q = array_column(rmt_destination_quality(50), null, 'slug');

@@ -195,6 +195,21 @@
         </section>
       <?php endforeach; ?>
 
+      <?php /* No community reviews yet, so nothing can honestly be called top. The places are
+               still listed, ones we have written about first, so the page leads somewhere. */ ?>
+      <?php if (!empty($discovery['fallback'])): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule">
+            <h2>Places in <?= e($d['name']) ?></h2>
+            <a class="section-more" href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all &rarr;</a>
+          </div>
+          <p class="hint" style="margin:-6px 0 12px">
+            No traveler reviews here yet, so nothing is ranked. These are the places we cover.
+          </p>
+          <?php $renderRow($discovery['fallback']); ?>
+        </section>
+      <?php endif; ?>
+
       <?php /* Quality and volume are different stories and get different rows. Shown only when
                enough places have cleared the threshold for the distinction to mean anything. */ ?>
       <?php if (($discovery['qualified'] ?? 0) >= 2 && !empty($discovery['highest_rated'])): ?>
