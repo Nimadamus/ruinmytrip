@@ -12,6 +12,14 @@ php /var/www/html/database/migrate.php || echo "entrypoint: migrate step failed,
 # low-confidence match instead of writing it -- so a container restart re-runs it and writes
 # nothing. Non-fatal for the same reason as the migrate above: a data problem in a proposal file
 # belongs in the log, not in a crash loop.
+# Create any curated places that do not exist yet, so enrichment has something to enrich. Uses
+# rmt_place_resolve(), the same find-or-create the editorial publisher calls, and matches on the
+# normalised (destination, name) key -- a restart re-finds every row and creates nothing.
+NEWPLACES=/var/www/html/database/enrichment/new_places.json
+if [ -f "$NEWPLACES" ]; then
+  php /var/www/html/scripts/add_places.php --apply   || echo "entrypoint: place creation reported errors, continuing"
+fi
+
 PROPOSAL=/var/www/html/database/enrichment/proposal.json
 if [ -f "$PROPOSAL" ]; then
   php /var/www/html/scripts/apply_place_enrichment.php --file "$PROPOSAL" --apply     || echo "entrypoint: place enrichment reported errors, continuing"

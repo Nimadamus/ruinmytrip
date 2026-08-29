@@ -1,0 +1,47 @@
+{
+  "_": "Curated inventory expansion for the five destinations closest to the category threshold. Every entry is a real, long-established, independently verifiable venue that we do not already hold, chosen because a traveler browsing that city would expect to find it. Nothing here is invented, nothing is a chain filler, and nothing was copied from another review site: the names are the venues' own, and every attribute they end up carrying comes from OpenStreetMap through the existing enricher, which refuses a match it cannot verify. Deduplication happens on the same normalised (destination, name) key the places table is unique on, so re-running this changes nothing.",
+  "_threshold": "The category threshold stays at 6. These were chosen to let real inventory reach it, not to reach it by any means: each city gets the venues that were genuinely missing rather than the minimum number that would tip the count.",
+  "places": [
+    {"destination_slug": "athens-greece", "name": "Ancient Agora of Athens", "type": "attraction",
+     "why": "The civic centre of classical Athens and the Stoa of Attalos museum. Missing from a list that already holds the Acropolis and four museums."},
+    {"destination_slug": "athens-greece", "name": "Temple of Olympian Zeus", "type": "attraction",
+     "why": "One of the four sites on the Athens combined ticket we already describe elsewhere."},
+    {"destination_slug": "athens-greece", "name": "Benaki Museum of Greek Culture", "type": "attraction",
+     "why": "The major Greek cultural collection outside the state museums."},
+
+    {"destination_slug": "london-uk", "name": "British Museum", "type": "attraction",
+     "why": "The most visited museum in the country and absent from our London list."},
+    {"destination_slug": "london-uk", "name": "Tower of London", "type": "attraction",
+     "why": "Historic royal palace and the single most obvious London omission after the British Museum."},
+    {"destination_slug": "london-uk", "name": "National Gallery", "type": "attraction",
+     "why": "Free national collection on Trafalgar Square."},
+
+    {"destination_slug": "amsterdam-netherlands", "name": "Rembrandt House Museum", "type": "attraction",
+     "why": "Rembrandt's own house and studio, a short walk from the Rijksmuseum we already cover."},
+    {"destination_slug": "amsterdam-netherlands", "name": "Royal Palace of Amsterdam", "type": "attraction",
+     "why": "The seventeenth-century town hall on Dam Square, open to visitors."},
+    {"destination_slug": "amsterdam-netherlands", "name": "NEMO Science Museum", "type": "attraction",
+     "why": "The city's science museum, and the one attraction on this list a family would look for."},
+
+    {"destination_slug": "new-york-city-usa", "name": "Metropolitan Museum of Art", "type": "attraction",
+     "why": "The largest art museum in the Americas, and a conspicuous gap next to the Whitney."},
+    {"destination_slug": "new-york-city-usa", "name": "American Museum of Natural History", "type": "attraction",
+     "why": "The other museum every first-time visitor asks about."},
+    {"destination_slug": "new-york-city-usa", "name": "Museum of Modern Art", "type": "attraction",
+     "why": "MoMA. Distinct from the Whitney and from the Met, and separately ticketed."},
+
+    {"destination_slug": "paris-france", "name": "Musee d'Orsay", "type": "attraction",
+     "why": "The impressionist collection, and the museum most often visited alongside the Louvre we already hold."},
+    {"destination_slug": "paris-france", "name": "Arc de Triomphe", "type": "attraction",
+     "why": "Monument with a paid rooftop terrace, comparable to the Eiffel Tower entry we already have."},
+    {"destination_slug": "paris-france", "name": "Centre Pompidou", "type": "attraction",
+     "why": "The modern art museum. Its building closes for renovation, which is exactly the kind of fact a place page should carry."},
+
+    {"destination_slug": "paris-france", "name": "Bouillon Chartier", "type": "restaurant",
+     "why": "An 1896 bouillon still serving at bouillon prices, and the counterweight to the expensive brasseries we already list."},
+    {"destination_slug": "paris-france", "name": "Le Train Bleu", "type": "restaurant",
+     "why": "The Gare de Lyon dining room, a listed historic monument."},
+    {"destination_slug": "paris-france", "name": "Chez L'Ami Jean", "type": "restaurant",
+     "why": "A long-running Basque bistro in the 7th, and a different price band from Le Procope and Brasserie Lipp."}
+  ]
+}

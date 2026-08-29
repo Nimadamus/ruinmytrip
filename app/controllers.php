@@ -3710,7 +3710,9 @@ function destination_category(array $a): void {
     if ($type === null) { not_found(); return; }
 
     $id = (int) $d['id'];
-    $counts = rmt_place_type_counts($id);
+    // Indexable places only, and the same numbers the threshold used -- a page that counts one way
+    // and is judged another will eventually print a count that contradicts its own existence.
+    $counts = rmt_indexable_type_counts($id);
     $verdict = rmt_indexable('category', ['place_count' => (int) ($counts[$type] ?? 0)]);
     // Below the threshold this is not a page. The destination browse view still shows the same
     // places, so nothing becomes unreachable -- it stops being a separate URL.

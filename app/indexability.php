@@ -249,17 +249,49 @@ function rmt_index_neighborhoods(): array {
  * @return list<array{dest_slug:string,type:string,place_count:int,verdict:array}>
  */
 function rmt_index_categories(): array {
-    $rows = q_all(
-        "SELECT d.slug dest_slug, d.name dest_name, p.type, COUNT(*) place_count
-           FROM places p JOIN destinations d ON d.id = p.destination_id
-          WHERE p.status = 'active'
-          GROUP BY d.slug, d.name, p.type
-          ORDER BY COUNT(*) DESC, d.name, p.type");
-    foreach ($rows as &$r) {
-        $r['place_count'] = (int) $r['place_count'];
-        $r['verdict'] = rmt_indexable('category', $r);
+    // Counted from places that are THEMSELVES indexable, not from every active row. Six empty
+    // shells is not six places, and a threshold that can be met by rows carrying nothing but a
+    // name is not a threshold -- it is a counter. This is the whole reason the number exists.
+    $byDest = [];
+    foreach (rmt_index_places() as $p) {
+        if (!$p['verdict']['ok']) continue;
+        $byDest[(int) $p['destination_id']][(string) $p['type']] =
+            ($byDest[(int) $p['destination_id']][(string) $p['type']] ?? 0) + 1;
     }
+    $dests = [];
+    foreach (q_all("SELECT id, slug, name FROM destinations") as $d) $dests[(int) $d['id']] = $d;
+
+    $rows = [];
+    foreach ($byDest as $destId => $types) {
+        if (!isset($dests[$destId])) continue;
+        foreach ($types as $type => $n) {
+            $row = ['dest_slug' => (string) $dests[$destId]['slug'],
+                    'dest_name' => (string) $dests[$destId]['name'],
+                    'type' => $type, 'place_count' => (int) $n];
+            $row['verdict'] = rmt_indexable('category', $row);
+            $rows[] = $row;
+        }
+    }
+    usort($rows, static fn($a, $b) => [$b['place_count'], $a['dest_name'], $a['type']]
+                                  <=> [$a['place_count'], $b['dest_name'], $b['type']]);
     return $rows;
+}
+
+/**
+ * Indexable places in one destination, by type -- the count a category page is judged on.
+ *
+ * The landing page and the threshold have to be looking at the same number, or the page says
+ * "7 hotels in Paris" above a verdict that counted six.
+ *
+ * @return array<string,int>
+ */
+function rmt_indexable_type_counts(int $destId): array {
+    $out = [];
+    foreach (rmt_index_places() as $p) {
+        if (!$p['verdict']['ok'] || (int) $p['destination_id'] !== $destId) continue;
+        $out[(string) $p['type']] = ($out[(string) $p['type']] ?? 0) + 1;
+    }
+    return $out;
 }
 
 /** @return list<array{username:string,verdict:array}> */

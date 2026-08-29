@@ -1,0 +1,164 @@
+[
+    {
+        "slug": "ancient-agora-of-athens",
+        "name": "Ancient Agora of Athens",
+        "city": "Athens",
+        "country": "Greece",
+        "type": "attraction",
+        "timezone": "Europe/Athens",
+        "search_name": "Ancient Agora of Athens"
+    },
+    {
+        "slug": "temple-of-olympian-zeus-athens",
+        "name": "Temple of Olympian Zeus",
+        "city": "Athens",
+        "country": "Greece",
+        "type": "attraction",
+        "timezone": "Europe/Athens",
+        "search_name": "Temple of Olympian Zeus"
+    },
+    {
+        "slug": "benaki-museum-of-greek-culture-athens",
+        "name": "Benaki Museum of Greek Culture",
+        "city": "Athens",
+        "country": "Greece",
+        "type": "attraction",
+        "timezone": "Europe/Athens",
+        "search_name": "Benaki Museum of Greek Culture"
+    },
+    {
+        "slug": "british-museum-london",
+        "name": "British Museum",
+        "city": "London",
+        "country": "United Kingdom",
+        "type": "attraction",
+        "timezone": "Europe/London",
+        "search_name": "British Museum"
+    },
+    {
+        "slug": "tower-of-london",
+        "name": "Tower of London",
+        "city": "London",
+        "country": "United Kingdom",
+        "type": "attraction",
+        "timezone": "Europe/London",
+        "search_name": "Tower of London"
+    },
+    {
+        "slug": "national-gallery-london",
+        "name": "National Gallery",
+        "city": "London",
+        "country": "United Kingdom",
+        "type": "attraction",
+        "timezone": "Europe/London",
+        "search_name": "National Gallery"
+    },
+    {
+        "slug": "rembrandt-house-museum-amsterdam",
+        "name": "Rembrandt House Museum",
+        "city": "Amsterdam",
+        "country": "Netherlands",
+        "type": "attraction",
+        "timezone": "Europe/Amsterdam",
+        "search_name": "Rembrandt House Museum"
+    },
+    {
+        "slug": "royal-palace-of-amsterdam",
+        "name": "Royal Palace of Amsterdam",
+        "city": "Amsterdam",
+        "country": "Netherlands",
+        "type": "attraction",
+        "timezone": "Europe/Amsterdam",
+        "search_name": "Royal Palace of Amsterdam"
+    },
+    {
+        "slug": "nemo-science-museum-amsterdam",
+        "name": "NEMO Science Museum",
+        "city": "Amsterdam",
+        "country": "Netherlands",
+        "type": "attraction",
+        "timezone": "Europe/Amsterdam",
+        "search_name": "NEMO Science Museum"
+    },
+    {
+        "slug": "metropolitan-museum-of-art-new-york-city",
+        "name": "Metropolitan Museum of Art",
+        "city": "New York City",
+        "country": "United States",
+        "type": "attraction",
+        "timezone": "America/New_York",
+        "search_name": "Metropolitan Museum of Art"
+    },
+    {
+        "slug": "american-museum-of-natural-history-new-york-city",
+        "name": "American Museum of Natural History",
+        "city": "New York City",
+        "country": "United States",
+        "type": "attraction",
+        "timezone": "America/New_York",
+        "search_name": "American Museum of Natural History"
+    },
+    {
+        "slug": "museum-of-modern-art-new-york-city",
+        "name": "Museum of Modern Art",
+        "city": "New York City",
+        "country": "United States",
+        "type": "attraction",
+        "timezone": "America/New_York",
+        "search_name": "Museum of Modern Art"
+    },
+    {
+        "slug": "musee-d-orsay-paris",
+        "name": "Musee d'Orsay",
+        "city": "Paris",
+        "country": "France",
+        "type": "attraction",
+        "timezone": "Europe/Paris",
+        "search_name": "Musee d'Orsay"
+    },
+    {
+        "slug": "arc-de-triomphe-paris",
+        "name": "Arc de Triomphe",
+        "city": "Paris",
+        "country": "France",
+        "type": "attraction",
+        "timezone": "Europe/Paris",
+        "search_name": "Arc de Triomphe"
+    },
+    {
+        "slug": "centre-pompidou-paris",
+        "name": "Centre Pompidou",
+        "city": "Paris",
+        "country": "France",
+        "type": "attraction",
+        "timezone": "Europe/Paris",
+        "search_name": "Centre Pompidou"
+    },
+    {
+        "slug": "bouillon-chartier-paris",
+        "name": "Bouillon Chartier",
+        "city": "Paris",
+        "country": "France",
+        "type": "restaurant",
+        "timezone": "Europe/Paris",
+        "search_name": "Bouillon Chartier"
+    },
+    {
+        "slug": "le-train-bleu-paris",
+        "name": "Le Train Bleu",
+        "city": "Paris",
+        "country": "France",
+        "type": "restaurant",
+        "timezone": "Europe/Paris",
+        "search_name": "Le Train Bleu"
+    },
+    {
+        "slug": "chez-l-ami-jean-paris",
+        "name": "Chez L'Ami Jean",
+        "city": "Paris",
+        "country": "France",
+        "type": "restaurant",
+        "timezone": "Europe/Paris",
+        "search_name": "Chez L'Ami Jean"
+    }
+]

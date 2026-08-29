@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-08-29T18:47:48Z",
+ "generated_at": "2026-08-29T23:44:56Z",
  "source": "openstreetmap/nominatim",
  "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
  "places": [
@@ -245,6 +245,151 @@
    "hours_raw": "Tu,We 10:00-20:30; Th-Su 10:00-18:00"
   },
   {
+   "slug": "american-museum-of-natural-history-new-york-city",
+   "name": "American Museum of Natural History",
+   "city": "New York City",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "200 Central Park West",
+    "postal_code": "10024",
+    "neighborhood": "Manhattan",
+    "lat": "40.7811007",
+    "lng": "-73.9742362",
+    "phone": "+1 212-769-5100",
+    "website_url": "https://www.amnh.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "way",
+    "id": 388436810,
+    "name": "American Museum of Natural History",
+    "display_name": "American Museum of Natural History, 200, Central Park West, Upper West Side, Manhattan Community Board 7, Manhattan, New York County, New York, 10024, United States"
+   },
+   "aliases": [
+    "Americké přírodovědné muzeum",
+    "Museo Americano de Historia Natural",
+    "Muséum américain d'histoire naturelle",
+    "Museo americano di storia naturale",
+    "Amerikaans Museum van Natuurlijke Geschiedenis",
+    "Amerykańskie Muzeum Historii Naturalnej",
+    "Museu Americano de História Natural",
+    "Americké přírodopisné muzeum"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/388436810",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "17:30"
+    }
+   ],
+   "hours_raw": "Mo-Su 10:00-17:30"
+  },
+  {
+   "slug": "ancient-agora-of-athens",
+   "name": "Ancient Agora of Athens",
+   "city": "Athens",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "lat": "37.9747095",
+    "lng": "23.7224934",
+    "timezone": "Europe/Athens"
+   },
+   "notes": [
+    "OSM tags this heath, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "natural/heath",
+   "osm": {
+    "type": "relation",
+    "id": 13139942,
+    "name": "Ancient Agora of Athens",
+    "display_name": "Ancient Agora of Athens, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, Greece"
+   },
+   "aliases": [
+    "Àgora Antiga",
+    "Agora Antique",
+    "Antica Agora"
+   ],
+   "source_url": "https://www.openstreetmap.org/relation/13139942",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "08:00",
+     "closes": "20:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "08:00",
+     "closes": "20:00"
+    }
+   ],
+   "hours_raw": "Mo-Su 08:00-20:00"
+  },
+  {
    "slug": "anne-frank-house-amsterdam",
    "name": "Anne Frank House",
    "city": "Amsterdam",
@@ -367,6 +512,45 @@
    "hours_raw": "Tu-Sa 12:30-14:30,19:30-22:00"
   },
   {
+   "slug": "arc-de-triomphe-paris",
+   "name": "Arc de Triomphe",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "75008",
+    "neighborhood": "8th Arrondissement of Paris",
+    "lat": "48.8737791",
+    "lng": "2.2950372",
+    "website_url": "https://www.paris-arc-de-triomphe.fr/",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (seasonal rule): Apr 2-Jan 31: Mo-Su 10:00-22:30; Apr 1,Sep 30: Mo-Su 10:00-23:00; Oct 1,Dec 31: Mo-Su 10:00-22:30; Jan 1,May 1,May 8,Jul 14,Nov 11,Dec 25: off",
+    "street_address dropped by hand: OSM gives \"Tunnel de l'Etoile\", the road that passes UNDER the monument, which would read on the page as the visitor address and is not one. The coordinates and postal code are correct and are kept."
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/attraction",
+   "osm": {
+    "type": "way",
+    "id": 226413508,
+    "name": "Arc de Triomphe",
+    "display_name": "Arc de Triomphe, Tunnel de l'Étoile, Quartier du Faubourg-du-Roule, 8th Arrondissement of Paris, Paris, Ile-de-France, Metropolitan France, 75008, France"
+   },
+   "aliases": [
+    "Arc de triomf de l’Étoile",
+    "Vítězný oblouk",
+    "Triumfbuen",
+    "Triumphbogen",
+    "Triumfa Arko",
+    "Arco de Triunfo",
+    "Riemukaari",
+    "Gapura Kemenangan"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/226413508"
+  },
+  {
    "slug": "au-pied-de-cochon-paris",
    "name": "Au Pied de Cochon",
    "city": "Paris",
@@ -435,6 +619,65 @@
     "Temple Expiatori de la Sagrada Família"
    ],
    "source_url": "https://www.openstreetmap.org/relation/9194723"
+  },
+  {
+   "slug": "benaki-museum-of-greek-culture-athens",
+   "name": "Benaki Museum",
+   "city": "Athens",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Koumpari 1",
+    "postal_code": "10674",
+    "lat": "37.9760160",
+    "lng": "23.7403430",
+    "timezone": "Europe/Athens"
+   },
+   "notes": [
+    "hand-verified: Nominatim returned nothing; located by the Greek name \"Μουσείο Μπενάκη\" via Overpass",
+    "identity confirmed by wikidata Q816669; OSM name:en is \"Benaki Museum\"",
+    "OSM tourism=museum at Koumpari 1, the Benaki Museum of Greek Culture building",
+    "closed Tuesdays, which the stored hours reflect by omitting that day",
+    "no phone or website in OSM, so neither is applied",
+    "timezone supplied by hand; OSM does not carry one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "way",
+    "id": 23183030,
+    "name": "Μουσείο Μπενάκη",
+    "display_name": "Benaki Museum, Koumpari 1, 10674 Athens, Greece"
+   },
+   "source_url": "https://www.openstreetmap.org/way/23183030",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "16:00"
+    }
+   ],
+   "hours_raw": "Tu off; Mo,We,Fr,Sa 10:00-18:00; Th 10:00-24:00; Su 10:00-16:00"
   },
   {
    "slug": "berlinische-galerie",
@@ -570,6 +813,73 @@
    "hours_raw": "Mo-Sa 08:30-17:00; Su 09:00-17:00"
   },
   {
+   "slug": "bouillon-chartier-paris",
+   "name": "Bouillon Chartier",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "7 Rue du Faubourg Montmartre",
+    "postal_code": "75009",
+    "neighborhood": "9th Arrondissement",
+    "lat": "48.8719356",
+    "lng": "2.3430137",
+    "phone": "+33147708629",
+    "website_url": "https://www.bouillon-chartier.com/grands-boulevards/",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 10804882603,
+    "name": "Bouillon Chartier",
+    "display_name": "Bouillon Chartier, 7, Rue du Faubourg Montmartre, Quartier du Faubourg-Montmartre, 9th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75009, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/10804882603",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "11:30",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "11:30",
+     "closes": "00:00"
+    }
+   ],
+   "hours_raw": "Mo-Su 11:30-00:00"
+  },
+  {
    "slug": "brasserie-lipp-paris",
    "name": "Brasserie Lipp",
    "city": "Paris",
@@ -635,6 +945,83 @@
     }
    ],
    "hours_raw": "Mo-Su 09:00-02:00"
+  },
+  {
+   "slug": "british-museum-london",
+   "name": "British Museum",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Great Russell Street",
+    "postal_code": "WC1B 3DG",
+    "neighborhood": "Bloomsbury",
+    "lat": "51.5193118",
+    "lng": "-0.1267051",
+    "phone": "+44 20 7323 8299",
+    "website_url": "https://www.britishmuseum.org",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "relation",
+    "id": 177044,
+    "name": "British Museum",
+    "display_name": "British Museum, Great Russell Street, St Giles, Bloomsbury, London Borough of Camden, Greater London, England, WC1B 3DG, United Kingdom"
+   },
+   "aliases": [
+    "Britisches Museum",
+    "Museo Británico",
+    "Briti Muuseum",
+    "Musée britannique",
+    "Museo Britannico",
+    "Museum Britannicum",
+    "Museu Britânico",
+    "Muzeul Britanic"
+   ],
+   "source_url": "https://www.openstreetmap.org/relation/177044",
+   "hours": [
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "20:30"
+    }
+   ],
+   "hours_raw": "Sa-Th 10:00-17:00; Fr 10:00-20:30"
   },
   {
    "slug": "buckingham-palace-state-rooms-london",
@@ -1048,6 +1435,46 @@
    "source_url": "https://www.openstreetmap.org/node/6228532187"
   },
   {
+   "slug": "centre-pompidou-paris",
+   "name": "Centre Pompidou",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "19 Rue Beaubourg",
+    "postal_code": "75004",
+    "neighborhood": "4th Arrondissement",
+    "lat": "48.8604964",
+    "lng": "2.3524221",
+    "phone": "+33144781233",
+    "website_url": "https://www.centrepompidou.fr",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (rule not understood: closed): closed"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "way",
+    "id": 55503397,
+    "name": "Centre Pompidou",
+    "display_name": "Centre Pompidou, 19, Rue Beaubourg, Quartier Saint-Merri, 4th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75004, France"
+   },
+   "aliases": [
+    "Centre Georges Pompidou",
+    "Centro Georges Pompidou",
+    "Centro Pompidou",
+    "Pompidou-senteret",
+    "Centrum Pompidou",
+    "Musée Beaubourg",
+    "Beaubourg;Centre Beaubourg",
+    "Pompidou Centre"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/55503397"
+  },
+  {
    "slug": "chapter-one-dublin",
    "name": "Chapter One",
    "city": "Dublin",
@@ -1072,6 +1499,91 @@
     "display_name": "Chapter One, 16, Parnell Square North, Rotunda B ED, Dublin, County Dublin, Leinster, D01 E7C1, Ireland"
    },
    "source_url": "https://www.openstreetmap.org/node/4419601490"
+  },
+  {
+   "slug": "chez-l-ami-jean-paris",
+   "name": "Chez L'Ami Jean",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "27 Rue Malar",
+    "postal_code": "75007",
+    "neighborhood": "7th Arrondissement",
+    "lat": "48.8603183",
+    "lng": "2.3059915",
+    "phone": "+33 1 47 05 86 89",
+    "website_url": "https://www.lamijean.fr",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 254497766,
+    "name": "L'Ami Jean",
+    "display_name": "L'Ami Jean, 27, Rue Malar, Quartier du Gros-Caillou, 7th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75007, France"
+   },
+   "aliases": [
+    "L'Ami Jean"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/254497766",
+   "hours": [
+    {
+     "day_of_week": 1,
+     "opens": "12:00",
+     "closes": "14:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "12:00",
+     "closes": "14:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "12:00",
+     "closes": "14:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "12:00",
+     "closes": "14:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "12:00",
+     "closes": "14:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "19:00",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "19:00",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "19:00",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "19:00",
+     "closes": "00:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "19:00",
+     "closes": "00:00"
+    }
+   ],
+   "hours_raw": "Tu-Sa 12:00-14:00,19:00-24:00"
   },
   {
    "slug": "cochon-new-orleans",
@@ -2687,6 +3199,107 @@
    "hours_raw": "12:00-24:00"
   },
   {
+   "slug": "le-train-bleu-paris",
+   "name": "Le Train Bleu",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue Van Gogh",
+    "postal_code": "75012",
+    "neighborhood": "12th Arrondissement",
+    "lat": "48.8450448",
+    "lng": "2.3734811",
+    "website_url": "https://www.le-train-bleu.com/",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "way",
+    "id": 406429774,
+    "name": "Le Train Bleu",
+    "display_name": "Le Train Bleu, Rue Van Gogh, Quartier des Quinze-Vingts, 12th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75012, France"
+   },
+   "source_url": "https://www.openstreetmap.org/way/406429774",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "11:15",
+     "closes": "14:30"
+    },
+    {
+     "day_of_week": 0,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "19:00",
+     "closes": "22:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "19:00",
+     "closes": "22:30"
+    }
+   ],
+   "hours_raw": "Mo-Su 11:15-14:30, 19:00-22:30"
+  },
+  {
    "slug": "louvre-museum-paris",
    "name": "Louvre Museum",
    "city": "Paris",
@@ -2855,6 +3468,40 @@
    "hours_raw": "Th-Mo 12:00-20:00; We 11:00-20:00"
   },
   {
+   "slug": "metropolitan-museum-of-art-new-york-city",
+   "name": "Metropolitan Museum of Art",
+   "city": "New York City",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1000 5th Avenue",
+    "postal_code": "10075",
+    "neighborhood": "Manhattan",
+    "lat": "40.7794396",
+    "lng": "-73.9633825",
+    "phone": "+1 212-535-7710",
+    "website_url": "https://www.metmuseum.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (seasonal rule): 10:00-17:00; Fr-Sa 10:00-21:00; We off; May Mo[1] off; Nov Th[4] off; Dec 25 off; Jan 01 off"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "relation",
+    "id": 3698894,
+    "name": "The Metropolitan Museum of Art",
+    "display_name": "The Metropolitan Museum of Art, 1000, 5th Avenue, Upper East Side, Manhattan Community Board 8, Manhattan, New York County, New York, 10075, United States"
+   },
+   "aliases": [
+    "The Metropolitan Museum of Art",
+    "The Met"
+   ],
+   "source_url": "https://www.openstreetmap.org/relation/3698894"
+  },
+  {
    "slug": "miod-malina-krakow",
    "name": "Miod Malina",
    "city": "Krakow",
@@ -2994,6 +3641,82 @@
     }
    ],
    "hours_raw": "Mo off; Tu,Fr 10:00-20:00; We-Th,Sa-Su 10:00-18:00"
+  },
+  {
+   "slug": "musee-d-orsay-paris",
+   "name": "Musee d'Orsay",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1 Rue de la Légion d'Honneur",
+    "postal_code": "75007",
+    "neighborhood": "7th Arrondissement",
+    "lat": "48.8599179",
+    "lng": "2.3265849",
+    "phone": "+33140494814",
+    "website_url": "https://www.musee-orsay.fr/",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "way",
+    "id": 63178753,
+    "name": "Museum of Orsay",
+    "display_name": "Museum of Orsay, 1, Rue de la Légion d'Honneur, Quartier Saint-Thomas-d'Aquin, 7th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75007, France"
+   },
+   "aliases": [
+    "Museum of Orsay",
+    "Museo de Orsay",
+    "Museo d'Orsay",
+    "Muzeum Orsay",
+    "Museu de Orsay",
+    "Gare d'Orsay",
+    "Musée d'Orsay - Valéry Giscard d'Estaing"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/63178753",
+   "hours": [
+    {
+     "day_of_week": 1,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "09:30",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "09:30",
+     "closes": "21:45"
+    }
+   ],
+   "hours_raw": "Tu-Su 09:30-18:00; Th 09:30-21:45"
   },
   {
    "slug": "museo-frida-kahlo-mexico-city",
@@ -3330,6 +4053,40 @@
    "hours_raw": "Mo,We,Fr,Sa 10:00-17:00; Th 10:00-20:00; Su 11:00-17:00; Tu off"
   },
   {
+   "slug": "museum-of-modern-art-new-york-city",
+   "name": "Museum of Modern Art",
+   "city": "New York City",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "11 West 53rd Street",
+    "postal_code": "10019",
+    "neighborhood": "Manhattan",
+    "lat": "40.7616124",
+    "lng": "-73.9774992",
+    "website_url": "https://www.moma.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (seasonal rule): Mo-Su 10:30-17:30; Sa 10:30-19:00; Dec 25 off; Nov Th[4] off"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "way",
+    "id": 278346578,
+    "name": "MoMA",
+    "display_name": "MoMA, 11, West 53rd Street, Midtown East, Manhattan Community Board 5, Manhattan, New York County, New York, 10019, United States"
+   },
+   "aliases": [
+    "MoMA",
+    "New Yorgi moodsa kunsti muuseum",
+    "The Museum of Modern Art"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/278346578"
+  },
+  {
    "slug": "museum-of-the-future-dubai",
    "name": "Museum of the Future",
    "city": "Dubai",
@@ -3435,6 +4192,76 @@
     "Ethniko Archeologiko Mousio"
    ],
    "source_url": "https://www.openstreetmap.org/relation/2828"
+  },
+  {
+   "slug": "national-gallery-london",
+   "name": "National Gallery",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "St Martin's Street",
+    "postal_code": "WC2N 5DN",
+    "neighborhood": "Covent Garden",
+    "lat": "51.5088810",
+    "lng": "-0.1283826",
+    "website_url": "https://www.nationalgallery.org.uk/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/gallery",
+   "osm": {
+    "type": "way",
+    "id": 4372002,
+    "name": "National Gallery",
+    "display_name": "National Gallery, St Martin's Street, St. James's, Westminster, Covent Garden, City of Westminster, Greater London, England, WC2N 5DN, United Kingdom"
+   },
+   "aliases": [
+    "Nationalgalerie",
+    "Galería Nacional."
+   ],
+   "source_url": "https://www.openstreetmap.org/way/4372002",
+   "hours": [
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "10:00",
+     "closes": "18:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "21:00"
+    }
+   ],
+   "hours_raw": "Sa-Th 10:00-18:00; Fr 10:00-21:00"
   },
   {
    "slug": "national-museum-of-iceland-reykjavik",
@@ -3763,6 +4590,75 @@
     }
    ],
    "hours_raw": "10:00-17:30"
+  },
+  {
+   "slug": "nemo-science-museum-amsterdam",
+   "name": "Nemo",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Oosterdok 2",
+    "postal_code": "1011VX",
+    "lat": "52.3738530",
+    "lng": "4.9121110",
+    "phone": "+31 20 531 3233",
+    "website_url": "https://www.nemosciencemuseum.nl",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "hand-verified: Nominatim free-text returned nothing for \"NEMO Science Museum\"; located by name search inside an Amsterdam bounding box via Overpass",
+    "identity confirmed by wikidata Q1422000 and the official site nemosciencemuseum.nl",
+    "OSM tourism=museum at Oosterdok 2",
+    "timezone supplied by hand; OSM does not carry one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 2741083161,
+    "name": "Nemo",
+    "display_name": "Nemo, Oosterdok 2, 1011VX Amsterdam, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2741083161",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "09:30",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "09:30",
+     "closes": "17:30"
+    }
+   ],
+   "hours_raw": "Mo-Su 09:30-17:30"
   },
   {
    "slug": "new-orleans-museum-of-art",
@@ -4529,6 +5425,42 @@
    "source_url": "https://www.openstreetmap.org/node/12826150834"
   },
   {
+   "slug": "rembrandt-house-museum-amsterdam",
+   "name": "Rembrandt House Museum",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "4 Jodenbreestraat",
+    "postal_code": "1011 NK",
+    "neighborhood": "Centrum",
+    "lat": "52.3693692",
+    "lng": "4.9012497",
+    "phone": "+31 20 520 0400",
+    "website_url": "https://www.rembrandthuis.nl",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (seasonal rule): Mo-Su 10:00-17:00; Jan 05-Feb 13 10:00-17:00; Feb 14-Mar 27 10:00-18:00; Mar 28-May 10 10:00-19:00; May 11-Nov 01 10:00-18:00; Nov 02-Dec 18 10:00-17:00; Dec 19-31 10:00-18:00; Apr 27 off; Dec 25 off; Dec 24 10:00-17:00; Dec 31 10:00-17:00"
+   ],
+   "confidence": 0.961,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 250624673,
+    "name": "Rembrandt House",
+    "display_name": "Rembrandt House, 4, Jodenbreestraat, Uilenburg, Nieuwmarkt/Lastage, Centrum, Amsterdam, North Holland, Netherlands, 1011 NK, Netherlands"
+   },
+   "aliases": [
+    "Rembrandt House",
+    "Rembrandthuis",
+    "Rembrandt-museet",
+    "Rembrandthaus"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/250624673"
+  },
+  {
    "slug": "rijksmuseum-amsterdam",
    "name": "Rijksmuseum",
    "city": "Amsterdam",
@@ -4658,6 +5590,75 @@
     }
    ],
    "hours_raw": "Mo-Sa 07:30-20:00"
+  },
+  {
+   "slug": "royal-palace-of-amsterdam",
+   "name": "Koninklijk Paleis",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Nieuwezijds Voorburgwal 147",
+    "postal_code": "1012RJ",
+    "lat": "52.3731450",
+    "lng": "4.8913360",
+    "website_url": "https://www.paleisamsterdam.nl/",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "hand-verified: Nominatim returned nothing for the English name; located by the Dutch name \"Koninklijk Paleis\" via Overpass",
+    "identity confirmed by wikidata Q1056152 and the official site paleisamsterdam.nl",
+    "OSM tourism=attraction, historic=castle, name:en \"Royal Palace\"",
+    "no phone in OSM, so none is applied",
+    "timezone supplied by hand; OSM does not carry one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/attraction",
+   "osm": {
+    "type": "relation",
+    "id": 3580875,
+    "name": "Koninklijk Paleis",
+    "display_name": "Koninklijk Paleis, Nieuwezijds Voorburgwal 147, 1012RJ Amsterdam, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/relation/3580875",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "17:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "17:00"
+    }
+   ],
+   "hours_raw": "10:00-17:00"
   },
   {
    "slug": "rules-london",
@@ -5130,6 +6131,77 @@
    "hours_raw": "Su-Th 10:00-18:00; Fr-Sa 10:00-21:00"
   },
   {
+   "slug": "temple-of-olympian-zeus-athens",
+   "name": "Temple of Olympian Zeus",
+   "city": "Athens",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Ανδρέα Συγγρού",
+    "postal_code": "105 58",
+    "lat": "37.9694370",
+    "lng": "23.7330955",
+    "timezone": "Europe/Athens"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/attraction",
+   "osm": {
+    "type": "way",
+    "id": 63765671,
+    "name": "Temple of Olympian Zeus",
+    "display_name": "Temple of Olympian Zeus, Ανδρέα Συγγρού, 2nd District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 105 58, Greece"
+   },
+   "aliases": [
+    "Templet for den Olympiske Zeus",
+    "Tempel des Olympischen Zeus",
+    "Templo de Zeus Olímpico",
+    "Olympiéion",
+    "Tempio di Zeus Olimpio"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/63765671",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "08:00",
+     "closes": "18:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "08:00",
+     "closes": "18:30"
+    }
+   ],
+   "hours_raw": "Mo-Su 08:00-18:30"
+  },
+  {
    "slug": "tokyo-national-museum",
    "name": "Tokyo National Museum",
    "city": "Tokyo",
@@ -5237,6 +6309,41 @@
     "Topografia Terroru"
    ],
    "source_url": "https://www.openstreetmap.org/way/24368681"
+  },
+  {
+   "slug": "tower-of-london",
+   "name": "Tower of London",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Tower Hill",
+    "postal_code": "EC3N 4AB",
+    "neighborhood": "Whitechapel",
+    "lat": "51.5082170",
+    "lng": "-0.0761879",
+    "website_url": "https://www.hrp.org.uk/toweroflondon",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/attraction",
+   "osm": {
+    "type": "way",
+    "id": 370870741,
+    "name": "Tower of London",
+    "display_name": "Tower of London, Tower Hill, East Smithfield, Tower Hill, Whitechapel, London Borough of Tower Hamlets, Greater London, England, EC3N 4AB, United Kingdom"
+   },
+   "aliases": [
+    "La Torre de Londres",
+    "Tour de Londres",
+    "Londra Kalesi",
+    "Londra Kulesi",
+    "Her Majesty's Royal Palace and Fortress of the Tower of London"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/370870741"
   },
   {
    "slug": "upper-belvedere-vienna",
