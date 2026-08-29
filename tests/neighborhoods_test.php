@@ -198,5 +198,27 @@ check('the two scripts are NOT merged by normalisation alone',
 check('an unlisted Greek name still does not resolve',
       rmt_nb_resolve(5, 'Εξάρχεια', 'Athens'), null);
 
+/* ------------------------------------------------- the link back from a place
+
+   The graph ran one way: a destination linked to its areas and an area linked to its places, but
+   a place named its area in plain text and linked nowhere, so neither a reader nor a crawler could
+   walk back up. Found by crawling the live site, not by reading the templates. */
+
+$p1 = q_one("SELECT * FROM places WHERE slug = 'p1'");
+$back = rmt_nb_of_place($p1);
+check('a place links back to its area', $back ? (int) $back['id'] : null, $paris['id']);
+check('and carries the city slug the URL needs', (string) $back['dest_slug'], 'paris-france');
+
+// An unresolved place has nowhere to send anyone, and says so by returning null rather than
+// guessing a destination for a link.
+q_run("UPDATE places SET neighborhood_id = NULL WHERE slug = 'p1'");
+check('an unresolved place links nowhere',
+      rmt_nb_of_place(q_one("SELECT * FROM places WHERE slug = 'p1'")), null);
+
+// A borough is not a page we send people to as a neighborhood, so a place inside one gets no link
+// from this function either -- the destination page offers it under its own heading instead.
+$nycPlace = q_one("SELECT * FROM places WHERE slug = 'p6'");
+check('a place in a borough gets no neighborhood link', rmt_nb_of_place($nycPlace), null);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

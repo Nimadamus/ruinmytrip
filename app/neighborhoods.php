@@ -236,6 +236,26 @@ function rmt_nb_for_destination(int $destId, int $limit = 12, int $min = RMT_NB_
 }
 
 /**
+ * The canonical area one place sits in, when it has been given identity -- for the place's own
+ * page to link back to.
+ *
+ * The link graph ran one way: a destination linked to its neighborhoods and a neighborhood linked
+ * to its places, but a place named its area in plain text and linked nowhere. So a reader on Cafe
+ * X could not get to Le Marais, and neither could a crawler. Returns null for an unresolved place
+ * or an area nobody browses by, in which case the page keeps showing the raw text.
+ */
+function rmt_nb_of_place(array $place): ?array {
+    $id = isset($place['neighborhood_id']) && $place['neighborhood_id'] !== null
+        ? (int) $place['neighborhood_id'] : 0;
+    if ($id <= 0) return null;
+    $kinds = "'" . implode("','", RMT_NB_BROWSABLE) . "'";
+    $row = q_one("SELECT n.*, d.slug dest_slug FROM neighborhoods n
+                    JOIN destinations d ON d.id = n.destination_id
+                   WHERE n.id = ? AND n.kind IN ($kinds)", [$id]);
+    return $row ?: null;
+}
+
+/**
  * The wider areas of a destination: boroughs and administrative units with real places in them.
  *
  * Manhattan holds more of our places than any actual neighborhood does, and it is still not a

@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var array $myLists @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var array $myLists @var ?array $placeArea @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -136,9 +136,19 @@
           <dt class="muted">Address</dt>
           <dd style="margin:0"><?= e(implode(', ', $address['lines'])) ?></dd>
         <?php endif; ?>
-        <?php if (!empty($p['neighborhood'])): ?>
+        <?php /* The area links back when it is one we have given identity to -- the graph ran one
+                 way before this, so a reader on a cafe page could reach the city but not the
+                 street it stands on. An unresolved area keeps showing its raw text, because the
+                 text is true even when we have nowhere to send anyone. */ ?>
+        <?php if ($placeArea || !empty($p['neighborhood'])): ?>
           <dt class="muted">Neighborhood</dt>
-          <dd style="margin:0"><?= e((string) $p['neighborhood']) ?></dd>
+          <dd style="margin:0">
+            <?php if ($placeArea): ?>
+              <a href="<?= e(url('d/' . $placeArea['dest_slug'] . '/n/' . $placeArea['slug'])) ?>"><?= e((string) $placeArea['canonical_name']) ?></a>
+            <?php else: ?>
+              <?= e((string) $p['neighborhood']) ?>
+            <?php endif; ?>
+          </dd>
         <?php endif; ?>
         <?php if (!empty($p['phone'])): ?>
           <dt class="muted">Phone</dt>

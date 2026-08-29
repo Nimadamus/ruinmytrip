@@ -32,6 +32,11 @@ fi
 # may have just changed a place's name.
 php /var/www/html/scripts/search_maintenance.php --quiet   || echo "entrypoint: search maintenance reported errors, continuing"
 
+# Rebuild the sitemap last, because everything above can change what is indexable: a migration
+# adds a page type, enrichment gives a place the address that makes it worth indexing, the
+# neighborhood seed decides which areas have enough density. One query per entity group.
+php /var/www/html/scripts/sitemap_build.php --quiet   || echo "entrypoint: sitemap build reported errors, continuing"
+
 sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 exec apache2-foreground

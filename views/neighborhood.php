@@ -1,7 +1,7 @@
 <?php /** @var array $me @var array $savedMap @var array $saveCounts @var array $d @var array $nb @var array $byType @var array $places @var ?string $type @var int $total */ ?>
 <div class="wrap">
   <p class="crumbs">
-    <a href="<?= e(url('destinations')) ?>">Destinations</a> /
+    <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
     <a href="<?= e(url('d/' . $d['slug'])) ?>"><?= e((string) $d['name']) ?></a> /
     <?= e((string) $nb['canonical_name']) ?>
   </p>

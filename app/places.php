@@ -25,6 +25,41 @@ declare(strict_types=1);
 /** What can be a place. `destination` is excluded on purpose — the destination IS the container. */
 const RMT_PLACE_TYPES = ['hotel', 'restaurant', 'attraction', 'experience'];
 
+/**
+ * The URL segment for a category landing page, and the way back.
+ *
+ * "things-to-do" rather than "attractions" because it is the phrase people actually search, and a
+ * landing page's slug is the one place where matching the query is worth more than matching our
+ * internal vocabulary. The map is explicit in both directions so a URL can never be built from one
+ * table and read with another.
+ */
+const RMT_CATEGORY_SLUGS = [
+    'hotel'      => 'hotels',
+    'restaurant' => 'restaurants',
+    'attraction' => 'things-to-do',
+    'experience' => 'experiences',
+];
+
+function rmt_category_slug(string $type): ?string {
+    return RMT_CATEGORY_SLUGS[$type] ?? null;
+}
+
+function rmt_category_type(string $slug): ?string {
+    $flip = array_flip(RMT_CATEGORY_SLUGS);
+    return $flip[$slug] ?? null;
+}
+
+/** The heading a category landing page carries. Plain, and the same words as the query. */
+function rmt_category_heading(string $type, string $city): string {
+    return match ($type) {
+        'hotel'      => 'Hotels in ' . $city,
+        'restaurant' => 'Restaurants in ' . $city,
+        'attraction' => 'Things to do in ' . $city,
+        'experience' => 'Experiences in ' . $city,
+        default      => 'Places in ' . $city,
+    };
+}
+
 const RMT_PLACE_NAME_MAX = 200;
 
 /** Plural, human labels for the type filter and headings. */

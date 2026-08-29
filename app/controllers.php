@@ -218,6 +218,7 @@ function destination(array $a): void {
     view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
+        'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
         'og_image' => abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$d['country'],'url'=>url('in/'.rmt_country_slug((string)$d['country']))],
@@ -267,6 +268,10 @@ function neighborhood_show(array $a): void {
 
     $byType = rmt_nb_type_counts((int) $nb['id']);
     $total  = array_sum($byType);
+    // The page is always real and always crawlable; whether it belongs in the index is decided in
+    // one place, against the density it actually has, and not by a constant written here.
+    $nbVerdict = rmt_indexable('neighborhood',
+        ['kind' => (string) $nb['kind'], 'place_count' => $total, 'type_count' => count($byType)]);
     $type   = (string) input('type');
     if ($type !== '' && !isset($byType[$type])) $type = '';      // a filter that returns nothing is not offered
     $places = rmt_nb_places((int) $nb['id'], $type ?: null);
@@ -284,7 +289,7 @@ function neighborhood_show(array $a): void {
     ], [
         'title' => $nb['canonical_name'] . ' in ' . $d['name'] . ' — RuinMyTrip',
         'description' => 'Places in ' . $nb['canonical_name'] . ', ' . $d['name'] . ': hotels, restaurants and things to do, with what we actually know about each.',
-        'robots' => 'noindex,follow',
+        'robots' => rmt_robots_for($nbVerdict),
         'canonical' => url('d/' . $d['slug'] . '/n/' . $nb['slug']),
     ]);
 }
@@ -307,9 +312,25 @@ function destination_places(array $a): void {
     $saveCounts = rmt_place_save_counts($ids);
     // The sort is a way to read the same list, not a different page. Every ordering canonicalises
     // to the unsorted URL so the four of them cannot compete with each other in an index.
-    $canonical = url(ltrim('/d/'.$d['slug'].'/places'.($type !== '' ? '?type='.$type : ''), '/'));
+    // Where this view's authority belongs. A type filter that has its own landing page points at
+    // it -- two URLs listing the same hotels in the same city is one page and one duplicate, and
+    // the landing page is the one written for the query. Filters without a landing page (below the
+    // threshold, or a sort) canonicalise to the unfiltered browse page.
+    $catSlug = $type !== '' ? rmt_category_slug($type) : null;
+    $hasLanding = $catSlug !== null
+        && rmt_indexable('category', ['place_count' => (int) ($counts[$type] ?? 0)])['ok'];
+    if ($hasLanding) {
+        $canonical = url(ltrim('/d/'.$d['slug'].'/'.$catSlug, '/'));
+        $robots = 'noindex,follow';
+    } else {
+        $canonical = url(ltrim('/d/'.$d['slug'].'/places', '/'));
+        // A sorted or filtered view of a page is not a second page. The unfiltered browse page
+        // itself stays indexable; every permutation of it does not.
+        $robots = ($type === '' && $sort === 'best') ? 'index, follow' : 'noindex,follow';
+    }
     view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort'), [
         'canonical' => $canonical,
+        'robots' => $robots,
         'title' => $label.' in '.$d['name'].' 2026: tickets, prices and reviews | RuinMyTrip',
         'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', '.$d['country'].', with current 2026 prices and official reviews.',
         'og_image' => abs_url($d['hero_url']),
@@ -366,6 +387,7 @@ function place_show(array $a): void {
     // Alternatives, which is a different question from what is close. In a city where we hold six
     // places the two lists are frequently the same three venues, and two headings over one list is
     // one module and a wasted screen -- so the weaker one is dropped rather than repeated.
+    $placeArea = rmt_nb_of_place($p);
     $similar = rmt_similar_places($p, 6);
     if (rmt_similar_is_redundant($similar, $nearby)) $similar = [];
     // The lists this reader could add this place to, and whether it is already on one. Only their
@@ -420,10 +442,18 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    // Robots from the same rule the sitemap uses, so the two can never disagree about this page.
+    $placeVerdict = rmt_indexable('place', $p + [
+        'hours_count'  => count($hours),
+        'photo_count'  => (int) $photoCount,
+        'review_count' => (int) ($stats['c'] ?? 0),
+        'editorial'    => $ed['what_it_is'] ?? '',
+    ]);
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
+        'robots' => rmt_robots_for($placeVerdict),
         'og_image' => $cover ? abs_url($cover) : abs_url($p['dest_hero']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$p['dest_name'],'url'=>url('d/'.$p['dest_slug'])],
@@ -469,6 +499,12 @@ function profile(array $a): void {
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans','beenPlaces'), [
+        'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
+            'review_count' => (int) ($stats['reviews'] ?? 0),
+            'guide_count'  => (int) ($stats['guides'] ?? 0),
+            'trip_count'   => (int) ($stats['trips'] ?? 0),
+            'list_count'   => count($collections),
+        ])),
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => abs_url($u['avatar_url']),
@@ -1126,6 +1162,7 @@ function collection_show(array $a): void {
     $canEdit = rmt_collection_can_edit($c, $me);
     $tags = rmt_tags_for('collection', $cid);
     view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit','tags'), [
+        'robots' => rmt_robots_for(rmt_indexable('list', $c + ['item_count' => count($items)])),
         'title' => $c['title'].' — RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
         'og_image' => $items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg'),
@@ -1724,9 +1761,13 @@ function search(array $a): void {
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
     }
+    // A search results page is a view of the index we already have, in somebody's words.
     view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
+        // Never a page in the index. A results page is a view of content we already publish, in
+        // somebody else's words, and one per query is an infinite set of near-duplicates.
+        'robots' => rmt_robots_for(rmt_indexable('search')),
     ]);
 }
 
@@ -3216,6 +3257,75 @@ function admin_destinations_report(array $a): void {
  * Internal. Counts attempts, not people: nothing here can name anybody, and the questions it
  * answers do not need it to.
  */
+/**
+ * GET /admin/seo - what is in the index, what is not, and why not.
+ *
+ * Built so expansion is a decision made against a number rather than a guess. Every row comes from
+ * the same rmt_indexable() the sitemap and the page's robots tag use, so this view cannot show a
+ * verdict that differs from the one crawlers actually get.
+ */
+function admin_seo(array $a): void {
+    require_role('admin', 'mod');
+
+    $groups = [];
+    $groups['destinations'] = [
+        'label' => 'Destinations',
+        'rule'  => 'Indexable with at least ' . RMT_IDX_DEST_MIN_PLACES . ' place, or editorial written about it.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => $r['name'], 'metric' => $r['place_count'] . ' places', 'verdict' => $r['verdict'],
+        ], rmt_index_destinations()),
+    ];
+    $groups['categories'] = [
+        'label' => 'Category landing pages',
+        'rule'  => 'Indexable at ' . RMT_IDX_CAT_MIN_PLACES . '+ places of that kind in the city.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => rmt_category_heading((string) $r['type'], (string) $r['dest_name']),
+            'metric' => $r['place_count'] . ' places', 'verdict' => $r['verdict'],
+        ], rmt_index_categories()),
+    ];
+    $groups['neighborhoods'] = [
+        'label' => 'Neighborhoods',
+        'rule'  => 'Indexable at ' . RMT_IDX_NB_MIN_PLACES . '+ places and ' . RMT_IDX_NB_MIN_TYPES . '+ kinds. Boroughs never.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => $r['name'] . ', ' . $r['dest_name'],
+            'metric' => $r['place_count'] . ' places / ' . $r['type_count'] . ' kinds',
+            'verdict' => $r['verdict'],
+        ], rmt_index_neighborhoods()),
+    ];
+    $groups['profiles'] = [
+        'label' => 'Profiles',
+        'rule'  => 'Indexable once the traveler has published something.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => '@' . $r['username'],
+            'metric' => ((int) $r['review_count'] + (int) $r['guide_count'] + (int) $r['trip_count'] + (int) $r['list_count']) . ' published',
+            'verdict' => $r['verdict'],
+        ], rmt_index_profiles()),
+    ];
+    $groups['lists'] = [
+        'label' => 'Public lists',
+        'rule'  => 'Indexable at ' . RMT_IDX_LIST_MIN_ITEMS . '+ items with a description.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => $r['title'], 'metric' => $r['item_count'] . ' items', 'verdict' => $r['verdict'],
+        ], rmt_index_lists()),
+    ];
+    $places = rmt_index_places();
+    $groups['places'] = [
+        'label' => 'Places',
+        'rule'  => 'Indexable when we hold something useful about them. Community reviews are NOT required.',
+        'rows'  => array_map(static fn(array $r) => [
+            'label' => $r['name'], 'metric' => '', 'verdict' => $r['verdict'],
+        ], $places),
+    ];
+
+    $sitemap = rmt_sitemap_parts();
+    view('admin_seo', [
+        'groups'    => $groups,
+        'sitemap'   => $sitemap,
+        'totalUrls' => array_sum(array_map(static fn(array $r) => (int) $r['url_count'], $sitemap)),
+        'generated' => $sitemap ? (string) $sitemap[0]['generated_at'] : null,
+    ], ['title' => 'SEO readiness - RuinMyTrip', 'robots' => 'noindex,follow']);
+}
+
 function admin_funnel(array $a): void {
     require_role('admin', 'mod');
     $days = (int) (input('days') !== '' ? input('days') : 30);
@@ -3545,16 +3655,95 @@ function readyz(array $a): void {
 }
 
 /* ---------- sitemap ---------- */
+/**
+ * GET /sitemap.xml - the index. Children are generated and cached; this lists them.
+ *
+ * Regeneration on a stale read is a fallback, not the plan: the maintenance script runs at deploy
+ * and on a schedule. It exists so a crawler arriving at a cold cache gets a correct sitemap
+ * rather than an empty one.
+ */
 function sitemap(array $a): void {
+    if (rmt_sitemap_is_stale()) rmt_sitemap_generate();
     header('Content-Type: application/xml; charset=utf-8');
     echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-    echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-    foreach (rmt_sitemap_entries() as $row) {
-        echo '  <url><loc>'.e($row['loc']).'</loc>';
-        if (!empty($row['lastmod'])) echo '<lastmod>'.e($row['lastmod']).'</lastmod>';
-        echo "</url>\n";
+    echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+    foreach (rmt_sitemap_parts() as $row) {
+        echo '  <sitemap><loc>'
+           . e(url(rmt_sitemap_filename((string) $row['group_key'], (int) $row['part'])))
+           . '</loc>';
+        $mod = rmt_sitemap_day((string) $row['generated_at']);
+        if ($mod) echo '<lastmod>'.e($mod).'</lastmod>';
+        echo "</sitemap>\n";
     }
-    echo '</urlset>';
+    echo '</sitemapindex>';
+}
+
+/** GET /sitemap-<group>[-<part>].xml - one cached child, served exactly as stored. */
+function sitemap_child(array $a): void {
+    $group = (string) $a['group'];
+    $part  = isset($a['part']) && $a['part'] !== '' ? (int) $a['part'] : 1;
+    if (!in_array($group, RMT_SITEMAP_GROUPS, true)) { not_found(); return; }
+    $row = q_one("SELECT xml FROM sitemap_cache WHERE group_key = ? AND part = ?", [$group, $part]);
+    if (!$row && rmt_sitemap_is_stale()) {
+        rmt_sitemap_generate();
+        $row = q_one("SELECT xml FROM sitemap_cache WHERE group_key = ? AND part = ?", [$group, $part]);
+    }
+    // A group with nothing in it has no file. Serving an empty <urlset> would put a URL in the
+    // index that promises content and delivers none.
+    if (!$row) { not_found(); return; }
+    header('Content-Type: application/xml; charset=utf-8');
+    echo $row['xml'];
+}
+
+/**
+ * GET /d/<city>/<category> - "Hotels in Paris", and the pilot's entire footprint.
+ *
+ * A landing page rather than a filtered view: it exists only where rmt_indexable() says the
+ * inventory is real, and below that threshold the route 404s rather than serving a thin page that
+ * happens to be reachable. The value is the inventory, so there is no introductory paragraph about
+ * how Paris is a beautiful city -- the reader came for hotels.
+ */
+function destination_category(array $a): void {
+    $d = dest_by_slug((string) $a['slug']);
+    if (!$d) { not_found(); return; }
+    $type = rmt_category_type((string) $a['cat']);
+    if ($type === null) { not_found(); return; }
+
+    $id = (int) $d['id'];
+    $counts = rmt_place_type_counts($id);
+    $verdict = rmt_indexable('category', ['place_count' => (int) ($counts[$type] ?? 0)]);
+    // Below the threshold this is not a page. The destination browse view still shows the same
+    // places, so nothing becomes unreachable -- it stops being a separate URL.
+    if (!$verdict['ok']) { not_found(); return; }
+
+    $sort = (string) ($_GET['sort'] ?? 'best');
+    if (!isset(RMT_BROWSE_SORTS[$sort])) $sort = 'best';
+    $places = rmt_destination_browse($id, $type, $sort);
+
+    $me = current_user();
+    $ids = array_map(static fn(array $p) => (int) $p['id'], $places);
+    $savedMap = rmt_saved_place_map($me ? (int) $me['id'] : null, $ids);
+    $saveCounts = rmt_place_save_counts($ids);
+    $areas = rmt_nb_for_destination($id);
+    $heading = rmt_category_heading($type, (string) $d['name']);
+
+    // One canonical per landing page. A sort is a way to read the same list, so every ordering
+    // points back at the unsorted URL instead of competing with it.
+    $canonical = url(ltrim('/d/'.$d['slug'].'/'.$a['cat'], '/'));
+
+    view('destination_category', compact('d','places','counts','type','sort','heading','me',
+                                         'savedMap','saveCounts','areas','verdict'), [
+        'title' => $heading . ' 2026: prices, hours and honest reviews | RuinMyTrip',
+        'description' => $heading . ': ' . (int) ($counts[$type] ?? 0) . ' places with addresses, opening hours and what they actually cost.',
+        'canonical' => $canonical,
+        'robots' => $sort === 'best' ? 'index, follow' : 'noindex,follow',
+        'breadcrumbs' => [
+            ['name' => 'Home', 'url' => url()],
+            ['name' => 'Explore', 'url' => url('explore')],
+            ['name' => (string) $d['name'], 'url' => url('d/'.$d['slug'])],
+            ['name' => $heading, 'url' => $canonical],
+        ],
+    ]);
 }
 
 /**
