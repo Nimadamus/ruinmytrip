@@ -44,6 +44,10 @@ function rmt_profile_stats(int $uid): array {
                                SELECT destination_id FROM trips
                                 WHERE user_id=? AND status='published' AND destination_id IS NOT NULL
                              ) x", [$uid, $uid]),
+        // Times other travelers marked this person's reviews useful. Their own votes never count.
+        'helpful'   => $one("SELECT COUNT(*) c FROM review_votes rv JOIN reviews r ON r.id=rv.review_id
+                              WHERE r.user_id=? AND r.status='published'
+                                AND rv.vote_type='useful' AND rv.user_id <> ?", [$uid, $uid]),
         'followers' => $one('SELECT COUNT(*) c FROM follows WHERE followee_id=?', [$uid]),
         'following' => $one('SELECT COUNT(*) c FROM follows WHERE follower_id=?', [$uid]),
         // "Photos" = every photo the user has actually posted, on a trip or a review.
@@ -136,11 +140,72 @@ function rmt_qualifies_elite_traveler(int $uid): bool {
  * Evaluate and grant any badges this user has newly earned. Idempotent — safe to call on every
  * publish. Returns the slugs newly awarded.
  */
+
+/* ===========================================================================
+ * Contribution milestones
+ * ======================================================================== */
+
+/**
+ * How many published reviews somebody has. Counted, never stored.
+ *
+ * A milestone standing on a counter is a milestone that survives the review being removed, which
+ * is how a reputation system starts saying things that are not true. Every rule below recounts.
+ */
+function rmt_user_review_count(int $uid): int {
+    return (int) (q_one("SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
+                        [$uid])['c'] ?? 0);
+}
+
+/** Photographs the user has actually posted, on a review or a trip. */
+function rmt_user_photo_count(int $uid): int {
+    return (int) (q_one("SELECT COUNT(*) c FROM (
+                            SELECT rp.id FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
+                             WHERE r.user_id = ? AND r.status = 'published'
+                            UNION ALL
+                            SELECT tp.id FROM trip_photos tp JOIN trips t ON t.id = tp.trip_id
+                             WHERE t.user_id = ? AND t.status = 'published') x", [$uid, $uid])['c'] ?? 0);
+}
+
+/**
+ * Times other travelers marked this person's reviews useful.
+ *
+ * Only votes on reviews that are still published count, and a person's votes on their own reviews
+ * are excluded -- a reputation you can award yourself is not one.
+ */
+function rmt_user_helpful_count(int $uid): int {
+    return (int) (q_one("SELECT COUNT(*) c FROM review_votes rv
+                           JOIN reviews r ON r.id = rv.review_id
+                          WHERE r.user_id = ? AND r.status = 'published'
+                            AND rv.vote_type = 'useful' AND rv.user_id <> ?", [$uid, $uid])['c'] ?? 0);
+}
+
+/**
+ * Every badge and the rule that earns it, in one place.
+ *
+ * Centralised on purpose: a threshold scattered through templates as `if ($count >= 5)` is a
+ * threshold nobody can change, and one that will eventually disagree with itself in two places.
+ * Adding a milestone is a row in this map and a row in the badges table.
+ */
+const RMT_BADGE_RULES = [
+    'founding-traveler' => 'rmt_qualifies_founding_traveler',
+    'elite-traveler'    => 'rmt_qualifies_elite_traveler',
+    'first-review'      => 'rmt_qualifies_first_review',
+    'reviewer-5'        => 'rmt_qualifies_reviewer_5',
+    'reviewer-10'       => 'rmt_qualifies_reviewer_10',
+    'reviewer-25'       => 'rmt_qualifies_reviewer_25',
+    'photo-contributor' => 'rmt_qualifies_photo_contributor',
+    'helpful-reviewer'  => 'rmt_qualifies_helpful_reviewer',
+];
+
+function rmt_qualifies_first_review(int $uid): bool      { return rmt_user_review_count($uid) >= 1; }
+function rmt_qualifies_reviewer_5(int $uid): bool        { return rmt_user_review_count($uid) >= 5; }
+function rmt_qualifies_reviewer_10(int $uid): bool       { return rmt_user_review_count($uid) >= 10; }
+function rmt_qualifies_reviewer_25(int $uid): bool       { return rmt_user_review_count($uid) >= 25; }
+function rmt_qualifies_photo_contributor(int $uid): bool { return rmt_user_photo_count($uid) >= 5; }
+function rmt_qualifies_helpful_reviewer(int $uid): bool  { return rmt_user_helpful_count($uid) >= 10; }
+
 function rmt_award_badges(int $uid): array {
-    $rules = [
-        'founding-traveler' => 'rmt_qualifies_founding_traveler',
-        'elite-traveler'    => 'rmt_qualifies_elite_traveler',
-    ];
+    $rules = RMT_BADGE_RULES;
     $awarded = [];
     foreach ($rules as $slug => $qualifies) {
         if (!$qualifies($uid)) continue;

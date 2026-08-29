@@ -16,6 +16,11 @@
         <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
         <span title="Useful + funny + cool votes from other travelers"><b><?= (int)$stats['votes'] ?></b> <?= $stats['votes'] === 1 ? 'vote' : 'votes' ?></span>
+        <?php /* Shown only once somebody has one. "0 found helpful" on every new profile is noise
+                 that makes the page look like a scoreboard nobody is winning. */ ?>
+        <?php if ((int) $stats['helpful'] > 0): ?>
+          <span title="Times other travelers marked this person's reviews useful"><b><?= (int)$stats['helpful'] ?></b> found helpful</span>
+        <?php endif; ?>
         <a href="<?= e(url('u/'.$u['username'].'/followers')) ?>"><b><?= $followers ?></b> <?= $followers === 1 ? 'follower' : 'followers' ?></a>
         <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
       </div>
@@ -194,10 +199,23 @@
     <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
   </div></div><?php endforeach; ?><?php endif; ?>
+  <?php /* An empty profile is the most common one on a site with no reviews yet, and "your profile
+           is empty" is a statement of failure rather than an invitation. This says what the page
+           becomes, and sends them to the page built for having a trip in mind rather than a URL. */ ?>
   <?php if ($isMe && !$reviews && !$trips): ?>
-    <div class="callout" style="margin-top:24px">
-      Your profile is empty. <a href="<?= e(url('review/new')) ?>">Write your first review</a> and it will show up here.
+    <div class="empty-cta" style="margin-top:24px">
+      <h3 style="margin:0 0 4px">Nothing here yet.</h3>
+      <p class="muted" style="margin:0">
+        This is where your travel record lives: the places you went, what they actually cost, and
+        what you would tell a friend. Start with somewhere you have been recently.
+      </p>
+      <p style="margin:14px 0 0">
+        <a class="btn btn-accent" data-review-cta="profile"
+           href="<?= e(url('contribute')) ?>">Review a place you went to</a>
+      </p>
     </div>
+  <?php elseif (!$isMe && !$reviews && !$trips): ?>
+    <p class="muted" style="margin-top:24px">@<?= e($u['username']) ?> has not published anything yet.</p>
   <?php endif; ?>
   <div style="height:40px"></div>
 </div>
