@@ -173,6 +173,12 @@ foreach ($doc['places'] as $prop) {
              (string) ($prop['hours_raw'] ?? '')));
     }
 
+    // Alternative names the map holds for this object, stored as search aliases so autocomplete
+    // can find a place under a name we did not choose for it. Matching only: the display name is
+    // untouched, and adding one that already exists is a no-op.
+    $aliases = array_values(array_filter((array) ($prop['aliases'] ?? []), 'is_string'));
+    if ($aliases) $say(sprintf('      + %-16s %s', 'aliases', implode(' / ', array_slice($aliases, 0, 4))));
+
     foreach ((array) ($prop['notes'] ?? []) as $n) $say('      note: ' . $n);
 
     if (!$apply) continue;
@@ -188,6 +194,9 @@ foreach ($doc['places'] as $prop) {
                 $pdo->rollBack();
                 continue;
             }
+        }
+        foreach ($aliases as $alias) {
+            rmt_search_add_alias('place', (int) $place['id'], $alias, 'local_name');
         }
         if ($doHours) {
             $errs = rmt_place_set_hours((int) $place['id'], $hours);

@@ -40,5 +40,6 @@
   </div>
 </footer>
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
+<script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>
 </body>
 </html>

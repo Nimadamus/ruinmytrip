@@ -15,6 +15,8 @@
 <meta property="og:site_name" content="RuinMyTrip">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f1b2d">
+<?php /* The autocomplete click beacon posts a CSRF token like every other write on the site. */ ?>
+<meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="RuinMyTrip" href="<?= e(url('feed.xml')) ?>">
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
@@ -28,12 +30,14 @@
     <a class="brand" href="<?= e(url()) ?>">
       <span class="brand-mark">◈</span> Ruin<span>My</span>Trip
     </a>
-    <form class="nav-search" action="<?= e(url('search')) ?>" method="get" role="search">
+    <form class="nav-search" action="<?= e(url('search')) ?>" method="get" role="search"
+          data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
       <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
     </form>
     <button class="nav-toggle" aria-label="Menu" onclick="document.body.classList.toggle('nav-open')">☰</button>
     <nav class="site-nav" aria-label="Primary">
-      <form class="nav-search-mobile" action="<?= e(url('search')) ?>" method="get" role="search">
+      <form class="nav-search-mobile" action="<?= e(url('search')) ?>" method="get" role="search"
+              data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
         <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
       </form>
       <a href="<?= e(url('explore')) ?>">Explore</a>

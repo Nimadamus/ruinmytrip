@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T18:15:56Z",
+  "generated_at": "2026-08-29T18:47:48Z",
   "source": "openstreetmap/nominatim",
   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
   "places": [
@@ -97,6 +97,15 @@
         "name": "Acropolis Museum",
         "display_name": "Acropolis Museum, 15, Διονυσίου Αρεοπαγίτου, Anafiotika, Πετράλωνα, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 117 42, Greece"
       },
+      "aliases": [
+        "Akropolismuseum",
+        "Museo de la Acrópolis",
+        "Musée de l'Acropole d'Athènes",
+        "Museo dell'Acropoli di Atene",
+        "Muzeum Akropolu",
+        "Museu da Acrópole",
+        "Akropolis Müzesi"
+      ],
       "source_url": "https://www.openstreetmap.org/way/983921252",
       "hours": [
         {
@@ -162,6 +171,12 @@
         "name": "Acropolis",
         "display_name": "Acropolis, Παναθηναίων, Anafiotika, Πετράλωνα, 3rd District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 105 55, Greece"
       },
+      "aliases": [
+        "Acropolis",
+        "Akropolis",
+        "Acropole",
+        "Atenska akropola"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/4423249"
     },
     {
@@ -191,6 +206,9 @@
         "name": "Alte Pinakothek",
         "display_name": "Alte Pinakothek, 27, Barer Straße, Kunstareal, Maxvorstadt, Munich, Bavaria, 80333, Germany"
       },
+      "aliases": [
+        "Pinacoteca Antigua"
+      ],
       "source_url": "https://www.openstreetmap.org/way/4647135",
       "hours": [
         {
@@ -254,6 +272,16 @@
         "name": "Anne Frank House",
         "display_name": "Anne Frank House, 267, Prinsengracht, Grachtengordel, Centrum, Amsterdam, North Holland, Netherlands, 1016 GV, Netherlands"
       },
+      "aliases": [
+        "Anne Frank Huis",
+        "Casa d'Anne Frank",
+        "Dům Anny Frankové",
+        "Tŷ Anne Frank",
+        "Anne Franks hus",
+        "Anne-Frank-Haus",
+        "Casa Anna Frank",
+        "Anne Franken etxea"
+      ],
       "source_url": "https://www.openstreetmap.org/way/601081859"
     },
     {
@@ -396,6 +424,16 @@
         "name": "Basilica of the Holy Family",
         "display_name": "Basilica of the Holy Family, Carrer de Mallorca, la Sagrada Família, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08013, Spain"
       },
+      "aliases": [
+        "Basilica of the Holy Family",
+        "Basilique de la Sagrada Família",
+        "Baislice an Teaghlaigh Naofa",
+        "Szent Család-templom",
+        "Basiliek van de Heilige Familie",
+        "Basílica da Sagrada Família",
+        "Sagrada Familia",
+        "Temple Expiatori de la Sagrada Família"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/9194723"
     },
     {
@@ -425,6 +463,9 @@
         "name": "Berlinische Galerie",
         "display_name": "Berlinische Galerie, 124-128, Alte Jakobstraße, Ritterkiez, Luisenstadt, Kreuzberg, Friedrichshain-Kreuzberg, Berlin, 10969, Germany"
       },
+      "aliases": [
+        "Berlijnse Galerij"
+      ],
       "source_url": "https://www.openstreetmap.org/way/33743630",
       "hours": [
         {
@@ -568,6 +609,16 @@
         "name": "Buckingham Palace",
         "display_name": "Buckingham Palace, Buckingham Gate, Victoria, City of Westminster, Greater London, England, SW1A 1AA, United Kingdom"
       },
+      "aliases": [
+        "Buckingham-paleis",
+        "Bukinqem sarayı",
+        "Palez Buckingham",
+        "Bakingemska palača",
+        "Palau de Buckingham",
+        "Buckinghamský palác",
+        "Palas Buckingham",
+        "Buckingham-Palast"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/5208404",
       "hours": [
         {
@@ -635,6 +686,12 @@
         "name": "Byzantine and Christian Museum",
         "display_name": "Byzantine and Christian Museum, 22, Βασιλίσσης Σοφίας, Kolonaki, Συνοικία Κολωνακίου, 2nd District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 75, Greece"
       },
+      "aliases": [
+        "Museu Bizantí i Cristià",
+        "Byzantinisches und Christliches Museum",
+        "Museo Bizantino",
+        "Musée byzantin et chrétien"
+      ],
       "source_url": "https://www.openstreetmap.org/way/318587297",
       "hours": [
         {
@@ -831,6 +888,10 @@
         "name": "Calouste Gulbenkian Museum",
         "display_name": "Calouste Gulbenkian Museum, Percurso do Lago, Campo Pequeno, Avenidas Novas, Lisbon, 1050-078, Portugal"
       },
+      "aliases": [
+        "Museu Calouste Gulbenkian",
+        "Museo Calouste Gulbenkian"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/17036063",
       "hours": [
         {
@@ -894,6 +955,14 @@
         "name": "Capitoline Museums",
         "display_name": "Capitoline Museums, Via del Teatro di Marcello, Campitelli, Municipio Roma I, Rome, Roma Capitale, Lazio, 00186, Italy"
       },
+      "aliases": [
+        "Musei Capitolini",
+        "Kapitolinische Museen",
+        "Museos Capitolinos",
+        "Musées du Capitole",
+        "Kapitolski muzeji",
+        "Capitoliumi Múzeumok"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/9909127"
     },
     {
@@ -1004,6 +1073,12 @@
         "name": "Copernicus Science Centre",
         "display_name": "Copernicus Science Centre, 20, Wybrzeże Kościuszkowskie, Powiśle-Skarpa, Powiśle, Midtown, Warsaw, Masovian Voivodeship, 00-390, Poland"
       },
+      "aliases": [
+        "Centrum Nauki Kopernik",
+        "Wissenschaftszentrum Kopernikus",
+        "Centrul științific Copernicus",
+        "CNK"
+      ],
       "source_url": "https://www.openstreetmap.org/way/504034835",
       "hours": [
         {
@@ -1158,6 +1233,13 @@
         "name": "Danish Museum of Art & Design",
         "display_name": "Danish Museum of Art & Design, Bredgade, Frederiksstaden, Indre By, Copenhagen, Copenhagen Municipality, Capital Region of Denmark, 1265, Denmark"
       },
+      "aliases": [
+        "Danish Museum of Art & Design",
+        "Designmuseum Danmark",
+        "Museo de Diseño de Dinamarca",
+        "Musée du Design danois",
+        "Kunstindustrimuseet"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/5693118",
       "hours": [
         {
@@ -1221,6 +1303,12 @@
         "name": "German Museum",
         "display_name": "German Museum, 1, Museumsinsel, Gärtnerplatz, Isarvorstadt, Ludwigsvorstadt-Isarvorstadt, Munich, Bavaria, 80538, Germany"
       },
+      "aliases": [
+        "German Museum",
+        "Museo Alemán",
+        "Deitsches Museum",
+        "Deutsches Museum von Meisterwerken der Naturwissenschaft und Technik"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/3866522"
     },
     {
@@ -1250,6 +1338,16 @@
         "name": "Milan Cathedral",
         "display_name": "Milan Cathedral, 1_33051, Cinque Vie, Duomo, Municipio 1, Milan, Rodano, Milan, Lombardy, 20122, Italy"
       },
+      "aliases": [
+        "Milan Cathedral",
+        "Milánský dóm",
+        "Mailänder Dom",
+        "Catedral de Milán",
+        "Dôme de Milan",
+        "Dom van Milaan",
+        "Katedra Narodzin św. Marii w Mediolanie",
+        "Catedral de Milão"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/18017026",
       "hours": [
         {
@@ -1317,6 +1415,16 @@
         "name": "Eiffel Tower",
         "display_name": "Eiffel Tower, 5, Avenue Anatole France, Quartier du Gros-Caillou, 7th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75007, France"
       },
+      "aliases": [
+        "Tour Eiffel",
+        "Eiffel-toring",
+        "Eiffelova věž",
+        "Eiffeltårnet",
+        "Eiffelturm",
+        "Eiffel-Turo",
+        "Torre Eiffel",
+        "Eiffeli torn"
+      ],
       "source_url": "https://www.openstreetmap.org/way/5013364"
     },
     {
@@ -1407,6 +1515,9 @@
         "name": "Empire State Building",
         "display_name": "Empire State Building, 350, 5th Avenue, Koreatown, Manhattan Community Board 5, Manhattan, New York County, New York, 10118, United States"
       },
+      "aliases": [
+        "Edificio Empire State"
+      ],
       "source_url": "https://www.openstreetmap.org/way/34633854",
       "hours": [
         {
@@ -1472,6 +1583,9 @@
         "name": "EPIC The Irish Emigration Museum",
         "display_name": "EPIC The Irish Emigration Museum, Custom House Quay, North Dock C Ward 1986, Dublin, County Dublin, Leinster, Ireland"
       },
+      "aliases": [
+        "CHQ"
+      ],
       "source_url": "https://www.openstreetmap.org/node/4427119837",
       "hours": [
         {
@@ -1606,6 +1720,10 @@
         "name": "Accademia Gallery",
         "display_name": "Accademia Gallery, 1050, Campo de la Carità, Dorsoduro, Venezia-Murano-Burano, Lido, Venice, Venezia, Veneto, 30123, Italy"
       },
+      "aliases": [
+        "Accademia Gallery",
+        "Galería de la Academia"
+      ],
       "source_url": "https://www.openstreetmap.org/node/895805118",
       "hours": [
         {
@@ -1671,6 +1789,9 @@
         "name": "Kyubey Ginza",
         "display_name": "Kyubey Ginza, 6, Ginza 8, Ginza, Chuo, Tokyo, 104-0061, Japan"
       },
+      "aliases": [
+        "Kyubey Ginza"
+      ],
       "source_url": "https://www.openstreetmap.org/node/1519676364"
     },
     {
@@ -1699,6 +1820,9 @@
         "name": "Grand Central Oyster Bar and Restaurant",
         "display_name": "Grand Central Oyster Bar and Restaurant, 89, East 42nd Street, Midtown, Manhattan Community Board 5, Manhattan, New York County, New York, 10168, United States"
       },
+      "aliases": [
+        "Grand Central Oyster Bar and Restaurant"
+      ],
       "source_url": "https://www.openstreetmap.org/node/6920037989"
     },
     {
@@ -1726,6 +1850,10 @@
         "name": "Grillmarkaðurinn",
         "display_name": "Grillmarkaðurinn, 22b, Lækjargata, Miðbær, Miðborg, Reykjavik, Capital Region, 101, Iceland"
       },
+      "aliases": [
+        "Grillmarkaðurinn",
+        "G19"
+      ],
       "source_url": "https://www.openstreetmap.org/node/1470766368"
     },
     {
@@ -1755,6 +1883,10 @@
         "name": "Gundel Restaurant",
         "display_name": "Gundel Restaurant, 4, Gundel Károly út, City Park, 14th district, Budapest, Central Hungary, 1146, Hungary"
       },
+      "aliases": [
+        "Gundel Restaurant",
+        "Restaurace Gundel"
+      ],
       "source_url": "https://www.openstreetmap.org/way/25227262",
       "hours": [
         {
@@ -1849,6 +1981,9 @@
         "name": "Hofbräuhaus am Platzl",
         "display_name": "Hofbräuhaus am Platzl, 9, Platzl, Graggenauerviertel, Old Town, Munich, Bavaria, 80331, Germany"
       },
+      "aliases": [
+        "Hofbräuhaus am Platzl"
+      ],
       "source_url": "https://www.openstreetmap.org/node/11829267544",
       "hours": [
         {
@@ -1914,6 +2049,11 @@
         "name": "Hofburg Palace",
         "display_name": "Hofburg Palace, Führichgasse, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Vienna, 1010, Austria"
       },
+      "aliases": [
+        "Hofburg Palace",
+        "Hofburg",
+        "Palacio Imperial de Hofburg"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/3898175"
     },
     {
@@ -1970,6 +2110,9 @@
         "name": "Hotel d’Angleterre",
         "display_name": "Hotel d’Angleterre, Hovedvagtsgade, Gammelholm, Indre By, Copenhagen, Copenhagen Municipality, Capital Region of Denmark, 1103, Denmark"
       },
+      "aliases": [
+        "Angleterre"
+      ],
       "source_url": "https://www.openstreetmap.org/way/133045890"
     },
     {
@@ -1999,6 +2142,9 @@
         "name": "Hotel Sacher",
         "display_name": "Hotel Sacher, Albertinaplatz, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Vienna, 1010, Austria"
       },
+      "aliases": [
+        "Hotel Sacher"
+      ],
       "source_url": "https://www.openstreetmap.org/way/628990501"
     },
     {
@@ -2028,6 +2174,11 @@
         "name": "Hungarian National Museum",
         "display_name": "Hungarian National Museum, 14-16, Múzeum körút, Palotanegyed, 8th district, Budapest, Central Hungary, 1088, Hungary"
       },
+      "aliases": [
+        "Magyar Nemzeti Múzeum",
+        "Ungarisches Nationalmuseum",
+        "Musée national hongrois"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/12963",
       "hours": [
         {
@@ -2090,6 +2241,11 @@
         "name": "Jewish Museum",
         "display_name": "Jewish Museum, 9-14, Lindenstraße, Zeitungsviertel, Kreuzberg, Friedrichshain-Kreuzberg, Berlin, 10969, Germany"
       },
+      "aliases": [
+        "Jewish Museum",
+        "Jüdisches Museum",
+        "Museo Ebraico"
+      ],
       "source_url": "https://www.openstreetmap.org/way/302942554",
       "hours": [
         {
@@ -2156,6 +2312,11 @@
         "name": "Jewish Museum",
         "display_name": "Jewish Museum, 141/1, U Staré školy, Josefov, obvod Praha 1, Prague, 110 00, Czechia"
       },
+      "aliases": [
+        "Jewish Museum",
+        "Židovské muzeum",
+        "Jüdisches Museum in Prag"
+      ],
       "source_url": "https://www.openstreetmap.org/node/1269502274"
     },
     {
@@ -2185,6 +2346,10 @@
         "name": "Katz's Delicatessen",
         "display_name": "Katz's Delicatessen, 205, East Houston Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States"
       },
+      "aliases": [
+        "Katz's of New York City",
+        "Katz's Deli"
+      ],
       "source_url": "https://www.openstreetmap.org/node/1915398676",
       "hours": [
         {
@@ -2250,6 +2415,16 @@
         "name": "Kinkaku-ji",
         "display_name": "Kinkaku-ji, Kinkakuji-chō, 馬喰町, Kita Ward, Kyoto, Kyoto Prefecture, 603-8361, Japan"
       },
+      "aliases": [
+        "Goldener-Pavillon-Tempel (Kinkaku-ji)",
+        "Złoty Pawilon",
+        "Kinkakuji",
+        "Rehgarten-Tempel",
+        "Golden Pavilion Temple",
+        "Temple du Pavillon d’or",
+        "Rokuon-ji",
+        "Temple Rokuon"
+      ],
       "source_url": "https://www.openstreetmap.org/way/98115917",
       "hours": [
         {
@@ -2316,6 +2491,9 @@
         "name": "Art House Vienna",
         "display_name": "Art House Vienna, Untere Weißgerberstraße, Weißgerber, Katastralgemeinde Landstraße, Landstraße, Vienna, 1030, Austria"
       },
+      "aliases": [
+        "Art House Vienna"
+      ],
       "source_url": "https://www.openstreetmap.org/way/342113776"
     },
     {
@@ -2345,6 +2523,9 @@
         "name": "Kunsthaus",
         "display_name": "Kunsthaus, 1, Heimplatz, Hochschulen, Altstadt, Zurich, District Zurich, Zurich, 8001, Switzerland"
       },
+      "aliases": [
+        "Kunsthaus"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/3768127"
     },
     {
@@ -2374,6 +2555,11 @@
         "name": "La Pedrera - Casa Milà",
         "display_name": "La Pedrera - Casa Milà, 261-265, Carrer de Provença, la Dreta de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08008, Spain"
       },
+      "aliases": [
+        "Casa Milà",
+        "카사 밀라 12위",
+        "la Pedrera"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/8974896"
     },
     {
@@ -2403,6 +2589,9 @@
         "name": "Le Procope",
         "display_name": "Le Procope, Rue de l'Ancienne Comédie, Quartier de la Monnaie, 6th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75006, France"
       },
+      "aliases": [
+        "Café Procope"
+      ],
       "source_url": "https://www.openstreetmap.org/node/2386622236",
       "hours": [
         {
@@ -2471,6 +2660,15 @@
         "name": "Louvre Museum",
         "display_name": "Louvre Museum, Lefuel Court, Saint-Germain-l'Auxerrois, 1st Arrondissement, Paris, Ile-de-France, Metropolitan France, 75001, France"
       },
+      "aliases": [
+        "Musée du Louvre",
+        "Museum des Louvre",
+        "Luvro",
+        "Museo del Louvre",
+        "Museu do Louvre",
+        "Louvre Müzesi",
+        "Louvre"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/7515426"
     },
     {
@@ -2529,6 +2727,11 @@
         "name": "Barcelona Museum of Contemporary Art",
         "display_name": "Barcelona Museum of Contemporary Art, Carrer de Montalegre, el Raval, Old Town, Barcelona, Barcelonès, Barcelona, Catalonia, 08001, Spain"
       },
+      "aliases": [
+        "Barcelona Museum of Contemporary Art",
+        "Museu d'Art Contemporani de Barcelona",
+        "Museo de Arte Contemporáneo de Barcelona"
+      ],
       "source_url": "https://www.openstreetmap.org/way/36930946"
     },
     {
@@ -2558,6 +2761,10 @@
         "name": "Museo de Arte Latinoamericano de Buenos Aires (MALBA)",
         "display_name": "Museo de Arte Latinoamericano de Buenos Aires (MALBA), 3415, Avenida Presidente Figueroa Alcorta, Barrio Parque, Palermo, Buenos Aires, Comuna 14, Autonomous City of Buenos Aires, C1425CLA, Argentina"
       },
+      "aliases": [
+        "Museo de Arte Latinoamericano de Buenos Aires (MALBA)",
+        "Museo de Arte Latinoamericano de Buenos Aires"
+      ],
       "source_url": "https://www.openstreetmap.org/way/23621021",
       "hours": [
         {
@@ -2620,6 +2827,10 @@
         "name": "Miód Malina",
         "display_name": "Miód Malina, 40, Grodzka, Old Town, Stare Miasto, Old Town, Krakow, Lesser Poland Voivodeship, 31-044, Poland"
       },
+      "aliases": [
+        "Mio malina",
+        "Restauracja Miód Malina"
+      ],
       "source_url": "https://www.openstreetmap.org/node/4161938189",
       "hours": [
         {
@@ -2686,6 +2897,11 @@
         "name": "Modern Art Museum",
         "display_name": "Modern Art Museum, Slupskjulsvägen, Skeppsholmen, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 111 49, Sweden"
       },
+      "aliases": [
+        "Modern Art Museum",
+        "Nykytaiteen museo",
+        "Musée d'art moderne"
+      ],
       "source_url": "https://www.openstreetmap.org/node/29898032",
       "hours": [
         {
@@ -2752,6 +2968,9 @@
         "name": "Frida Kahlo Museum",
         "display_name": "Frida Kahlo Museum, 247, Calle Ignacio Allende, Colonia Del Carmen, Coyoacán, Mexico City, Coyoacán, Mexico City, 04100, Mexico"
       },
+      "aliases": [
+        "Frida Kahlo Museum"
+      ],
       "source_url": "https://www.openstreetmap.org/way/176482295",
       "hours": [
         {
@@ -2814,6 +3033,11 @@
         "name": "Larco Herrera Museum",
         "display_name": "Larco Herrera Museum, 1515, Simon Bolivar Avenue, Pueblo Libre, Province of Lima, Lima Metropolitan Area, Lima, 15084, Peru"
       },
+      "aliases": [
+        "Larco Herrera Museum",
+        "Museo Arqueológico Rafael Larco Herrera",
+        "Musée Larco"
+      ],
       "source_url": "https://www.openstreetmap.org/way/387071625",
       "hours": [
         {
@@ -2942,6 +3166,9 @@
         "name": "Museo Nazionale Romano",
         "display_name": "Museo Nazionale Romano, 46, Piazza di Sant'Apollinare, Ponte, Municipio Roma I, Rome, Roma Capitale, Lazio, 00186, Italy"
       },
+      "aliases": [
+        "Nemzeti Római Kori Múzeum"
+      ],
       "source_url": "https://www.openstreetmap.org/node/677476578",
       "hours": [
         {
@@ -3004,6 +3231,11 @@
         "name": "Museum of Cycladic Art",
         "display_name": "Museum of Cycladic Art, 4, Νεοφύτου Δούκα, Kolonaki, Συνοικία Κολωνακίου, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 74, Greece"
       },
+      "aliases": [
+        "Museum für kykladische Kunst",
+        "Musée d'art cycladique",
+        "Museu de Arte Cicládica"
+      ],
       "source_url": "https://www.openstreetmap.org/way/220890927",
       "hours": [
         {
@@ -3069,6 +3301,9 @@
         "name": "Museum Of The Future",
         "display_name": "Museum Of The Future, Sheikh Zayed Road (north), Sheikh Zayed Road, Trade Centre 1, Trade Centre, Dubai, Dubai Emirate, United Arab Emirates"
       },
+      "aliases": [
+        "Muzeum budoucnosti"
+      ],
       "source_url": "https://www.openstreetmap.org/way/1054289435",
       "hours": [
         {
@@ -3137,6 +3372,14 @@
         "name": "National Archaeological Museum",
         "display_name": "National Archaeological Museum, 44, Πατησίων, Μουσείο, 1st District of Athens, Athens, Municipality of Athens, Regional Unit of Central Athens, Attica, 106 82, Greece"
       },
+      "aliases": [
+        "Archäologisches Nationalmuseum",
+        "Museo Arqueológico Nacional",
+        "Musée national d'Archéologie",
+        "Nationaal Archeologisch Museum",
+        "Narodowe Muzeum Archeologiczne",
+        "Ethniko Archeologiko Mousio"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/2828"
     },
     {
@@ -3166,6 +3409,16 @@
         "name": "National Museum of Iceland",
         "display_name": "National Museum of Iceland, 41, Suðurgata, Háskóli, Miðborg, Reykjavik, Capital Region, 102, Iceland"
       },
+      "aliases": [
+        "Þjóðminjasafn Íslands",
+        "Islands Nationalmuseum",
+        "Isländisches Nationalmuseum",
+        "Museo Nacional de Islandia",
+        "Islannin kansallismuseo",
+        "Musée national d'Islande",
+        "Museo nazionale d'Islanda",
+        "Narodowe Muzeum Islandii"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/6180675",
       "hours": [
         {
@@ -3234,6 +3487,12 @@
         "name": "National Museum of Scotland",
         "display_name": "National Museum of Scotland, Chambers Street, Abbeyhill, Old Town, City of Edinburgh, Scotland, EH1 1JF, United Kingdom"
       },
+      "aliases": [
+        "Museo Nacional de Escocia",
+        "Taigh-tasgaidh Nàiseanta na h-Alba",
+        "Naitional Museum o Scotland",
+        "Royal Musuem of Scotland"
+      ],
       "source_url": "https://www.openstreetmap.org/way/467226683"
     },
     {
@@ -3277,6 +3536,10 @@
         "name": "National Museum of Fine Arts",
         "display_name": "National Museum of Fine Arts, Södra Blasieholmshamnen, Norrmalm, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 111 48, Sweden"
       },
+      "aliases": [
+        "National Museum of Fine Arts",
+        "Kansallismuseo"
+      ],
       "source_url": "https://www.openstreetmap.org/way/24968329",
       "hours": [
         {
@@ -3342,6 +3605,16 @@
         "name": "Natural History Museum",
         "display_name": "Natural History Museum, Cromwell Road, Brompton, Royal Borough of Kensington and Chelsea, Greater London, England, SW7 5BD, United Kingdom"
       },
+      "aliases": [
+        "Museu d'Història Natural",
+        "Přírodopisné muzeum",
+        "Naturhistorisches Museum",
+        "Muzeo pri Natura Historio",
+        "Museo de Historia Natural",
+        "Londoni loodusmuuseum",
+        "Historia Naturalaren Museoa",
+        "Musée d'histoire naturelle"
+      ],
       "source_url": "https://www.openstreetmap.org/way/24436446",
       "hours": [
         {
@@ -3475,6 +3748,11 @@
         "name": "New York Botanical Garden",
         "display_name": "New York Botanical Garden, 2900, Southern Boulevard, The Bronx, Bronx County, New York, 10458, United States"
       },
+      "aliases": [
+        "Jardín Botánico de Nueva York",
+        "Jardin botanique de New York",
+        "NYBG"
+      ],
       "source_url": "https://www.openstreetmap.org/way/38839186",
       "hours": [
         {
@@ -3536,6 +3814,16 @@
         "name": "Nijō Castle",
         "display_name": "Nijō Castle, Matsuyamachi street, Samamatsucho, Nakagyo Ward, Kyoto, Kyoto Prefecture, 602-8145, Japan"
       },
+      "aliases": [
+        "Burg Nijō",
+        "Château de Nijō",
+        "Nijō Imperial Villa",
+        "Villa impérial de Nijō",
+        "Nijō-jō",
+        "Nijō-rikyū",
+        "Former Imperial Villa Nijō",
+        "Ancienne Villa impériale de Nijō"
+      ],
       "source_url": "https://www.openstreetmap.org/way/57111281",
       "hours": [
         {
@@ -3741,6 +4029,13 @@
         "name": "Oskar Schindler's Enamel Factory",
         "display_name": "Oskar Schindler's Enamel Factory, 4, Lipowa, Zabłocie, Podgórze, Krakow, Lesser Poland Voivodeship, 30-702, Poland"
       },
+      "aliases": [
+        "Fabryka Emalia Oskara Schindlera",
+        "Emaillewarenfabrik Oskar Schindler",
+        "Oskar Schindler zománcárugyára",
+        "Fabbrica di Schindler",
+        "Fabryka Schindlera"
+      ],
       "source_url": "https://www.openstreetmap.org/way/136648568",
       "hours": [
         {
@@ -3809,6 +4104,10 @@
         "name": "Palace of Holyroodhouse",
         "display_name": "Palace of Holyroodhouse, Canongate, Holyrood, Abbeyhill, Old Town, City of Edinburgh, Scotland, EH8 8DX, United Kingdom"
       },
+      "aliases": [
+        "Holyrood Palace",
+        "Palacio_de_Holyroodhouse"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/16769442"
     },
     {
@@ -3837,6 +4136,16 @@
         "name": "Doge's Palace",
         "display_name": "Doge's Palace, Molo di Palazzo Ducale, San Marco, Venezia-Murano-Burano, Lido, Venice, Venezia, Veneto, 30124, Italy"
       },
+      "aliases": [
+        "Doge's Palace",
+        "Dogepaladset",
+        "Dogenpalast",
+        "Palacio Ducal",
+        "Palais des Doges",
+        "Dózse palota",
+        "Pałac Dożów",
+        "Duždeva palata"
+      ],
       "source_url": "https://www.openstreetmap.org/way/138803915"
     },
     {
@@ -3866,6 +4175,10 @@
         "name": "Pantheon",
         "display_name": "Pantheon, Place du Panthéon, Quartier de la Sorbonne, 5th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75005, France"
       },
+      "aliases": [
+        "Panteono",
+        "Panteón"
+      ],
       "source_url": "https://www.openstreetmap.org/way/16407465"
     },
     {
@@ -3961,6 +4274,10 @@
         "name": "Pestana Palace Hotel",
         "display_name": "Pestana Palace Hotel, Rua Jau, Santo Amaro, Alcântara, Lisbon, 1300-245, Portugal"
       },
+      "aliases": [
+        "Hotel Pestana Palace",
+        "Pestana Palace Hotel;Palácio Vale-Flor;Pestana Carlton Palace Hotel;Jardim do Palácio Vale Flor"
+      ],
       "source_url": "https://www.openstreetmap.org/way/579539846"
     },
     {
@@ -3991,6 +4308,13 @@
         "name": "Pinacoteca di Brera",
         "display_name": "Pinacoteca di Brera, 28, Via Brera, Borgonuovo, Cerchia dei Navigli, Municipio 1, Milan, Rodano, Milan, Lombardy, 20121, Italy"
       },
+      "aliases": [
+        "Pinakothek von Brera",
+        "Pinacoteca de Brera",
+        "Pinacothèque de Brera",
+        "Breros pinakoteka",
+        "Pinakoteka Brera"
+      ],
       "source_url": "https://www.openstreetmap.org/node/1029667846"
     },
     {
@@ -4020,6 +4344,10 @@
         "name": "Pinakothek der Moderne",
         "display_name": "Pinakothek der Moderne, 40, Barer Straße, Kunstareal, Maxvorstadt, Munich, Bavaria, 80333, Germany"
       },
+      "aliases": [
+        "Pinacoteca Moderna",
+        "Pinakothek vo da Modeane"
+      ],
       "source_url": "https://www.openstreetmap.org/way/10053440",
       "hours": [
         {
@@ -4109,6 +4437,10 @@
         "name": "Rijksmuseum",
         "display_name": "Rijksmuseum, Hobbemastraat, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 ZC, Netherlands"
       },
+      "aliases": [
+        "Reichsmuseum",
+        "Rijksmuseum Amsterdam"
+      ],
       "source_url": "https://www.openstreetmap.org/way/29989787",
       "hours": [
         {
@@ -4362,6 +4694,16 @@
         "name": "St Paul's Cathedral",
         "display_name": "St Paul's Cathedral, St Paul's Churchyard, West Smithfield, St Paul's, City of London, Greater London, England, EC4M 8AD, United Kingdom"
       },
+      "aliases": [
+        "St. Paulus se katedraal",
+        "Katedrála svatého Pavla",
+        "Catedral de San Pablo",
+        "Cathédrale Saint-Paul",
+        "Ecclesia cathedralis Sancti Pauli Londiniensis",
+        "Šv. Pauliaus katedra",
+        "Katedra św. Pawła w Londynie",
+        "Saint Paul's"
+      ],
       "source_url": "https://www.openstreetmap.org/way/369161987",
       "hours": [
         {
@@ -4424,6 +4766,10 @@
         "name": "Stedelijk Museum Amsterdam",
         "display_name": "Stedelijk Museum Amsterdam, 10, Museumplein, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 DJ, Netherlands"
       },
+      "aliases": [
+        "Stedelijk Museum Amsterdam",
+        "Museo Stedelijk"
+      ],
       "source_url": "https://www.openstreetmap.org/way/44508819",
       "hours": [
         {
@@ -4491,6 +4837,10 @@
         "name": "Landesmuseum",
         "display_name": "Landesmuseum, 2, Museumstrasse, City, Altstadt, Zurich, District Zurich, Zurich, 8021, Switzerland"
       },
+      "aliases": [
+        "Landesmuseum",
+        "Schweizerisches Landesmuseum"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/4281153",
       "hours": [
         {
@@ -4619,6 +4969,9 @@
         "name": "Tate Modern",
         "display_name": "Tate Modern, Bankside, Borough Market, Bankside, Southwark, London Borough of Southwark, Greater London, England, SE1 9TG, United Kingdom"
       },
+      "aliases": [
+        "Bankside Power Station"
+      ],
       "source_url": "https://www.openstreetmap.org/way/24642569",
       "hours": [
         {
@@ -4685,6 +5038,16 @@
         "name": "Tokyo National Museum",
         "display_name": "Tokyo National Museum, 9, Ueno Park, Taito, Tokyo, 110-8712, Japan"
       },
+      "aliases": [
+        "Nationalmuseum Tokio",
+        "Museo Nacional de Tokio",
+        "Tōkyō Rahvusmuuseum",
+        "Musée national de Tokyo",
+        "Museo Nazionale di Tokyo",
+        "TNM;東博",
+        "Tōkyō Kokuritsu-hakubutsukan",
+        "Tōhaku"
+      ],
       "source_url": "https://www.openstreetmap.org/way/33439660",
       "hours": [
         {
@@ -4748,6 +5111,14 @@
         "name": "Topography of Terror",
         "display_name": "Topography of Terror, 8, Niederkirchnerstraße, Friedrichstadt, Kreuzberg, Mitte, Berlin, 10963, Germany"
       },
+      "aliases": [
+        "Topographie des Terrors",
+        "Topografía del terror",
+        "Topographie de la terreur",
+        "Topografia del terrore",
+        "Topografie van de Terror",
+        "Topografia Terroru"
+      ],
       "source_url": "https://www.openstreetmap.org/way/24368681"
     },
     {
@@ -4777,6 +5148,11 @@
         "name": "Upper Belvedere",
         "display_name": "Upper Belvedere, 27, Prinz-Eugen-Straße, Wieden, Katastralgemeinde Landstraße, Landstraße, Vienna, 1030, Austria"
       },
+      "aliases": [
+        "Oberes Belvedere",
+        "Alto Belvedere",
+        "Belvedere Upper Palace;美景宫上宫"
+      ],
       "source_url": "https://www.openstreetmap.org/way/5887599",
       "hours": [
         {
@@ -4844,6 +5220,10 @@
         "name": "Van Gogh Museum",
         "display_name": "Van Gogh Museum, 7, Paulus Potterstraat, Museumkwartier, Oud-Zuid, Zuid, Amsterdam, North Holland, Netherlands, 1071 CX, Netherlands"
       },
+      "aliases": [
+        "Van Gogh Musé",
+        "Rijksmuseum Vincent van Gogh"
+      ],
       "source_url": "https://www.openstreetmap.org/relation/6577680",
       "hours": [
         {
@@ -4911,6 +5291,15 @@
         "name": "Vasa Museum",
         "display_name": "Vasa Museum, Galärvarvsvägen, Djurgårdsstaden, Djurgården, Norra innerstadens stadsdelsområde, Stockholm, Stockholm Municipality, Stockholm County, 115 21, Sweden"
       },
+      "aliases": [
+        "Vasamuseet",
+        "Museu Vasa",
+        "Museo-Vasa",
+        "Vasa muuseum",
+        "Vasan museo",
+        "Musée Vasa",
+        "Vasa múzeum"
+      ],
       "source_url": "https://www.openstreetmap.org/way/27288534",
       "hours": [
         {
@@ -4978,6 +5367,16 @@
         "name": "Vatican Museums",
         "display_name": "Vatican Museums, Octagonal Courtyard, Vatican City, 00120, Vatican City"
       },
+      "aliases": [
+        "Musei Vaticani",
+        "Vatikánská muzea",
+        "Vatikanmuseet",
+        "Vatikanische Museen",
+        "Museos Vaticanos",
+        "Vatikaanin museot",
+        "Musées du Vatican",
+        "Vatikáni Múzeumok"
+      ],
       "source_url": "https://www.openstreetmap.org/way/255959482"
     },
     {
@@ -5007,6 +5406,15 @@
         "name": "Warsaw Rising Museum",
         "display_name": "Warsaw Rising Museum, 79, Grzybowska, Czyste, Wola, Warsaw, Masovian Voivodeship, 00-844, Poland"
       },
+      "aliases": [
+        "Muzeum Powstania Warszawskiego",
+        "Museum des Warschauer Aufstandes",
+        "Museo del Alzamiento de Varsovia",
+        "Musée de l'Insurrection de Varsovie",
+        "Varšuvos sukilimo muziejus",
+        "Museu da Insurreição de Varsóvia",
+        "Muzeul Insurecției din Varșovia"
+      ],
       "source_url": "https://www.openstreetmap.org/way/167109428",
       "hours": [
         {
@@ -5072,6 +5480,16 @@
         "name": "Westminster Abbey",
         "display_name": "Westminster Abbey, 20, Dean's Yard, Westminster, Millbank, City of Westminster, Greater London, England, SW1P 3PA, United Kingdom"
       },
+      "aliases": [
+        "Vestminster abbatlığı",
+        "Abati Westminster",
+        "Vestminsterska opatija",
+        "Abadia de Westminster",
+        "Westminsterské opatství",
+        "Abaty San Steffan",
+        "Westminsterabtei",
+        "Westminster abadia"
+      ],
       "source_url": "https://www.openstreetmap.org/way/364313092",
       "hours": [
         {
@@ -5134,6 +5552,10 @@
         "name": "Whitney Museum of American Art",
         "display_name": "Whitney Museum of American Art, 99, Gansevoort Street, Meatpacking District, Manhattan, New York County, New York, 10014, United States"
       },
+      "aliases": [
+        "Museo de Arte America Whitney",
+        "The Whitney"
+      ],
       "source_url": "https://www.openstreetmap.org/way/288749896",
       "hours": [
         {

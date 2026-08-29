@@ -17,6 +17,11 @@ if [ -f "$PROPOSAL" ]; then
   php /var/www/html/scripts/apply_place_enrichment.php --file "$PROPOSAL" --apply     || echo "entrypoint: place enrichment reported errors, continuing"
 fi
 
+# Keep the autocomplete index in step: fill any missing normalised names and seed destination
+# aliases. Idempotent and fast, and it has to run AFTER enrichment, because enrichment is what
+# may have just changed a place's name.
+php /var/www/html/scripts/search_maintenance.php --quiet   || echo "entrypoint: search maintenance reported errors, continuing"
+
 sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 exec apache2-foreground

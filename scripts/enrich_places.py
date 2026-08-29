@@ -332,6 +332,24 @@ def propose(cand: dict) -> dict:
 
     out['osm'] = {'type': best.get('osm_type'), 'id': best.get('osm_id'),
                   'name': best.get('name'), 'display_name': best.get('display_name')}
+
+    # Every other name the map records for this object, so search can find "Milan Cathedral" when
+    # our page is called "Duomo di Milano" and vice versa. These are matching aids, never display
+    # names: the page keeps the name we chose for it.
+    nd = best.get('namedetails') or {}
+    alias_pool = [best.get('name') or '']
+    alias_pool += [v for k, v in nd.items()
+                   if isinstance(v, str) and v and not k.endswith(':prefix') and 'wikidata' not in k]
+    seen_alias = {fold(name)}
+    aliases = []
+    for a in alias_pool:
+        f = fold(a)
+        if not f or f in seen_alias:
+            continue
+        seen_alias.add(f)
+        aliases.append(a)
+    if aliases:
+        out['aliases'] = aliases[:8]
     out['source_url'] = 'https://www.openstreetmap.org/%s/%s' % (best.get('osm_type'), best.get('osm_id'))
 
     addr = best.get('address') or {}

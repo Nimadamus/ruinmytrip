@@ -1501,6 +1501,65 @@ function leaderboard(array $a): void {
  * relevance, not just "contains the substring", and now covers reviews and people too (the old
  * LIKE search never searched review content or usernames at all).
  */
+/**
+ * GET /suggest?q= — the autocomplete endpoint. JSON, public, rate limited.
+ *
+ * One endpoint for every entity type rather than four the browser has to fan out to and stitch
+ * together: the ranking that decides what actually leads the list can only be done where all the
+ * candidates are, and doing it in the client would mean shipping the scoring rules to it.
+ */
+function suggest_json(array $a): void {
+    $q = trim((string) ($_GET['q'] ?? ''));
+
+    // A public endpoint that runs several queries per call is worth a limit. Keyed by IP, generous
+    // enough that a fast typist with a 180ms debounce never sees it.
+    $who = (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon');
+    if (!rmt_rate_ok('suggest', $who, 240, 60)) {
+        http_response_code(429);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+        echo json_encode(['groups' => [], 'count' => 0, 'throttled' => true]);
+        return;
+    }
+
+    $res = rmt_search_suggest($q);
+
+    // Logged only for a query long enough to mean something, and only the normalised text: no user,
+    // no session, no address. A zero-result query is the most useful row in the table.
+    if (mb_strlen($res['query']) >= RMT_SUGGEST_MIN_CHARS) {
+        rmt_search_log($res['query'], (int) $res['count']);
+    }
+
+    header('Content-Type: application/json; charset=utf-8');
+    // Private and short: suggestions are cheap to recompute and a shared cache would hand one
+    // person's typing to the next.
+    header('Cache-Control: private, max-age=30');
+    echo json_encode(rmt_suggest_public($res), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+}
+
+/**
+ * POST /suggest/click — which suggestion was taken, and where it sat.
+ *
+ * Fire and forget: the browser sends it with sendBeacon and navigates immediately. Analytics does
+ * not get to stand between a person and the page they asked for.
+ */
+function suggest_click(array $a): void {
+    // A beacon can carry a form field, so it carries the same CSRF token every other POST does.
+    // Without it this is an open endpoint for writing rows into an analytics table from any page
+    // on the internet, which is a small hole but a pointless one to leave.
+    csrf_check();
+    if (!rmt_rate_ok('suggest_click', (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 120, 60)) {
+        http_response_code(204);
+        return;
+    }
+    $q = rmt_search_norm((string) ($_POST['q'] ?? ''));
+    $type = (string) ($_POST['type'] ?? '');
+    $id = (string) ($_POST['id'] ?? '');
+    $pos = (int) ($_POST['position'] ?? 0);
+    if ($q !== '' && $type !== '') rmt_search_log_click($q, $type, $id, $pos);
+    http_response_code(204);
+}
+
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
     $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=[];
@@ -2799,6 +2858,33 @@ function admin_places_index(array $a): void {
                           'refusals' => rmt_enrichment_refusals(),
                           'stale'    => rmt_stale_places(180, 50)],
          ['title' => 'Places — RuinMyTrip admin']);
+}
+
+/**
+ * GET /admin/search — what people looked for and what they found.
+ *
+ * Internal. A query that returns nothing is the clearest statement a traveler can make about what
+ * this site does not have yet, and it costs nothing to listen to. Nothing here identifies anybody:
+ * the log holds a normalised query, a count and a timestamp.
+ */
+function admin_search_report(array $a): void {
+    require_role('admin', 'mod');
+    $days = max(1, min(365, (int) (input('days') ?: 90)));
+    view('admin_search', [
+        'days'     => $days,
+        'zero'     => rmt_search_zero_results($days, 60),
+        'low'      => rmt_search_low_results($days, 30, 2),
+        'top'      => q_all("SELECT query_norm, COUNT(*) searches, MAX(result_count) best
+                               FROM search_log WHERE result_count >= 0 AND created_at >= ?
+                              GROUP BY query_norm ORDER BY searches DESC LIMIT 25",
+                            [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))]),
+        'clicks'   => q_all("SELECT clicked_type, COUNT(*) clicks, ROUND(AVG(clicked_position * 1.0), 2) avg_position
+                               FROM search_log WHERE clicked_type IS NOT NULL AND created_at >= ?
+                              GROUP BY clicked_type ORDER BY clicks DESC",
+                            [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))]),
+        'total'    => (int) (q_one('SELECT COUNT(*) c FROM search_log WHERE created_at >= ?',
+                            [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))])['c'] ?? 0),
+    ], ['title' => 'Search — RuinMyTrip admin']);
 }
 
 /** GET /admin/place/{id} — the editor. */
