@@ -43,7 +43,8 @@ const RMT_CONTRIB_EVENTS = [
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
 const RMT_CONTRIB_SOURCES = [
-    'place', 'destination', 'browse', 'contribute', 'profile', 'search', 'home', 'review', 'other',
+    'place', 'destination', 'browse', 'contribute', 'profile', 'search', 'home', 'review', 'feed',
+    'other',
 ];
 
 /**

@@ -247,6 +247,19 @@ function rmt_return_place_name(string $return): ?string {
 }
 
 /**
+ * What a travel list holds, in words, when its owner has not written a summary.
+ *
+ * Says what is actually on the list rather than assuming. "3 destinations" printed over a list of
+ * three restaurants is a small thing that tells a reader the site is not paying attention.
+ */
+function rmt_collection_summary(int $destinations, int $places): string {
+    $parts = [];
+    if ($destinations > 0) $parts[] = $destinations . ' ' . ($destinations === 1 ? 'destination' : 'destinations');
+    if ($places > 0)       $parts[] = $places . ' ' . ($places === 1 ? 'place' : 'places');
+    return $parts ? implode(' and ', $parts) : 'Nothing on it yet';
+}
+
+/**
  * Community rating for one place: published reviews from real members only, editorial excluded by
  * role exactly as rmt_community_avg() does for destinations.
  *

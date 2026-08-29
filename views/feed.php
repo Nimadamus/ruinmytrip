@@ -12,7 +12,15 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
     <a class="btn btn-ghost btn-sm" href="<?= e(url('going')) ?>">Share dates</a>
   </div>
   <?php if (!$items): ?>
-    <div class="callout">You're not following anyone yet. <a href="<?= e(url('travelers')) ?>">Find travelers</a> or <a href="<?= e(url('explore')) ?>">explore destinations</a>.</div>
+    <?php /* An empty feed on a young site is the normal state, not a failure, and the honest
+             version of it points at the three things that actually fill it: following somebody,
+             going somewhere, or writing the first thing yourself. */ ?>
+    <div class="callout">
+      Nothing here yet &mdash; this fills up as the travelers you follow post.
+      <a href="<?= e(url('travelers')) ?>">Find travelers</a>,
+      <a href="<?= e(url('explore')) ?>">explore destinations</a>, or
+      <a data-review-cta="feed" href="<?= e(url('contribute')) ?>">review a place you went to</a>.
+    </div>
   <?php endif; ?>
   <?php foreach ($items as $it): ?>
     <article class="card" style="margin-bottom:18px">

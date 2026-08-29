@@ -609,18 +609,23 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
+    // Lists can hold places as well as cities, so the cover has to look for the first CITY rather
+    // than the first item -- and the summary has to count what is actually on the list. Before
+    // this, a list of three restaurants had no cover and described itself as "3 destinations".
     $collections = q_all("SELECT c.*,
             (SELECT d.hero_url FROM collection_items ci JOIN destinations d ON d.id=ci.destination_id
-              WHERE ci.collection_id=c.id ORDER BY ci.sort, ci.id LIMIT 1) cover_url,
-            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+              WHERE ci.collection_id=c.id AND ci.destination_id IS NOT NULL
+              ORDER BY ci.sort, ci.id LIMIT 1) cover_url,
+            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.destination_id IS NOT NULL) dest_count,
+            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.place_id IS NOT NULL) place_count
           FROM collections c WHERE c.status='published' AND $followedPlain
           ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", $args);
     foreach ($collections as &$row) {
         $row['kind'] = 'collection';
         $row['dest_name'] = null;
         $row['feed_url'] = url('c/'.$row['slug']);
-        $count = (int)$row['item_count'];
-        $row['feed_excerpt'] = $row['summary'] ?: ($count.' '.($count===1?'destination':'destinations'));
+        $row['item_count'] = (int) $row['dest_count'] + (int) $row['place_count'];
+        $row['feed_excerpt'] = $row['summary'] ?: rmt_collection_summary((int) $row['dest_count'], (int) $row['place_count']);
     }
     unset($row);
 
