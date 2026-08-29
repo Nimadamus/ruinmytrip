@@ -95,26 +95,83 @@ $bp  = $boundPlace ?? null;
 <textarea id="what_ruined" name="what_ruined" rows="3" maxlength="2000"
           placeholder="The thing you wish someone had warned you about."><?= $val('what_ruined') ?></textarea>
 
-<div class="grid g-2" style="gap:14px">
-  <div>
-    <label for="safety_rating">Safety <span class="muted">(optional)</span></label>
-    <select id="safety_rating" name="safety_rating">
-      <option value="">— Not rated —</option>
-      <?php for ($i = 5; $i >= 1; $i--): ?>
-        <option value="<?= $i ?>"<?= $sel('safety_rating', $i) ?>><?= $i ?> — <?= ['','Felt unsafe','Uneasy','Mixed','Mostly fine','Felt safe'][$i] ?></option>
-      <?php endfor; ?>
+<?php
+/* Optional detail: traveler type and the subratings that apply to what is being reviewed.
+   Three rules hold this block together:
+     1. It is optional in full. A review with a headline, a body and an overall rating publishes
+        with this whole section untouched, which is what keeps the form quick.
+     2. Only the aspects for the selected category are enabled. A restaurant review is never asked
+        about hotel rooms. Every category's fieldset is rendered so the switch is instant, and the
+        inactive ones are DISABLED, which means the browser does not submit them at all.
+     3. With JavaScript off, the fieldset for the currently selected category is the enabled one and
+        everything still works; the server re-checks the category against the aspects regardless.
+   It starts collapsed. A wall of eleven selects above the publish button is how a form stops being
+   filled in. */
+$aspectValues = $aspectValues ?? [];
+$currentCat = (string) ($r['subject_type'] ?? ($bp['type'] ?? 'destination'));
+if (!isset(RMT_ASPECTS_BY_CATEGORY[$currentCat])) $currentCat = 'destination';
+$anyDetail = $aspectValues || !empty($r['traveler_type']);
+?>
+<details class="card" id="review-detail" style="margin:6px 0 18px"<?= $anyDetail ? ' open' : '' ?>>
+  <summary style="cursor:pointer;padding:12px 14px;font-weight:600">
+    Add more detail <span class="muted" style="font-weight:400">(optional)</span>
+  </summary>
+  <div class="card-body" style="padding-top:0">
+
+    <label for="traveler_type">Who were you travelling with? <span class="muted">(optional)</span></label>
+    <select id="traveler_type" name="traveler_type">
+      <option value="">— Rather not say —</option>
+      <?php foreach (RMT_TRAVELER_TYPES as $tt): ?>
+        <option value="<?= e($tt) ?>"<?= ((string)($r['traveler_type'] ?? '') === $tt ? ' selected' : '') ?>>
+          <?= e((string) rmt_traveler_type_label($tt)) ?>
+        </option>
+      <?php endforeach; ?>
     </select>
+
+    <?php foreach (RMT_ASPECTS_BY_CATEGORY as $cat => $aspects): ?>
+      <fieldset class="aspect-group" data-category="<?= e($cat) ?>"
+                style="border:0;padding:0;margin:16px 0 0<?= $cat === $currentCat ? '' : ';display:none' ?>"
+                <?= $cat === $currentCat ? '' : 'disabled' ?>>
+        <legend style="padding:0;font-size:.95rem;font-weight:600">Rate the details <span class="muted" style="font-weight:400">(optional)</span></legend>
+        <div class="grid g-2" style="gap:14px">
+          <?php foreach ($aspects as $aspect): $meta = RMT_REVIEW_ASPECTS[$aspect]; $fid = 'aspect-'.$cat.'-'.$aspect; ?>
+            <div>
+              <label for="<?= e($fid) ?>"><?= e($meta['label']) ?></label>
+              <select id="<?= e($fid) ?>" name="aspect[<?= e($aspect) ?>]">
+                <option value="">— Not rated —</option>
+                <?php for ($i = 5; $i >= 1; $i--): ?>
+                  <option value="<?= $i ?>"<?= (($aspectValues[$aspect] ?? null) === $i ? ' selected' : '') ?>>
+                    <?= $i ?> — <?= e($meta['scale'][$i]) ?>
+                  </option>
+                <?php endfor; ?>
+              </select>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </fieldset>
+    <?php endforeach; ?>
   </div>
-  <div>
-    <label for="value_rating">Value for money <span class="muted">(optional)</span></label>
-    <select id="value_rating" name="value_rating">
-      <option value="">— Not rated —</option>
-      <?php for ($i = 5; $i >= 1; $i--): ?>
-        <option value="<?= $i ?>"<?= $sel('value_rating', $i) ?>><?= $i ?> — <?= ['','Rip-off','Overpriced','Fair','Good value','Bargain'][$i] ?></option>
-      <?php endfor; ?>
-    </select>
-  </div>
-</div>
+</details>
+
+<script>
+// Show the subratings for whatever is being reviewed, and disable the rest so the browser does not
+// submit them. Progressive enhancement: with this script off, the group rendered as active is the
+// only enabled one and the server drops anything that does not belong to the posted category.
+(function () {
+  var type = document.getElementById('subject_type');
+  if (!type) return;
+  var groups = document.querySelectorAll('.aspect-group');
+  function apply() {
+    groups.forEach(function (g) {
+      var on = g.getAttribute('data-category') === type.value;
+      g.style.display = on ? '' : 'none';
+      g.disabled = !on;
+    });
+  }
+  type.addEventListener('change', apply);
+  apply();
+})();
+</script>
 
 <script>
 // Map the type-ahead box back onto the real <select>. Progressive enhancement only: with JS off,

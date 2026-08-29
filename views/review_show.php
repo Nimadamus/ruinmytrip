@@ -40,6 +40,7 @@
     <span>by <a href="<?= e(url('u/'.$author['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($author['username']) ?></a>
       · <?= e(ago((string)$r['created_at'])) ?>
       <?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?>
+      <?php if (!empty($r['traveler_type']) && rmt_traveler_type_label($r['traveler_type'])): ?> · <?= e((string) rmt_traveler_type_label($r['traveler_type'])) ?><?php endif; ?>
     </span>
   </div>
 
@@ -75,20 +76,25 @@
     </div></div>
   <?php endif; ?>
 
-  <?php if ($r['safety_rating'] || $r['value_rating']): ?>
-    <div class="grid g-2" style="gap:14px;margin:18px 0">
-      <?php if ($r['safety_rating']): ?>
-        <div class="card"><div class="card-body">
-          <p class="muted" style="margin:0 0 4px">Safety</p>
-          <span class="stars"><?= stars((int)$r['safety_rating']) ?></span>
+  <?php /* This reviewer's own subratings, in the order their category asks them. Reviews written
+           before subratings existed have none and this whole block is absent -- no "not rated"
+           placeholders, and no zero-star rows standing in for a question nobody was asked. */ ?>
+  <?php
+    $ordered = [];
+    foreach (rmt_aspects_for_category((string) $r['subject_type']) as $a) {
+        if (isset($aspectValues[$a])) $ordered[$a] = $aspectValues[$a];
+    }
+    foreach ($aspectValues as $a => $v) { if (!isset($ordered[$a])) $ordered[$a] = $v; }
+  ?>
+  <?php if ($ordered): ?>
+    <div class="grid g-3" style="gap:12px;margin:18px 0">
+      <?php foreach ($ordered as $aspect => $value): ?>
+        <div class="card"><div class="card-body" style="padding:12px 14px">
+          <p class="muted" style="margin:0 0 4px;font-size:.9rem"><?= e(rmt_aspect_label((string) $aspect)) ?></p>
+          <span class="stars"><?= stars((int) $value) ?></span>
+          <span class="hint" style="margin-left:6px"><?= e((string) (RMT_REVIEW_ASPECTS[$aspect]['scale'][$value] ?? '')) ?></span>
         </div></div>
-      <?php endif; ?>
-      <?php if ($r['value_rating']): ?>
-        <div class="card"><div class="card-body">
-          <p class="muted" style="margin:0 0 4px">Value for money</p>
-          <span class="stars"><?= stars((int)$r['value_rating']) ?></span>
-        </div></div>
-      <?php endif; ?>
+      <?php endforeach; ?>
     </div>
   <?php endif; ?>
 

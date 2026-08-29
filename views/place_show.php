@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -28,13 +28,10 @@
       <strong style="font-size:1.15rem"><?= e((string)$stats['a']) ?>/5</strong>
       <span class="muted">from <?= (int)$stats['c'] ?> traveler <?= $stats['c'] === 1 ? 'review' : 'reviews' ?></span>
     </div>
-    <?php /* Denominators are shown per line: safety and value are optional on the write form, so a
-             place with 12 reviews and 3 safety ratings must say "from 3", never average the blanks. */ ?>
-    <p class="muted" style="margin:0 0 14px">
-      <?php if ($stats['safety_c'] > 0): ?>Safety <?= e((string)$stats['safety_a']) ?>/5 <span class="hint">(from <?= (int)$stats['safety_c'] ?>)</span><?php endif; ?>
-      <?php if ($stats['safety_c'] > 0 && $stats['value_c'] > 0): ?> · <?php endif; ?>
-      <?php if ($stats['value_c'] > 0): ?>Value <?= e((string)$stats['value_a']) ?>/5 <span class="hint">(from <?= (int)$stats['value_c'] ?>)</span><?php endif; ?>
-    </p>
+    <?php /* Safety and value used to be printed here as their own line. They are aspects now and
+             appear in the breakdown below with every other one, under the same minimum-sample rule.
+             Keeping both would have shown Value twice and shown Safety off two ratings in one place
+             while the threshold correctly withheld it in the other. */ ?>
 
     <div style="max-width:420px;margin:0 0 22px">
       <?php foreach ([5,4,3,2,1] as $n): $c = (int)$breakdown[$n]; $pct = $stats['c'] > 0 ? round($c * 100 / $stats['c']) : 0; ?>
@@ -51,6 +48,25 @@
     <p class="muted" style="margin:0 0 18px">
       No published traveler reviews yet, and we will not invent one to fill the space.
     </p>
+  <?php endif; ?>
+
+  <?php /* What travelers rated, aspect by aspect. Only aspects at least RMT_ASPECT_MIN_SAMPLE
+           people scored appear: one person's "Service 5.0" is a person, not a consensus, and
+           printing it as a community figure is the same borrowed credibility as inventing a
+           review. Every rating is still stored; the threshold governs display only. */ ?>
+  <?php if (!empty($aspectAverages)): ?>
+    <div style="max-width:420px;margin:0 0 22px">
+      <?php foreach ($aspectAverages as $a): $pct = round($a['avg'] * 20); ?>
+        <div style="display:flex;align-items:center;gap:10px;margin:5px 0">
+          <span class="muted" style="width:7.5rem;font-size:.9rem"><?= e($a['label']) ?></span>
+          <span style="flex:1;height:8px;background:#e9e9ee;border-radius:99px;overflow:hidden">
+            <span style="display:block;height:100%;width:<?= $pct ?>%;background:var(--ink)"></span>
+          </span>
+          <strong style="width:2.2rem;text-align:right;font-size:.9rem"><?= e(number_format($a['avg'], 1)) ?></strong>
+        </div>
+      <?php endforeach; ?>
+      <p class="hint" style="margin:8px 0 0">Shown once at least <?= RMT_ASPECT_MIN_SAMPLE ?> travelers have rated it.</p>
+    </div>
   <?php endif; ?>
 
   <?php /* Actions wrap on a narrow screen instead of overflowing, and the save control is a real

@@ -16,6 +16,7 @@ require BASE_PATH . '/app/tokens.php';
 require BASE_PATH . '/app/ratelimit.php';
 require BASE_PATH . '/app/auth.php';
 require BASE_PATH . '/app/reviews.php';
+require BASE_PATH . '/app/review_aspects.php';
 require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/places.php';
