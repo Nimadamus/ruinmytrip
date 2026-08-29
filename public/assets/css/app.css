@@ -87,6 +87,12 @@ section.block{padding:56px 0}
 .dest-hero{position:relative;color:#fff;border-radius:22px;overflow:hidden;margin-top:24px}
 .dest-hero img{height:340px;width:100%;object-fit:cover}
 .dest-hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(15,27,45,.85));display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:28px;flex-wrap:wrap}
+/* The hero row wraps, but a flex item will not shrink below its own content, so on a 390px
+   screen the action beside the city name ran to x=540 and .dest-hero clipped it: a call to
+   action cut in half by the edge of the phone. Measured, not spotted -- it looks deliberate
+   in a screenshot. */
+.dest-hero .overlay > *{min-width:0;max-width:100%}
+@media (max-width:520px){.dest-hero .overlay{padding:18px;gap:10px}}
 .dest-hero h1{color:#fff;margin:0}
 .dest-hero .btn-ghost{color:#fff;border-color:rgba(255,255,255,.55)}
 .dest-hero .btn-ghost:hover{background:rgba(255,255,255,.12);color:#fff}
