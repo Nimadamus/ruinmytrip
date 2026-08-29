@@ -1885,7 +1885,13 @@ function contribute_page(array $a): void {
           LIMIT 12");
     $recentDestinations = array_values(array_filter($recentDestinations, static fn($r) => (int) $r['places'] > 0));
 
-    view('contribute', compact('me', 'recentDestinations', 'myReviews'), [
+    // Arriving from a search that found nothing: the traveler has already typed the name of the
+    // thing we are missing, so ask them to type it a second time only if we lost it.
+    $prefillName = trim((string) ($_GET['name'] ?? ''));
+    if ($prefillName !== '' && !rmt_search_suggestable($prefillName)) $prefillName = '';
+    $prefillName = mb_substr($prefillName, 0, 200);
+
+    view('contribute', compact('me', 'recentDestinations', 'myReviews', 'prefillName'), [
         'title' => 'Review a place you went to — RuinMyTrip',
         'description' => 'Write about a hotel, restaurant or attraction you actually visited. Real traveler reviews, not imported listings.',
     ]);

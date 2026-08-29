@@ -216,5 +216,55 @@ echo "\n-- backfill is idempotent --\n";
 $again = rmt_search_backfill_norm();
 check('a second pass changes nothing', $again, ['destinations' => 0, 'places' => 0, 'aliases' => 0]);
 
+/* ------------------------------------------------------------------ suggestable
+   The gate in front of the missing-place queue. A false accept costs one row somebody dismisses;
+   a false reject costs a real place we never hear about again -- so this leans toward accepting,
+   and the tests pin both the leaning and the floor. */
+
+// Things that look like the name of a venue, including ones we would never guess at ourselves.
+foreach ([
+    'Kyubey Ginza',
+    'The Ivy',
+    'St Regis',
+    'Nyx Bar',
+    'Cafe de Flore',
+    'Café de Flore',              // accents survive the shape test
+    'Hôtel Étoile du Nord',
+    'Museu Nacional de Arte Antiga',
+    "Katz's Delicatessen",
+    'Bar 1930',                   // digits are fine when letters carry the name
+    'Test Kitchen',               // "test" as a real word inside a real name
+] as $q) {
+    check('suggestable: ' . $q, rmt_search_suggestable($q), true);
+}
+
+// Things that are not a name, and would make the human queue unreadable.
+foreach ([
+    ''            => 'empty',
+    'ab'          => 'too short',
+    'the'         => 'bare stopword',
+    'test'        => 'bare test string',
+    'hello'       => 'bare greeting',
+    'asdfgh'      => 'keyboard mash, no vowel',
+    'bcdfghjk'    => 'consonant run',
+    '????'        => 'punctuation only',
+    '2024'        => 'digits only',
+    '!!! ???'     => 'punctuation with spaces',
+    'https://maps.google.com/x' => 'pasted link',
+    'www.example.com'           => 'pasted host',
+    'someone@example.com'       => 'address, not a place name',
+    'a b c d e f g h i j k l m' => 'pasted sentence',
+] as $q => $why) {
+    $q = (string) $q;   // PHP turns a numeric array key into an int, and "2024" is a real query
+    check('not suggestable (' . $why . '): ' . ($q === '' ? '<empty>' : $q), rmt_search_suggestable($q), false);
+}
+
+// A name at the length boundary is accepted; a paragraph is not.
+check('suggestable: 80 chars is allowed', rmt_search_suggestable(str_repeat('ab', 40)), true);
+check('not suggestable: over 80 chars', rmt_search_suggestable(str_repeat('ab', 41)), false);
+
+// Whitespace is not meaning: the same query padded and doubled-spaced decides the same way.
+check('suggestable: whitespace normalised', rmt_search_suggestable('   The   Ivy   '), true);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

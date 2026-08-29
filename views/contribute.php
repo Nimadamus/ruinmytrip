@@ -1,4 +1,4 @@
-<?php /** @var ?array $me @var array $recentDestinations @var int $myReviews */ ?>
+<?php /** @var string $prefillName @var ?array $me @var array $recentDestinations @var int $myReviews */ ?>
 <div class="wrap" style="max-width:760px">
   <h1 style="margin:.2rem 0 .4rem">Review a place you went to</h1>
   <p class="muted" style="margin:0 0 6px">
@@ -43,8 +43,13 @@
     </div>
   <?php endif; ?>
 
-  <section class="card" style="margin:0 0 30px"><div class="card-body">
+  <section class="card" id="suggest" style="margin:0 0 30px"><div class="card-body">
     <h2 style="margin:0 0 8px;font-size:1.02rem">Can't find the place?</h2>
+    <?php if ($prefillName !== ''): ?>
+      <p class="hint" style="margin:0 0 8px">
+        You searched for &ldquo;<?= e($prefillName) ?>&rdquo; and we did not have it.
+      </p>
+    <?php endif; ?>
     <p class="muted" style="margin:0 0 10px;font-size:.95rem">
       Tell us the name and the city and we will check it and add it. Places are added by hand
       rather than instantly, so nobody can fill the site with entries that do not exist.
@@ -55,7 +60,8 @@
         <div class="grid g-2" style="gap:12px">
           <div>
             <label for="sp-name">Place name</label>
-            <input type="text" id="sp-name" name="name" maxlength="200" required>
+            <input type="text" id="sp-name" name="name" maxlength="200" required
+                   value="<?= e($prefillName) ?>"<?= $prefillName !== '' ? ' autofocus' : '' ?>>
           </div>
           <div>
             <label for="sp-city">City or destination</label>

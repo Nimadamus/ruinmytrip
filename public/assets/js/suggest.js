@@ -104,13 +104,42 @@
       window.location.href = url;
     }
 
+    // Finding nothing is not an error, it is information: on the contribution page it is the exact
+    // moment somebody learns we do not have the place they came to write about. Rather than an
+    // empty box closing on them, offer the queue and carry the name across. Only here -- on
+    // ordinary site search an empty dropdown should stay out of the way, and that page has its own
+    // zero-result offer under the results.
+    function missing() {
+      panel.textContent = '';
+      options = [];
+      active = -1;
+      var q = input.value.trim();
+      if (!reviewTarget || q.length < 3) { close(); return; }
+      var row = el('a', 'suggest-item');
+      row.setAttribute('role', 'presentation');
+      row.setAttribute('href', '#suggest');
+      row.appendChild(el('span', 'suggest-name', 'Suggest “' + q + '”'));
+      row.appendChild(el('span', 'suggest-sub', 'We check it by hand before it goes on the site'));
+      row.addEventListener('mousedown', function (ev) {
+        ev.preventDefault();
+        close();
+        var name = document.getElementById('sp-name');
+        if (name) { name.value = q; name.focus(); }
+        var sec = document.getElementById('suggest');
+        if (sec && sec.scrollIntoView) sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+      panel.appendChild(row);
+      panel.hidden = false;
+      input.setAttribute('aria-expanded', 'false');   // nothing selectable: not a listbox state
+    }
+
     function render(data) {
       panel.textContent = '';
       options = [];
       active = -1;
 
       if (!data || !data.groups || !data.groups.length) {
-        close();
+        missing();
         return;
       }
 
@@ -149,7 +178,7 @@
         });
       });
 
-      if (!options.length) { close(); return; }
+      if (!options.length) { missing(); return; }
       panel.hidden = false;
       input.setAttribute('aria-expanded', 'true');
     }

@@ -6,7 +6,22 @@
     <button class="btn btn-primary">Search</button>
   </form>
   <?php if ($qs===''): ?><p class="muted">Type a place, a trip, a review, or a traveler to begin.</p><?php else: ?>
-    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people): ?><p class="muted">No results for “<?= e($qs) ?>”.</p><?php endif; ?>
+    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people): ?><p class="muted">No results for “<?= e($qs) ?>”.</p>
+      <?php /* A search that found nothing is the one moment somebody has told us exactly what we
+               are missing, so this is where the missing-place flow belongs. Shown only when the
+               query looks like the name of something: a queue full of typos is a queue nobody
+               reads. The name is carried across so they do not type it twice. */ ?>
+      <?php if (rmt_search_suggestable($qs)): ?>
+        <p style="margin:10px 0 0">
+          <a class="btn btn-ghost" data-review-cta="search"
+             href="<?= e(url('contribute') . '?name=' . rawurlencode($qs)) ?>#suggest">Suggest &ldquo;<?= e($qs) ?>&rdquo;</a>
+        </p>
+        <p class="hint" style="margin:6px 0 0">
+          We add places by hand after checking them, so this goes to a queue rather than straight
+          onto the site.
+        </p>
+      <?php endif; ?>
+    <?php endif; ?>
     <?php if ($dests): ?><h2>Destinations</h2><div class="grid g-3">
       <?php foreach($dests as $d):?><article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($d['name']) ?></h3></div></a></article><?php endforeach;?>
     </div><?php endif; ?>

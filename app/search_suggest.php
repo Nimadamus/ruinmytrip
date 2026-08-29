@@ -658,3 +658,57 @@ function rmt_search_add_alias(string $entityType, int $entityId, string $alias, 
           [$entityType, $entityId, trim($alias), $norm, $source, date('Y-m-d H:i:s')]);
     return true;
 }
+
+/**
+ * Is this query worth offering "suggest this place" for?
+ *
+ * A zero-result search is the one moment a traveler has told us, unprompted, exactly what we are
+ * missing -- so it is where the missing-place flow belongs. But it is also where every typo, empty
+ * press, pasted URL and keyboard mash lands, and inviting those into a human review queue would
+ * bury the real suggestions under noise until nobody reads the queue at all.
+ *
+ * So the gate is deliberately about SHAPE, not meaning. We cannot know whether "Kyubey Ginza" is a
+ * real restaurant -- that is precisely what the human queue is for -- but we can tell that it looks
+ * like the name of something, and that "asdfgh", "????" and "https://..." do not. The test is
+ * permissive on purpose: a false accept costs one queue row somebody dismisses, a false reject
+ * costs a real place we never hear about again. Erring toward accepting is the cheaper mistake.
+ */
+function rmt_search_suggestable(string $q): bool {
+    $q = trim(preg_replace('/\s+/u', ' ', $q) ?? '');
+    $len = function_exists('mb_strlen') ? mb_strlen($q, 'UTF-8') : strlen($q);
+    if ($len < 3 || $len > 80) return false;
+
+    // A pasted link is somebody navigating, not naming a venue.
+    if (preg_match('~^\s*(https?://|www\.)~i', $q)) return false;
+    // An address typed into search is a real intent, but it is not a place NAME, and the queue
+    // needs a name it can look up.
+    if (str_contains($q, '@')) return false;
+
+    // A single stopword typed alone is somebody trailing off, not naming anything.
+    static $stop = ['the','and','for','you','was','are','not','but','with','from','this','that',
+                    'what','where','when','how','why','who','test','asdf','hello'];
+    if (!str_contains($q, ' ') && in_array(strtolower(rmt_search_norm($q)), $stop, true)) return false;
+
+    // A name carries letters. Plenty of real ones lean on a number -- Bar 1930, Studio 54, Hotel
+    // 41 -- so the floor is a few letters and a minority share rather than a majority, which still
+    // rejects "2024", "?????" and "!!!" while keeping the venues that name themselves after a year.
+    $letters = preg_match_all('/\p{L}/u', $q);
+    if ($letters < 3 || $letters < $len * 0.3) return false;
+
+    // A search box is not a sentence. Somebody pasting a paragraph is not naming a venue.
+    if (str_word_count(preg_replace('/[^A-Za-z\' ]/', ' ', $q) ?? '') > 10) return false;
+
+    // Keyboard mash. Every language we index writes venue names with vowels somewhere, and no real
+    // name runs five consonants together in one word. Applied per word so "Nyx" and "St" survive
+    // inside a longer name.
+    $ascii = rmt_search_norm($q);
+    if ($ascii !== '') {
+        foreach (preg_split('/\s+/', $ascii) ?: [] as $w) {
+            // A number is a word here ("Bar 1930"), and asking a number for a vowel is nonsense.
+            if ($w === '' || strlen($w) < 4 || !preg_match('/[a-z]/', $w)) continue;
+            if (!preg_match('/[aeiouy]/', $w)) return false;
+            if (preg_match('/[bcdfghjklmnpqrstvwxz]{5}/', $w)) return false;
+        }
+    }
+    return true;
+}
