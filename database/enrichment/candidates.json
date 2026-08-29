@@ -1,0 +1,123 @@
+[
+  {
+    "slug": "hotel-sacher-vienna",
+    "name": "Hotel Sacher Vienna",
+    "city": "Vienna",
+    "country": "Austria",
+    "type": "hotel",
+    "timezone": "Europe/Vienna"
+  },
+  {
+    "slug": "hassler-roma-rome",
+    "name": "Hassler Roma",
+    "city": "Rome",
+    "country": "Italy",
+    "type": "hotel",
+    "timezone": "Europe/Rome",
+    "search_name": "Hotel Hassler"
+  },
+  {
+    "slug": "hotel-d-angleterre-copenhagen",
+    "name": "Hotel d'Angleterre",
+    "city": "Copenhagen",
+    "country": "Denmark",
+    "type": "hotel",
+    "timezone": "Europe/Copenhagen"
+  },
+  {
+    "slug": "pestana-palace-lisboa-lisbon",
+    "name": "Pestana Palace Lisboa",
+    "city": "Lisbon",
+    "country": "Portugal",
+    "type": "hotel",
+    "timezone": "Europe/Lisbon"
+  },
+  {
+    "slug": "hotel-chelsea-new-york-city",
+    "name": "Hotel Chelsea",
+    "city": "New York City",
+    "country": "United States",
+    "type": "hotel",
+    "timezone": "America/New_York"
+  },
+  {
+    "slug": "le-procope-paris",
+    "name": "Le Procope",
+    "city": "Paris",
+    "country": "France",
+    "type": "restaurant",
+    "timezone": "Europe/Paris"
+  },
+  {
+    "slug": "gundel-budapest",
+    "name": "Gundel",
+    "city": "Budapest",
+    "country": "Hungary",
+    "type": "restaurant",
+    "timezone": "Europe/Budapest"
+  },
+  {
+    "slug": "au-pied-de-cochon-paris",
+    "name": "Au Pied de Cochon",
+    "city": "Paris",
+    "country": "France",
+    "type": "restaurant",
+    "timezone": "Europe/Paris"
+  },
+  {
+    "slug": "cafe-savoy-prague",
+    "name": "Cafe Savoy",
+    "city": "Prague",
+    "country": "Czechia",
+    "type": "restaurant",
+    "timezone": "Europe/Prague"
+  },
+  {
+    "slug": "antiche-carampane-venice",
+    "name": "Antiche Carampane",
+    "city": "Venice",
+    "country": "Italy",
+    "type": "restaurant",
+    "timezone": "Europe/Rome"
+  },
+  {
+    "slug": "warsaw-rising-museum",
+    "name": "Warsaw Rising Museum",
+    "city": "Warsaw",
+    "country": "Poland",
+    "type": "attraction",
+    "timezone": "Europe/Warsaw"
+  },
+  {
+    "slug": "duomo-di-milano",
+    "name": "Duomo di Milano",
+    "city": "Milan",
+    "country": "Italy",
+    "type": "attraction",
+    "timezone": "Europe/Rome"
+  },
+  {
+    "slug": "palace-of-holyroodhouse-edinburgh",
+    "name": "Palace of Holyroodhouse",
+    "city": "Edinburgh",
+    "country": "United Kingdom",
+    "type": "attraction",
+    "timezone": "Europe/London"
+  },
+  {
+    "slug": "pinacoteca-di-brera-milan",
+    "name": "Pinacoteca di Brera",
+    "city": "Milan",
+    "country": "Italy",
+    "type": "attraction",
+    "timezone": "Europe/Rome"
+  },
+  {
+    "slug": "pantheon-paris",
+    "name": "Pantheon",
+    "city": "Paris",
+    "country": "France",
+    "type": "attraction",
+    "timezone": "Europe/Paris"
+  }
+]

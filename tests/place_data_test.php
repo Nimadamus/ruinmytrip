@@ -245,6 +245,19 @@ check('...but still carries the city it is in', $bare['address']['addressLocalit
 check('a bare place shows no facts panel',
       rmt_place_has_address(rmt_place_by_slug('bare-place-lisbon')), false);
 
+echo "\n-- provenance line --\n";
+check('no source means no line',
+      rmt_place_source_line(['data_source' => null, 'data_source_url' => null]), null);
+$osm = rmt_place_source_line(['data_source' => 'osm',
+    'data_source_url' => 'https://www.openstreetmap.org/way/1', 'data_checked_at' => '2026-08-29 10:00:00']);
+check('OSM is credited by name, as ODbL requires',
+      str_contains($osm['text'], 'OpenStreetMap contributors, ODbL'), true);
+check('...with the date it was checked', str_contains($osm['text'], 'checked 2026-08-29'), true);
+check('...and a link to the object', $osm['url'], 'https://www.openstreetmap.org/way/1');
+check('a map source is never described as the venue', str_contains($osm['text'], 'the venue'), false);
+$own = rmt_place_source_line(['data_source' => 'official_site', 'data_source_url' => 'https://x.com']);
+check('an official site IS the venue', str_contains($own['text'], 'the venue'), true);
+
 echo "\n-- driver parity --\n";
 // The two migration files describe the same tables on two engines. When they disagree about a
 // storage class the difference does not show up locally at all: it shows up as a 500 in

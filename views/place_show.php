@@ -146,12 +146,20 @@
             <dd style="margin:0"><?= $d['closed'] ? 'Closed' : e(implode(', ', $d['intervals'])) ?></dd>
           <?php endforeach; ?>
         </dl>
-        <?php if (!empty($p['data_source_url'])): ?>
-          <p class="hint" style="margin:8px 0 0">Hours from
-            <a href="<?= e((string) $p['data_source_url']) ?>" rel="nofollow noopener" target="_blank">the venue</a><?php
-            if (!empty($p['data_checked_at'])): ?>, checked <?= e(substr((string) $p['data_checked_at'], 0, 10)) ?><?php endif; ?>.
-          </p>
-        <?php endif; ?>
+      <?php endif; ?>
+
+      <?php /* Provenance sits under the whole card, not just the hours: the address came from the
+               same place. OpenStreetMap is ODbL and the attribution is a licence term. */ ?>
+      <?php $src = rmt_place_source_line($p); ?>
+      <?php if ($src): ?>
+        <p class="hint" style="margin:12px 0 0">
+          <?php if ($src['url']): ?>
+            <a href="<?= e($src['url']) ?>" rel="nofollow noopener" target="_blank"><?= e($src['text']) ?></a>
+          <?php else: ?>
+            <?= e($src['text']) ?>
+          <?php endif; ?>
+          Tell us if something has changed and we will correct it.
+        </p>
       <?php endif; ?>
     </div></section>
   <?php endif; ?>

@@ -1,0 +1,627 @@
+{
+  "generated_at": "2026-08-29T16:35:22Z",
+  "source": "openstreetmap/nominatim",
+  "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+  "places": [
+    {
+      "slug": "hotel-sacher-vienna",
+      "name": "Hotel Sacher Vienna",
+      "city": "Vienna",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Albertinaplatz",
+        "postal_code": "1010",
+        "neighborhood": "Innere Stadt",
+        "lat": "48.2040427",
+        "lng": "16.3697708",
+        "phone": "+43 1 514560",
+        "website_url": "https://www.sacher.com/hotel-sacher-wien/",
+        "timezone": "Europe/Vienna"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "way",
+        "id": 628990501,
+        "name": "Hotel Sacher",
+        "display_name": "Hotel Sacher, Albertinaplatz, Kärntner Viertel, Katastralgemeinde Innere Stadt, Innere Stadt, Wien, 1010, Österreich"
+      },
+      "source_url": "https://www.openstreetmap.org/way/628990501"
+    },
+    {
+      "slug": "hassler-roma-rome",
+      "name": "Hotel Hassler",
+      "city": "Rome",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Piazza della Trinità dei Monti 6",
+        "postal_code": "00187",
+        "neighborhood": "Municipio Roma I",
+        "lat": "41.9059856",
+        "lng": "12.4836915",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 2442830197,
+        "name": "Hotel Hassler",
+        "display_name": "Hotel Hassler, 6, Piazza della Trinità dei Monti, Campo Marzio, Municipio Roma I, Roma, Roma Capitale, Lazio, 00187, Italia"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2442830197"
+    },
+    {
+      "slug": "hotel-d-angleterre-copenhagen",
+      "name": "Hotel d'Angleterre",
+      "city": "Copenhagen",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Hovedvagtsgade",
+        "postal_code": "1103",
+        "neighborhood": "Indre By",
+        "lat": "55.6805544",
+        "lng": "12.5842804",
+        "phone": "+45 33120095",
+        "website_url": "http://www.dangleterre.dk/",
+        "timezone": "Europe/Copenhagen"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "way",
+        "id": 133045890,
+        "name": "Hotel d’Angleterre",
+        "display_name": "Hotel d’Angleterre, Hovedvagtsgade, Gammelholm, Indre By, København, Københavns Kommune, Region Hovedstaden, 1103, Danmark"
+      },
+      "source_url": "https://www.openstreetmap.org/way/133045890"
+    },
+    {
+      "slug": "pestana-palace-lisboa-lisbon",
+      "name": "Pestana Palace Lisboa",
+      "city": "Lisbon",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rua Jau",
+        "postal_code": "1300-245",
+        "neighborhood": "Santo Amaro",
+        "lat": "38.7035332",
+        "lng": "-9.1866758",
+        "website_url": "https://www.tesla.com/pt_PT/findus/list/chargers/Portugal",
+        "timezone": "Europe/Lisbon"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 0.768,
+      "osm": {
+        "type": "node",
+        "id": 8198583025,
+        "name": "Pestana Palace Lisboa Tesla Destination Charger",
+        "display_name": "Pestana Palace Lisboa Tesla Destination Charger, Rua Jau, Santo Amaro, Alcântara, Lisboa, 1300-245, Portugal"
+      },
+      "source_url": "https://www.openstreetmap.org/node/8198583025"
+    },
+    {
+      "slug": "hotel-chelsea-new-york-city",
+      "name": "Hotel Chelsea",
+      "city": "New York City",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "222 West 23rd Street",
+        "postal_code": "10011",
+        "neighborhood": "Manhattan",
+        "lat": "40.7443742",
+        "lng": "-73.9968175",
+        "timezone": "America/New_York"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 2325990473,
+        "name": "Hotel Chelsea",
+        "display_name": "Hotel Chelsea, 222, West 23rd Street, Chelsea District, Manhattan Community Board 4, Manhattan, New York County, New York, 10011, United States"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2325990473"
+    },
+    {
+      "slug": "le-procope-paris",
+      "name": "Le Procope",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rue de l'Ancienne Comédie",
+        "postal_code": "75006",
+        "neighborhood": "Paris 6e Arrondissement",
+        "lat": "48.8530584",
+        "lng": "2.3387505",
+        "phone": "+33 1 40 46 79 00",
+        "website_url": "https://www.procope.com",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 2386622236,
+        "name": "Le Procope",
+        "display_name": "Le Procope, Rue de l'Ancienne Comédie, Quartier de la Monnaie, Paris 6e Arrondissement, Paris, Île-de-France, France métropolitaine, 75006, France"
+      },
+      "source_url": "https://www.openstreetmap.org/node/2386622236",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:00",
+          "closes": "00:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "12:00",
+          "closes": "00:00"
+        }
+      ],
+      "hours_raw": "12:00-24:00"
+    },
+    {
+      "slug": "gundel-budapest",
+      "name": "Gundel",
+      "city": "Budapest",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Fő út",
+        "postal_code": "1087",
+        "neighborhood": "Kerepesdűlő",
+        "lat": "47.4959533",
+        "lng": "19.0899134",
+        "timezone": "Europe/Budapest"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 0.782,
+      "osm": {
+        "type": "node",
+        "id": 6421186843,
+        "name": "Gundel Károly",
+        "display_name": "Gundel Károly, Fő út, Kerepesdűlő, VIII. kerület, Budapest, Közép-Magyarország, 1087, Magyarország"
+      },
+      "source_url": "https://www.openstreetmap.org/node/6421186843"
+    },
+    {
+      "slug": "au-pied-de-cochon-paris",
+      "name": "Au Pied de Cochon",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Rue Coquillière",
+        "postal_code": "75001",
+        "neighborhood": "Paris 1er Arrondissement",
+        "lat": "48.8634885",
+        "lng": "2.3437958",
+        "phone": "+33 1 40 13 77 00",
+        "website_url": "https://www.pieddecochon.com/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (unsupported syntax: 24/7): 24/7"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 1678050141,
+        "name": "Au Pied de Cochon",
+        "display_name": "Au Pied de Cochon, Rue Coquillière, Quartier Les Halles, Paris 1er Arrondissement, Paris, Île-de-France, France métropolitaine, 75001, France"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1678050141"
+    },
+    {
+      "slug": "cafe-savoy-prague",
+      "name": "Cafe Savoy",
+      "city": "Prague",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Vítězná 124/5",
+        "postal_code": "150 00",
+        "neighborhood": "Smíchov",
+        "lat": "50.0809258",
+        "lng": "14.4072158",
+        "phone": "+420 257 311 562",
+        "website_url": "https://cafesavoy.ambi.cz/",
+        "timezone": "Europe/Prague"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 332442885,
+        "name": "Café Savoy",
+        "display_name": "Café Savoy, 124/5, Vítězná, Smíchov, Praha 5, obvod Praha 5, Praha, 150 00, Česko"
+      },
+      "source_url": "https://www.openstreetmap.org/node/332442885",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "09:00",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "09:00",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Mo-Fr 08:00-22:00; Sa,Su 09:00-22:00"
+    },
+    {
+      "slug": "antiche-carampane-venice",
+      "name": "Antiche Carampane",
+      "city": "Venice",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Corte de Ca Bollani",
+        "postal_code": "30125",
+        "neighborhood": "Venezia-Murano-Burano",
+        "lat": "45.4386713",
+        "lng": "12.3311153",
+        "phone": "+39 041 5240165",
+        "website_url": "https://www.antichecarampane.com/en/storia",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 0.773,
+      "osm": {
+        "type": "way",
+        "id": 228612578,
+        "name": "Trattoria Antiche Carampane",
+        "display_name": "Trattoria Antiche Carampane, Corte de Ca Bollani, San Polo, Venezia-Murano-Burano, Murano, Venezia, Veneto, 30125, Italia"
+      },
+      "source_url": "https://www.openstreetmap.org/way/228612578",
+      "hours": [
+        {
+          "day_of_week": 1,
+          "opens": "12:30",
+          "closes": "14:30"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "12:30",
+          "closes": "14:30"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "12:30",
+          "closes": "14:30"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "12:30",
+          "closes": "14:30"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "12:30",
+          "closes": "14:30"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "19:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "19:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "19:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "19:30",
+          "closes": "22:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "19:30",
+          "closes": "22:00"
+        }
+      ],
+      "hours_raw": "Tu-Sa 12:30-14:30,19:30-22:00"
+    },
+    {
+      "slug": "warsaw-rising-museum",
+      "name": "Warsaw Rising Museum",
+      "city": "Warsaw",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Grzybowska 79",
+        "postal_code": "00-844",
+        "neighborhood": "Wola",
+        "lat": "52.2321024",
+        "lng": "20.9813775",
+        "phone": "+48 22 539 79 05",
+        "website_url": "https://1944.pl/",
+        "timezone": "Europe/Warsaw"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "way",
+        "id": 167109428,
+        "name": "Muzeum Powstania Warszawskiego",
+        "display_name": "Muzeum Powstania Warszawskiego, 79, Grzybowska, Czyste, Wola, Warszawa, województwo mazowieckie, 00-844, Polska"
+      },
+      "source_url": "https://www.openstreetmap.org/way/167109428",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 1,
+          "closed": true
+        },
+        {
+          "day_of_week": 5,
+          "opens": "10:00",
+          "closes": "18:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "hours_raw": "Mo,We-Fr 08:00-18:00; Tu off; Sa-Su 10:00-18:00"
+    },
+    {
+      "slug": "duomo-di-milano",
+      "name": "Duomo di Milano",
+      "city": "Milan",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "1_33051",
+        "postal_code": "20122",
+        "neighborhood": "Municipio 1",
+        "lat": "45.4641669",
+        "lng": "9.1916121",
+        "phone": "+39 02 361691",
+        "website_url": "https://www.duomomilano.it/",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "relation",
+        "id": 18017026,
+        "name": "Duomo di Milano",
+        "display_name": "Duomo di Milano, 1_33051, Cinque Vie, Duomo, Municipio 1, Milano, Rodano, Milano, Lombardia, 20122, Italia"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/18017026",
+      "hours": [
+        {
+          "day_of_week": 0,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 1,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 2,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 3,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 4,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 5,
+          "opens": "08:00",
+          "closes": "19:00"
+        },
+        {
+          "day_of_week": 6,
+          "opens": "08:00",
+          "closes": "19:00"
+        }
+      ],
+      "hours_raw": "Mo-Su 08:00-19:00"
+    },
+    {
+      "slug": "palace-of-holyroodhouse-edinburgh",
+      "name": "Palace of Holyroodhouse",
+      "city": "Edinburgh",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Canongate",
+        "postal_code": "EH8 8DX",
+        "neighborhood": "Abbeyhill",
+        "lat": "55.9526948",
+        "lng": "-3.1716130",
+        "phone": "+44 20 7766 7334",
+        "website_url": "https://www.royalcollection.org.uk/visit/palace-of-holyroodhouse",
+        "timezone": "Europe/London"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Nov 01-Mar 29 09:30-16:30; Mar 31-Oct 31 09:30-18:00"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "relation",
+        "id": 16769442,
+        "name": "Palace of Holyroodhouse",
+        "display_name": "Palace of Holyroodhouse, Canongate, Holyrood, Abbeyhill, Old Town, City of Edinburgh, Alba / Scotland, EH8 8DX, United Kingdom"
+      },
+      "source_url": "https://www.openstreetmap.org/relation/16769442"
+    },
+    {
+      "slug": "pinacoteca-di-brera-milan",
+      "name": "Pinacoteca di Brera",
+      "city": "Milan",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Via Brera 28",
+        "postal_code": "20121",
+        "neighborhood": "Municipio 1",
+        "lat": "45.4722421",
+        "lng": "9.1884071",
+        "phone": "+39 02 722631",
+        "website_url": "https://pinacotecabrera.org/",
+        "timezone": "Europe/Rome"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Tu-Su 09:30-18:30; Mo, Jan 1, May 1, Dec 25 off"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "node",
+        "id": 1029667846,
+        "name": "Pinacoteca di Brera",
+        "display_name": "Pinacoteca di Brera, 28, Via Brera, Borgonuovo, Cerchia dei Navigli, Municipio 1, Milano, Rodano, Milano, Lombardia, 20121, Italia"
+      },
+      "source_url": "https://www.openstreetmap.org/node/1029667846"
+    },
+    {
+      "slug": "pantheon-paris",
+      "name": "Pantheon",
+      "city": "Paris",
+      "source": "osm",
+      "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+      "fields": {
+        "street_address": "Place du Panthéon",
+        "postal_code": "75005",
+        "neighborhood": "Paris 5e Arrondissement",
+        "lat": "48.8461947",
+        "lng": "2.3460507",
+        "website_url": "https://www.paris-pantheon.fr/",
+        "timezone": "Europe/Paris"
+      },
+      "notes": [
+        "timezone supplied by hand; Nominatim does not return one",
+        "opening_hours not stored (seasonal rule): Mo-Su 10:00-18:00; Apr 1-Sep 30: Mo-Su 10:00-18:30; Jan 1,May 1,Dec 25: off"
+      ],
+      "confidence": 1.0,
+      "osm": {
+        "type": "way",
+        "id": 16407465,
+        "name": "Panthéon",
+        "display_name": "Panthéon, Place du Panthéon, Quartier de la Sorbonne, Paris 5e Arrondissement, Paris, Île-de-France, France métropolitaine, 75005, France"
+      },
+      "source_url": "https://www.openstreetmap.org/way/16407465"
+    }
+  ]
+}

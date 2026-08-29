@@ -18,6 +18,9 @@ services:
     plan: free            # free web spins down on idle (cold starts). Upgrade to Starter for always-on (billing decision).
     dockerfilePath: ./Dockerfile
     healthCheckPath: /healthz
+    # NOTE: the live service was created from the repo URL via the API, not from this blueprint,
+    # and its preDeployCommand is empty. Migrations and the place-enrichment step actually run in
+    # docker/entrypoint.sh. Keep this line in step with that file if the blueprint is ever adopted.
     preDeployCommand: php database/migrate.php
     autoDeploy: true
     envVars:

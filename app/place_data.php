@@ -337,6 +337,35 @@ function rmt_place_categories_for(string $bucket): array {
                    WHERE bucket = ? AND status = ? ORDER BY sort, name', [$bucket, 'active']);
 }
 
+/**
+ * The line that says where the facts on this page came from, or null when we hold no provenance.
+ *
+ * Two reasons this is not one hardcoded sentence. First, "from the venue" is false for a value that
+ * came off a map, and a wrong attribution is its own kind of made-up fact. Second, OpenStreetMap is
+ * ODbL: using it obliges us to say so wherever it renders, which is a licence term, not a courtesy.
+ *
+ * @return array{text:string,url:?string}|null
+ */
+function rmt_place_source_line(array $p): ?array {
+    $src = trim((string) ($p['data_source'] ?? ''));
+    $url = trim((string) ($p['data_source_url'] ?? ''));
+    $checked = substr((string) ($p['data_checked_at'] ?? ''), 0, 10);
+    if ($src === '' && $url === '') return null;
+
+    $who = match ($src) {
+        'osm'          => 'OpenStreetMap contributors, ODbL',
+        'wikidata'     => 'Wikidata',
+        'owner'        => 'the business',
+        'official_site'=> 'the venue',
+        'tourism_board'=> 'the local tourism board',
+        'editorial'    => 'the RuinMyTrip editorial team',
+        default        => $src !== '' ? $src : 'a cited source',
+    };
+    $text = 'Address and hours from ' . $who;
+    if ($checked !== '') $text .= ', checked ' . $checked;
+    return ['text' => $text . '.', 'url' => $url !== '' ? $url : null];
+}
+
 /* ===========================================================================
  * Opening hours
  * ======================================================================== */
