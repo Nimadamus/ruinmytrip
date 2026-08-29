@@ -382,6 +382,24 @@ function rmt_place_schema_type(string $type): string {
     return ['hotel' => 'Hotel', 'restaurant' => 'Restaurant'][$type] ?? 'TouristAttraction';
 }
 
+/**
+ * The schema.org type to use as Review.itemReviewed, or null when this kind of place is not
+ * eligible for a Google Review rich result at all.
+ *
+ * Google's Review snippet accepts a closed list of reviewed-item types (LocalBusiness and its
+ * subtypes, Product, Book, Movie, Event, Recipe, Organization, ...). A museum, a landmark, a beach
+ * and a city are schema.org Places, and neither Place nor TouristAttraction nor TouristDestination
+ * is on that list. Marking one up anyway is what produced the Search Console error
+ * "Invalid object type for field itemReviewed".
+ *
+ * Re-typing an attraction as a LocalBusiness purely to keep the stars would be schema that
+ * describes something other than reality, so an ineligible place gets accurate Place markup and no
+ * review/aggregateRating block. Nothing visible on the page changes.
+ */
+function rmt_place_review_type(string $type): ?string {
+    return ['hotel' => 'Hotel', 'restaurant' => 'Restaurant'][$type] ?? null;
+}
+
 /** The question the page title promises to answer. Nobody asks whether a hotel is worth visiting. */
 function rmt_place_title_question(string $type): string {
     return [

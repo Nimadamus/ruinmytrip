@@ -218,8 +218,10 @@ function destination(array $a): void {
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
             'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
-            'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']],
-            'aggregateRating'=>$avg && $avg['c']>0 ? ['@type'=>'AggregateRating','ratingValue'=>$avg['a'],'reviewCount'=>$avg['c']] : null]),
+            // No aggregateRating: TouristDestination is not one of the types Google accepts for a
+            // review rich result, so a rating here is reported as an invalid reviewed-item type.
+            // The visible community score on the page is unaffected.
+            'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']]]),
     ]);
 }
 
@@ -296,14 +298,18 @@ function place_show(array $a): void {
     if ($ed && !empty($ed['what_it_is'])) $ld['description'] = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 300, '…');
     // aggregateRating is COMMUNITY ONLY and omitted entirely at zero. An empty aggregate, or one
     // padded with our own rating, would be a consensus claim with nothing behind it.
-    if ($stats['c'] > 0 && $stats['a'] !== null) {
+    // ...and only on a type Google accepts as a reviewed item. An attraction is a schema.org
+    // Place, which is not on that list, so hanging a rating off it is rejected as
+    // "Invalid object type for field itemReviewed" (see rmt_place_review_type).
+    $ratingEligible = rmt_place_review_type((string) $p['type']) !== null;
+    if ($ratingEligible && $stats['c'] > 0 && $stats['a'] !== null) {
         $ld['aggregateRating'] = ['@type'=>'AggregateRating','ratingValue'=>$stats['a'],
                                   'reviewCount'=>$stats['c'],'bestRating'=>5,'worstRating'=>1];
     }
     // The editorial review is marked up as what it actually is: one Review, authored by the
     // organisation, never folded into an aggregate. That is semantically correct and it is the
     // opposite of inventing review counts.
-    if ($editorial) {
+    if ($ratingEligible && $editorial) {
         $er = $editorial[0];
         $ld['review'] = ['@type'=>'Review',
             'author'=>['@type'=>'Organization','name'=>rmt_editorial_name()],
@@ -1886,13 +1892,7 @@ function review_show(array $a): void {
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
                           ['name'=>$r['title'] ?: $r['subject_name'],'url'=>url(ltrim(rmt_review_path($r),'/'))]],
-        'jsonld' => $r['status']==='published' ? jsonld(['@context'=>'https://schema.org','@type'=>'Review',
-            'itemReviewed'=>array_filter(['@type'=>'Place','name'=>$r['subject_name'],
-                'url'=>$r['place_slug'] ? url('p/'.$r['place_slug']) : null]),
-            'reviewRating'=>['@type'=>'Rating','ratingValue'=>(int)$r['rating'],'bestRating'=>5,'worstRating'=>1],
-            'author'=>['@type'=>'Person','name'=>'@'.$r['username']],
-            'datePublished'=>substr((string)$r['created_at'],0,10),
-            'reviewBody'=>mb_strimwidth(strip_tags((string)$r['body']),0,500,'…')]) : '',
+        'jsonld' => rmt_review_jsonld($r),
     ]);
 }
 

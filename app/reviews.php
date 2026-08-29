@@ -109,13 +109,47 @@ function rmt_review_path(array $r): string {
 
 /** Fetch one review with its author, destination and the place it is about (if any). */
 function rmt_review_get(int $id): ?array {
-    return q_one('SELECT r.*, d.name dest_name, d.slug dest_slug, u.username, u.status user_status,
-                         p.slug place_slug, p.name place_name
+    return q_one('SELECT r.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
+                         u.username, u.status user_status,
+                         p.slug place_slug, p.name place_name, p.type place_type
                   FROM reviews r
                   LEFT JOIN destinations d ON d.id = r.destination_id
                   LEFT JOIN places p ON p.id = r.place_id AND p.status = \'active\'
                   JOIN users u ON u.id = r.user_id
                   WHERE r.id = ?', [$id]);
+}
+
+/**
+ * Review JSON-LD for a review detail page, or '' when the reviewed subject is not a type Google
+ * accepts as itemReviewed.
+ *
+ * Every /review/ page used to declare itemReviewed as a schema.org Place, which Search Console
+ * rejects with "Invalid object type for field itemReviewed" — Place is not on Google's closed list
+ * of reviewable types. A review is only marked up when it is attached to a real place row whose
+ * kind maps to a supported type (a hotel or a restaurant, both LocalBusiness subtypes). Reviews of
+ * a city or of an attraction keep their BreadcrumbList and their visible content and emit no Review
+ * block, rather than being re-typed into something they are not just to earn stars.
+ */
+function rmt_review_jsonld(array $r): string {
+    if (($r['status'] ?? '') !== 'published') return '';
+    $type = rmt_place_review_type((string) ($r['place_type'] ?? ''));
+    if ($type === null || empty($r['place_slug'])) return '';
+
+    $item = ['@type' => $type,
+             'name'  => $r['place_name'] ?: $r['subject_name'],
+             'url'   => url('p/'.$r['place_slug'])];
+    if (!empty($r['dest_name'])) {
+        $item['address'] = array_filter(['@type' => 'PostalAddress',
+            'addressLocality' => $r['dest_name'], 'addressCountry' => $r['dest_country'] ?? null]);
+    }
+
+    return jsonld(['@context' => 'https://schema.org', '@type' => 'Review',
+        'itemReviewed'  => $item,
+        'reviewRating'  => ['@type'=>'Rating','ratingValue'=>(int)$r['rating'],'bestRating'=>5,'worstRating'=>1],
+        'author'        => ['@type'=>'Person','name'=>'@'.$r['username'],'url'=>url('u/'.$r['username'])],
+        'datePublished' => substr((string)$r['created_at'], 0, 10),
+        'name'          => $r['title'] ?: null,
+        'reviewBody'    => mb_strimwidth(strip_tags((string)$r['body']), 0, 500, '…')]);
 }
 
 /**
