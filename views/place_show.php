@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -302,6 +302,37 @@
       </div></article>
     <?php endforeach; ?>
   </div>
+
+  <?php /* Alternatives, which is a different question from what is close by. Scored on what the
+           entities have in common -- same area, same category, same price band -- with distance
+           only as a tiebreak, so a closer venue of the wrong kind never outranks a matching one.
+           The controller drops this module entirely when it would repeat the nearby list. */ ?>
+  <?php if ($similar): ?>
+    <section style="margin:0 0 40px">
+      <h2 style="font-size:1.1rem;margin:0 0 10px"><?= e(rmt_similar_heading((string) $p['type'])) ?></h2>
+      <div class="grid g-3" style="gap:12px">
+        <?php foreach ($similar as $sp): ?>
+          <article class="card"><div class="card-body">
+            <span class="eyebrow" style="text-transform:capitalize"><?= e(rmt_place_type_label((string) $sp['type'])) ?></span>
+            <h3 style="margin:.25rem 0 .2rem;font-size:1.02rem">
+              <a href="<?= e(url('p/' . $sp['slug'])) ?>"><?= e((string) $sp['name']) ?></a>
+            </h3>
+            <?php /* Why it is here, in the reader's terms. A module that cannot say why a row is
+                     in it is a module the reader has no reason to trust. */ ?>
+            <p class="hint" style="margin:0">
+              <?php
+                $why = [];
+                if (!empty($sp['neighborhood'])) $why[] = (string) $sp['neighborhood'];
+                if (($lbl = rmt_place_price_label(isset($sp['price_level']) && $sp['price_level'] !== null ? (int) $sp['price_level'] : null))) $why[] = $lbl;
+                if (isset($sp['distance_m']) && $sp['distance_m'] !== null) $why[] = rmt_distance_label((int) $sp['distance_m']) . ' away';
+                echo e(implode(' · ', $why));
+              ?>
+            </p>
+          </div></article>
+        <?php endforeach; ?>
+      </div>
+    </section>
+  <?php endif; ?>
 
   <?php /* Internal links to sibling attractions, but only ones with editorial behind them, so this
            can never become a ring of empty pages pointing at each other. */ ?>

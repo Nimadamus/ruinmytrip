@@ -363,6 +363,11 @@ function place_show(array $a): void {
     // place we have not located yet, so nothing regresses for the ones still unenriched.
     $nearbyGeo = rmt_places_nearby($p, '', 6);
     $nearby = $nearbyGeo ?: rmt_place_nearby($id, (int)$p['destination_id']);
+    // Alternatives, which is a different question from what is close. In a city where we hold six
+    // places the two lists are frequently the same three venues, and two headings over one list is
+    // one module and a wasted screen -- so the weaker one is dropped rather than repeated.
+    $similar = rmt_similar_places($p, 6);
+    if (rmt_similar_is_redundant($similar, $nearby)) $similar = [];
     $saved = rmt_place_is_saved($id, $me ? (int) $me['id'] : null);
     $saveCount = rmt_place_save_count($id);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
@@ -407,7 +412,7 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,

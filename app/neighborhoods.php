@@ -236,6 +236,29 @@ function rmt_nb_for_destination(int $destId, int $limit = 12, int $min = RMT_NB_
 }
 
 /**
+ * The wider areas of a destination: boroughs and administrative units with real places in them.
+ *
+ * Manhattan holds more of our places than any actual neighborhood does, and it is still not a
+ * neighborhood. Calling it one would be a small lie told for the sake of a fuller module; leaving
+ * it entirely unreachable makes a real page with six places in it that nothing links to. So it is
+ * offered under its own heading, labelled as what it is.
+ *
+ * @return list<array{id:int,slug:string,name:string,kind:string,places:int}>
+ */
+function rmt_nb_wider_for_destination(int $destId, int $limit = 8): array {
+    $kinds = "'" . implode("','", RMT_NB_BROWSABLE) . "'";
+    return q_all(
+        "SELECT n.id, n.slug, n.canonical_name name, n.kind, COUNT(p.id) places
+           FROM neighborhoods n
+           JOIN places p ON p.neighborhood_id = n.id AND p.status = 'active'
+          WHERE n.destination_id = ? AND n.kind NOT IN ($kinds)
+          GROUP BY n.id, n.slug, n.canonical_name, n.kind
+         HAVING COUNT(p.id) >= " . RMT_NB_MIN_PLACES . "
+          ORDER BY COUNT(p.id) DESC, n.canonical_name
+          LIMIT " . max(1, $limit), [$destId]);
+}
+
+/**
  * Areas that exist but are not browsable -- too few places, or an administrative unit.
  *
  * For the admin coverage view. The point is that they are visible as data rather than invisible as

@@ -308,6 +308,7 @@ function rmt_destination_discovery(int $destId, int $size = RMT_MODULE_SIZE): ar
         'mean'          => $rank['mean'],
         'recent'        => rmt_destination_recent_reviews($destId, 5),
         'neighborhoods' => rmt_destination_neighborhoods($destId),
+        'wider_areas'   => rmt_nb_wider_for_destination($destId),
         'counts'        => rmt_place_type_counts($destId),
     ];
 }

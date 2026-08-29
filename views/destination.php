@@ -289,6 +289,22 @@
         </section>
       <?php endif; ?>
 
+      <?php /* Wider areas, under their own heading. Manhattan holds more of our places than any real
+               neighborhood does and is still a borough: calling it a neighborhood would be a small
+               lie for the sake of a fuller module, and leaving it unlinked would make a real page
+               nothing points at. */ ?>
+      <?php if (!empty($discovery['wider_areas'])): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule"><h2>Wider areas</h2></div>
+          <div class="chip-row">
+            <?php foreach ($discovery['wider_areas'] as $wa): ?>
+              <a class="chip" href="<?= e(url('d/' . $d['slug'] . '/n/' . $wa['slug'])) ?>"><?= e((string) $wa['name']) ?>
+                <span class="chip-count"><?= (int) $wa['places'] ?></span></a>
+            <?php endforeach; ?>
+          </div>
+        </section>
+      <?php endif; ?>
+
       <?php if ($placeCount > 0): ?>
         <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int) $placeCount ?> places in <?= e($d['name']) ?> &rarr;</a></p>
       <?php endif; ?>
