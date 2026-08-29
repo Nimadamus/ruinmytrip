@@ -93,8 +93,11 @@ section.block{padding:56px 0}
    a wrap, so it stayed on the line and simply overhung. Below 520px the row becomes a column,
    which is what "these do not fit side by side" actually means. */
 @media (max-width:520px){
-  .dest-hero .overlay{flex-direction:column;align-items:flex-start;justify-content:flex-end;
-    padding:18px;gap:10px}
+  /* flex-wrap:nowrap is the load-bearing word. As a COLUMN that still wraps, content taller
+     than the 340px hero wraps into a second COLUMN -- placed to the right, off the side of
+     the phone, at exactly the x=544 this was supposed to fix. A stack does not wrap. */
+  .dest-hero .overlay{flex-direction:column;flex-wrap:nowrap;align-items:flex-start;
+    justify-content:flex-end;padding:18px;gap:10px}
   .dest-hero .overlay .btn{white-space:normal;text-align:center}
 }
 .dest-hero h1{color:#fff;margin:0}
