@@ -201,6 +201,53 @@ function rmt_search_suggest(string $raw, int $limit = RMT_SUGGEST_LIMIT): array 
     return ['query' => $qNorm, 'groups' => $groups, 'count' => $count];
 }
 
+
+/**
+ * Published review counts for a set of rows, in one query.
+ *
+ * Not a correlated subquery per candidate. Popularity is a tiebreaker worth at most five points
+ * and it was costing one COUNT per row considered, most of them for rows about to be thrown away.
+ * Counting the survivors once is the same answer for a fraction of the work, and it is the
+ * difference between a query plan that holds at ten thousand places and one that does not.
+ *
+ * @param  list<int> $ids
+ * @return array<int,int>
+ */
+function rmt_suggest_review_counts(string $column, array $ids): array {
+    $ids = array_values(array_unique(array_filter(array_map('intval', $ids), static fn(int $i) => $i > 0)));
+    if (!$ids) return [];
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $col = in_array($column, ['place_id', 'destination_id', 'user_id'], true) ? $column : 'place_id';
+    $out = [];
+    foreach (q_all("SELECT {$col} k, COUNT(*) c FROM reviews
+                     WHERE {$col} IN ({$in}) AND status = 'published' GROUP BY {$col}", $ids) as $r) {
+        $out[(int) $r['k']] = (int) $r['c'];
+    }
+    return $out;
+}
+
+/**
+ * Apply the popularity tiebreaker to an already-tiered list, then sort and trim.
+ *
+ * Counts are fetched once for the whole shortlist. Because the bonus is capped below a tier gap it
+ * can only reorder rows that matched equally well, which is why it is safe to apply after tiering
+ * rather than during it.
+ *
+ * @param list<array<string,mixed>> $rows each with 'id' and 'score'
+ */
+function rmt_suggest_finish(array $rows, string $countColumn, int $limit): array {
+    if (!$rows) return [];
+    usort($rows, static fn($a, $b) => $b['score'] <=> $a['score']);
+    $short = array_slice($rows, 0, max($limit * 2, 12));
+    $counts = rmt_suggest_review_counts($countColumn, array_column($short, 'id'));
+    foreach ($short as &$r) {
+        $r['score'] += rmt_suggest_popularity((int) ($counts[(int) $r['id']] ?? 0));
+    }
+    unset($r);
+    usort($short, static fn($a, $b) => $b['score'] <=> $a['score']);
+    return array_slice($short, 0, $limit);
+}
+
 /**
  * The public shape of a suggestion list: exactly what the browser needs to draw a row and follow
  * it, and nothing else.
@@ -231,7 +278,6 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
     $like = rmt_search_like($qNorm);
     $rows = q_all(
         "SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm,
-                (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                 NULL AS alias_hit
            FROM destinations d
           WHERE d.name_norm LIKE ? ESCAPE '!'
@@ -241,7 +287,6 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
 
     // Aliases: Wien, Praha, NYC. A hit here is a strong signal, not a fuzzy one.
     foreach (q_all("SELECT a.alias, d.id, d.slug, d.name, d.country, d.region, d.name_norm,
-                           (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                            a.alias_norm AS alias_hit
                       FROM search_aliases a JOIN destinations d ON d.id = a.entity_id
                      WHERE a.entity_type = 'destination' AND a.alias_norm LIKE ? ESCAPE '!'
@@ -271,12 +316,11 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
             'kind'     => 'Destination',
             'url'      => url('d/' . $r['slug']),
             'slug'     => (string) $r['slug'],
-            'score'    => $tier['score'] + rmt_suggest_popularity((int) $r['review_count']),
+            'score'    => $tier['score'],
             'tier'     => $tier['tier'],
         ];
     }
-    usort($out, static fn($a, $b) => $b['score'] <=> $a['score']);
-    return array_slice($out, 0, $limit);
+    return rmt_suggest_finish($out, 'destination_id', $limit);
 }
 
 /** Place candidates. Always carries the city, so two venues with one name are told apart. */
@@ -284,7 +328,6 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
     $like = rmt_search_like($qNorm);
     $sql = "SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
                    d.name dest_name, d.country dest_country,
-                   (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                    NULL AS alias_hit
               FROM places p JOIN destinations d ON d.id = p.destination_id
              WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!'
@@ -303,7 +346,6 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
     // Duomo di Milano, the local name for an English one. Stored by enrichment, matched here.
     foreach (q_all("SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
                            d.name dest_name, d.country dest_country,
-                           (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                            a.alias_norm AS alias_hit
                       FROM search_aliases a
                       JOIN places p ON p.id = a.entity_id AND p.status = 'active'
@@ -319,6 +361,16 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
         }
     }
 
+    // One lookup for every subcategory on the shortlist, not one per row.
+    $catIds = array_values(array_filter(array_map(static fn($r) => (int) ($r['category_id'] ?? 0), $rows)));
+    $catNames = [];
+    if ($catIds) {
+        $in = implode(',', array_fill(0, count($catIds), '?'));
+        foreach (q_all("SELECT id, name FROM place_categories WHERE id IN ({$in})", $catIds) as $c) {
+            $catNames[(int) $c['id']] = (string) $c['name'];
+        }
+    }
+
     $out = [];
     foreach ($rows as $r) {
         $tier = rmt_suggest_tier((string) $r['name_norm'], $qNorm, $r['alias_hit'] ?? null);
@@ -326,8 +378,7 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
             $tier = ['tier' => 'fuzzy', 'score' => RMT_SUGGEST_TIERS['fuzzy'] * (float) $r['fuzzy_score']];
         }
         if (!$tier) continue;
-        $cat = rmt_place_category(isset($r['category_id']) ? (int) $r['category_id'] : null);
-        $kind = $cat['name'] ?? rmt_place_type_label((string) $r['type']);
+        $kind = $catNames[(int) ($r['category_id'] ?? 0)] ?? rmt_place_type_label((string) $r['type']);
         $out[] = [
             'type'     => 'place',
             'id'       => (int) $r['id'],
@@ -336,19 +387,17 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
             'kind'     => $kind,
             'url'      => url('p/' . $r['slug']),
             'slug'     => (string) $r['slug'],
-            'score'    => $tier['score'] + rmt_suggest_popularity((int) $r['review_count']),
+            'score'    => $tier['score'],
             'tier'     => $tier['tier'],
         ];
     }
-    usort($out, static fn($a, $b) => $b['score'] <=> $a['score']);
-    return array_slice($out, 0, $limit);
+    return rmt_suggest_finish($out, 'place_id', $limit);
 }
 
 /** Reviewers, by username or display name. Deliberately few: this is not a people search. */
 function rmt_suggest_users(string $qNorm, int $limit): array {
     $like = rmt_search_like($qNorm);
-    $rows = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url,
-                          (SELECT COUNT(*) FROM reviews r WHERE r.user_id = u.id AND r.status = 'published') review_count
+    $rows = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url
                      FROM users u LEFT JOIN profiles p ON p.user_id = u.id
                     WHERE u.status = 'active'
                       AND (LOWER(u.username) LIKE ? ESCAPE '!' OR LOWER(COALESCE(p.display_name, '')) LIKE ? ESCAPE '!')
@@ -369,12 +418,11 @@ function rmt_suggest_users(string $qNorm, int $limit): array {
             'slug'     => (string) $r['username'],
             // Users sit a tier lower than an entity of the same strength: somebody typing three
             // letters into a travel search box means a place far more often than a person.
-            'score'    => $tier['score'] - 12 + rmt_suggest_popularity((int) $r['review_count']),
+            'score'    => $tier['score'] - 12,
             'tier'     => $tier['tier'],
         ];
     }
-    usort($out, static fn($a, $b) => $b['score'] <=> $a['score']);
-    return array_slice($out, 0, $limit);
+    return rmt_suggest_finish($out, 'user_id', $limit);
 }
 
 /**
@@ -430,12 +478,10 @@ function rmt_suggest_fuzzy_portable(string $table, string $qNorm, int $limit): a
 
     $rows = $table === 'destinations'
         ? q_all("SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm,
-                        (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                         NULL AS alias_hit
                    FROM destinations d WHERE d.name_norm LIKE ? ESCAPE '!' LIMIT 300", [$like])
         : q_all("SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
                         d.name dest_name, d.country dest_country,
-                        (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                         NULL AS alias_hit
                    FROM places p JOIN destinations d ON d.id = p.destination_id
                   WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!' LIMIT 300", [$like]);
@@ -472,7 +518,6 @@ function rmt_suggest_fuzzy(string $table, string $qNorm, int $limit): array {
     if ($table === 'destinations') {
         return q_all("SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm,
                              similarity(d.name_norm, ?) AS fuzzy_score,
-                             (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') review_count,
                              NULL AS alias_hit
                         FROM destinations d
                        WHERE d.name_norm % ? AND similarity(d.name_norm, ?) > 0.45
@@ -481,7 +526,6 @@ function rmt_suggest_fuzzy(string $table, string $qNorm, int $limit): array {
     return q_all("SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
                          d.name dest_name, d.country dest_country,
                          similarity(p.name_norm, ?) AS fuzzy_score,
-                         (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
                          NULL AS alias_hit
                     FROM places p JOIN destinations d ON d.id = p.destination_id
                    WHERE p.status = 'active' AND p.name_norm % ? AND similarity(p.name_norm, ?) > 0.45
