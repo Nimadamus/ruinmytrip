@@ -92,7 +92,14 @@ section.block{padding:56px 0}
    action cut in half by the edge of the phone. Measured, not spotted -- it looks deliberate
    in a screenshot. */
 .dest-hero .overlay > *{min-width:0;max-width:100%}
-@media (max-width:520px){.dest-hero .overlay{padding:18px;gap:10px}}
+@media (max-width:520px){
+  .dest-hero .overlay{padding:18px;gap:10px}
+  /* .btn is white-space:nowrap everywhere, which is right for a two-word button and wrong
+     for "Join to mark been / want" on a 390px screen: min-width:0 lets the CONTAINER
+     shrink, and the button inside it still refuses to break, so it overhung and the hero
+     clipped it. Only inside the hero, only on small screens. */
+  .dest-hero .overlay .btn{white-space:normal;text-align:center}
+}
 .dest-hero h1{color:#fff;margin:0}
 .dest-hero .btn-ghost{color:#fff;border-color:rgba(255,255,255,.55)}
 .dest-hero .btn-ghost:hover{background:rgba(255,255,255,.12);color:#fff}
