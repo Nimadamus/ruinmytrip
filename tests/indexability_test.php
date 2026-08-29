@@ -124,7 +124,11 @@ check('every reason code has wording', count(array_filter(RMT_INDEX_REASONS)), c
 
 $pdo = db();
 $pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT, role TEXT)");
-$pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, summary TEXT, body TEXT)");
+// Mirrors the real schema: destinations has NO body column. The first version of this
+// fixture invented one, the test passed, and sitemap generation died on production after
+// the first group.
+$pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, summary TEXT)");
+$pdo->exec("CREATE TABLE destination_tips (id INTEGER PRIMARY KEY, destination_id INT, body TEXT, sort INT)");
 $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, destination_id INT, slug TEXT, name TEXT, type TEXT,
             status TEXT, street_address TEXT, lat REAL, website_url TEXT, phone TEXT,
             created_at TEXT, updated_at TEXT)");
@@ -147,9 +151,11 @@ $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/057_sitemap_cache
 
 $pdo->exec("INSERT INTO users (id,username,status,role) VALUES
     (1,'contributor','active','user'), (2,'lurker','active','user'), (3,'gone','disabled','user')");
-$pdo->exec("INSERT INTO destinations (id,slug,name,country,summary,body) VALUES
-    (1,'paris-france','Paris','France','A city','Long text'),
-    (2,'nowhere','Nowhere','Elsewhere','','')");
+$pdo->exec("INSERT INTO destinations (id,slug,name,country,summary) VALUES
+    (1,'paris-france','Paris','France','A city'),
+    (2,'nowhere','Nowhere','Elsewhere','')");
+// Paris has something written about it; Nowhere has nothing and no places.
+$pdo->exec("INSERT INTO destination_tips (destination_id,body,sort) VALUES (1,'Buy the pass',0)");
 // Paris: 7 hotels (over the category threshold), 2 restaurants (under it).
 for ($i = 1; $i <= 7; $i++) {
     q_run("INSERT INTO places (id,destination_id,slug,name,type,status,street_address,updated_at)
@@ -265,6 +271,21 @@ foreach (rmt_sitemap_parts() as $pt) {
     libxml_use_internal_errors($prev);
     check('valid XML: ' . $pt['group_key'], $ok, true);
 }
+
+/* ---------------------------------------------- one broken group is not nine
+
+   The first deploy of this shipped a sitemap containing exactly one file: a query in the second
+   group referenced a column that existed in the fixture and not in production, generation threw,
+   and the entrypoint logged and continued. Seven groups of real URLs disappeared without an error
+   anybody saw. A group that fails now costs that group only. */
+
+$pdo->exec("DROP TABLE guides");                 // the editorial group's query will now throw
+$counts = rmt_sitemap_generate();
+check('the broken group is reported as failed', $counts['editorial'], -1);
+check('but the others still generated', $counts['places'] >= 0 && $counts['destinations'] >= 0, true);
+$groups = array_column(rmt_sitemap_parts(), 'group_key');
+check('and their files exist', in_array('destinations', $groups, true), true);
+check('the failed group has no file rather than an empty one', in_array('editorial', $groups, true), false);
 
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

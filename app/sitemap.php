@@ -198,7 +198,18 @@ function rmt_sitemap_render(array $rows): string {
 function rmt_sitemap_generate(): array {
     $counts = [];
     foreach (RMT_SITEMAP_GROUPS as $group) {
-        $rows = rmt_sitemap_group($group);
+        // One group failing must not take the rest with it. The first version of this had no
+        // try/catch, a query in the second group referenced a column that exists only in a test
+        // fixture, and the deploy shipped a sitemap containing exactly one file -- silently,
+        // because the caller logs and continues. A broken group now costs that group and nothing
+        // else, and the group that failed keeps whatever it last generated rather than vanishing.
+        try {
+            $rows = rmt_sitemap_group($group);
+        } catch (Throwable $e) {
+            error_log('sitemap: group ' . $group . ' failed: ' . $e->getMessage());
+            $counts[$group] = -1;
+            continue;
+        }
         $counts[$group] = count($rows);
         q_run("DELETE FROM sitemap_cache WHERE group_key = ?", [$group]);
         if (!$rows) continue;

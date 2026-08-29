@@ -192,12 +192,20 @@ function rmt_index_reason_label(string $code): string {
 
 /** @return list<array{slug:string,name:string,verdict:array,place_count:int}> */
 function rmt_index_destinations(): array {
+    // destinations has no body column -- the written content lives in destination_tips and in the
+    // editorial reviews attached to the city. Reading a column that only existed in a test fixture
+    // is how the first version of this aborted sitemap generation in production while passing
+    // every test locally.
     $rows = q_all(
-        "SELECT d.id, d.slug, d.name, d.country, d.summary, d.body,
-                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active') place_count
+        "SELECT d.id, d.slug, d.name, d.country, d.summary,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active') place_count,
+                (SELECT COUNT(*) FROM destination_tips t WHERE t.destination_id = d.id) tip_count,
+                (SELECT COUNT(*) FROM reviews r WHERE r.destination_id = d.id AND r.status = 'published') dest_review_count
            FROM destinations d ORDER BY d.name");
     foreach ($rows as &$r) {
         $r['place_count'] = (int) $r['place_count'];
+        // "Written about" means tips, an editorial review, or a summary -- whichever exists.
+        $r['body'] = ((int) $r['tip_count'] + (int) $r['dest_review_count']) > 0 ? 'y' : '';
         $r['verdict'] = rmt_indexable('destination', $r);
     }
     return $rows;
