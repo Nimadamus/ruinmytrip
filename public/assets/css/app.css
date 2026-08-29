@@ -230,7 +230,7 @@ a.ed-badge:hover{background:var(--brand)}
 /* ---------------------------------------------------------------- autocomplete
    The panel is anchored to the search form, so it moves with it and cannot detach on a scroll or
    a soft-keyboard resize. Rows are 44px tall because that is a finger, not a cursor. */
-.nav-search,.nav-search-mobile{position:relative}
+.nav-search,.nav-search-mobile,.contribute-search{position:relative}
 .suggest-panel{position:absolute;left:0;right:auto;top:calc(100% + 6px);z-index:60;
   /* The nav input is narrow; the suggestions are not. Anchor to the input's left edge and let the
      panel take the width it needs, capped so it can never run off the side of the window --
