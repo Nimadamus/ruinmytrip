@@ -23,7 +23,7 @@
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
 </head>
-<body>
+<body data-event-url="<?= e(url('event')) ?>">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-inner">

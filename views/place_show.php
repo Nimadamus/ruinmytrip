@@ -74,7 +74,8 @@
            button: it links to sign-in carrying this page as the return, so the intent survives the
            detour instead of the control simply being missing. */ ?>
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 <?= $saveCount > 0 ? '8px' : '26px' ?>">
-    <a class="btn btn-accent" href="<?= e(url('review/new?place='.(int)$p['id'])) ?>">Write a review</a>
+    <a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+       href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Write a review</a>
     <?php if ($me): ?>
       <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
         <?= csrf_field() ?>
@@ -258,7 +259,8 @@
     <div class="empty-cta" style="margin-bottom:50px">
       <h3>Be the first to review <?= e($p['name']) ?>.</h3>
       <p class="muted" style="margin:0">The bad parts are the useful parts. Say what it actually cost and what you wish you had known.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new?place='.(int)$p['id'])) ?>">Share your experience</a></p>
+      <p style="margin:16px 0 0"><a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+       href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Share your experience</a></p>
     </div>
   <?php endif; ?>
 

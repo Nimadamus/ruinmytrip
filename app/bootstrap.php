@@ -22,6 +22,7 @@ require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/place_data.php';
 require BASE_PATH . '/app/destination_modules.php';
+require BASE_PATH . '/app/contribution_events.php';
 require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/going.php';

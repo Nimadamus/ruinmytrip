@@ -97,6 +97,10 @@
           navigator.sendBeacon(form.getAttribute('data-suggest-click') || '/suggest/click', fd);
         }
       } catch (e) { /* analytics is never worth a broken navigation */ }
+      if (reviewTarget && window.rmtTrack && node.getAttribute('data-type') === 'place') {
+        window.rmtTrack('contribute_place_selected',
+                        { source: 'contribute', place_id: node.getAttribute('data-id') || '' });
+      }
       window.location.href = url;
     }
 
@@ -175,7 +179,12 @@
       lastQuery = q;
       if (timer) clearTimeout(timer);
       if (q.length < MIN_CHARS) { close(); return; }
-      timer = setTimeout(function () { fetchSuggestions(q); }, DEBOUNCE_MS);
+      timer = setTimeout(function () {
+        // Only on the contribution page, and only once per query: this measures whether people
+        // find what they went there to review, not what anybody typed.
+        if (reviewTarget && window.rmtTrack) window.rmtTrack('contribute_search', { source: 'contribute' });
+        fetchSuggestions(q);
+      }, DEBOUNCE_MS);
     });
 
     input.addEventListener('keydown', function (ev) {

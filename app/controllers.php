@@ -1848,6 +1848,28 @@ function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
  * the only path to writing is remembering how to find each place first, and that is enough
  * friction to lose the review.
  */
+/**
+ * POST /event — a funnel event the browser is in a position to see and the server is not.
+ *
+ * Only clicks and restores: a CTA press, a suggestion picked, a saved draft put back. Everything
+ * the server can observe for itself is recorded there instead, because a client-reported step is
+ * one a client can decline to report.
+ *
+ * CSRF-checked and rate limited like any other write. Answers 204 always: analytics is never worth
+ * an error the person can see.
+ */
+function contribution_event(array $a): void {
+    csrf_check();
+    if (rmt_rate_ok('contrib_event', (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 180, 60)) {
+        rmt_track((string) input('event'), [
+            'source'         => (string) input('source'),
+            'place_id'       => (int) input('place_id'),
+            'destination_id' => (int) input('destination_id'),
+        ]);
+    }
+    http_response_code(204);
+}
+
 function contribute_page(array $a): void {
     $me = current_user();
     $myReviews = $me ? (int) (q_one("SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
@@ -1911,11 +1933,22 @@ function contribute_suggest_place(array $a): void {
     q_run("INSERT INTO place_suggestions (name, city, type, website_url, suggested_by, status, created_at)
            VALUES (?,?,?,?,?,'pending',?)",
           [$name, $city, $type, $website, (int) $me['id'], date('Y-m-d H:i:s')]);
+    rmt_track('place_suggested', ['source' => 'contribute']);
     flash('Thanks — we will check it and add it. Places are added by hand, so it is not instant.');
     redirect('/contribute');
 }
 
 function review_new_form(array $a): void {
+    // Recorded BEFORE require_login sends an anonymous visitor away, because "wanted the form and
+    // had no account" is the single most important step in this funnel and it is invisible after
+    // the redirect.
+    if (!is_logged_in()) {
+        rmt_track('review_signup_required', [
+            'source' => (string) (input('src') ?: 'place'),
+            'place_id' => (int) input('place'),
+            'destination_id' => (int) input('destination'),
+        ]);
+    }
     require_login();
     // A "Share your experience" link from a destination page should not dump the writer back
     // into an empty type-ahead they have to re-search -- that extra step is exactly the kind of
@@ -1928,12 +1961,17 @@ function review_new_form(array $a): void {
         $r = ['destination_id' => (int) $bound['destination_id'],
               'subject_type'   => $bound['type'],
               'subject_name'   => $bound['name']];
+        rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'place'),
+                                        'place_id' => (int) $bound['id'],
+                                        'destination_id' => (int) $bound['destination_id']]);
         view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound, 'aspectValues'=>[]],
              ['title'=>'Review '.$bound['name'].' — RuinMyTrip']);
         return;
     }
     $preselect = (int) input('destination');
     $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
+    rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
+                                    'destination_id' => $preselect]);
     view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[]],
          ['title'=>'Write a review — RuinMyTrip']);
 }
@@ -1949,6 +1987,7 @@ function review_create(array $a): void {
     $opts  = static fn(array $extra) => $extra + ['dests'=>all_dests(), 'placeOptions'=>$bound ? [] : rmt_place_suggestions(),
                                                  'boundPlace'=>$bound, 'aspectValues'=>rmt_posted_aspect_values($_POST)];
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
+        rmt_track('review_publish_failure', ['reason' => 'rate_limit']);
         view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>null]),
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
@@ -1959,12 +1998,18 @@ function review_create(array $a): void {
     // review is saved as their draft and they are told so; confirming the address and pressing
     // publish is all that is left.
     $holdForVerification = !$isDraft && !email_is_verified($me);
-    if ($holdForVerification) $isDraft = true;
+    if ($holdForVerification) {
+        $isDraft = true;
+        rmt_track('review_verification_required', ['reason' => 'verification']);
+    }
+    rmt_track('review_submit_attempt', ['source' => (string) (input('src') ?: 'place'),
+                                        'place_id' => $bound ? (int) $bound['id'] : 0]);
     $v = rmt_review_validate($_POST, $isDraft);
     // Aspect ratings are parsed against the category being submitted, not against whatever the
     // browser happened to render, and a malformed set stops the save alongside any other error.
     $asp = rmt_review_parse_aspects($_POST, (string) ($_POST['subject_type'] ?? ''));
     if (!$v['ok'] || !$asp['ok']) {
+        rmt_track('review_publish_failure', ['reason' => 'validation']);
         view('review_new', $opts(['errors'=>array_merge($v['errors'], $asp['errors']), 'r'=>$_POST]),
              ['title'=>'Write a review — RuinMyTrip']); return;
     }
@@ -2014,6 +2059,12 @@ function review_create(array $a): void {
     // ?published=1 asks the review page for the "what next" panel. Landing on your own review and
     // being shown two useful things to do next is the difference between one review and a habit;
     // a bare redirect back to the page is where a first-time contributor stops.
+    if (!$isDraft) {
+        rmt_track('review_publish_success', ['place_id' => (int) $placeId,
+                                             'destination_id' => (int) $d['destination_id']]);
+        // A published review ends this attempt; the next one is counted separately.
+        rmt_journey_rotate();
+    }
     if ($holdForVerification) redirect('/verify-email');
     redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug.'?published=1');
 }
@@ -2671,7 +2722,15 @@ function login_submit(array $a): void {
     // A logged-out visit to a protected route redirects here with ?return= set (see
     // require_login()) so signing in lands back where the user was actually headed, not always
     // on /feed -- most noticeable on mobile, where re-finding a page by hand is worse.
-    if (attempt_login($email, input('password'))) { flash('Welcome back.'); redirect($return); }
+    if (attempt_login($email, input('password'))) {
+        // Only interesting when it was a review the person was trying to reach.
+        if (str_contains($return, '/review/new')) {
+            rmt_track('review_login_completed');
+            rmt_track('review_return_after_auth');
+        }
+        flash('Welcome back.');
+        redirect($return);
+    }
     view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in — RuinMyTrip']);
 }
 /**
@@ -2706,6 +2765,10 @@ function register_submit(array $a): void {
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
             : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link from /verify-email.';
         if ($return !== '' && $return !== '/feed') {
+            if (str_contains($return, '/review/new')) {
+                rmt_track('review_signup_completed');
+                rmt_track('review_return_after_auth');
+            }
             flash($heading . ' You can write now and save a draft; confirming lets you publish.');
             redirect($return);
         }
@@ -3045,6 +3108,26 @@ function admin_destinations_report(array $a): void {
     unset($r);
     usort($rows, static fn($x, $y) => [$y['ready'], $y['places']] <=> [$x['ready'], $x['places']]);
     view('admin_destinations', ['rows' => $rows], ['title' => 'Destinations — RuinMyTrip admin']);
+}
+
+/**
+ * GET /admin/funnel — where people give up between wanting to write and having written.
+ *
+ * Internal. Counts attempts, not people: nothing here can name anybody, and the questions it
+ * answers do not need it to.
+ */
+function admin_funnel(array $a): void {
+    require_role('admin', 'mod');
+    $days = (int) (input('days') !== '' ? input('days') : 30);
+    if (!in_array($days, [1, 7, 30, 0], true)) $days = 30;
+    view('admin_funnel', [
+        'days'      => $days,
+        'steps'     => rmt_funnel_steps($days),
+        'byAuth'    => rmt_funnel_by_auth($days),
+        'bySource'  => rmt_funnel_by_source($days),
+        'failures'  => rmt_funnel_failures($days),
+        'counts'    => rmt_funnel_counts($days),
+    ], ['title' => 'Contribution funnel — RuinMyTrip admin']);
 }
 
 /** GET /admin/suggestions — places travelers have asked us to add. */

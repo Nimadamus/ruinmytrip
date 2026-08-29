@@ -83,6 +83,8 @@
       if (typeof v === 'string' && v !== '') { el.value = v; restored++; }
     });
     if (!restored) return;
+    // One funnel event: text was put back. Reported here because the server cannot see it.
+    if (window.rmtTrack) window.rmtTrack('review_draft_restored', { source: 'review' });
 
     var note = document.createElement('p');
     note.className = 'hint';

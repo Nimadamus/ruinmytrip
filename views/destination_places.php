@@ -46,7 +46,8 @@
         first entry.
       </p>
       <p style="margin:16px 0 0">
-        <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write the first review</a>
+        <a class="btn btn-accent" data-review-cta="browse" data-destination-id="<?= (int) $d['id'] ?>"
+           href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=browse')) ?>">Write the first review</a>
       </p>
     </div>
   <?php endif; ?>
@@ -73,7 +74,8 @@
         Say what it cost and what you wish you had known.
       </p>
       <p style="margin:16px 0 0">
-        <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write a review</a>
+        <a class="btn btn-accent" data-review-cta="browse" data-destination-id="<?= (int) $d['id'] ?>"
+           href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=browse')) ?>">Write a review</a>
         <a class="btn btn-ghost" href="<?= e(url('d/'.$d['slug'])) ?>">Back to <?= e($d['name']) ?></a>
       </p>
     </div>
