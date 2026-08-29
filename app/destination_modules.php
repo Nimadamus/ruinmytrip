@@ -433,9 +433,30 @@ function rmt_destination_quality(int $limit = 300): array {
                     AND p.neighborhood IS NOT NULL AND p.neighborhood <> '') neighborhoods,
                 (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id = r.user_id
                   WHERE r.destination_id = d.id AND r.status = 'published' AND u.role <> ?) reviews,
-                (SELECT MAX(r.created_at) FROM reviews r
-                  WHERE r.destination_id = d.id AND r.status = 'published') last_review_at
+                -- Community depth, not just volume: how many different people wrote, how many
+                -- places have any traveler review at all, and how many have enough to be ranked.
+                -- A destination with forty reviews from one person is not a community.
+                (SELECT COUNT(DISTINCT r.user_id) FROM reviews r JOIN users u ON u.id = r.user_id
+                  WHERE r.destination_id = d.id AND r.status = 'published' AND u.role <> ?) reviewers,
+                (SELECT COUNT(*) FROM (
+                    SELECT p2.id FROM places p2
+                      JOIN reviews r2 ON r2.place_id = p2.id AND r2.status = 'published'
+                      JOIN users u2 ON u2.id = r2.user_id AND u2.role <> ?
+                     WHERE p2.destination_id = d.id AND p2.status = 'active'
+                     GROUP BY p2.id) t1) places_reviewed,
+                (SELECT COUNT(*) FROM (
+                    SELECT p3.id FROM places p3
+                      JOIN reviews r3 ON r3.place_id = p3.id AND r3.status = 'published'
+                      JOIN users u3 ON u3.id = r3.user_id AND u3.role <> ?
+                     WHERE p3.destination_id = d.id AND p3.status = 'active'
+                     GROUP BY p3.id HAVING COUNT(*) >= 3) t2) places_rankable,
+                (SELECT COUNT(*) FROM review_photos rp
+                   JOIN reviews r4 ON r4.id = rp.review_id AND r4.status = 'published'
+                  WHERE r4.destination_id = d.id) photos,
+                (SELECT MAX(r.created_at) FROM reviews r JOIN users u ON u.id = r.user_id
+                  WHERE r.destination_id = d.id AND r.status = 'published' AND u.role <> ?) last_review_at
            FROM destinations d
           ORDER BY places DESC, d.name
-          LIMIT " . max(1, $limit), [RMT_EDITORIAL_ROLE]);
+          LIMIT " . max(1, $limit),
+        array_fill(0, 5, RMT_EDITORIAL_ROLE));
 }

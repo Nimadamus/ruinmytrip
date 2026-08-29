@@ -3027,14 +3027,20 @@ function admin_destinations_report(array $a): void {
     require_role('admin', 'mod');
     $rows = rmt_destination_quality(400);
     foreach ($rows as &$r) {
-        foreach (['places','hotels','restaurants','attractions','located','neighborhoods','reviews'] as $k) {
-            $r[$k] = (int) $r[$k];
+        foreach (['places','hotels','restaurants','attractions','located','neighborhoods','reviews',
+                  'reviewers','places_reviewed','places_rankable','photos'] as $k) {
+            $r[$k] = (int) ($r[$k] ?? 0);
         }
         // A destination is "ready" when there is enough to fill a discovery page honestly: places
         // across more than one kind, coordinates on most of them, and reviews behind them.
         $kinds = ($r['hotels'] > 0 ? 1 : 0) + ($r['restaurants'] > 0 ? 1 : 0) + ($r['attractions'] > 0 ? 1 : 0);
         $r['ready'] = $r['places'] >= 5 && $kinds >= 2 && $r['reviews'] >= 5
                       && $r['located'] >= (int) ceil($r['places'] * 0.6);
+        // Separately: is there enough COMMUNITY here for a ranked page to say anything? Three
+        // rankable places from at least three different people. Place data readiness and community
+        // readiness are different questions and a destination can pass one and fail the other --
+        // today every destination does exactly that.
+        $r['community_ready'] = $r['places_rankable'] >= 3 && $r['reviewers'] >= 3;
     }
     unset($r);
     usort($rows, static fn($x, $y) => [$y['ready'], $y['places']] <=> [$x['ready'], $x['places']]);
