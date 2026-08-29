@@ -31,9 +31,28 @@ function q_all(string $sql, array $args = []): array {
 function q_one(string $sql, array $args = []): ?array {
     $st = db()->prepare($sql); $st->execute($args); $r = $st->fetch(); return $r === false ? null : $r;
 }
-/** Convenience: run a write, return last insert id (empty string when N/A, e.g. composite-key tables on pgsql). */
+/**
+ * Run a write. Returns the last insert id for an INSERT, and an empty string otherwise.
+ *
+ * The INSERT check is not a tidiness pass, it is a correctness one. pdo_pgsql implements
+ * lastInsertId() as `SELECT lastval()`, and lastval() RAISES when the session has not used a
+ * sequence yet. Outside a transaction that error is isolated and the catch below is enough.
+ * INSIDE a transaction it aborts the entire transaction, and catching the PHP exception does not
+ * undo that: every following statement fails with 25P02 "current transaction is aborted", and the
+ * commit silently discards work that looked like it succeeded.
+ *
+ * That is exactly what happened on 2026-08-29: the place enrichment run reported "91 fields
+ * written" and wrote nothing at all, because the first UPDATE inside each per-place transaction
+ * was followed by a lastval() that poisoned it. Asking only after an INSERT removes the call from
+ * every UPDATE and DELETE, which is every case where the answer was meaningless anyway.
+ *
+ * Residual case: an INSERT into a table with no sequence (a composite-key table) inside a
+ * transaction would still raise. Nothing does that today; if something needs to, give it its own
+ * savepoint or a RETURNING clause rather than relaxing this.
+ */
 function q_run(string $sql, array $args = []): string {
     $st = db()->prepare($sql); $st->execute($args);
+    if (!preg_match('/^\s*INSERT\s/i', $sql)) return '';
     try { return (string) db()->lastInsertId(); }
     catch (\PDOException $e) { return ''; } // pgsql lastval() undefined on no-serial inserts
 }

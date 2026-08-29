@@ -245,6 +245,20 @@ check('...but still carries the city it is in', $bare['address']['addressLocalit
 check('a bare place shows no facts panel',
       rmt_place_has_address(rmt_place_by_slug('bare-place-lisbon')), false);
 
+echo "\n-- q_run inside a transaction --\n";
+// pdo_pgsql implements lastInsertId() as lastval(), which RAISES when no sequence has been used
+// and, inside a transaction, poisons every statement after it. q_run must therefore not ask after
+// an UPDATE or a DELETE. SQLite will not reproduce the failure, so this pins the contract instead:
+// a non-INSERT returns an empty string without consulting the driver at all.
+check('an UPDATE returns no insert id',
+      q_run('UPDATE places SET updated_at = ? WHERE id = ?', ['2026-01-01', 1]), '');
+check('a DELETE returns no insert id',
+      q_run('DELETE FROM place_hours WHERE place_id = ?', [-1]), '');
+check('an INSERT still returns its id',
+      q_run('INSERT INTO place_hours (place_id, day_of_week, opens, closes, closed, sort) VALUES (?,?,?,?,?,?)',
+            [1, 0, '09:00', '17:00', 0, 0]) !== '', true);
+db()->exec('DELETE FROM place_hours WHERE place_id = 1');
+
 echo "\n-- provenance line --\n";
 check('no source means no line',
       rmt_place_source_line(['data_source' => null, 'data_source_url' => null]), null);
