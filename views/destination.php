@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount */ // reviews/editorial rows also carry 'useful_count' ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('in/'.rmt_country_slug((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -154,43 +154,119 @@
         </div></div>
       <?php endif; ?>
 
-      <?php /* Places only exist because somebody reviewed one, so this whole block stays hidden
-               until there is something real in it rather than showing an empty shell. */ ?>
-      <?php if ($topPlaces): ?>
-        <div class="section-rule">
-          <h2>Reviewed places</h2>
-          <span class="count"><?= (int)$placeCount ?></span>
-        </div>
-        <div class="grid" style="gap:10px;margin-bottom:10px">
-          <?php foreach ($topPlaces as $tp): $tc = (int)$tp['review_count']; ?>
-            <div class="card"><div class="card-body">
-              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
-                <span>
-                  <a href="<?= e(url('p/'.$tp['slug'])) ?>"><strong><?= e($tp['name']) ?></strong></a>
-                  <span class="muted" style="text-transform:capitalize"> · <?= e(rmt_place_type_label((string)$tp['type'])) ?></span>
-                </span>
-                <span class="muted" style="white-space:nowrap">
-                  <?php if ($tc > 0): ?>
-                    <span class="stars"><?= stars((int) round((float)$tp['avg_rating'])) ?></span>
-                    <?= e((string)$tp['avg_rating']) ?>/5 · <?= $tc ?>
-                  <?php elseif ((int)$tp['editorial_count'] > 0): ?>
-                    <?= rmt_editorial_badge('review') ?>
-                  <?php else: ?>
-                    No reviews yet
-                  <?php endif; ?>
-                </span>
-              </div>
-              <?php if (!empty($tp['snippet'])): ?>
-                <p class="muted" style="margin:.35rem 0 0;font-size:.93rem"><?= e((string)$tp['snippet']) ?></p>
-              <?php endif; ?>
-            </div></div>
+      <?php
+      /* Discovery. Every row here is built from rows this site holds, and a row with nothing
+         behind it is not rendered at all -- no "Top hotels / no hotels found" shells. */
+      $dcounts = array_filter($discovery['counts'] ?? []);
+      $typeHeadings = ['hotel' => 'Top hotels', 'restaurant' => 'Top restaurants',
+                       'attraction' => 'Top things to do', 'experience' => 'Top experiences'];
+      $renderRow = static function (array $cards) {
+          echo '<div class="place-row">';
+          foreach ($cards as $card) { include __DIR__ . '/_place_card.php'; }
+          echo '</div>';
+      };
+      ?>
+
+      <?php /* Browse by kind. The counts are real and a kind with none of them is simply absent. */ ?>
+      <?php if ($dcounts): ?>
+        <nav class="chip-row" aria-label="Browse <?= e($d['name']) ?> by category" style="margin:0 0 26px">
+          <?php foreach ($dcounts as $ctype => $cn): ?>
+            <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places').'?type='.urlencode((string) $ctype)) ?>">
+              <?= e(rmt_place_type_label((string) $ctype, true)) ?>
+              <span class="chip-count"><?= (int) $cn ?></span>
+            </a>
           <?php endforeach; ?>
-        </div>
-        <?php if ($placeCount > count($topPlaces)): ?>
-          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int)$placeCount ?> places →</a></p>
-        <?php else: ?>
-          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">Browse places by type →</a></p>
-        <?php endif; ?>
+          <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places')) ?>">All places
+            <span class="chip-count"><?= (int) array_sum($dcounts) ?></span></a>
+        </nav>
+      <?php endif; ?>
+
+      <?php /* Ranked by a rating pulled toward this city's average in proportion to how few reviews
+               are behind it, so three five-star reviews cannot outrank forty at 4.7. A place needs
+               RMT_TOP_MIN_REVIEWS community reviews before it appears here at all. */ ?>
+      <?php foreach ($typeHeadings as $ttype => $heading): ?>
+        <?php $cards = $discovery['top'][$ttype] ?? []; if (!$cards) continue; ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule">
+            <h2><?= e($heading) ?> in <?= e($d['name']) ?></h2>
+            <a class="section-more" href="<?= e(url('d/'.$d['slug'].'/places').'?type='.urlencode((string) $ttype)) ?>">See all &rarr;</a>
+          </div>
+          <?php $renderRow($cards); ?>
+        </section>
+      <?php endforeach; ?>
+
+      <?php /* Quality and volume are different stories and get different rows. Shown only when
+               enough places have cleared the threshold for the distinction to mean anything. */ ?>
+      <?php if (($discovery['qualified'] ?? 0) >= 2 && !empty($discovery['highest_rated'])): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule"><h2>Highest rated in <?= e($d['name']) ?></h2></div>
+          <p class="hint" style="margin:-6px 0 12px">
+            Places with at least <?= RMT_TOP_MIN_REVIEWS ?> traveler reviews, weighed against how much
+            evidence there is rather than by raw average.
+          </p>
+          <?php $renderRow($discovery['highest_rated']); ?>
+        </section>
+      <?php endif; ?>
+
+      <?php if (!empty($discovery['most_reviewed']) && count($discovery['most_reviewed']) > 1): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule"><h2>Most reviewed in <?= e($d['name']) ?></h2></div>
+          <p class="hint" style="margin:-6px 0 12px">What travelers here have written about most. Volume, not a recommendation.</p>
+          <?php $renderRow($discovery['most_reviewed']); ?>
+        </section>
+      <?php endif; ?>
+
+      <?php if (!empty($discovery['recent'])): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule"><h2>Recently reviewed</h2></div>
+          <div class="grid" style="gap:10px">
+            <?php foreach ($discovery['recent'] as $rr): ?>
+              <article class="card"><div class="card-body" style="padding:12px 14px">
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap">
+                  <span>
+                    <a href="<?= e(url('p/'.$rr['place_slug'])) ?>"><strong><?= e((string) $rr['place_name']) ?></strong></a>
+                    <span class="muted"> &middot; <?= e(rmt_place_type_label((string) $rr['place_type'])) ?><?php
+                      if (!empty($rr['neighborhood'])): ?> &middot; <?= e((string) $rr['neighborhood']) ?><?php endif; ?></span>
+                  </span>
+                  <span class="stars" style="white-space:nowrap"><?= stars((int) $rr['rating']) ?></span>
+                </div>
+                <?php if (!empty($rr['title'])): ?>
+                  <p style="margin:.35rem 0 .1rem;font-size:.96rem">
+                    <a href="<?= e(url(ltrim(rmt_review_path($rr), '/'))) ?>"><?= e((string) $rr['title']) ?></a>
+                  </p>
+                <?php endif; ?>
+                <p class="muted" style="margin:0;font-size:.9rem">
+                  <?= e(mb_strimwidth(strip_tags((string) $rr['body']), 0, 130, '&hellip;')) ?>
+                </p>
+                <p class="hint" style="margin:.35rem 0 0">
+                  <?php if (!empty($rr['author']['username'])): ?>
+                    <a href="<?= e(url('u/'.$rr['author']['username'])) ?>">@<?= e((string) $rr['author']['username']) ?></a> &middot;
+                  <?php endif; ?>
+                  <?= e(date('M j, Y', strtotime((string) $rr['created_at']))) ?>
+                </p>
+              </div></article>
+            <?php endforeach; ?>
+          </div>
+        </section>
+      <?php endif; ?>
+
+      <?php /* Neighborhoods a place actually sits in, never invented, and only ones with more than
+               one place behind them. They do not link anywhere yet: the entity relationship is
+               arriving before the routes that will use it. */ ?>
+      <?php if (!empty($discovery['neighborhoods'])): ?>
+        <section style="margin:0 0 30px">
+          <div class="section-rule"><h2>Neighborhoods</h2></div>
+          <div class="chip-row">
+            <?php foreach ($discovery['neighborhoods'] as $nb): ?>
+              <span class="chip"><?= e((string) $nb['name']) ?>
+                <span class="chip-count"><?= (int) $nb['places'] ?></span></span>
+            <?php endforeach; ?>
+          </div>
+        </section>
+      <?php endif; ?>
+
+      <?php if ($placeCount > 0): ?>
+        <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int) $placeCount ?> places in <?= e($d['name']) ?> &rarr;</a></p>
       <?php endif; ?>
 
       <div class="section-rule">

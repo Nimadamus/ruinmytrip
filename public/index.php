@@ -117,6 +117,7 @@ $routes = [
     ['GET',  '#^/admin$#',                     'admin_dashboard'],
     ['GET',  '#^/admin/places$#',               'admin_places_index'],
     ['GET',  '#^/admin/search$#',               'admin_search_report'],
+    ['GET',  '#^/admin/destinations$#',         'admin_destinations_report'],
     ['GET',  '#^/admin/place/(?<id>\d+)$#',     'admin_place_form'],
     ['POST', '#^/admin/place/(?<id>\d+)$#',     'admin_place_save'],
     ['POST', '#^/admin/place/(?<id>\d+)/photo$#', 'admin_place_photo'],

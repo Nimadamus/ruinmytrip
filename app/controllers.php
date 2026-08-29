@@ -209,7 +209,13 @@ function destination(array $a): void {
     $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
                        LEFT JOIN profiles p ON p.user_id=u.id
                        WHERE c.target_type='destination' AND c.target_id=? AND c.status='published' ORDER BY c.id", [$id]);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts','been','beenCount','beenPeople','wantPeople','comments'), [
+
+    // Discovery: top by kind, highest rated, most reviewed, what is being reviewed now, and which
+    // neighborhoods have more than one place in them. Assembled in one call because the modules
+    // share a stats query, a cover lookup and a category lookup -- building them separately would
+    // run each of those several times over for one page.
+    $discovery = rmt_destination_discovery($id);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'og_image' => abs_url($d['hero_url']),
@@ -2889,6 +2895,32 @@ function admin_search_report(array $a): void {
         'total'    => (int) (q_one('SELECT COUNT(*) c FROM search_log WHERE created_at >= ?',
                             [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))])['c'] ?? 0),
     ], ['title' => 'Search — RuinMyTrip admin']);
+}
+
+/**
+ * GET /admin/destinations — where the data actually is.
+ *
+ * Internal. This is the view that will eventually decide which destinations can carry a category
+ * landing page without it being thin, so it counts the things that make a page worth having:
+ * places by kind, how many are located, how many neighborhoods emerged, community reviews, and
+ * when somebody last wrote one.
+ */
+function admin_destinations_report(array $a): void {
+    require_role('admin', 'mod');
+    $rows = rmt_destination_quality(400);
+    foreach ($rows as &$r) {
+        foreach (['places','hotels','restaurants','attractions','located','neighborhoods','reviews'] as $k) {
+            $r[$k] = (int) $r[$k];
+        }
+        // A destination is "ready" when there is enough to fill a discovery page honestly: places
+        // across more than one kind, coordinates on most of them, and reviews behind them.
+        $kinds = ($r['hotels'] > 0 ? 1 : 0) + ($r['restaurants'] > 0 ? 1 : 0) + ($r['attractions'] > 0 ? 1 : 0);
+        $r['ready'] = $r['places'] >= 5 && $kinds >= 2 && $r['reviews'] >= 5
+                      && $r['located'] >= (int) ceil($r['places'] * 0.6);
+    }
+    unset($r);
+    usort($rows, static fn($x, $y) => [$y['ready'], $y['places']] <=> [$x['ready'], $x['places']]);
+    view('admin_destinations', ['rows' => $rows], ['title' => 'Destinations — RuinMyTrip admin']);
 }
 
 /** GET /admin/place/{id} — the editor. */

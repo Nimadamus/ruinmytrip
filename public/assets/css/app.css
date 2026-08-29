@@ -247,3 +247,27 @@ a.ed-badge:hover{background:var(--brand)}
      on-screen keyboard never leaves it with nowhere to go. */
   .suggest-panel{left:0;right:0;min-width:0;max-width:none;max-height:min(50vh,20rem)}
 }
+
+/* -------------------------------------------------------- destination discovery
+   Rows of place cards that stay readable at any width: three up on a desktop, two on a tablet,
+   one on a phone. A card is never stretched across the viewport, which is what turns a discovery
+   page into a database dump. */
+/* auto-fill rather than a fixed column count: this row sits inside a narrow main column on the
+   destination page and could sit full width elsewhere, and a hardcoded three-up made 150px cards
+   in the first case. The card decides its own minimum and the grid fits what it can. */
+.place-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.place-card{overflow:hidden}
+.place-card .card-media{border-radius:0}
+.section-more{font-size:.9rem;white-space:nowrap;margin-left:auto}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;min-height:36px;
+  border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.9rem;
+  text-decoration:none;color:inherit}
+a.chip:hover{border-color:var(--ink)}
+.chip-count{font-size:.8rem;color:var(--muted)}
+
+@media (max-width:560px){
+  /* One card per row on a phone. Two would put a 150px-wide photo next to a wrapped name. */
+  .place-row{grid-template-columns:1fr;gap:12px}
+  .chip{min-height:40px}
+}
