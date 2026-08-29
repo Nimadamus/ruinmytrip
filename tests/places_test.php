@@ -35,7 +35,7 @@ function authors_fill(array &$rows, string $idField = 'user_id'): void {}
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)');
-$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, hero_url TEXT)');
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, region TEXT, hero_url TEXT)');
 $pdo->exec('CREATE TABLE places (id INTEGER PRIMARY KEY AUTOINCREMENT, destination_id INT NOT NULL,
               slug TEXT UNIQUE NOT NULL, name TEXT NOT NULL, name_key TEXT NOT NULL,
               type TEXT NOT NULL DEFAULT \'attraction\', created_by INT, status TEXT NOT NULL DEFAULT \'active\',

@@ -20,6 +20,16 @@ function rmt_asset(string $rel): string {
 function redirect(string $path): never { header('Location: ' . $path); exit; }
 
 /**
+ * A 301, for a URL that has moved for good.
+ *
+ * Separate from redirect() because the difference matters to a crawler and is irreversible in
+ * practice: a 302 keeps the old URL indexed and splits the signals between two addresses, while a
+ * 301 passes them to the new one. Used for retired place slugs, where the entity is the same row
+ * and only its presentation changed.
+ */
+function redirect_permanent(string $path): never { header('Location: ' . $path, true, 301); exit; }
+
+/**
  * Canonical path for one saved item. Kept out of SQL so a URL is never assembled by the
  * database (`||` concatenates on Postgres and SQLite but is logical OR on MySQL), and kept here
  * rather than in the controller so it can be unit tested on its own.

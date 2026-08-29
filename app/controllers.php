@@ -276,13 +276,30 @@ function destination_places(array $a): void {
  * all — an empty aggregate would be a rating claim with nothing behind it.
  */
 function place_show(array $a): void {
-    $p = rmt_place_by_slug($a['slug']); if (!$p) not_found();
+    $p = rmt_place_by_slug($a['slug']);
+    if (!$p) {
+        // The slug may be one this place used to have. Identity is the row id, so a rename is a
+        // permanent redirect to wherever that row lives now -- never a 404, and never a chain,
+        // because the target is always read fresh from the place rather than from history.
+        $prev = rmt_place_for_retired_slug((string) $a['slug']);
+        if ($prev && $prev['status'] === 'active') redirect_permanent(url('p/'.$prev['slug']));
+        not_found();
+    }
     $id = (int) $p['id'];
     $stats = rmt_place_stats($id);
     $breakdown = rmt_place_rating_breakdown($id);
     $reviews = rmt_place_reviews($id);
     [$editorial, $reviews] = rmt_split_editorial($reviews);
-    $photos = rmt_place_photos($id, 12);
+    $photos = rmt_place_gallery($id, 12);
+    $photoCount = rmt_place_photo_count($id);
+    $hours = rmt_place_hours($id);
+    $hoursByDay = rmt_place_hours_by_day($hours);
+    $openNow = rmt_place_open_now($hours, $p['timezone'] ?? null);
+    $address = rmt_place_address($p);
+    $coords = rmt_place_normalize_coords($p['lat'] ?? null, $p['lng'] ?? null);
+    $category = rmt_place_category(isset($p['category_id']) ? (int) $p['category_id'] : null);
+    $priceLabel = rmt_place_price_label(isset($p['price_level']) && $p['price_level'] !== null ? (int) $p['price_level'] : null);
+    $cover = rmt_place_cover_url($id);
     $me = current_user();
     $typeLabel = rmt_place_type_label((string) $p['type']);
 
@@ -292,9 +309,12 @@ function place_show(array $a): void {
     $saveCount = rmt_place_save_count($id);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
 
+    // Address, geo, phone, price band and opening hours are all safe on any schema.org Place and
+    // are emitted only for the values we actually hold -- see rmt_place_schema_attributes.
     $ld = ['@context'=>'https://schema.org', '@type'=>rmt_place_schema_type((string) $p['type']), 'name'=>$p['name'],
-           'url'=>$canonical,
-           'address'=>['@type'=>'PostalAddress','addressLocality'=>$p['dest_name'],'addressCountry'=>$p['dest_country']]];
+           'url'=>$canonical]
+        + rmt_place_schema_attributes($p, $hours);
+    if ($cover) $ld['image'] = abs_url($cover);
     if ($ed && !empty($ed['what_it_is'])) $ld['description'] = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 300, '…');
     // aggregateRating is COMMUNITY ONLY and omitted entirely at zero. An empty aggregate, or one
     // padded with our own rating, would be a consensus claim with nothing behind it.
@@ -329,11 +349,11 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','me','typeLabel','ed','nearby','saved','saveCount'), [
+    view('place_show', compact('p','stats','breakdown','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
-        'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($p['dest_hero']),
+        'og_image' => $cover ? abs_url($cover) : abs_url($p['dest_hero']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$p['dest_name'],'url'=>url('d/'.$p['dest_slug'])],
                           ['name'=>'Places','url'=>url('d/'.$p['dest_slug'].'/places')],

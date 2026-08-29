@@ -120,7 +120,8 @@ function rmt_place_resolve(?int $destId, string $type, string $name, ?int $userI
 
 /** One place with its destination, by slug. */
 function rmt_place_by_slug(string $slug): ?array {
-    return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country, d.hero_url dest_hero
+    return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
+                         d.region dest_region, d.hero_url dest_hero
                     FROM places p JOIN destinations d ON d.id = p.destination_id
                    WHERE p.slug = ? AND p.status = ?', [$slug, 'active']);
 }
@@ -128,7 +129,8 @@ function rmt_place_by_slug(string $slug): ?array {
 /** One place with its destination, by id. */
 function rmt_place_by_id(int $id): ?array {
     if ($id <= 0) return null;
-    return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country, d.hero_url dest_hero
+    return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
+                         d.region dest_region, d.hero_url dest_hero
                     FROM places p JOIN destinations d ON d.id = p.destination_id
                    WHERE p.id = ? AND p.status = ?', [$id, 'active']);
 }
@@ -267,17 +269,6 @@ function rmt_place_reviews(int $placeId, int $limit = 50): array {
                     LIMIT " . max(1, $limit), [$placeId, RMT_EDITORIAL_ROLE]);
     authors_fill($rows);
     return $rows;
-}
-
-/** Traveler photos of a place, taken from the reviews that are about it. */
-function rmt_place_photos(int $placeId, int $limit = 12): array {
-    $photos = q_all("SELECT rp.url, rp.caption, rp.created_at, r.id parent_id, r.slug parent_slug,
-                            r.user_id, 'review' AS kind
-                       FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
-                      WHERE r.place_id = ? AND r.status = 'published'
-                      ORDER BY rp.created_at DESC, rp.id DESC LIMIT " . max(1, $limit), [$placeId]);
-    authors_fill($photos);
-    return $photos;
 }
 
 /**

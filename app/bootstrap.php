@@ -19,6 +19,7 @@ require BASE_PATH . '/app/reviews.php';
 require BASE_PATH . '/app/editorial.php';
 require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/places.php';
+require BASE_PATH . '/app/place_data.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/visits.php';

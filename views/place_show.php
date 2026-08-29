@@ -1,11 +1,25 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
     <a href="<?= e(url('d/'.$p['dest_slug'])) ?>"><?= e($p['dest_name']) ?></a> /
     <a href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">Places</a>
   </p>
-  <p class="eyebrow" style="margin-top:6px"><?= e($typeLabel) ?> · <?= e($p['dest_name']) ?>, <?= e($p['dest_country']) ?></p>
+  <?php /* The cover is the place's own picture or nothing. The destination hero is a photo of the
+           city, and standing it in here would tell the reader it is a photo of this place. */ ?>
+  <?php if ($cover): ?>
+    <img class="card-media" src="<?= e(abs_url($cover)) ?>" alt="<?= e($p['name']) ?>"
+         style="width:100%;aspect-ratio:16/7;object-fit:cover;border-radius:12px;margin:10px 0 14px">
+  <?php endif; ?>
+
+  <?php /* Every part of this line is dropped when we do not hold it, so a separator never ends up
+           orphaned next to a blank. */ ?>
+  <p class="eyebrow" style="margin-top:6px"><?= e(implode(' · ', array_filter([
+        $category['name'] ?? $typeLabel,
+        trim($p['dest_name'] . ', ' . $p['dest_country'], ', '),
+        $priceLabel,
+        $openNow === null ? null : ($openNow ? 'Open now' : 'Closed now'),
+      ]))) ?></p>
   <h1 style="margin:.2rem 0 .5rem"><?= e($p['name']) ?></h1>
 
   <?php if ($stats['c'] > 0): ?>
@@ -66,6 +80,62 @@
     <p class="hint" style="margin:0 0 26px"><?= $saveCount ?> <?= $saveCount === 1 ? 'traveler has' : 'travelers have' ?> saved this</p>
   <?php endif; ?>
 
+  <?php /* Practical detail. The whole card is skipped when we hold none of it, and each row is
+           skipped on its own, so a place we only know the name of shows no empty scaffolding.
+           Nothing here is inferred: an address we do not have is an address we do not print. */ ?>
+  <?php $hasFacts = rmt_place_has_address($p) || !empty($p['phone']) || !empty($p['website_url']) || $coords || $hoursByDay; ?>
+  <?php if ($hasFacts): ?>
+    <section class="card" style="margin:0 0 26px"><div class="card-body">
+      <h2 style="margin:0 0 10px;font-size:1.05rem">The basics</h2>
+      <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:.95rem">
+        <?php if (rmt_place_has_address($p)): ?>
+          <dt class="muted">Address</dt>
+          <dd style="margin:0"><?= e(implode(', ', $address['lines'])) ?></dd>
+        <?php endif; ?>
+        <?php if (!empty($p['neighborhood'])): ?>
+          <dt class="muted">Neighborhood</dt>
+          <dd style="margin:0"><?= e((string) $p['neighborhood']) ?></dd>
+        <?php endif; ?>
+        <?php if (!empty($p['phone'])): ?>
+          <dt class="muted">Phone</dt>
+          <dd style="margin:0"><a href="tel:<?= e(rmt_place_tel_href((string) $p['phone'])) ?>"><?= e((string) $p['phone']) ?></a></dd>
+        <?php endif; ?>
+        <?php if (!empty($p['website_url'])): ?>
+          <dt class="muted">Website</dt>
+          <dd style="margin:0"><a href="<?= e((string) $p['website_url']) ?>" rel="nofollow noopener" target="_blank"><?= e(parse_url((string) $p['website_url'], PHP_URL_HOST) ?: (string) $p['website_url']) ?></a></dd>
+        <?php endif; ?>
+        <?php if ($priceLabel): ?>
+          <dt class="muted">Price</dt>
+          <dd style="margin:0"><?= e($priceLabel) ?> <span class="hint"><?= e((string) rmt_place_price_title((int) $p['price_level'])) ?></span></dd>
+        <?php endif; ?>
+        <?php if ($coords): ?>
+          <?php /* A link, not an embedded map: a third-party iframe on every place page costs more
+                   load time than a map nobody asked to open is worth. */ ?>
+          <dt class="muted">Map</dt>
+          <dd style="margin:0"><a href="<?= e(rmt_place_map_url($coords[0], $coords[1])) ?>" rel="nofollow noopener" target="_blank">Open in maps</a></dd>
+        <?php endif; ?>
+      </dl>
+
+      <?php if ($hoursByDay): ?>
+        <?php /* Only days we hold are listed. A missing day is left out rather than printed as
+                 "Closed", which would assert something we were never told. */ ?>
+        <h3 style="margin:16px 0 6px;font-size:.98rem">Opening hours</h3>
+        <dl style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:.93rem">
+          <?php foreach ($hoursByDay as $d): ?>
+            <dt class="muted"><?= e($d['day']) ?></dt>
+            <dd style="margin:0"><?= $d['closed'] ? 'Closed' : e(implode(', ', $d['intervals'])) ?></dd>
+          <?php endforeach; ?>
+        </dl>
+        <?php if (!empty($p['data_source_url'])): ?>
+          <p class="hint" style="margin:8px 0 0">Hours from
+            <a href="<?= e((string) $p['data_source_url']) ?>" rel="nofollow noopener" target="_blank">the venue</a><?php
+            if (!empty($p['data_checked_at'])): ?>, checked <?= e(substr((string) $p['data_checked_at'], 0, 10)) ?><?php endif; ?>.
+          </p>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div></section>
+  <?php endif; ?>
+
   <?php /* Structured editorial. Only sections with content render, so a page never pads itself with
            headings that say nothing. Every claim here is sourced; the list is printed at the end. */ ?>
   <?php if ($ed): ?>
@@ -106,17 +176,32 @@
     <?php endif; ?>
   <?php endif; ?>
 
+  <?php /* Photos of the place and photos travelers attached to reviews of it, in one gallery. A
+           review photo links to the review it belongs to; a place photo has nowhere to go and is
+           rendered as a plain image rather than a link to nothing. */ ?>
   <?php if ($photos): ?>
-    <h2 style="font-size:1.1rem;margin:0 0 10px">Traveler photos</h2>
-    <div class="grid g-4" style="margin-bottom:28px">
+    <h2 style="font-size:1.1rem;margin:0 0 10px"><?= count($photos) === 1 ? 'Photo' : 'Photos' ?></h2>
+    <div class="grid g-4" style="margin-bottom:<?= $photoCount > count($photos) ? '10px' : '28px' ?>">
       <?php foreach ($photos as $ph): ?>
-        <a href="<?= e(url('review/'.$ph['parent_id'].($ph['parent_slug'] ? '/'.$ph['parent_slug'] : ''))) ?>" title="<?= e($ph['caption'] ?? '') ?>">
+        <?php
+          $alt = $ph['alt_text'] ?: ($ph['caption'] ?: ($ph['kind'] === 'review'
+                 ? $p['name'] . ' photo by @' . ($ph['author']['username'] ?? '')
+                 : $p['name']));
+        ?>
+        <?php if ($ph['kind'] === 'review' && $ph['parent_id']): ?>
+          <a href="<?= e(url('review/'.$ph['parent_id'].($ph['parent_slug'] ? '/'.$ph['parent_slug'] : ''))) ?>" title="<?= e((string) ($ph['caption'] ?? '')) ?>">
+            <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover"
+                 src="<?= e(abs_url($ph['url'])) ?>" alt="<?= e($alt) ?>">
+          </a>
+        <?php else: ?>
           <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover"
-               src="<?= e(abs_url($ph['url'])) ?>"
-               alt="<?= e($ph['caption'] ?: ($p['name'].' photo by @'.($ph['author']['username'] ?? ''))) ?>">
-        </a>
+               src="<?= e(abs_url($ph['url'])) ?>" alt="<?= e($alt) ?>">
+        <?php endif; ?>
       <?php endforeach; ?>
     </div>
+    <?php if ($photoCount > count($photos)): ?>
+      <p class="hint" style="margin:0 0 28px"><?= (int) $photoCount ?> photos in total.</p>
+    <?php endif; ?>
   <?php endif; ?>
 
   <?php if ($editorial): ?>
