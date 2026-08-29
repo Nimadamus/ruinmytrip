@@ -5,10 +5,16 @@
  * @var array $card  a place row: id, slug, name, type, plus any of category_name, neighborhood,
  *                   rating_avg, review_count, price_level, cover_url
  *
+ * @var bool  $cardActions  optional: render save and review controls (a browse page, where the
+ *                           reader is choosing, rather than a discovery row they are skimming)
+ *
  * Each line is dropped when the data behind it is absent. A place we hold nothing about renders as
  * a name and a kind, which is honest and still useful; it never renders a row of dashes or a grey
  * box where a photograph should be.
  */
+// Reset per card: this file is included in a loop and a flag set for one card would
+// otherwise persist into every card after it.
+$cardActions = $cardActions ?? false;
 $rating = isset($card['rating_avg']) ? (float) $card['rating_avg'] : null;
 $count  = isset($card['review_count']) ? (int) $card['review_count'] : 0;
 $price  = rmt_place_price_label(isset($card['price_level']) && $card['price_level'] !== null ? (int) $card['price_level'] : null);
@@ -38,8 +44,36 @@ $meta   = array_filter([
       <p style="margin:0;font-size:.88rem">
         <span class="stars"><?= stars((int) round($rating)) ?></span>
         <strong><?= e(number_format($rating, 1)) ?></strong>
-        <span class="muted">· <?= $count ?> <?= $count === 1 ? 'review' : 'reviews' ?></span>
+        <span class="muted">&middot; <?= $count ?> <?= $count === 1 ? 'review' : 'reviews' ?></span>
       </p>
+    <?php else: ?>
+      <?php /* No traveler has written about this yet, and the card says so rather than leaving a
+               gap that reads like a missing rating. It is also the most useful thing we can tell
+               somebody who has been there. */ ?>
+      <p class="hint" style="margin:0">No traveler reviews yet</p>
+    <?php endif; ?>
+
+    <?php if (!empty($cardActions)): ?>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap">
+        <a class="btn btn-ghost" style="padding:5px 12px;font-size:.85rem"
+           href="<?= e(url('review/new?place=' . (int) $card['id'])) ?>">
+          <?= $count > 0 ? 'Review' : 'Be the first' ?>
+        </a>
+        <?php if (!empty($me)): ?>
+          <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
+            <?= csrf_field() ?>
+            <input type="hidden" name="place_id" value="<?= (int) $card['id'] ?>">
+            <input type="hidden" name="return" value="<?= e($_SERVER['REQUEST_URI'] ?? '/') ?>">
+            <button class="btn btn-ghost" style="padding:5px 12px;font-size:.85rem"
+                    aria-pressed="<?= !empty($card['saved']) ? 'true' : 'false' ?>">
+              <?= !empty($card['saved']) ? '&#9733; Saved' : '&#9734; Save' ?>
+            </button>
+          </form>
+        <?php endif; ?>
+        <?php if (!empty($card['save_count'])): ?>
+          <span class="hint"><?= (int) $card['save_count'] ?> saved</span>
+        <?php endif; ?>
+      </div>
     <?php endif; ?>
   </div>
 </article>

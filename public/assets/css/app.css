@@ -264,6 +264,10 @@ a.ed-badge:hover{background:var(--brand)}
   border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.9rem;
   text-decoration:none;color:inherit}
 a.chip:hover{border-color:var(--ink)}
+/* The active filter or sort. A colour change alone is not enough on its own, so the weight
+   changes too -- somebody who cannot distinguish the two backgrounds can still see which is on. */
+.chip.is-on{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:600}
+.chip.is-on .chip-count{color:rgba(255,255,255,.75)}
 .chip-count{font-size:.8rem;color:var(--muted)}
 
 @media (max-width:560px){

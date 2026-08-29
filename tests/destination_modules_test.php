@@ -195,6 +195,35 @@ check('the browse counts are still real', $fresh['counts']['hotel'] ?? null, 1);
 $paris = rmt_destination_discovery(1);
 check('a destination with rankings shows no fallback row', $paris['fallback'], []);
 
+echo "\n-- category browsing --\n";
+$all = rmt_destination_browse(1, '', 'best');
+check('every place is listed, reviewed or not', count($all), 5);
+check('a place with no reviews is still listed',
+      in_array('no-reviews', array_column($all, 'slug'), true), true);
+check('...and carries no rating rather than a zero', $all[count($all) - 1]['rating_avg'], null);
+
+$restaurants = rmt_destination_browse(1, 'restaurant', 'best');
+check('a kind filter filters', array_column($restaurants, 'slug'), ['bistro']);
+check('an unknown kind is ignored rather than returning nothing',
+      count(rmt_destination_browse(1, 'spaceship', 'best')), 5);
+
+$byReviews = array_column(rmt_destination_browse(1, '', 'reviews'), 'slug');
+check('most reviewed leads the volume sort', $byReviews[0], 'steady');
+$byName = array_column(rmt_destination_browse(1, '', 'name'), 'slug');
+check('A to Z is alphabetical by name',
+      $byName, ['thin', 'bistro', 'no-reviews', 'one-hit', 'steady']);
+check('an unknown sort falls back to the default rather than erroring',
+      array_column(rmt_destination_browse(1, '', 'nonsense'), 'slug'),
+      array_column(rmt_destination_browse(1, '', 'best'), 'slug'));
+
+// The default order must not imply a ranking where there is none to imply.
+$fresh = rmt_destination_browse(3, '', 'best');
+check('with no reviews the default order is just the places',
+      count($fresh), 2);
+check('...and nothing carries a weighted score',
+      array_values(array_unique(array_column($fresh, 'weighted'))), [0.0]);
+check('the sort vocabulary is closed', array_keys(RMT_BROWSE_SORTS), ['best','reviews','name','newest']);
+
 echo "\n-- the readiness report --\n";
 $q = array_column(rmt_destination_quality(50), null, 'slug');
 check('places are counted', (int) $q['paris-france']['places'], 5);

@@ -255,7 +255,9 @@ function destination_places(array $a): void {
     $id = (int) $d['id'];
     $type = (string) ($_GET['type'] ?? '');
     if (!in_array($type, RMT_PLACE_TYPES, true)) $type = '';
-    $places = rmt_places_for_destination($id, $type);
+    $sort = (string) ($_GET['sort'] ?? 'best');
+    if (!isset(RMT_BROWSE_SORTS[$sort])) $sort = 'best';
+    $places = rmt_destination_browse($id, $type, $sort);
     $counts = rmt_place_type_counts($id);
     $total = array_sum($counts);
     $label = $type === '' ? 'Places' : rmt_place_type_label($type, true);
@@ -264,7 +266,11 @@ function destination_places(array $a): void {
     $ids = array_map(static fn(array $p) => (int) $p['id'], $places);
     $savedMap = rmt_saved_place_map($me ? (int) $me['id'] : null, $ids);
     $saveCounts = rmt_place_save_counts($ids);
-    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts'), [
+    // The sort is a way to read the same list, not a different page. Every ordering canonicalises
+    // to the unsorted URL so the four of them cannot compete with each other in an index.
+    $canonical = url(ltrim('/d/'.$d['slug'].'/places'.($type !== '' ? '?type='.$type : ''), '/'));
+    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort'), [
+        'canonical' => $canonical,
         'title' => $label.' in '.$d['name'].' 2026: tickets, prices and reviews | RuinMyTrip',
         'description' => 'Hotels, restaurants, attractions and experiences in '.$d['name'].', '.$d['country'].', with current 2026 prices and official reviews.',
         'og_image' => abs_url($d['hero_url']),

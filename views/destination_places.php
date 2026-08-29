@@ -1,86 +1,81 @@
-<?php /** @var array $d @var array $places @var array $counts @var int $total @var string $type @var string $label @var ?array $me @var array $savedMap @var array $saveCounts */ ?>
+<?php /** @var array $d @var array $places @var array $counts @var int $total @var string $type @var string $label @var ?array $me @var array $savedMap @var array $saveCounts @var string $sort */ ?>
 <div class="wrap">
-  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($d['name']) ?></a> / Places</p>
+  <p class="crumbs">
+    <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
+    <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($d['name']) ?></a> / Places
+  </p>
   <h1 style="margin-top:6px"><?= e($label) ?> in <?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
-  <p class="muted">
-    <?= $total ?> reviewed <?= $total === 1 ? 'place' : 'places' ?>. Ratings are the community average —
-    our own editorial reviews are never counted in them.
+  <p class="muted" style="margin:0 0 4px">
+    <?= (int) count($places) ?> <?= count($places) === 1 ? 'place' : 'places' ?><?= $type !== '' ? '' : ' we cover here' ?>.
+    Ratings are the community average &mdash; our own editorial reviews are never counted in them.
   </p>
 
+  <?php /* Kind first, because "where do I eat" is a different question from "where do I stay", and
+           a kind with nothing in it is not offered. */ ?>
   <?php if ($counts): ?>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px">
-      <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places')) ?>" style="<?= $type==='' ? 'background:var(--ink);color:#fff' : '' ?>">All <?= $total ?></a>
+    <nav class="chip-row" aria-label="Filter by kind" style="margin:14px 0 10px">
+      <a class="chip<?= $type === '' ? ' is-on' : '' ?>" href="<?= e(url('d/'.$d['slug'].'/places')) ?>">
+        All <span class="chip-count"><?= (int) $total ?></span></a>
       <?php foreach (RMT_PLACE_TYPES as $t): if (empty($counts[$t])) continue; ?>
-        <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places?type='.$t)) ?>"
-           style="<?= $type===$t ? 'background:var(--ink);color:#fff' : '' ?>"><?= e(rmt_place_type_label($t, true)) ?> <?= (int)$counts[$t] ?></a>
+        <a class="chip<?= $type === $t ? ' is-on' : '' ?>"
+           href="<?= e(url('d/'.$d['slug'].'/places?type='.$t)) ?>">
+          <?= e(rmt_place_type_label($t, true)) ?> <span class="chip-count"><?= (int) $counts[$t] ?></span></a>
       <?php endforeach; ?>
-    </div>
+    </nav>
+  <?php endif; ?>
+
+  <?php /* Sorting is a way to read the same list. Every option is a plain link, so it works with
+           no JavaScript and a crawler can follow it; all four canonicalise to the unsorted URL. */ ?>
+  <?php if (count($places) > 1): ?>
+    <nav class="chip-row" aria-label="Sort" style="margin:0 0 20px">
+      <?php foreach (RMT_BROWSE_SORTS as $key => $sortLabel): ?>
+        <?php $q = array_filter(['type' => $type, 'sort' => $key === 'best' ? '' : $key]); ?>
+        <a class="chip<?= $sort === $key ? ' is-on' : '' ?>" rel="nofollow"
+           href="<?= e(url('d/'.$d['slug'].'/places') . ($q ? '?' . http_build_query($q) : '')) ?>">
+          <?= e($sortLabel) ?></a>
+      <?php endforeach; ?>
+    </nav>
   <?php endif; ?>
 
   <?php if (!$places): ?>
     <div class="empty-cta" style="margin:20px 0">
-      <h3>Nothing reviewed here yet<?= $type ? ' in this category' : '' ?>.</h3>
+      <h3>Nothing here yet<?= $type ? ' in this category' : '' ?>.</h3>
       <p class="muted" style="margin:0">
         Places appear the moment somebody reviews one. We do not import listings or invent them to
-        look busy — if you stayed, ate, or booked something in <?= e($d['name']) ?>, you are the
+        look busy &mdash; if you stayed, ate, or booked something in <?= e($d['name']) ?>, you are the
         first entry.
       </p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write the first review</a></p>
+      <p style="margin:16px 0 0">
+        <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write the first review</a>
+      </p>
     </div>
   <?php endif; ?>
 
-  <?php $listPath = '/d/' . $d['slug'] . '/places' . ($type !== '' ? '?type=' . $type : ''); ?>
-  <div class="grid" style="gap:14px;padding-bottom:50px">
-    <?php foreach ($places as $p): $c = (int)$p['review_count']; ?>
-      <article class="card"><div class="card-body">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <span class="eyebrow" style="text-transform:capitalize"><?= e(rmt_place_type_label((string)$p['type'])) ?></span>
-          <?php if ($c > 0): ?>
-            <span style="display:flex;gap:8px;align-items:center">
-              <span class="stars"><?= stars((int) round((float)$p['avg_rating'])) ?></span>
-              <span class="muted"><?= e((string)$p['avg_rating']) ?>/5</span>
-            </span>
-          <?php endif; ?>
-        </div>
-        <h2 style="margin:.35rem 0 .2rem;font-size:1.1rem">
-          <a href="<?= e(url('p/'.$p['slug'])) ?>"><?= e($p['name']) ?></a>
-        </h2>
-        <?php /* The snippet is the hand-written meta description for that place, not a truncated
-                 slice of its body: a generic first-40-words teaser is exactly the boilerplate this
-                 page is supposed to avoid. Places with no editorial simply show no snippet. */ ?>
-        <?php if (!empty($p['snippet'])): ?>
-          <p style="margin:0 0 .35rem"><?= e((string)$p['snippet']) ?></p>
-        <?php endif; ?>
-        <p class="muted" style="margin:0">
-          <?php if ($c > 0): ?>
-            <?= $c ?> traveler <?= $c === 1 ? 'review' : 'reviews' ?>
-          <?php elseif ((int)$p['editorial_count'] > 0): ?>
-            <?= rmt_editorial_badge('review') ?> <span class="hint">no traveler reviews yet</span>
-          <?php else: ?>
-            No published reviews yet
-          <?php endif; ?>
-        </p>
-        <?php /* Collecting happens here, not only on the place page: a browser comparing eight
-                 restaurants should not have to open and leave eight pages to keep three of them.
-                 Returns to this exact list, filter and all. */ ?>
-        <?php $isSaved = !empty($savedMap[(int)$p['id']]); $sc = (int) ($saveCounts[(int)$p['id']] ?? 0); ?>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:.6rem 0 0">
-          <?php if ($me): ?>
-            <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
-              <?= csrf_field() ?>
-              <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
-              <input type="hidden" name="return" value="<?= e($listPath) ?>">
-              <button class="btn <?= $isSaved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"
-                      aria-pressed="<?= $isSaved ? 'true' : 'false' ?>"><?= $isSaved ? '★ Saved' : '☆ Save' ?></button>
-            </form>
-          <?php else: ?>
-            <a class="btn btn-ghost btn-sm" href="<?= e(url('login?return=' . rawurlencode($listPath))) ?>">☆ Save</a>
-          <?php endif; ?>
-          <?php if ($sc > 0): ?>
-            <span class="hint"><?= $sc ?> saved</span>
-          <?php endif; ?>
-        </div>
-      </div></article>
-    <?php endforeach; ?>
-  </div>
+  <?php if ($places): ?>
+    <div class="place-row" style="padding-bottom:26px">
+      <?php foreach ($places as $card): ?>
+        <?php
+          $card['saved'] = !empty($savedMap[(int) $card['id']]);
+          $card['save_count'] = (int) ($saveCounts[(int) $card['id']] ?? 0);
+          $cardActions = true;   // this page is for choosing, so each card carries its actions
+          include __DIR__ . '/_place_card.php';
+        ?>
+      <?php endforeach; ?>
+    </div>
+
+    <?php /* The contribution prompt belongs at the end of a list somebody has just read: they have
+             seen what is here and know whether they have something to add. */ ?>
+    <div class="empty-cta" style="margin:0 0 50px">
+      <h3>Been to one of these?</h3>
+      <p class="muted" style="margin:0">
+        <?= (int) count($places) ?> <?= count($places) === 1 ? 'place' : 'places' ?> in
+        <?= e($d['name']) ?>, and what they are actually like comes from travelers who went.
+        Say what it cost and what you wish you had known.
+      </p>
+      <p style="margin:16px 0 0">
+        <a class="btn btn-accent" href="<?= e(url('review/new?destination='.(int)$d['id'])) ?>">Write a review</a>
+        <a class="btn btn-ghost" href="<?= e(url('d/'.$d['slug'])) ?>">Back to <?= e($d['name']) ?></a>
+      </p>
+    </div>
+  <?php endif; ?>
 </div>

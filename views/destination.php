@@ -161,6 +161,8 @@
       $typeHeadings = ['hotel' => 'Top hotels', 'restaurant' => 'Top restaurants',
                        'attraction' => 'Top things to do', 'experience' => 'Top experiences'];
       $renderRow = static function (array $cards) {
+          // Discovery rows are for skimming, not choosing, so the cards carry no controls.
+          $cardActions = false;
           echo '<div class="place-row">';
           foreach ($cards as $card) { include __DIR__ . '/_place_card.php'; }
           echo '</div>';

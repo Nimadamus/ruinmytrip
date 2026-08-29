@@ -300,6 +300,87 @@ function rmt_destination_discovery(int $destId, int $size = RMT_MODULE_SIZE): ar
 }
 
 /**
+ * The sort orders the browse page offers, and what each one honestly means.
+ *
+ * "best" is the default and is not a claim that these are the best places: it puts the ones with
+ * enough reviews to be ranked first, in weighted order, and then everything else. On a destination
+ * with no community reviews it degrades to exactly the same list as "name" with our own covered
+ * places first, which is the truthful outcome rather than a ranking of nothing.
+ */
+const RMT_BROWSE_SORTS = [
+    'best'    => 'Best reviewed',
+    'reviews' => 'Most reviewed',
+    'name'    => 'A to Z',
+    'newest'  => 'Recently added',
+];
+
+/**
+ * Every place in a destination, optionally of one kind, ordered and decorated for the card grid.
+ *
+ * One query for the rows, one for covers, one for category names. No per-card lookups: this page
+ * can show a hundred cards and it must not become a hundred round trips.
+ *
+ * @param string $type '' for all, otherwise one of RMT_PLACE_TYPES
+ * @param string $sort a key of RMT_BROWSE_SORTS
+ */
+function rmt_destination_browse(int $destId, string $type = '', string $sort = 'best'): array {
+    if (!isset(RMT_BROWSE_SORTS[$sort])) $sort = 'best';
+    $args = [RMT_EDITORIAL_ROLE, $destId];
+    $where = '';
+    if (in_array($type, RMT_PLACE_TYPES, true)) { $where = ' AND p.type = ?'; $args[] = $type; }
+
+    $rows = q_all(
+        "SELECT p.id, p.slug, p.name, p.type, p.category_id, p.neighborhood, p.price_level, p.created_at,
+                COUNT(r.id) review_count,
+                AVG(r.rating * 1.0) rating_avg,
+                CASE WHEN pe.place_id IS NULL THEN 1 ELSE 0 END no_editorial
+           FROM places p
+           LEFT JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
+                              AND r.user_id IN (SELECT id FROM users WHERE role <> ?)
+           LEFT JOIN place_editorial pe ON pe.place_id = p.id
+          WHERE p.destination_id = ? AND p.status = 'active'" . $where . "
+          GROUP BY p.id, p.slug, p.name, p.type, p.category_id, p.neighborhood, p.price_level,
+                   p.created_at, pe.place_id",
+        $args);
+
+    if (!$rows) return [];
+
+    $mean = rmt_destination_mean(array_map(
+        static fn($r) => ['review_count' => (int) $r['review_count'], 'rating_avg' => (float) $r['rating_avg']],
+        array_filter($rows, static fn($r) => (int) $r['review_count'] > 0)));
+
+    foreach ($rows as &$r) {
+        $r['review_count'] = (int) $r['review_count'];
+        $r['rating_avg']   = $r['review_count'] > 0 ? round((float) $r['rating_avg'], 1) : null;
+        $r['weighted']     = $r['review_count'] >= RMT_TOP_MIN_REVIEWS
+            ? rmt_weighted_rating((float) $r['rating_avg'], $r['review_count'], $mean) : 0.0;
+        $r['no_editorial'] = (int) $r['no_editorial'];
+    }
+    unset($r);
+
+    usort($rows, static function (array $a, array $b) use ($sort): int {
+        return match ($sort) {
+            // Ranked places first, then the ones we have written about, then alphabetical. With no
+            // reviews anywhere the first key is zero for everyone and this is simply that order.
+            'reviews' => [$b['review_count'], $a['name']] <=> [$a['review_count'], $b['name']],
+            'name'    => strcasecmp($a['name'], $b['name']),
+            'newest'  => [$b['created_at'], $a['name']] <=> [$a['created_at'], $b['name']],
+            default   => [$b['weighted'], $a['no_editorial'], mb_strtolower($a['name'])]
+                     <=> [$a['weighted'], $b['no_editorial'], mb_strtolower($b['name'])],
+        };
+    });
+
+    $covers = rmt_place_cover_map(array_column($rows, 'id'));
+    $catNames = rmt_category_name_map(array_map(static fn($r) => (int) ($r['category_id'] ?? 0), $rows));
+    foreach ($rows as &$r) {
+        $r['cover_url'] = $covers[(int) $r['id']] ?? null;
+        $r['category_name'] = $catNames[(int) ($r['category_id'] ?? 0)] ?? null;
+    }
+    unset($r);
+    return $rows;
+}
+
+/**
  * The places we cover in a destination, for when the ranked rows have nothing to show.
  *
  * Every ranking module here is gated on community reviews, and a destination with none of them
