@@ -273,35 +273,48 @@ function rmt_suggest_public(array $res): array {
     ];
 }
 
-/** Destination candidates, prefix first and fuzzy only if prefix did not fill the list. */
+/**
+ * Destination candidates: the name and its aliases in one statement.
+ *
+ * Two round trips became one. Each branch is its own index range scan and the union is small;
+ * splitting them cost a network round trip per keystroke for no benefit, which on a remote
+ * database is most of the time a suggestion takes.
+ */
 function rmt_suggest_destinations(string $qNorm, int $limit): array {
-    $like = rmt_search_like($qNorm);
+    $like = rmt_search_like($qNorm) . '%';
+    $cap = $limit * 3;
+
     $rows = q_all(
-        "SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm,
-                NULL AS alias_hit
+        "SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm, NULL AS alias_hit
            FROM destinations d
           WHERE d.name_norm LIKE ? ESCAPE '!'
-          ORDER BY d.name LIMIT " . ($limit * 3), [$like . '%']);
+          UNION ALL
+         SELECT d.id, d.slug, d.name, d.country, d.region, d.name_norm, a.alias_norm AS alias_hit
+           FROM search_aliases a JOIN destinations d ON d.id = a.entity_id
+          WHERE a.entity_type = 'destination' AND a.alias_norm LIKE ? ESCAPE '!'
+          LIMIT " . $cap, [$like, $like]);
 
-    $seen = array_column($rows, null, 'id');
-
-    // Aliases: Wien, Praha, NYC. A hit here is a strong signal, not a fuzzy one.
-    foreach (q_all("SELECT a.alias, d.id, d.slug, d.name, d.country, d.region, d.name_norm,
-                           a.alias_norm AS alias_hit
-                      FROM search_aliases a JOIN destinations d ON d.id = a.entity_id
-                     WHERE a.entity_type = 'destination' AND a.alias_norm LIKE ? ESCAPE '!'
-                     LIMIT " . ($limit * 2), [$like . '%']) as $r) {
-        if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
+    // One row per destination: its own name matching always outranks an alias matching, and
+    // rmt_suggest_tier() prefers the name when both are present, so keep the first of each.
+    $seen = [];
+    $uniq = [];
+    foreach ($rows as $r) {
+        $id = (int) $r['id'];
+        if (isset($seen[$id])) {
+            if (empty($seen[$id]['alias_hit']) || !empty($r['alias_hit'])) continue;
+        }
+        $seen[$id] = $r;
     }
+    $uniq = array_values($seen);
 
-    if (count($rows) < $limit) {
+    if (count($uniq) < $limit) {
         foreach (rmt_suggest_fuzzy('destinations', $qNorm, $limit) as $r) {
-            if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
+            if (!isset($seen[(int) $r['id']])) { $seen[(int) $r['id']] = $r; $uniq[] = $r; }
         }
     }
 
     $out = [];
-    foreach ($rows as $r) {
+    foreach ($uniq as $r) {
         $tier = rmt_suggest_tier((string) $r['name_norm'], $qNorm, $r['alias_hit'] ?? null);
         if (!$tier && !empty($r['fuzzy_score'])) {
             $tier = ['tier' => 'fuzzy', 'score' => RMT_SUGGEST_TIERS['fuzzy'] * (float) $r['fuzzy_score']];
@@ -323,46 +336,55 @@ function rmt_suggest_destinations(string $qNorm, int $limit): array {
     return rmt_suggest_finish($out, 'destination_id', $limit);
 }
 
-/** Place candidates. Always carries the city, so two venues with one name are told apart. */
+/**
+ * Place candidates: prefix, word-inside-the-name, and alternative names, in one statement.
+ *
+ * Three round trips became one. The prefix branch is an index range scan; the other two are
+ * bounded scans that only ever run over the same small candidate space, and paying one network
+ * round trip for all three rather than three is most of the latency of a keystroke.
+ *
+ * Every row carries its city, so two venues with the same name are told apart on sight.
+ */
 function rmt_suggest_places(string $qNorm, int $limit): array {
     $like = rmt_search_like($qNorm);
-    $sql = "SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
-                   d.name dest_name, d.country dest_country,
-                   NULL AS alias_hit
-              FROM places p JOIN destinations d ON d.id = p.destination_id
-             WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!'
-             ORDER BY p.name LIMIT " . ($limit * 3);
-    $rows = q_all($sql, [$like . '%']);
-    $seen = array_column($rows, null, 'id');
+    $cap = $limit * 3;
 
-    // A word inside the name starting with the query: "savoy" should find "Cafe Savoy". Same
-    // statement, different pattern -- this one cannot use the prefix index, which is why it runs
-    // second and only over a bounded LIMIT.
-    foreach (q_all($sql, ['% ' . $like . '%']) as $r) {
-        if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
+    $rows = q_all(
+        "SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
+                d.name dest_name, d.country dest_country, NULL AS alias_hit
+           FROM places p JOIN destinations d ON d.id = p.destination_id
+          WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!'
+          UNION ALL
+         SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
+                d.name dest_name, d.country dest_country, NULL AS alias_hit
+           FROM places p JOIN destinations d ON d.id = p.destination_id
+          WHERE p.status = 'active' AND p.name_norm LIKE ? ESCAPE '!'
+          UNION ALL
+         SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
+                d.name dest_name, d.country dest_country, a.alias_norm AS alias_hit
+           FROM search_aliases a
+           JOIN places p ON p.id = a.entity_id AND p.status = 'active'
+           JOIN destinations d ON d.id = p.destination_id
+          WHERE a.entity_type = 'place' AND a.alias_norm LIKE ? ESCAPE '!'
+          LIMIT " . $cap, [$like . '%', '% ' . $like . '%', $like . '%']);
+
+    $seen = [];
+    foreach ($rows as $r) {
+        $id = (int) $r['id'];
+        // Keep the branch that matched the place's own name over the one that matched an alias.
+        if (isset($seen[$id]) && (empty($seen[$id]['alias_hit']) || !empty($r['alias_hit']))) continue;
+        $seen[$id] = $r;
     }
+    $uniq = array_values($seen);
 
-    // Names the map knows this place by that we did not choose for it: "Milan Cathedral" for
-    // Duomo di Milano, the local name for an English one. Stored by enrichment, matched here.
-    foreach (q_all("SELECT p.id, p.slug, p.name, p.type, p.name_norm, p.category_id,
-                           d.name dest_name, d.country dest_country,
-                           a.alias_norm AS alias_hit
-                      FROM search_aliases a
-                      JOIN places p ON p.id = a.entity_id AND p.status = 'active'
-                      JOIN destinations d ON d.id = p.destination_id
-                     WHERE a.entity_type = 'place' AND a.alias_norm LIKE ? ESCAPE '!'
-                     LIMIT " . ($limit * 2), [$like . '%']) as $r) {
-        if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
-    }
-
-    if (count($rows) < $limit) {
+    if (count($uniq) < $limit) {
         foreach (rmt_suggest_fuzzy('places', $qNorm, $limit) as $r) {
-            if (!isset($seen[$r['id']])) { $seen[$r['id']] = $r; $rows[] = $r; }
+            if (!isset($seen[(int) $r['id']])) { $seen[(int) $r['id']] = $r; $uniq[] = $r; }
         }
     }
 
     // One lookup for every subcategory on the shortlist, not one per row.
-    $catIds = array_values(array_filter(array_map(static fn($r) => (int) ($r['category_id'] ?? 0), $rows)));
+    $catIds = array_values(array_filter(array_map(static fn($r) => (int) ($r['category_id'] ?? 0), $uniq)));
     $catNames = [];
     if ($catIds) {
         $in = implode(',', array_fill(0, count($catIds), '?'));
@@ -372,7 +394,7 @@ function rmt_suggest_places(string $qNorm, int $limit): array {
     }
 
     $out = [];
-    foreach ($rows as $r) {
+    foreach ($uniq as $r) {
         $tier = rmt_suggest_tier((string) $r['name_norm'], $qNorm, $r['alias_hit'] ?? null);
         if (!$tier && !empty($r['fuzzy_score'])) {
             $tier = ['tier' => 'fuzzy', 'score' => RMT_SUGGEST_TIERS['fuzzy'] * (float) $r['fuzzy_score']];
