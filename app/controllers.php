@@ -2783,6 +2783,159 @@ function admin_dashboard(array $a): void {
     ];
     view('admin', compact('reports','stats'), ['title'=>'Moderation — RuinMyTrip']);
 }
+/* ===========================================================================
+ * Admin place editor
+ * ======================================================================== */
+
+/** GET /admin/places — everything an editor might want to fill in, with a filter. */
+function admin_places_index(array $a): void {
+    require_role('admin', 'mod');
+    $q = trim((string) input('q'));
+    $rows = rmt_admin_places($q);
+    foreach ($rows as &$r) $r['completeness'] = rmt_place_completeness($r);
+    unset($r);
+    view('admin_places', ['rows' => $rows, 'q' => $q],
+         ['title' => 'Places — RuinMyTrip admin']);
+}
+
+/** GET /admin/place/{id} — the editor. */
+function admin_place_form(array $a): void {
+    require_role('admin', 'mod');
+    $p = rmt_place_by_id((int) $a['id']);
+    if (!$p) not_found();
+    admin_place_render($p, [], []);
+}
+
+/** Shared render so a failed save comes back with the values that were typed, not a blank form. */
+function admin_place_render(array $p, array $errors, array $posted): void {
+    $id = (int) $p['id'];
+    view('admin_place_edit', [
+        'p'          => $posted ? array_merge($p, $posted) : $p,
+        'orig'       => $p,
+        'errors'     => $errors,
+        'categories' => rmt_place_categories_for((string) $p['type']),
+        'grid'       => rmt_admin_hours_grid($id),
+        'photos'     => q_all("SELECT * FROM place_photos WHERE place_id = ? ORDER BY is_cover DESC, sort, id", [$id]),
+        'reviewPhotos' => q_all("SELECT rp.id, rp.url, rp.storage_key, rp.caption
+                                   FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
+                                  WHERE r.place_id = ? AND r.status = 'published'
+                                  ORDER BY rp.id DESC LIMIT 24", [$id]),
+    ], ['title' => 'Edit ' . $p['name'] . ' — RuinMyTrip admin']);
+}
+
+/**
+ * POST /admin/place/{id} — save attributes and hours together.
+ *
+ * Both halves are validated before either is written, and the write runs in one transaction, so a
+ * bad closing time cannot leave an address saved and the hours half-applied.
+ */
+function admin_place_save(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $p = rmt_place_by_id((int) $a['id']);
+    if (!$p) not_found();
+    $id = (int) $p['id'];
+
+    $hours = rmt_admin_parse_hours_grid((array) ($_POST['hours'] ?? []));
+    $errors = $hours['errors'];
+
+    $name = trim((string) input('name'));
+    $renameTo = ($name !== '' && $name !== $p['name']) ? $name : null;
+
+    $attrs = [];
+    foreach (['street_address','neighborhood','region','postal_code','phone','website_url',
+              'timezone','data_source','data_source_url','lat','lng','price_level','category_id'] as $f) {
+        if (array_key_exists($f, $_POST)) $attrs[$f] = $_POST[$f];
+    }
+
+    $pdo = db();
+    $pdo->beginTransaction();
+    try {
+        $attrErrors = rmt_place_update_attributes($id, $attrs);
+        $errors = array_merge($errors, array_values($attrErrors));
+        if (!$errors) {
+            $hoursErrors = rmt_place_set_hours($id, $hours['intervals']);
+            $errors = array_merge($errors, array_values($hoursErrors));
+        }
+        if (!$errors && $renameTo !== null) {
+            // Renaming retires the old slug into place_slug_history, so the URL this place has been
+            // published under keeps working as a 301. The row id never changes.
+            rmt_place_rename($id, $renameTo);
+        }
+        if ($errors) { $pdo->rollBack(); }
+        else { $pdo->commit(); }
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        throw $e;
+    }
+
+    if ($errors) {
+        admin_place_render($p, array_values(array_unique($errors)), $_POST);
+        return;
+    }
+    flash('Saved.');
+    redirect('/admin/place/' . $id);
+}
+
+/**
+ * POST /admin/place/{id}/photo — set a cover, adopt a traveler photo, or remove one.
+ *
+ * Adopting a review photo stores a REFERENCE (its storage key and review_photo_id), never a copy:
+ * one blob, two rows pointing at it, and deleting the review takes the reference with it.
+ */
+function admin_place_photo(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $p = rmt_place_by_id((int) $a['id']);
+    if (!$p) not_found();
+    $id = (int) $p['id'];
+    $action = (string) input('do');
+
+    if ($action === 'adopt') {
+        $rp = q_one("SELECT rp.* FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
+                      WHERE rp.id = ? AND r.place_id = ? AND r.status = 'published'",
+                    [(int) input('review_photo_id'), $id]);
+        if ($rp) {
+            $already = q_one('SELECT id FROM place_photos WHERE review_photo_id = ?', [(int) $rp['id']]);
+            if ($already) {
+                q_run('UPDATE place_photos SET is_cover = 0 WHERE place_id = ?', [$id]);
+                q_run('UPDATE place_photos SET is_cover = 1 WHERE id = ?', [(int) $already['id']]);
+            } else {
+                rmt_place_photo_add($id, [
+                    'review_photo_id' => (int) $rp['id'],
+                    'storage_key' => $rp['storage_key'] ?: null,
+                    'url' => $rp['url'] ?: null,
+                    'caption' => $rp['caption'] ?: null,
+                    'alt_text' => trim((string) input('alt_text')) ?: null,
+                    'credit' => 'Traveler photo',
+                    'is_cover' => true,
+                    'uploaded_by' => (int) current_user()['id'],
+                ]);
+            }
+            flash('Cover set from a traveler photo.');
+        } else {
+            flash('That photo does not belong to this place.');
+        }
+    } elseif ($action === 'cover') {
+        $ph = q_one('SELECT id FROM place_photos WHERE id = ? AND place_id = ?', [(int) input('photo_id'), $id]);
+        if ($ph) {
+            q_run('UPDATE place_photos SET is_cover = 0 WHERE place_id = ?', [$id]);
+            q_run('UPDATE place_photos SET is_cover = 1 WHERE id = ?', [(int) $ph['id']]);
+            flash('Cover updated.');
+        }
+    } elseif ($action === 'remove') {
+        $ph = q_one('SELECT * FROM place_photos WHERE id = ? AND place_id = ?', [(int) input('photo_id'), $id]);
+        if ($ph) {
+            // Only delete the underlying blob when this row OWNS it. A photo adopted from a review
+            // shares the review's media, and destroying it would blank the review too.
+            if (empty($ph['review_photo_id']) && !empty($ph['storage_key'])) {
+                rmt_storage_delete((string) $ph['storage_key']);
+            }
+            q_run('DELETE FROM place_photos WHERE id = ?', [(int) $ph['id']]);
+            flash('Photo removed.');
+        }
+    }
+    redirect('/admin/place/' . $id);
+}
+
 function admin_resolve(array $a): void {
     require_role('admin','mod'); csrf_check(); $me = current_user();
     $rid = (int) input('report_id');

@@ -89,6 +89,10 @@
       <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode(rmt_place_path($p)))) ?>">☆ Save</a>
     <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
+    <?php /* Editors get a direct route into the place editor from the page they are looking at. */ ?>
+    <?php if ($me && in_array($me['role'], ['admin','mod'], true)): ?>
+      <a class="btn btn-ghost" href="<?= e(url('admin/place/'.(int)$p['id'])) ?>">Edit this place</a>
+    <?php endif; ?>
   </div>
   <?php /* Zero is not announced. "0 travelers saved this" is a fact about nobody caring and it is
            the first thing a new page would say about itself. */ ?>
