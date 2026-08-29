@@ -368,6 +368,14 @@ function place_show(array $a): void {
     // one module and a wasted screen -- so the weaker one is dropped rather than repeated.
     $similar = rmt_similar_places($p, 6);
     if (rmt_similar_is_redundant($similar, $nearby)) $similar = [];
+    // The lists this reader could add this place to, and whether it is already on one. Only their
+    // own: a list belongs to the person who made it.
+    $myLists = $me ? q_all(
+        "SELECT c.id, c.title,
+                (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id = c.id AND ci.place_id = ?) has
+           FROM collections c
+          WHERE c.user_id = ? AND c.status <> 'deleted'
+          ORDER BY c.updated_at DESC, c.id DESC LIMIT 25", [$id, (int) $me['id']]) : [];
     $saved = rmt_place_is_saved($id, $me ? (int) $me['id'] : null);
     $saveCount = rmt_place_save_count($id);
     $canonical = url(ltrim(rmt_place_path($p), '/'));
@@ -412,7 +420,7 @@ function place_show(array $a): void {
             : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
     }
 
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
@@ -1086,9 +1094,23 @@ function collection_show(array $a): void {
     $c['author'] = author((int)$c['user_id']);
     $me = current_user();
     $cid = (int) $c['id'];
-    $items = q_all("SELECT ci.*, d.slug dest_slug, d.name dest_name, d.country dest_country, d.hero_url dest_hero
-                    FROM collection_items ci JOIN destinations d ON d.id=ci.destination_id
-                    WHERE ci.collection_id=? ORDER BY ci.sort, ci.id", [$cid]);
+    // LEFT JOINs, and a row is one kind or the other: the inner join here silently dropped every
+    // place from a list the moment lists could hold places.
+    $items = q_all("SELECT ci.*, d.slug dest_slug, d.name dest_name, d.country dest_country, d.hero_url dest_hero,
+                           pl.slug place_slug, pl.name place_name, pl.type place_type, pl.neighborhood place_area,
+                           pd.slug place_dest_slug, pd.name place_dest_name
+                    FROM collection_items ci
+                    LEFT JOIN destinations d ON d.id = ci.destination_id
+                    LEFT JOIN places pl ON pl.id = ci.place_id AND pl.status = 'active'
+                    LEFT JOIN destinations pd ON pd.id = pl.destination_id
+                    WHERE ci.collection_id = ?
+                    ORDER BY ci.sort, ci.id", [$cid]);
+    // A place that was removed from the site leaves an item pointing at nothing. Dropping it on
+    // read is better than rendering a blank card, and better than deleting somebody's list item
+    // behind their back.
+    $items = array_values(array_filter($items, static fn(array $i) =>
+        ($i['destination_id'] !== null && $i['dest_slug'] !== null) ||
+        ($i['place_id'] !== null && $i['place_slug'] !== null)));
     $comments = q_all("SELECT cm.*, u.username, p2.avatar_url FROM comments cm JOIN users u ON u.id=cm.user_id
                        LEFT JOIN profiles p2 ON p2.user_id=u.id
                        WHERE cm.target_type='collection' AND cm.target_id=? AND cm.status='published' ORDER BY cm.id", [$cid]);
@@ -1169,9 +1191,18 @@ function collection_edit_form(array $a): void {
     $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
     if (!$c) not_found();
     if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
-    $items = q_all("SELECT ci.*, d.name dest_name, d.country dest_country FROM collection_items ci
-                    JOIN destinations d ON d.id=ci.destination_id WHERE ci.collection_id=? ORDER BY ci.sort, ci.id", [(int)$c['id']]);
-    $usedIds = array_column($items, 'destination_id');
+    // LEFT JOINs for the same reason as the public page: an inner join on destinations hides every
+    // place the moment a list can hold one, and the owner would be looking at an editor that had
+    // quietly lost half their list.
+    $items = q_all("SELECT ci.*, d.name dest_name, d.country dest_country,
+                           pl.name place_name, pl.slug place_slug, pl.type place_type,
+                           pd.name place_dest_name
+                      FROM collection_items ci
+                      LEFT JOIN destinations d ON d.id = ci.destination_id
+                      LEFT JOIN places pl ON pl.id = ci.place_id
+                      LEFT JOIN destinations pd ON pd.id = pl.destination_id
+                     WHERE ci.collection_id = ? ORDER BY ci.sort, ci.id", [(int)$c['id']]);
+    $usedIds = array_values(array_filter(array_column($items, 'destination_id'), static fn($v) => $v !== null));
     $available = $usedIds
         ? q_all('SELECT id,name,country FROM destinations WHERE id NOT IN ('.implode(',', array_fill(0, count($usedIds), '?')).') ORDER BY name', $usedIds)
         : all_dests();
@@ -1216,26 +1247,40 @@ function collection_delete(array $a): void {
 /** POST /collection/{id}/items — owner-only, adds one destination (+ optional note) to the list. */
 function collection_item_add(array $a): void {
     require_login(); csrf_check();
-    $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
+    // The list is named in the URL when editing a list, and chosen from a select when adding from
+    // a place page. Same permission check either way -- which is the reason this is one function
+    // and not two.
+    $listId = (int) ($a['id'] ?? 0) ?: (int) input('list_id');
+    $c = q_one('SELECT * FROM collections WHERE id=?', [$listId]);
     if (!$c) not_found();
     if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
 
+    // A list item is a city or a venue, exactly one. The database says the same thing with a
+    // check constraint; this is the readable half of that rule.
     $did = (int) input('destination_id');
+    $pid = (int) input('place_id');
     $note = trim((string) input('note'));
+    $back = rmt_safe_return_path((string) input('return')) ?: '/collection/'.(int)$c['id'].'/edit';
     if (mb_strlen($note) > 500) {
-        flash('That note is too long (500 characters max).'); redirect('/collection/'.(int)$c['id'].'/edit'); return;
+        flash('That note is too long (500 characters max).'); redirect($back); return;
     }
-    if (!$did || !dest_by_id($did)) redirect('/collection/'.(int)$c['id'].'/edit');
+    if (($did > 0) === ($pid > 0)) redirect($back);          // neither, or both
+    if ($did > 0 && !dest_by_id($did)) redirect($back);
+    if ($pid > 0 && !q_one("SELECT 1 FROM places WHERE id = ? AND status = 'active'", [$pid])) redirect($back);
+
     $count = (int) (q_one('SELECT COUNT(*) n FROM collection_items WHERE collection_id=?', [(int)$c['id']])['n'] ?? 0);
     if ($count >= 50) {
-        flash('A collection can hold at most 50 destinations.'); redirect('/collection/'.(int)$c['id'].'/edit'); return;
+        flash('A list can hold at most 50 items.'); redirect($back); return;
     }
     $nextSort = (int) (q_one('SELECT COALESCE(MAX(sort),-1) n FROM collection_items WHERE collection_id=?', [(int)$c['id']])['n'] ?? -1) + 1;
     try {
-        q_run('INSERT INTO collection_items (collection_id,destination_id,note,sort) VALUES (?,?,?,?)',
-            [(int)$c['id'], $did, $note !== '' ? $note : null, $nextSort]);
+        q_run('INSERT INTO collection_items (collection_id,destination_id,place_id,note,sort) VALUES (?,?,?,?,?)',
+            [(int)$c['id'], $did > 0 ? $did : null, $pid > 0 ? $pid : null, $note !== '' ? $note : null, $nextSort]);
+        flash($pid > 0 ? 'Added to your list.' : 'Added.');
     } catch (\PDOException $e) {
+        // The unique index means it is already in the list, which is not an error worth a 500.
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        flash('That is already on the list.');
     }
     redirect('/collection/'.(int)$c['id'].'/edit');
 }

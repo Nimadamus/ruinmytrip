@@ -48,8 +48,14 @@ function rmt_profile_stats(int $uid): array {
         'helpful'   => $one("SELECT COUNT(*) c FROM review_votes rv JOIN reviews r ON r.id=rv.review_id
                               WHERE r.user_id=? AND r.status='published'
                                 AND rv.vote_type='useful' AND rv.user_id <> ?", [$uid, $uid]),
-        'followers' => $one('SELECT COUNT(*) c FROM follows WHERE followee_id=?', [$uid]),
-        'following' => $one('SELECT COUNT(*) c FROM follows WHERE follower_id=?', [$uid]),
+        // Counted the same way they are LISTED. rmt_followers() and rmt_following() both join
+        // users and require status='active'; these counts did not, so a profile whose follower
+        // deactivated said "12 followers" above a list of 11 and there was no way to tell which
+        // number was lying.
+        'followers' => $one("SELECT COUNT(*) c FROM follows f JOIN users u ON u.id = f.follower_id
+                              WHERE f.followee_id = ? AND u.status = 'active'", [$uid]),
+        'following' => $one("SELECT COUNT(*) c FROM follows f JOIN users u ON u.id = f.followee_id
+                              WHERE f.follower_id = ? AND u.status = 'active'", [$uid]),
         // "Photos" = every photo the user has actually posted, on a trip or a review.
         'photos'    => $one("SELECT COUNT(*) c FROM (
                                SELECT rp.id FROM review_photos rp JOIN reviews r ON r.id=rp.review_id

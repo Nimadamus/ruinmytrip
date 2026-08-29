@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var array $myLists @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -88,6 +88,29 @@
       </form>
     <?php else: ?>
       <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode(rmt_place_path($p)))) ?>">☆ Save</a>
+    <?php endif; ?>
+    <?php /* Adding a venue to a travel list, from the page you are already on. Only the reader's
+             own lists, and a list this place is already on says so rather than offering to add it
+             twice -- the database would refuse the duplicate anyway, and a control that cannot
+             work should not be offered. Save and List are different things: Save is a private
+             bookmark, a list is something you name, order, annotate and can publish. */ ?>
+    <?php if ($me && $myLists): ?>
+      <form method="post" action="<?= e(url('list/add')) ?>" style="margin:0;display:flex;gap:6px;align-items:center">
+        <?= csrf_field() ?>
+        <input type="hidden" name="place_id" value="<?= (int) $p['id'] ?>">
+        <input type="hidden" name="return" value="<?= e(rmt_place_path($p)) ?>">
+        <label class="sr-only" for="list_id">Add to one of your lists</label>
+        <select id="list_id" name="list_id" style="width:auto;padding:.5rem .7rem">
+          <?php foreach ($myLists as $l): ?>
+            <option value="<?= (int) $l['id'] ?>"<?= (int) $l['has'] ? ' disabled' : '' ?>>
+              <?= e((string) $l['title']) ?><?= (int) $l['has'] ? ' (already on it)' : '' ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+        <button class="btn btn-ghost">Add to list</button>
+      </form>
+    <?php elseif ($me): ?>
+      <a class="btn btn-ghost" href="<?= e(url('collection/new')) ?>">Start a list</a>
     <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
     <?php /* Editors get a direct route into the place editor from the page they are looking at. */ ?>

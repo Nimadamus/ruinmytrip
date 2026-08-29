@@ -13,12 +13,18 @@
 
   <hr style="margin:28px 0">
 
-  <h2>Destinations <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($items) ?>)</span></h2>
+  <h2>On this list <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($items) ?>)</span></h2>
   <?php if (!$items): ?><p class="muted">Nothing added yet.</p><?php endif; ?>
   <?php foreach ($items as $it): ?>
     <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px;display:flex;gap:10px;align-items:flex-start">
       <div style="flex:1">
-        <b><?= e($it['dest_name']) ?>, <?= e($it['dest_country']) ?></b>
+        <?php if (!empty($it['place_id'])): ?>
+          <b><?= e((string) $it['place_name']) ?></b>
+          <span class="muted" style="text-transform:capitalize"> &middot; <?= e(rmt_place_type_label((string) $it['place_type'])) ?>
+            &middot; <?= e((string) $it['place_dest_name']) ?></span>
+        <?php else: ?>
+          <b><?= e((string) $it['dest_name']) ?>, <?= e((string) $it['dest_country']) ?></b>
+        <?php endif; ?>
         <?php if ($it['note']): ?><p style="margin:.3rem 0 0"><?= e($it['note']) ?></p><?php endif; ?>
       </div>
       <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/items/'.(int)$it['id'].'/delete')) ?>">

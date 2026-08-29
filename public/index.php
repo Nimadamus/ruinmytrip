@@ -68,6 +68,8 @@ $routes = [
     ['POST', '#^/collection/(?<id>\d+)/edit$#',           'collection_edit_submit'],
     ['POST', '#^/collection/(?<id>\d+)/delete$#',         'collection_delete'],
     ['POST', '#^/collection/(?<id>\d+)/items$#',          'collection_item_add'],
+    // Adding from a place page, where the list is chosen in a select rather than named in the URL.
+    ['POST', '#^/list/add$#',                             'collection_item_add'],
     ['POST', '#^/collection/(?<id>\d+)/items/(?<item_id>\d+)/delete$#', 'collection_item_remove'],
     ['GET',  '#^/c/(?<slug>[a-z0-9\-]+)$#',               'collection_show'],
     ['GET',  '#^/meetups$#',                   'meetups_index'],

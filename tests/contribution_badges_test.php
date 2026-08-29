@@ -135,5 +135,22 @@ check('photos',   $stats['photos'], 5);
 check('helpful',  $stats['helpful'], 0);
 check('a profile with nothing reports nothing', rmt_profile_stats(999)['reviews'], 0);
 
+/* ---------------------------------------------------- follower counts vs lists
+
+   The count and the list are two answers to one question, and they were computed differently:
+   the list required an active user, the count did not. A profile whose follower deactivated read
+   "2 followers" above a list of one, and nothing on the page said which number to believe. */
+
+$pdo->exec("INSERT INTO users (id,username,role,status) VALUES
+    (81,'popular','user','active'), (82,'live_fan','user','active'), (83,'gone_fan','user','disabled')");
+$pdo->exec("INSERT INTO follows (follower_id,followee_id) VALUES (82,81),(83,81)");
+
+$st = rmt_profile_stats(81);
+check('followers counts only active accounts', (int) $st['followers'], 1);
+
+// And the other direction: a user who followed somebody since deactivated.
+$pdo->exec("INSERT INTO follows (follower_id,followee_id) VALUES (81,82),(81,83)");
+check('following counts only active accounts', (int) rmt_profile_stats(81)['following'], 1);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
