@@ -85,9 +85,20 @@ function rmt_link_norm(string $s): string {
  * form we store. Both must still clear the length floor on their own.
  */
 function rmt_link_mentions(string $normalisedHaystack, string $name): bool {
-    foreach ([$name, preg_replace('/\s*[,(].*$/u', '', $name) ?? $name] as $candidate) {
+    // An article writes "the Louvre", not "Louvre Museum". Dropping ONE trailing descriptor is the
+    // difference between the Paris guide linking one venue and linking four, and it is safe in a
+    // way that general shortening is not: the remainder still has to clear six characters on its
+    // own, so "Ueno Park" does not become "Ueno" and "Old Town" does not become "Old".
+    $short = preg_replace('/\s+(museum|gallery|cathedral|palace|market|tower|park|garden|basilica|abbey)$/i',
+                          '', trim($name)) ?? $name;
+    $forms = [$name, preg_replace('/\s*[,(].*$/u', '', $name) ?? $name];
+    if ($short !== trim($name) && strlen(trim(rmt_link_norm($short))) >= 6) $forms[] = $short;
+
+    foreach ($forms as $candidate) {
         $needle = trim(rmt_link_norm((string) $candidate));
-        if (strlen($needle) < RMT_LINK_MIN_NAME) continue;
+        // The shortened form is allowed down to six; anything else must clear the full floor.
+        $floor = ($candidate === $short && $short !== trim($name)) ? 6 : RMT_LINK_MIN_NAME;
+        if (strlen($needle) < $floor) continue;
         if (str_contains($normalisedHaystack, ' ' . $needle . ' ')) return true;
     }
     return false;

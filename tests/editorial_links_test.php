@@ -111,5 +111,22 @@ check('nor a guide from another destination', in_array('prague-guide', array_col
 $procope = q_one("SELECT * FROM places WHERE id = 7");
 check('a place no guide names gets nothing', rmt_guides_mentioning_place($procope), []);
 
+echo "
+One trailing descriptor may be dropped, and only one:
+";
+// An article writes "the Louvre", not "Louvre Museum". Allowing that shortened form is the
+// difference between the Paris guide linking one venue and linking four -- and it is only safe
+// because the remainder still has to clear six characters by itself.
+check('"the Louvre" finds Louvre Museum',
+      rmt_link_mentions(rmt_link_norm('The Louvre now charges non-EU visitors more.'), 'Louvre Museum'), true);
+check('"Ueno" does not find Ueno Park',
+      rmt_link_mentions(rmt_link_norm('We walked through Ueno on Sunday.'), 'Ueno Park'), false);
+check('the descriptor alone links nothing',
+      rmt_link_mentions(rmt_link_norm('The tower was busy that morning.'), 'Eiffel Tower'), false);
+check('the full name still matches',
+      rmt_link_mentions(rmt_link_norm('Climb the Eiffel Tower early.'), 'Eiffel Tower'), true);
+check('a name with no descriptor is unaffected',
+      rmt_link_mentions(rmt_link_norm('The old part of town is nice.'), 'Old Town'), false);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
