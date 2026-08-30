@@ -173,6 +173,27 @@
     <?php endif; ?>
   </div>
 
+  <?php if (!empty($placeTalk)): ?>
+    <h2 style="font-size:1.1rem;margin:26px 0 8px">Questions about <?= e((string) ($r['place_name'] ?? $r['subject_name'])) ?></h2>
+    <?php foreach ($placeTalk as $tp): ?>
+      <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+        <a href="<?= e(url('post/'.(int) $tp['id'])) ?>"><?= e(mb_strimwidth((string) $tp['body'], 0, 140, '…')) ?></a>
+        <span class="hint"> · @<?= e((string) $tp['username']) ?></span>
+      </div></div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
+  <?php if (!empty($moreReviews)): ?>
+    <h2 style="font-size:1.1rem;margin:26px 0 8px">More from <?= e((string) ($r['dest_name'] ?: 'other travelers')) ?></h2>
+    <?php foreach ($moreReviews as $mr): ?>
+      <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+        <a href="<?= e(url('review/'.(int) $mr['id'].'/'.($mr['slug'] ?: ''))) ?>">
+          <b><?= e((string) ($mr['title'] ?: $mr['subject_name'])) ?></b></a>
+        <span class="hint"> · <?= (int) $mr['rating'] ?>/5 · @<?= e((string) $mr['username']) ?></span>
+      </div></div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
   <?php $shareUrl = url(ltrim(rmt_review_path($r), '/'));
         $shareText = (string) ($r['title'] ?: $r['subject_name']);
         include __DIR__ . '/_share.php'; ?>

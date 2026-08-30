@@ -2494,7 +2494,19 @@ function review_show(array $a): void {
     $isFirstReview = $justPublished && (int) (q_one(
         "SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
         [(int) $r['user_id']])['c'] ?? 0) === 1;
-    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished','isFirstReview'), [
+    /* A review that ends in nothing is a leaf: the reader arrived from a search result and has
+       nowhere to go but back to it. Two neighbours -- what else people said about this city, and
+       what they are asking about this exact place -- keep the visit going and give the crawler a
+       reason to walk deeper than one page. */
+    $moreReviews = $r['destination_id'] ? q_all(
+        "SELECT r2.id, r2.slug, r2.title, r2.subject_name, r2.rating, u.username
+           FROM reviews r2 JOIN users u ON u.id = r2.user_id
+          WHERE r2.destination_id = ? AND r2.status='published' AND r2.id <> ? AND u.status='active'
+       ORDER BY r2.created_at DESC, r2.id DESC LIMIT 4",
+        [(int) $r['destination_id'], (int) $r['id']]) : [];
+    $placeTalk = $r['place_id'] ? rmt_posts_for_place((int) $r['place_id'], 3) : [];
+
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished','isFirstReview','moreReviews','placeTalk'), [
         'title' => rmt_meta_title((string) ($r['title'] ?: $r['subject_name'])),
         'description' => rmt_meta_description((string) $r['body']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
