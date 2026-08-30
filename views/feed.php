@@ -1,4 +1,4 @@
-<?php /** @var array $items @var array $me */
+<?php /** @var array $items @var array $me @var bool $isEveryone */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
                    'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said'];
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk'];
@@ -24,6 +24,13 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
       <a data-review-cta="feed" href="<?= e(url('contribute')) ?>">review a place you went to</a>.
     </div>
   <?php endif; ?>
+  <?php if (!empty($isEveryone)): ?>
+    <?php /* Say whose activity this is. A feed that quietly shows strangers as if they were people
+             you chose to follow is a small lie that gets found out the moment somebody checks. */ ?>
+    <p class="hint">You are not following anybody yet, so this is everyone on RuinMyTrip.
+      <a href="<?= e(url('travelers')) ?>">Find people to follow</a>.</p>
+  <?php endif; ?>
+
   <?php foreach ($items as $it): ?>
     <article class="card" style="margin-bottom:18px">
       <?php if (!empty($it['cover_url'])): ?>

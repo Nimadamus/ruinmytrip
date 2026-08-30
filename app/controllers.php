@@ -757,7 +757,16 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
 function feed(array $a): void {
     require_login(); $me = current_user(); $uid = (int)$me['id'];
     $items = rmt_activity_items($uid);
-    view('feed', compact('items','me'), [
+    /* A feed scoped to who you follow is empty on the day you join, which is the day it matters
+       most. Falling back to the whole site is not a lie as long as the page says so: the member
+       sees a living place and can start following from it, instead of a blank page that reads as
+       "nobody is here". */
+    $isEveryone = false;
+    if (!$items) {
+        $items = rmt_activity_items(null);
+        $isEveryone = (bool) $items;
+    }
+    view('feed', compact('items','me','isEveryone'), [
         'title' => 'Your feed — RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);
@@ -1696,11 +1705,13 @@ function welcome_form(array $a): void {
     require_login();
     $me = current_user();
     $dests = q_all('SELECT id, slug, name, country FROM destinations ORDER BY name');
+    // Rooms that already have somebody in them. An empty one is a worse first experience than none.
+    $communities = rmt_community_browse(6);
     $saved = [];
     foreach (q_all("SELECT target_id FROM saves WHERE user_id=? AND target_type='destination'", [(int)$me['id']]) as $r) {
         $saved[(int)$r['target_id']] = true;
     }
-    view('welcome', compact('dests','saved','me'), [
+    view('welcome', compact('dests','saved','me','communities'), [
         'title' => 'Start your traveler profile — RuinMyTrip',
         'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
     ]);
@@ -1737,6 +1748,37 @@ function welcome_submit(array $a): void {
             flash($v['errors'][0]);
             redirect('/welcome');
         }
+    }
+    /* Joining rooms and saying something are the two actions that decide whether somebody comes
+       back, and both were left for later. Both are optional here, and both fail quietly: a new
+       member's first screen is not the place to bounce them to an error page. */
+    $joined = 0;
+    foreach (array_slice(array_unique(array_map('intval', (array) ($_POST['join'] ?? []))), 0, 6) as $cidJoin) {
+        if ($cidJoin < 1) continue;
+        $c = q_one("SELECT * FROM collections WHERE id=? AND status='published'", [$cidJoin]);
+        if ($c && rmt_community_join($c, $me) === 'joined') $joined++;
+    }
+
+    $said = false;
+    $hello = trim((string) ($_POST['hello'] ?? ''));
+    if ($hello !== '' && email_is_verified($me)) {
+        $pv = rmt_post_validate(['body' => $hello], $me);
+        if ($pv['ok']) {
+            rmt_post_create($uid, $pv['data']);
+            $said = true;
+        } else {
+            flash($pv['errors'][0]);
+        }
+    }
+
+    // Land them where their own answers point: dates mean matches, words mean the conversation.
+    if ($wants && (trim((string) ($_POST['date_from'] ?? '')) !== '')) {
+        flash('Profile started. Here is who else will be there.');
+        redirect('/matches');
+    }
+    if ($said || $joined) {
+        flash($joined ? 'You are in. This is what people are saying.' : 'Posted. This is what people are saying.');
+        redirect('/talk');
     }
     flash('Profile started. Add a trip or a review whenever you are ready.');
     redirect('/feed');
