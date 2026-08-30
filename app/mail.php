@@ -203,8 +203,38 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
         $reviewsHtml = '<p style="margin:20px 0 8px;font-weight:600">New from travelers you follow</p><ul style="margin:0;padding-left:20px">' . implode('', $items) . '</ul>';
     }
 
+    if ((int) ($activity['matches'] ?? 0) > 0) {
+        $n = (int) $activity['matches'];
+        $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'traveler' : 'travelers')
+                 . ' with dates that overlap yours — <a href="' . e(url('matches')) . '">see who</a></li>';
+    }
+    if ((int) ($activity['unread_messages'] ?? 0) > 0) {
+        $n = (int) $activity['unread_messages'];
+        $lines[] = '<li>' . $n . ' unread ' . ($n === 1 ? 'message' : 'messages')
+                 . ' — <a href="' . e(url('messages')) . '">open your inbox</a></li>';
+    }
+
+    $section = static function (string $heading, array $items): string {
+        if (!$items) return '';
+        return '<p style="margin:20px 0 8px;font-weight:600">' . e($heading) . '</p>'
+             . '<ul style="margin:0;padding-left:20px">' . implode('', $items) . '</ul>';
+    };
+    $repliesHtml = $section('Replies to you', array_map(
+        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> — @' . e($r['author']) . '</li>',
+        $activity['replies'] ?? []));
+    $communityHtml = $section('In your communities', array_map(
+        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> — @'
+                                     . e($r['author']) . ' in ' . e($r['community']) . '</li>',
+        $activity['community'] ?? []));
+    $meetupsHtml = $section('Happening while you are there', array_map(
+        static fn(array $m): string => '<li><a href="' . e($m['url']) . '">' . e($m['title']) . '</a> — ' . e($m['when']) . '</li>',
+        $activity['meetups'] ?? []));
+
     $bodyHtml = '<p>Hi @' . e($username) . ' — here is what happened on RuinMyTrip this week.</p>'
               . '<ul style="margin:0;padding-left:20px">' . implode('', $lines) . '</ul>'
+              . $repliesHtml
+              . $communityHtml
+              . $meetupsHtml
               . $reviewsHtml
               . '<p style="color:#8895a3;font-size:12px;margin:24px 0 0">'
               . '<a href="' . e($unsubscribeUrl) . '" style="color:#8895a3">Unsubscribe from these emails</a></p>';

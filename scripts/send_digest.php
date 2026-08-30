@@ -5,10 +5,10 @@ declare(strict_types=1);
  * Weekly activity digest email. Intended to run on a schedule (see
  * .github/workflows/weekly-digest.yml), not on every deploy.
  *
- * For each active, email-verified, non-opted-out user: sums real activity since their last
- * digest (new followers, votes received, compliments received, new reviews from people they
- * follow). A user with zero activity in the window gets nothing -- an empty digest is spam, not
- * a service.
+ * For each active, email-verified, non-opted-out user: sums real activity since their last digest.
+ * What counts as activity lives in app/digest.php (rmt_digest_activity), so the question this whole
+ * retention loop rests on is testable and is asked in exactly one place. A user with zero activity
+ * in the window gets nothing -- an empty digest is spam, not a service.
  *
  * Usage:
  *   php scripts/send_digest.php --dry-run    preview who would get what, send nothing
@@ -36,51 +36,10 @@ foreach ($recipients as $u) {
     $uid = (int) $u['id'];
     $since = $u['last_digest_at'] ?: $defaultSince;
 
-    $followers = q_all("SELECT u2.username FROM follows f JOIN users u2 ON u2.id = f.follower_id
-                        WHERE f.followee_id = ? AND f.created_at > ? ORDER BY f.created_at DESC LIMIT 5",
-                       [$uid, $since]);
-    $followerCount = (int) (q_one("SELECT COUNT(*) c FROM follows WHERE followee_id = ? AND created_at > ?",
-                                  [$uid, $since])['c'] ?? 0);
-    $votes = (int) (q_one("SELECT COUNT(*) c FROM review_votes rv JOIN reviews r ON r.id = rv.review_id
-                          WHERE r.user_id = ? AND r.status='published' AND rv.created_at > ?",
-                         [$uid, $since])['c'] ?? 0);
-    $compliments = (int) (q_one("SELECT COUNT(*) c FROM compliments WHERE to_user_id = ? AND created_at > ?",
-                                [$uid, $since])['c'] ?? 0);
-    $followedReviews = q_all("SELECT r.id, r.title, r.subject_name, r.slug, u2.username
-                             FROM reviews r JOIN follows f ON f.followee_id = r.user_id
-                             LEFT JOIN users u2 ON u2.id = r.user_id
-                             WHERE f.follower_id = ? AND r.status = 'published' AND r.created_at > ?
-                             ORDER BY r.created_at DESC LIMIT 5", [$uid, $since]);
-    $watchedReviews = q_all("SELECT r.id, r.title, r.subject_name, r.slug, d.name dest_name
-                             FROM reviews r JOIN saves s ON s.target_type='destination' AND s.target_id=r.destination_id
-                             LEFT JOIN destinations d ON d.id=r.destination_id
-                             JOIN users ru ON ru.id=r.user_id
-                             WHERE s.user_id = ? AND r.status='published' AND ru.role <> 'editorial'
-                               AND r.created_at > ? AND r.user_id <> ?
-                             ORDER BY r.created_at DESC LIMIT 5", [$uid, $since, $uid]);
-    foreach ($watchedReviews as $wr) {
-        $followedReviews[] = $wr + ['username' => ($wr['dest_name'] ?? 'a destination')];
-    }
+    $activity = rmt_digest_activity($uid, $since);
+    if (!$activity['any']) { $skippedEmpty++; continue; }
 
-    if ($followerCount === 0 && $votes === 0 && $compliments === 0 && !$followedReviews) {
-        $skippedEmpty++;
-        continue;
-    }
-
-    $activity = [
-        'followers' => $followerCount,
-        'follower_names' => array_column($followers, 'username'),
-        'votes' => $votes,
-        'compliments' => $compliments,
-        'reviews' => array_map(fn($r) => [
-            'title' => $r['title'] ?: $r['subject_name'],
-            'author' => $r['username'] ?: 'a traveler',
-            'url' => url(ltrim(rmt_review_path($r), '/')),
-        ], $followedReviews),
-    ];
-
-    out(sprintf('%s @%s: %d follower(s), %d vote(s), %d compliment(s), %d review(s)',
-               $dryRun ? 'WOULD SEND' : 'sending', $u['username'], $followerCount, $votes, $compliments, count($followedReviews)));
+    out(sprintf('%s @%s: %s', $dryRun ? 'WOULD SEND' : 'sending', $u['username'], rmt_digest_summary($activity)));
 
     if (!$dryRun) {
         [$ok, $detail] = rmt_mail_digest($u['email'], $u['username'], $activity, rmt_unsubscribe_url($uid));
