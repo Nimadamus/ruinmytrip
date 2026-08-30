@@ -1,6 +1,6 @@
 <?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups */ ?>
 <div class="wrap">
-  <div class="profile-cover" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
+  <div class="profile-cover<?= $u['cover_url'] ? ' has-image' : '' ?>" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
     <img class="avatar-lg" src="<?= e(avatar_url($u['avatar_url'])) ?>" alt="<?= e($u['username']) ?>">
     <div style="flex:1;min-width:220px">
@@ -233,11 +233,17 @@
       <h3 style="margin:0 0 4px">Nothing here yet.</h3>
       <p class="muted" style="margin:0">
         This is where your travel record lives: the places you went, what they actually cost, and
-        what you would tell a friend. Start with somewhere you have been recently.
+        what you would tell a friend. Start with somewhere you went recently, or keep a list of
+        where you are going next.
       </p>
-      <p style="margin:14px 0 0">
+      <?php /* Two ways in, not one, and not a wall of them. A review is the thing we most want and
+               is also the bigger ask -- it needs somewhere you have actually been. A list needs
+               only somewhere you would like to go, which is a real thing to do on a travel site on
+               a day you have nothing to review. Both, once, and then the page stops asking. */ ?>
+      <p style="margin:14px 0 0;display:flex;gap:10px;flex-wrap:wrap">
         <a class="btn btn-accent" data-review-cta="profile"
            href="<?= e(url('contribute')) ?>">Review a place you went to</a>
+        <a class="btn btn-ghost" href="<?= e(url('collection/new')) ?>">Start a travel list</a>
       </p>
     </div>
   <?php elseif (!$isMe && !$reviews && !$trips): ?>

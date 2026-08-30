@@ -141,7 +141,12 @@ textarea{min-height:140px;resize:vertical}
 .article-hero{width:100%;max-height:440px;object-fit:cover;border-radius:18px;margin:18px 0}
 
 /* profile */
-.profile-cover{height:200px;background:linear-gradient(120deg,var(--ink),var(--brand));border-radius:22px;margin-top:24px;background-size:cover;background-position:center}
+/* 200px was sized for a header that sat ON the cover. With the name moved below it, a profile
+   without an uploaded cover was 200px of empty gradient above the fold -- the first fifth of
+   the page saying nothing. A profile that HAS a cover keeps the full height, because there
+   the band is a photograph rather than a placeholder. */
+.profile-cover{height:120px;background:linear-gradient(120deg,var(--ink),var(--brand));border-radius:22px;margin-top:24px;background-size:cover;background-position:center}
+.profile-cover.has-image{height:200px}
 /* The avatar overlaps the cover; the NAME does not. Pulling the whole header up put dark
    heading text on a dark cover image, so the one thing a profile has to say -- whose it is --
    was the least readable thing on it. Only the avatar is pulled up now. */
