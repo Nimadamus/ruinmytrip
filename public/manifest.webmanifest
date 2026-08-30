@@ -1,0 +1,20 @@
+{
+  "name": "RuinMyTrip",
+  "short_name": "RuinMyTrip",
+  "description": "Travelers talking about where they went, what it cost, and who else will be there.",
+  "start_url": "/talk",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#0f1b2d",
+  "background_color": "#0f1b2d",
+  "icons": [
+    { "src": "/assets/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/img/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Travel talk", "url": "/talk" },
+    { "name": "Your matches", "url": "/matches" },
+    { "name": "Write a review", "url": "/review/new" }
+  ]
+}

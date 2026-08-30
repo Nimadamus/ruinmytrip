@@ -129,3 +129,10 @@ document.addEventListener('click', function (e) {
 
   document.addEventListener('click', function (e) { if (box && !box.contains(e.target)) close(); });
 })();
+
+// Install the service worker. It caches the shell only -- see public/sw.js for why no HTML.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function () { /* fine without it */ });
+  });
+}

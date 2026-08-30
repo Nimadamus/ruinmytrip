@@ -18,6 +18,8 @@
 <meta property="og:site_name" content="RuinMyTrip">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f1b2d">
+<link rel="manifest" href="<?= e(url('manifest.webmanifest')) ?>">
+<link rel="apple-touch-icon" href="<?= e(url('assets/img/icon-192.png')) ?>">
 <?php /* The autocomplete click beacon posts a CSRF token like every other write on the site. */ ?>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml">
