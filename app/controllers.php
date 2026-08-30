@@ -1872,7 +1872,7 @@ function suggest_click(array $a): void {
 
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=[];
+    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=$talk=[];
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         if ($driver === 'pgsql') {
@@ -1923,9 +1923,17 @@ function search(array $a): void {
                          LEFT JOIN profiles p ON p.user_id=u.id
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                          LIMIT 10", [$like,$like]);
+        /* Talk is searched with LIKE rather than the full-text index the long-form types use. A
+           post is a few sentences somebody typed in a hurry: stemming buys little on that length,
+           and a missing FTS row would silently hide a whole content type from search. */
+        $talk = q_all("SELECT p.id, p.body, p.created_at, u.username, d.name dest_name
+                         FROM posts p JOIN users u ON u.id=p.user_id
+                    LEFT JOIN destinations d ON d.id=p.destination_id
+                        WHERE p.status='published' AND u.status='active' AND LOWER(p.body) LIKE ?
+                     ORDER BY p.created_at DESC LIMIT 10", [$like]);
     }
     // A search results page is a view of the index we already have, in somebody's words.
-    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections'), [
+    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections','talk'), [
         'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in

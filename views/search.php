@@ -1,4 +1,4 @@
-<?php /** @var string $qs @var array $dests @var array $places @var array $trips @var array $guides @var array $reviews @var array $people @var array $posts @var array $collections */ ?>
+<?php /** @var string $qs @var array $dests @var array $places @var array $trips @var array $guides @var array $reviews @var array $people @var array $posts @var array $collections @var array $talk */ ?>
 <div class="wrap" style="min-height:50vh">
   <h1 style="margin-top:24px">Search</h1>
   <form action="<?= e(url('search')) ?>" method="get" style="display:flex;gap:10px;margin:14px 0 26px">
@@ -6,7 +6,7 @@
     <button class="btn btn-primary">Search</button>
   </form>
   <?php if ($qs===''): ?><p class="muted">Type a place, a trip, a review, or a traveler to begin.</p><?php else: ?>
-    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people): ?><p class="muted">No results for “<?= e($qs) ?>”.</p>
+    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people && !$talk): ?><p class="muted">No results for “<?= e($qs) ?>”.</p>
       <?php /* A search that found nothing is the one moment somebody has told us exactly what we
                are missing, so this is where the missing-place flow belongs. Shown only when the
                query looks like the name of something: a queue full of typos is a queue nobody
@@ -43,6 +43,12 @@
     <?php if ($guides): ?><h2 style="margin-top:24px">Guides</h2><ul class="list-plain">
       <?php foreach($guides as $g):?><li style="padding:8px 0;border-bottom:1px solid var(--line)"><a href="<?= e(url('g/'.$g['slug'])) ?>"><?= e($g['title']) ?></a></li><?php endforeach;?>
     </ul><?php endif; ?>
+    <?php if ($talk): ?><h2 style="margin-top:24px">Travel talk</h2><ul class="list-plain">
+      <?php foreach ($talk as $tp): ?><li style="padding:8px 0;border-bottom:1px solid var(--line)">
+        <a href="<?= e(url('post/'.(int) $tp['id'])) ?>"><?= e(mb_strimwidth((string) $tp['body'], 0, 110, '…')) ?></a>
+        <span class="hint"> · @<?= e((string) $tp['username']) ?><?php if (!empty($tp['dest_name'])): ?> · <?= e((string) $tp['dest_name']) ?><?php endif; ?></span>
+      </li><?php endforeach; ?></ul><?php endif; ?>
+
     <?php if ($posts): ?><h2 style="margin-top:24px">Blog</h2><ul class="list-plain">
       <?php foreach($posts as $p):?><li style="padding:8px 0;border-bottom:1px solid var(--line)"><a href="<?= e(url('blog/'.$p['slug'])) ?>"><?= e($p['title']) ?></a></li><?php endforeach;?>
     </ul><?php endif; ?>

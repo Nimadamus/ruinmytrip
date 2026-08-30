@@ -188,3 +188,15 @@ function unblock_action(array $a): void {
     flash('Unblocked.');
     redirect(rmt_return_to());
 }
+
+/**
+ * Unread notifications, for the bell in the nav.
+ *
+ * The bell had no count, so the only way to find out whether anything had happened was to open the
+ * page and find out that nothing had. Every event the site now generates -- a reply, a trip match,
+ * a meetup in your dates -- is worth exactly nothing if nobody knows it is waiting.
+ */
+function rmt_unread_notification_count(int $uid): int {
+    if ($uid < 1) return 0;
+    return (int) (q_one('SELECT COUNT(*) n FROM notifications WHERE user_id=? AND read_at IS NULL', [$uid])['n'] ?? 0);
+}
