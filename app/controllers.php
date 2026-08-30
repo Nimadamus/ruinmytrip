@@ -2882,6 +2882,11 @@ function saved_index(array $a): void {
                 s.created_at saved_at, r.user_id
            FROM saves s JOIN reviews r ON r.id = s.target_id AND r.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'review'",
+        // Saving a post has worked since posts existed; the saved page just never showed them,
+        // which is the version of a bug where the button lies.
+        "SELECT 'post' kind, p.body title, p.id, '' slug, s.created_at saved_at, p.user_id
+           FROM saves s JOIN posts p ON p.id = s.target_id AND p.status = 'published'
+          WHERE s.user_id = ? AND s.target_type = 'post'",
     ];
     foreach ($sources as $sql) {
         foreach (q_all($sql, [$uid]) as $row) {
@@ -3003,8 +3008,19 @@ function comment_action(array $a): void {
         redirect(rmt_return_to());
     }
 
-    q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at) VALUES (?,?,?,?, 'published', ?)",
-        [(int)$me['id'], $tt, $tid, $body, date('Y-m-d H:i:s')]);
+    /* A reply belongs to one comment on the same thing. Anything else -- a parent from another
+       post, a removed one, a reply to a reply -- is flattened into a plain comment rather than
+       refused: the words are what the person came to say. */
+    $parentId = (int) input('parent_id');
+    if ($parentId > 0) {
+        $parent = q_one("SELECT id, target_type, target_id, parent_id, status FROM comments WHERE id=?", [$parentId]);
+        $parentId = ($parent && $parent['status'] === 'published' && empty($parent['parent_id'])
+                     && $parent['target_type'] === $tt && (int) $parent['target_id'] === $tid)
+            ? (int) $parent['id'] : 0;
+    }
+
+    q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at,parent_id) VALUES (?,?,?,?, 'published', ?,?)",
+        [(int)$me['id'], $tt, $tid, $body, date('Y-m-d H:i:s'), $parentId ?: null]);
 
     // Tell the content's author someone commented (follows and compliments already notified, but
     // comments never did). Skip self-comments; @mentions in the body ping their own recipients,
@@ -3013,6 +3029,15 @@ function comment_action(array $a): void {
     if ($owner && $owner !== (int)$me['id']) {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
+    }
+    // The person actually being answered. Skipped when they wrote the thing anyway: one
+    // notification for one event, not two.
+    if ($parentId > 0) {
+        $parentAuthor = (int) (q_one('SELECT user_id FROM comments WHERE id=?', [$parentId])['user_id'] ?? 0);
+        if ($parentAuthor > 0 && $parentAuthor !== (int) $me['id'] && $parentAuthor !== $owner) {
+            q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+                [$parentAuthor, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
+        }
     }
     rmt_notify_mentions($tt, $tid, (int)$me['id'], [$owner], $body);
     redirect(rmt_return_to());
