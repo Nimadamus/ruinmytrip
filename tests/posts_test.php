@@ -30,7 +30,8 @@ $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id
     target_id INT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT, collection_id INT,
-    body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'published', created_at TEXT NOT NULL, updated_at TEXT)");
+    body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'published', created_at TEXT NOT NULL, updated_at TEXT,
+    image_url TEXT, image_key TEXT, image_w INT, image_h INT)");
 
 $pdo->exec("INSERT INTO users (id,username,status,role) VALUES
     (1,'alice','active','user'),(2,'bob','active','user'),(3,'mod','active','mod')");
@@ -122,6 +123,12 @@ $long = ['status' => 'published', 'body' => str_repeat('Real detail about a city
 check('so does saying something substantial', rmt_indexable('post', $long)['ok'], true);
 $long['status'] = 'removed';
 check('a removed post is never indexed', rmt_indexable('post', $long)['ok'], false);
+
+echo "\n-- the one picture --\n";
+$pdo->exec("UPDATE posts SET image_url='/m/abc', image_key='abc', image_w=800, image_h=600 WHERE id=$id");
+check('the listing carries the image', (string) rmt_posts_recent(50)[0]['image_url'], '/m/abc');
+check('an empty file input is not an error',
+      rmt_post_attach_image($id, ['error' => UPLOAD_ERR_NO_FILE], 1)['ok'], true);
 
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

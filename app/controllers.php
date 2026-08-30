@@ -4331,6 +4331,10 @@ function post_create(array $a): void {
         redirect(rmt_return_to('/talk'));
     }
     $id = rmt_post_create((int) $me['id'], $v['data']);
+    if (!empty($_FILES['photo'])) {
+        $img = rmt_post_attach_image($id, $_FILES['photo'], (int) $me['id']);
+        if (!$img['ok']) flash($img['error']);   // the words are already posted; say what happened
+    }
     rmt_notify_mentions('post', $id, (int) $me['id'], [], (string) $v['data']['body']);
     redirect('/post/' . $id);
 }
@@ -4367,6 +4371,7 @@ function post_delete(array $a): void {
     if (!$p) not_found();
     $me = current_user();
     if (!rmt_post_can_remove($p, $me)) forbidden('That is not your post.');
+    rmt_post_drop_image($p);
     rmt_post_delete((int) $p['id']);
     flash('Post removed.');
     redirect($p['community_slug'] ? '/c/' . $p['community_slug'] : '/talk');

@@ -19,6 +19,11 @@
            put words in their mouth -- the derived one-liner is for the tab and the feed only. */ ?>
   <div style="font-size:1.12rem;line-height:1.65;margin:18px 0;white-space:pre-wrap"><?= rmt_linkify_mentions(e((string) $p['body'])) ?></div>
 
+  <?php if (!empty($p['image_url'])): ?>
+    <img src="<?= e(abs_url((string) $p['image_url'])) ?>" alt=""
+         style="width:100%;border-radius:12px;margin:0 0 18px">
+  <?php endif; ?>
+
   <?php if ($me && (rmt_post_can_edit($p, $me) || rmt_post_can_remove($p, $me))): ?>
     <div style="display:flex;gap:8px;margin:0 0 8px">
       <?php if (rmt_post_can_edit($p, $me)): ?>

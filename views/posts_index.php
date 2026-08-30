@@ -15,7 +15,7 @@
            first job is to make you click "new post" gets one post a week. */ ?>
   <?php if ($me): ?>
     <div class="card" style="margin:18px 0"><div class="card-body">
-      <form method="post" action="<?= e(url('post/new')) ?>">
+      <form method="post" action="<?= e(url('post/new')) ?>" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
         <input type="hidden" name="return" value="<?= e(url('talk')) ?>">
         <label for="body" class="sr-only">What do you want to say?</label>
@@ -38,6 +38,9 @@
               <?php endforeach; ?>
             </select>
           <?php endif; ?>
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+            Photo <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none">
+          </label>
           <button class="btn btn-accent">Post</button>
         </div>
       </form>
@@ -71,6 +74,10 @@
           </div>
         </div>
         <p style="margin:.6rem 0 .4rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $p['body'], 0, 500, '…'))) ?></p>
+        <?php if (!empty($p['image_url'])): ?>
+          <a href="<?= e(url('post/'.(int) $p['id'])) ?>"><img loading="lazy" src="<?= e(abs_url((string) $p['image_url'])) ?>"
+               alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:.2rem 0 .5rem"></a>
+        <?php endif; ?>
         <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $p['id'])) ?>">
           <?php $n = (int) ($p['reply_count'] ?? 0); ?>
           <?= $n ? $n . ' ' . ($n === 1 ? 'reply' : 'replies') : 'Reply' ?></a></p>

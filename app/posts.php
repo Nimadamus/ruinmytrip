@@ -160,3 +160,31 @@ function rmt_post_reply_count(int $postId): int {
 function rmt_posts_for_destination(int $destId, int $limit = 3): array {
     return rmt_posts_recent($limit, $destId);
 }
+
+/**
+ * Attach the one image a post is allowed.
+ *
+ * Uploading is deliberately separate from creating: a post whose text was fine must not be lost
+ * because the photo was a 30MB HEIC. The post is written first, the image is attached if it
+ * works, and a failed upload is a message rather than a discarded post.
+ *
+ * @return array{ok:bool,error?:string}
+ */
+function rmt_post_attach_image(int $postId, array $file, int $ownerId): array {
+    if ((int) ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) return ['ok' => true];
+    if (!rmt_rate_ok('upload', (string) $ownerId, 40, 3600)) {
+        return ['ok' => false, 'error' => 'Too many uploads. Try again later.'];
+    }
+    $res = rmt_upload_image($file, $ownerId);
+    if (!$res['ok']) return ['ok' => false, 'error' => $res['error']];
+    q_run('UPDATE posts SET image_url=?, image_key=?, image_w=?, image_h=? WHERE id=?',
+          [$res['url'], $res['key'], $res['w'], $res['h'], $postId]);
+    return ['ok' => true];
+}
+
+/** Take the image off a post and out of storage. Used when the post itself is being removed. */
+function rmt_post_drop_image(array $p): void {
+    if (empty($p['image_key'])) return;
+    rmt_storage_delete((string) $p['image_key']);
+    q_run('UPDATE posts SET image_url=NULL, image_key=NULL, image_w=NULL, image_h=NULL WHERE id=?', [(int) $p['id']]);
+}

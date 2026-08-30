@@ -115,13 +115,17 @@
     <h2>Discussion</h2>
     <?php if ($myRole !== null): ?>
       <div class="card" style="margin:14px 0"><div class="card-body">
-        <form method="post" action="<?= e(url('post/new')) ?>">
+        <form method="post" action="<?= e(url('post/new')) ?>" enctype="multipart/form-data">
           <?= csrf_field() ?><input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
           <input type="hidden" name="collection_id" value="<?= (int) $c['id'] ?>">
           <label class="sr-only" for="community_body">Say something to this community</label>
           <textarea id="community_body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
                     placeholder="Say something to <?= e($c['title']) ?>."></textarea>
-          <p style="margin:10px 0 0"><button class="btn btn-accent">Post</button></p>
+          <p style="margin:10px 0 0;display:flex;gap:8px;align-items:center">
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+              Photo <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none">
+            </label>
+            <button class="btn btn-accent">Post</button></p>
         </form>
       </div></div>
     <?php elseif (!$me): ?>
@@ -138,6 +142,10 @@
         <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
         <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
         <p style="margin:.4rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 400, '…'))) ?></p>
+        <?php if (!empty($tp['image_url'])): ?>
+          <a href="<?= e(url('post/'.(int) $tp['id'])) ?>"><img loading="lazy" src="<?= e(abs_url((string) $tp['image_url'])) ?>"
+               alt="" style="width:100%;max-height:320px;object-fit:cover;border-radius:10px;margin:.2rem 0 .4rem"></a>
+        <?php endif; ?>
         <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
           <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
           <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Reply' ?></a></p>
