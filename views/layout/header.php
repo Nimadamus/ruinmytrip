@@ -26,7 +26,7 @@
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
 </head>
-<body data-event-url="<?= e(url('event')) ?>">
+<body data-event-url="<?= e(url('event')) ?>"<?php if ($me): ?> data-suggest-users="<?= e(url('suggest/users')) ?>"<?php endif; ?>>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-inner">

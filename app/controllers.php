@@ -4624,3 +4624,40 @@ function post_repost(array $a): void {
     flash('Reposted to your followers.');
     redirect('/post/' . $id);
 }
+
+/**
+ * GET /suggest/users?q= — who you might be about to @mention.
+ *
+ * Signed in only. The list of every member with a prefix search over it is exactly the shape a
+ * scraper wants, and a mention box is only useful to somebody who can post anyway.
+ */
+function suggest_users_json(array $a): void {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    $me = current_user();
+    if (!$me) { http_response_code(403); echo json_encode(['users' => []]); return; }
+    if (!rmt_rate_ok('suggest_users', (string) $me['id'], 240, 60)) {
+        http_response_code(429); echo json_encode(['users' => [], 'throttled' => true]); return;
+    }
+    $q = trim((string) input('q'));
+    if (mb_strlen($q) < 1) { echo json_encode(['users' => []]); return; }
+
+    /* Prefix first, then anywhere: typing "ma" should offer @maya before @normanmartin, and offer
+       @normanmartin at all rather than pretending it does not exist. */
+    $like = mb_strtolower($q) . '%';
+    $anywhere = '%' . mb_strtolower($q) . '%';
+    $rows = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url
+                     FROM users u LEFT JOIN profiles p ON p.user_id = u.id
+                    WHERE u.status='active' AND u.id <> ?
+                      AND (LOWER(u.username) LIKE ? OR LOWER(COALESCE(p.display_name,'')) LIKE ?)
+                      AND NOT EXISTS (SELECT 1 FROM blocks b
+                                       WHERE (b.blocker_id = ? AND b.blocked_id = u.id)
+                                          OR (b.blocker_id = u.id AND b.blocked_id = ?))
+                 ORDER BY CASE WHEN LOWER(u.username) LIKE ? THEN 0 ELSE 1 END, u.username
+                    LIMIT 8",
+                  [(int) $me['id'], $anywhere, $anywhere, (int) $me['id'], (int) $me['id'], $like]);
+    echo json_encode(['users' => array_map(static fn(array $r): array => [
+        'username' => (string) $r['username'],
+        'name' => (string) ($r['display_name'] ?? ''),
+    ], $rows)]);
+}

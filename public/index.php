@@ -116,6 +116,7 @@ $routes = [
     ['GET',  '#^/tag/(?<name>[a-z0-9][a-z0-9_\-]{1,29})$#', 'tag_show'],
     ['GET',  '#^/search$#',                    'search'],
     ['GET',  '#^/suggest$#',                   'suggest_json'],
+    ['GET',  '#^/suggest/users$#',             'suggest_users_json'],
     ['POST', '#^/suggest/click$#',             'suggest_click'],
     ['GET',  '#^/notifications$#',             'notifications'],
     ['GET',  '#^/messages$#',                  'messages_index'],
