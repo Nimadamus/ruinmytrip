@@ -173,6 +173,7 @@ $routes = [
     ['GET',  '#^/sitemap\.xml$#',              'sitemap'],
     ['GET',  '#^/sitemap-(?<group>[a-z]+)(?:-(?<part>\d+))?\.xml$#', 'sitemap_child'],
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
+    ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
     ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/healthz$#',                    'healthz'],
     ['GET',  '#^/readyz$#',                     'readyz'],

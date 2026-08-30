@@ -970,6 +970,7 @@ function guide_create(array $a): void {
     rmt_sync_tags('guide', $gid, $d['title'], $d['summary'], $d['body']);
     rmt_notify_mentions('guide', $gid, (int)$me['id'], [], $d['title'], $d['summary'], $d['body']);
     flash('Guide published.');
+    rmt_seo_announce('/g/'.$slug);
     redirect('/g/'.$slug);
 }
 
@@ -2038,6 +2039,7 @@ function trip_create(array $a): void {
     $msg = 'Trip published.';
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
+    rmt_seo_announce('/trip/'.$id.'/'.slugify($d['title']));
     redirect('/trip/'.$id.'/'.slugify($d['title']));
 }
 
@@ -2378,6 +2380,7 @@ function review_create(array $a): void {
         rmt_journey_rotate();
     }
     if ($holdForVerification) redirect('/verify-email');
+    if (!$isDraft) rmt_seo_announce('/review/'.$id.'/'.$slug);
     redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug.'?published=1');
 }
 
@@ -4319,6 +4322,36 @@ function post_show(array $a): void {
         'description' => mb_strimwidth(strip_tags((string) $p['body']), 0, 150, '…'),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
         'breadcrumbs' => $crumbs,
+        /* DiscussionForumPosting, not Article. Google treats forum-shaped content as its own kind
+           of result, and describing a two-line question as an article would be both wrong and a
+           worse fit for the surface it can actually appear in. */
+        'jsonld' => jsonld([
+            '@context' => 'https://schema.org',
+            '@type' => 'DiscussionForumPosting',
+            'headline' => rmt_post_title($p),
+            'text' => (string) $p['body'],
+            'url' => url('post/' . (int) $p['id']),
+            'datePublished' => $p['created_at'],
+            'dateModified' => $p['updated_at'] ?: $p['created_at'],
+            'author' => ['@type' => 'Person', 'name' => '@' . $p['author']['username'],
+                         'url' => url('u/' . $p['author']['username'])],
+            'image' => !empty($p['image_url']) ? abs_url((string) $p['image_url']) : null,
+            'interactionStatistic' => [
+                ['@type' => 'InteractionCounter',
+                 'interactionType' => 'https://schema.org/CommentAction',
+                 'userInteractionCount' => count($comments)],
+                ['@type' => 'InteractionCounter',
+                 'interactionType' => 'https://schema.org/LikeAction',
+                 'userInteractionCount' => $likeCount],
+            ],
+            'comment' => array_map(static fn(array $c): array => [
+                '@type' => 'Comment',
+                'text' => (string) $c['body'],
+                'datePublished' => $c['created_at'],
+                'author' => ['@type' => 'Person', 'name' => '@' . $c['username'],
+                             'url' => url('u/' . $c['username'])],
+            ], $comments),
+        ]),
     ]);
 }
 
@@ -4344,6 +4377,7 @@ function post_create(array $a): void {
         if (!$img['ok']) flash($img['error']);   // the words are already posted; say what happened
     }
     rmt_notify_mentions('post', $id, (int) $me['id'], [], (string) $v['data']['body']);
+    rmt_seo_announce('/post/' . $id);
     redirect('/post/' . $id);
 }
 
@@ -4432,6 +4466,28 @@ function community_create(array $a): void {
     q_run('INSERT INTO collection_members (collection_id,user_id,role,status,joined_at) VALUES (?,?,?,?,?)',
           [$cid, (int) $me['id'], 'owner', 'active', $now]);
     rmt_sync_tags('collection', $cid, $d['title'], $d['summary']);
+    rmt_seo_announce('/c/' . $slug);
     flash('Your community exists. Put a few places in it and say something, then invite people.');
     redirect('/c/' . $slug);
+}
+
+/**
+ * GET /cron/indexnow — flush the announce queue.
+ *
+ * The web service already holds the only credentials that reach the database, so a scheduled job
+ * that curls this needs none: no firewall to open, no connection string to hand out, nothing that
+ * has to be re-locked afterwards if the run dies halfway.
+ *
+ * Unset CRON_KEY means the endpoint does not exist. A wrong one gets the same 404 as a wrong path,
+ * because telling a scanner that it found a real endpoint with the wrong key is free information.
+ */
+function cron_indexnow(array $a): void {
+    $key = (string) (getenv('CRON_KEY') ?: '');
+    $given = (string) input('key');
+    if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
+    header('Content-Type: text/plain; charset=utf-8');
+    header('X-Robots-Tag: noindex');
+    $pending = count(rmt_seo_pending(500));
+    $sent = rmt_seo_flush(500);
+    echo "pending={$pending} submitted={$sent}\n";
 }

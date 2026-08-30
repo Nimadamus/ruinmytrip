@@ -4,5 +4,6 @@ Disallow: /settings
 Disallow: /notifications
 Disallow: /admin
 Disallow: /report
+Disallow: /cron
 
 Sitemap: https://ruinmytrip.com/sitemap.xml

@@ -199,3 +199,47 @@ function rmt_indexnow_submit(array $urls): bool {
     $ok = @file_get_contents('https://api.indexnow.org/indexnow', false, $ctx);
     return $ok !== false;
 }
+
+/* ------------------------------------------------------------------ announcing new pages */
+
+/**
+ * Remember that a URL is new or changed, so the next flush can tell search engines about it.
+ *
+ * Deliberately not a submit. Publishing a post must not wait on somebody else's API, and a search
+ * engine being briefly out of date is a smaller problem than a member watching a spinner because
+ * api.indexnow.org is slow. Writing the row is one insert; the talking happens on a schedule.
+ *
+ * Silently does nothing if the queue table is not there yet, so a deploy that runs the app before
+ * its migration cannot take publishing down with it.
+ */
+function rmt_seo_announce(string $path): void {
+    $url = str_starts_with($path, 'http') ? $path : url(ltrim($path, '/'));
+    try {
+        q_run('INSERT INTO seo_ping_queue (url, created_at) VALUES (?,?)', [$url, date('Y-m-d H:i:s')]);
+    } catch (\PDOException $e) {
+        // A duplicate means it is already queued, which is the correct state. Anything else is
+        // not worth failing a publish over.
+    }
+}
+
+/** @return list<string> URLs waiting to go out, oldest first. */
+function rmt_seo_pending(int $limit = 500): array {
+    $rows = q_all('SELECT url FROM seo_ping_queue WHERE sent_at IS NULL ORDER BY id LIMIT ' . (int) $limit);
+    return array_map(static fn(array $r): string => (string) $r['url'], $rows);
+}
+
+/**
+ * Submit everything waiting and mark it done. Returns how many URLs went out.
+ *
+ * A failed submit leaves the rows pending on purpose: IndexNow being down for an hour should cost
+ * an hour of delay, not the announcement itself.
+ */
+function rmt_seo_flush(int $limit = 500): int {
+    $urls = rmt_seo_pending($limit);
+    if (!$urls) return 0;
+    if (!rmt_indexnow_submit($urls)) return 0;
+    $now = date('Y-m-d H:i:s');
+    $in = implode(',', array_fill(0, count($urls), '?'));
+    q_run("UPDATE seo_ping_queue SET sent_at = ? WHERE url IN ($in)", array_merge([$now], $urls));
+    return count($urls);
+}

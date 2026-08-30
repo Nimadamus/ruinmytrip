@@ -19,7 +19,9 @@
       <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
-      <a href="<?= e(url('matches')) ?>">Your matches</a>
+<?php /* Signed out this is a redirect to /login, which is a link worth nothing to a reader
+             and a wasted crawl to everybody else. */ ?>
+      <?php if (current_user()): ?><a href="<?= e(url('matches')) ?>">Your matches</a><?php endif; ?>
       <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
       <a href="<?= e(url('tags')) ?>">Topics</a>
     </div>

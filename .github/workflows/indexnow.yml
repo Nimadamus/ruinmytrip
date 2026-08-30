@@ -1,0 +1,31 @@
+name: indexnow
+
+# Announce newly published pages to IndexNow (Bing, Yandex, Seznam, Naver).
+#
+# It curls the site rather than touching the database. The web service already holds the only
+# credentials that reach Postgres, so this job needs no connection string and no firewall opened
+# and re-locked around it -- which also keeps it out of the way of db-backup and weekly-digest,
+# which do have to do that dance and share a concurrency group because of it.
+
+on:
+  schedule:
+    - cron: '17 */2 * * *'     # every two hours, off the hour to avoid the crowd
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  flush:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Flush the announce queue
+        run: |
+          set -euo pipefail
+          KEY='${{ secrets.RMT_CRON_KEY }}'
+          if [ -z "$KEY" ]; then echo "RMT_CRON_KEY is not set; nothing to do."; exit 0; fi
+          OUT=$(curl -fsS --max-time 60 "https://ruinmytrip.com/cron/indexnow?key=$KEY")
+          echo "$OUT"
+          # A 404 means the key is wrong or the endpoint is gone, and curl -f has already failed by
+          # then. Anything that gets here submitted whatever was waiting, including zero.
