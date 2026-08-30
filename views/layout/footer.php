@@ -14,6 +14,7 @@
       <a href="<?= e(url('contribute')) ?>">Write a review</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
       <a href="<?= e(url('discover')) ?>">Discover</a>
+      <a href="<?= e(url('talk')) ?>">Travel talk</a>
       <a href="<?= e(url('communities')) ?>">Communities</a>
       <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>

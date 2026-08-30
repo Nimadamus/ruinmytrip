@@ -31,6 +31,7 @@ require BASE_PATH . '/app/search_suggest.php';
 require BASE_PATH . '/app/neighborhoods.php';
 require BASE_PATH . '/app/seo.php';
 require BASE_PATH . '/app/communities.php';   // the list rule reads the community thresholds
+require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/indexability.php';
 require BASE_PATH . '/app/sitemap.php';
 

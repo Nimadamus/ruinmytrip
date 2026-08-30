@@ -111,6 +111,9 @@ function rmt_notification_target_url(string $type, int $id, int $forUserId = 0):
         case 'going':
             $r = q_one("SELECT d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?", [$id]);
             return $r ? url('d/' . $r['slug']) : url('going');
+        case 'post':
+            $r = q_one("SELECT id FROM posts WHERE id=? AND status='published'", [$id]);
+            return $r ? url('post/' . (int)$r['id']) : null;
         case 'destination':
             $r = q_one('SELECT slug FROM destinations WHERE id=?', [$id]);
             return $r ? url('d/' . $r['slug']) : null;

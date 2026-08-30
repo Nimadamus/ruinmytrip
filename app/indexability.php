@@ -197,6 +197,19 @@ function rmt_indexable(string $type, array $e = []): array {
             if (($e['status'] ?? '') !== 'published') return $no('noindex_private');
             return $yes();
 
+        /* A post is chatter until it is not. "anyone in Lisbon in June?" is a fine thing to say to
+           other members and a terrible search result, so a post earns a place in the index by
+           being substantial on its own or by having drawn an actual conversation. */
+        case 'post':
+            if (($e['status'] ?? '') !== 'published') return $no('noindex_private');
+            $len = mb_strlen(trim(strip_tags((string) ($e['body'] ?? ''))));
+            $replies = (int) ($e['reply_count'] ?? 0);
+            if ($len < RMT_POST_INDEX_MIN && $replies < 1) {
+                return $no('noindex_thin', sprintf('%d chars, %d replies, needs %d chars or a reply',
+                    $len, $replies, RMT_POST_INDEX_MIN));
+            }
+            return $yes();
+
         default:
             return $no('noindex_unlisted_entity', $type);
     }

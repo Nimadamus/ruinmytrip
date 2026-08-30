@@ -230,6 +230,22 @@
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
   </div></div><?php endforeach; ?><?php endif; ?>
 
+  <?php if ($talkPosts): ?>
+    <h2 style="margin-top:30px">Talk <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($talkPosts) ?>)</span></h2>
+    <?php foreach ($talkPosts as $tp): ?>
+      <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+        <span class="hint"><?= e(ago((string) $tp['created_at'])) ?>
+          <?php if (!empty($tp['dest_name'])): ?> · <a href="<?= e(url('d/'.$tp['dest_slug'])) ?>"><?= e((string) $tp['dest_name']) ?></a><?php endif; ?>
+          <?php if (!empty($tp['community_slug'])): ?> · <a href="<?= e(url('c/'.$tp['community_slug'])) ?>"><?= e((string) $tp['community_title']) ?></a><?php endif; ?>
+        </span>
+        <p style="margin:.35rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 300, '…'))) ?></p>
+        <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
+          <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
+          <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Open' ?></a></p>
+      </div></div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+
   <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
            was the FIRST section on a profile carrying 185 reviews: the page led with the one thing
            this traveler had not done. */ ?>

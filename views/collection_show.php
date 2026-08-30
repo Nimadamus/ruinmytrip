@@ -1,5 +1,5 @@
 <?php /** @var array $c @var ?array $me @var array $items @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var bool $canEdit @var array $tags
-     @var bool $isCommunity @var array $members @var int $memberCount @var ?string $myRole @var bool $canAdd @var string $joinState @var ?array $invite @var ?string $inviteToken */ ?>
+     @var bool $isCommunity @var array $members @var int $memberCount @var ?string $myRole @var bool $canAdd @var string $joinState @var ?array $invite @var ?string $inviteToken @var array $talk */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('collections')) ?>">Collections</a> / <?= e($c['title']) ?></p></div>
 <div class="wrap prose">
   <h1><?= e($c['title']) ?></h1>
@@ -106,6 +106,44 @@
       <?php endif; ?>
     </div>
   <?php endforeach; ?>
+
+  <?php /* A community needs somewhere for its members to talk, or it is a shelf with a door on it.
+           Members post; everybody reads. The composer is only shown to people who are actually in,
+           because an open door is not the same as an open microphone. */ ?>
+  <?php if ($isCommunity): ?>
+    <hr style="margin:32px 0">
+    <h2>Discussion</h2>
+    <?php if ($myRole !== null): ?>
+      <div class="card" style="margin:14px 0"><div class="card-body">
+        <form method="post" action="<?= e(url('post/new')) ?>">
+          <?= csrf_field() ?><input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
+          <input type="hidden" name="collection_id" value="<?= (int) $c['id'] ?>">
+          <label class="sr-only" for="community_body">Say something to this community</label>
+          <textarea id="community_body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
+                    placeholder="Say something to <?= e($c['title']) ?>."></textarea>
+          <p style="margin:10px 0 0"><button class="btn btn-accent">Post</button></p>
+        </form>
+      </div></div>
+    <?php elseif (!$me): ?>
+      <p class="hint"><a href="<?= e(url('login')) ?>">Sign in</a> and join to take part.</p>
+    <?php else: ?>
+      <p class="hint">Join this community to post in it.</p>
+    <?php endif; ?>
+
+    <?php if (!$talk): ?>
+      <p class="muted">Nothing said here yet.</p>
+    <?php endif; ?>
+    <?php foreach ($talk as $tp): ?>
+      <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+        <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
+        <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
+        <p style="margin:.4rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 400, '…'))) ?></p>
+        <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
+          <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
+          <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Reply' ?></a></p>
+      </div></div>
+    <?php endforeach; ?>
+  <?php endif; ?>
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?= e(url($isCommunity ? 'communities' : 'collections')) ?>">← <?= $isCommunity ? 'All communities' : 'All collections' ?></a>

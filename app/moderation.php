@@ -133,6 +133,25 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
         ];
     }
 
+    /* A post has no title column and no slug: its name is its first sentence and its address is
+       its id. Without this a moderator would see "#37" and no way to open it. */
+    if ($targetType === 'post') {
+        $r = q_one("SELECT p.*, u.username, d.name dest_name FROM posts p
+                      JOIN users u ON u.id = p.user_id
+                 LEFT JOIN destinations d ON d.id = p.destination_id
+                     WHERE p.id = ?", [$targetId]);
+        if (!$r) return $out;
+        return [
+            'title'   => rmt_post_title($r),
+            'excerpt' => mb_strimwidth(strip_tags((string) $r['body']), 0, 400, '…'),
+            'author'  => (string) $r['username'],
+            'status'  => (string) $r['status'],
+            'url'     => url('post/' . (int) $r['id']),
+            'where'   => $r['dest_name'] ? (string) $r['dest_name'] : null,
+            'rating'  => null,
+        ];
+    }
+
     $table = RMT_REPORT_TARGETS[$targetType] ?? null;
     if (!$table) return $out;
     $row = q_one("SELECT * FROM {$table} WHERE id = ?", [$targetId]);

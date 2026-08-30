@@ -86,6 +86,13 @@ $routes = [
     ['POST', '#^/collection/(?<id>\d+)/invite$#',         'community_invite_rotate'],
     ['POST', '#^/collection/(?<id>\d+)/invite/revoke$#',  'community_invite_revoke'],
     ['POST', '#^/collection/(?<id>\d+)/items/(?<item_id>\d+)/pin$#', 'community_item_pin'],
+    // Talk: the short-form conversation the site had nowhere to put.
+    ['GET',  '#^/talk$#',                      'posts_index'],
+    ['POST', '#^/post/new$#',                  'post_create'],
+    ['GET',  '#^/post/(?<id>\d+)/edit$#',      'post_edit_form'],
+    ['POST', '#^/post/(?<id>\d+)/edit$#',      'post_edit_submit'],
+    ['POST', '#^/post/(?<id>\d+)/delete$#',    'post_delete'],
+    ['GET',  '#^/post/(?<id>\d+)$#',           'post_show'],
     ['GET',  '#^/meetups$#',                   'meetups_index'],
     ['GET',  '#^/meetup/new$#',                'meetup_new_form'],
     ['POST', '#^/meetup/new$#',                'meetup_create'],

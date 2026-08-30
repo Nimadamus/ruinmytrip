@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery */ // reviews/editorial rows also carry 'useful_count' ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery @var array $talk */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('in/'.rmt_country_slug((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -384,6 +384,28 @@
           <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">See all <?= $photoCount ?> photos →</a></p>
         <?php endif; ?>
       <?php endif; ?>
+
+      <?php /* Live conversation before the archive. Somebody who landed here from a search is far
+               more likely to join over an unanswered question from yesterday than over a trip
+               report from last year. */ ?>
+      <div class="section-rule">
+        <h2>Travelers talking</h2>
+        <a class="hint" href="<?= e(url('talk?d='.$d['slug'])) ?>">all talk</a>
+      </div>
+      <?php if (!$talk): ?>
+        <p class="muted">Nobody has said anything about <?= e($d['name']) ?> yet.
+          <a href="<?= e(url('talk?d='.$d['slug'])) ?>">Start it.</a></p>
+      <?php endif; ?>
+      <?php foreach ($talk as $tp): ?>
+        <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+          <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
+          <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
+          <p style="margin:.4rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 300, '…'))) ?></p>
+          <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
+            <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
+            <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Reply' ?></a></p>
+        </div></div>
+      <?php endforeach; ?>
 
       <div class="section-rule">
         <h2>Trip stories</h2>

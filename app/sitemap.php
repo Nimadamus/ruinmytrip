@@ -43,7 +43,7 @@ const RMT_SITEMAP_TTL = 21600;   // 6 hours
  * big file cannot.
  */
 const RMT_SITEMAP_GROUPS = ['core', 'destinations', 'categories', 'neighborhoods', 'places',
-                            'editorial', 'community', 'profiles', 'lists'];
+                            'editorial', 'community', 'profiles', 'lists', 'talk'];
 
 /**
  * Every URL in one group, already filtered to what is indexable.
@@ -78,6 +78,7 @@ function rmt_sitemap_group(string $group): array {
                 $add('/communities');
             if ($has("SELECT COUNT(*) c FROM meetups WHERE status='published'"))      $add('/meetups');
             if ($has("SELECT COUNT(*) c FROM going WHERE visibility='public'"))       $add('/going');
+            if ($has("SELECT COUNT(*) c FROM posts WHERE status='published'"))       $add('/talk');
             if ($has("SELECT COUNT(*) c FROM reviews WHERE status='published'"))      $add('/discover');
             if ($has("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
                        WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])) $add('/leaderboard');
@@ -160,6 +161,22 @@ function rmt_sitemap_group(string $group): array {
             foreach (rmt_index_profiles() as $u) {
                 if (!$u['verdict']['ok']) continue;
                 $add('u/' . $u['username']);
+            }
+            break;
+
+        case 'talk':
+            /* Same question the page itself asks: a post is in the index when it stands on its own
+               or when it drew a conversation. Asking rmt_indexable() here rather than repeating the
+               rule is the point -- a sitemap that disagrees with the page's own robots tag is a
+               contradiction we would rather not ship. */
+            foreach (q_all("SELECT p.id, p.body, p.status, p.created_at, p.updated_at,
+                                   (SELECT COUNT(*) FROM comments cm
+                                     WHERE cm.target_type='post' AND cm.target_id=p.id
+                                       AND cm.status='published') reply_count
+                              FROM posts p JOIN users u ON u.id=p.user_id
+                             WHERE p.status='published' AND u.status='active'") as $p2) {
+                if (!rmt_indexable('post', $p2)['ok']) continue;
+                $add('post/' . (int) $p2['id'], $p2['updated_at'] ?: ($p2['created_at'] ?? null));
             }
             break;
 

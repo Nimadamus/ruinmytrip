@@ -225,7 +225,9 @@ function destination(array $a): void {
     // share a stats query, a cover lookup and a category lookup -- building them separately would
     // run each of those several times over for one page.
     $discovery = rmt_destination_discovery($id);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery'), [
+    // What travelers are saying about the city right now, above the archive of finished writing.
+    $talk = rmt_posts_for_destination($id, 3);
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
@@ -525,7 +527,9 @@ function profile(array $a): void {
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
-    view('profile', compact('u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans','beenPlaces'), [
+    // What they have been saying lately, which on most profiles is the only recent thing there is.
+    $talkPosts = rmt_posts_by_user($uid, 10);
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans','beenPlaces'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
@@ -725,7 +729,25 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings);
+    /* Talk belongs in the same stream as everything else. A conversation that only exists on its
+       own page is a forum bolted to the side of the site; in the feed it is what makes the site
+       look alive on a day when nobody published an article. */
+    $talk = q_all("SELECT p.*, d.name dest_name, d.slug dest_slug
+                     FROM posts p LEFT JOIN destinations d ON d.id=p.destination_id
+                    WHERE p.status='published' AND " . str_replace('user_id', 'p.user_id', $followedPlain) . "
+                 ORDER BY p.created_at DESC, p.id DESC LIMIT $limitEach", $args);
+    foreach ($talk as &$row) {
+        $row['kind'] = 'post';
+        $row['title'] = rmt_post_title($row);
+        $row['cover_url'] = null;
+        $row['subject'] = $row['dest_name'] ?: null;
+        $row['subject_url'] = $row['dest_slug'] ? url('d/' . $row['dest_slug']) : null;
+        $row['feed_url'] = url('post/' . (int) $row['id']);
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 180, '…');
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -1228,8 +1250,10 @@ function collection_show(array $a): void {
     $inviteToken  = trim((string) ($_GET['invite'] ?? '')) ?: null;
     $joinState    = $isCommunity ? rmt_community_join_state($c, $me, $inviteToken) : 'not_a_community';
     $invite       = ($isCommunity && $canEdit) ? rmt_community_invite($cid) : null;
+    // The room's conversation. A community whose only content is a list of places is a shelf.
+    $talk         = $isCommunity ? rmt_posts_recent(15, null, $cid) : [];
     view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit','tags',
-                                    'isCommunity','members','memberCount','myRole','canAdd','joinState','invite','inviteToken'), [
+                                    'isCommunity','members','memberCount','myRole','canAdd','joinState','invite','inviteToken','talk'), [
         'robots' => rmt_robots_for(rmt_indexable('list', $c + ['item_count' => count($items),
                                                                'member_count' => $memberCount])),
         'title' => $c['title'].' — RuinMyTrip Collections',
@@ -2512,6 +2536,7 @@ const RMT_INTERACT_TARGETS = [
     'blog_post'   => 'blog_posts',
     'collection'  => 'collections',
     'destination' => 'destinations',
+    'post'        => 'posts',
 ];
 
 /**
@@ -3178,6 +3203,7 @@ const RMT_REPORT_TARGETS = [
     'comment'    => 'comments',
     'user'       => 'users',
     'collection' => 'collections',
+    'post'       => 'posts',
 ];
 const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
 
@@ -4162,4 +4188,124 @@ function matches_index(array $a): void {
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Matches', 'url' => url('matches')]],
     ]);
+}
+
+/* ------------------------------------------------------------------ posts / talk */
+
+/**
+ * GET /talk — the conversation surface.
+ *
+ * Public on purpose. Somebody who found the site through a search result should be able to read
+ * what travelers are saying before deciding whether to join, and the fastest way to lose them is
+ * a sign-in wall over a conversation.
+ */
+function posts_index(array $a): void {
+    $me = current_user();
+    $destSlug = trim((string) input('d'));
+    $comSlug  = trim((string) input('c'));
+    $dest = $destSlug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$destSlug]) : null;
+    $community = $comSlug !== '' ? q_one("SELECT * FROM collections WHERE slug=? AND status='published'", [$comSlug]) : null;
+
+    $posts = rmt_posts_recent(50, $dest ? (int) $dest['id'] : null, $community ? (int) $community['id'] : null);
+    $dests = $me ? all_dests() : [];
+    $myCommunities = $me ? rmt_community_memberships((int) $me['id']) : [];
+
+    $title = 'Travel talk';
+    if ($dest) $title = 'Travelers talking about ' . $dest['name'];
+    if ($community) $title = $community['title'] . ' — discussion';
+
+    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community'), [
+        'title' => $title . ' — RuinMyTrip',
+        'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
+        // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.
+        'robots' => rmt_robots_for(rmt_indexable($dest || $community ? 'filter' : 'static')),
+        'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Talk', 'url' => url('talk')]],
+    ]);
+}
+
+function post_show(array $a): void {
+    $p = rmt_post_get((int) $a['id']);
+    if (!$p || $p['status'] !== 'published') not_found();
+    $author = q_one("SELECT status FROM users WHERE id=?", [(int) $p['user_id']]);
+    if (!$author || $author['status'] !== 'active') not_found();
+    $p['author'] = author((int) $p['user_id']);
+    $me = current_user();
+
+    $comments = q_all("SELECT c.*, u.username, pr.avatar_url FROM comments c
+                         JOIN users u ON u.id=c.user_id
+                    LEFT JOIN profiles pr ON pr.user_id=u.id
+                        WHERE c.target_type='post' AND c.target_id=? AND c.status='published'
+                     ORDER BY c.id", [(int) $p['id']]);
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='post' AND target_id=?", [(int) $p['id']])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='post' AND target_id=?", [(int) $p['id']])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int) $me['id'], 'post', (int) $p['id']]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int) $me['id'], 'post', (int) $p['id']]);
+
+    $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'Talk', 'url' => url('talk')]];
+    if ($p['dest_slug']) $crumbs[] = ['name' => (string) $p['dest_name'], 'url' => url('d/' . $p['dest_slug'])];
+
+    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me'), [
+        'title' => rmt_post_title($p) . ' — RuinMyTrip',
+        'description' => mb_strimwidth(strip_tags((string) $p['body']), 0, 150, '…'),
+        'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
+        'breadcrumbs' => $crumbs,
+    ]);
+}
+
+function post_create(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    if (!rmt_rate_ok('post', (string) $me['id'], 20, 3600)) {
+        flash('You are posting very fast. Try again shortly.');
+        redirect(rmt_return_to('/talk'));
+    }
+    if (!rmt_submit_ok('post_new', input('_submit'))) {
+        flash('That post was already published.');
+        redirect(rmt_return_to('/talk'));
+    }
+    $v = rmt_post_validate($_POST, $me);
+    if (!$v['ok']) {
+        flash($v['errors'][0]);
+        redirect(rmt_return_to('/talk'));
+    }
+    $id = rmt_post_create((int) $me['id'], $v['data']);
+    rmt_notify_mentions('post', $id, (int) $me['id'], [], (string) $v['data']['body']);
+    redirect('/post/' . $id);
+}
+
+function post_edit_form(array $a): void {
+    require_login();
+    $p = rmt_post_get((int) $a['id']);
+    if (!$p || $p['status'] !== 'published') not_found();
+    if (!rmt_post_can_edit($p, current_user())) forbidden('That is not your post.');
+    view('post_edit', ['p' => $p, 'me' => current_user()], [
+        'title' => 'Edit post — RuinMyTrip',
+        'robots' => rmt_robots_for(rmt_indexable('private')),
+    ]);
+}
+
+function post_edit_submit(array $a): void {
+    require_login(); csrf_check();
+    $p = rmt_post_get((int) $a['id']);
+    if (!$p || $p['status'] !== 'published') not_found();
+    if (!rmt_post_can_edit($p, current_user())) forbidden('That is not your post.');
+    $body = trim((string) input('body'));
+    if (mb_strlen($body) < RMT_POST_MIN || mb_strlen($body) > RMT_POST_MAX) {
+        flash('A post is between ' . RMT_POST_MIN . ' and ' . RMT_POST_MAX . ' characters.');
+        redirect('/post/' . (int) $p['id'] . '/edit');
+    }
+    rmt_post_update((int) $p['id'], $body);
+    flash('Post updated.');
+    redirect('/post/' . (int) $p['id']);
+}
+
+function post_delete(array $a): void {
+    require_login(); csrf_check();
+    $p = rmt_post_get((int) $a['id']);
+    if (!$p) not_found();
+    $me = current_user();
+    if (!rmt_post_can_remove($p, $me)) forbidden('That is not your post.');
+    rmt_post_delete((int) $p['id']);
+    flash('Post removed.');
+    redirect($p['community_slug'] ? '/c/' . $p['community_slug'] : '/talk');
 }
