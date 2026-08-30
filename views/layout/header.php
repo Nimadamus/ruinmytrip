@@ -47,6 +47,7 @@
       <a href="<?= e(url('guides')) ?>">Guides</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <a href="<?= e(url('communities')) ?>">Communities</a>
       <a href="<?= e(url('going')) ?>">Going</a>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>

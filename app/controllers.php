@@ -1197,7 +1197,12 @@ function collection_show(array $a): void {
                     LEFT JOIN places pl ON pl.id = ci.place_id AND pl.status = 'active'
                     LEFT JOIN destinations pd ON pd.id = pl.destination_id
                     WHERE ci.collection_id = ?
-                    ORDER BY ci.sort, ci.id", [$cid]);
+                    ORDER BY ci.pinned DESC, ci.sort, ci.id", [$cid]);
+    // Who put each thing here. On a personal list this is always the owner and the view says
+    // nothing; in a community it is the difference between a room and a shelf.
+    $contributors = authors_by_ids(array_column($items, 'added_by'));
+    foreach ($items as &$__it) $__it['contributor'] = $contributors[(int) $__it['added_by']] ?? null;
+    unset($__it);
     // A place that was removed from the site leaves an item pointing at nothing. Dropping it on
     // read is better than rendering a blank card, and better than deleting somebody's list item
     // behind their back.
@@ -1213,8 +1218,20 @@ function collection_show(array $a): void {
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'collection',$cid]);
     $canEdit = rmt_collection_can_edit($c, $me);
     $tags = rmt_tags_for('collection', $cid);
-    view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit','tags'), [
-        'robots' => rmt_robots_for(rmt_indexable('list', $c + ['item_count' => count($items)])),
+    $isCommunity  = rmt_is_community($c);
+    $members      = $isCommunity ? rmt_community_members($cid) : [];
+    $memberCount  = $isCommunity ? count($members) : 1;
+    $myRole       = $isCommunity ? rmt_community_role($cid, $me ? (int) $me['id'] : null) : null;
+    $canAdd       = rmt_community_can_add($c, $me);
+    // The token rides in the URL so an invite link lands on the community itself, showing what is
+    // inside before asking anyone to commit to joining it.
+    $inviteToken  = trim((string) ($_GET['invite'] ?? '')) ?: null;
+    $joinState    = $isCommunity ? rmt_community_join_state($c, $me, $inviteToken) : 'not_a_community';
+    $invite       = ($isCommunity && $canEdit) ? rmt_community_invite($cid) : null;
+    view('collection_show', compact('c','me','items','comments','likeCount','saveCount','liked','saved','canEdit','tags',
+                                    'isCommunity','members','memberCount','myRole','canAdd','joinState','invite','inviteToken'), [
+        'robots' => rmt_robots_for(rmt_indexable('list', $c + ['item_count' => count($items),
+                                                               'member_count' => $memberCount])),
         'title' => $c['title'].' — RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
         'og_image' => $items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg'),
@@ -1318,8 +1335,12 @@ function collection_edit_submit(array $a): void {
     }
     $d = $v['data'];
     $slug = rmt_collection_unique_slug($d['title'], (int)$c['id']);
-    db()->prepare("UPDATE collections SET title=?, slug=?, summary=?, updated_at=? WHERE id=?")
-        ->execute([$d['title'], $slug, $d['summary'], date('Y-m-d H:i:s'), (int)$c['id']]);
+    // The two decisions that turn a list into a community, and they are separate on purpose.
+    $policy = (string) input('join_policy');
+    if (!in_array($policy, RMT_JOIN_POLICIES, true)) $policy = (string) $c['join_policy'];
+    $canAdd = input('members_can_add') ? 1 : 0;
+    db()->prepare("UPDATE collections SET title=?, slug=?, summary=?, join_policy=?, members_can_add=?, updated_at=? WHERE id=?")
+        ->execute([$d['title'], $slug, $d['summary'], $policy, $canAdd, date('Y-m-d H:i:s'), (int)$c['id']]);
     rmt_sync_tags('collection', (int)$c['id'], $d['title'], $d['summary']);
     flash('Collection updated.');
     redirect('/collection/'.(int)$c['id'].'/edit');
@@ -1347,7 +1368,10 @@ function collection_item_add(array $a): void {
     $listId = (int) ($a['id'] ?? 0) ?: (int) input('list_id');
     $c = q_one('SELECT * FROM collections WHERE id=?', [$listId]);
     if (!$c) not_found();
-    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+    // Was owner-only, and stays owner-only for a personal list. A community widens it to members
+    // the founder has handed the pen to, which is the whole difference between a list and a place
+    // people contribute to.
+    if (!rmt_community_can_add($c, current_user())) { forbidden('You cannot add to that collection.'); }
 
     // A list item is a city or a venue, exactly one. The database says the same thing with a
     // check constraint; this is the readable half of that rule.
@@ -1368,15 +1392,16 @@ function collection_item_add(array $a): void {
     }
     $nextSort = (int) (q_one('SELECT COALESCE(MAX(sort),-1) n FROM collection_items WHERE collection_id=?', [(int)$c['id']])['n'] ?? -1) + 1;
     try {
-        q_run('INSERT INTO collection_items (collection_id,destination_id,place_id,note,sort) VALUES (?,?,?,?,?)',
-            [(int)$c['id'], $did > 0 ? $did : null, $pid > 0 ? $pid : null, $note !== '' ? $note : null, $nextSort]);
+        q_run('INSERT INTO collection_items (collection_id,destination_id,place_id,note,sort,added_by) VALUES (?,?,?,?,?,?)',
+            [(int)$c['id'], $did > 0 ? $did : null, $pid > 0 ? $pid : null, $note !== '' ? $note : null, $nextSort,
+             (int) current_user()['id']]);
         flash($pid > 0 ? 'Added to your list.' : 'Added.');
     } catch (\PDOException $e) {
         // The unique index means it is already in the list, which is not an error worth a 500.
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         flash('That is already on the list.');
     }
-    redirect('/collection/'.(int)$c['id'].'/edit');
+    redirect(rmt_community_can_manage($c, current_user()) ? '/collection/'.(int)$c['id'].'/edit' : '/c/'.$c['slug']);
 }
 
 /** POST /collection/{id}/items/{item_id}/delete — owner-only. */
@@ -1384,9 +1409,13 @@ function collection_item_remove(array $a): void {
     require_login(); csrf_check();
     $c = q_one('SELECT * FROM collections WHERE id=?', [(int)$a['id']]);
     if (!$c) not_found();
-    if (!rmt_collection_can_edit($c, current_user())) { forbidden('That is not your collection.'); }
+    $me = current_user();
+    $item = q_one('SELECT * FROM collection_items WHERE id=? AND collection_id=?', [(int)$a['item_id'], (int)$c['id']]);
+    if (!$item) not_found();
+    // A member may retract what they contributed. They may not edit the room.
+    if (!rmt_community_can_remove_item($c, $me, $item)) { forbidden('That is not yours to remove.'); }
     db()->prepare('DELETE FROM collection_items WHERE id=? AND collection_id=?')->execute([(int)$a['item_id'], (int)$c['id']]);
-    redirect('/collection/'.(int)$c['id'].'/edit');
+    redirect(rmt_community_can_manage($c, $me) ? '/collection/'.(int)$c['id'].'/edit' : '/c/'.$c['slug']);
 }
 
 function meetups_index(array $a): void {
@@ -3963,4 +3992,138 @@ function feed_rss(array $a): void {
         echo '</item>'."\n";
     }
     echo '</channel></rss>';
+}
+
+/* ============================================================================ communities
+ *
+ * A collection with a door. Everything below is the door, who holds the key, and the founder
+ * tools that make a room worth walking into. The collection itself -- its page, its items, its
+ * comments, its moderation -- is unchanged and lives above.
+ */
+
+/** POST /c/{slug}/join */
+function community_join(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE slug=?', [$a['slug']]);
+    if (!$c) not_found();
+    $token = trim((string) input('invite')) ?: null;
+    $state = rmt_community_join($c, current_user(), $token);
+    flash(match ($state) {
+        'joined'          => 'You are in. Say something.',
+        'already_member'  => 'You are already a member.',
+        'invite_required' => 'That community is invite only.',
+        'removed'         => 'You are not able to rejoin that community.',
+        default           => 'That community cannot be joined.',
+    });
+    redirect('/c/'.$c['slug']);
+}
+
+/** POST /c/{slug}/leave */
+function community_leave(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE slug=?', [$a['slug']]);
+    if (!$c) not_found();
+    $state = rmt_community_leave($c, current_user());
+    flash(match ($state) {
+        'left'               => 'You have left the community.',
+        'owner_cannot_leave' => 'You founded this community, so you cannot leave it. Delete it instead.',
+        default              => 'You were not a member.',
+    });
+    redirect('/c/'.$c['slug']);
+}
+
+/** GET /c/{slug}/members */
+function community_members(array $a): void {
+    $c = q_one('SELECT * FROM collections WHERE slug=?', [$a['slug']]);
+    if (!$c || $c['status'] !== 'published') not_found();
+    $me = current_user();
+    $members = rmt_community_members((int) $c['id']);
+    $canEdit = rmt_community_can_manage($c, $me);
+    // The founder is the only one who needs to see who was removed, and only so they can undo it.
+    $removed = $canEdit
+        ? q_all("SELECT m.*, u.username FROM collection_members m JOIN users u ON u.id=m.user_id
+                  WHERE m.collection_id=? AND m.status='removed' ORDER BY m.removed_at DESC", [(int) $c['id']])
+        : [];
+    view('community_members', compact('c','me','members','removed','canEdit'), [
+        'robots' => rmt_robots_for(rmt_indexable('private')),   // a member list is for the community, not for search
+        'title'  => 'Members of '.$c['title'].' — RuinMyTrip',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Communities','url'=>url('communities')],
+                          ['name'=>$c['title'],'url'=>url('c/'.$c['slug'])],
+                          ['name'=>'Members','url'=>url('c/'.$c['slug'].'/members')]],
+    ]);
+}
+
+/** POST /collection/{id}/members/{user_id}/remove */
+function community_member_remove(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int) $a['id']]);
+    if (!$c) not_found();
+    $state = rmt_community_remove_member($c, current_user(), (int) $a['user_id']);
+    if ($state === 'forbidden') forbidden('That is not your community.');
+    flash($state === 'removed' ? 'Member removed.' : 'Nothing to remove.');
+    redirect('/c/'.$c['slug'].'/members');
+}
+
+/** POST /collection/{id}/members/{user_id}/reinstate */
+function community_member_reinstate(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int) $a['id']]);
+    if (!$c) not_found();
+    $state = rmt_community_reinstate_member($c, current_user(), (int) $a['user_id']);
+    if ($state === 'forbidden') forbidden('That is not your community.');
+    flash($state === 'reinstated' ? 'Member reinstated.' : 'Nothing to reinstate.');
+    redirect('/c/'.$c['slug'].'/members');
+}
+
+/** POST /collection/{id}/invite — issue a link, which retires the previous one. */
+function community_invite_rotate(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int) $a['id']]);
+    if (!$c) not_found();
+    if (rmt_community_rotate_invite($c, current_user()) === null) forbidden('That is not your community.');
+    flash('New invite link created. The previous link no longer works.');
+    redirect('/collection/'.(int) $c['id'].'/edit');
+}
+
+/** POST /collection/{id}/invite/revoke */
+function community_invite_revoke(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int) $a['id']]);
+    if (!$c) not_found();
+    if (!rmt_community_revoke_invite($c, current_user())) forbidden('That is not your community.');
+    flash('Invite link revoked.');
+    redirect('/collection/'.(int) $c['id'].'/edit');
+}
+
+/** GET /join/{token} — an invite link. Lands on the community, carrying the token. */
+function community_invite_landing(array $a): void {
+    $c = rmt_community_by_invite((string) $a['token']);
+    if (!$c) {
+        flash('That invite link is no longer active.');
+        redirect('/communities'); return;
+    }
+    redirect('/c/'.$c['slug'].'?invite='.urlencode((string) $a['token']));
+}
+
+/** POST /collection/{id}/items/{item_id}/pin */
+function community_item_pin(array $a): void {
+    require_login(); csrf_check();
+    $c = q_one('SELECT * FROM collections WHERE id=?', [(int) $a['id']]);
+    if (!$c) not_found();
+    $pin = (string) input('pinned') === '1';
+    if (!rmt_community_set_pinned($c, current_user(), (int) $a['item_id'], $pin)) forbidden('That is not your community.');
+    flash($pin ? 'Pinned to the top.' : 'Unpinned.');
+    redirect('/c/'.$c['slug']);
+}
+
+/** GET /communities — only the ones a stranger should be shown. */
+function communities_index(array $a): void {
+    $communities = rmt_community_browse(30);
+    $me = current_user();
+    $mine = $me ? rmt_community_memberships((int) $me['id']) : [];
+    view('communities_index', compact('communities','mine','me'), [
+        'title' => 'Communities — RuinMyTrip',
+        'description' => 'Travel communities started by travelers. Join one, or start your own.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Communities','url'=>url('communities')]],
+    ]);
 }

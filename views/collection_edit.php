@@ -8,8 +8,49 @@
     <input type="text" id="title" name="title" value="<?= e($c['title']) ?>" required>
     <label for="summary">Summary <span class="hint">(optional)</span></label>
     <textarea id="summary" name="summary" maxlength="500"><?= e($c['summary'] ?? '') ?></textarea>
+
+    <?php /* The two decisions that turn a list into a community. They are separate because letting
+             somebody in and handing them the pen are separate decisions, and a founder should be
+             able to make the first without the second. */ ?>
+    <label for="join_policy">Who can join</label>
+    <select id="join_policy" name="join_policy">
+      <option value="closed" <?= ($c['join_policy'] ?? 'closed') === 'closed' ? 'selected' : '' ?>>Nobody. This is my own list.</option>
+      <option value="invite" <?= ($c['join_policy'] ?? '') === 'invite' ? 'selected' : '' ?>>People I send an invite link to</option>
+      <option value="open"   <?= ($c['join_policy'] ?? '') === 'open'   ? 'selected' : '' ?>>Anyone with an account</option>
+    </select>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-weight:400">
+      <input type="checkbox" name="members_can_add" value="1" <?= (int) ($c['members_can_add'] ?? 0) === 1 ? 'checked' : '' ?>>
+      Members can add places and cities
+    </label>
+    <p class="hint">A community stays out of search and off the browse page until it has
+      <?= RMT_COMMUNITY_MIN_ITEMS ?> things in it and <?= RMT_COMMUNITY_MIN_MEMBERS ?> members. An empty room turns
+      away the first person who finds it.</p>
+
     <div style="margin-top:18px"><button class="btn btn-primary" type="submit">Save details</button></div>
   </form>
+
+  <?php if (in_array($c['join_policy'] ?? 'closed', ['invite','open'], true)): ?>
+    <hr style="margin:28px 0">
+    <h2>Invite link</h2>
+    <?php $inv = rmt_community_invite((int) $c['id']); ?>
+    <?php if ($inv): ?>
+      <p><code><?= e(abs_url('/join/'.$inv['token'])) ?></code></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/invite')) ?>">
+          <?= csrf_field() ?><button class="btn btn-ghost btn-sm">Replace link</button>
+        </form>
+        <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/invite/revoke')) ?>">
+          <?= csrf_field() ?><button class="btn btn-ghost btn-sm" style="color:#b42318">Revoke link</button>
+        </form>
+      </div>
+      <p class="hint">Replacing the link stops the old one working. There is only ever one live link.</p>
+    <?php else: ?>
+      <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/invite')) ?>">
+        <?= csrf_field() ?><button class="btn btn-accent btn-sm">Create an invite link</button>
+      </form>
+    <?php endif; ?>
+    <p style="margin-top:14px"><a href="<?= e(url('c/'.$c['slug'].'/members')) ?>">Members and removals →</a></p>
+  <?php endif; ?>
 
   <hr style="margin:28px 0">
 

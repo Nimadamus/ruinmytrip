@@ -68,6 +68,14 @@ function rmt_sitemap_group(string $group): array {
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
             if ($has("SELECT COUNT(*) c FROM blog_posts WHERE status='published'"))   $add('/blog');
             if ($has("SELECT COUNT(*) c FROM collections WHERE status='published'"))  $add('/collections');
+            // Same rule the browse page applies to itself: /communities is worth a result once at
+            // least one community has earned its place on it, and is a thin page before that.
+            if ($has("SELECT COUNT(*) c FROM collections c2 WHERE c2.status='published'
+                        AND c2.join_policy IN ('open','invite')
+                        AND (SELECT COUNT(*) FROM collection_members m
+                              WHERE m.collection_id=c2.id AND m.status='active') >= " . RMT_COMMUNITY_MIN_MEMBERS . "
+                        AND (SELECT COUNT(*) FROM collection_items i WHERE i.collection_id=c2.id) >= " . RMT_COMMUNITY_MIN_ITEMS))
+                $add('/communities');
             if ($has("SELECT COUNT(*) c FROM meetups WHERE status='published'"))      $add('/meetups');
             if ($has("SELECT COUNT(*) c FROM going WHERE visibility='public'"))       $add('/going');
             if ($has("SELECT COUNT(*) c FROM reviews WHERE status='published'"))      $add('/discover');

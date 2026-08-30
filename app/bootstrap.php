@@ -33,6 +33,7 @@ require BASE_PATH . '/app/feedback.php';
 require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/going.php';
+require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/visits.php';
 require BASE_PATH . '/app/profiles.php';
 require BASE_PATH . '/app/tags.php';

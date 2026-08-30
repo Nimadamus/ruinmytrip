@@ -30,6 +30,7 @@ require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/search_suggest.php';
 require BASE_PATH . '/app/neighborhoods.php';
 require BASE_PATH . '/app/seo.php';
+require BASE_PATH . '/app/communities.php';   // the list rule reads the community thresholds
 require BASE_PATH . '/app/indexability.php';
 require BASE_PATH . '/app/sitemap.php';
 
@@ -162,8 +163,10 @@ $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)");
 $pdo->exec("CREATE TABLE guides (id INTEGER PRIMARY KEY, user_id INT, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, user_id INT, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, user_id INT, slug TEXT, title TEXT, summary TEXT,
-            status TEXT, created_at TEXT, updated_at TEXT)");
+            status TEXT, created_at TEXT, updated_at TEXT, join_policy TEXT NOT NULL DEFAULT 'closed')");
 $pdo->exec("CREATE TABLE collection_items (id INTEGER PRIMARY KEY, collection_id INT, destination_id INT, place_id INT)");
+$pdo->exec("CREATE TABLE collection_members (id INTEGER PRIMARY KEY, collection_id INT, user_id INT,
+            role TEXT, status TEXT, joined_at TEXT, removed_at TEXT)");
 $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, status TEXT)");
 $pdo->exec("CREATE TABLE going (id INTEGER PRIMARY KEY, visibility TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/055_neighborhoods.sqlite.sql'));
@@ -192,6 +195,16 @@ q_run("INSERT INTO collections (id,user_id,slug,title,summary,status,created_at,
        VALUES (1,1,'big','Big List','Why these','published','2026-08-01','2026-08-02'),
               (2,1,'tiny','Tiny List','Why these','published','2026-08-01','2026-08-02')");
 q_run("INSERT INTO collection_items (collection_id,place_id) VALUES (1,1),(1,2),(1,3),(1,4),(2,1)");
+// A community with plenty of content but nobody in it yet. It has a URL and it works; what it
+// does not get is a place in the sitemap, because the first stranger to arrive would find a room
+// with one person in it.
+q_run("INSERT INTO collections (id,user_id,slug,title,summary,status,created_at,updated_at,join_policy)
+       VALUES (3,1,'lonely','Lonely Community','Why these','published','2026-08-01','2026-08-02','open'),
+              (4,1,'busy','Busy Community','Why these','published','2026-08-01','2026-08-02','open')");
+q_run("INSERT INTO collection_items (collection_id,place_id) VALUES (3,1),(3,2),(3,3),(3,4),(4,1),(4,2),(4,3),(4,4)");
+q_run("INSERT INTO collection_members (collection_id,user_id,role,status,joined_at)
+       VALUES (3,1,'owner','active','2026-08-01'),
+              (4,1,'owner','active','2026-08-01'), (4,2,'member','active','2026-08-02')");
 
 echo "\nBatch verdicts against real rows:\n";
 $places = rmt_index_places();
@@ -224,6 +237,10 @@ $lists = [];
 foreach (rmt_index_lists() as $c) $lists[$c['slug']] = $c['verdict'];
 check('a list of four with a description', $lists['big']['reason'], 'indexable');
 check('a list of one is thin',             $lists['tiny']['reason'], 'noindex_thin');
+// A personal list needs no members; a community does. Same function, same page, one rule.
+check('a community with only its founder is thin', $lists['lonely']['reason'], 'noindex_thin');
+check('and the reason says how many members it has', $lists['lonely']['detail'], '1 member, needs 2');
+check('a community somebody joined is indexable',   $lists['busy']['reason'], 'indexable');
 
 /* ---------------------------------------------------------------- generation */
 

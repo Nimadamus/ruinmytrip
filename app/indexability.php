@@ -75,6 +75,10 @@ const RMT_IDX_CAT_MIN_PLACES = 6;
 /** A list worth a result is one somebody built and described, not two places and a working title. */
 const RMT_IDX_LIST_MIN_ITEMS = 4;
 
+/* A community additionally needs people in it. That threshold is RMT_COMMUNITY_MIN_MEMBERS and it
+   lives in app/communities.php with the rest of the membership rules, because it decides who is
+   shown a community as well as whether it is indexed, and one number cannot live in two files. */
+
 /**
  * The verdict for one entity.
  *
@@ -172,6 +176,17 @@ function rmt_indexable(string $type, array $e = []): array {
             // without a description there is nothing on the page a search result could quote.
             if (trim((string) ($e['summary'] ?? '')) === '') {
                 return $no('noindex_thin', 'no description of what the list is for');
+            }
+            // A community is a room, and a room with only its founder in it is an empty room. It
+            // keeps its URL, so an invite link always works and a member can always reach it; what
+            // it does not get is a stranger arriving from a search result to find nobody there.
+            // Same judgement the category pilot makes about places, applied to people.
+            if (in_array($e['join_policy'] ?? 'closed', ['open', 'invite'], true)) {
+                $members = (int) ($e['member_count'] ?? 0);
+                if ($members < RMT_COMMUNITY_MIN_MEMBERS) {
+                    return $no('noindex_thin', sprintf('%d member%s, needs %d',
+                        $members, $members === 1 ? '' : 's', RMT_COMMUNITY_MIN_MEMBERS));
+                }
             }
             return $yes();
 
@@ -391,11 +406,16 @@ function rmt_index_profiles(): array {
 /** @return list<array{slug:string,title:string,verdict:array}> */
 function rmt_index_lists(): array {
     $rows = q_all(
-        "SELECT c.id, c.slug, c.title, c.summary, c.status, c.updated_at, c.created_at,
-                (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id = c.id) item_count
+        "SELECT c.id, c.slug, c.title, c.summary, c.status, c.updated_at, c.created_at, c.join_policy,
+                (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id = c.id) item_count,
+                (SELECT COUNT(*) FROM collection_members m
+                  WHERE m.collection_id = c.id AND m.status = 'active') member_count
            FROM collections c WHERE c.status = 'published' ORDER BY c.title");
     foreach ($rows as &$r) {
         $r['item_count'] = (int) $r['item_count'];
+        // The sitemap has to ask the same question the page asks, with the same facts in hand, or
+        // the two hold separate opinions and a noindex URL ends up listed.
+        $r['member_count'] = (int) $r['member_count'];
         $r['verdict'] = rmt_indexable('list', $r);
     }
     return $rows;
