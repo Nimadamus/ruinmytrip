@@ -1,4 +1,4 @@
-<?php /** @var array $groups @var array $sitemap @var int $totalUrls @var ?string $generated */ ?>
+<?php /** @var array $depth @var array $groups @var array $sitemap @var int $totalUrls @var ?string $generated */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / SEO readiness</p>
   <h1 style="margin:.2rem 0 .4rem">SEO readiness</h1>
@@ -28,6 +28,41 @@
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+  </div></section>
+
+  <?php /* Where to put editorial effort next. Every figure is a count of real rows, so a city
+           cannot climb this list by being described enthusiastically. The depth number is a crude
+           sum on purpose: it orders eighty-four cities so a person can look at the top ten, and
+           nothing else reads it. */ ?>
+  <section class="card" style="margin:0 0 22px"><div class="card-body">
+    <h2 style="margin:0 0 4px;font-size:1.05rem">Destination depth</h2>
+    <p class="hint" style="margin:0 0 12px">
+      The strongest destinations we already have, and what each is short of. Internal
+      prioritisation, never shown to anybody.
+    </p>
+    <table style="width:100%;border-collapse:collapse;font-size:.92rem">
+      <tr class="muted" style="text-align:left">
+        <th style="padding:4px 8px 4px 0">Destination</th>
+        <th style="padding:4px 8px">Places</th>
+        <th style="padding:4px 8px">Kinds</th>
+        <th style="padding:4px 8px">Areas</th>
+        <th style="padding:4px 8px">Guides</th>
+        <th style="padding:4px 0 4px 8px">Short of</th>
+      </tr>
+      <?php foreach ($depth as $d): ?>
+        <tr style="border-top:1px solid var(--line)">
+          <td style="padding:5px 8px 5px 0">
+            <a href="<?= e(url('d/' . $d['slug'])) ?>"><?= e((string) $d['name']) ?></a>
+            <span class="hint"><?= e((string) $d['country']) ?></span>
+          </td>
+          <td style="padding:5px 8px"><?= (int) $d['places'] ?></td>
+          <td style="padding:5px 8px"><?= (int) $d['kinds'] ?></td>
+          <td style="padding:5px 8px"><?= (int) $d['areas'] ?></td>
+          <td style="padding:5px 8px"><?= (int) $d['guides'] ?></td>
+          <td style="padding:5px 0 5px 8px" class="hint"><?= e(implode(', ', $d['gaps'])) ?: 'nothing obvious' ?></td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
   </div></section>
 
   <?php foreach ($groups as $key => $g): ?>

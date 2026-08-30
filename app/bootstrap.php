@@ -25,6 +25,7 @@ require BASE_PATH . '/app/indexability.php';
 require BASE_PATH . '/app/neighborhoods.php';
 require BASE_PATH . '/app/sitemap.php';
 require BASE_PATH . '/app/similar_places.php';
+require BASE_PATH . '/app/editorial_links.php';
 require BASE_PATH . '/app/destination_modules.php';
 require BASE_PATH . '/app/contribution_events.php';
 require BASE_PATH . '/app/moderation.php';

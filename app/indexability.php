@@ -202,6 +202,66 @@ function rmt_index_reason_label(string $code): string {
    The sitemap and the readiness dashboard both need a verdict for every entity of a kind. Asking
    per row would be a query per page; each of these is ONE query for the whole set. */
 
+/**
+ * How much a destination actually has behind it, and what it is short of.
+ *
+ * An internal prioritisation tool, not a public ranking and not a score anybody is shown. It exists
+ * to answer one question before editorial work starts: which cities are worth deepening, and what
+ * is missing from them. Every figure is a count of real rows, so a destination cannot rise up this
+ * list by being described enthusiastically.
+ *
+ * Deliberately built from the queries that already exist rather than a new scoring service. The
+ * "depth" number is a crude sum and is meant to be -- it orders a list of eighty-four cities so a
+ * person can look at the top ten, and nothing downstream reads it.
+ *
+ * @return list<array>
+ */
+function rmt_destination_depth(): array {
+    $rows = q_all(
+        "SELECT d.id, d.slug, d.name, d.country,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active') places,
+                (SELECT COUNT(DISTINCT p.type) FROM places p WHERE p.destination_id = d.id AND p.status = 'active') kinds,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active' AND p.type = 'hotel') hotels,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active' AND p.type = 'restaurant') restaurants,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active' AND p.type = 'attraction') attractions,
+                (SELECT COUNT(*) FROM places p WHERE p.destination_id = d.id AND p.status = 'active'
+                   AND (p.street_address IS NOT NULL AND p.street_address <> '')) located,
+                (SELECT COUNT(*) FROM neighborhoods n WHERE n.destination_id = d.id) areas,
+                (SELECT COUNT(*) FROM guides g WHERE g.destination_id = d.id AND g.status = 'published') guides,
+                (SELECT COUNT(*) FROM destination_tips t WHERE t.destination_id = d.id) tips,
+                (SELECT COUNT(*) FROM reviews r JOIN users u ON u.id = r.user_id
+                  WHERE r.destination_id = d.id AND r.status = 'published' AND u.role <> ?) community
+           FROM destinations d", [RMT_EDITORIAL_ROLE]);
+
+    foreach ($rows as &$r) {
+        foreach (['places','kinds','hotels','restaurants','attractions','located','areas','guides','tips','community'] as $k) {
+            $r[$k] = (int) $r[$k];
+        }
+        // Weighted toward the things that make a hub useful rather than long: real places first,
+        // then variety, then areas to browse by, then what we have written.
+        $r['depth'] = $r['places'] * 3 + $r['kinds'] * 4 + $r['areas'] * 2
+                    + $r['guides'] * 3 + min($r['tips'], 6) + $r['community'] * 2;
+
+        // Gaps, in the words a person would use to commission the work.
+        $gaps = [];
+        if ($r['places'] < 6)        $gaps[] = 'thin inventory (' . $r['places'] . ' places)';
+        if ($r['hotels'] === 0)      $gaps[] = 'no hotels';
+        if ($r['restaurants'] < 3)   $gaps[] = 'few restaurants (' . $r['restaurants'] . ')';
+        if ($r['attractions'] < 3)   $gaps[] = 'few things to do (' . $r['attractions'] . ')';
+        if ($r['areas'] === 0)       $gaps[] = 'no neighborhoods mapped';
+        if ($r['guides'] === 0)      $gaps[] = 'no guide written';
+        if ($r['located'] < $r['places']) {
+            $gaps[] = ($r['places'] - $r['located']) . ' places with no address';
+        }
+        if ($r['community'] === 0)   $gaps[] = 'no traveler reviews';
+        $r['gaps'] = $gaps;
+    }
+    unset($r);
+
+    usort($rows, static fn($a, $b) => [$b['depth'], $b['places']] <=> [$a['depth'], $a['places']]);
+    return $rows;
+}
+
 /** @return list<array{slug:string,name:string,verdict:array,place_count:int}> */
 function rmt_index_destinations(): array {
     // destinations has no body column -- the written content lives in destination_tips and in the

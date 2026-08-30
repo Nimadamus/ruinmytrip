@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var array $myLists @var ?array $placeArea @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
+<?php /** @var array $p @var array $stats @var array $breakdown @var array $aspectAverages @var array $reviews @var array $editorial @var array $photos @var int $photoCount @var ?array $me @var string $typeLabel @var ?array $ed @var array $nearby @var array $nearbyGeo @var array $similar @var array $myLists @var ?array $placeArea @var array $inGuides @var bool $saved @var int $saveCount @var array $hours @var array $hoursByDay @var ?bool $openNow @var array $address @var ?array $coords @var ?array $category @var ?string $priceLabel @var ?string $cover */ ?>
 <div class="wrap">
   <p class="crumbs">
     <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> /
@@ -27,6 +27,15 @@
            "what happened to that restaurant" is a question this site should answer rather than
            404 -- but a reader must not get halfway down a page of opening hours before finding
            out. */ ?>
+  <?php /* A line, not a module. The guide is context for the page rather than a competing
+           destination, and it only appears when a guide genuinely names this venue. */ ?>
+  <?php if (!empty($inGuides)): ?>
+    <p class="hint" style="margin:0 0 12px">
+      Mentioned in
+      <?php foreach ($inGuides as $i => $gd): ?><?= $i > 0 ? ', ' : '' ?><a href="<?= e(url('g/' . $gd['slug'])) ?>"><?= e((string) $gd['title']) ?></a><?php endforeach; ?>.
+    </p>
+  <?php endif; ?>
+
   <?php $statusLabel = rmt_place_status_label((string) $p['status']); ?>
   <?php if ($statusLabel !== null): ?>
     <div class="callout" style="margin:0 0 18px;border-left-color:#b42318">

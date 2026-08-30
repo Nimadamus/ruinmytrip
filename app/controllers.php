@@ -401,6 +401,10 @@ function place_show(array $a): void {
     // places the two lists are frequently the same three venues, and two headings over one list is
     // one module and a wasted screen -- so the weaker one is dropped rather than repeated.
     $placeArea = rmt_nb_of_place($p);
+    // Guides of this city that actually name this venue. The other direction of the same
+    // relationship: somebody on the Louvre page wondering what the ticket change means
+    // should be able to reach the guide that explains it.
+    $inGuides = rmt_guides_mentioning_place($p);
     $similar = rmt_similar_places($p, 6);
     if (rmt_similar_is_redundant($similar, $nearby)) $similar = [];
     // The lists this reader could add this place to, and whether it is already on one. Only their
@@ -467,7 +471,7 @@ function place_show(array $a): void {
         'review_count' => (int) ($stats['c'] ?? 0),
         'editorial'    => $ed['what_it_is'] ?? '',
     ]);
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
@@ -856,7 +860,12 @@ function guide_show(array $a): void {
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'guide',$gid]);
     $tags = rmt_tags_for('guide', $gid);
-    view('guide_show', compact('g','me','comments','likeCount','saveCount','liked','saved','tags'), [
+    // What this guide actually names, in its own destination. Computed from the text as
+    // written rather than stored, so an edit changes the links immediately.
+    $mentions = rmt_editorial_entities((int) ($g['destination_id'] ?? 0),
+                                       (string) ($g['body'] ?? '') . ' ' . (string) ($g['summary'] ?? ''));
+
+    view('guide_show', compact('mentions','g','me','comments','likeCount','saveCount','liked','saved','tags'), [
         'title'=>$g['title'].' — RuinMyTrip',
         'description'=>$g['summary'],
         'og_image'=>abs_url($g['cover_url']),
@@ -3482,7 +3491,12 @@ function admin_seo(array $a): void {
     ];
 
     $sitemap = rmt_sitemap_parts();
+    // Where the editorial work should go next, on the page that already answers "what is indexed".
+    // The two questions are the same one asked twice: a destination is worth deepening for the same
+    // reasons its pages are worth indexing.
+    $depth = array_slice(rmt_destination_depth(), 0, 12);
     view('admin_seo', [
+        'depth'     => $depth,
         'groups'    => $groups,
         'sitemap'   => $sitemap,
         'totalUrls' => array_sum(array_map(static fn(array $r) => (int) $r['url_count'], $sitemap)),
