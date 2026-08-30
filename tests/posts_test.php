@@ -32,7 +32,9 @@ $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id
 $pdo->exec("CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT, collection_id INT,
     body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'published', created_at TEXT NOT NULL, updated_at TEXT,
-    image_url TEXT, image_key TEXT, image_w INT, image_h INT, repost_of INT)");
+    image_url TEXT, image_key TEXT, image_w INT, image_h INT, repost_of INT, place_id INT)");
+$pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, destination_id INT, status TEXT)");
+$pdo->exec("INSERT INTO places (id,slug,name,destination_id,status) VALUES (60,'anne-frank-house-amsterdam','Anne Frank House',10,'active')");
 
 $pdo->exec("INSERT INTO users (id,username,status,role) VALUES
     (1,'alice','active','user'),(2,'bob','active','user'),(3,'mod','active','mod')");
@@ -184,6 +186,18 @@ check('counts come back with the row', (int) $top[0]['reply_count'], 2);
 $pdo->exec("INSERT INTO posts (id,user_id,body,status,created_at,repost_of) VALUES (103,2,'','published','$now',100)");
 check('a repost outweighs a like', (int) rmt_posts_top(10)[0]['id'], 101);
 check('and shows on the original', (int) rmt_posts_top(10)[1]['repost_count'], 1);
+
+echo "\n-- about one place --\n";
+$v = rmt_post_validate(['body' => 'How early do you need to book?', 'place_id' => 60], $alice);
+check('a place is accepted', (int) $v['data']['place_id'], 60);
+check('and fills in its city', (int) $v['data']['destination_id'], 10);
+$v2 = rmt_post_validate(['body' => 'Asking about nothing.', 'place_id' => 999], $alice);
+check('an unknown place is refused', $v2['ok'], false);
+$pid = rmt_post_create(1, $v['data']);
+check('the place comes back on the row', (int) rmt_post_get($pid)['place_id'], 60);
+check('and its name for rendering', (string) rmt_post_get($pid)['place_name'], 'Anne Frank House');
+check('the place page finds it', count(rmt_posts_for_place(60)), 1);
+check('a different place finds nothing', rmt_posts_for_place(61), []);
 
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

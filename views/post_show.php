@@ -9,6 +9,9 @@
     <div>
       <b><a href="<?= e(url('u/'.$p['author']['username'])) ?>">@<?= e((string) $p['author']['username']) ?></a></b>
       <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?><?php if (!empty($p['updated_at'])): ?> · edited<?php endif; ?></span>
+      <?php if (!empty($p['place_slug'])): ?>
+        <div class="hint">about <a href="<?= e(url('p/'.$p['place_slug'])) ?>"><?= e((string) $p['place_name']) ?></a></div>
+      <?php endif; ?>
       <?php if (!empty($p['community_slug'])): ?>
         <div class="hint">in <a href="<?= e(url('c/'.$p['community_slug'])) ?>"><?= e((string) $p['community_title']) ?></a></div>
       <?php endif; ?>

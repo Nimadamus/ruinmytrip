@@ -1,4 +1,4 @@
-<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community @var array $topTags @var string $sort */ ?>
+<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community @var ?array $place @var array $topTags @var string $sort */ ?>
 <div class="wrap"><p class="crumbs">
   <a href="<?= e(url()) ?>">Home</a> / <?php if ($dest || $community): ?><a href="<?= e(url('talk')) ?>">Talk</a> /
     <?= e($dest ? (string) $dest['name'] : (string) $community['title']) ?><?php else: ?>Talk<?php endif; ?>
@@ -81,6 +81,9 @@
           <div style="flex:1;min-width:0">
             <b><a href="<?= e(url('u/'.$p['username'])) ?>">@<?= e((string) $p['username']) ?></a></b>
             <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?></span>
+            <?php if (!empty($p['place_slug'])): ?>
+              <span class="hint"> · <a href="<?= e(url('p/'.$p['place_slug'])) ?>"><?= e((string) $p['place_name']) ?></a></span>
+            <?php endif; ?>
             <?php if (!empty($p['dest_slug'])): ?>
               <span class="hint"> · <a href="<?= e(url('talk?d='.$p['dest_slug'])) ?>"><?= e((string) $p['dest_name']) ?></a></span>
             <?php endif; ?>

@@ -473,7 +473,10 @@ function place_show(array $a): void {
         'review_count' => (int) ($stats['c'] ?? 0),
         'editorial'    => $ed['what_it_is'] ?? '',
     ]);
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover'), [
+    // The question a traveler actually types belongs on the page about the thing they are asking
+    // about, not two clicks away on the city page.
+    $talk = rmt_posts_for_place((int) $p['id'], 3);
+    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
@@ -4369,6 +4372,8 @@ function posts_index(array $a): void {
     $me = current_user();
     $destSlug = trim((string) input('d'));
     $comSlug  = trim((string) input('c'));
+    $placeSlug = trim((string) input('p'));
+    $place = $placeSlug !== '' ? q_one("SELECT * FROM places WHERE slug=? AND status='active'", [$placeSlug]) : null;
     $dest = $destSlug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$destSlug]) : null;
     $community = $comSlug !== '' ? q_one("SELECT * FROM collections WHERE slug=? AND status='published'", [$comSlug]) : null;
 
@@ -4377,22 +4382,26 @@ function posts_index(array $a): void {
     $sort = input('sort') === 'top' ? 'top' : 'latest';
     $destId = $dest ? (int) $dest['id'] : null;
     $comId  = $community ? (int) $community['id'] : null;
-    $posts = $sort === 'top' ? rmt_posts_top(50, $destId, $comId) : rmt_posts_recent(50, $destId, $comId);
+    $placeId = $place ? (int) $place['id'] : null;
+    $posts = ($sort === 'top' && !$placeId)
+        ? rmt_posts_top(50, $destId, $comId)
+        : rmt_posts_recent(50, $destId, $comId, $placeId);
     // A quiet week has nothing inside the window; showing an empty Top tab would read as breakage.
-    if ($sort === 'top' && !$posts) $posts = rmt_posts_recent(50, $destId, $comId);
+    if ($sort === 'top' && !$posts) $posts = rmt_posts_recent(50, $destId, $comId, $placeId);
     $dests = $me ? all_dests() : [];
     $myCommunities = $me ? rmt_community_memberships((int) $me['id']) : [];
 
     $title = 'Travel talk';
-    if ($dest) $title = 'Travelers talking about ' . $dest['name'];
+    if ($place) $title = 'Questions about ' . $place['name'];
+    elseif ($dest) $title = 'Travelers talking about ' . $dest['name'];
     if ($community) $title = $community['title'] . ' — discussion';
 
     $topTags = rmt_top_tags(12);
-    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort'), [
+    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort', 'place'), [
         'title' => $title . ' — RuinMyTrip',
         'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
         // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.
-        'robots' => rmt_robots_for(rmt_indexable($dest || $community ? 'filter' : 'static')),
+        'robots' => rmt_robots_for(rmt_indexable($dest || $community || $place ? 'filter' : 'static')),
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Talk', 'url' => url('talk')]],
     ]);
 }

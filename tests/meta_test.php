@@ -53,5 +53,26 @@ $early = 'Yes. ' . str_repeat('And then a much longer second sentence that runs 
 check('a two-word first sentence does not become the description',
       str_ends_with(rmt_meta_description($early), '…'), true);
 
+echo "\n-- place titles --\n";
+$fits = static fn(array $p): bool => mb_strlen(rmt_place_page_title($p)) <= 60;
+$anne = ['name' => 'Anne Frank House', 'dest_name' => 'Amsterdam', 'type' => 'attraction'];
+check('the city and the year fit here', str_contains(rmt_place_page_title($anne), 'Amsterdam ' . date('Y')), true);
+check('and it says what the page answers', str_contains(rmt_place_page_title($anne), 'tickets & prices'), true);
+check('inside the budget', $fits($anne), true);
+
+$long = ['name' => 'Book of Kells Experience at Trinity College', 'dest_name' => 'Dublin', 'type' => 'attraction'];
+check('a long name loses the city, not the question',
+      str_contains(rmt_place_page_title($long), 'tickets & prices'), true);
+check('still inside the budget', $fits($long), true);
+check('and the name is trimmed rather than dropped',
+      str_starts_with(rmt_place_page_title($long), 'Book of Kells'), true);
+
+check('a hotel is asked a hotel question',
+      str_contains(rmt_place_page_title(['name' => 'Hotel Danieli', 'dest_name' => 'Venice', 'type' => 'hotel']), 'prices & fees'), true);
+check('a restaurant too',
+      str_contains(rmt_place_page_title(['name' => 'Chez Janou', 'dest_name' => 'Paris', 'type' => 'restaurant']), 'prices & hours'), true);
+check('no city is not a stray comma',
+      str_contains(rmt_place_page_title(['name' => 'Somewhere', 'dest_name' => '', 'type' => 'attraction']), ', '), false);
+
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

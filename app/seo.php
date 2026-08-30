@@ -55,15 +55,40 @@ function rmt_destination_page_title(array $d): string {
 
 /** Place page title: price/ticket intent, not a fake "reviewed by travelers" claim. */
 function rmt_place_page_title(array $p): string {
-    $q = match ((string) ($p['type'] ?? '')) {
-        'hotel'      => 'prices, fees and is it worth staying',
-        'restaurant' => 'prices, hours and is it worth eating at',
-        default      => 'tickets, prices and is it worth visiting',
+    /* The old version was honest and too long: "Book of Kells Experience at Trinity College,
+       Dublin 2026: tickets, prices and is it worth visiting | RuinMyTrip" is 110 characters, and
+       a search result shows about 60. Everything that made it a good title -- the word tickets,
+       the word prices, the year -- was past the cut.
+
+       So it is assembled to a budget instead, dropping the least load-bearing part first: the
+       brand, then the year, then the city. The name and what the page answers always survive,
+       because those are the two things somebody is searching for. */
+    $answer = match ((string) ($p['type'] ?? '')) {
+        'hotel'      => 'prices & fees',
+        'restaurant' => 'prices & hours',
+        default      => 'tickets & prices',
     };
-    $city = (string) ($p['dest_name'] ?? '');
-    $name = (string) ($p['name'] ?? 'Place');
-    return $city === '' ? $name.' 2026: '.$q.' | RuinMyTrip'
-                        : $name.', '.$city.' 2026: '.$q.' | RuinMyTrip';
+    $name = trim((string) ($p['name'] ?? 'Place'));
+    $city = trim((string) ($p['dest_name'] ?? ''));
+    $year = date('Y');
+
+    foreach ([
+        $name . ', ' . $city . ' ' . $year . ': ' . $answer . ' | RuinMyTrip',
+        $name . ', ' . $city . ' ' . $year . ': ' . $answer,
+        $name . ' ' . $year . ': ' . $answer,
+        $name . ': ' . $answer,
+    ] as $candidate) {
+        if ($city === '' && str_contains($candidate, ', ')) continue;
+        if (mb_strlen($candidate) <= 60) return $candidate;
+    }
+    /* A name that will not fit beside the answer gets shortened, not the answer. "Book of Kells
+       Experience at Trinity…: tickets & prices" is a usable result; the same name alone is a page
+       about nothing in particular. */
+    $room = 60 - mb_strlen(': ' . $answer) - 1;
+    $short = mb_substr($name, 0, max(12, $room));
+    $sp = mb_strrpos($short, ' ');
+    if ($sp !== false && $sp > $room * 0.5) $short = mb_substr($short, 0, $sp);
+    return rtrim($short, " ,;:-–—") . '…: ' . $answer;
 }
 
 /** YYYY-MM-DD for sitemap lastmod, or null when we do not actually know. */

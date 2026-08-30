@@ -330,6 +330,39 @@
     </div>
   <?php endif; ?>
 
+  <?php /* Questions, above reviews on purpose. A review is what somebody says after going; a
+           question is what the person reading this page has right now, and answering it is a far
+           smaller thing to ask of the community than writing a review. */ ?>
+  <h2 style="font-size:1.1rem;margin:0 0 10px">Questions about <?= e($p['name']) ?></h2>
+  <?php foreach ($talk as $tp): ?>
+    <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+      <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
+      <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
+      <p style="margin:.35rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 260, '…'))) ?></p>
+      <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
+        <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
+        <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Answer it' ?></a></p>
+    </div></div>
+  <?php endforeach; ?>
+  <?php if ($me): ?>
+    <div class="card" style="margin:0 0 26px"><div class="card-body">
+      <form method="post" action="<?= e(url('post/new')) ?>">
+        <?= csrf_field() ?><input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
+        <input type="hidden" name="place_id" value="<?= (int) $p['id'] ?>">
+        <input type="hidden" name="return" value="<?= e(url('p/'.$p['slug'])) ?>">
+        <label class="sr-only" for="place_question">Ask about <?= e($p['name']) ?></label>
+        <textarea id="place_question" name="body" rows="2" required maxlength="<?= RMT_POST_MAX ?>"
+                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."></textarea>
+        <p style="margin:8px 0 0"><button class="btn btn-ghost btn-sm">Ask</button>
+          <?php if ($talk): ?><a class="hint" style="margin-left:8px" href="<?= e(url('talk?p='.$p['slug'])) ?>">All questions</a><?php endif; ?>
+        </p>
+      </form>
+    </div></div>
+  <?php elseif (!$talk): ?>
+    <p class="muted" style="margin:0 0 26px">Nobody has asked anything about <?= e($p['name']) ?> yet.
+      <a href="<?= e(url('register')) ?>">Join free</a> to ask.</p>
+  <?php endif; ?>
+
   <h2 style="font-size:1.1rem;margin:0 0 10px">
     <?= $stats['c'] > 0 ? 'What travelers said' : 'Traveler reviews' ?>
   </h2>

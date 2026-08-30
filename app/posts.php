@@ -41,6 +41,19 @@ function rmt_post_validate(array $in, ?array $user): array {
         $destId = 0;
     }
 
+    /* A place is more specific than a city, so when both are given the place wins and the city is
+       filled in from it: "about the Anne Frank House" is never also "about somewhere else". */
+    $placeId = (int) ($in['place_id'] ?? 0);
+    if ($placeId > 0) {
+        $pl = q_one("SELECT id, destination_id FROM places WHERE id=? AND status='active'", [$placeId]);
+        if (!$pl) {
+            $errors[] = 'That place does not exist.';
+            $placeId = 0;
+        } elseif ($pl['destination_id']) {
+            $destId = (int) $pl['destination_id'];
+        }
+    }
+
     $colId = (int) ($in['collection_id'] ?? 0);
     if ($colId > 0) {
         $c = q_one("SELECT * FROM collections WHERE id=? AND status='published'", [$colId]);
@@ -56,14 +69,16 @@ function rmt_post_validate(array $in, ?array $user): array {
 
     return ['ok' => $errors === [], 'errors' => $errors, 'data' => [
         'body' => $body, 'destination_id' => $destId ?: null, 'collection_id' => $colId ?: null,
+        'place_id' => $placeId ?: null,
     ]];
 }
 
 function rmt_post_create(int $userId, array $data): int {
     $now = date('Y-m-d H:i:s');
-    q_run('INSERT INTO posts (user_id, destination_id, collection_id, body, status, created_at)
-           VALUES (?,?,?,?,?,?)',
-          [$userId, $data['destination_id'], $data['collection_id'], $data['body'], 'published', $now]);
+    q_run('INSERT INTO posts (user_id, destination_id, collection_id, place_id, body, status, created_at)
+           VALUES (?,?,?,?,?,?,?)',
+          [$userId, $data['destination_id'], $data['collection_id'], $data['place_id'] ?? null,
+           $data['body'], 'published', $now]);
     return (int) (q_one('SELECT id FROM posts WHERE user_id=? ORDER BY id DESC', [$userId])['id'] ?? 0);
 }
 
@@ -79,10 +94,12 @@ function rmt_post_delete(int $postId): void {
 }
 
 function rmt_post_get(int $postId): ?array {
-    return q_one('SELECT p.*, d.slug dest_slug, d.name dest_name, c.slug community_slug, c.title community_title
+    return q_one('SELECT p.*, d.slug dest_slug, d.name dest_name, c.slug community_slug, c.title community_title,
+                         pl.slug place_slug, pl.name place_name
                     FROM posts p
                LEFT JOIN destinations d ON d.id = p.destination_id
                LEFT JOIN collections c ON c.id = p.collection_id
+               LEFT JOIN places pl ON pl.id = p.place_id AND pl.status = "active"
                    WHERE p.id = ?', [$postId]);
 }
 
@@ -113,16 +130,18 @@ function rmt_post_title(array $p, int $max = 70): string {
 }
 
 /** @return list<array<string,mixed>> */
-function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collectionId = null): array {
+function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collectionId = null, ?int $placeId = null): array {
     $where = ["p.status = 'published'", "u.status = 'active'"];
     $args = [];
     if ($destId !== null)       { $where[] = 'p.destination_id = ?'; $args[] = $destId; }
     if ($collectionId !== null) { $where[] = 'p.collection_id = ?';  $args[] = $collectionId; }
+    if ($placeId !== null)      { $where[] = 'p.place_id = ?';       $args[] = $placeId; }
     $sql = implode(' AND ', $where);
     $rows = q_all(
         "SELECT p.*, u.username, pr.avatar_url, pr.display_name,
                 d.slug dest_slug, d.name dest_name,
                 c.slug community_slug, c.title community_title,
+                pl.slug place_slug, pl.name place_name,
                 (SELECT COUNT(*) FROM comments cm
                   WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') reply_count
            FROM posts p
@@ -130,6 +149,7 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
       LEFT JOIN profiles pr ON pr.user_id = p.user_id
       LEFT JOIN destinations d ON d.id = p.destination_id
       LEFT JOIN collections c ON c.id = p.collection_id
+      LEFT JOIN places pl ON pl.id = p.place_id AND pl.status = 'active'
           WHERE $sql
        ORDER BY p.created_at DESC, p.id DESC
           LIMIT " . (int) $limit,
@@ -160,6 +180,11 @@ function rmt_post_reply_count(int $postId): int {
 /** Posts whose thread already has substance, for the destination page's talk module. */
 function rmt_posts_for_destination(int $destId, int $limit = 3): array {
     return rmt_posts_recent($limit, $destId);
+}
+
+/** What travelers are asking about one specific place, for its own page. */
+function rmt_posts_for_place(int $placeId, int $limit = 3): array {
+    return rmt_posts_recent($limit, null, null, $placeId);
 }
 
 /**
