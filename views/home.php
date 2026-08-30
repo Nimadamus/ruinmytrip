@@ -14,7 +14,14 @@
       <?php if ($taxPost): ?>
         <a class="btn btn-ghost" href="<?= e(url('blog/'.$taxPost['slug'])) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">2026 tourist taxes</a>
       <?php endif; ?>
-      <a class="btn btn-ghost" href="<?= e(url('founding')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">Founding Traveler</a>
+      <?php /* The hero answered four of the five questions a first-time visitor has -- what this is,
+               how it differs from a travel blog, what to read, how to search -- and not the fifth:
+               that they can contribute. The button it replaces said "Founding Traveler", which is
+               the name of our launch programme and means nothing to somebody who arrived a minute
+               ago. The programme is still explained on /founding and linked from signup, so
+               nothing is orphaned. */ ?>
+      <a class="btn btn-ghost" data-review-cta="home" href="<?= e(url('contribute')) ?>"
+         style="color:#fff;border-color:rgba(255,255,255,.45)">Been somewhere? Review it</a>
     </p>
     <div class="hero-stats">
       <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
