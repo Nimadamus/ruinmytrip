@@ -108,6 +108,14 @@ function rmt_compliments_sent_by(int $fromUid, int $toUid): array {
 
 /** Badges a user currently holds. */
 function rmt_user_badges(int $uid): array {
+    // Filtered on read, not deleted. The editorial account was awarded Founding Traveler before
+    // badges were restricted to travelers, and the row is history rather than something to erase --
+    // but a traveler-reputation badge on a staff account is a claim the account is not entitled to
+    // make, so it is not displayed. Stopping future awards was not enough on its own: the ones
+    // already granted kept showing.
+    $u = q_one('SELECT role FROM users WHERE id = ?', [$uid]);
+    if ($u && rmt_is_editorial(['role' => (string) $u['role']])) return [];
+
     return q_all('SELECT b.* FROM user_badges ub JOIN badges b ON b.id = ub.badge_id
                   WHERE ub.user_id = ? ORDER BY ub.awarded_at', [$uid]);
 }

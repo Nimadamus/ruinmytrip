@@ -169,6 +169,16 @@ check('and would qualify on the raw rule', rmt_qualifies_reviewer_25(91), true);
 // ...and is still awarded nothing, because badges are traveler reputation.
 check('but it is awarded no badges at all', rmt_award_badges(91), []);
 check('and holds none', count(rmt_user_badges(91)), 0);
+// A badge granted before the rule existed must stop SHOWING, not merely stop being granted: the
+// editorial account was awarded Founding Traveler long before this and it was still on the page.
+$b = q_one("SELECT id FROM badges LIMIT 1");
+if ($b) {
+    q_run("INSERT INTO user_badges (user_id, badge_id, awarded_at) VALUES (?,?,?)",
+          [91, (int) $b['id'], '2026-01-01 00:00:00']);
+    check('a badge granted historically is still stored',
+          (int) q_one("SELECT COUNT(*) c FROM user_badges WHERE user_id = 91")['c'], 1);
+    check('but is not shown on an editorial profile', count(rmt_user_badges(91)), 0);
+}
 
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
