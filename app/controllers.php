@@ -3976,6 +3976,9 @@ function readyz(array $a): void {
  */
 function sitemap(array $a): void {
     if (rmt_sitemap_is_stale()) rmt_sitemap_generate();
+    /* A crawler asking what we have is the moment to tell the ones that take a push. The cost of
+       the call lands here, on a robot, rather than on a member mid-publish. */
+    rmt_seo_flush_if_due();
     header('Content-Type: application/xml; charset=utf-8');
     echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
     echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";

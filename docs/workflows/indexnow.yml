@@ -1,3 +1,8 @@
+# NOT INSTALLED. This file cannot be committed to .github/workflows from this machine: the
+# GitHub token here has repo scope and not workflow scope, and GitHub refuses the push. Copy
+# it to .github/workflows/indexnow.yml from an account that has workflow scope and it starts
+# working; the secret it needs (RMT_CRON_KEY) is already stored in the repository.
+#
 name: indexnow
 
 # Announce newly published pages to IndexNow (Bing, Yandex, Seznam, Naver).

@@ -222,6 +222,24 @@ function rmt_seo_announce(string $path): void {
     }
 }
 
+/**
+ * Flush, but only when there is something that has been waiting a while.
+ *
+ * This is called from the sitemap request, which is the one moment where announcing is obviously
+ * relevant and where the cost lands on a crawler rather than on a member. The age check batches a
+ * burst of publishing into one submission and stops a busy hour turning into an API call per page.
+ */
+function rmt_seo_flush_if_due(int $minAgeMinutes = 5): int {
+    try {
+        $oldest = q_one('SELECT created_at FROM seo_ping_queue WHERE sent_at IS NULL ORDER BY id LIMIT 1');
+    } catch (\PDOException $e) {
+        return 0;   // table not migrated yet; a sitemap request is not the place to fail
+    }
+    if (!$oldest) return 0;
+    if (strtotime((string) $oldest['created_at']) > time() - $minAgeMinutes * 60) return 0;
+    return rmt_seo_flush(500);
+}
+
 /** @return list<string> URLs waiting to go out, oldest first. */
 function rmt_seo_pending(int $limit = 500): array {
     $rows = q_all('SELECT url FROM seo_ping_queue WHERE sent_at IS NULL ORDER BY id LIMIT ' . (int) $limit);
