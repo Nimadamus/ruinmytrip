@@ -217,3 +217,68 @@ function rmt_match_shared_destinations(int $userId, array $otherIds): array {
 function rmt_match_count(int $userId): int {
     return count(rmt_trip_matches($userId, 99));
 }
+
+/* --------------------------------------------------- from a match to an actual plan */
+
+/**
+ * Meetups happening in a city inside a traveler's own window.
+ *
+ * A match tells two people they will be in the same place. It does not tell them what to do about
+ * it, and "message a stranger" is a bigger first step than most people take. An event that already
+ * exists, on a date they are already there, is the smaller one.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_meetups_in_window(int $destId, string $from, string $to, int $limit = 5): array {
+    if ($destId < 1 || $from === '' || $to === '') return [];
+    return q_all(
+        "SELECT m.*, u.username host_username,
+                (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going_count
+           FROM meetups m JOIN users u ON u.id = m.host_id
+          WHERE m.destination_id = ? AND m.status = 'published' AND m.visibility = 'public'
+            AND m.date_start >= ? AND m.date_start <= ?
+       ORDER BY m.date_start
+          LIMIT " . (int) $limit,
+        [$destId, $from . ' 00:00:00', $to . ' 23:59:59']
+    );
+}
+
+/**
+ * Tell the travelers who will already be in town that somebody is hosting something.
+ *
+ * Meetups had exactly one way to be found: opening the meetups page and hoping. The people most
+ * likely to come are the ones who have already said they will be in that city on that day, and
+ * the site knew who they were and never told them.
+ *
+ * @return int notifications written
+ */
+function rmt_meetup_notify_travelers(int $meetupId, int $hostId, int $destId, string $dateStart): int {
+    if ($meetupId < 1 || $destId < 1) return 0;
+    $day = substr(trim($dateStart), 0, 10);
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $day)) return 0;
+    [$blockSql] = rmt_match_block_sql('o.user_id');
+    $rows = q_all(
+        "SELECT o.user_id
+           FROM going o JOIN users u ON u.id = o.user_id
+          WHERE o.destination_id = ? AND o.user_id <> ?
+            AND u.status = 'active'
+            AND o.date_from <= ? AND o.date_to >= ?
+            AND $blockSql
+       ORDER BY o.date_from
+          LIMIT " . RMT_MATCH_NOTIFY_MAX,
+        [$destId, $hostId, $day, $day, $hostId, $hostId]
+    );
+    $now = date('Y-m-d H:i:s');
+    $sent = 0;
+    foreach ($rows as $r) {
+        $uid = (int) $r['user_id'];
+        if ($uid < 1 || $uid === $hostId) continue;
+        $seen = q_one('SELECT 1 x FROM notifications WHERE user_id=? AND type=? AND target_id=?',
+                      [$uid, 'meetup_nearby', $meetupId]);
+        if ($seen) continue;
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [$uid, 'meetup_nearby', $hostId, 'meetup', $meetupId, $now]);
+        $sent++;
+    }
+    return $sent;
+}

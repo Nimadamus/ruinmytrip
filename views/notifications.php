@@ -41,6 +41,7 @@
             'meetup_rsvp'      => $who . ' is going to ' . ($title ? $what : 'your meetup') . '.',
             'meetup_changed'   => 'The time changed for ' . ($title ? $what : 'a meetup you are going to') . '.',
             'meetup_cancelled' => 'Cancelled: ' . ($title ? $what : 'a meetup you were going to') . '.',
+            'meetup_nearby'    => $who . ' is hosting ' . ($title ? $what : 'a meetup') . ' while you are in town.',
           ][$n['type']];
         ?>
           <?php if ($href): ?>

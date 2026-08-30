@@ -1497,7 +1497,17 @@ function meetup_new_form(array $a): void {
         flash('You must be 18+ to host a meetup.');
         redirect('/meetups');
     }
-    view('meetup_new', ['dests' => all_dests(), 'errors' => [], 'm' => []], [
+    /* Arriving from a trip match, where the city and the days are already known. Making somebody
+       retype what the page they came from just told them is how a good idea dies between screens. */
+    $pre = [];
+    $dSlug = trim((string) input('d'));
+    if ($dSlug !== '') {
+        $d = q_one('SELECT id FROM destinations WHERE slug=?', [$dSlug]);
+        if ($d) $pre['destination_id'] = (int) $d['id'];
+    }
+    $start = trim((string) input('start'));
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $start)) $pre['date_start'] = $start . ' 18:00:00';
+    view('meetup_new', ['dests' => all_dests(), 'errors' => [], 'm' => $pre], [
         'title' => 'Host a meetup — RuinMyTrip',
         'description' => 'Host a public, optional, safety-first travel meetup in a destination.',
     ]);
@@ -1535,7 +1545,10 @@ function meetup_create(array $a): void {
     } catch (\PDOException $e) {
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
     }
-    flash('Meetup published. Share the link with anyone you want there.');
+    // The people most likely to come are the ones who already said they will be in that city on
+    // that day. The site knew who they were and, until this, never told them.
+    rmt_meetup_notify_travelers($id, (int) $me['id'], (int) $d['destination_id'], (string) $d['date_start']);
+    flash('Meetup published. Travelers with dates in town have been told.');
     redirect('/meetup/' . $id);
 }
 
@@ -4176,6 +4189,13 @@ function matches_index(array $a): void {
         $byDest[(string) $m['dest_slug']]['dest'] = ['slug' => $m['dest_slug'], 'name' => $m['dest_name'],
                                                      'my_from' => $m['my_from'], 'my_to' => $m['my_to']];
         $byDest[(string) $m['dest_slug']]['people'][] = $m;
+    }
+
+    // What is already happening while they are there, so the next step is not "message a stranger".
+    foreach ($byDest as $slug => $g) {
+        $d = $g['dest'];
+        $byDest[$slug]['meetups'] = rmt_meetups_in_window((int) $g['people'][0]['dest_id'],
+                                                          (string) $d['my_from'], (string) $d['my_to']);
     }
 
     $wishlist = rmt_wishlist_matches($uid);

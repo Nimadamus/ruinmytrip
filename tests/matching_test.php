@@ -128,5 +128,36 @@ check('a block hides the wishlist tier too', count(rmt_wishlist_matches(1)), 1);
 $pdo->exec('DELETE FROM blocks');
 check('no saves means no wishlist matches', rmt_wishlist_matches(99), []);
 
+echo "\n-- meetups in the window --\n";
+$pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY AUTOINCREMENT, host_id INT, destination_id INT,
+    title TEXT, date_start TEXT, status TEXT DEFAULT 'published', visibility TEXT DEFAULT 'public')");
+$pdo->exec("CREATE TABLE meetup_rsvps (meetup_id INT, user_id INT, status TEXT)");
+$pdo->prepare("INSERT INTO meetups (id,host_id,destination_id,title,date_start) VALUES
+    (1,3,10,'Coffee in Lisbon',?),(2,3,10,'Way after they leave',?),(3,3,11,'Wrong city',?)")
+    ->execute([$d('06-09') . ' 10:00:00', $d('12-01') . ' 10:00:00', $d('06-09') . ' 10:00:00']);
+$pdo->exec("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (1,3,'going')");
+$win = rmt_meetups_in_window(10, $d('06-01'), $d('06-10'));
+check('only the one inside the dates', count($win), 1);
+check('and it is the right one', (string) $win[0]['title'], 'Coffee in Lisbon');
+check('host count comes back', (int) $win[0]['going_count'], 1);
+check('a city I am not in has none', rmt_meetups_in_window(12, $d('06-01'), $d('06-10')), []);
+$pdo->exec("UPDATE meetups SET status='cancelled' WHERE id=1");
+check('a cancelled meetup is not offered', rmt_meetups_in_window(10, $d('06-01'), $d('06-10')), []);
+$pdo->exec("UPDATE meetups SET status='published' WHERE id=1");
+
+echo "\n-- telling the people already in town --\n";
+$sent = rmt_meetup_notify_travelers(1, 3, 10, $d('06-09') . ' 10:00:00');
+check('travelers with dates covering it are told', $sent > 0, true);
+check('and never twice', rmt_meetup_notify_travelers(1, 3, 10, $d('06-09') . ' 10:00:00'), 0);
+$n = q_one("SELECT * FROM notifications WHERE type='meetup_nearby'");
+check('points at the meetup', (int) $n['target_id'] === 1 && $n['target_type'] === 'meetup', true);
+check('a date nobody is there for tells nobody',
+      rmt_meetup_notify_travelers(2, 3, 10, $d('12-01') . ' 10:00:00'), 0);
+$pdo->exec("DELETE FROM notifications WHERE type='meetup_nearby'");
+$pdo->exec('INSERT INTO blocks (blocker_id,blocked_id) VALUES (1,3)');
+$blocked = rmt_meetup_notify_travelers(1, 3, 10, $d('06-09') . ' 10:00:00');
+check('a block keeps the host out of my notifications', $blocked === $sent - 1, true);
+$pdo->exec('DELETE FROM blocks');
+
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

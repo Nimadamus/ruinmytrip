@@ -14,6 +14,21 @@
       <p class="hint" style="margin:0 0 12px">You are there
         <?= e(date('M j', strtotime((string) $d['my_from']))) ?> –
         <?= e(date('M j, Y', strtotime((string) $d['my_to']))) ?></p>
+      <?php /* An event that already exists on a day they are already there is a much smaller first
+               step than messaging somebody they have never met. */ ?>
+      <?php if (!empty($g['meetups'])): ?>
+        <?php foreach ($g['meetups'] as $mu): ?>
+          <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+            <b><a href="<?= e(url('meetup/'.(int) $mu['id'])) ?>"><?= e((string) $mu['title']) ?></a></b>
+            <p class="hint" style="margin:.2rem 0 0"><?= e(date('D M j, H:i', strtotime((string) $mu['date_start']))) ?>
+              · hosted by @<?= e((string) $mu['host_username']) ?>
+              · <?= (int) $mu['going_count'] ?> going</p>
+          </div></div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+      <p style="margin:0 0 14px"><a class="btn btn-ghost btn-sm"
+         href="<?= e(url('meetup/new?d='.$slug.'&start='.substr((string) $d['my_from'], 0, 10))) ?>">Propose a meetup here</a></p>
+
       <div class="grid g-2">
         <?php foreach ($g['people'] as $r): ?>
           <div class="card"><div class="card-body" style="display:flex;gap:14px;align-items:center">

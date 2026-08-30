@@ -145,7 +145,7 @@ function rmt_meetups_attending_upcoming(int $userId, int $limit = 10): array {
 }
 
 /** The three things that happen to a meetup which the other people involved need told about. */
-const RMT_MEETUP_NOTIFY_TYPES = ['meetup_rsvp', 'meetup_changed', 'meetup_cancelled'];
+const RMT_MEETUP_NOTIFY_TYPES = ['meetup_rsvp', 'meetup_changed', 'meetup_cancelled', 'meetup_nearby'];
 
 /** Everyone currently going, except one person (normally the host, who is doing the thing). */
 function rmt_meetup_going_user_ids(int $meetupId, int $exceptUserId = 0): array {
