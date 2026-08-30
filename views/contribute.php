@@ -1,15 +1,24 @@
 <?php /** @var string $prefillName @var ?array $me @var array $recentDestinations @var int $myReviews */ ?>
 <div class="wrap" style="max-width:760px">
-  <h1 style="margin:.2rem 0 .4rem">Review a place you went to</h1>
-  <p class="muted" style="margin:0 0 6px">
-    Not every review starts from a page. Search for the hotel, restaurant or thing you did, and
-    write what it was actually like.
+  <?php /* Written for a traveler who has never seen this site before, not for somebody who knows
+           how the rest of it works. The old opening line was "Not every review starts from a
+           page", which is true, is about our own navigation, and means nothing to a stranger. What
+           a first-time visitor needs in the first two seconds is what to type and what we want
+           back: somewhere you actually went, and what it was actually like. */ ?>
+  <h1 style="margin:.2rem 0 .4rem">Where have you been?</h1>
+  <p style="margin:0 0 6px;font-size:1.05rem">
+    Search for a hotel, restaurant or attraction you have visited, and say what actually happened.
+    Good, bad or somewhere in between.
   </p>
   <p class="hint" style="margin:0 0 22px">
     <?php if ($myReviews > 0): ?>
       You have written <?= (int) $myReviews ?> <?= $myReviews === 1 ? 'review' : 'reviews' ?> so far.
     <?php else: ?>
-      What it cost, what surprised you, what you wish somebody had told you first.
+      <?php /* The honesty norm, stated once and early. A site that only ever asks for reviews
+               gets the reviews people think it wants; saying plainly that a bad one is as welcome
+               as a good one is the difference between a review site and a testimonial page. */ ?>
+      We are not after five stars. A one-star review that explains itself is worth more here than a
+      polite one that does not.
     <?php endif; ?>
   </p>
 
@@ -19,13 +28,12 @@
         data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>"
         data-suggest-target="review" data-review-url="<?= e(url('review/new')) ?>"
         style="margin:0 0 26px">
-    <label for="contribute-q" style="display:block;margin:0 0 6px;font-weight:600">Where did you go?</label>
+    <label for="contribute-q" style="display:block;margin:0 0 6px;font-weight:600">Search places</label>
     <input type="search" id="contribute-q" name="q" autocomplete="off"
            placeholder="Hotel Sacher, Rijksmuseum, a restaurant in Prague&hellip;"
            aria-label="Search for a place you visited" style="width:100%">
     <p class="hint" style="margin:8px 0 0">
-      Pick a place from the suggestions to go straight to writing. Pressing Enter searches
-      everything instead.
+      Pick one from the list and you go straight to writing. It takes a couple of minutes.
     </p>
   </form>
 
