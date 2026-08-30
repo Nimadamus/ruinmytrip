@@ -485,7 +485,12 @@ function profile(array $a): void {
                     WHERE t.user_id=? AND t.status='published' ORDER BY t.id DESC", [$uid]);
     $reviews = q_all("SELECT * FROM reviews WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     $guides = q_all("SELECT * FROM guides WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
-    $collections = q_all("SELECT c.*, (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+    // Split by kind, because a list can hold places as well as cities and "3 destinations" over a
+    // list of three restaurants is the site not paying attention.
+    $collections = q_all("SELECT c.*,
+                            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.destination_id IS NOT NULL) dest_count,
+                            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.place_id IS NOT NULL) place_count,
+                            (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
                           FROM collections c WHERE c.user_id=? AND c.status='published' ORDER BY c.id DESC", [$uid]);
     $wishlist = q_all("SELECT d.id, d.slug, d.name, d.country FROM saves s JOIN destinations d ON d.id=s.target_id
                        WHERE s.user_id=? AND s.target_type='destination' ORDER BY d.name", [$uid]);

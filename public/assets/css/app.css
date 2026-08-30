@@ -142,7 +142,11 @@ textarea{min-height:140px;resize:vertical}
 
 /* profile */
 .profile-cover{height:200px;background:linear-gradient(120deg,var(--ink),var(--brand));border-radius:22px;margin-top:24px;background-size:cover;background-position:center}
-.profile-head{display:flex;gap:20px;align-items:flex-end;margin-top:-48px;padding:0 20px;flex-wrap:wrap}
+/* The avatar overlaps the cover; the NAME does not. Pulling the whole header up put dark
+   heading text on a dark cover image, so the one thing a profile has to say -- whose it is --
+   was the least readable thing on it. Only the avatar is pulled up now. */
+.profile-head{display:flex;gap:20px;align-items:flex-end;margin-top:8px;padding:0 20px;flex-wrap:wrap}
+.profile-head .avatar-lg{margin-top:-56px}
 .stat-inline{display:flex;gap:10px 22px;margin:10px 0;flex-wrap:wrap}
 .stat-inline b{color:var(--ink)}
 

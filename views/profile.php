@@ -12,17 +12,35 @@
       <p class="muted" style="margin:.1rem 0">@<?= e($u['username']) ?> <?= $u['home_city']?' · '.e($u['home_city']):'' ?></p>
       <div class="stat-inline">
         <?php /* Every figure is a live COUNT (see rmt_profile_stats) — no stored counters. */ ?>
+        <?php /* Only what this traveler actually has. A row reading "0 photos, 0 places visited,
+                 0 votes, 0 followers, 0 following" is five statements of absence and reads as a
+                 scoreboard nobody is winning -- on a new profile it is the first thing a person
+                 sees about themselves. Reviews always shows, because it is the number the page is
+                 fundamentally about and its empty state is handled below with an invitation
+                 rather than a zero. */ ?>
         <span><b><?= (int)$stats['reviews'] ?></b> <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?></span>
-        <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
-        <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
-        <span title="Useful + funny + cool votes from other travelers"><b><?= (int)$stats['votes'] ?></b> <?= $stats['votes'] === 1 ? 'vote' : 'votes' ?></span>
+        <?php if ((int) $stats['photos'] > 0): ?>
+          <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
+        <?php endif; ?>
+        <?php if ((int) $stats['places'] > 0): ?>
+          <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
+        <?php endif; ?>
+        <?php if ((int) $stats['votes'] > 0): ?>
+          <span title="Useful + funny + cool votes from other travelers"><b><?= (int)$stats['votes'] ?></b> <?= $stats['votes'] === 1 ? 'vote' : 'votes' ?></span>
+        <?php endif; ?>
         <?php /* Shown only once somebody has one. "0 found helpful" on every new profile is noise
                  that makes the page look like a scoreboard nobody is winning. */ ?>
         <?php if ((int) $stats['helpful'] > 0): ?>
           <span title="Times other travelers marked this person's reviews useful"><b><?= (int)$stats['helpful'] ?></b> found helpful</span>
         <?php endif; ?>
-        <a href="<?= e(url('u/'.$u['username'].'/followers')) ?>"><b><?= $followers ?></b> <?= $followers === 1 ? 'follower' : 'followers' ?></a>
-        <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
+        <?php /* Follow counts appear once there is one, and for the profile's owner regardless, so
+                 they always have the way in to see who is following them. */ ?>
+        <?php if ($followers > 0 || $isMe): ?>
+          <a href="<?= e(url('u/'.$u['username'].'/followers')) ?>"><b><?= $followers ?></b> <?= $followers === 1 ? 'follower' : 'followers' ?></a>
+        <?php endif; ?>
+        <?php if ($following > 0 || $isMe): ?>
+          <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
+        <?php endif; ?>
       </div>
       <?php if ($badges): ?>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
@@ -169,8 +187,22 @@
     </div>
   <?php endif; ?>
 
+
+  <?php /* Reviews first. This is a travel review site, a reviewer's reviews are the answer to
+           "who is this traveler", and they were below trips, guides and collections. */ ?>
+  <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
+  <?php foreach ($reviews as $r): ?><div class="card" style="margin-bottom:12px"><div class="card-body">
+    <span class="stars"><?= stars((int)$r['rating']) ?></span>
+    <b><a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></b>
+    <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
+    <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
+  </div></div><?php endforeach; ?><?php endif; ?>
+
+  <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
+           was the FIRST section on a profile carrying 185 reviews: the page led with the one thing
+           this traveler had not done. */ ?>
+  <?php if ($trips): ?>
   <h2 style="margin-top:24px">Trips</h2>
-  <?php if (!$trips): ?><p class="muted">No trips shared yet.</p><?php endif; ?>
   <div class="grid g-3">
     <?php foreach ($trips as $t): ?>
       <article class="card"><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
@@ -178,6 +210,7 @@
         <div class="card-body"><?php if($t['dest_name']):?><span class="chip"><?= e($t['dest_name']) ?></span><?php endif;?><h3 style="font-size:1.05rem"><?= e($t['title']) ?></h3></div></a></article>
     <?php endforeach; ?>
   </div>
+  <?php endif; ?>
 
   <?php if ($guides): ?><h2 style="margin-top:30px">Guides</h2>
   <div class="grid g-3"><?php foreach ($guides as $g): ?>
@@ -188,17 +221,10 @@
   <div class="grid g-3"><?php foreach ($collections as $c): ?>
     <article class="card"><a href="<?= e(url('c/'.$c['slug'])) ?>"><div class="card-body">
       <h3 style="font-size:1.05rem"><?= e($c['title']) ?></h3>
-      <p class="muted" style="margin:.3rem 0 0"><?= (int)$c['item_count'] ?> <?= (int)$c['item_count']===1?'destination':'destinations' ?></p>
+      <p class="muted" style="margin:.3rem 0 0"><?= e(rmt_collection_summary((int) ($c['dest_count'] ?? 0), (int) ($c['place_count'] ?? 0))) ?></p>
     </div></a></article>
   <?php endforeach; ?></div><?php endif; ?>
 
-  <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
-  <?php foreach ($reviews as $r): ?><div class="card" style="margin-bottom:12px"><div class="card-body">
-    <span class="stars"><?= stars((int)$r['rating']) ?></span>
-    <b><a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></b>
-    <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
-    <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
-  </div></div><?php endforeach; ?><?php endif; ?>
   <?php /* An empty profile is the most common one on a site with no reviews yet, and "your profile
            is empty" is a statement of failure rather than an invitation. This says what the page
            becomes, and sends them to the page built for having a trip in mind rather than a URL. */ ?>
