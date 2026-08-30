@@ -263,3 +263,50 @@ function rmt_posts_attach_originals(array $rows): array {
     }
     return $rows;
 }
+
+/**
+ * Other talk worth reading after this one: same city first, then anything sharing a hashtag.
+ *
+ * A post that ends in nothing sends the reader back to where they came from, which for most of
+ * them is a search result. Two or three real neighbours is the difference between a page and a
+ * visit.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_posts_related(array $p, int $limit = 4): array {
+    $id = (int) $p['id'];
+    $out = [];
+    $seen = [$id => true];
+
+    $take = static function (array $rows) use (&$out, &$seen, $limit): void {
+        foreach ($rows as $r) {
+            if (count($out) >= $limit) return;
+            if (isset($seen[(int) $r['id']])) continue;
+            $seen[(int) $r['id']] = true;
+            $out[] = $r;
+        }
+    };
+
+    if (!empty($p['destination_id'])) {
+        $take(q_all("SELECT p.id, p.body, p.created_at, u.username
+                       FROM posts p JOIN users u ON u.id = p.user_id
+                      WHERE p.status='published' AND u.status='active' AND p.repost_of IS NULL
+                        AND p.destination_id = ? AND p.id <> ?
+                   ORDER BY p.created_at DESC LIMIT " . (int) $limit, [(int) $p['destination_id'], $id]));
+    }
+    if (count($out) < $limit) {
+        $tagIds = array_column(rmt_tags_for('post', $id), 'id');
+        if ($tagIds) {
+            $in = implode(',', array_fill(0, count($tagIds), '?'));
+            $take(q_all("SELECT DISTINCT p.id, p.body, p.created_at, u.username
+                           FROM posts p
+                           JOIN taggings tg ON tg.target_type='post' AND tg.target_id = p.id
+                           JOIN users u ON u.id = p.user_id
+                          WHERE p.status='published' AND u.status='active' AND p.repost_of IS NULL
+                            AND tg.tag_id IN ($in) AND p.id <> ?
+                       ORDER BY p.created_at DESC LIMIT " . (int) $limit,
+                       array_merge($tagIds, [$id])));
+        }
+    }
+    return $out;
+}

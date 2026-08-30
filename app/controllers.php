@@ -766,17 +766,20 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
 
 function feed(array $a): void {
     require_login(); $me = current_user(); $uid = (int)$me['id'];
-    $items = rmt_activity_items($uid);
+    /* Two scopes, named. Following is the point of following somebody; Everyone is what makes the
+       site readable on the day you join and on any day your follows are quiet. */
+    $scope = input('scope') === 'everyone' ? 'everyone' : 'following';
+    $items = $scope === 'everyone' ? rmt_activity_items(null) : rmt_activity_items($uid);
     /* A feed scoped to who you follow is empty on the day you join, which is the day it matters
        most. Falling back to the whole site is not a lie as long as the page says so: the member
        sees a living place and can start following from it, instead of a blank page that reads as
        "nobody is here". */
-    $isEveryone = false;
-    if (!$items) {
+    $isEveryone = $scope === 'everyone';
+    if (!$items && $scope === 'following') {
         $items = rmt_activity_items(null);
         $isEveryone = (bool) $items;
     }
-    view('feed', compact('items','me','isEveryone'), [
+    view('feed', compact('items','me','isEveryone','scope'), [
         'title' => 'Your feed — RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);
@@ -4362,7 +4365,8 @@ function post_show(array $a): void {
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'Talk', 'url' => url('talk')]];
     if ($p['dest_slug']) $crumbs[] = ['name' => (string) $p['dest_name'], 'url' => url('d/' . $p['dest_slug'])];
 
-    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount'), [
+    $related = rmt_posts_related($p, 4);
+    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount', 'related'), [
         'title' => rmt_meta_title(rmt_post_title($p)),
         'description' => rmt_meta_description((string) $p['body']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),

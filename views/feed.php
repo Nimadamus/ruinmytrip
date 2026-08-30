@@ -1,4 +1,4 @@
-<?php /** @var array $items @var array $me @var bool $isEveryone */
+<?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
                    'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said'];
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk'];
@@ -24,7 +24,14 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
       <a data-review-cta="feed" href="<?= e(url('contribute')) ?>">review a place you went to</a>.
     </div>
   <?php endif; ?>
-  <?php if (!empty($isEveryone)): ?>
+  <p style="margin:0 0 14px">
+    <a class="btn btn-sm <?= ($scope ?? 'following') === 'following' ? 'btn-primary' : 'btn-ghost' ?>"
+       href="<?= e(url('feed')) ?>">Following</a>
+    <a class="btn btn-sm <?= ($scope ?? '') === 'everyone' ? 'btn-primary' : 'btn-ghost' ?>"
+       href="<?= e(url('feed?scope=everyone')) ?>">Everyone</a>
+  </p>
+
+  <?php if (!empty($isEveryone) && ($scope ?? '') !== 'everyone'): ?>
     <?php /* Say whose activity this is. A feed that quietly shows strangers as if they were people
              you chose to follow is a small lie that gets found out the moment somebody checks. */ ?>
     <p class="hint">You are not following anybody yet, so this is everyone on RuinMyTrip.

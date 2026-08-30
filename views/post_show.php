@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var ?array $me @var ?array $original @var int $repostCount */ ?>
+<?php /** @var array $p @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var ?array $me @var ?array $original @var int $repostCount @var array $related */ ?>
 <div class="wrap"><p class="crumbs">
   <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('talk')) ?>">Talk</a>
   <?php if (!empty($p['dest_slug'])): ?> / <a href="<?= e(url('d/'.$p['dest_slug'])) ?>"><?= e((string) $p['dest_name']) ?></a><?php endif; ?>
@@ -75,6 +75,17 @@
     $ownerId = (int) $p['user_id'];
     include __DIR__ . '/_engagement.php';
   ?>
+
+  <?php /* A page that ends in nothing sends the reader back to the search result they came from. */ ?>
+  <?php if ($related): ?>
+    <h2 style="margin:30px 0 10px;font-size:1.15rem">More talk</h2>
+    <?php foreach ($related as $rl): ?>
+      <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+        <a href="<?= e(url('post/'.(int) $rl['id'])) ?>"><?= e(mb_strimwidth((string) $rl['body'], 0, 140, '…')) ?></a>
+        <span class="hint"> · @<?= e((string) $rl['username']) ?></span>
+      </div></div>
+    <?php endforeach; ?>
+  <?php endif; ?>
 
   <p style="margin:26px 0 50px"><a class="btn btn-ghost" href="<?= e(url('talk')) ?>">← All travel talk</a>
     <?php if (!empty($p['dest_slug'])): ?>
