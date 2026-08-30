@@ -19,6 +19,9 @@
   <?php if ($me && (int)$t['user_id'] === (int)$me['id']): ?>
     <p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a></p>
   <?php endif; ?>
+  <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
+        include __DIR__ . '/_share.php'; ?>
+
   <?php
     $targetType = 'trip'; $targetId = (int)$t['id']; $ownerId = (int)$t['user_id'];
     $returnUrl = url('trip/'.$t['id'].'/'.$t['slug']);

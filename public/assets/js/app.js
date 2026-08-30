@@ -20,3 +20,20 @@ document.addEventListener('click', function (e) {
     window.prompt('Copy', url);
   }
 });
+
+// Native share where the browser has it. The button is hidden by default so a desktop browser
+// without navigator.share never shows a control that would do nothing.
+(function () {
+  if (!navigator.share) return;
+  document.querySelectorAll('.share-row .js-share-native').forEach(function (b) {
+    b.hidden = false;
+    b.addEventListener('click', function () {
+      const row = b.closest('.share-row');
+      navigator.share({
+        title: row.getAttribute('data-share-text') || document.title,
+        text: row.getAttribute('data-share-text') || '',
+        url: row.getAttribute('data-share-url') || location.href
+      }).catch(function () { /* the sharer cancelled, which is not an error */ });
+    });
+  });
+})();

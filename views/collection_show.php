@@ -160,6 +160,9 @@
     <?php endif; ?>
   </div>
 
+  <?php $shareUrl = url('c/'.$c['slug']); $shareText = (string) $c['title'];
+        include __DIR__ . '/_share.php'; ?>
+
   <?php
     $targetType = 'collection'; $targetId = (int)$c['id']; $ownerId = (int)$c['user_id'];
     $returnUrl = url('c/'.$c['slug']);

@@ -173,6 +173,10 @@
     <?php endif; ?>
   </div>
 
+  <?php $shareUrl = url(ltrim(rmt_review_path($r), '/'));
+        $shareText = (string) ($r['title'] ?: $r['subject_name']);
+        include __DIR__ . '/_share.php'; ?>
+
   <?php
     $showActionsBar = false; $targetType = 'review'; $targetId = (int)$r['id']; $ownerId = (int)$r['user_id'];
     $returnUrl = url(ltrim(rmt_review_path($r),'/'));

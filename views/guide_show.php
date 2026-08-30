@@ -53,6 +53,9 @@
     <?php endif; ?>
   </div>
 
+  <?php $shareUrl = url('g/'.$g['slug']); $shareText = (string) $g['title'];
+        include __DIR__ . '/_share.php'; ?>
+
   <?php
     // showActionsBar defaults true: renders Like/Save + Report (Edit is handled above instead).
     $targetType = 'guide'; $targetId = (int)$g['id']; $ownerId = (int)$g['user_id'];

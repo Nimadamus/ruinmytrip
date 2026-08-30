@@ -36,6 +36,9 @@
     </div>
   <?php endif; ?>
 
+  <?php $shareUrl = url('post/'.(int) $p['id']); $shareText = rmt_post_title($p);
+        include __DIR__ . '/_share.php'; ?>
+
   <?php
     $targetType = 'post';
     $targetId = (int) $p['id'];
