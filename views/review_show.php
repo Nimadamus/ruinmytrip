@@ -48,7 +48,7 @@
   <?php if ($isEd): ?>
     <div class="card ed-panel" style="margin-bottom:18px"><div class="card-body">
       <?= rmt_editorial_badge('review') ?>
-      <p style="margin:.5rem 0 0"><?= e(rmt_editorial_disclosure()) ?></p>
+      <p style="margin:.5rem 0 0"><?= rmt_editorial_disclosure() ?></p>
     </div></div>
   <?php endif; ?>
 

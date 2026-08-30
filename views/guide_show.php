@@ -6,7 +6,7 @@
   <?php if($isEd):?><?= rmt_editorial_badge() ?><?php endif;?>
   <h1><?= e($g['title']) ?></h1>
   <p class="muted">by <a href="<?= e(url('u/'.$g['author']['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($g['author']['username']) ?></a> · <?= e(ago($g['created_at'])) ?></p>
-  <?php if($isEd):?><div class="callout"><?= e(rmt_editorial_disclosure()) ?></div><?php endif;?>
+  <?php if($isEd):?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif;?>
   <?php if ($g['cover_url']): ?><img class="article-hero" src="<?= e($g['cover_url']) ?>" alt="<?= e($g['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($g['summary']) ?></p>
   <?php if ($g['premium']): ?><div class="callout warn"><b>Premium guide.</b> A preview is shown. Full booking-ready detail unlocks with a creator subscription (coming soon).</div><?php endif; ?>

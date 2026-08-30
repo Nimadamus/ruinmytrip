@@ -68,11 +68,22 @@ function rmt_editorial_badge(string $kind = 'editorial', bool $link = true): str
          . e($text) . '</a>';
 }
 
-/** The one-line honesty statement shown wherever editorial content is read in full. */
+/**
+ * The one-line honesty statement shown wherever editorial content is read in full.
+ *
+ * The name is a LINK. It said who wrote this on 123 place pages and gave the reader no way to check
+ * that account -- what else it has published, what it is allowed to claim, whether it is a person
+ * who went. "Written by the RuinMyTrip Editorial team" as plain text asks to be taken on trust; the
+ * same words linked to the account and the policy can be verified in two clicks, which is the whole
+ * difference between a disclosure and an assertion.
+ *
+ * Returns HTML, so callers must NOT escape it. The only interpolated value is a constant username.
+ */
 function rmt_editorial_disclosure(): string {
-    return 'Written by the ' . rmt_editorial_name() . ' team from published research and official '
-         . 'sources, not from a personal trip. It is not a traveler review and is never counted in '
-         . 'the community rating.';
+    return 'Written by <a href="' . e(url('u/' . RMT_EDITORIAL_USERNAME)) . '">'
+         . e(rmt_editorial_name()) . '</a> from published research and official sources, not from a '
+         . 'personal trip. It is not a traveler review and is never counted in the community '
+         . 'rating. <a href="' . e(url('editorial-policy')) . '">How we research</a>.';
 }
 
 /**

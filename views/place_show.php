@@ -215,7 +215,7 @@
         <h2 style="margin:0;font-size:1.15rem">RuinMyTrip guide to <?= e($p['name']) ?></h2>
         <?= rmt_editorial_badge('review') ?>
       </div>
-      <p class="hint" style="margin:.5rem 0 0"><?= e(rmt_editorial_disclosure()) ?></p>
+      <p class="hint" style="margin:.5rem 0 0"><?= rmt_editorial_disclosure() ?></p>
     </div></div>
 
     <?php foreach (rmt_place_editorial_sections((string) $p['type']) as $col => $heading): ?>
@@ -277,7 +277,7 @@
 
   <?php if ($editorial): ?>
     <h2 style="font-size:1.1rem;margin:0 0 10px">From the RuinMyTrip team</h2>
-    <p class="hint" style="margin:-4px 0 12px"><?= e(rmt_editorial_disclosure()) ?></p>
+    <p class="hint" style="margin:-4px 0 12px"><?= rmt_editorial_disclosure() ?></p>
     <div class="grid" style="gap:14px;margin-bottom:28px">
       <?php foreach ($editorial as $r): ?>
         <?php $href = url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r))); ?>

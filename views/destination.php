@@ -138,7 +138,7 @@
             <p style="margin:.7rem 0 0;font-size:.95rem"><b style="color:#b42318">What nearly ruins it:</b> <?= e(mb_strimwidth((string)$ed['what_ruined'], 0, 180, '…')) ?></p>
           <?php endif; ?>
           <p style="margin:.9rem 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$ed['id'].'/'.($ed['slug'] ?: rmt_review_slug($ed)))) ?>">Read the full editorial review</a></p>
-          <p class="ed-note"><?= e(rmt_editorial_disclosure()) ?></p>
+          <p class="ed-note"><?= rmt_editorial_disclosure() ?></p>
         </div></div>
       <?php endforeach; ?>
 
