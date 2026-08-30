@@ -48,6 +48,15 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']===RMT_MATCH_NOTIFY_TYPE):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $dest = q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',
+                        [(int)$n['target_id']])['name'] ?? null;
+          /* Leads with the fact that matters -- the same city at the same time -- because that is
+             what makes somebody open it rather than clear it. */
+          $line = $dest ? $who.' will be in '.$dest.' while you are.' : $who.' has dates that overlap yours.';
+        ?>
+          <a href="<?= e(url('matches')) ?>"><b><?= e($line) ?></b></a>
         <?php elseif ($n['type']==='going'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url('going', (int)$n['target_id']);

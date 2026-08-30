@@ -98,6 +98,7 @@ $routes = [
     ['POST', '#^/going$#',                     'going_save'],
     ['POST', '#^/going/delete$#',              'going_delete'],
     ['GET',  '#^/travelers$#',                 'travelers_index'],
+    ['GET',  '#^/matches$#',                   'matches_index'],
     ['GET',  '#^/welcome$#',                   'welcome_form'],
     ['POST', '#^/welcome$#',                   'welcome_submit'],
     ['GET',  '#^/leaderboard$#',               'leaderboard'],

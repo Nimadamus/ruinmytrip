@@ -18,6 +18,7 @@
       <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
+      <a href="<?= e(url('matches')) ?>">Your matches</a>
       <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
       <a href="<?= e(url('tags')) ?>">Topics</a>
     </div>

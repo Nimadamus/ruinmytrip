@@ -1622,6 +1622,9 @@ function going_save(array $a): void {
     if ($v['data']['visibility'] === 'public' && (!$prev || $prev['visibility'] !== 'public')) {
         rmt_going_notify_followers((int)$me['id'], $gid, 'public');
     }
+    // The people already holding dates in that city are the ones this plan is news to.
+    rmt_match_notify((int)$me['id'], $gid, (int)$v['data']['destination_id'],
+                     (string)$v['data']['date_from'], (string)$v['data']['date_to'], $v['data']['visibility']);
     flash('Saved. Destination and dates only — never a precise location.');
     $d = dest_by_id((int)$v['data']['destination_id']);
     redirect($d ? '/d/'.$d['slug'] : '/going');
@@ -4125,5 +4128,38 @@ function communities_index(array $a): void {
         'title' => 'Communities — RuinMyTrip',
         'description' => 'Travel communities started by travelers. Join one, or start your own.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Communities','url'=>url('communities')]],
+    ]);
+}
+
+/**
+ * Trip matches: the answer to "who else will be there when I am".
+ *
+ * Private by construction -- it is a list of other people's plans assembled for one viewer, so it
+ * is never indexed and never shown signed out.
+ */
+function matches_index(array $a): void {
+    require_login();
+    $me = current_user();
+    $uid = (int) $me['id'];
+    $matches = rmt_trip_matches($uid);
+
+    /* Grouped by city, because that is the unit a traveler acts on: they are not deciding about a
+       person, they are deciding what to do about one trip. */
+    $byDest = [];
+    foreach ($matches as $m) {
+        $byDest[(string) $m['dest_slug']]['dest'] = ['slug' => $m['dest_slug'], 'name' => $m['dest_name'],
+                                                     'my_from' => $m['my_from'], 'my_to' => $m['my_to']];
+        $byDest[(string) $m['dest_slug']]['people'][] = $m;
+    }
+
+    $wishlist = rmt_wishlist_matches($uid);
+    $shared = rmt_match_shared_destinations($uid, array_column($wishlist, 'user_id'));
+    $myPlans = rmt_going_list_for_profile($uid, $me);
+
+    view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me'), [
+        'title' => 'Your trip matches — RuinMyTrip',
+        'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
+        'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader
+        'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Matches', 'url' => url('matches')]],
     ]);
 }

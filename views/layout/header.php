@@ -50,6 +50,7 @@
       <a href="<?= e(url('communities')) ?>">Communities</a>
       <a href="<?= e(url('going')) ?>">Going</a>
       <?php if ($me): ?>
+        <a href="<?= e(url('matches')) ?>">Matches</a>
         <a href="<?= e(url('feed')) ?>">Feed</a>
         <a href="<?= e(url('saved')) ?>">Saved</a>
         <a href="<?= e(url('messages')) ?>" title="Messages">✉️<?php $unread = rmt_unread_message_count((int)$me['id']); if ($unread): ?> <span class="chip" style="background:#0f766e;color:#fff"><?= $unread ?></span><?php endif; ?></a>

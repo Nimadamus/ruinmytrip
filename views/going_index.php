@@ -5,6 +5,7 @@
   <div class="callout"><b>Destination + date range only.</b> RuinMyTrip never shows precise or real-time location. Share your plans only if you choose to, and control who sees them.</div>
 
   <?php if ($me): ?>
+    <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('matches')) ?>">See who overlaps your dates</a></p>
     <div class="card" style="margin:18px 0"><div class="card-body">
       <?php $current = null; $lockDestId = 0; include __DIR__.'/_going_form.php'; ?>
     </div></div>
