@@ -278,7 +278,10 @@
             <?= rmt_editorial_badge('review') ?>
           </div>
           <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem"><a href="<?= e($href) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></h3>
-          <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
+          <?php /* 200 characters was a teaser on the one page where the reviews are the content.
+                 Long enough to actually read, cut on a word boundary, and the full text is one
+                 click away on the review's own page. */ ?>
+        <p style="margin:.4rem 0 0;line-height:1.55"><?= e(excerpt((string) $r['body'], 420)) ?></p>
         </div></article>
       <?php endforeach; ?>
     </div>

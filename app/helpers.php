@@ -147,6 +147,23 @@ function view(string $name, array $data = [], array $meta = []): void {
     require BASE_PATH . '/views/layout/footer.php';
 }
 
+/**
+ * A readable excerpt: never cuts a word in half, and returns the whole thing when it already fits.
+ *
+ * mb_strimwidth() truncates by width, so "eleven pieces with rolls, soup and dessert" becomes
+ * "...with rolls, soup and dess...". On a site whose content is people's sentences, the last word
+ * of every excerpt being a fragment is a small constant reminder that nothing here was laid out
+ * for reading.
+ */
+function excerpt(string $text, int $max = 400): string {
+    $text = trim(preg_replace('/\s+/u', ' ', strip_tags($text)) ?? '');
+    if ($text === '' || mb_strlen($text) <= $max) return $text;
+    $cut = mb_substr($text, 0, $max);
+    $sp = mb_strrpos($cut, ' ');
+    if ($sp !== false && $sp > $max * 0.6) $cut = mb_substr($cut, 0, $sp);
+    return rtrim($cut, " ,;:-") . "\u{2026}";
+}
+
 function age_from(string $birthdate): int {
     $b = strtotime($birthdate); if (!$b) return 0;
     return (int)floor((time() - $b) / 31557600);
