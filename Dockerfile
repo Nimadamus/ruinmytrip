@@ -10,7 +10,7 @@ RUN apt-get update \
       libpq-dev libpng-dev libjpeg62-turbo-dev libwebp-dev \
  && docker-php-ext-configure gd --with-jpeg --with-webp \
  && docker-php-ext-install pdo pdo_pgsql gd \
- && a2enmod rewrite \
+ && a2enmod rewrite headers expires \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Uploads are re-encoded in memory; allow enough headroom for a large photo.
