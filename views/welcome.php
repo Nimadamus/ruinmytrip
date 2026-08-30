@@ -1,4 +1,4 @@
-<?php /** @var array $dests @var array $saved @var array $me @var array $communities */ ?>
+<?php /** @var array $dests @var array $saved @var array $me @var array $communities @var array $suggested */ ?>
 <section class="block"><div class="wrap" style="max-width:760px">
   <p class="eyebrow">You're in</p>
   <h1>Start your traveler profile</h1>
@@ -42,6 +42,20 @@
           <b><?= e((string) $cc['title']) ?></b>
           <span class="hint"> · <?= (int) $cc['member_count'] ?> members</span>
           <?php if (!empty($cc['summary'])): ?><span class="muted" style="display:block;margin-top:.2rem"><?= e((string) $cc['summary']) ?></span><?php endif; ?>
+        </span></label>
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php /* People first among the optional steps: following somebody is the one action that makes
+             the next screen worth opening. */ ?>
+    <?php if ($suggested): ?>
+      <h2 style="font-size:1.15rem;margin-top:26px">Follow a few travelers (optional)</h2>
+      <?php foreach ($suggested as $sg): ?>
+        <label class="card" style="display:block;margin-bottom:8px;cursor:pointer"><span class="card-body" style="display:block;padding:12px 16px">
+          <input type="checkbox" name="follow[]" value="<?= (int) $sg['id'] ?>" style="margin-right:8px">
+          <b>@<?= e((string) $sg['username']) ?></b>
+          <?php if (!empty($sg['home_city'])): ?><span class="hint"> · <?= e((string) $sg['home_city']) ?></span><?php endif; ?>
+          <span class="hint"> · <?= e((string) $sg['reason']) ?></span>
         </span></label>
       <?php endforeach; ?>
     <?php endif; ?>

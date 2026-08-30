@@ -1,4 +1,4 @@
-<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community @var array $topTags */ ?>
+<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community @var array $topTags @var string $sort */ ?>
 <div class="wrap"><p class="crumbs">
   <a href="<?= e(url()) ?>">Home</a> / <?php if ($dest || $community): ?><a href="<?= e(url('talk')) ?>">Talk</a> /
     <?= e($dest ? (string) $dest['name'] : (string) $community['title']) ?><?php else: ?>Talk<?php endif; ?>
@@ -49,6 +49,13 @@
     <p style="margin:16px 0"><a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free to reply</a>
       <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a></p>
   <?php endif; ?>
+
+  <p style="margin:18px 0 0">
+    <a class="btn btn-sm <?= ($sort ?? 'latest') === 'latest' ? 'btn-primary' : 'btn-ghost' ?>"
+       href="<?= e(url('talk' . ($dest ? '?d='.$dest['slug'] : ($community ? '?c='.$community['slug'] : '')))) ?>">Latest</a>
+    <a class="btn btn-sm <?= ($sort ?? '') === 'top' ? 'btn-primary' : 'btn-ghost' ?>"
+       href="<?= e(url('talk?sort=top' . ($dest ? '&d='.$dest['slug'] : ($community ? '&c='.$community['slug'] : '')))) ?>">Top this week</a>
+  </p>
 
   <?php /* Topics, because a stream is only browsable by the people who read all of it. */ ?>
   <?php if ($topTags): ?>

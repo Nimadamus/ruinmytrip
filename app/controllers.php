@@ -1724,11 +1724,13 @@ function welcome_form(array $a): void {
     $dests = q_all('SELECT id, slug, name, country FROM destinations ORDER BY name');
     // Rooms that already have somebody in them. An empty one is a worse first experience than none.
     $communities = rmt_community_browse(6);
+    // And people. A social site whose first screen asks only about places is still a directory.
+    $suggested = rmt_follow_suggestions((int) $me['id'], 5);
     $saved = [];
     foreach (q_all("SELECT target_id FROM saves WHERE user_id=? AND target_type='destination'", [(int)$me['id']]) as $r) {
         $saved[(int)$r['target_id']] = true;
     }
-    view('welcome', compact('dests','saved','me','communities'), [
+    view('welcome', compact('dests','saved','me','communities','suggested'), [
         'title' => 'Start your traveler profile — RuinMyTrip',
         'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
     ]);
@@ -1776,6 +1778,19 @@ function welcome_submit(array $a): void {
         if ($c && rmt_community_join($c, $me) === 'joined') $joined++;
     }
 
+    $followed = 0;
+    foreach (array_slice(array_unique(array_map('intval', (array) ($_POST['follow'] ?? []))), 0, 10) as $fid) {
+        if ($fid < 1 || $fid === $uid) continue;
+        if (rmt_is_blocked($uid, $fid)) continue;
+        try {
+            db()->prepare('INSERT INTO follows (follower_id, followee_id, created_at) VALUES (?,?,?)')
+               ->execute([$uid, $fid, $now]);
+            $followed++;
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+    }
+
     $said = false;
     $hello = trim((string) ($_POST['hello'] ?? ''));
     if ($hello !== '' && email_is_verified($me)) {
@@ -1793,7 +1808,7 @@ function welcome_submit(array $a): void {
         flash('Profile started. Here is who else will be there.');
         redirect('/matches');
     }
-    if ($said || $joined) {
+    if ($said || $joined || $followed) {
         flash($joined ? 'You are in. This is what people are saying.' : 'Posted. This is what people are saying.');
         redirect('/talk');
     }
@@ -4346,7 +4361,14 @@ function posts_index(array $a): void {
     $dest = $destSlug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$destSlug]) : null;
     $community = $comSlug !== '' ? q_one("SELECT * FROM collections WHERE slug=? AND status='published'", [$comSlug]) : null;
 
-    $posts = rmt_posts_recent(50, $dest ? (int) $dest['id'] : null, $community ? (int) $community['id'] : null);
+    /* Two orders, both honest. Latest is the default because a conversation surface that hides
+       the newest thing feels broken; Top answers "I have five minutes, what did I miss". */
+    $sort = input('sort') === 'top' ? 'top' : 'latest';
+    $destId = $dest ? (int) $dest['id'] : null;
+    $comId  = $community ? (int) $community['id'] : null;
+    $posts = $sort === 'top' ? rmt_posts_top(50, $destId, $comId) : rmt_posts_recent(50, $destId, $comId);
+    // A quiet week has nothing inside the window; showing an empty Top tab would read as breakage.
+    if ($sort === 'top' && !$posts) $posts = rmt_posts_recent(50, $destId, $comId);
     $dests = $me ? all_dests() : [];
     $myCommunities = $me ? rmt_community_memberships((int) $me['id']) : [];
 
@@ -4355,7 +4377,7 @@ function posts_index(array $a): void {
     if ($community) $title = $community['title'] . ' — discussion';
 
     $topTags = rmt_top_tags(12);
-    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags'), [
+    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort'), [
         'title' => $title . ' — RuinMyTrip',
         'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
         // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.

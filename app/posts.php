@@ -310,3 +310,49 @@ function rmt_posts_related(array $p, int $limit = 4): array {
     }
     return $out;
 }
+
+/**
+ * The talk worth reading first: what other people actually engaged with, this week.
+ *
+ * Chronological is honest and, past a certain volume, useless: the newest thing is not the best
+ * thing, and a stream sorted by clock rewards whoever posts most often. The score is deliberately
+ * simple and countable -- a reply is worth more than a like because writing one costs more, and a
+ * repost is worth most because somebody put their own name on it.
+ *
+ * Restricted to a window so the same three posts do not sit at the top forever. Outside the window
+ * the answer is the chronological list, which is what /talk shows by default.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_posts_top(int $limit = 40, ?int $destId = null, ?int $collectionId = null, int $days = 7): array {
+    $where = ["p.status = 'published'", "u.status = 'active'", 'p.created_at >= ?'];
+    $args = [date('Y-m-d H:i:s', time() - $days * 86400)];
+    if ($destId !== null)       { $where[] = 'p.destination_id = ?'; $args[] = $destId; }
+    if ($collectionId !== null) { $where[] = 'p.collection_id = ?';  $args[] = $collectionId; }
+    $sql = implode(' AND ', $where);
+
+    $rows = q_all(
+        "SELECT p.*, u.username, pr.avatar_url, pr.display_name,
+                d.slug dest_slug, d.name dest_name,
+                c.slug community_slug, c.title community_title,
+                (SELECT COUNT(*) FROM comments cm
+                  WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') reply_count,
+                (SELECT COUNT(*) FROM likes lk WHERE lk.target_type='post' AND lk.target_id=p.id) like_count,
+                (SELECT COUNT(*) FROM posts rp WHERE rp.repost_of=p.id AND rp.status='published') repost_count
+           FROM posts p
+           JOIN users u ON u.id = p.user_id
+      LEFT JOIN profiles pr ON pr.user_id = p.user_id
+      LEFT JOIN destinations d ON d.id = p.destination_id
+      LEFT JOIN collections c ON c.id = p.collection_id
+          WHERE $sql
+       ORDER BY (
+                (SELECT COUNT(*) FROM comments cm
+                  WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') * 3
+              + (SELECT COUNT(*) FROM likes lk WHERE lk.target_type='post' AND lk.target_id=p.id)
+              + (SELECT COUNT(*) FROM posts rp WHERE rp.repost_of=p.id AND rp.status='published') * 5
+                ) DESC, p.created_at DESC, p.id DESC
+          LIMIT " . (int) $limit,
+        $args
+    );
+    return rmt_posts_attach_originals($rows);
+}

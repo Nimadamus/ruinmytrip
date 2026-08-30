@@ -26,6 +26,7 @@ $pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, user_id INT, slug 
     status TEXT DEFAULT 'published', join_policy TEXT NOT NULL DEFAULT 'closed', members_can_add INT DEFAULT 0)");
 $pdo->exec("CREATE TABLE collection_members (id INTEGER PRIMARY KEY AUTOINCREMENT, collection_id INT, user_id INT,
     role TEXT, status TEXT, joined_at TEXT, removed_at TEXT)");
+$pdo->exec("CREATE TABLE likes (user_id INT, target_type TEXT, target_id INT)");
 $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, target_type TEXT,
     target_id INT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE posts (
@@ -160,6 +161,29 @@ check('nothing added means nothing new',
 check('a quote stands on its own',
       rmt_indexable('post', ['status' => 'published', 'repost_of' => 5, 'reply_count' => 1,
                              'body' => 'Adding a real point of my own here.'])['ok'], true);
+
+echo "\n-- top of the week --\n";
+$pdo->exec("DELETE FROM posts");
+$pdo->exec("DELETE FROM comments");
+$now = date('Y-m-d H:i:s');
+$old = date('Y-m-d H:i:s', time() - 30 * 86400);
+$pdo->exec("INSERT INTO posts (id,user_id,body,status,created_at) VALUES
+    (100,1,'Quiet one.','published','$now'),
+    (101,1,'Busy one.','published','$now'),
+    (102,1,'Old but loved.','published','$old')");
+$pdo->exec("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at)
+            VALUES (2,'post',101,'a','published','$now'),(3,'post',101,'b','published','$now')");
+$pdo->exec("INSERT INTO likes (user_id,target_type,target_id) VALUES (2,'post',100)");
+$pdo->exec("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at)
+            VALUES (2,'post',102,'a','published','$old'),(3,'post',102,'b','published','$old')");
+$top = rmt_posts_top(10);
+check('engagement wins over recency', (int) $top[0]['id'], 101);
+check('a like still counts for something', (int) $top[1]['id'], 100);
+check('outside the window is out', in_array(102, array_map(static fn($r) => (int) $r['id'], $top), true), false);
+check('counts come back with the row', (int) $top[0]['reply_count'], 2);
+$pdo->exec("INSERT INTO posts (id,user_id,body,status,created_at,repost_of) VALUES (103,2,'','published','$now',100)");
+check('a repost outweighs a like', (int) rmt_posts_top(10)[0]['id'], 101);
+check('and shows on the original', (int) rmt_posts_top(10)[1]['repost_count'], 1);
 
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);
