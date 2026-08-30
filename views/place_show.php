@@ -185,23 +185,27 @@
       <?php /* Provenance sits under the whole card, not just the hours: the address came from the
                same place. OpenStreetMap is ODbL and the attribution is a licence term. */ ?>
       <?php $src = rmt_place_source_line($p); ?>
-      <p class="hint" style="margin:12px 0 0">
-        <?php if ($src): ?>
+      <?php if ($src): ?>
+        <p class="hint" style="margin:12px 0 0">
           <?php if ($src['url']): ?>
             <a href="<?= e($src['url']) ?>" rel="nofollow noopener" target="_blank"><?= e($src['text']) ?></a>
           <?php else: ?>
             <?= e($src['text']) ?>
           <?php endif; ?>
-        <?php endif; ?>
-        <?php /* The correction link is not conditional on us having a source. A place we hold no
-                 provenance for is the one most likely to be wrong, and it used to be the one with
-                 no way to say so. "Tell us if something has changed" was a sentence with nothing
-                 behind it: there was no route, no form and no queue. */ ?>
-        <a href="<?= e(url(ltrim(rmt_place_path($p), '/') . '/correct')) ?>">Suggest a correction</a>
-        &mdash; closed, moved, wrong hours, anything. A person checks it.
-      </p>
+        </p>
+      <?php endif; ?>
     </div></section>
   <?php endif; ?>
+
+  <?php /* Outside the card on purpose. "The basics" only renders when we hold some basics, so
+           putting the correction link inside it meant the places we know NOTHING about -- exactly
+           the ones most likely to be wrong, and the ones a traveler is most able to help with --
+           were the only ones with no way to tell us. Found by checking a place with no address:
+           Ondine, which we deliberately hold no data for, had no correction link. */ ?>
+  <p class="hint" style="margin:-14px 0 26px">
+    <a href="<?= e(url(ltrim(rmt_place_path($p), '/') . '/correct')) ?>">Suggest a correction</a>
+    &mdash; closed, moved, wrong hours, anything. A person checks it.
+  </p>
 
   <?php /* Structured editorial. Only sections with content render, so a page never pads itself with
            headings that say nothing. Every claim here is sourced; the list is printed at the end. */ ?>
