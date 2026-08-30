@@ -3305,6 +3305,121 @@ function admin_destinations_report(array $a): void {
  * the same rmt_indexable() the sitemap and the page's robots tag use, so this view cannot show a
  * verdict that differs from the one crawlers actually get.
  */
+/** GET /about - what this site is, in the site's own words, with live numbers. */
+function page_about(array $a): void {
+    $one = static fn(string $sql, array $args = []): int => (int) (q_one($sql, $args)['c'] ?? 0);
+    $counts = [
+        'destinations' => $one('SELECT COUNT(*) c FROM destinations'),
+        'places'       => $one("SELECT COUNT(*) c FROM places WHERE status = 'active'"),
+        // The number that matters, counted the same way every other honest count on this site is:
+        // published, and not ours.
+        'community_reviews' => $one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id
+                                      WHERE r.status = 'published' AND u.role <> ?", [RMT_EDITORIAL_ROLE]),
+        'reviewers' => $one("SELECT COUNT(DISTINCT r.user_id) c FROM reviews r JOIN users u ON u.id = r.user_id
+                              WHERE r.status = 'published' AND u.role <> ?", [RMT_EDITORIAL_ROLE]),
+    ];
+    view('legal/about', ['counts' => $counts], [
+        'title' => 'About RuinMyTrip - what this site is and what it promises',
+        'description' => 'A travel discovery and review community built on honest traveler experiences. What we promise, what we are not, and how editorial content is kept separate.',
+        'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'About', 'url' => url('about')]],
+    ]);
+}
+
+/** GET /contact - where to send what, with the in-product routes first. */
+function page_contact(array $a): void {
+    view('legal/contact', ['errors' => [], 'sent' => false], [
+        'title' => 'Contact RuinMyTrip',
+        'description' => 'How to report a wrong address or opening hours, report a review, tell us about a missing place, or reach us about anything else.',
+        'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Contact', 'url' => url('contact')]],
+    ]);
+}
+
+/**
+ * GET /p/<slug>/correct - tell us something on this place page is wrong.
+ *
+ * No account needed. A correction we never hear about because the form wanted a login is worse for
+ * the next reader than one we hear about anonymously and have to check ourselves.
+ */
+function place_correct_form(array $a): void {
+    $p = rmt_place_by_slug((string) $a['slug']);
+    if (!$p || $p['status'] !== 'active') { not_found(); return; }
+    view('place_correct', ['p' => $p, 'errors' => [], 'sent' => false], [
+        'title' => 'Suggest a correction to ' . $p['name'] . ' - RuinMyTrip',
+        'description' => 'Tell us if the address, opening hours or details for ' . $p['name'] . ' are wrong.',
+        // A form is not a page anybody should arrive at from a search result.
+        'robots' => rmt_robots_for(rmt_indexable('filter')),
+        'canonical' => url(ltrim(rmt_place_path($p), '/')),
+    ]);
+}
+
+/** POST /p/<slug>/correct */
+function place_correct_submit(array $a): void {
+    csrf_check();
+    $p = rmt_place_by_slug((string) $a['slug']);
+    if (!$p || $p['status'] !== 'active') { not_found(); return; }
+    $me = current_user();
+
+    // Rate limited by connection rather than by account, because the form deliberately does not
+    // need one. Generous: a person correcting several places in a sitting is doing us a favour.
+    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 20, 3600)) {
+        view('place_correct', ['p' => $p, 'sent' => false,
+                               'errors' => ['That is a lot of corrections at once. Try again shortly.']], [
+            'title' => 'Suggest a correction - RuinMyTrip', 'robots' => 'noindex,follow']);
+        return;
+    }
+
+    $r = rmt_feedback_submit((string) input('kind'), (int) $p['id'], (string) input('message'),
+                             $me ? (int) $me['id'] : null, (string) input('contact_email'));
+    if (!$r['ok']) {
+        view('place_correct', ['p' => $p, 'sent' => false, 'errors' => [$r['error']]], [
+            'title' => 'Suggest a correction - RuinMyTrip', 'robots' => 'noindex,follow']);
+        return;
+    }
+    view('place_correct', ['p' => $p, 'errors' => [], 'sent' => true], [
+        'title' => 'Thank you - RuinMyTrip', 'robots' => 'noindex,follow']);
+}
+
+/** POST /contact - the general form, for things that are not about one place. */
+function page_contact_submit(array $a): void {
+    csrf_check();
+    $me = current_user();
+    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 20, 3600)) {
+        view('legal/contact', ['errors' => ['That is a lot of messages at once. Try again shortly.'], 'sent' => false],
+             ['title' => 'Contact RuinMyTrip', 'robots' => 'noindex,follow']);
+        return;
+    }
+    $kind = (string) input('kind');
+    if (in_array($kind, RMT_FEEDBACK_PLACE_KINDS, true)) $kind = 'general';   // no place attached here
+    $r = rmt_feedback_submit($kind, null, (string) input('message'),
+                             $me ? (int) $me['id'] : null, (string) input('contact_email'));
+    view('legal/contact', ['errors' => $r['ok'] ? [] : [$r['error']], 'sent' => $r['ok']],
+         ['title' => 'Contact RuinMyTrip', 'robots' => 'noindex,follow']);
+}
+
+/** GET /admin/feedback - the queue. */
+function admin_feedback(array $a): void {
+    require_role('admin', 'mod');
+    $status = (string) (input('status') ?: 'pending');
+    if (!in_array($status, RMT_FEEDBACK_STATUSES, true)) $status = 'pending';
+    view('admin_feedback', [
+        'rows'    => rmt_feedback_queue($status),
+        'status'  => $status,
+        'pending' => rmt_feedback_pending_count(),
+    ], ['title' => 'Feedback and corrections - RuinMyTrip', 'robots' => 'noindex,follow']);
+}
+
+/** POST /admin/feedback/resolve - close one, without touching the place. */
+function admin_feedback_resolve(array $a): void {
+    require_role('admin', 'mod');
+    csrf_check();
+    $me = current_user();
+    $ok = rmt_feedback_resolve((int) input('id'), (int) $me['id'],
+                               (string) input('status'), (string) input('note'));
+    flash($ok ? 'Marked. The place itself is unchanged -- edit it if the correction was right.'
+              : 'Could not update that item.');
+    redirect('/admin/feedback');
+}
+
 function admin_seo(array $a): void {
     require_role('admin', 'mod');
 

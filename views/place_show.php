@@ -185,16 +185,21 @@
       <?php /* Provenance sits under the whole card, not just the hours: the address came from the
                same place. OpenStreetMap is ODbL and the attribution is a licence term. */ ?>
       <?php $src = rmt_place_source_line($p); ?>
-      <?php if ($src): ?>
-        <p class="hint" style="margin:12px 0 0">
+      <p class="hint" style="margin:12px 0 0">
+        <?php if ($src): ?>
           <?php if ($src['url']): ?>
             <a href="<?= e($src['url']) ?>" rel="nofollow noopener" target="_blank"><?= e($src['text']) ?></a>
           <?php else: ?>
             <?= e($src['text']) ?>
           <?php endif; ?>
-          Tell us if something has changed and we will correct it.
-        </p>
-      <?php endif; ?>
+        <?php endif; ?>
+        <?php /* The correction link is not conditional on us having a source. A place we hold no
+                 provenance for is the one most likely to be wrong, and it used to be the one with
+                 no way to say so. "Tell us if something has changed" was a sentence with nothing
+                 behind it: there was no route, no form and no queue. */ ?>
+        <a href="<?= e(url(ltrim(rmt_place_path($p), '/') . '/correct')) ?>">Suggest a correction</a>
+        &mdash; closed, moved, wrong hours, anything. A person checks it.
+      </p>
     </div></section>
   <?php endif; ?>
 

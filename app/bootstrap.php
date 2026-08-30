@@ -28,6 +28,7 @@ require BASE_PATH . '/app/similar_places.php';
 require BASE_PATH . '/app/destination_modules.php';
 require BASE_PATH . '/app/contribution_events.php';
 require BASE_PATH . '/app/moderation.php';
+require BASE_PATH . '/app/feedback.php';
 require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/going.php';

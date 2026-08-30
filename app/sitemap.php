@@ -63,7 +63,7 @@ function rmt_sitemap_group(string $group): array {
             // ranking strategy.
             foreach (['/', '/explore', '/travelers', '/founding', '/start', '/guides', '/reviews',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
-                      '/safety', '/contribute'] as $p) $add($p);
+                      '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
 
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
             if ($has("SELECT COUNT(*) c FROM blog_posts WHERE status='published'"))   $add('/blog');

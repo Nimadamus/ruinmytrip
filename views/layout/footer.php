@@ -22,15 +22,23 @@
     </div>
     <div>
       <h4>Community</h4>
-      <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>
       <a href="<?= e(url('safety')) ?>">Meetup Safety</a>
       <a href="<?= e(url('register')) ?>">Create an account</a>
       <a href="<?= e(url('founding')) ?>">Founding Traveler</a>
       <a href="<?= e(url('start')) ?>">How to start</a>
     </div>
     <div>
+      <?php /* "Legal" is where terms and privacy belong. How the site works, what it promises and
+               how to reach it are not legal documents, and filing them under that heading is how
+               nobody reads them. */ ?>
+      <h4>Trust</h4>
+      <a href="<?= e(url('about')) ?>">About RuinMyTrip</a>
+      <a href="<?= e(url('editorial-policy')) ?>">Editorial standards</a>
+      <a href="<?= e(url('guidelines')) ?>">Community guidelines</a>
+      <a href="<?= e(url('contact')) ?>">Contact and corrections</a>
+    </div>
+    <div>
       <h4>Legal</h4>
-      <a href="<?= e(url('editorial-policy')) ?>">Editorial Policy</a>
       <a href="<?= e(url('terms')) ?>">Terms</a>
       <a href="<?= e(url('privacy')) ?>">Privacy</a>
       <a href="<?= e(url('affiliate')) ?>">Affiliate Disclosure</a>
