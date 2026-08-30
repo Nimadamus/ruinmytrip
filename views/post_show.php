@@ -79,6 +79,20 @@
     include __DIR__ . '/_engagement.php';
   ?>
 
+  <?php /* The person best placed to answer a question about a place is somebody who has been, and
+           the site wants the longer thing they know rather than only the one-line reply. */ ?>
+  <?php if (!empty($p['place_slug'])): ?>
+    <div class="empty-cta" style="margin:24px 0">
+      <h3 style="margin:0 0 6px">Been to <?= e((string) $p['place_name']) ?>?</h3>
+      <p class="muted" style="margin:0">Answer the question above, or write the review this page is
+        missing. The bad parts are the useful parts.</p>
+      <p style="margin:14px 0 0">
+        <a class="btn btn-accent" href="<?= e(url('review/new?place='.(int) $p['place_id'].'&src=post')) ?>">Write the review</a>
+        <a class="btn btn-ghost" href="<?= e(url('p/'.$p['place_slug'])) ?>">See the place</a>
+      </p>
+    </div>
+  <?php endif; ?>
+
   <?php /* A page that ends in nothing sends the reader back to the search result they came from. */ ?>
   <?php if ($related): ?>
     <h2 style="margin:30px 0 10px;font-size:1.15rem">More talk</h2>
