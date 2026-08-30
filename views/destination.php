@@ -305,6 +305,23 @@
         </section>
       <?php endif; ?>
 
+      <?php /* The category pages this city qualifies for. Only ones that exist -- a link to a page
+               that 404s below the threshold would be worse than no link -- and each says how many
+               places are behind it, so the row is a description of what is there rather than a set
+               of promises. This is the path a reader takes from a city to "hotels in Paris", and
+               the one a crawler takes to reach those pages at all. */ ?>
+      <?php if (!empty($categoryPages)): ?>
+        <section style="margin:0 0 26px">
+          <div class="section-rule"><h2>Browse <?= e($d['name']) ?> by kind</h2></div>
+          <div class="chip-row">
+            <?php foreach ($categoryPages as $cp): ?>
+              <a class="chip" href="<?= e(url('d/'.$d['slug'].'/'.$cp['slug'])) ?>"><?= e($cp['label']) ?>
+                <span class="chip-count"><?= (int) $cp['n'] ?></span></a>
+            <?php endforeach; ?>
+          </div>
+        </section>
+      <?php endif; ?>
+
       <?php if ($placeCount > 0): ?>
         <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int) $placeCount ?> places in <?= e($d['name']) ?> &rarr;</a></p>
       <?php endif; ?>

@@ -196,6 +196,16 @@ function destination(array $a): void {
     // Top places teaser: the destination page shows the best-rated few, /d/{slug}/places has them all.
     $topPlaces = rmt_places_for_destination($id, '', 6);
     $placeCount = array_sum(rmt_place_type_counts($id));
+    // The category landing pages this city actually qualifies for. A destination is where a
+    // reader looking for "hotels in Paris" starts, and until now those pages were reachable
+    // only from the sitemap and from each other -- present in the index we submit, and
+    // unreachable by following links from the city they are about.
+    $categoryPages = [];
+    foreach (rmt_indexable_type_counts($id) as $t => $n) {
+        if (!rmt_indexable('category', ['place_count' => $n])['ok']) continue;
+        if (($slug = rmt_category_slug((string) $t)) === null) continue;
+        $categoryPages[] = ['slug' => $slug, 'label' => rmt_category_heading((string) $t, (string) $d['name']), 'n' => $n];
+    }
     $photos = rmt_destination_photos($id, 12);
     $photoCount = (int) (q_one("SELECT
             (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
@@ -215,7 +225,7 @@ function destination(array $a): void {
     // share a stats query, a cover lookup and a category lookup -- building them separately would
     // run each of those several times over for one page.
     $discovery = rmt_destination_discovery($id);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
