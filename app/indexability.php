@@ -202,6 +202,12 @@ function rmt_indexable(string $type, array $e = []): array {
            being substantial on its own or by having drawn an actual conversation. */
         case 'post':
             if (($e['status'] ?? '') !== 'published') return $no('noindex_private');
+            /* A repost with nothing added is somebody else's words at a second address. It is a
+               real page for the people who follow the reposter and a duplicate for everybody
+               else, so it stays out of the index rather than competing with the original. */
+            if (!empty($e['repost_of']) && trim((string) ($e['body'] ?? '')) === '') {
+                return $no('noindex_duplicate', 'repost with nothing added');
+            }
             $len = mb_strlen(trim(strip_tags((string) ($e['body'] ?? ''))));
             $replies = (int) ($e['reply_count'] ?? 0);
             if ($len < RMT_POST_INDEX_MIN && $replies < 1) {

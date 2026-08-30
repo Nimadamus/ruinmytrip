@@ -82,10 +82,17 @@
             <?php endif; ?>
           </div>
         </div>
+        <?php if (!empty($p['repost_of'])): ?>
+          <p class="hint" style="margin:.4rem 0 0">↻ reposted<?= !empty($p['original']) ? ' @'.e((string) $p['original']['username']) : '' ?></p>
+        <?php endif; ?>
         <p style="margin:.6rem 0 .4rem;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e(mb_strimwidth((string) $p['body'], 0, 500, '…'))))) ?></p>
         <?php if (!empty($p['image_url'])): ?>
           <a href="<?= e(url('post/'.(int) $p['id'])) ?>"><img loading="lazy" src="<?= e(abs_url((string) $p['image_url'])) ?>"
                alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:.2rem 0 .5rem"></a>
+        <?php endif; ?>
+        <?php if (!empty($p['original']) && trim((string) $p['body']) === ''): ?>
+          <p style="margin:0 0 .4rem;white-space:pre-wrap;border-left:3px solid var(--line);padding-left:10px">
+            <?= nl2br(e(mb_strimwidth((string) $p['original']['body'], 0, 300, '…'))) ?></p>
         <?php endif; ?>
         <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $p['id'])) ?>">
           <?php $n = (int) ($p['reply_count'] ?? 0); ?>

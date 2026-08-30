@@ -732,12 +732,22 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     /* Talk belongs in the same stream as everything else. A conversation that only exists on its
        own page is a forum bolted to the side of the site; in the feed it is what makes the site
        look alive on a day when nobody published an article. */
-    $talk = q_all("SELECT p.*, d.name dest_name, d.slug dest_slug
-                     FROM posts p LEFT JOIN destinations d ON d.id=p.destination_id
+    $talk = q_all("SELECT p.*, d.name dest_name, d.slug dest_slug,
+                          o.body orig_body, ou.username orig_username
+                     FROM posts p
+                LEFT JOIN destinations d ON d.id=p.destination_id
+                LEFT JOIN posts o ON o.id = p.repost_of AND o.status='published'
+                LEFT JOIN users ou ON ou.id = o.user_id
                     WHERE p.status='published' AND " . str_replace('user_id', 'p.user_id', $followedPlain) . "
                  ORDER BY p.created_at DESC, p.id DESC LIMIT $limitEach", $args);
     foreach ($talk as &$row) {
         $row['kind'] = 'post';
+        // A repost carries the original's words, credited, so the feed row says something.
+        if (!empty($row['repost_of']) && trim((string) $row['body']) === '' && $row['orig_body'] !== null) {
+            $row['body'] = $row['orig_body'];
+            $row['subject'] = '@' . $row['orig_username'];
+            $row['subject_url'] = url('u/' . $row['orig_username']);
+        }
         $row['title'] = rmt_post_title($row);
         $row['cover_url'] = null;
         $row['subject'] = $row['dest_name'] ?: null;
@@ -4344,10 +4354,15 @@ function post_show(array $a): void {
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int) $me['id'], 'post', (int) $p['id']]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int) $me['id'], 'post', (int) $p['id']]);
 
+    $original = !empty($p['repost_of']) ? rmt_post_get((int) $p['repost_of']) : null;
+    if ($original && $original['status'] !== 'published') $original = null;
+    if ($original) $original['author'] = author((int) $original['user_id']);
+    $repostCount = rmt_post_repost_count((int) $p['id']);
+
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'Talk', 'url' => url('talk')]];
     if ($p['dest_slug']) $crumbs[] = ['name' => (string) $p['dest_name'], 'url' => url('d/' . $p['dest_slug'])];
 
-    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me'), [
+    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount'), [
         'title' => rmt_meta_title(rmt_post_title($p)),
         'description' => rmt_meta_description((string) $p['body']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
@@ -4522,4 +4537,39 @@ function cron_indexnow(array $a): void {
     $pending = count(rmt_seo_pending(500));
     $sent = rmt_seo_flush(500);
     echo "pending={$pending} submitted={$sent}\n";
+}
+
+/** POST /post/{id}/repost — pass it on, with or without a comment of your own. */
+function post_repost(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    if (!rmt_rate_ok('post', (string) $me['id'], 20, 3600)) {
+        flash('You are posting very fast. Try again shortly.');
+        redirect(rmt_return_to('/talk'));
+    }
+    $orig = rmt_post_get((int) $a['id']);
+    if (!$orig) not_found();
+    // A block stops somebody amplifying the person who blocked them, the same way it stops them
+    // commenting. Reposting is a louder act than a comment, not a quieter one.
+    if (rmt_is_blocked((int) $me['id'], (int) $orig['user_id'])) {
+        flash('You cannot repost that.');
+        redirect(rmt_return_to('/talk'));
+    }
+    $res = rmt_post_repost((int) $me['id'], (int) $a['id'], (string) input('body'));
+    if (!$res['ok']) {
+        flash($res['error']);
+        redirect(rmt_return_to('/post/' . (int) $a['id']));
+    }
+    $id = (int) $res['id'];
+    rmt_sync_tags('post', $id, (string) input('body'));
+    // The author hears about it. Being passed on is the thing worth knowing.
+    $ownerId = (int) $orig['user_id'];
+    if ($ownerId !== (int) $me['id']) {
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [$ownerId, 'repost', (int) $me['id'], 'post', $id, date('Y-m-d H:i:s')]);
+    }
+    rmt_notify_mentions('post', $id, (int) $me['id'], [$ownerId], (string) input('body'));
+    rmt_seo_announce('/post/' . $id);
+    flash('Reposted to your followers.');
+    redirect('/post/' . $id);
 }

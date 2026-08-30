@@ -1,4 +1,4 @@
-<?php /** @var array $p @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var ?array $me */ ?>
+<?php /** @var array $p @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var ?array $me @var ?array $original @var int $repostCount */ ?>
 <div class="wrap"><p class="crumbs">
   <a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('talk')) ?>">Talk</a>
   <?php if (!empty($p['dest_slug'])): ?> / <a href="<?= e(url('d/'.$p['dest_slug'])) ?>"><?= e((string) $p['dest_name']) ?></a><?php endif; ?>
@@ -19,6 +19,22 @@
            put words in their mouth -- the derived one-liner is for the tab and the feed only. */ ?>
   <div style="font-size:1.12rem;line-height:1.65;margin:18px 0;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(e((string) $p['body']))) ?></div>
 
+  <?php /* What this passes on, quoted rather than restated, so the credit is unambiguous. */ ?>
+  <?php if ($original): ?>
+    <div class="card" style="margin:0 0 18px"><div class="card-body" style="padding:14px 16px">
+      <b><a href="<?= e(url('u/'.$original['author']['username'])) ?>">@<?= e((string) $original['author']['username']) ?></a></b>
+      <span class="hint"> · <?= e(ago((string) $original['created_at'])) ?></span>
+      <p style="margin:.4rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $original['body'], 0, 600, '…'))) ?></p>
+      <?php if (!empty($original['image_url'])): ?>
+        <img loading="lazy" src="<?= e(abs_url((string) $original['image_url'])) ?>" alt=""
+             style="width:100%;max-height:360px;object-fit:cover;border-radius:10px;margin:.2rem 0 .4rem">
+      <?php endif; ?>
+      <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $original['id'])) ?>">Open the original</a></p>
+    </div></div>
+  <?php elseif (!empty($p['repost_of'])): ?>
+    <p class="hint">The post this passed on has been removed.</p>
+  <?php endif; ?>
+
   <?php if (!empty($p['image_url'])): ?>
     <img src="<?= e(abs_url((string) $p['image_url'])) ?>" alt=""
          style="width:100%;border-radius:12px;margin:0 0 18px">
@@ -34,6 +50,19 @@
         <?= csrf_field() ?><button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
       </form>
     </div>
+  <?php endif; ?>
+
+  <?php /* Reposting is how something reaches people who have never heard of whoever wrote it.
+           Adding a line is encouraged and optional: the empty version is one click. */ ?>
+  <?php if ($me && (int) $p['user_id'] !== (int) $me['id']): ?>
+    <form method="post" action="<?= e(url('post/'.(int) $p['id'].'/repost')) ?>" style="margin:0 0 14px">
+      <?= csrf_field() ?>
+      <input type="text" name="body" maxlength="<?= RMT_POST_MAX ?>" placeholder="Add a line (optional)"
+             style="max-width:420px;display:inline-block;vertical-align:middle">
+      <button class="btn btn-ghost btn-sm">Repost<?= $repostCount ? ' · '.$repostCount : '' ?></button>
+    </form>
+  <?php elseif ($repostCount): ?>
+    <p class="hint">Reposted <?= (int) $repostCount ?> <?= $repostCount === 1 ? 'time' : 'times' ?>.</p>
   <?php endif; ?>
 
   <?php $shareUrl = url('post/'.(int) $p['id']); $shareText = rmt_post_title($p);

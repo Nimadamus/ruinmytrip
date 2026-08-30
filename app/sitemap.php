@@ -169,7 +169,7 @@ function rmt_sitemap_group(string $group): array {
                or when it drew a conversation. Asking rmt_indexable() here rather than repeating the
                rule is the point -- a sitemap that disagrees with the page's own robots tag is a
                contradiction we would rather not ship. */
-            foreach (q_all("SELECT p.id, p.body, p.status, p.created_at, p.updated_at,
+            foreach (q_all("SELECT p.id, p.body, p.status, p.created_at, p.updated_at, p.repost_of,
                                    (SELECT COUNT(*) FROM comments cm
                                      WHERE cm.target_type='post' AND cm.target_id=p.id
                                        AND cm.status='published') reply_count

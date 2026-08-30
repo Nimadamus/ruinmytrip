@@ -119,7 +119,7 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
     if ($destId !== null)       { $where[] = 'p.destination_id = ?'; $args[] = $destId; }
     if ($collectionId !== null) { $where[] = 'p.collection_id = ?';  $args[] = $collectionId; }
     $sql = implode(' AND ', $where);
-    return q_all(
+    $rows = q_all(
         "SELECT p.*, u.username, pr.avatar_url, pr.display_name,
                 d.slug dest_slug, d.name dest_name,
                 c.slug community_slug, c.title community_title,
@@ -135,11 +135,12 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
           LIMIT " . (int) $limit,
         $args
     );
+    return rmt_posts_attach_originals($rows);
 }
 
 /** Somebody's own posts, for their profile. */
 function rmt_posts_by_user(int $userId, int $limit = 20): array {
-    return q_all(
+    return rmt_posts_attach_originals(q_all(
         "SELECT p.*, d.slug dest_slug, d.name dest_name, c.slug community_slug, c.title community_title,
                 (SELECT COUNT(*) FROM comments cm
                   WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') reply_count
@@ -148,7 +149,7 @@ function rmt_posts_by_user(int $userId, int $limit = 20): array {
       LEFT JOIN collections c ON c.id = p.collection_id
           WHERE p.user_id = ? AND p.status = 'published'
        ORDER BY p.created_at DESC, p.id DESC
-          LIMIT " . (int) $limit, [$userId]);
+          LIMIT " . (int) $limit, [$userId]));
 }
 
 function rmt_post_reply_count(int $postId): int {
@@ -187,4 +188,78 @@ function rmt_post_drop_image(array $p): void {
     if (empty($p['image_key'])) return;
     rmt_storage_delete((string) $p['image_key']);
     q_run('UPDATE posts SET image_url=NULL, image_key=NULL, image_w=NULL, image_h=NULL WHERE id=?', [(int) $p['id']]);
+}
+
+/* --------------------------------------------------------------------- reposting */
+
+/**
+ * Pass somebody else's post on to your own followers.
+ *
+ * A repost is a post with a pointer, so comments, likes, moderation and the feed need no special
+ * case. An empty body is a plain repost; a body makes it a quote, which is the version that
+ * actually adds something and the one worth encouraging.
+ *
+ * @return array{ok:bool,error?:string,id?:int}
+ */
+function rmt_post_repost(int $userId, int $originalId, string $body = ''): array {
+    $orig = rmt_post_get($originalId);
+    if (!$orig || $orig['status'] !== 'published') return ['ok' => false, 'error' => 'That post is gone.'];
+    // Reposting a repost points at the thing itself. Chains of "X reposted Y reposting Z" are
+    // noise, and the original author is who the credit belongs to.
+    if (!empty($orig['repost_of'])) {
+        $orig = rmt_post_get((int) $orig['repost_of']);
+        if (!$orig || $orig['status'] !== 'published') return ['ok' => false, 'error' => 'That post is gone.'];
+        $originalId = (int) $orig['id'];
+    }
+    if ((int) $orig['user_id'] === $userId) return ['ok' => false, 'error' => 'That is already yours.'];
+
+    $body = trim($body);
+    if ($body !== '' && mb_strlen($body) > RMT_POST_MAX) {
+        return ['ok' => false, 'error' => 'That is too long to add to a repost.'];
+    }
+    // Twice is an accident, not an opinion, unless there is something new to say with it.
+    if ($body === '' && q_one("SELECT 1 x FROM posts WHERE user_id=? AND repost_of=? AND body='' AND status='published'",
+                              [$userId, $originalId])) {
+        return ['ok' => false, 'error' => 'You already reposted that.'];
+    }
+
+    $now = date('Y-m-d H:i:s');
+    q_run('INSERT INTO posts (user_id, destination_id, collection_id, body, status, created_at, repost_of)
+           VALUES (?,?,?,?,?,?,?)',
+          [$userId, $orig['destination_id'], null, $body, 'published', $now, $originalId]);
+    $id = (int) (q_one('SELECT id FROM posts WHERE user_id=? ORDER BY id DESC', [$userId])['id'] ?? 0);
+    return ['ok' => true, 'id' => $id];
+}
+
+function rmt_post_repost_count(int $postId): int {
+    return (int) q_one("SELECT COUNT(*) n FROM posts WHERE repost_of=? AND status='published'", [$postId])['n'];
+}
+
+/**
+ * Fill in what each repost is passing on, in one query rather than one per row.
+ *
+ * @param list<array<string,mixed>> $rows
+ * @return list<array<string,mixed>> each repost row gains `original`
+ */
+function rmt_posts_attach_originals(array $rows): array {
+    $ids = array_values(array_unique(array_filter(array_map(
+        static fn(array $r): int => (int) ($r['repost_of'] ?? 0), $rows))));
+    if (!$ids) return $rows;
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $found = [];
+    foreach (q_all("SELECT p.*, u.username, pr.avatar_url, d.slug dest_slug, d.name dest_name
+                      FROM posts p JOIN users u ON u.id = p.user_id
+                 LEFT JOIN profiles pr ON pr.user_id = p.user_id
+                 LEFT JOIN destinations d ON d.id = p.destination_id
+                     WHERE p.id IN ($in)", $ids) as $o) {
+        $found[(int) $o['id']] = $o;
+    }
+    foreach ($rows as $i => $r) {
+        $oid = (int) ($r['repost_of'] ?? 0);
+        // A repost whose original was removed keeps its own words and loses the quote block: the
+        // alternative is a card that says somebody passed on nothing.
+        $rows[$i]['original'] = $oid && isset($found[$oid]) && $found[$oid]['status'] === 'published'
+            ? $found[$oid] : null;
+    }
+    return $rows;
 }

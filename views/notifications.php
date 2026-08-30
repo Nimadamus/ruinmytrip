@@ -49,6 +49,15 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='repost'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $href = rmt_notification_target_url('post', (int)$n['target_id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> reposted you.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> reposted you.
+          <?php endif; ?>
         <?php elseif ($n['type']==='like'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $noun = ['trip'=>'trip story','review'=>'review','guide'=>'guide','blog_post'=>'blog post',

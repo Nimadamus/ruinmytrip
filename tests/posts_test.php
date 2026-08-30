@@ -31,7 +31,7 @@ $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id
 $pdo->exec("CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT, collection_id INT,
     body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'published', created_at TEXT NOT NULL, updated_at TEXT,
-    image_url TEXT, image_key TEXT, image_w INT, image_h INT)");
+    image_url TEXT, image_key TEXT, image_w INT, image_h INT, repost_of INT)");
 
 $pdo->exec("INSERT INTO users (id,username,status,role) VALUES
     (1,'alice','active','user'),(2,'bob','active','user'),(3,'mod','active','mod')");
@@ -129,6 +129,37 @@ $pdo->exec("UPDATE posts SET image_url='/m/abc', image_key='abc', image_w=800, i
 check('the listing carries the image', (string) rmt_posts_recent(50)[0]['image_url'], '/m/abc');
 check('an empty file input is not an error',
       rmt_post_attach_image($id, ['error' => UPLOAD_ERR_NO_FILE], 1)['ok'], true);
+
+echo "\n-- reposting --\n";
+$oid = rmt_post_create(1, ['body' => 'The night bus is a scam, take the ferry.', 'destination_id' => 10, 'collection_id' => null]);
+$r = rmt_post_repost(2, $oid);
+check('a plain repost is created', $r['ok'], true);
+check('the same one twice is refused', rmt_post_repost(2, $oid)['ok'], false);
+check('but adding something is not', rmt_post_repost(2, $oid, 'This saved me forty euros.')['ok'], true);
+check('your own post is not repostable', rmt_post_repost(1, $oid)['error'], 'That is already yours.');
+check('the author sees the count', rmt_post_repost_count($oid), 2);
+$rp = rmt_post_get((int) $r['id']);
+check('it points at the original', (int) $rp['repost_of'], $oid);
+check('it inherits the city', (int) $rp['destination_id'], 10);
+
+$chain = rmt_post_repost(3, (int) $r['id']);
+check('reposting a repost points at the original instead',
+      (int) rmt_post_get((int) $chain['id'])['repost_of'], $oid);
+
+$rows = rmt_posts_attach_originals([rmt_post_get((int) $r['id'])]);
+check('the original is attached for rendering', (string) $rows[0]['original']['body'], 'The night bus is a scam, take the ferry.');
+rmt_post_delete($oid);
+$gone = rmt_posts_attach_originals([rmt_post_get((int) $r['id'])]);
+check('a removed original leaves no quote block', $gone[0]['original'], null);
+check('and cannot be reposted again', rmt_post_repost(4, $oid)['ok'], false);
+
+echo "\n-- a bare repost is not a page for the index --\n";
+check('nothing added means nothing new',
+      rmt_indexable('post', ['status' => 'published', 'body' => '', 'repost_of' => 5, 'reply_count' => 2])['reason'],
+      'noindex_duplicate');
+check('a quote stands on its own',
+      rmt_indexable('post', ['status' => 'published', 'repost_of' => 5, 'reply_count' => 1,
+                             'body' => 'Adding a real point of my own here.'])['ok'], true);
 
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);
