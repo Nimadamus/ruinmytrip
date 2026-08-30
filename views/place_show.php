@@ -22,6 +22,23 @@
       ]))) ?></p>
   <h1 style="margin:.2rem 0 .5rem"><?= e($p['name']) ?></h1>
 
+  <?php /* Said once, at the top, before the address and the hours and the buttons. A closed place
+           keeps its page -- the reviews on it are still true about the time they describe, and
+           "what happened to that restaurant" is a question this site should answer rather than
+           404 -- but a reader must not get halfway down a page of opening hours before finding
+           out. */ ?>
+  <?php $statusLabel = rmt_place_status_label((string) $p['status']); ?>
+  <?php if ($statusLabel !== null): ?>
+    <div class="callout" style="margin:0 0 18px;border-left-color:#b42318">
+      <b><?= e($statusLabel) ?>.</b>
+      <?php if (rmt_place_status((string) $p['status']) === 'permanently_closed'): ?>
+        Everything below is kept for the record: what travelers wrote, and what the place was like
+        while it was open.
+      <?php else: ?>
+        It is expected to reopen. The hours below are the ones it kept before, not a promise about
+        this week.
+      <?php endif; ?>
+
   <?php if ($stats['c'] > 0): ?>
     <div class="meta-row" style="gap:12px;align-items:center;margin-bottom:6px">
       <span class="stars" style="font-size:1.25rem"><?= stars((int) round((float)$stats['a'])) ?></span>
@@ -73,22 +90,6 @@
            form (a POST toggle), which cannot live inside a <p>. A logged-out visitor still sees the
            button: it links to sign-in carrying this page as the return, so the intent survives the
            detour instead of the control simply being missing. */ ?>
-  <?php /* Said once, at the top, before the address and the hours and the buttons. A closed place
-           keeps its page -- the reviews on it are still true about the time they describe, and
-           "what happened to that restaurant" is a question this site should answer rather than
-           404 -- but a reader must not get halfway down a page of opening hours before finding
-           out. */ ?>
-  <?php $statusLabel = rmt_place_status_label((string) $p['status']); ?>
-  <?php if ($statusLabel !== null): ?>
-    <div class="callout" style="margin:0 0 18px;border-left-color:#b42318">
-      <b><?= e($statusLabel) ?>.</b>
-      <?php if (rmt_place_status((string) $p['status']) === 'permanently_closed'): ?>
-        Everything below is kept for the record: what travelers wrote, and what the place was like
-        while it was open.
-      <?php else: ?>
-        It is expected to reopen. The hours below are the ones it kept before, not a promise about
-        this week.
-      <?php endif; ?>
     </div>
   <?php endif; ?>
 
