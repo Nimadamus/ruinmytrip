@@ -60,6 +60,15 @@ function rmt_notify_mentions(string $targetType, int $targetId, int $actorId, ar
         if ($dup) continue;
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
               [$uid, 'mention', $actorId, $targetType, $targetId, $now]);
+
+        /* Being named is addressed to one person, so it is one of the few things worth an email
+           the same day. Capped hard in rmt_notify_email_direct(); silent when over. */
+        $actor = q_one("SELECT username FROM users WHERE id=?", [$actorId]);
+        $href = rmt_notification_target_url($targetType, $targetId, (int) $uid);
+        if ($actor && $href) {
+            rmt_notify_email_direct((int) $uid, 'You were mentioned on RuinMyTrip',
+                '@' . $actor['username'] . ' mentioned you.', $href);
+        }
     }
 }
 

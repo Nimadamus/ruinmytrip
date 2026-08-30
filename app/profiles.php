@@ -35,6 +35,9 @@ function rmt_profile_stats(int $uid): array {
     return [
         'reviews'   => $one("SELECT COUNT(*) c FROM reviews WHERE user_id=? AND status='published'", [$uid]),
         'trips'     => $one("SELECT COUNT(*) c FROM trips   WHERE user_id=? AND status='published'", [$uid]),
+        // Talk is the thing most members produce most of, so leaving it out of the row made the
+        // busiest profiles look like the emptiest ones.
+        'posts'     => $one("SELECT COUNT(*) c FROM posts   WHERE user_id=? AND status='published'", [$uid]),
         // "Places visited" = distinct destinations the user has actually written about, from
         // either a review or a trip. Not a self-declared number.
         'places'    => $one("SELECT COUNT(*) c FROM (

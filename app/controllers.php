@@ -3044,6 +3044,11 @@ function comment_action(array $a): void {
     if ($owner && $owner !== (int)$me['id']) {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
+        $href = rmt_notification_target_url($tt, $tid, $owner);
+        if ($href) {
+            rmt_notify_email_direct($owner, 'Somebody replied to you on RuinMyTrip',
+                '@' . $me['username'] . ' replied to something you wrote.', $href);
+        }
     }
     // The person actually being answered. Skipped when they wrote the thing anyway: one
     // notification for one event, not two.

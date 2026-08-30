@@ -39,6 +39,9 @@
             traveler <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?>
           <?php endif; ?>
         </span>
+        <?php if ((int) ($stats['posts'] ?? 0) > 0): ?>
+          <span><b><?= (int)$stats['posts'] ?></b> <?= $stats['posts'] === 1 ? 'post' : 'posts' ?></span>
+        <?php endif; ?>
         <?php if ((int) $stats['photos'] > 0): ?>
           <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <?php endif; ?>

@@ -154,6 +154,10 @@ function messages_send(array $a): void {
     if (!$pending) {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
             [$themId, 'message', $meId, 'conversation', $convId, $now]);
+        /* Same rule as the notification: the email goes out for a thread that is not already
+           waiting unread, so a conversation is one email rather than one per line typed. */
+        rmt_notify_email_direct($themId, 'A message on RuinMyTrip',
+            '@' . $me['username'] . ' sent you a message.', '/messages/' . $me['username']);
     }
 
     redirect($return);
