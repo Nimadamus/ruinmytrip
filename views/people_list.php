@@ -28,10 +28,17 @@
           <h2 style="font-size:1.05rem;margin:0">
             <a href="<?= e(url('u/'.$pp['username'])) ?>"><?= e($pp['display_name'] ?: $pp['username']) ?></a>
           </h2>
+          <?php /* What they have written, where we know it. Following exists here so that people
+                   whose reviews you trust show up in your feed, and a list where a traveler with
+                   forty reviews looks identical to one with none gives you no way to act on that.
+                   Shown only when there is something to show -- "0 reviews" beside a name is a
+                   judgement nobody asked for. */ ?>
           <p class="muted" style="margin:.1rem 0 0">@<?= e($pp['username']) ?><?php
-            if ($pp['home_city']): ?> · <?= e($pp['home_city']) ?><?php endif; ?></p>
+            if ($pp['home_city']): ?> · <?= e($pp['home_city']) ?><?php endif; ?><?php
+            if ((int) ($pp['review_count'] ?? 0) > 0): ?> · <b><?= (int) $pp['review_count'] ?></b>
+              <?= (int) $pp['review_count'] === 1 ? 'review' : 'reviews' ?><?php endif; ?></p>
           <?php if ($pp['bio']): ?>
-            <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$pp['bio'], 0, 120, '…')) ?></p>
+            <p style="margin:.4rem 0 0"><?= e(excerpt((string) $pp['bio'], 140)) ?></p>
           <?php endif; ?>
         </div>
       </div></article>

@@ -257,7 +257,10 @@ function rmt_top_reviewers(?int $destinationId = null, int $limit = 20): array {
 
 /** Followers of a user, newest first. */
 function rmt_followers(int $uid, int $limit = 200): array {
-    return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.bio, p.home_city, f.created_at
+    return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.bio, p.home_city, f.created_at,
+                         (SELECT COUNT(*) FROM reviews r
+                           WHERE r.user_id = u.id AND r.status = 'published') review_count,
+                         0 pad
                   FROM follows f JOIN users u ON u.id = f.follower_id
                   LEFT JOIN profiles p ON p.user_id = u.id
                   WHERE f.followee_id = ? AND u.status = 'active'
@@ -266,7 +269,10 @@ function rmt_followers(int $uid, int $limit = 200): array {
 
 /** Users a user follows, newest first. */
 function rmt_following(int $uid, int $limit = 200): array {
-    return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.bio, p.home_city, f.created_at
+    return q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.bio, p.home_city, f.created_at,
+                         (SELECT COUNT(*) FROM reviews r
+                           WHERE r.user_id = u.id AND r.status = 'published') review_count,
+                         0 pad
                   FROM follows f JOIN users u ON u.id = f.followee_id
                   LEFT JOIN profiles p ON p.user_id = u.id
                   WHERE f.follower_id = ? AND u.status = 'active'

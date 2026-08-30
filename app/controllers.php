@@ -629,11 +629,19 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $reviews = q_all("SELECT r.*, d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
-                      WHERE r.status='published' AND $followedR
-                      ORDER BY r.created_at DESC, r.id DESC LIMIT $limitEach", $args);
+    // The place is the point of a review, so the feed has to know which one. Without pl.name and
+    // pl.slug the row could say who reviewed something and when, and not what -- a travel feed
+    // whose entries do not name the venue.
+    $reviews = q_all("SELECT r.*, d.name dest_name, pl.name place_name, pl.slug place_slug
+                        FROM reviews r
+                        LEFT JOIN destinations d ON d.id=r.destination_id
+                        LEFT JOIN places pl ON pl.id=r.place_id AND pl.status='active'
+                       WHERE r.status='published' AND $followedR
+                       ORDER BY r.created_at DESC, r.id DESC LIMIT $limitEach", $args);
     foreach ($reviews as &$row) {
         $row['kind'] = 'review';
+        $row['subject'] = $row['place_name'] ?: $row['subject_name'];
+        $row['subject_url'] = $row['place_slug'] ? url('p/' . $row['place_slug']) : null;
         $row['title'] = $row['title'] ?: $row['subject_name'];
         $row['feed_url'] = url(ltrim(rmt_review_path($row), '/'));
         $row['feed_excerpt'] = mb_strimwidth(strip_tags((string)$row['body']), 0, 180, '…');
@@ -673,6 +681,8 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
           ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", $args);
     foreach ($collections as &$row) {
         $row['kind'] = 'collection';
+        $row['subject'] = $row['title'];
+        $row['subject_url'] = url('c/' . $row['slug']);
         $row['dest_name'] = null;
         $row['feed_url'] = url('c/'.$row['slug']);
         $row['item_count'] = (int) $row['dest_count'] + (int) $row['place_count'];

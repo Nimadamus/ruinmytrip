@@ -1,4 +1,6 @@
 <?php /** @var array $items @var array $me */
+$rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
+                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to'];
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going"];
 ?>
 <div class="wrap" style="max-width:760px">
@@ -31,8 +33,16 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
         <div class="meta-row" style="margin:0 0 8px">
           <img class="avatar" src="<?= e(avatar_url($it['author']['avatar_url']??null)) ?>" alt="">
           <span>
-            <span class="chip" style="margin-right:6px"><?= e($rmt_kind_labels[$it['kind']] ?? ucfirst($it['kind'])) ?></span>
-            <a href="<?= e(url('u/'.($it['author']['username']??''))) ?>">@<?= e($it['author']['username']??'') ?></a> · <?= e(ago($it['created_at'])) ?><?= !empty($it['dest_name'])?' · '.e($it['dest_name']):'' ?>
+            <?php /* An activity feed has to say who did what to which thing. It used to lead with a
+                     kind chip and then the author, so a review entry read "Review, @somebody, 49m
+                     ago, Prague" and never named the place that was reviewed -- the one fact the
+                     entry exists to carry. The verb does the work the chip was doing, so the chip
+                     goes. */ ?>
+            <a href="<?= e(url('u/'.($it['author']['username']??''))) ?>">@<?= e($it['author']['username']??'') ?></a>
+            <?= e($rmt_kind_verbs[$it['kind']] ?? 'posted') ?><?php if (!empty($it['subject'])): ?>
+              <?php if (!empty($it['subject_url'])): ?><a href="<?= e($it['subject_url']) ?>"><b><?= e((string) $it['subject']) ?></b></a><?php
+                    else: ?><b><?= e((string) $it['subject']) ?></b><?php endif; ?><?php endif; ?>
+            <span class="hint">&middot; <?= e(ago($it['created_at'])) ?><?= !empty($it['dest_name'])?' · '.e($it['dest_name']):'' ?></span>
           </span>
         </div>
         <h3><a href="<?= e($it['feed_url']) ?>"><?= e($it['title']) ?></a></h3>
