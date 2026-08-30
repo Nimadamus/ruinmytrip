@@ -19,6 +19,7 @@ Steps: create Resend domain -> read required DNS records -> merge into the live 
 -> trigger verification -> poll -> flip MAIL_FROM on Render -> send a live probe to a
 non-owner address to prove real users can actually be reached.
 """
+import os
 import re
 import sys
 import json
@@ -26,13 +27,23 @@ import time
 import urllib.parse
 import urllib.request
 
-NC_USER = "Nimadamus"
-NC_KEY = "1af77f072ced4bbda7c765938fd174f1"
+# Credentials come from the environment, never from this file. Two live API keys -- the Namecheap
+# key and the Render key -- were hardcoded here and committed, which means they are in the git
+# history of every clone of this repository. Removing them from the working tree stops the leak
+# growing; it does NOT unpublish what is already in history, so BOTH KEYS SHOULD BE ROTATED.
+#
+#   set NAMECHEAP_API_KEY=...   set RENDER_API_KEY=...   then run this script
+NC_USER = os.environ.get("NAMECHEAP_API_USER", "Nimadamus")
+NC_KEY = os.environ.get("NAMECHEAP_API_KEY", "")
 SLD, TLD = "ruinmytrip", "com"
 SUBDOMAIN = "send.ruinmytrip.com"
 
-RENDER_KEY = "rnd_RTlUN4ico5DAlDkjzKLfVslAcp2f"
+RENDER_KEY = os.environ.get("RENDER_API_KEY", "")
 RMT_SERVICE = "srv-d9co4n0k1i2s73cg0nfg"
+
+if not NC_KEY or not RENDER_KEY:
+    print("ABORT: set NAMECHEAP_API_KEY and RENDER_API_KEY in the environment first.")
+    sys.exit(1)
 
 APPLY = "--apply" in sys.argv
 RESEND_KEY = next((a for a in sys.argv[1:] if a.startswith("re_")), None)

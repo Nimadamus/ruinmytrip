@@ -223,10 +223,17 @@ function rmt_place_by_slug(string $slug): ?array {
 /** One place with its destination, by id. */
 function rmt_place_by_id(int $id): ?array {
     if ($id <= 0) return null;
+    // Any status a visitor may read, matching rmt_place_by_slug(). It filtered to active, and the
+    // consequence was quiet: the "Write a review" button is deliberately kept on a temporarily
+    // closed place, and clicking it reached a review form with no place bound to it. An offered
+    // control that silently does not work is worse than one that is missing. Admin editing, place
+    // saving and review binding all need to see a closed place too -- the row still exists and is
+    // still the same entity.
+    $in = "'" . implode("','", array_merge(RMT_PLACE_PUBLIC_STATUSES, ['closed'])) . "'";
     return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
                          d.region dest_region, d.hero_url dest_hero
                     FROM places p JOIN destinations d ON d.id = p.destination_id
-                   WHERE p.id = ? AND p.status = ?', [$id, 'active']);
+                   WHERE p.id = ? AND p.status IN (' . $in . ')', [$id]);
 }
 
 /**

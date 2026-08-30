@@ -2644,7 +2644,7 @@ function destination_save_action(array $a): void {
 function place_save_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $pid = (int) input('place_id');
-    $p   = $pid ? rmt_place_by_id($pid) : null;      // rmt_place_by_id already filters status='active'
+    $p   = $pid ? rmt_place_by_id($pid) : null;      // any place a visitor can see, closed included
 
     // Nothing posted means the place's own page, which is where the button lives.
     $return = rmt_return_to($p ? rmt_place_path($p) : '/');

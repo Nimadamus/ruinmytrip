@@ -179,5 +179,22 @@ check('it is still permanently closed', (string) q_one("SELECT status FROM place
 check('the report is waiting for a person',
       (string) q_one("SELECT status FROM feedback WHERE id = ?", [$r['id']])['status'], 'pending');
 
+/* ------------------------------------- a closed place is still bindable
+
+   rmt_place_by_id() filtered to active. The "Write a review" button is deliberately kept on a
+   temporarily closed place -- people are still remembering visits -- and clicking it reached a
+   form with no place bound to it, because the lookup behind the form could not see the row. An
+   offered control that silently does not work is worse than one that is missing. */
+
+q_run("UPDATE places SET status = 'temporarily_closed' WHERE id = 1");
+check('a temporarily closed place is still found by id', rmt_place_by_id(1) !== null, true);
+q_run("UPDATE places SET status = 'permanently_closed' WHERE id = 1");
+check('so is a permanently closed one', rmt_place_by_id(1) !== null, true);
+check('and the review binding still resolves it',
+      rmt_place_bound_id(1, 1, (string) q_one("SELECT name FROM places WHERE id = 1")['name']), 1);
+q_run("UPDATE places SET status = 'hidden' WHERE id = 1");
+check('but a place we have hidden is not', rmt_place_by_id(1), null);
+q_run("UPDATE places SET status = 'active' WHERE id = 1");
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
