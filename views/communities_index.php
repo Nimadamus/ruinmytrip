@@ -45,13 +45,13 @@
 
   <hr style="margin:28px 0">
   <h2>Start your own</h2>
-  <p>A community here is a collection with a door on it. Make the collection, put a few things in
-    it, then choose who can join from its edit page.</p>
+  <p>Pick a name, say who it is for, and choose whether anybody can walk in or people need a link.
+    Put a few things in it and say something, and it appears on this page once somebody else joins.</p>
   <p>
     <?php if ($me): ?>
-      <a class="btn btn-accent" href="<?= e(url('collection/new')) ?>">Start a community</a>
+      <a class="btn btn-accent" href="<?= e(url('communities/new')) ?>">Start a community</a>
     <?php else: ?>
-      <a class="btn btn-accent" href="<?= e(url('login?return='.urlencode('/collection/new'))) ?>">Sign in to start one</a>
+      <a class="btn btn-accent" href="<?= e(url('login?return='.urlencode('/communities/new'))) ?>">Sign in to start one</a>
     <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('collections')) ?>">Browse all collections</a>
   </p>

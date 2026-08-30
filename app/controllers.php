@@ -4384,3 +4384,54 @@ function post_delete(array $a): void {
     flash('Post removed.');
     redirect($p['community_slug'] ? '/c/' . $p['community_slug'] : '/talk');
 }
+
+/**
+ * GET /communities/new — starting a community as one step.
+ *
+ * It took three before: make a collection, find the edit page, discover that a join policy exists
+ * and change it. Every one of those was a place to lose somebody who arrived wanting to start a
+ * group, and "start your own" was the whole invitation on the browse page.
+ */
+function community_new_form(array $a): void {
+    require_login();
+    view('community_new', ['errors' => [], 'me' => current_user()], [
+        'title' => 'Start a community — RuinMyTrip',
+        'description' => 'Start a group other travelers can join, about how you travel rather than where.',
+        'breadcrumbs' => [['name' => 'Home', 'url' => url()],
+                          ['name' => 'Communities', 'url' => url('communities')],
+                          ['name' => 'Start one', 'url' => url('communities/new')]],
+    ]);
+}
+
+function community_create(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    $opts = ['title' => 'Start a community — RuinMyTrip'];
+    if (!rmt_submit_ok('community_new', input('_submit'))) {
+        flash('That community was already created.'); redirect('/communities'); return;
+    }
+    if (!rmt_rate_ok('collection_create', (string) $me['id'], 10, 3600)) {
+        view('community_new', ['errors' => ['You are creating these very fast. Try again later.'], 'me' => $me], $opts);
+        return;
+    }
+    $v = rmt_collection_validate($_POST);
+    if (!$v['ok']) { view('community_new', ['errors' => $v['errors'], 'me' => $me], $opts); return; }
+
+    $policy = (string) input('join_policy', 'open');
+    if (!in_array($policy, ['open', 'invite'], true)) $policy = 'open';   // a closed one is a list, not a community
+    $membersCanAdd = input('members_can_add') ? 1 : 0;
+
+    $d = $v['data'];
+    $slug = rmt_collection_unique_slug($d['title']);
+    $now = date('Y-m-d H:i:s');
+    q_run("INSERT INTO collections (user_id,slug,title,summary,status,created_at,join_policy,members_can_add)
+           VALUES (?,?,?,?,'published',?,?,?)",
+          [(int) $me['id'], $slug, $d['title'], $d['summary'], $now, $policy, $membersCanAdd]);
+    $cid = (int) q_one('SELECT id FROM collections WHERE slug=?', [$slug])['id'];
+    // The founder is a member. Without this the room has an owner and nobody in it, and every
+    // membership check treats the person who made it as a stranger.
+    q_run('INSERT INTO collection_members (collection_id,user_id,role,status,joined_at) VALUES (?,?,?,?,?)',
+          [$cid, (int) $me['id'], 'owner', 'active', $now]);
+    rmt_sync_tags('collection', $cid, $d['title'], $d['summary']);
+    flash('Your community exists. Put a few places in it and say something, then invite people.');
+    redirect('/c/' . $slug);
+}

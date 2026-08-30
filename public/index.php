@@ -77,6 +77,8 @@ $routes = [
     ['GET',  '#^/c/(?<slug>[a-z0-9\-]+)$#',               'collection_show'],
     // Communities: a collection with a door. The collection routes above are unchanged.
     ['GET',  '#^/communities$#',                          'communities_index'],
+    ['GET',  '#^/communities/new$#',                      'community_new_form'],
+    ['POST', '#^/communities/new$#',                      'community_create'],
     ['GET',  '#^/join/(?<token>[a-f0-9]{32})$#',          'community_invite_landing'],
     ['GET',  '#^/c/(?<slug>[a-z0-9\-]+)/members$#',       'community_members'],
     ['POST', '#^/c/(?<slug>[a-z0-9\-]+)/join$#',          'community_join'],
