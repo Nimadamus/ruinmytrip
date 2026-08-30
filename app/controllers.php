@@ -1137,7 +1137,17 @@ function collections_index(array $a): void {
                             (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
                            FROM collections c WHERE c.status='published' ORDER BY c.id DESC LIMIT 50");
     authors_fill($collections);
-    view('collections_index', ['collections'=>$collections], [
+
+    // Your own lists, drafts included. Without this a list you had not published yet was reachable
+    // only from a URL you no longer had -- you could make one, leave, and never find it again.
+    $me = current_user();
+    $mine = $me ? q_all("SELECT c.*,
+                           (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id) item_count
+                          FROM collections c
+                         WHERE c.user_id = ? AND c.status <> 'deleted'
+                         ORDER BY c.updated_at DESC, c.id DESC LIMIT 24", [(int) $me['id']]) : [];
+
+    view('collections_index', ['collections'=>$collections, 'mine'=>$mine], [
         'title' => 'Collections — RuinMyTrip',
         'description' => 'Traveler-curated lists of destinations, with the honest reasoning behind each pick.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')]],
@@ -1223,7 +1233,7 @@ function collection_new_form(array $a): void {
 function collection_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
     if (!rmt_submit_ok('collection_new', input('_submit'))) {
-        flash('That collection was already created.'); redirect('/collections'); return;
+        flash('That list was already created.'); redirect('/collections'); return;
     }
     if (!rmt_rate_ok('collection_create', (string)$me['id'], 10, 3600)) {
         view('collection_new', ['errors'=>['You are creating collections very fast. Try again later.']],
@@ -1239,7 +1249,7 @@ function collection_create(array $a): void {
         [(int)$me['id'], $slug, $d['title'], $d['summary'], date('Y-m-d H:i:s')]);
     $cid = (int) q_one('SELECT id FROM collections WHERE slug=?', [$slug])['id'];
     rmt_sync_tags('collection', $cid, $d['title'], $d['summary']);
-    flash('Collection created. Now add a few destinations to it.');
+    flash('List created. Add the places and cities that belong on it.');
     redirect('/collection/'.$cid.'/edit');
 }
 

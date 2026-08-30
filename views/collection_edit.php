@@ -1,6 +1,6 @@
 <?php /** @var array $c @var array $items @var array $available @var array $errors */ ?>
 <div class="wrap"><div class="form-card form-wide">
-  <h1>Edit collection</h1>
+  <h1>Edit list</h1>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/edit')) ?>">
     <?= csrf_field() ?>
@@ -46,16 +46,16 @@
       </select>
       <label for="note">Why it's on this list <span class="hint">(optional)</span></label>
       <textarea id="note" name="note" maxlength="500" placeholder="A sentence or two on why this one made the cut"></textarea>
-      <div style="margin-top:12px"><button class="btn btn-accent" type="submit">Add to collection</button></div>
+      <div style="margin-top:12px"><button class="btn btn-accent" type="submit">Add to list</button></div>
     </form>
   <?php else: ?>
-    <p class="muted" style="margin-top:14px">Every destination on the site is already in this collection.</p>
+    <p class="muted" style="margin-top:14px">Every destination on the site is already on this list.</p>
   <?php endif; ?>
 
   <hr style="margin:28px 0">
-  <p><a href="<?= e(url('c/'.$c['slug'])) ?>">View collection →</a></p>
-  <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/delete')) ?>" onsubmit="return confirm('Delete this collection? This cannot be undone.');">
+  <p><a href="<?= e(url('c/'.$c['slug'])) ?>">View list →</a></p>
+  <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/delete')) ?>" onsubmit="return confirm('Delete this list? This cannot be undone.');">
     <?= csrf_field() ?>
-    <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete collection</button>
+    <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete list</button>
   </form>
 </div></div>
