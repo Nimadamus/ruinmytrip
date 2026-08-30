@@ -36,6 +36,9 @@
       <p class="muted" style="margin:.35rem 0 0">
         <?= (int) $c['member_count'] ?> <?= (int) $c['member_count'] === 1 ? 'member' : 'members' ?>
         &middot; <?= (int) $c['item_count'] ?> <?= (int) $c['item_count'] === 1 ? 'entry' : 'entries' ?>
+        <?php if ((int) ($c['post_count'] ?? 0) > 0): ?>
+          &middot; <?= (int) $c['post_count'] ?> <?= (int) $c['post_count'] === 1 ? 'post' : 'posts' ?>
+        <?php endif; ?>
         &middot; started by <a href="<?= e(url('u/'.$c['owner_username'])) ?>">@<?= e((string) $c['owner_username']) ?></a>
         <?php if ($c['join_policy'] === 'invite'): ?> &middot; invite only<?php endif; ?>
       </p>

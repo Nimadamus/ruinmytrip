@@ -37,6 +37,7 @@ $pdo->exec('CREATE TABLE profiles (user_id INTEGER PRIMARY KEY, avatar_url TEXT)
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, hero_url TEXT)');
 $pdo->exec('CREATE TABLE places (id INTEGER PRIMARY KEY, destination_id INT, slug TEXT, name TEXT, type TEXT, status TEXT)');
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/025_collections.sqlite.sql'));
+$pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, collection_id INT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/056_collection_places.sqlite.sql'));
 
 $pdo->exec("INSERT INTO users (id,username,status) VALUES

@@ -790,7 +790,13 @@ function feed(array $a): void {
 function discover(array $a): void {
     $items = rmt_activity_items(null);
     $topTags = rmt_top_tags(14);
-    view('discover', ['items'=>$items, 'me'=>current_user(), 'topTags'=>$topTags], [
+    /* The public front door for anybody who arrived without an account. It showed a stream and
+       nothing to join, so the two things a stranger can actually act on -- the conversation and
+       the rooms -- now sit on it. */
+    $topTalk = rmt_posts_top(5);
+    $communities = rmt_community_browse(4);
+    view('discover', ['items'=>$items, 'me'=>current_user(), 'topTags'=>$topTags,
+                      'topTalk'=>$topTalk, 'communities'=>$communities], [
         'title' => 'Discover — RuinMyTrip',
         'description' => 'The latest trips, reviews, guides, collections and blog posts from every traveler on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Discover','url'=>url('discover')]],

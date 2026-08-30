@@ -235,18 +235,30 @@ function rmt_community_is_discoverable(array $c, ?int $itemCount = null, ?int $m
     return $items >= RMT_COMMUNITY_MIN_ITEMS && $members >= RMT_COMMUNITY_MIN_MEMBERS;
 }
 
-/** Communities a stranger may browse. Ordered by the only signal that means anything yet: people. */
+/**
+ * Communities a stranger may browse.
+ *
+ * Ordered by conversation, then by size. A room somebody spoke in yesterday is a better answer to
+ * 'which of these should I join' than a bigger room that has been silent for a month, and rooms
+ * with no talk at all fall to the bottom without disappearing.
+ */
 function rmt_community_browse(int $limit = 30): array {
     return q_all("SELECT c.*, u.username owner_username,
                          (SELECT COUNT(*) FROM collection_members m
                            WHERE m.collection_id=c.id AND m.status='active') member_count,
-                         (SELECT COUNT(*) FROM collection_items i WHERE i.collection_id=c.id) item_count
+                         (SELECT COUNT(*) FROM collection_items i WHERE i.collection_id=c.id) item_count,
+                         (SELECT COUNT(*) FROM posts p
+                           WHERE p.collection_id=c.id AND p.status='published') post_count
                     FROM collections c
                     JOIN users u ON u.id = c.user_id
                    WHERE c.status='published' AND c.join_policy IN ('open','invite')
                      AND (SELECT COUNT(*) FROM collection_members m
                            WHERE m.collection_id=c.id AND m.status='active') >= " . RMT_COMMUNITY_MIN_MEMBERS . "
                      AND (SELECT COUNT(*) FROM collection_items i WHERE i.collection_id=c.id) >= " . RMT_COMMUNITY_MIN_ITEMS . "
-                ORDER BY member_count DESC, c.id DESC
+                ORDER BY (SELECT COUNT(*) FROM posts p
+                           WHERE p.collection_id=c.id AND p.status='published') > 0 DESC,
+                         (SELECT MAX(p.created_at) FROM posts p
+                           WHERE p.collection_id=c.id AND p.status='published') DESC,
+                         member_count DESC, c.id DESC
                    LIMIT " . (int) $limit);
 }

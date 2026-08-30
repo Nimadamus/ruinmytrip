@@ -3,6 +3,38 @@ $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' =>
                    'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said'];
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk'];
 ?>
+
+<?php /* Two things a stranger can act on without an account: what people are saying, and which
+         rooms are open. Both above the stream, because the stream is a list of things to read and
+         these are things to join. */ ?>
+<?php if (!empty($topTalk)): ?>
+  <div class="wrap">
+    <h2 style="margin:18px 0 8px">Travelers are saying</h2>
+    <?php foreach ($topTalk as $tp): ?>
+      <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+        <a href="<?= e(url('post/'.(int) $tp['id'])) ?>"><?= e(mb_strimwidth((string) $tp['body'], 0, 150, '…')) ?></a>
+        <span class="hint"> · @<?= e((string) $tp['username']) ?>
+          <?php if ((int) ($tp['reply_count'] ?? 0) > 0): ?> · <?= (int) $tp['reply_count'] ?> replies<?php endif; ?></span>
+      </div></div>
+    <?php endforeach; ?>
+    <p style="margin:6px 0 20px"><a class="btn btn-ghost btn-sm" href="<?= e(url('talk')) ?>">All travel talk</a></p>
+  </div>
+<?php endif; ?>
+
+<?php if (!empty($communities)): ?>
+  <div class="wrap">
+    <h2 style="margin:18px 0 8px">Communities open to join</h2>
+    <div class="grid g-2" style="margin-bottom:22px">
+      <?php foreach ($communities as $cc): ?>
+        <div class="card"><div class="card-body" style="padding:12px 16px">
+          <b><a href="<?= e(url('c/'.$cc['slug'])) ?>"><?= e((string) $cc['title']) ?></a></b>
+          <p class="hint" style="margin:.2rem 0 0"><?= (int) $cc['member_count'] ?> members
+            <?php if ((int) ($cc['post_count'] ?? 0) > 0): ?> · <?= (int) $cc['post_count'] ?> posts<?php endif; ?></p>
+        </div></div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+<?php endif; ?>
 <div class="wrap" style="max-width:760px">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Discover</p>
   <h1 style="margin-top:8px">Discover</h1>
