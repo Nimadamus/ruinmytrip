@@ -19,6 +19,7 @@ $GLOBALS['config'] = [
 
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/feedback.php';
 
 $fail = 0;
@@ -41,7 +42,8 @@ $pdo->exec("INSERT INTO users (id,username,status) VALUES (1,'ada','active'), (2
 $pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (1,'paris-france','Paris')");
 $pdo->exec("INSERT INTO places (id,destination_id,slug,name,type,status,street_address,phone,website_url)
             VALUES (1,1,'le-procope','Le Procope','restaurant','active','13 Rue de l''Ancienne Comedie','+33 1','https://x.test'),
-                   (2,1,'shut','Shut Place','hotel','closed','1 Rue X',NULL,NULL)");
+                   (2,1,'shut','Shut Place','hotel','permanently_closed','1 Rue X',NULL,NULL),
+                   (3,1,'hidden-one','Hidden Place','hotel','hidden','1 Rue Y',NULL,NULL)");
 
 /* ------------------------------------------------------- nothing is changed */
 
@@ -74,8 +76,12 @@ check('and says what to do', str_contains((string) $bad['error'], 'sentence'), t
 check('an unknown kind is refused', rmt_feedback_submit('delete_it', 1, 'A real message here.')['ok'], false);
 check('a place correction needs a place',
       rmt_feedback_submit('wrong_hours', null, 'A real message here.')['ok'], false);
-check('an inactive place is not correctable',
-      rmt_feedback_submit('wrong_hours', 2, 'A real message here.')['ok'], false);
+// A closed place is exactly where corrections matter most -- "it has reopened", "this page still
+// lists the old number" -- so refusing them would silence the reports most likely to be right.
+check('a closed place IS correctable',
+      rmt_feedback_submit('closed_temporarily', 2, 'Walked past, it is open again.')['ok'], true);
+check('a place we have hidden is not',
+      rmt_feedback_submit('wrong_hours', 3, 'A real message here.')['ok'], false);
 check('a place that does not exist is refused',
       rmt_feedback_submit('wrong_hours', 999, 'A real message here.')['ok'], false);
 check('an over-long message is refused',

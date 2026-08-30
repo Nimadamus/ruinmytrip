@@ -33,6 +33,59 @@ const RMT_PLACE_TYPES = ['hotel', 'restaurant', 'attraction', 'experience'];
  * internal vocabulary. The map is explicit in both directions so a URL can never be built from one
  * table and read with another.
  */
+/**
+ * What state a place is in.
+ *
+ * Deliberately four values and no state machine. A business is open, shut for now, shut for good,
+ * or hidden by us -- and the difference that actually matters to a reader is only ever "can I go
+ * there today". Anything more elaborate would be a business-lifecycle engine, which is not what a
+ * review site needs to know.
+ *
+ * A CLOSED PLACE IS NOT A DELETED PLACE. Reviews, photos, lists, saves and inbound links all
+ * survive, because what somebody wrote about a restaurant in 2025 is still true about 2025 and
+ * still useful to the person wondering what happened to it. The row id never changes and the URL
+ * keeps working.
+ *
+ * "closed" is the legacy value this replaces. Migration 059 rewrites it; the helpers below still
+ * understand it so a row written by older code cannot make a page throw.
+ */
+const RMT_PLACE_STATUSES = ['active', 'temporarily_closed', 'permanently_closed', 'hidden'];
+
+/** Statuses whose page the public may read. Hidden is ours; the rest are the place's own story. */
+const RMT_PLACE_PUBLIC_STATUSES = ['active', 'temporarily_closed', 'permanently_closed'];
+
+/** Normalise, including the legacy value, so one spelling reaches every comparison. */
+function rmt_place_status(string $status): string {
+    if ($status === 'closed') return 'permanently_closed';       // legacy
+    return in_array($status, RMT_PLACE_STATUSES, true) ? $status : 'active';
+}
+
+/** Can a visitor read this place's page at all? */
+function rmt_place_is_public(string $status): bool {
+    return in_array(rmt_place_status($status), RMT_PLACE_PUBLIC_STATUSES, true);
+}
+
+/**
+ * Is it open for business at all right now?
+ *
+ * False for both kinds of closed, and that is the whole reason this exists: a temporarily closed
+ * restaurant still has Tuesday hours in the database, and showing "Open now" from them because the
+ * clock says Tuesday afternoon would be the site confidently telling somebody to walk to a locked
+ * door.
+ */
+function rmt_place_is_trading(string $status): bool {
+    return rmt_place_status($status) === 'active';
+}
+
+/** What to call it on the page. Null when there is nothing to announce. */
+function rmt_place_status_label(string $status): ?string {
+    return match (rmt_place_status($status)) {
+        'temporarily_closed' => 'Temporarily closed',
+        'permanently_closed' => 'Permanently closed',
+        default              => null,
+    };
+}
+
 const RMT_CATEGORY_SLUGS = [
     'hotel'      => 'hotels',
     'restaurant' => 'restaurants',
@@ -155,10 +208,16 @@ function rmt_place_resolve(?int $destId, string $type, string $name, ?int $userI
 
 /** One place with its destination, by slug. */
 function rmt_place_by_slug(string $slug): ?array {
+    // Any status a visitor may read, not just active. A place that closed keeps its page: the
+    // reviews on it are still true about the time they describe, the inbound links still point
+    // here, and "what happened to that restaurant" is a question this site should answer rather
+    // than 404. Listing queries filter status='active' individually, so nothing shut appears in
+    // browse, search, a category count or the sitemap because of this.
+    $in = "'" . implode("','", array_merge(RMT_PLACE_PUBLIC_STATUSES, ['closed'])) . "'";
     return q_one('SELECT p.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
                          d.region dest_region, d.hero_url dest_hero
                     FROM places p JOIN destinations d ON d.id = p.destination_id
-                   WHERE p.slug = ? AND p.status = ?', [$slug, 'active']);
+                   WHERE p.slug = ? AND p.status IN (' . $in . ')', [$slug]);
 }
 
 /** One place with its destination, by id. */

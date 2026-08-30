@@ -61,8 +61,14 @@ function rmt_feedback_submit(string $kind, ?int $placeId, string $message,
     $isPlaceKind = in_array($kind, RMT_FEEDBACK_PLACE_KINDS, true);
     if ($isPlaceKind && !$placeId) return $fail('That correction needs a place.');
     if (!$isPlaceKind) $placeId = null;      // a site problem is not about a place, whatever was posted
-    if ($placeId && !q_one("SELECT 1 FROM places WHERE id = ? AND status = 'active'", [$placeId])) {
-        return $fail('We could not find that place.');
+    // Any place a visitor can see, not only an open one. "It has reopened" and "this closed page
+    // still lists the old phone number" are corrections about places that are shut, and refusing
+    // them would silence the reports most likely to be right.
+    if ($placeId) {
+        $row = q_one("SELECT status FROM places WHERE id = ?", [$placeId]);
+        if (!$row || !rmt_place_is_public((string) $row['status'])) {
+            return $fail('We could not find that place.');
+        }
     }
 
     $message = trim(preg_replace('/\s+/u', ' ', $message) ?? '');

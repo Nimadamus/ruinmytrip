@@ -152,5 +152,23 @@ check('followers counts only active accounts', (int) $st['followers'], 1);
 $pdo->exec("INSERT INTO follows (follower_id,followee_id) VALUES (81,82),(81,83)");
 check('following counts only active accounts', (int) rmt_profile_stats(81)['following'], 1);
 
+/* ------------------------------------------- editorial does not earn traveler badges
+
+   rmt_user_review_count() counts published reviews, and 185 of them belong to the editorial
+   account. Without this the staff account qualifies for First Review, 5, 10, 25 and Helpful
+   Reviewer -- five statements that somebody went places and wrote about them, on an account whose
+   own policy says it never claims to have gone. */
+
+$pdo->exec("INSERT INTO users (id,username,role,status) VALUES (91,'the_editorial','" . RMT_EDITORIAL_ROLE . "','active')");
+for ($i = 0; $i < 30; $i++) {
+    q_run("INSERT INTO reviews (user_id,destination_id,place_id,rating,status,created_at)
+           VALUES (91,1,1,5,'published','2026-08-01')");
+}
+check('the editorial account has plenty of published reviews', rmt_user_review_count(91) >= 25, true);
+check('and would qualify on the raw rule', rmt_qualifies_reviewer_25(91), true);
+// ...and is still awarded nothing, because badges are traveler reputation.
+check('but it is awarded no badges at all', rmt_award_badges(91), []);
+check('and holds none', count(rmt_user_badges(91)), 0);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

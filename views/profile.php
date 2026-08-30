@@ -10,6 +10,17 @@
         <?php elseif ($u['role']==='creator'): ?><span class="chip" style="background:#fef3c7;color:#92400e">Creator</span><?php endif; ?>
       </h1>
       <p class="muted" style="margin:.1rem 0">@<?= e($u['username']) ?> <?= $u['home_city']?' · '.e($u['home_city']):'' ?></p>
+      <?php /* A reader arriving from "Written by RuinMyTrip Editorial" lands here, and what they
+               need first is what kind of account this is -- not a traveler with an extraordinary
+               number of trips. */ ?>
+      <?php if (rmt_is_editorial($u)): ?>
+        <p class="hint" style="margin:.2rem 0 0;max-width:60ch">
+          This is the site's editorial account, not a traveler. Everything it publishes is
+          researched from published and official sources rather than from a personal visit, is
+          labelled wherever it appears, and is never counted in any community rating.
+          <a href="<?= e(url('editorial-policy')) ?>">How we research</a>.
+        </p>
+      <?php endif; ?>
       <div class="stat-inline">
         <?php /* Every figure is a live COUNT (see rmt_profile_stats) — no stored counters. */ ?>
         <?php /* Only what this traveler actually has. A row reading "0 photos, 0 places visited,
@@ -18,12 +29,30 @@
                  sees about themselves. Reviews always shows, because it is the number the page is
                  fundamentally about and its empty state is handled below with an invitation
                  rather than a zero. */ ?>
-        <span><b><?= (int)$stats['reviews'] ?></b> <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?></span>
+        <?php /* "185 reviews" on the editorial account reads as a traveler who reviewed 185 places.
+                 The same number, named for what it actually is, reads as what it is. */ ?>
+        <?php $isEdProfile = rmt_is_editorial($u); ?>
+        <span><b><?= (int)$stats['reviews'] ?></b>
+          <?php if ($isEdProfile): ?>
+            editorial <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?>
+          <?php else: ?>
+            traveler <?= $stats['reviews'] === 1 ? 'review' : 'reviews' ?>
+          <?php endif; ?>
+        </span>
         <?php if ((int) $stats['photos'] > 0): ?>
           <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <?php endif; ?>
         <?php if ((int) $stats['places'] > 0): ?>
-          <span><b><?= (int)$stats['places'] ?></b> <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?></span>
+          <?php /* "80 places visited" on the editorial account directly contradicted the editorial
+                   policy, which says in as many words that we never claim to have gone. The count
+                   is true; the verb was not. Covered, not visited. */ ?>
+          <span><b><?= (int)$stats['places'] ?></b>
+            <?php if ($isEdProfile): ?>
+              <?= $stats['places'] === 1 ? 'place covered' : 'places covered' ?>
+            <?php else: ?>
+              <?= $stats['places'] === 1 ? 'place visited' : 'places visited' ?>
+            <?php endif; ?>
+          </span>
         <?php endif; ?>
         <?php if ((int) $stats['votes'] > 0): ?>
           <span title="Useful + funny + cool votes from other travelers"><b><?= (int)$stats['votes'] ?></b> <?= $stats['votes'] === 1 ? 'vote' : 'votes' ?></span>
@@ -190,9 +219,12 @@
 
   <?php /* Reviews first. This is a travel review site, a reviewer's reviews are the answer to
            "who is this traveler", and they were below trips, guides and collections. */ ?>
-  <?php if ($reviews): ?><h2 style="margin-top:30px">Reviews <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
+  <?php if ($reviews): ?><h2 style="margin-top:30px"><?= rmt_is_editorial($u) ? 'Editorial reviews' : 'Traveler reviews' ?> <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
   <?php foreach ($reviews as $r): ?><div class="card" style="margin-bottom:12px"><div class="card-body">
     <span class="stars"><?= stars((int)$r['rating']) ?></span>
+    <?php /* Labelled on the card, not only in the page header. A reader scrolling a list of 185
+             does not carry the header down the page with them. */ ?>
+    <?php if (rmt_is_editorial($u)): ?><?= rmt_editorial_badge('review') ?><?php endif; ?>
     <b><a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></b>
     <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>

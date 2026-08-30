@@ -109,7 +109,19 @@ function rmt_indexable(string $type, array $e = []): array {
             return $yes();
 
         case 'place':
-            if (($e['status'] ?? '') !== 'active') return $no('noindex_private');
+            $pstatus = rmt_place_status((string) ($e['status'] ?? ''));
+            if (!in_array($pstatus, RMT_PLACE_PUBLIC_STATUSES, true)) return $no('noindex_private');
+            // A closed place is a real answer to a real search -- somebody typing the name of a
+            // restaurant that shut deserves to be told it shut, by us, rather than to find a page
+            // that still says "Open now" somewhere else. But it earns that only if there is
+            // something here: reviews or our own writing. A closed listing with nothing but a name
+            // is a dead end wearing a page's clothes.
+            if ($pstatus === 'permanently_closed') {
+                $hasHistory = (int) ($e['review_count'] ?? 0) > 0
+                           || trim((string) ($e['editorial'] ?? '')) !== ''
+                           || (int) ($e['photo_count'] ?? 0) > 0;
+                if (!$hasHistory) return $no('noindex_thin', 'closed, and nothing was ever written about it');
+            }
             if (empty($e['destination_id'])) return $no('noindex_thin', 'not attached to a destination');
             // Useful content is anything that answers a question somebody would arrive with: where
             // it is, when it is open, what it costs, what we wrote about it, or what a traveler
@@ -219,7 +231,11 @@ function rmt_index_places(): array {
                 (SELECT COUNT(*) FROM place_hours h WHERE h.place_id = p.id) hours_count,
                 (SELECT COUNT(*) FROM place_photos ph WHERE ph.place_id = p.id) photo_count,
                 (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count
-           FROM places p WHERE p.status = 'active' ORDER BY p.name");
+           FROM places p WHERE p.status IN ('active','temporarily_closed','permanently_closed','closed')
+          ORDER BY p.name");
+    // Closed places are handed to the rule rather than filtered out before it, or the decision
+    // about whether a closed page belongs in the index would be made here, silently, by a WHERE
+    // clause -- which is exactly the second opinion this layer exists to abolish.
     foreach ($rows as &$r) $r['verdict'] = rmt_indexable('place', $r);
     return $rows;
 }
@@ -255,6 +271,10 @@ function rmt_index_categories(): array {
     $byDest = [];
     foreach (rmt_index_places() as $p) {
         if (!$p['verdict']['ok']) continue;
+        // Indexable is not the same as open. A closed place can deserve its own page and still
+        // must not be counted as inventory on "Restaurants in Paris", which is a promise about
+        // where you can eat tonight.
+        if (!rmt_place_is_trading((string) $p['status'])) continue;
         $byDest[(int) $p['destination_id']][(string) $p['type']] =
             ($byDest[(int) $p['destination_id']][(string) $p['type']] ?? 0) + 1;
     }
@@ -289,6 +309,7 @@ function rmt_indexable_type_counts(int $destId): array {
     $out = [];
     foreach (rmt_index_places() as $p) {
         if (!$p['verdict']['ok'] || (int) $p['destination_id'] !== $destId) continue;
+        if (!rmt_place_is_trading((string) $p['status'])) continue;
         $out[(string) $p['type']] = ($out[(string) $p['type']] ?? 0) + 1;
     }
     return $out;

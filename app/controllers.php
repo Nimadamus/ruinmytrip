@@ -363,8 +363,11 @@ function place_show(array $a): void {
         // The slug may be one this place used to have. Identity is the row id, so a rename is a
         // permanent redirect to wherever that row lives now -- never a 404, and never a chain,
         // because the target is always read fresh from the place rather than from history.
+        // Any status the public may read, not only active. A place that was renamed and later
+        // closed still has the same row, the same reviews and the same inbound links; 404ing its
+        // old URL would throw away both the redirect and the page it points at.
         $prev = rmt_place_for_retired_slug((string) $a['slug']);
-        if ($prev && $prev['status'] === 'active') redirect_permanent(url('p/'.$prev['slug']));
+        if ($prev && rmt_place_is_public((string) $prev['status'])) redirect_permanent(url('p/'.$prev['slug']));
         not_found();
     }
     $id = (int) $p['id'];
@@ -453,6 +456,11 @@ function place_show(array $a): void {
     }
 
     // Robots from the same rule the sitemap uses, so the two can never disagree about this page.
+    // Open now is a claim about today, so a closed place must not make it however complete its
+    // hours are. Suppressed here rather than in the view: any other surface asking the same
+    // question gets the same answer.
+    if (!rmt_place_is_trading((string) $p['status'])) $openNow = null;
+
     $placeVerdict = rmt_indexable('place', $p + [
         'hours_count'  => count($hours),
         'photo_count'  => (int) $photoCount,
@@ -3609,6 +3617,16 @@ function admin_place_save(array $a): void {
         if (!$errors) {
             $hoursErrors = rmt_place_set_hours($id, $hours['intervals']);
             $errors = array_merge($errors, array_values($hoursErrors));
+        }
+        // Closing a place is an editor's deliberate act, never a consequence of a report. The
+        // correction queue can tell us a restaurant has shut; only this line acts on it, and only
+        // when a person chose the value.
+        if (!$errors && array_key_exists('status', $_POST)) {
+            $newStatus = rmt_place_status((string) $_POST['status']);
+            if ($newStatus !== rmt_place_status((string) $p['status'])) {
+                q_run('UPDATE places SET status = ?, updated_at = ? WHERE id = ?',
+                      [$newStatus, date('Y-m-d H:i:s'), $id]);
+            }
         }
         if (!$errors && $renameTo !== null) {
             // Renaming retires the old slug into place_slug_history, so the URL this place has been

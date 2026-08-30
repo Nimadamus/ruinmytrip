@@ -35,6 +35,21 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
   <form method="post" action="<?= e(url('admin/place/'.(int)$orig['id'])) ?>"><?= csrf_field() ?>
 
     <h2 style="font-size:1.05rem;margin:20px 0 8px">Identity</h2>
+  <?php /* The only place a closure happens. Hours are never cleared by a closure: a place that
+           reopens gets its Tuesdays back, and a permanently closed page keeps them as a record of
+           what it was. */ ?>
+  <label for="status">Status</label>
+  <select id="status" name="status">
+    <?php foreach ([
+      'active'             => 'Open',
+      'temporarily_closed' => 'Temporarily closed',
+      'permanently_closed' => 'Permanently closed',
+      'hidden'             => 'Hidden (not public)',
+    ] as $k => $label): ?>
+      <option value="<?= e($k) ?>"<?= rmt_place_status((string) $p['status']) === $k ? ' selected' : '' ?>><?= e($label) ?></option>
+    <?php endforeach; ?>
+  </select>
+
     <label for="name">Name</label>
     <input type="text" id="name" name="name" value="<?= $v('name') ?>" maxlength="200">
     <p class="hint" style="margin:.2rem 0 12px">

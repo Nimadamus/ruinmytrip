@@ -69,8 +69,28 @@ check('a place with ZERO reviews is still indexable',
       why('place', $base + ['street_address' => '1 Rue X', 'review_count' => 0]), 'indexable');
 check('a name and a type and nothing else is not',
       why('place', $base), 'noindex_no_content');
-check('a closed place is never indexed',
-      why('place', ['status' => 'closed', 'destination_id' => 1, 'street_address' => '1 Rue X']), 'noindex_private');
+// A closed place is a real answer to a real search: somebody typing the name of a restaurant that
+// shut should be told it shut, by us. It earns the page only if something was written about it --
+// a closed listing carrying nothing but a name is a dead end wearing a page's clothes.
+check('a closed place with reviews keeps its page',
+      why('place', ['status' => 'permanently_closed', 'destination_id' => 1,
+                    'street_address' => '1 Rue X', 'review_count' => 3]), 'indexable');
+check('...or with our own writing',
+      why('place', ['status' => 'permanently_closed', 'destination_id' => 1,
+                    'street_address' => '1 Rue X', 'editorial' => 'What it was']), 'indexable');
+check('a closed place with nothing behind it does not',
+      why('place', ['status' => 'permanently_closed', 'destination_id' => 1,
+                    'street_address' => '1 Rue X']), 'noindex_thin');
+// Temporarily closed is a place that still exists and is coming back. It is judged exactly as an
+// open one, because in a month it will be one.
+check('temporarily closed is judged like any other place',
+      why('place', ['status' => 'temporarily_closed', 'destination_id' => 1,
+                    'street_address' => '1 Rue X']), 'indexable');
+check('the legacy "closed" value still means permanently closed',
+      why('place', ['status' => 'closed', 'destination_id' => 1, 'street_address' => '1 Rue X']), 'noindex_thin');
+check('hidden is ours, and is never public',
+      why('place', ['status' => 'hidden', 'destination_id' => 1, 'street_address' => '1 Rue X',
+                    'review_count' => 9]), 'noindex_private');
 check('a place with no destination is not a page',
       why('place', ['status' => 'active', 'street_address' => '1 Rue X']), 'noindex_thin');
 
@@ -179,7 +199,14 @@ $byslug = [];
 foreach ($places as $p) $byslug[$p['slug']] = $p['verdict'];
 check('an enriched place is indexable', $byslug['h1']['reason'], 'indexable');
 check('a bare place is not',            $byslug['bare']['reason'], 'noindex_no_content');
-check('a closed place is not even considered', isset($byslug['shut']), false);
+// It IS considered now -- the rule decides, not a WHERE clause -- and with nothing written about
+// it the rule says no.
+check('a closed place is judged rather than filtered out', isset($byslug['shut']), true);
+check('and a closed place with nothing behind it is not indexed', $byslug['shut']['reason'], 'noindex_thin');
+// The category count is a promise about where you can eat tonight, so a closed place must never
+// count toward it however deserving its own page is.
+$openHotels = rmt_indexable_type_counts(1)['hotel'] ?? 0;
+check('a closed place does not count as inventory', $openHotels, 7);
 
 $cats = [];
 foreach (rmt_index_categories() as $c) $cats[$c['dest_slug'] . '/' . $c['type']] = $c;

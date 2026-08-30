@@ -211,6 +211,15 @@ function rmt_qualifies_photo_contributor(int $uid): bool { return rmt_user_photo
 function rmt_qualifies_helpful_reviewer(int $uid): bool  { return rmt_user_helpful_count($uid) >= 10; }
 
 function rmt_award_badges(int $uid): array {
+    // Badges are TRAVELER reputation: they say somebody went places and wrote about them. The
+    // editorial account publishes researched articles and has never claimed to have gone anywhere,
+    // so it cannot earn them -- and it would have earned every one of them, because
+    // rmt_user_review_count() counts published reviews and 185 of them are ours. "First Review",
+    // "25 Reviews" and "Helpful Reviewer" on a staff account would each be a small lie told by a
+    // counter.
+    $u = q_one('SELECT role FROM users WHERE id = ?', [$uid]);
+    if ($u && rmt_is_editorial(['role' => (string) $u['role']])) return [];
+
     $rules = RMT_BADGE_RULES;
     $awarded = [];
     foreach ($rules as $slug => $qualifies) {

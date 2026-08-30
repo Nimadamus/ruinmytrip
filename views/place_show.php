@@ -73,9 +73,33 @@
            form (a POST toggle), which cannot live inside a <p>. A logged-out visitor still sees the
            button: it links to sign-in carrying this page as the return, so the intent survives the
            detour instead of the control simply being missing. */ ?>
+  <?php /* Said once, at the top, before the address and the hours and the buttons. A closed place
+           keeps its page -- the reviews on it are still true about the time they describe, and
+           "what happened to that restaurant" is a question this site should answer rather than
+           404 -- but a reader must not get halfway down a page of opening hours before finding
+           out. */ ?>
+  <?php $statusLabel = rmt_place_status_label((string) $p['status']); ?>
+  <?php if ($statusLabel !== null): ?>
+    <div class="callout" style="margin:0 0 18px;border-left-color:#b42318">
+      <b><?= e($statusLabel) ?>.</b>
+      <?php if (rmt_place_status((string) $p['status']) === 'permanently_closed'): ?>
+        Everything below is kept for the record: what travelers wrote, and what the place was like
+        while it was open.
+      <?php else: ?>
+        It is expected to reopen. The hours below are the ones it kept before, not a promise about
+        this week.
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
+
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 <?= $saveCount > 0 ? '8px' : '26px' ?>">
-    <a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
-       href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Write a review</a>
+    <?php /* Reviewing somewhere that has shut for good is not something to invite, and somebody
+             who genuinely went while it was open can still reach the form from their own profile.
+             A temporarily closed place keeps the button: people are still remembering visits. */ ?>
+    <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed'): ?>
+      <a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+         href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Write a review</a>
+    <?php endif; ?>
     <?php if ($me): ?>
       <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">
         <?= csrf_field() ?>
@@ -173,7 +197,7 @@
       <?php if ($hoursByDay): ?>
         <?php /* Only days we hold are listed. A missing day is left out rather than printed as
                  "Closed", which would assert something we were never told. */ ?>
-        <h3 style="margin:16px 0 6px;font-size:.98rem">Opening hours</h3>
+        <h3 style="margin:16px 0 6px;font-size:.98rem"><?= rmt_place_is_trading((string) $p['status']) ? 'Opening hours' : 'Hours it kept' ?></h3>
         <dl style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:.93rem">
           <?php foreach ($hoursByDay as $d): ?>
             <dt class="muted"><?= e($d['day']) ?></dt>
