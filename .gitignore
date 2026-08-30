@@ -28,3 +28,6 @@ __pycache__/
 database/dev.sqlite
 database/dev.sqlite.broken-*
 .work/
+
+# Cookie jars the review-flow harness writes as it runs. Session state, not source.
+scripts/ci/jar_*.txt

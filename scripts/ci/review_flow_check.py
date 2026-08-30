@@ -112,6 +112,32 @@ for kind, pid in PLACES.items():
         continue
     rid = row[0][0]
     made[kind] = rid
+
+    # The moment after publishing. A first review is a different event from a fiftieth, and the
+    # panel that says so is the only thing a new contributor sees between writing and leaving --
+    # so it is checked here rather than trusted, on the first of the three flows and never again.
+    # The canonical slug, from the database. A wrong slug 302s to the right one and the
+    # redirect drops the query string, so ?published=1 never arrives and the panel this is
+    # meant to test silently does not render -- the assertion would be measuring a redirect.
+    rslug = db('SELECT slug FROM reviews WHERE id=?', (rid,))[0][0]
+    page = get('/review/%d/%s?published=1' % (rid, rslug), jar_w)
+    # Expectation derived from the DB, not from the order the flows happen to run in. This harness
+    # is re-run against a database that keeps its rows, so "the hotel one is the first review" is
+    # true on a fresh database and false on the second run -- an assertion that passes once and
+    # then reports a bug that is not there.
+    published = db("SELECT COUNT(*) FROM reviews r JOIN users u ON u.id=r.user_id"
+                   " WHERE u.username='qa_writer' AND r.status='published'")[0][0]
+    first_panel = 'Your first review is live' in page
+    check('first-review wording appears exactly when it is the first (%s)' % kind,
+          first_panel, published == 1)
+    if published == 1:
+        check('...and says what it did for the next traveler', 'know what to expect' in page, True)
+    else:
+        check('...and a later one still confirms it is live (%s)' % kind,
+              'Your review is live' in page, True)
+    # Two actions, never three: a moment with a menu on it is not a moment.
+    buttons = page.count('class="btn btn-accent"') + page.count('class="btn btn-ghost"')
+    check('the panel offers two actions, not a menu (%s)' % kind, buttons >= 2, True)
     check('traveler type stored', row[0][1], 'couple')
     stored = dict(db('SELECT aspect, value FROM review_ratings WHERE review_id=?', (rid,)))
     check('every aspect stored', stored, ASPECTS[kind])

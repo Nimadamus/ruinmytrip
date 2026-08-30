@@ -2284,7 +2284,13 @@ function review_show(array $a): void {
     // Shown once, straight after publishing, and only to the person who wrote it.
     $justPublished = input('published') === '1' && $me && (int) $me['id'] === (int) $r['user_id']
                      && $r['status'] === 'published';
-    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished'), [
+    // Whether this is their FIRST. A first review is a different moment from a fiftieth: somebody
+    // has just done a thing they had never done before, on a site that had nothing from them, and
+    // saying so once is worth more than saying "thanks" identically forever.
+    $isFirstReview = $justPublished && (int) (q_one(
+        "SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
+        [(int) $r['user_id']])['c'] ?? 0) === 1;
+    view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished','isFirstReview'), [
         'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
         'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],

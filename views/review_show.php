@@ -1,4 +1,4 @@
-<?php /** @var array $r @var ?array $author @var array $photos @var ?array $me @var array $voteCounts @var array $myVotes @var bool $justPublished */ ?>
+<?php /** @var array $r @var ?array $author @var array $photos @var ?array $me @var array $voteCounts @var array $myVotes @var bool $justPublished @var bool $isFirstReview */ ?>
 <?php $rmt_vote_labels = ['useful'=>'👍 Useful','funny'=>'😄 Funny','cool'=>'😎 Cool']; ?>
 <article class="wrap" style="max-width:760px;padding-top:28px">
   <?php /* Two next steps, not ten. Photos, because a review with one is worth more to the next
@@ -7,16 +7,31 @@
            it. Anything else here would be noise at the one moment we have their attention. */ ?>
   <?php if (!empty($justPublished)): ?>
     <div class="empty-cta" style="margin:0 0 24px">
-      <h3 style="margin:0 0 4px">Your review is live.</h3>
-      <p class="muted" style="margin:0">
-        Thanks &mdash; that is one more place on RuinMyTrip a traveler can trust.
-      </p>
+      <?php /* Said in the reader's terms, not ours. "One more place a traveler can trust" is about
+               the site; what actually happened is that the next person to look this place up will
+               know something they did not. A first review says so plainly, once. No confetti, no
+               points, no badge animation -- somebody wrote something honest, and the right response
+               is to tell them what it does. */ ?>
+      <?php if (!empty($isFirstReview)): ?>
+        <h3 style="margin:0 0 4px">Your first review is live.</h3>
+        <p class="muted" style="margin:0">
+          The next traveler who looks this place up will know what to expect, because you told them.
+          That is the whole idea.
+        </p>
+      <?php else: ?>
+        <h3 style="margin:0 0 4px">Your review is live.</h3>
+        <p class="muted" style="margin:0">
+          You just helped the next traveler know what to expect.
+        </p>
+      <?php endif; ?>
+      <?php /* Two actions. A third turns a moment into a menu, and the one that matters most is
+               whichever of these they have not done yet. */ ?>
       <p style="margin:14px 0 0;display:flex;gap:10px;flex-wrap:wrap">
         <?php if (empty($photos)): ?>
           <a class="btn btn-accent" href="<?= e(url('review/'.(int)$r['id'].'/edit')) ?>">Add photos</a>
-        <?php endif; ?>
-        <?php if (!empty($r['dest_slug'])): ?>
-          <a class="btn btn-ghost" href="<?= e(url('d/'.$r['dest_slug'].'/places')) ?>">Review another place in <?= e((string) $r['dest_name']) ?></a>
+        <?php elseif (!empty($r['dest_slug'])): ?>
+          <a class="btn btn-accent" data-review-cta="review"
+             href="<?= e(url('d/'.$r['dest_slug'].'/places')) ?>">Review another place in <?= e((string) $r['dest_name']) ?></a>
         <?php endif; ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$r['username'])) ?>">Your profile</a>
       </p>
