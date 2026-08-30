@@ -1,4 +1,4 @@
-<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community */ ?>
+<?php /** @var array $posts @var ?array $me @var array $dests @var array $myCommunities @var ?array $dest @var ?array $community @var array $topTags */ ?>
 <div class="wrap"><p class="crumbs">
   <a href="<?= e(url()) ?>">Home</a> / <?php if ($dest || $community): ?><a href="<?= e(url('talk')) ?>">Talk</a> /
     <?= e($dest ? (string) $dest['name'] : (string) $community['title']) ?><?php else: ?>Talk<?php endif; ?>
@@ -20,7 +20,7 @@
         <input type="hidden" name="return" value="<?= e(url('talk')) ?>">
         <label for="body" class="sr-only">What do you want to say?</label>
         <textarea id="body" name="body" rows="4" required maxlength="<?= RMT_POST_MAX ?>"
-                  placeholder="Ask something, warn somebody, or say what a place was really like."></textarea>
+                  placeholder="Ask something, warn somebody, or say what a place was really like. #hashtags work."></textarea>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px">
           <select name="destination_id" aria-label="About a destination (optional)">
             <option value="">Anywhere in particular? (optional)</option>
@@ -50,6 +50,15 @@
       <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a></p>
   <?php endif; ?>
 
+  <?php /* Topics, because a stream is only browsable by the people who read all of it. */ ?>
+  <?php if ($topTags): ?>
+    <p style="margin:18px 0 6px">
+      <?php foreach ($topTags as $tg): ?>
+        <a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e((string) $tg['name']) ?></a>
+      <?php endforeach; ?>
+    </p>
+  <?php endif; ?>
+
   <?php if (!$posts): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
       <h3>Nothing here yet.</h3>
@@ -73,7 +82,7 @@
             <?php endif; ?>
           </div>
         </div>
-        <p style="margin:.6rem 0 .4rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $p['body'], 0, 500, '…'))) ?></p>
+        <p style="margin:.6rem 0 .4rem;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e(mb_strimwidth((string) $p['body'], 0, 500, '…'))))) ?></p>
         <?php if (!empty($p['image_url'])): ?>
           <a href="<?= e(url('post/'.(int) $p['id'])) ?>"><img loading="lazy" src="<?= e(abs_url((string) $p['image_url'])) ?>"
                alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:.2rem 0 .5rem"></a>

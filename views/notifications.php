@@ -49,6 +49,17 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='like'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $noun = ['trip'=>'trip story','review'=>'review','guide'=>'guide','blog_post'=>'blog post',
+                   'meetup'=>'meetup','collection'=>'list','post'=>'post'][$n['target_type']] ?? 'post';
+          $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> liked your <?= e($noun) ?>.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> liked your <?= e($noun) ?>.
+          <?php endif; ?>
         <?php elseif ($n['type']===RMT_MATCH_NOTIFY_TYPE):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $dest = q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',

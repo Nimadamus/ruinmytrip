@@ -282,3 +282,68 @@ function rmt_meetup_notify_travelers(int $meetupId, int $hostId, int $destId, st
     }
     return $sent;
 }
+
+/* ------------------------------------------------------------------ who to follow */
+
+/**
+ * People worth following, with the reason attached.
+ *
+ * A flat directory of every member sorted by review count is a phone book: it answers "who is
+ * here" and never "who is here for me". Three signals, strongest first, and each carries the
+ * sentence that explains it, because "suggested for you" with no reason is the thing people learn
+ * to ignore.
+ *
+ *   in a community with you   you already share a room
+ *   followed by people you follow   the oldest working signal on any social graph
+ *   wants to go where you want   shared saved destinations
+ *
+ * @return list<array<string,mixed>> user rows plus `reason`
+ */
+function rmt_follow_suggestions(int $userId, int $limit = 8): array {
+    if ($userId < 1) return [];
+    [$blockSql] = rmt_match_block_sql('u.id');
+    $exclude = "u.id <> ? AND u.status='active'
+                AND NOT EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = ? AND f.followee_id = u.id)
+                AND $blockSql";
+
+    $rows = [];
+    $add = static function (array $found, string $reason) use (&$rows): void {
+        foreach ($found as $r) {
+            $id = (int) $r['id'];
+            if (isset($rows[$id])) continue;          // the first reason found is the strongest one
+            $rows[$id] = $r + ['reason' => $reason];
+        }
+    };
+
+    // Four placeholders in $exclude: the self check, the follow check, and two for the block pair.
+    $exclArgs = [$userId, $userId, $userId, $userId];
+    $add(q_all("SELECT DISTINCT u.id, u.username, p.display_name, p.avatar_url, p.home_city
+                  FROM collection_members mine
+                  JOIN collection_members theirs ON theirs.collection_id = mine.collection_id
+                                                AND theirs.status='active' AND theirs.user_id <> mine.user_id
+                  JOIN users u ON u.id = theirs.user_id
+             LEFT JOIN profiles p ON p.user_id = u.id
+                 WHERE mine.user_id = ? AND mine.status='active' AND $exclude
+                 LIMIT 20", array_merge([$userId], $exclArgs)), 'in a community with you');
+
+    $add(q_all("SELECT DISTINCT u.id, u.username, p.display_name, p.avatar_url, p.home_city
+                  FROM follows mine
+                  JOIN follows theirs ON theirs.follower_id = mine.followee_id
+                  JOIN users u ON u.id = theirs.followee_id
+             LEFT JOIN profiles p ON p.user_id = u.id
+                 WHERE mine.follower_id = ? AND $exclude
+                 LIMIT 20", array_merge([$userId], $exclArgs)), 'followed by people you follow');
+
+    foreach (rmt_wishlist_matches($userId, 20) as $w) {
+        $id = (int) $w['user_id'];
+        if (isset($rows[$id])) continue;
+        // rmt_wishlist_matches already excludes blocks; the follow check is the one thing it does
+        // not do, because there it is a list of travelers rather than a list of suggestions.
+        if (q_one('SELECT 1 x FROM follows WHERE follower_id=? AND followee_id=?', [$userId, $id])) continue;
+        $rows[$id] = ['id' => $id, 'username' => $w['username'], 'display_name' => $w['display_name'] ?? null,
+                      'avatar_url' => $w['avatar_url'] ?? null, 'home_city' => $w['home_city'] ?? null,
+                      'reason' => 'wants to go where you want'];
+    }
+
+    return array_slice(array_values($rows), 0, $limit);
+}

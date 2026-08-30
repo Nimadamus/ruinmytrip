@@ -159,5 +159,24 @@ $blocked = rmt_meetup_notify_travelers(1, 3, 10, $d('06-09') . ' 10:00:00');
 check('a block keeps the host out of my notifications', $blocked === $sent - 1, true);
 $pdo->exec('DELETE FROM blocks');
 
+echo "\n-- who to follow --\n";
+$pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, title TEXT, status TEXT)");
+$pdo->exec("CREATE TABLE collection_members (collection_id INT, user_id INT, status TEXT)");
+$pdo->exec("INSERT INTO collections (id,title,status) VALUES (7,'Slow travel','published')");
+$pdo->exec("INSERT INTO collection_members (collection_id,user_id,status) VALUES (7,1,'active'),(7,3,'active')");
+$names = array_map(static fn(array $r): string => (string) $r['username'], rmt_follow_suggestions(1, 8));
+check('somebody in my community is suggested', in_array('cara', $names, true), true);
+check('a person I already follow is not', in_array('bob', $names, true), false);
+$reason = null;
+foreach (rmt_follow_suggestions(1, 8) as $r) if ($r['username'] === 'cara') $reason = $r['reason'];
+check('and the reason says why', $reason, 'in a community with you');
+check('never myself', in_array('alice', $names, true), false);
+check('never a deleted account', in_array('gone', $names, true), false);
+$pdo->exec('INSERT INTO blocks (blocker_id,blocked_id) VALUES (3,1)');
+$blocked = array_map(static fn(array $r): string => (string) $r['username'], rmt_follow_suggestions(1, 8));
+check('a block removes them from suggestions', in_array('cara', $blocked, true), false);
+$pdo->exec('DELETE FROM blocks');
+check('signed out has none', rmt_follow_suggestions(0), []);
+
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

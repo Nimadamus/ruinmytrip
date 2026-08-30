@@ -1695,7 +1695,10 @@ function travelers_index(array $a): void {
                      FROM users u LEFT JOIN profiles p ON p.user_id=u.id
                      WHERE u.status='active' AND u.role <> ?
                      ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80", [RMT_EDITORIAL_ROLE]);
-    view('travelers_index', ['people'=>$people, 'me'=>current_user()], [
+    $me = current_user();
+    // Who is here, for you. A directory sorted by review count answers a different question.
+    $suggested = $me ? rmt_follow_suggestions((int) $me['id'], 8) : [];
+    view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested], [
         'title' => 'Travelers on RuinMyTrip',
         'description' => 'Real traveler profiles on RuinMyTrip. Follow people whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
@@ -2696,8 +2699,31 @@ function react_action(array $a): void {
         try { db()->prepare("INSERT INTO $tbl (user_id,target_type,target_id" . ($kind === 'save' ? ',created_at' : '') . ") VALUES (?,?,?" . ($kind === 'save' ? ',?' : '') . ")")
                   ->execute($kind === 'save' ? [(int)$me['id'],$tt,$tid,date('Y-m-d H:i:s')] : [(int)$me['id'],$tt,$tid]); }
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
+
+        /* Somebody liking what you wrote was, until now, invisible to you. It is the smallest
+           signal the site produces and the one people come back for. Saves stay silent: a save is
+           a note to yourself about somebody else's page, and telling them turns a private
+           bookmark into a public act. */
+        if ($kind === 'like') rmt_notify_like((int) $me['id'], $tt, $tid);
     }
     redirect(rmt_return_to());
+}
+
+/**
+ * Tell an author their work was liked, once per person per thing.
+ *
+ * Once ever, not once per like: unliking and liking again is a thing people do by accident with a
+ * double tap, and it must not ring somebody's bell twice.
+ */
+function rmt_notify_like(int $actorId, string $tt, int $tid): void {
+    $owner = rmt_content_owner_id($tt, $tid);
+    if ($owner < 1 || $owner === $actorId) return;
+    $seen = q_one("SELECT 1 x FROM notifications
+                    WHERE user_id=? AND type='like' AND actor_id=? AND target_type=? AND target_id=?",
+                  [$owner, $actorId, $tt, $tid]);
+    if ($seen) return;
+    q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+          [$owner, 'like', $actorId, $tt, $tid, date('Y-m-d H:i:s')]);
 }
 
 /** POST /destination/been — self-asserted "I've been". Not a review, not a rating. */
@@ -4290,7 +4316,8 @@ function posts_index(array $a): void {
     if ($dest) $title = 'Travelers talking about ' . $dest['name'];
     if ($community) $title = $community['title'] . ' — discussion';
 
-    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community'), [
+    $topTags = rmt_top_tags(12);
+    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags'), [
         'title' => $title . ' — RuinMyTrip',
         'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
         // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.
@@ -4375,6 +4402,7 @@ function post_create(array $a): void {
         redirect(rmt_return_to('/talk'));
     }
     $id = rmt_post_create((int) $me['id'], $v['data']);
+    rmt_sync_tags('post', $id, (string) $v['data']['body']);
     if (!empty($_FILES['photo'])) {
         $img = rmt_post_attach_image($id, $_FILES['photo'], (int) $me['id']);
         if (!$img['ok']) flash($img['error']);   // the words are already posted; say what happened
@@ -4406,6 +4434,7 @@ function post_edit_submit(array $a): void {
         redirect('/post/' . (int) $p['id'] . '/edit');
     }
     rmt_post_update((int) $p['id'], $body);
+    rmt_sync_tags('post', (int) $p['id'], $body);
     flash('Post updated.');
     redirect('/post/' . (int) $p['id']);
 }

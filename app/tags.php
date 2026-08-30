@@ -80,6 +80,7 @@ function rmt_top_tags(int $limit = 14): array {
           UNION ALL SELECT tg.tag_id FROM taggings tg JOIN reviews c ON c.id=tg.target_id AND c.status='published' WHERE tg.target_type='review'
           UNION ALL SELECT tg.tag_id FROM taggings tg JOIN guides c ON c.id=tg.target_id AND c.status='published' WHERE tg.target_type='guide'
           UNION ALL SELECT tg.tag_id FROM taggings tg JOIN blog_posts c ON c.id=tg.target_id AND c.status='published' WHERE tg.target_type='blog_post'
+          UNION ALL SELECT tg.tag_id FROM taggings tg JOIN posts c ON c.id=tg.target_id AND c.status='published' WHERE tg.target_type='post'
                   ) x JOIN tags t ON t.id=x.tag_id
                   GROUP BY t.id, t.name ORDER BY n DESC, t.name LIMIT $limit");
 }
@@ -145,7 +146,22 @@ function rmt_tag_items(int $tagId, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections);
+    /* Talk belongs on a topic page more than anything else here: a hashtag is how somebody says
+       what a two-line remark is about, and #solotravel with only long articles under it is a
+       topic page for a site nobody posts on. */
+    $talk = q_all("SELECT p.*, d.name dest_name FROM posts p
+                   LEFT JOIN destinations d ON d.id=p.destination_id
+                   WHERE p.status='published' AND p.id IN $in
+                   ORDER BY p.created_at DESC, p.id DESC LIMIT $limitEach", [$tagId, 'post']);
+    foreach ($talk as &$row) {
+        $row['kind'] = 'post';
+        $row['title'] = rmt_post_title($row);
+        $row['feed_url'] = url('post/' . (int) $row['id']);
+        $row['feed_excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 180, '…');
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $talk);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);

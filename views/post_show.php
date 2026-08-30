@@ -17,7 +17,7 @@
 
   <?php /* No headline. A post is what somebody said, and inventing a title for it on the page would
            put words in their mouth -- the derived one-liner is for the tab and the feed only. */ ?>
-  <div style="font-size:1.12rem;line-height:1.65;margin:18px 0;white-space:pre-wrap"><?= rmt_linkify_mentions(e((string) $p['body'])) ?></div>
+  <div style="font-size:1.12rem;line-height:1.65;margin:18px 0;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(e((string) $p['body']))) ?></div>
 
   <?php if (!empty($p['image_url'])): ?>
     <img src="<?= e(abs_url((string) $p['image_url'])) ?>" alt=""
