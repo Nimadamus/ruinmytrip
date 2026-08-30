@@ -261,3 +261,56 @@ function rmt_seo_flush(int $limit = 500): int {
     q_run("UPDATE seo_ping_queue SET sent_at = ? WHERE url IN ($in)", array_merge([$now], $urls));
     return count($urls);
 }
+
+/* --------------------------------------------------------------- what a result looks like */
+
+/**
+ * A title that survives being shown in a search result.
+ *
+ * Google gives a title roughly 60 characters before it truncates, and every character spent on
+ * something the reader already knows is one the headline does not get. Review pages were spending
+ * theirs on " — review by @ruinmytrip | RuinMyTrip": a suffix on every result, on a site whose
+ * name is already in the URL and the breadcrumb, pushing the actual subject off the end.
+ *
+ * The brand is appended only when it fits. Being recognisable is worth something; being
+ * recognisable instead of legible is not.
+ */
+function rmt_meta_title(string $head, string $brand = 'RuinMyTrip', int $max = 60): string {
+    $head = trim(preg_replace('/\s+/', ' ', strip_tags($head)) ?? '');
+    if ($head === '') return $brand;
+    if (mb_strlen($head) > $max) {
+        $cut = mb_substr($head, 0, $max);
+        $sp = mb_strrpos($cut, ' ');
+        // Never break a word: a title ending "expensi…" reads as a broken page, not a long one.
+        // A headline this long has already used the whole budget, so the brand does not go on.
+        return rtrim($sp !== false && $sp > $max * 0.6 ? mb_substr($cut, 0, $sp) : $cut, " ,;:-–—") . '…';
+    }
+    $withBrand = $head . ' | ' . $brand;
+    return mb_strlen($withBrand) <= $max ? $withBrand : $head;
+}
+
+/**
+ * A description that ends where a sentence does.
+ *
+ * The old one took 155 characters of the body and hung an ellipsis off whatever word it landed in
+ * the middle of, so the one line a searcher reads before deciding stopped mid-thought. Preferring
+ * a sentence boundary costs a few characters and reads like something somebody wrote.
+ */
+function rmt_meta_description(string $text, int $max = 155): string {
+    $text = trim(preg_replace('/\s+/', ' ', strip_tags($text)) ?? '');
+    if ($text === '') return '';
+    if (mb_strlen($text) <= $max) return $text;
+
+    $cut = mb_substr($text, 0, $max);
+    // The last sentence that finishes inside the budget, if it is not so early that we throw the
+    // description away to get it.
+    if (preg_match_all('/[.!?](?=\s|$)/u', $cut, $m, PREG_OFFSET_CAPTURE)) {
+        $last = (int) end($m[0])[1];
+        $upTo = mb_strlen(substr($cut, 0, $last + 1));
+        // A third of the budget is enough: a complete short sentence reads better than a long
+        // one that stops mid-clause, but a two-word opener is not a description.
+        if ($upTo >= $max * 0.35) return mb_substr($cut, 0, $upTo);
+    }
+    $sp = mb_strrpos($cut, ' ');
+    return rtrim($sp !== false ? mb_substr($cut, 0, $sp) : $cut, " ,;:-–—") . '…';
+}

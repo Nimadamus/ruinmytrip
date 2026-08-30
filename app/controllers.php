@@ -824,8 +824,8 @@ function trip_show(array $a): void {
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
     $tags = rmt_tags_for('trip', (int)$t['id']);
     view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags'), [
-        'title' => $t['title'].' — RuinMyTrip',
-        'description' => mb_substr(strip_tags((string)$t['body']),0,150),
+        'title' => rmt_meta_title((string) $t['title']),
+        'description' => rmt_meta_description((string) $t['body']),
         'og_image' => abs_url($t['cover_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>$t['dest_name']?:'Trips','url'=>$t['dest_slug']?url('d/'.$t['dest_slug']):url('explore')],['name'=>$t['title'],'url'=>url('trip/'.$t['id'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$t['title'],
@@ -897,8 +897,8 @@ function guide_show(array $a): void {
                                        (string) ($g['body'] ?? '') . ' ' . (string) ($g['summary'] ?? ''));
 
     view('guide_show', compact('mentions','g','me','comments','likeCount','saveCount','liked','saved','tags'), [
-        'title'=>$g['title'].' — RuinMyTrip',
-        'description'=>$g['summary'],
+        'title'=>rmt_meta_title((string) $g['title']),
+        'description'=>rmt_meta_description((string) $g['summary']),
         'og_image'=>abs_url($g['cover_url']),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Guides','url'=>url('guides')],['name'=>$g['title'],'url'=>url('g/'.$g['slug'])]],
         'jsonld'=>jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$g['title'],'datePublished'=>$g['created_at']]),
@@ -2455,8 +2455,8 @@ function review_show(array $a): void {
         "SELECT COUNT(*) c FROM reviews WHERE user_id = ? AND status = 'published'",
         [(int) $r['user_id']])['c'] ?? 0) === 1;
     view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished','isFirstReview'), [
-        'title' => ($r['title'] ?: $r['subject_name']).' — review by @'.$r['username'].' | RuinMyTrip',
-        'description' => mb_strimwidth(strip_tags((string)$r['body']), 0, 155, '…'),
+        'title' => rmt_meta_title((string) ($r['title'] ?: $r['subject_name'])),
+        'description' => rmt_meta_description((string) $r['body']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
                           ['name'=>$r['title'] ?: $r['subject_name'],'url'=>url(ltrim(rmt_review_path($r),'/'))]],
         'jsonld' => rmt_review_jsonld($r),
@@ -4321,8 +4321,8 @@ function post_show(array $a): void {
     if ($p['dest_slug']) $crumbs[] = ['name' => (string) $p['dest_name'], 'url' => url('d/' . $p['dest_slug'])];
 
     view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me'), [
-        'title' => rmt_post_title($p) . ' — RuinMyTrip',
-        'description' => mb_strimwidth(strip_tags((string) $p['body']), 0, 150, '…'),
+        'title' => rmt_meta_title(rmt_post_title($p)),
+        'description' => rmt_meta_description((string) $p['body']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
         'breadcrumbs' => $crumbs,
         /* DiscussionForumPosting, not Article. Google treats forum-shaped content as its own kind
