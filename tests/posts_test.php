@@ -199,5 +199,29 @@ check('and its name for rendering', (string) rmt_post_get($pid)['place_name'], '
 check('the place page finds it', count(rmt_posts_for_place(60)), 1);
 check('a different place finds nothing', rmt_posts_for_place(61), []);
 
+echo "\n-- structured data --\n";
+$qid = rmt_post_create(1, ['body' => 'How early do you need to book tickets?', 'destination_id' => 10,
+                           'collection_id' => null, 'place_id' => 60]);
+$q = rmt_post_get($qid);
+$q['author'] = ['username' => 'alice'];
+$unanswered = rmt_post_jsonld($q, [], 0);
+check('an unanswered question is not a Q&A page', $unanswered['@type'], 'DiscussionForumPosting');
+$answers = [['id' => 5, 'body' => 'A week ahead in summer.', 'created_at' => '2026-08-30 10:00:00', 'username' => 'bob']];
+$answered = rmt_post_jsonld($q, $answers, 3);
+check('answered, it is', $answered['@type'], 'QAPage');
+check('with the question as the main entity', $answered['mainEntity']['@type'], 'Question');
+check('the answer count is real', $answered['mainEntity']['answerCount'], 1);
+check('likes become upvotes', $answered['mainEntity']['upvoteCount'], 3);
+check('no answer is marked accepted', isset($answered['mainEntity']['acceptedAnswer']), false);
+check('answers carry their author', $answered['mainEntity']['suggestedAnswer'][0]['author']['name'], '@bob');
+
+$sid = rmt_post_create(1, ['body' => 'Ferries beat night buses.', 'destination_id' => 10,
+                           'collection_id' => null, 'place_id' => null]);
+$st = rmt_post_get($sid);
+$st['author'] = ['username' => 'alice'];
+$stmt = rmt_post_jsonld($st, $answers, 0);
+check('a statement with replies stays a forum posting', $stmt['@type'], 'DiscussionForumPosting');
+check('and carries its replies as comments', count($stmt['comment']), 1);
+
 echo $fail ? "\nFAILED: $fail\n" : "\nOK\n";
 exit($fail ? 1 : 0);

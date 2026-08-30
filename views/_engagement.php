@@ -41,7 +41,7 @@ foreach ($comments as $c) {
 }
 $rmt_render_comment = static function (array $c, bool $isReply) use ($me, $returnUrl, $targetType, $targetId, &$rmt_children) {
     ?>
-    <div class="card" style="margin:0 0 10px <?= $isReply ? '28px' : '0' ?>"><div class="card-body" style="padding:12px 16px">
+    <div class="card" id="comment-<?= (int) $c['id'] ?>" style="margin:0 0 10px <?= $isReply ? '28px' : '0' ?>"><div class="card-body" style="padding:12px 16px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
         <span><b>@<?= e($c['username']) ?></b> <span class="hint"><?= e(ago($c['created_at'])) ?></span></span>
         <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>

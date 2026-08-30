@@ -381,3 +381,79 @@ function rmt_posts_top(int $limit = 40, ?int $destId = null, ?int $collectionId 
     );
     return rmt_posts_attach_originals($rows);
 }
+
+/**
+ * Structured data for one post.
+ *
+ * Two shapes, because the same table holds two different things. A post ending in a question mark
+ * with answers under it is a Q&A page, which is the shape Google shows question results from and
+ * exactly what the place pages now collect. Everything else is a forum posting. Describing either
+ * as an Article would be wrong and would compete in a category it cannot win.
+ *
+ * An unanswered question stays a DiscussionForumPosting: QAPage with an empty answer list is a
+ * claim that there is an answer here, and there is not.
+ *
+ * @param array $p        the post, with author filled in
+ * @param array $comments published replies, oldest first
+ */
+function rmt_post_jsonld(array $p, array $comments, int $likeCount = 0): array {
+    $url = url('post/' . (int) $p['id']);
+    $author = static fn(string $username): array =>
+        ['@type' => 'Person', 'name' => '@' . $username, 'url' => url('u/' . $username)];
+    $body = (string) $p['body'];
+    $isQuestion = str_ends_with(rtrim($body), '?');
+
+    if ($isQuestion && $comments) {
+        $answers = array_map(static fn(array $c): array => [
+            '@type' => 'Answer',
+            'text' => (string) $c['body'],
+            'dateCreated' => $c['created_at'],
+            'url' => $url . '#comment-' . (int) $c['id'],
+            'author' => $author((string) $c['username']),
+        ], $comments);
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'QAPage',
+            'mainEntity' => [
+                '@type' => 'Question',
+                'name' => rmt_post_title($p),
+                'text' => $body,
+                'answerCount' => count($answers),
+                'upvoteCount' => $likeCount,
+                'dateCreated' => $p['created_at'],
+                'author' => $author((string) $p['author']['username']),
+                'url' => $url,
+                // The oldest answer is not "accepted" -- nobody accepted it -- so every answer is
+                // suggested. Marking one accepted with no signal behind it is a fabricated fact.
+                'suggestedAnswer' => $answers,
+            ],
+        ];
+    }
+
+    return [
+        '@context' => 'https://schema.org',
+        '@type' => 'DiscussionForumPosting',
+        'headline' => rmt_post_title($p),
+        'text' => $body,
+        'url' => $url,
+        'datePublished' => $p['created_at'],
+        'dateModified' => $p['updated_at'] ?: $p['created_at'],
+        'author' => $author((string) $p['author']['username']),
+        'image' => !empty($p['image_url']) ? abs_url((string) $p['image_url']) : null,
+        'interactionStatistic' => [
+            ['@type' => 'InteractionCounter',
+             'interactionType' => 'https://schema.org/CommentAction',
+             'userInteractionCount' => count($comments)],
+            ['@type' => 'InteractionCounter',
+             'interactionType' => 'https://schema.org/LikeAction',
+             'userInteractionCount' => $likeCount],
+        ],
+        'comment' => array_map(static fn(array $c): array => [
+            '@type' => 'Comment',
+            'text' => (string) $c['body'],
+            'datePublished' => $c['created_at'],
+            'author' => $author((string) $c['username']),
+        ], $comments),
+    ];
+}

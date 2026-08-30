@@ -4438,36 +4438,10 @@ function post_show(array $a): void {
         'description' => rmt_meta_description((string) $p['body']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
         'breadcrumbs' => $crumbs,
-        /* DiscussionForumPosting, not Article. Google treats forum-shaped content as its own kind
-           of result, and describing a two-line question as an article would be both wrong and a
-           worse fit for the surface it can actually appear in. */
-        'jsonld' => jsonld([
-            '@context' => 'https://schema.org',
-            '@type' => 'DiscussionForumPosting',
-            'headline' => rmt_post_title($p),
-            'text' => (string) $p['body'],
-            'url' => url('post/' . (int) $p['id']),
-            'datePublished' => $p['created_at'],
-            'dateModified' => $p['updated_at'] ?: $p['created_at'],
-            'author' => ['@type' => 'Person', 'name' => '@' . $p['author']['username'],
-                         'url' => url('u/' . $p['author']['username'])],
-            'image' => !empty($p['image_url']) ? abs_url((string) $p['image_url']) : null,
-            'interactionStatistic' => [
-                ['@type' => 'InteractionCounter',
-                 'interactionType' => 'https://schema.org/CommentAction',
-                 'userInteractionCount' => count($comments)],
-                ['@type' => 'InteractionCounter',
-                 'interactionType' => 'https://schema.org/LikeAction',
-                 'userInteractionCount' => $likeCount],
-            ],
-            'comment' => array_map(static fn(array $c): array => [
-                '@type' => 'Comment',
-                'text' => (string) $c['body'],
-                'datePublished' => $c['created_at'],
-                'author' => ['@type' => 'Person', 'name' => '@' . $c['username'],
-                             'url' => url('u/' . $c['username'])],
-            ], $comments),
-        ]),
+        /* Two shapes for two different things; see rmt_post_jsonld(). A question with answers is
+           a Q&A page, which is what the place pages now collect and what Google shows question
+           results from. */
+        'jsonld' => jsonld(rmt_post_jsonld($p, $comments, $likeCount)),
     ]);
 }
 
