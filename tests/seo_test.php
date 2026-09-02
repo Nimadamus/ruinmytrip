@@ -24,7 +24,7 @@ $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT
 $pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, destination_id INT, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)");
-$pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, place_id INT, slug TEXT, title TEXT, subject_name TEXT, status TEXT, created_at TEXT)");
+$pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, place_id INT, slug TEXT, title TEXT, subject_name TEXT, what_ruined TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT)");
 $pdo->exec("CREATE TABLE guides (id INTEGER PRIMARY KEY, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, body TEXT, status TEXT, created_at TEXT)");

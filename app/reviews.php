@@ -168,3 +168,32 @@ function rmt_review_can_view(array $r, ?array $user): bool {
 function rmt_review_can_edit(array $r, ?array $user): bool {
     return $user !== null && (int) $r['user_id'] === (int) $user['id'];
 }
+
+/* ---------- "What ruined it" ---------- */
+
+/**
+ * Published reviews that carry a what_ruined line, by an active author, newest first. The one
+ * sentence people actually came to say, collected on one page (/ruined) and quoted on the home
+ * page as the reason to add yours.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_reviews_ruined(int $limit = 60, ?int $destId = null): array {
+    $where = "r.status='published' AND u.status='active' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''";
+    $args = [];
+    if ($destId) { $where .= ' AND r.destination_id = ?'; $args[] = $destId; }
+    return q_all("SELECT r.*, u.username, u.role, d.name dest_name, d.slug dest_slug, pl.name place_name, pl.slug place_slug
+                    FROM reviews r
+                    JOIN users u ON u.id = r.user_id
+               LEFT JOIN destinations d ON d.id = r.destination_id
+               LEFT JOIN places pl ON pl.id = r.place_id
+                   WHERE $where
+                ORDER BY r.created_at DESC, r.id DESC LIMIT " . (int) $limit, $args);
+}
+
+function rmt_reviews_ruined_count(?int $destId = null): int {
+    $where = "r.status='published' AND u.status='active' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''";
+    $args = [];
+    if ($destId) { $where .= ' AND r.destination_id = ?'; $args[] = $destId; }
+    return (int) (q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id WHERE $where", $args)['c'] ?? 0);
+}

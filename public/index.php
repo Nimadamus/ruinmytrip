@@ -40,6 +40,7 @@ $routes = [
     ['POST', '#^/trip/(?<id>\d+)/delete$#',    'trip_delete'],
     ['GET',  '#^/trip/(?<id>\d+)(?:/[a-z0-9\-]+)?$#', 'trip_show'],
     ['GET',  '#^/reviews$#',                   'reviews_index'],
+    ['GET',  '#^/ruined$#',                    'ruined_page'],
     ['GET',  '#^/contribute$#',                'contribute_page'],
     ['POST', '#^/event$#',                     'contribution_event'],
     ['POST', '#^/contribute/suggest-place$#',   'contribute_suggest_place'],

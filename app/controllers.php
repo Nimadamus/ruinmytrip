@@ -69,7 +69,10 @@ function home(array $a): void {
     $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
     $latestPosts = q_all("SELECT slug, title, summary, cover_url, category, created_at FROM blog_posts WHERE status='published' ORDER BY created_at DESC, id DESC LIMIT 3");
     $refUser = current_user() ? null : rmt_invite_referrer();
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser'), [
+    $ruinedLines = rmt_reviews_ruined(3);
+    $ruinedTotal = rmt_reviews_ruined_count();
+    $askDests = all_dests();
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests'), [
         'title' => 'RuinMyTrip — 2026 travel costs, tourist taxes, tickets and honest reviews',
         'description' => 'What a trip actually costs in 2026: tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
@@ -2335,6 +2338,29 @@ function contribute_suggest_place(array $a): void {
     redirect('/contribute');
 }
 
+/**
+ * GET /ruined — every "what ruined it" line on one page, and the box that asks for yours.
+ * The page a stranger lands on from a shared quote, and the page that turns them into a writer.
+ */
+function ruined_page(array $a): void {
+    $slug = trim((string) input('d'));
+    $dest = $slug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$slug]) : null;
+    $destId = $dest ? (int) $dest['id'] : null;
+    $rows = rmt_reviews_ruined(90, $destId);
+    $total = rmt_reviews_ruined_count($destId);
+    $dests = all_dests();
+    $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'What ruined it', 'url' => url('ruined')]];
+    if ($dest) $crumbs[] = ['name' => (string) $dest['name'], 'url' => url('ruined?d=' . $dest['slug'])];
+    view('ruined', compact('rows', 'dests', 'dest', 'total'), [
+        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] : 'What ruined the trip') . ' — RuinMyTrip',
+        'description' => $dest
+            ? 'One sentence each from travelers about what nearly ruined ' . $dest['name'] . ', and a place to add yours.'
+            : 'The thing travelers wish somebody had warned them about, one sentence each. Read them before you go, add yours when you get back.',
+        'robots' => rmt_robots_for(rmt_indexable($dest ? 'filter' : 'static')),
+        'breadcrumbs' => $crumbs,
+    ]);
+}
+
 function review_new_form(array $a): void {
     // Recorded BEFORE require_login sends an anonymous visitor away, because "wanted the form and
     // had no account" is the single most important step in this funnel and it is invisible after
@@ -2358,6 +2384,7 @@ function review_new_form(array $a): void {
         $r = ['destination_id' => (int) $bound['destination_id'],
               'subject_type'   => $bound['type'],
               'subject_name'   => $bound['name']];
+        if (($ruined = trim((string) input('ruined'))) !== '') $r['what_ruined'] = mb_substr($ruined, 0, 2000);
         rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'place'),
                                         'place_id' => (int) $bound['id'],
                                         'destination_id' => (int) $bound['destination_id']]);
@@ -2367,6 +2394,9 @@ function review_new_form(array $a): void {
     }
     $preselect = (int) input('destination');
     $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
+    // The front-door question ("What ruined your trip?") arrives here as ?ruined=; it opens the
+    // form with the sentence already in the box, which is the whole point of asking for it first.
+    if (($ruined = trim((string) input('ruined'))) !== '') $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
     view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[]],

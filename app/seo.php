@@ -124,6 +124,8 @@ function rmt_sitemap_entries(): array {
     $add('/affiliate');
     $add('/safety');
 
+    if (function_exists('rmt_reviews_ruined_count') && rmt_reviews_ruined_count() > 0) $add('/ruined');
+
     $nBlog = (int) (q_one("SELECT COUNT(*) c FROM blog_posts WHERE status='published'")['c'] ?? 0);
     if ($nBlog > 0) $add('/blog');
 

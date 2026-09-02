@@ -40,6 +40,26 @@
   </div>
 </section>
 
+<?php /* The one question the site is named after, asked first. A visitor who came to read leaves
+         having said the thing that annoyed them, and that sentence becomes their first review. */ ?>
+<section class="block" style="background:linear-gradient(120deg,var(--ink),#163a4a);color:#fff"><div class="wrap">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;align-items:start">
+    <div><?php $dests = $askDests ?? []; $askVariant = 'hero'; include __DIR__ . '/_ruined_ask.php'; ?></div>
+    <div>
+      <p class="eyebrow" style="color:#7dd3c8;margin:0 0 8px">What ruined it for others</p>
+      <?php if (!empty($ruinedLines)): ?>
+        <?php foreach ($ruinedLines as $rl): ?>
+          <p style="margin:0 0 10px;font-size:1.02rem;line-height:1.5">“<?= e(mb_strimwidth(trim((string) $rl['what_ruined']), 0, 140, '…')) ?>”
+            <span style="opacity:.75;font-size:.9rem"> — <?= e((string) ($rl['place_name'] ?: $rl['subject_name'] ?: $rl['dest_name'])) ?></span></p>
+        <?php endforeach; ?>
+        <p style="margin:12px 0 0"><a href="<?= e(url('ruined')) ?>" style="color:#7dd3c8">All <?= (int) ($ruinedTotal ?? 0) ?> warnings →</a></p>
+      <?php else: ?>
+        <p style="margin:0;opacity:.85">Nobody has said theirs yet. The first one is the one people remember.</p>
+      <?php endif; ?>
+    </div>
+  </div>
+</div></section>
+
 <section class="block" style="background:#fff;border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="section-head"><div><p class="eyebrow">Plan smarter</p><h2>2026 travel guides</h2></div>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('guides')) ?>">All guides</a></div>
