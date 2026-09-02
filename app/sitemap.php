@@ -66,6 +66,7 @@ function rmt_sitemap_group(string $group): array {
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
 
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
+            if (function_exists('rmt_reviews_ruined_count') && rmt_reviews_ruined_count() > 0) $add('/ruined');
             if ($has("SELECT COUNT(*) c FROM blog_posts WHERE status='published'"))   $add('/blog');
             if ($has("SELECT COUNT(*) c FROM collections WHERE status='published'"))  $add('/collections');
             // Same rule the browse page applies to itself: /communities is worth a result once at
