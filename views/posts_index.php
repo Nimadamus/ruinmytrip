@@ -41,8 +41,24 @@
           <label class="btn btn-ghost btn-sm" style="cursor:pointer">
             Photo <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none">
           </label>
+          <button type="button" class="btn btn-ghost btn-sm js-poll-toggle" aria-expanded="false" aria-controls="poll-fields">Poll</button>
           <button class="btn btn-accent">Post</button>
         </div>
+        <?php /* A poll is the cheapest way to make a stranger touch the page: one click, no words.
+                 Hidden until asked for so the composer stays a box you type into. */ ?>
+        <fieldset id="poll-fields" hidden style="border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0 0">
+          <legend class="hint">Poll choices (2 to 4)</legend>
+          <?php for ($pi = 0; $pi < RMT_POLL_MAX_OPTIONS; $pi++): ?>
+            <input type="text" name="poll[]" maxlength="<?= RMT_POLL_LABEL_MAX ?>" placeholder="Choice <?= $pi + 1 ?><?= $pi > 1 ? ' (optional)' : '' ?>"
+                   style="margin:4px 0;max-width:420px;display:block">
+          <?php endfor; ?>
+          <label class="hint" style="display:block;margin-top:6px">Runs for
+            <select name="poll_days"><option value="1">1 day</option><option value="3" selected>3 days</option><option value="7">7 days</option></select>
+          </label>
+        </fieldset>
+        <script>(function(){var b=document.querySelector('.js-poll-toggle'),f=document.getElementById('poll-fields');if(!b||!f)return;
+          b.addEventListener('click',function(){var open=f.hidden;f.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');
+          if(open){var i=f.querySelector('input');if(i)i.focus();}else{f.querySelectorAll('input').forEach(function(x){x.value='';});}});})();</script>
       </form>
     </div></div>
   <?php else: ?>
@@ -96,6 +112,8 @@
           <p class="hint" style="margin:.4rem 0 0">↻ reposted<?= !empty($p['original']) ? ' @'.e((string) $p['original']['username']) : '' ?></p>
         <?php endif; ?>
         <p style="margin:.6rem 0 .4rem;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e(mb_strimwidth((string) $p['body'], 0, 500, '…'))))) ?></p>
+        <?php if (!empty($polls[(int) $p['id']])): $poll = $polls[(int) $p['id']]; $postId = (int) $p['id'];
+                $pollReturn = url('talk' . (($_SERVER['QUERY_STRING'] ?? '') !== '' ? '?' . $_SERVER['QUERY_STRING'] : '')); include __DIR__ . '/_poll.php'; endif; ?>
         <?php if (!empty($p['image_url'])): ?>
           <a href="<?= e(url('post/'.(int) $p['id'])) ?>"><img loading="lazy" src="<?= e(abs_url((string) $p['image_url'])) ?>"
                alt="" style="width:100%;max-height:420px;object-fit:cover;border-radius:10px;margin:.2rem 0 .5rem"></a>

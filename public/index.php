@@ -94,6 +94,7 @@ $routes = [
     ['GET',  '#^/post/(?<id>\d+)/edit$#',      'post_edit_form'],
     ['POST', '#^/post/(?<id>\d+)/edit$#',      'post_edit_submit'],
     ['POST', '#^/post/(?<id>\d+)/delete$#',    'post_delete'],
+    ['POST', '#^/post/(?<id>\d+)/vote$#',      'post_vote'],
     ['POST', '#^/post/(?<id>\d+)/repost$#',    'post_repost'],
     ['GET',  '#^/post/(?<id>\d+)$#',           'post_show'],
     ['GET',  '#^/meetups$#',                   'meetups_index'],

@@ -22,6 +22,8 @@
            put words in their mouth -- the derived one-liner is for the tab and the feed only. */ ?>
   <div style="font-size:1.12rem;line-height:1.65;margin:18px 0;white-space:pre-wrap"><?= rmt_linkify_tags(rmt_linkify_mentions(e((string) $p['body']))) ?></div>
 
+  <?php if (!empty($poll)): $postId = (int) $p['id']; include __DIR__ . '/_poll.php'; endif; ?>
+
   <?php /* What this passes on, quoted rather than restated, so the credit is unambiguous. */ ?>
   <?php if ($original): ?>
     <div class="card" style="margin:0 0 18px"><div class="card-body" style="padding:14px 16px">

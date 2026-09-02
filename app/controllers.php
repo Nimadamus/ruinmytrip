@@ -4409,7 +4409,8 @@ function posts_index(array $a): void {
     if ($community) $title = $community['title'] . ' — discussion';
 
     $topTags = rmt_top_tags(12);
-    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort', 'place'), [
+    $polls = rmt_polls_for_posts(array_column($posts, 'id'), $me ? (int) $me['id'] : null);
+    view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort', 'place', 'polls'), [
         'title' => $title . ' — RuinMyTrip',
         'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
         // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.
@@ -4445,7 +4446,8 @@ function post_show(array $a): void {
     if ($p['dest_slug']) $crumbs[] = ['name' => (string) $p['dest_name'], 'url' => url('d/' . $p['dest_slug'])];
 
     $related = rmt_posts_related($p, 4);
-    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount', 'related'), [
+    $poll = rmt_poll_for_post((int) $p['id'], $me ? (int) $me['id'] : null);
+    view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount', 'related', 'poll'), [
         'title' => rmt_meta_title(rmt_post_title($p)),
         'description' => rmt_meta_description((string) $p['body']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
@@ -4469,11 +4471,13 @@ function post_create(array $a): void {
         redirect(rmt_return_to('/talk'));
     }
     $v = rmt_post_validate($_POST, $me);
-    if (!$v['ok']) {
-        flash($v['errors'][0]);
+    $poll = rmt_poll_validate($_POST);
+    if (!$v['ok'] || !$poll['ok']) {
+        flash($v['ok'] ? $poll['errors'][0] : $v['errors'][0]);
         redirect(rmt_return_to('/talk'));
     }
     $id = rmt_post_create((int) $me['id'], $v['data']);
+    if ($poll['options']) rmt_poll_create($id, $poll['options'], $poll['days']);
     rmt_sync_tags('post', $id, (string) $v['data']['body']);
     if (!empty($_FILES['photo'])) {
         $img = rmt_post_attach_image($id, $_FILES['photo'], (int) $me['id']);
@@ -4597,6 +4601,21 @@ function cron_indexnow(array $a): void {
 }
 
 /** POST /post/{id}/repost — pass it on, with or without a comment of your own. */
+/** POST /post/{id}/vote — cast or move a poll vote. A vote is one click; it needs an account, not a confirmed email. */
+function post_vote(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $p = rmt_post_get((int) $a['id']);
+    if (!$p || $p['status'] !== 'published') not_found();
+    if (!rmt_rate_ok('react', (string) $me['id'], 120, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(rmt_return_to('/post/' . (int) $p['id']));
+    }
+    $r = rmt_poll_vote((int) $p['id'], (int) input('option_id'), (int) $me['id']);
+    if (!$r['ok']) flash($r['error']);
+    redirect(rmt_return_to('/post/' . (int) $p['id']));
+}
+
 function post_repost(array $a): void {
     require_verified_email(); csrf_check();
     $me = current_user();
