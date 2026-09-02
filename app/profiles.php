@@ -38,6 +38,8 @@ function rmt_profile_stats(int $uid): array {
         // Talk is the thing most members produce most of, so leaving it out of the row made the
         // busiest profiles look like the emptiest ones.
         'posts'     => $one("SELECT COUNT(*) c FROM posts   WHERE user_id=? AND status='published'", [$uid]),
+        // Members this person brought here on their invite link. A fact about what they did.
+        'invited'   => $one("SELECT COUNT(*) c FROM users WHERE invited_by=? AND status='active'", [$uid]),
         // "Places visited" = distinct destinations the user has actually written about, from
         // either a review or a trip. Not a self-declared number.
         'places'    => $one("SELECT COUNT(*) c FROM (

@@ -56,6 +56,7 @@
         <a href="<?= e(url('matches')) ?>">Matches</a>
         <a href="<?= e(url('feed')) ?>">Feed</a>
         <a href="<?= e(url('saved')) ?>">Saved</a>
+        <a href="<?= e(url('invite')) ?>">Invite</a>
         <a href="<?= e(url('messages')) ?>" title="Messages">✉️<?php $unread = rmt_unread_message_count((int)$me['id']); if ($unread): ?> <span class="chip" style="background:#0f766e;color:#fff"><?= $unread ?></span><?php endif; ?></a>
         <a href="<?= e(url('notifications')) ?>" title="Notifications">🔔<?php $unseen = rmt_unread_notification_count((int)$me['id']); if ($unseen): ?> <span class="chip" style="background:#b42318;color:#fff"><?= $unseen ?></span><?php endif; ?></a>
         <?php if (in_array($me['role'],['admin','mod'],true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>

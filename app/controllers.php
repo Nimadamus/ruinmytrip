@@ -68,7 +68,8 @@ function home(array $a): void {
     $stat_travelers = (int)(q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
     $latestPosts = q_all("SELECT slug, title, summary, cover_url, category, created_at FROM blog_posts WHERE status='published' ORDER BY created_at DESC, id DESC LIMIT 3");
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts'), [
+    $refUser = current_user() ? null : rmt_invite_referrer();
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser'), [
         'title' => 'RuinMyTrip — 2026 travel costs, tourist taxes, tickets and honest reviews',
         'description' => 'What a trip actually costs in 2026: tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
@@ -1984,6 +1985,16 @@ function search(array $a): void {
         // somebody else's words, and one per query is an infinite set of near-duplicates.
         'robots' => rmt_robots_for(rmt_indexable('search')),
     ]);
+}
+
+/** GET /invite — a member's personal link, who it brought, and the words to send with it. */
+function invite_page(array $a): void {
+    require_login(); $me = current_user();
+    view('invite', [
+        'me' => $me, 'link' => rmt_invite_link($me), 'message' => rmt_invite_message($me),
+        'count' => rmt_invite_count((int) $me['id']), 'recent' => rmt_invite_recent((int) $me['id']),
+    ], ['title' => 'Invite a traveler — RuinMyTrip', 'description' => 'Bring somebody who has a story about a trip that went sideways.',
+        'robots' => 'noindex, follow']);
 }
 
 function notifications(array $a): void {

@@ -119,6 +119,7 @@ $routes = [
     ['GET',  '#^/suggest$#',                   'suggest_json'],
     ['GET',  '#^/suggest/users$#',             'suggest_users_json'],
     ['POST', '#^/suggest/click$#',             'suggest_click'],
+    ['GET',  '#^/invite$#',                    'invite_page'],
     ['GET',  '#^/notifications$#',             'notifications'],
     ['GET',  '#^/messages$#',                  'messages_index'],
     ['GET',  '#^/messages/(?<username>[A-Za-z0-9_]+)$#',      'messages_thread'],

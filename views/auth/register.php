@@ -14,6 +14,9 @@
              were about to write. Carried through the form so a validation error does not lose it
              either. */ ?>
     <input type="hidden" name="return" value="<?= e((string) ($return ?? '')) ?>">
+    <?php if (function_exists('rmt_invite_referrer_name') && ($refName = rmt_invite_referrer_name())): ?>
+      <p class="hint" style="margin:0 0 10px">Invited by <b>@<?= e($refName) ?></b>. They will hear when you join.</p>
+    <?php endif; ?>
     <label for="username">Username</label>
     <input type="text" id="username" name="username" value="<?= e(input('username')) ?>" required pattern="[A-Za-z0-9_]{3,24}" autocomplete="username">
     <label for="email">Email</label>

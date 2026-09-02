@@ -42,6 +42,9 @@
         <?php if ((int) ($stats['posts'] ?? 0) > 0): ?>
           <span><b><?= (int)$stats['posts'] ?></b> <?= $stats['posts'] === 1 ? 'post' : 'posts' ?></span>
         <?php endif; ?>
+        <?php if ((int) ($stats['invited'] ?? 0) > 0): ?>
+          <span><b><?= (int)$stats['invited'] ?></b> <?= $stats['invited'] === 1 ? 'traveler brought' : 'travelers brought' ?></span>
+        <?php endif; ?>
         <?php if ((int) $stats['photos'] > 0): ?>
           <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <?php endif; ?>

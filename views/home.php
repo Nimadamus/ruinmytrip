@@ -1,4 +1,13 @@
 <?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts */ ?>
+<?php if (!empty($refUser)): ?>
+  <?php /* The one line that turns a forwarded link into a signup: who sent it, by name. */ ?>
+  <div class="wrap" style="margin-top:14px"><div class="card"><div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <img class="avatar" style="width:40px;height:40px" src="<?= e(avatar_url($refUser['avatar_url'] ?? null)) ?>" alt="">
+    <div style="flex:1;min-width:200px"><b>@<?= e((string) $refUser['username']) ?></b> invited you to RuinMyTrip.
+      <span class="muted">Join free, follow them, and say what went wrong on your last trip.</span></div>
+    <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join</a>
+  </div></div></div>
+<?php endif; ?>
 <section class="hero">
   <div class="hero-bg" style="background-image:url('<?= e(url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg')) ?>')"></div>
   <div class="hero-inner">

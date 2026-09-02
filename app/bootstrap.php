@@ -38,6 +38,7 @@ require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/polls.php';
 require BASE_PATH . '/app/cards.php';
+require BASE_PATH . '/app/invites.php';
 require BASE_PATH . '/app/digest.php';
 require BASE_PATH . '/app/notify_email.php';
 require BASE_PATH . '/app/visits.php';
@@ -67,4 +68,6 @@ if (PHP_SAPI !== 'cli') {
     session_name($config['session_name']);
     session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => ($config['app_env'] === 'production')]);
     session_start();
+    // A visitor who arrived on somebody's invite link is remembered until they sign up.
+    rmt_invite_capture();
 }

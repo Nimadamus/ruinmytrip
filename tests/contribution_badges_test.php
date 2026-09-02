@@ -31,7 +31,7 @@ function check(string $name, $got, $expect): void {
 }
 
 $pdo = db();
-$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)");
+$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT, invited_by INT)");
 $pdo->exec("CREATE TABLE profiles (user_id INTEGER PRIMARY KEY, display_name TEXT, avatar_url TEXT, bio TEXT, home_city TEXT, credibility_score INT)");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT, place_id INT, status TEXT, rating INT, created_at TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT, status TEXT)");

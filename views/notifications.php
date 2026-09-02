@@ -49,6 +49,10 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='invite_joined' && $n['actor']): ?>
+          <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> joined from your invite link. Say hi.</a>
+        <?php elseif ($n['type']==='invite_joined'): ?>
+          <b>Someone</b> joined from your invite link, then left.
         <?php elseif ($n['type']==='repost'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url('post', (int)$n['target_id']);

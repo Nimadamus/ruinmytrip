@@ -177,6 +177,7 @@ function register_user(string $username, string $email, string $password, string
         return ['ok' => false, 'errors' => $errors ?: ['That email or username is already taken.']];
     }
     q_run('INSERT INTO profiles (user_id, display_name, credibility_score) VALUES (?,?,0)', [$id, $username]);
+    if (function_exists('rmt_invite_attach')) rmt_invite_attach((int) $id);
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$id;
 
