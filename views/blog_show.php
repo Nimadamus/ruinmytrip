@@ -16,6 +16,14 @@
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?= e(url('blog')) ?>">← Back to blog</a>
+  </div>
+
+  <?php /* A reader who came for a price has a trip behind them. Ask for the sentence, here, while
+           the page is still open: it becomes their first review. */ ?>
+  <div class="card" style="margin:22px 0"><div class="card-body">
+    <?php $dests = $askDests ?? []; $askVariant = 'card'; include __DIR__ . '/_ruined_ask.php'; ?>
+  </div></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
     <?php if (rmt_blog_can_edit($p, $me)): ?>
       <a class="btn btn-ghost" href="<?= e(url('blog/'.(int)$p['id'].'/edit')) ?>">Edit</a>
     <?php endif; ?>

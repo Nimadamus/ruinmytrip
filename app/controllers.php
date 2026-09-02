@@ -1093,7 +1093,8 @@ function blog_show(array $a): void {
            'description'=>$p['summary'],'datePublished'=>$p['created_at'],
            'url'=>url('blog/'.$p['slug'])];
     if ($isEd) $ld['author'] = ['@type'=>'Organization','name'=>rmt_editorial_name()];
-    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags'), [
+    $askDests = all_dests();
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests'), [
         'title' => $p['title'].' | RuinMyTrip',
         'description' => $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
