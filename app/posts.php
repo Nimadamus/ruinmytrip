@@ -99,7 +99,7 @@ function rmt_post_get(int $postId): ?array {
                     FROM posts p
                LEFT JOIN destinations d ON d.id = p.destination_id
                LEFT JOIN collections c ON c.id = p.collection_id
-               LEFT JOIN places pl ON pl.id = p.place_id AND pl.status = "active"
+               LEFT JOIN places pl ON pl.id = p.place_id AND pl.status = 'active'
                    WHERE p.id = ?', [$postId]);
 }
 
