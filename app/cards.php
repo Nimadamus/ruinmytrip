@@ -105,10 +105,11 @@ function rmt_card_render(array $spec): string {
     // one is still whole.
     $maxW = $W - $pad * 2;
     $size = 60; $lines = [];
+    $maxLines = !empty($spec['rating']) ? 3 : 4;      // the stars take a line of their own
     foreach ([60, 52, 46, 40] as $size) {
-        $lines = rmt_card_wrap((string) $spec['title'], $bold, $size, $maxW, 4);
+        $lines = rmt_card_wrap((string) $spec['title'], $bold, $size, $maxW, $maxLines);
         $probe = rmt_card_wrap((string) $spec['title'], $bold, $size, $maxW, 12);
-        if (count($probe) <= 4) break;
+        if (count($probe) <= $maxLines) break;
     }
     $lineH = (int) round($size * 1.32);
     $y = 178;
@@ -129,17 +130,21 @@ function rmt_card_render(array $spec): string {
         imagettftext($im, 28, 0, $pad, min($y + 26, $H - 120), $muted, $regular, $mLines[0] ?? '');
     }
 
-    // Pills along the bottom left, domain bottom right.
+    // Pills along the bottom left, domain bottom right. A pill that would run into the domain
+    // is shortened, and one that cannot fit at all is dropped.
+    $dom = 'ruinmytrip.com';
+    $dw = rmt_card_text_width($dom, $regular, 24);
     $px = $pad; $py = $H - 62;
     foreach (array_slice((array) ($spec['pills'] ?? []), 0, 4) as $pill) {
-        $pill = (string) $pill;
+        $avail = ($W - $pad - $dw - 40) - $px - 32;
+        if ($avail < 100) break;
+        $pill = rmt_card_wrap((string) $pill, $regular, 22, $avail, 1)[0] ?? '';
+        if ($pill === '') break;
         $tw = rmt_card_text_width($pill, $regular, 22);
         imagefilledrectangle($im, $px, $py - 34, $px + $tw + 32, $py + 12, $panel);
         imagettftext($im, 22, 0, $px + 16, $py, $white, $regular, $pill);
         $px += $tw + 46;
     }
-    $dom = 'ruinmytrip.com';
-    $dw = rmt_card_text_width($dom, $regular, 24);
     imagettftext($im, 24, 0, $W - $pad - $dw, $H - 52, $brand, $regular, $dom);
 
     ob_start();

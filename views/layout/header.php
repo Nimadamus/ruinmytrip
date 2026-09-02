@@ -19,6 +19,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f1b2d">
 <link rel="manifest" href="<?= e(url('manifest.webmanifest')) ?>">
+<?php if (!empty($me) && function_exists('rmt_push_enabled') && rmt_push_enabled()): ?>
+<meta name="vapid-key" content="<?= e(rmt_push_public_key()) ?>">
+<script src="<?= e(url('assets/js/push.js')) ?>" defer></script>
+<?php endif; ?>
 <link rel="apple-touch-icon" href="<?= e(url('assets/img/icon-192.png')) ?>">
 <?php /* The autocomplete click beacon posts a CSRF token like every other write on the site. */ ?>
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">

@@ -1,6 +1,15 @@
 <?php /** @var array $items @var array $me */ ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Notifications</h1>
+  <?php if (rmt_push_enabled()): ?>
+    <?php /* Shown only where the browser can do it; push.js hides it again once a device is on. */ ?>
+    <div id="push-cta" hidden class="card" style="margin:12px 0"><div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:220px"><b>Get these on your phone.</b>
+        <span class="muted">Replies, mentions, messages and matches, the moment they happen.</span></div>
+      <button type="button" class="btn btn-primary js-push-on">Turn on</button>
+    </div></div>
+    <p id="push-state" class="hint" hidden></p>
+  <?php endif; ?>
   <?php if(!$items):?>
     <div class="empty-cta" style="margin-top:16px">
       <h3>Nothing yet.</h3>

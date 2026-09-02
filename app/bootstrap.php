@@ -46,6 +46,7 @@ require BASE_PATH . '/app/profiles.php';
 require BASE_PATH . '/app/tags.php';
 require BASE_PATH . '/app/mentions.php';
 require BASE_PATH . '/app/messages.php';
+require BASE_PATH . '/app/push.php';
 require BASE_PATH . '/app/storage.php';
 require BASE_PATH . '/app/search_suggest.php';
 require BASE_PATH . '/app/seo.php';
@@ -70,4 +71,7 @@ if (PHP_SAPI !== 'cli') {
     session_start();
     // A visitor who arrived on somebody's invite link is remembered until they sign up.
     rmt_invite_capture();
+    // Every notification written during a POST is pushed to the recipient's devices after the
+    // response is sent. See rmt_push_flush(); without VAPID keys this is a no-op.
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') register_shutdown_function('rmt_push_flush_at_shutdown');
 }

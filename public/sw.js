@@ -6,7 +6,7 @@
  * caches is the shell: stylesheet, script, icons, and an offline page to land on instead of the
  * browser's dinosaur.
  */
-const VERSION = 'rmt-v1';
+const VERSION = 'rmt-v2';
 const SHELL = [
   '/offline.html',
   '/assets/css/app.css',
@@ -53,4 +53,29 @@ self.addEventListener('fetch', (e) => {
       })
     );
   }
+});
+
+/* Web push: the server sends {title, body, url, tag} (see app/push.php). Show it, and on tap go
+   where it points, reusing an open tab when there is one. */
+self.addEventListener('push', (e) => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'RuinMyTrip', {
+    body: d.body || '',
+    icon: '/assets/img/icon-192.png',
+    badge: '/assets/img/icon-192.png',
+    tag: d.tag || undefined,
+    data: { url: d.url || '/notifications' },
+  }));
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/notifications';
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    for (const c of list) {
+      if ('focus' in c) { c.navigate(url); return c.focus(); }
+    }
+    return self.clients.openWindow(url);
+  }));
 });

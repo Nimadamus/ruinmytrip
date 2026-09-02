@@ -1987,6 +1987,35 @@ function search(array $a): void {
     ]);
 }
 
+/** POST /push/subscribe — a device registers for push. Form-encoded, CSRF like every other write. */
+function push_subscribe(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    header('Content-Type: application/json');
+    if (!rmt_push_enabled()) { echo json_encode(['ok' => false, 'error' => 'push_disabled']); exit; }
+    $ok = rmt_push_subscribe((int) $me['id'], input('endpoint'), input('p256dh'), input('auth'),
+                             (string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    echo json_encode(['ok' => $ok]); exit;
+}
+
+/** POST /push/unsubscribe */
+function push_unsubscribe(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    rmt_push_unsubscribe(input('endpoint'), (int) $me['id']);
+    header('Content-Type: application/json');
+    echo json_encode(['ok' => true]); exit;
+}
+
+/** GET /cron/push?key= — sweep anything the request-time flush did not reach (GET-created rows, retries). */
+function cron_push(array $a): void {
+    $key = (string) (getenv('CRON_KEY') ?: '');
+    $given = (string) input('key');
+    if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
+    header('Content-Type: text/plain; charset=utf-8');
+    header('X-Robots-Tag: noindex');
+    echo 'sent=' . rmt_push_flush(200) . "\n";
+    exit;
+}
+
 /** GET /invite — a member's personal link, who it brought, and the words to send with it. */
 function invite_page(array $a): void {
     require_login(); $me = current_user();
