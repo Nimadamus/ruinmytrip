@@ -177,6 +177,7 @@ $routes = [
     ['GET',  '#^/sitemap-(?<group>[a-z]+)(?:-(?<part>\d+))?\.xml$#', 'sitemap_child'],
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
+    ['GET',  '#^/card/(?<kind>post|review|c|u|meetup|tag)/(?<key>[A-Za-z0-9_\-]+)\.png$#', 'share_card'],
     ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/healthz$#',                    'healthz'],
     ['GET',  '#^/readyz$#',                     'readyz'],

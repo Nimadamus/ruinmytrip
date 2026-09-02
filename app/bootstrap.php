@@ -37,6 +37,7 @@ require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/polls.php';
+require BASE_PATH . '/app/cards.php';
 require BASE_PATH . '/app/digest.php';
 require BASE_PATH . '/app/notify_email.php';
 require BASE_PATH . '/app/visits.php';

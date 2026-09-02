@@ -541,7 +541,7 @@ function profile(array $a): void {
         ])),
         'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
-        'og_image' => abs_url($u['avatar_url']),
+        'og_image' => rmt_card_url('u', (string) $u['username']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ProfilePage',
             'mainEntity'=>['@type'=>'Person','name'=>$u['display_name'] ?: $u['username'],
@@ -825,6 +825,7 @@ function tag_show(array $a): void {
     view('tag_show', ['tag'=>$tag, 'items'=>$items, 'me'=>current_user()], [
         'title' => '#'.$tag['name'].' — RuinMyTrip',
         'description' => 'Trips, reviews, guides and blog posts tagged #'.$tag['name'].' by real travelers.',
+        'og_image' => rmt_card_url('tag', (string) $tag['name']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Topics','url'=>url('tags')],
                           ['name'=>'#'.$tag['name'],'url'=>url('tag/'.$tag['name'])]],
     ]);
@@ -1290,7 +1291,8 @@ function collection_show(array $a): void {
                                                                'member_count' => $memberCount])),
         'title' => $c['title'].' — RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
-        'og_image' => $items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg'),
+        'og_image' => $isCommunity ? rmt_card_url('c', (string) $c['slug'])
+                                   : ($items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg')),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')],['name'=>$c['title'],'url'=>url('c/'.$c['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ItemList','name'=>$c['title'],
             'description'=>$c['summary'],
@@ -1515,6 +1517,7 @@ function meetup_show(array $a): void {
     view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast','hostStats','hostBadges','hostSince'), [
         'title'=>$m['title'].' — RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
+        'og_image'=>rmt_card_url('meetup', (string) (int) $m['id']),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')],['name'=>$m['title'],'url'=>url('meetup/'.$m['id'])]],
     ]);
 }
@@ -2509,6 +2512,7 @@ function review_show(array $a): void {
     view('review_show', compact('r','author','photos','me','voteCounts','myVotes','comments','tags','aspectValues','justPublished','isFirstReview','moreReviews','placeTalk'), [
         'title' => rmt_meta_title((string) ($r['title'] ?: $r['subject_name'])),
         'description' => rmt_meta_description((string) $r['body']),
+        'og_image' => $photos ? abs_url((string) $photos[0]['url']) : rmt_card_url('review', (string) (int) $r['id']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')],
                           ['name'=>$r['title'] ?: $r['subject_name'],'url'=>url(ltrim(rmt_review_path($r),'/'))]],
         'jsonld' => rmt_review_jsonld($r),
@@ -4450,6 +4454,8 @@ function post_show(array $a): void {
     view('post_show', compact('p', 'comments', 'likeCount', 'saveCount', 'liked', 'saved', 'me', 'original', 'repostCount', 'related', 'poll'), [
         'title' => rmt_meta_title(rmt_post_title($p)),
         'description' => rmt_meta_description((string) $p['body']),
+        // A post with a photo previews as the photo; one without previews as what it says.
+        'og_image' => !empty($p['image_url']) ? abs_url((string) $p['image_url']) : rmt_card_url('post', (string) (int) $p['id']),
         'robots' => rmt_robots_for(rmt_indexable('post', $p + ['reply_count' => count($comments)])),
         'breadcrumbs' => $crumbs,
         /* Two shapes for two different things; see rmt_post_jsonld(). A question with answers is
@@ -4602,6 +4608,24 @@ function cron_indexnow(array $a): void {
 
 /** POST /post/{id}/repost — pass it on, with or without a comment of your own. */
 /** POST /post/{id}/vote — cast or move a poll vote. A vote is one click; it needs an account, not a confirmed email. */
+/**
+ * GET /card/{kind}/{key}.png — the link preview image for a post, review, community, profile,
+ * meetup or topic. See app/cards.php. Public, cached a day, 404 for anything the page would 404.
+ */
+function share_card(array $a): void {
+    if (!rmt_card_available()) not_found();
+    $spec = rmt_card_spec((string) $a['kind'], (string) $a['key']);
+    if (!$spec) not_found();
+    $etag = '"' . substr(sha1(json_encode($spec) ?: ''), 0, 20) . '"';
+    header('Cache-Control: public, max-age=86400');
+    header('ETag: ' . $etag);
+    if (($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $etag) { http_response_code(304); exit; }
+    header('Content-Type: image/png');
+    header('X-Content-Type-Options: nosniff');
+    echo rmt_card_render($spec);
+    exit;
+}
+
 function post_vote(array $a): void {
     require_login(); csrf_check();
     $me = current_user();
