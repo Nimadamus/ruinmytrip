@@ -94,13 +94,13 @@ function rmt_post_delete(int $postId): void {
 }
 
 function rmt_post_get(int $postId): ?array {
-    return q_one('SELECT p.*, d.slug dest_slug, d.name dest_name, c.slug community_slug, c.title community_title,
+    return q_one("SELECT p.*, d.slug dest_slug, d.name dest_name, c.slug community_slug, c.title community_title,
                          pl.slug place_slug, pl.name place_name
                     FROM posts p
                LEFT JOIN destinations d ON d.id = p.destination_id
                LEFT JOIN collections c ON c.id = p.collection_id
                LEFT JOIN places pl ON pl.id = p.place_id AND pl.status = 'active'
-                   WHERE p.id = ?', [$postId]);
+                   WHERE p.id = ?", [$postId]);
 }
 
 /** The author, an admin or a mod. A community founder moderates their room through the community. */
