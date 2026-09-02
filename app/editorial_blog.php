@@ -40,8 +40,15 @@ function rmt_upsert_editorial_blog(): int {
         }
         $cover = null;
         if (!empty($p['destination_slug'])) {
-            $d = q_one('SELECT hero_url FROM destinations WHERE slug = ?', [$p['destination_slug']]);
+            $d = q_one('SELECT name, hero_url FROM destinations WHERE slug = ?', [$p['destination_slug']]);
             $cover = $d['hero_url'] ?? null;
+            // A post about a city links the city page, and the city page lists the post because of
+            // that link (rmt_blog_posts_for_destination matches on /d/<slug>). Without it a post is
+            // reachable only from the sitemap, which is a page nobody is sent to.
+            if ($d && !str_contains($body, '/d/' . $p['destination_slug'])) {
+                $body = rtrim($body) . '<p>More on <a href="' . e(url('d/' . $p['destination_slug'])) . '">' . e((string) $d['name'])
+                      . '</a>: places, reviews and what travelers say went wrong.</p>';
+            }
         }
         $created = (string) ($p['created_at'] ?? gmdate('Y-m-d\TH:i:s\Z'));
         $have = q_one('SELECT id, title, summary, body, cover_url, category FROM blog_posts WHERE slug = ?', [$slug]);

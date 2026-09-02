@@ -1064,10 +1064,16 @@ function blog_index(array $a): void {
     $sql = "SELECT p.* FROM blog_posts p WHERE p.status='published'";
     $args = [];
     if (in_array($cat, RMT_BLOG_CATEGORIES, true)) { $sql .= ' AND p.category = ?'; $args[] = $cat; }
-    $sql .= ' ORDER BY p.id DESC LIMIT 50';
+    $per = 50;
+    $page = max(1, (int) input('page'));
+    $total = (int) (q_one(str_replace('SELECT p.*', 'SELECT COUNT(*) c', $sql), $args)['c'] ?? 0);
+    $pages = max(1, (int) ceil($total / $per));
+    if ($page > $pages) not_found();
+    $sql .= ' ORDER BY p.id DESC LIMIT ' . $per . ' OFFSET ' . (($page - 1) * $per);
     $posts = q_all($sql, $args);
     authors_fill($posts);
-    view('blog_index', ['posts'=>$posts,'cat'=>(string)$cat], [
+    $qs = in_array($cat, RMT_BLOG_CATEGORIES, true) ? 'category=' . $cat . '&' : '';
+    view('blog_index', ['posts'=>$posts,'cat'=>(string)$cat,'page'=>$page,'pages'=>$pages,'qs'=>$qs], [
         'title'=>'2026 travel notes: tourist taxes, ticket prices and rules | RuinMyTrip',
         'description'=>'Current 2026 tourist taxes, ticket prices, access fees and travel rules, plus stories from travelers who actually went.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')]],

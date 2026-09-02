@@ -15,6 +15,13 @@
          style="<?= $cat===$c ? 'background:var(--ink);color:#fff' : '' ?>"><?= e(ucfirst($c)) ?></a>
     <?php endforeach; ?>
   </div>
+  <?php if (($pages ?? 1) > 1): ?>
+    <p style="display:flex;gap:10px;justify-content:center;margin:18px 0 40px">
+      <?php if ($page > 1): ?><a class="btn btn-ghost" rel="prev" href="<?= e(url('blog?' . $qs . 'page=' . ($page - 1))) ?>">← Newer</a><?php endif; ?>
+      <span class="hint" style="align-self:center">Page <?= (int) $page ?> of <?= (int) $pages ?></span>
+      <?php if ($page < $pages): ?><a class="btn btn-ghost" rel="next" href="<?= e(url('blog?' . $qs . 'page=' . ($page + 1))) ?>">Older →</a><?php endif; ?>
+    </p>
+  <?php endif; ?>
 
   <?php if (!$posts): ?>
     <div class="empty-cta" style="margin-bottom:24px">
