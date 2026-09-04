@@ -62,9 +62,12 @@ jobs:
           curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
             -d "{\"ipAllowList\":[{\"cidrBlock\":\"$IP/32\",\"description\":\"gha-digest temporary\"}]}" \
             "https://api.render.com/v1/postgres/$DB_ID" > /dev/null
+          # connection-info returns the INSTANCE default database. Since 2026-09-03 the
+          # ruinmytrip database is one of several on that instance, so keep only the external
+          # host from it and put back the database name the app itself is configured with.
           CONN=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
             "https://api.render.com/v1/postgres/$DB_ID/connection-info" \
-            | python3 -c "import sys,json;print(json.load(sys.stdin)['externalConnectionString'])")
+            | DB_NAME="$DB_NAME" python3 -c "import sys,json,os,urllib.parse as up;u=up.urlsplit(json.load(sys.stdin)['externalConnectionString']);print(up.urlunsplit((u.scheme,u.netloc,'/'+os.environ['DB_NAME'],u.query,u.fragment)))")
           echo "::add-mask::$CONN"
           echo "DATABASE_URL=$CONN" >> "$GITHUB_ENV"
           sleep 20
