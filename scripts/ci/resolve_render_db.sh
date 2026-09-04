@@ -13,7 +13,8 @@
 # "production" that cannot go stale, so that is what we read.
 #
 # Requires: RENDER_API_KEY. Optional: RENDER_SERVICE_NAME (default: ruinmytrip-web).
-# Echoes the resolved id and, under GitHub Actions, exports DB_ID for later steps.
+# Echoes the resolved id and database name and, under GitHub Actions, exports DB_ID and
+# DB_NAME for later steps.
 set -euo pipefail
 
 : "${RENDER_API_KEY:?RENDER_API_KEY is required}"
@@ -29,25 +30,39 @@ if not data:
 print(data[0]["service"]["id"])
 ' "$SERVICE_NAME")
 
-DB_ID=$(curl -fsS -H "$AUTH" "$API/services/$SERVICE_ID/env-vars?limit=100" | python3 -c '
-import sys, json, re
+RESOLVED=$(curl -fsS -H "$AUTH" "$API/services/$SERVICE_ID/env-vars?limit=100" | python3 -c '
+import sys, json, re, urllib.parse
 for item in json.load(sys.stdin):
     var = item.get("envVar", item)
     if var.get("key") == "DATABASE_URL":
-        match = re.search(r"@(dpg-[a-z0-9]+(?:-a)?)", var.get("value", ""))
+        url = var.get("value", "")
+        match = re.search(r"@(dpg-[a-z0-9]+(?:-a)?)", url)
         if not match:
             sys.exit("DATABASE_URL is set but contains no dpg- host")
+        # The instance can host several databases (ruinmytrip was moved onto the
+        # betlegend instance on 2026-09-03), so the database NAME has to come from
+        # this URL too. Rendering it from the instance default would dump the wrong
+        # database -- which is exactly what happened on 2026-09-04.
+        name = urllib.parse.urlsplit(url).path.lstrip("/")
+        if not name:
+            sys.exit("DATABASE_URL has no database name in its path")
         print(match.group(1))
+        print(name)
         break
 else:
     sys.exit("service has no DATABASE_URL env var")
 ')
+DB_ID=$(printf '%s
+' "$RESOLVED" | sed -n 1p)
+DB_NAME=$(printf '%s
+' "$RESOLVED" | sed -n 2p)
 
 # Confirm the resolved instance actually exists before any caller opens a firewall or
 # starts a dump against it. Better to fail here, loudly, than halfway through.
 curl -fsS -o /dev/null -H "$AUTH" "$API/postgres/$DB_ID"
 
-echo "Resolved production database: $DB_ID (from $SERVICE_NAME DATABASE_URL)"
+echo "Resolved production database: $DB_ID database=$DB_NAME (from $SERVICE_NAME DATABASE_URL)"
 if [ -n "${GITHUB_ENV:-}" ]; then
   echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
+  echo "DB_NAME=$DB_NAME" >> "$GITHUB_ENV"
 fi
