@@ -357,6 +357,9 @@ function destination_travelers(array $a): void {
         'title' => 'Travelers in ' . $d['name'] . ' — who is going, meetups and travel buddies',
         'description' => 'Meet travelers going to ' . $d['name'] . ', ' . $d['country']
             . '. See who is there and when, join a meetup, ask the people who have been, and post your own dates.',
+        // Every link posted anywhere points here, so the picture that comes with it names the city
+        // and says how many people are actually going.
+        'og_image' => rmt_card_url('city', (string) $d['slug']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],
                           ['name'=>'Travelers','url'=>url('d/'.$d['slug'].'/travelers')]],

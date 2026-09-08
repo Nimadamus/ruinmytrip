@@ -243,6 +243,27 @@ function rmt_card_spec(string $kind, string $key): ?array {
             if ($m['status'] === 'cancelled') $pills[] = 'Cancelled';
             return ['kicker' => 'Meetup', 'title' => (string) $m['title'], 'meta' => trim($meta, ' ·'), 'pills' => $pills];
 
+        case 'city':
+            /* The people page for a city, which is what every link we post anywhere points at.
+               Without this it shared as the site's default image, so the one thing the link is
+               about -- the city -- was not on the picture. Counts are live and appear only when
+               they are real: a pill reading "0 going" is an advert for an empty room. */
+            $d = q_one('SELECT id, name, country FROM destinations WHERE slug = ?', [$key]);
+            if (!$d) return null;
+            $did = (int) $d['id'];
+            $going = (int) (q_one("SELECT COUNT(*) c FROM going
+                                    WHERE destination_id = ? AND visibility = 'public' AND date_to >= ?",
+                                  [$did, date('Y-m-d')])['c'] ?? 0);
+            $meets = (int) (q_one("SELECT COUNT(*) c FROM meetups
+                                    WHERE destination_id = ? AND status = 'published' AND date_start >= ?",
+                                  [$did, date('Y-m-d H:i:s')])['c'] ?? 0);
+            $pills = [];
+            if ($going > 0) $pills[] = $going . ($going === 1 ? ' traveler going' : ' travelers going');
+            if ($meets > 0) $pills[] = $meets . ($meets === 1 ? ' meetup' : ' meetups');
+            return ['kicker' => 'Travelers', 'title' => 'Travelers in ' . $d['name'],
+                    'meta' => trim((string) $d['country'] . ' · who is going, meetups and questions', ' ·'),
+                    'pills' => $pills];
+
         case 'tag':
             $t = q_one('SELECT * FROM tags WHERE name=?', [$key]);
             if (!$t) return null;
