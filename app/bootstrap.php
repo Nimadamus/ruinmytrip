@@ -34,6 +34,7 @@ require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/feed_scope.php';
+require BASE_PATH . '/app/travelers_hub.php';
 require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/posts.php';

@@ -184,6 +184,11 @@
   <?php endif; ?>
 
   <?php if (!empty($moreReviews)): ?>
+    <?php if (!empty($r['dest_slug'])): ?>
+      <?php $destSlug = (string) $r['dest_slug']; $destName = (string) $r['dest_name'];
+            include __DIR__ . '/_meet_travelers.php'; ?>
+    <?php endif; ?>
+
     <h2 style="font-size:1.1rem;margin:26px 0 8px">More from <?= e((string) ($r['dest_name'] ?: 'other travelers')) ?></h2>
     <?php foreach ($moreReviews as $mr): ?>
       <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">

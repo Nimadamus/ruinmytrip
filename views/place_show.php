@@ -333,6 +333,11 @@
   <?php /* Questions, above reviews on purpose. A review is what somebody says after going; a
            question is what the person reading this page has right now, and answering it is a far
            smaller thing to ask of the community than writing a review. */ ?>
+  <?php if (!empty($p['dest_slug'])): ?>
+    <?php $destSlug = (string) $p['dest_slug']; $destName = (string) $p['dest_name'];
+          include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
   <h2 style="font-size:1.1rem;margin:0 0 10px">Questions about <?= e($p['name']) ?></h2>
   <?php foreach ($talk as $tp): ?>
     <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">

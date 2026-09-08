@@ -1,4 +1,4 @@
-<?php /** @var array $people @var ?array $me @var array $suggested */ ?>
+<?php /** @var array $people @var ?array $me @var array $suggested @var array $cities */ ?>
 <section class="block"><div class="wrap">
   <div class="section-head">
     <div>
@@ -8,6 +8,18 @@
     <?php if (!$me): ?>
       <a class="btn btn-accent btn-sm" href="<?= e(url('register')) ?>">Join free</a>
     <?php endif; ?>
+  </div>
+
+  <?php /* Every city has a people page, and this is where they all hang. The counts are live, so
+           a city that says nothing is going on is telling the truth and the reader can be the one
+           who changes it. */ ?>
+  <h2 style="margin:6px 0 10px">Travelers by city</h2>
+  <div class="tag-list" style="margin-bottom:26px">
+    <?php foreach ($cities as $c):
+        $n = (int)$c['going_count'] + (int)$c['meetup_count'] + (int)$c['talk_count']; ?>
+      <a class="chip" href="<?= e(url('d/'.$c['slug'].'/travelers')) ?>"><?= e($c['name']) ?><?php
+        if ($n): ?> <span class="hint"><?= $n ?></span><?php endif; ?></a>
+    <?php endforeach; ?>
   </div>
 
   <?php /* Reasons attached on purpose. "Suggested for you" with nothing behind it is the block

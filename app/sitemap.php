@@ -103,6 +103,11 @@ function rmt_sitemap_group(string $group): array {
                 $add('/d/' . $d['slug']);
                 // The browse page is a real page with its own inventory, not a filtered view.
                 if ($d['place_count'] > 0) $add('/d/' . $d['slug'] . '/places');
+                // The people page for the city. Submitted for every destination, empty or not:
+                // the search it answers ("travel buddy in X", "who is going to X") is one nobody
+                // is served well on, and a page that recruits the first member is worth more to
+                // this site than a page that lists the tenth museum.
+                $add('/d/' . $d['slug'] . '/travelers');
             }
             foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
                              WHERE EXISTS (SELECT 1 FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id

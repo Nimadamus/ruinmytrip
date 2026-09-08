@@ -310,6 +310,31 @@ function neighborhood_show(array $a): void {
     ]);
 }
 
+/**
+ * GET /d/{slug}/travelers -- the people going to a city, rather than the things in it.
+ *
+ * This is the page the site is for. Somebody searching "travel buddy in Lisbon" or "who is going
+ * to Lisbon in March" is looking for members, and every other page we publish answers a question
+ * about a building. It is also the only landing page where the thing a stranger is asked to do
+ * (post your dates, host a meetup, ask the group) IS the product rather than a newsletter box.
+ */
+function destination_travelers(array $a): void {
+    $d = dest_by_slug($a['slug']); if (!$d) not_found();
+    $me = current_user();
+    $hub = rmt_city_traveler_hub((int) $d['id'], $me);
+    $myGoing = $me ? rmt_going_for_user_dest((int) $me['id'], (int) $d['id']) : null;
+    view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing], [
+        // Written for the search it answers, and it is a search about people. 60-char budget on the
+        // first clause so the city survives the truncation.
+        'title' => 'Travelers in ' . $d['name'] . ' — who is going, meetups and travel buddies',
+        'description' => 'Meet travelers going to ' . $d['name'] . ', ' . $d['country']
+            . '. See who is there and when, join a meetup, ask the people who have been, and post your own dates.',
+        'breadcrumbs' => [['name'=>'Home','url'=>url()],
+                          ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],
+                          ['name'=>'Travelers','url'=>url('d/'.$d['slug'].'/travelers')]],
+    ]);
+}
+
 function destination_places(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int) $d['id'];
@@ -1785,7 +1810,18 @@ function travelers_index(array $a): void {
     $me = current_user();
     // Who is here, for you. A directory sorted by review count answers a different question.
     $suggested = $me ? rmt_follow_suggestions((int) $me['id'], 8) : [];
-    view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested], [
+    /* Every city's people page hangs off this one. Cities with somebody in them come first, because
+       a browse list whose first ten entries are empty rooms teaches the reader to stop clicking. */
+    $cities = q_all("SELECT d.id, d.slug, d.name, d.country,
+                            (SELECT COUNT(*) FROM going g WHERE g.destination_id=d.id AND g.visibility='public'
+                               AND g.date_to >= ?) going_count,
+                            (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
+                               AND m.status='published' AND m.date_start >= ?) meetup_count,
+                            (SELECT COUNT(*) FROM posts p2 WHERE p2.destination_id=d.id AND p2.status='published') talk_count
+                       FROM destinations d
+                       ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name",
+                    [date('Y-m-d'), date('Y-m-d H:i:s')]);
+    view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities], [
         'title' => 'Travelers on RuinMyTrip',
         'description' => 'Real traveler profiles on RuinMyTrip. Follow people whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],

@@ -478,7 +478,7 @@
         <?php else: ?>
           <a class="btn btn-accent btn-sm btn-block" style="margin-top:10px" href="<?= e(url('register')) ?>">Join to share dates</a>
         <?php endif; ?>
-        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('going')) ?>">See who's going</a>
+        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Travelers in <?= e($d['name']) ?></a>
       </div></div>
 
       <div class="card" style="margin-top:18px"><div class="card-body">
