@@ -192,3 +192,30 @@ function logout(): void { $_SESSION = []; session_destroy(); }
 function can_host_meetups(?array $u): bool {
     return $u && !empty($u['birthdate']) && age_from($u['birthdate']) >= 18;
 }
+
+/**
+ * What the visitor was on their way to do, said back to them on the join form.
+ *
+ * A signup form that says "build your traveler profile" is asking a stranger to want something
+ * abstract. Somebody who clicked join from Lisbon's travelers page wants one concrete thing, and
+ * the form should say that thing: it is the difference between a generic pitch and finishing the
+ * sentence they started.
+ *
+ * Returns null when the destination is not one of the paths that carries an obvious intent, in
+ * which case the page keeps its general pitch.
+ */
+function rmt_join_intent_line(string $return): ?string {
+    if ($return === '') return null;
+    $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
+    if (preg_match('#^/d/([a-z0-9\-]+)/travelers$#', $path, $m)) {
+        $d = q_one('SELECT name FROM destinations WHERE slug = ?', [$m[1]]);
+        if ($d) return 'Join and see who else is going to ' . $d['name'] . ', post your own dates, and meet them there.';
+    }
+    if ($path === '/going')    return 'Join and post your dates. Travelers whose trips overlap yours will see them.';
+    if ($path === '/matches')  return 'Join to see which travelers have dates that overlap yours.';
+    if ($path === '/meetups' || str_starts_with($path, '/meetup/')) {
+        return 'Join to RSVP. Meetups are public, 18+, and you can leave any time.';
+    }
+    if ($path === '/talk')     return 'Join and ask the travelers who have actually been.';
+    return null;
+}

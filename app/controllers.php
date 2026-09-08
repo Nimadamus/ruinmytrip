@@ -45,9 +45,13 @@ function home(array $a): void {
     $stories = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                       LEFT JOIN destinations d ON d.id=t.destination_id
                       WHERE t.status='published' ORDER BY t.created_at DESC, t.id DESC LIMIT 4");
-    $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug FROM meetups m
-                      LEFT JOIN destinations d ON d.id=m.destination_id
-                      WHERE m.status='published' ORDER BY m.date_start ASC LIMIT 3");
+    // Upcoming only. A homepage that leads with a meetup which already happened is telling a
+    // visitor the site is abandoned, in the one section meant to prove it is not.
+    $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
+                             (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going_count
+                        FROM meetups m LEFT JOIN destinations d ON d.id=m.destination_id
+                       WHERE m.status='published' AND m.date_start >= ?
+                       ORDER BY m.date_start ASC LIMIT 6", [date('Y-m-d H:i:s')]);
     $guides = q_all("SELECT g.*, d.name dest_name FROM guides g
                      LEFT JOIN destinations d ON d.id=g.destination_id
                      WHERE g.status='published' ORDER BY g.id DESC LIMIT 6");
@@ -72,9 +76,33 @@ function home(array $a): void {
     $ruinedLines = rmt_reviews_ruined(3);
     $ruinedTotal = rmt_reviews_ruined_count();
     $askDests = all_dests();
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests'), [
-        'title' => 'RuinMyTrip — 2026 travel costs, tourist taxes, tickets and honest reviews',
-        'description' => 'What a trip actually costs in 2026: tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.',
+    /* Who is actually going somewhere, soonest first. This is the site's own answer to "is anybody
+       here", and it belongs above the research: a visitor deciding whether to join is deciding
+       whether there are people, not whether we can compile a ticket price. Public plans only. */
+    $goingSoon = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url
+                          FROM going g
+                          JOIN destinations d ON d.id = g.destination_id
+                          JOIN users u ON u.id = g.user_id AND u.status = 'active'
+                     LEFT JOIN profiles p ON p.user_id = u.id
+                         WHERE g.visibility = 'public' AND g.date_to >= ?
+                      ORDER BY g.date_from LIMIT 8", [date('Y-m-d')]);
+    /* The cities with people in them, for the row that sends a stranger to a page made of members
+       rather than to another article. Ordered by activity so the first chips are never empty rooms. */
+    $liveCities = q_all("SELECT d.slug, d.name,
+                                (SELECT COUNT(*) FROM going g WHERE g.destination_id=d.id
+                                   AND g.visibility='public' AND g.date_to >= ?) going_count,
+                                (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
+                                   AND m.status='published' AND m.date_start >= ?) meetup_count,
+                                (SELECT COUNT(*) FROM posts p2 WHERE p2.destination_id=d.id AND p2.status='published') talk_count
+                           FROM destinations d
+                       ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name
+                          LIMIT 12", [date('Y-m-d'), date('Y-m-d H:i:s')]);
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+        // Written for what the site is rather than what it happens to have indexed: somebody
+        // searching for a travel community should recognise this in the result, and somebody
+        // searching for a ticket price should not arrive expecting a price list.
+        'title' => 'RuinMyTrip — meet travelers going where you are going',
+        'description' => 'A travel community, not a guidebook. Post your dates, see whose overlap, join public meetups, and read reviews written by travelers who actually went. Free to join.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
             'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']]),
     ]);

@@ -1,4 +1,4 @@
-<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts */ ?>
+<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts @var array $goingSoon @var array $liveCities */ ?>
 <?php if (!empty($refUser)): ?>
   <?php /* The one line that turns a forwarded link into a signup: who sent it, by name. */ ?>
   <div class="wrap" style="margin-top:14px"><div class="card"><div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
@@ -11,18 +11,24 @@
 <section class="hero">
   <div class="hero-bg" style="background-image:url('<?= e(url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg')) ?>')"></div>
   <div class="hero-inner">
-    <p class="eyebrow" style="color:#7dd3c8">Honest 2026 travel intel</p>
-    <h1>What it actually costs. What nearly ruins it.</h1>
-    <p>Tourist taxes, ticket prices, scams and new rules, researched from official sources. No fake travelers. No invented reviews.</p>
+    <?php /* The front door said "here is our research on ticket prices", which is what every travel
+             page on the internet says and is not what this is. This site's one thing is the people:
+             who is going where you are going, and whether you can meet them. That is the sentence
+             a stranger has to read first, because it is the only one they cannot get elsewhere. */ ?>
+    <p class="eyebrow" style="color:#7dd3c8">A travel community, not a guidebook</p>
+    <h1>Find the people going where you are going.</h1>
+    <p>Post your dates and see whose overlap. Meet up in public. Ask travelers who have actually been, and read reviews written by them rather than by us.</p>
     <form class="hero-search" action="<?= e(url('explore')) ?>" method="get">
-      <input type="search" name="q" placeholder="Where to next? Try Kyoto, Lisbon, Banff…" aria-label="Search destinations">
-      <button class="btn btn-primary" type="submit">Explore</button>
+      <input type="search" name="q" placeholder="Which city? Try Lisbon, Tokyo, Mexico City…" aria-label="Search destinations">
+      <button class="btn btn-primary" type="submit">Search</button>
     </form>
     <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap">
-      <a class="btn btn-accent" href="<?= e(url('guides')) ?>">2026 city guides</a>
-      <?php if ($taxPost): ?>
-        <a class="btn btn-ghost" href="<?= e(url('blog/'.$taxPost['slug'])) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">2026 tourist taxes</a>
+      <?php if (!current_user()): ?>
+        <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
+      <?php else: ?>
+        <a class="btn btn-accent" href="<?= e(url('going')) ?>">Post your dates</a>
       <?php endif; ?>
+      <a class="btn btn-ghost" href="<?= e(url('travelers')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">See who is going</a>
       <?php /* The hero answered four of the five questions a first-time visitor has -- what this is,
                how it differs from a travel blog, what to read, how to search -- and not the fifth:
                that they can contribute. The button it replaces said "Founding Traveler", which is
@@ -32,13 +38,68 @@
       <a class="btn btn-ghost" data-review-cta="home" href="<?= e(url('contribute')) ?>"
          style="color:#fff;border-color:rgba(255,255,255,.45)">Been somewhere? Review it</a>
     </p>
+    <?php /* People first, and every number is a live COUNT(*) of something real. A stat row that
+             leads with how much WE wrote is the old positioning restated in numbers. */ ?>
     <div class="hero-stats">
-      <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'Destination' : 'Destinations' ?></span></div>
-      <div><b><?= (int)$stat_editorial_reviews ?></b><span>Researched reviews</span></div>
       <div><b><?= (int)($stat_travelers ?? 0) ?></b><span><?= (int)($stat_travelers ?? 0) === 1 ? 'Traveler' : 'Travelers' ?></span></div>
+      <div><b><?= (int)$stat_community_reviews ?></b><span><?= $stat_community_reviews === 1 ? 'Traveler review' : 'Traveler reviews' ?></span></div>
+      <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'City' : 'Cities' ?></span></div>
     </div>
   </div>
 </section>
+
+<?php /* Who is here, before anything we wrote. A visitor deciding whether to join is deciding
+         whether there are people, and no amount of research answers that question. When there is
+         nobody yet the section says so and offers the empty chair, which is the only version of
+         this that has ever recruited anybody. */ ?>
+<section class="block" style="background:#fff;border-bottom:1px solid var(--line)"><div class="wrap">
+  <div class="section-head"><div><p class="eyebrow">Right now</p><h2>Travelers with dates coming up</h2></div>
+    <a class="section-more" href="<?= e(url('travelers')) ?>">All travelers &rarr;</a></div>
+
+  <?php if (!empty($goingSoon)): ?>
+    <div class="tag-list" style="margin-bottom:8px">
+      <?php foreach ($goingSoon as $g): ?>
+        <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
+           href="<?= e(url('d/'.$g['dest_slug'].'/travelers')) ?>">
+          <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($g['avatar_url'] ?? null)) ?>" alt="">
+          @<?= e($g['username']) ?> &middot; <?= e($g['dest_name']) ?>
+          <span class="hint"><?= e(date('M j', strtotime((string)$g['date_from']))) ?>&ndash;<?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <p class="hint" style="margin:0">Destination and date range only. Never a precise or live location.</p>
+  <?php else: ?>
+    <p class="muted" style="margin:0 0 12px">Nobody has posted upcoming dates yet. Whoever goes first is
+      the traveler everybody arriving next month sees.</p>
+    <p style="margin:0"><a class="btn btn-accent" href="<?= e(current_user() ? url('going') : url('register?return=' . rawurlencode('/going'))) ?>">Post your dates</a></p>
+  <?php endif; ?>
+
+  <?php if (!empty($meetups)): ?>
+    <h3 style="margin:24px 0 10px">Meetups coming up</h3>
+    <div class="grid g-3" style="gap:14px">
+      <?php foreach (array_slice($meetups, 0, 3) as $m): ?>
+        <div class="card"><a href="<?= e(url('meetup/'.(int)$m['id'])) ?>"><div class="card-body">
+          <?php if ($m['dest_name']): ?><span class="chip"><?= e($m['dest_name']) ?></span><?php endif; ?>
+          <h3 style="font-size:1.05rem;margin:.35rem 0 .2rem"><?= e($m['title']) ?></h3>
+          <p class="muted" style="margin:0"><?= e(date('M j · g:ia', strtotime((string)$m['date_start']))) ?>
+            &middot; <?= (int)($m['going_count'] ?? 0) === 1 ? '1 going' : (int)($m['going_count'] ?? 0) . ' going' ?></p>
+        </div></a></div>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!empty($liveCities)): ?>
+    <h3 style="margin:24px 0 10px">Who is going, by city</h3>
+    <div class="tag-list">
+      <?php foreach ($liveCities as $c):
+          $n = (int)$c['going_count'] + (int)$c['meetup_count'] + (int)$c['talk_count']; ?>
+        <a class="chip" href="<?= e(url('d/'.$c['slug'].'/travelers')) ?>"><?= e($c['name']) ?><?php
+          if ($n): ?> <span class="hint"><?= $n ?></span><?php endif; ?></a>
+      <?php endforeach; ?>
+      <a class="chip" href="<?= e(url('travelers')) ?>">Every city &rarr;</a>
+    </div>
+  <?php endif; ?>
+</div></section>
 
 <?php /* The one question the site is named after, asked first. A visitor who came to read leaves
          having said the thing that annoyed them, and that sentence becomes their first review. */ ?>
@@ -190,8 +251,9 @@
 </div></section>
 
 <section class="block"><div class="wrap" style="text-align:center;background:linear-gradient(120deg,var(--ink),var(--brand));color:#fff;border-radius:24px;padding:56px 24px">
-  <h2 style="color:#fff;font-size:2rem">Been there? Correct us.</h2>
-  <p style="color:#dfe9f2;max-width:48ch;margin:0 auto 20px">Prices move. A first-hand review is worth more than desk research, and we will show it next to ours.</p>
-  <a class="btn btn-accent" href="<?= e(url('founding')) ?>">Become a Founding Traveler</a>
-      <a class="btn btn-ghost" href="<?= e(url('review/new')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">Write a review</a>
+  <h2 style="color:#fff;font-size:2rem">Join the people, not the guidebook.</h2>
+  <p style="color:#dfe9f2;max-width:52ch;margin:0 auto 20px">Post where you are going and when. See whose dates
+    overlap yours, meet in public, and write the review you wish you had read. Free, and 16+.</p>
+  <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
+      <a class="btn btn-ghost" href="<?= e(url('travelers')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">See who is going</a>
 </div></section>

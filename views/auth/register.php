@@ -7,7 +7,16 @@
     <p class="muted">Create an account and we will take you straight back to your review of
       <b><?= e($rp) ?></b>. It takes a moment and your review is kept while you do it.</p>
   <?php endif; ?>
-  <p class="muted">Build your traveler profile. Share trips, reviews, and guides. The first 100 people who publish a review get Founding Traveler. <a href="<?= e(url('start')) ?>">How launch works</a>.</p>
+  <?php /* Finish the sentence the visitor started. Somebody who clicked join from a city's people
+           page wants one specific thing, and being told the general pitch instead is how a signup
+           stops halfway. */ ?>
+  <?php $intent = function_exists('rmt_join_intent_line') ? rmt_join_intent_line((string) ($return ?? '')) : null; ?>
+  <?php if ($intent !== null): ?>
+    <p style="font-size:1.05rem;margin:0 0 10px"><b><?= e($intent) ?></b></p>
+  <?php endif; ?>
+  <p class="muted">RuinMyTrip is a travel community: post where you are going, see whose dates overlap
+    yours, meet up in public, and write reviews other travelers can trust. Free, 16+.
+    <a href="<?= e(url('start')) ?>">How it works</a>.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('register')) ?>"><?= csrf_field() ?>
     <?php /* Where the visitor was headed before they needed an account -- usually a review they
