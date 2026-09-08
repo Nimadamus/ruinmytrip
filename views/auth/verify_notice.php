@@ -8,6 +8,13 @@
     <h1>Confirm your email</h1>
     <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
     <?php if ($me): ?>
+      <?php /* Confirming an email is a chore. Saying what it releases turns it into the last step
+               of something they already did, which is the difference between doing it now and
+               doing it never. */ ?>
+      <?php if (function_exists('rmt_pending_has') && rmt_pending_has()): ?>
+        <p style="font-size:1.05rem;margin:0 0 10px"><b>Your travel dates and your first post are saved.</b>
+          They go live the moment you confirm this address.</p>
+      <?php endif; ?>
       <p class="muted">We sent a link to <b><?= e($me['email']) ?></b>. Click it to confirm this address.
         You can browse RuinMyTrip in the meantime, but you will need a confirmed email before posting
         trips or reviews.</p>

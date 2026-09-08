@@ -49,17 +49,22 @@
               data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
         <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
       </form>
+      <?php /* People first. The nav opened with Explore, Guides and Blog, so every page on a
+               community site led with the three things we wrote ourselves, and Meetups -- the one
+               feature that puts two members in the same room -- was not in the nav at all. Nothing
+               is removed here; the research just stops going first. */ ?>
+      <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('going')) ?>">Going</a>
+      <a href="<?= e(url('talk')) ?>">Talk</a>
+      <a href="<?= e(url('communities')) ?>">Communities</a>
+      <a href="<?= e(url('ruined')) ?>">Ruined</a>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('guides')) ?>">Guides</a>
       <a href="<?= e(url('blog')) ?>">Blog</a>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('ruined')) ?>">Ruined</a>
-      <a href="<?= e(url('talk')) ?>">Talk</a>
-      <a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('going')) ?>">Going</a>
       <?php if ($me): ?>
-        <a href="<?= e(url('matches')) ?>">Matches</a>
         <a href="<?= e(url('feed')) ?>">Feed</a>
+        <a href="<?= e(url('matches')) ?>">Matches</a>
         <a href="<?= e(url('saved')) ?>">Saved</a>
         <a href="<?= e(url('invite')) ?>">Invite</a>
         <a href="<?= e(url('messages')) ?>" title="Messages">✉️<?php $unread = rmt_unread_message_count((int)$me['id']); if ($unread): ?> <span class="chip" style="background:#0f766e;color:#fff"><?= $unread ?></span><?php endif; ?></a>

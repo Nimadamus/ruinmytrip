@@ -1892,18 +1892,23 @@ function welcome_submit(array $a): void {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         }
     }
+    /* Dates are the most valuable thing on this screen and they used to be the one that threw the
+       screen away: an unverified member -- which is every member, thirty seconds after signing up
+       -- was bounced to /verify-email with the rooms unjoined, the follows undone and their first
+       sentence deleted. The gate stays; the work is held instead of discarded. */
+    $datesHeld = false;
     if (trim((string)($_POST['date_from'] ?? '')) !== '' || trim((string)($_POST['date_to'] ?? '')) !== '') {
-        if (!email_is_verified($me)) {
-            flash('Confirm your email before sharing travel dates.');
-            redirect('/verify-email');
-        }
         $v = rmt_going_validate($_POST);
-        if ($v['ok']) {
+        if (!$v['ok']) {
+            flash($v['errors'][0]);
+            redirect('/welcome');
+        }
+        if (email_is_verified($me)) {
             $gid = rmt_going_upsert($uid, $v['data']);
             rmt_going_notify_followers($uid, $gid, $v['data']['visibility']);
         } else {
-            flash($v['errors'][0]);
-            redirect('/welcome');
+            rmt_pending_stash(['going' => $_POST]);
+            $datesHeld = true;
         }
     }
     /* Joining rooms and saying something are the two actions that decide whether somebody comes
@@ -1931,17 +1936,27 @@ function welcome_submit(array $a): void {
 
     $said = false;
     $hello = trim((string) ($_POST['hello'] ?? ''));
-    if ($hello !== '' && email_is_verified($me)) {
+    if ($hello !== '') {
         $pv = rmt_post_validate(['body' => $hello], $me);
-        if ($pv['ok']) {
+        if (!$pv['ok']) {
+            flash($pv['errors'][0]);
+        } elseif (email_is_verified($me)) {
             rmt_post_create($uid, $pv['data']);
             $said = true;
         } else {
-            flash($pv['errors'][0]);
+            // Held alongside the dates, in one slot, so confirming the address publishes both.
+            $held = (array) ($_SESSION[RMT_PENDING_KEY] ?? []);
+            $held['hello'] = ['body' => $hello];
+            rmt_pending_stash($held);
+            $datesHeld = true;
         }
     }
 
     // Land them where their own answers point: dates mean matches, words mean the conversation.
+    if ($datesHeld) {
+        flash('Saved. Confirm your email and your dates and your first post go live straight away.');
+        redirect('/verify-email');
+    }
     if ($wants && (trim((string) ($_POST['date_from'] ?? '')) !== '')) {
         flash('Profile started. Here is who else will be there.');
         redirect('/matches');
@@ -3471,6 +3486,22 @@ function verify_email_confirm(array $a): void {
     rmt_token_consume((int)$row['id']);
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$row['user_id'];
+    /* Whatever they wrote before the email arrived goes live now, in the same request. Making
+       somebody retype their travel dates as the price of confirming an address is how a new
+       member's first five minutes end. */
+    $applied = rmt_pending_apply((array) current_user());
+    if ($applied['going'] && $applied['hello']) {
+        flash('Email confirmed. Your dates and your first post are live.');
+        redirect('/matches');
+    }
+    if ($applied['going']) {
+        flash('Email confirmed. Your dates are live -- here is who else will be there.');
+        redirect('/matches');
+    }
+    if ($applied['hello']) {
+        flash('Email confirmed. Your first post is live.');
+        redirect('/talk');
+    }
     flash('Email confirmed. Welcome to RuinMyTrip.');
     redirect('/welcome');
 }
