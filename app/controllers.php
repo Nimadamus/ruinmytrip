@@ -630,15 +630,22 @@ function profile_edit_submit(array $a): void {
  * PHP.
  */
 function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
+    /* Two deliberate acts decide what a member sees: who they follow, and which cities they saved.
+       The second one used to feed nothing at all -- somebody who saved Lisbon, Porto and Naples had
+       said precisely which conversations they wanted and still got an empty feed. Content with no
+       destination (blog posts, lists) keeps the follows-only condition, hence two arg shapes. */
     if ($scopeUid !== null) {
-        $args = [$scopeUid, $scopeUid];
-        $followedT = '(t.user_id=? OR t.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-        $followedR = '(r.user_id=? OR r.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-        $followedG = '(g.user_id=? OR g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
-        $followedPlain = '(user_id=? OR user_id IN (SELECT followee_id FROM follows WHERE follower_id=?))';
+        $args      = rmt_feed_scope_args($scopeUid);
+        $argsPlain = rmt_feed_scope_args($scopeUid, false);
+        $followedT     = rmt_feed_scope_sql('t.user_id', 't.destination_id');
+        $followedR     = rmt_feed_scope_sql('r.user_id', 'r.destination_id');
+        $followedG     = rmt_feed_scope_sql('g.user_id', 'g.destination_id');
+        $followedP     = rmt_feed_scope_sql('p.user_id', 'p.destination_id');
+        $followedM     = rmt_feed_scope_sql('m.host_id', 'm.destination_id');
+        $followedPlain = rmt_feed_scope_sql('user_id');
     } else {
-        $args = [];
-        $followedT = $followedR = $followedG = $followedPlain = '1=1';
+        $args = $argsPlain = [];
+        $followedT = $followedR = $followedG = $followedP = $followedM = $followedPlain = '1=1';
     }
 
     $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
@@ -682,7 +689,7 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     unset($row);
 
     $posts = q_all("SELECT * FROM blog_posts WHERE status='published' AND $followedPlain
-                    ORDER BY created_at DESC, id DESC LIMIT $limitEach", $args);
+                    ORDER BY created_at DESC, id DESC LIMIT $limitEach", $argsPlain);
     foreach ($posts as &$row) {
         $row['kind'] = 'blog_post';
         $row['dest_name'] = null;
@@ -701,7 +708,7 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
             (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.destination_id IS NOT NULL) dest_count,
             (SELECT COUNT(*) FROM collection_items ci WHERE ci.collection_id=c.id AND ci.place_id IS NOT NULL) place_count
           FROM collections c WHERE c.status='published' AND $followedPlain
-          ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", $args);
+          ORDER BY c.created_at DESC, c.id DESC LIMIT $limitEach", $argsPlain);
     foreach ($collections as &$row) {
         $row['kind'] = 'collection';
         $row['subject'] = $row['title'];
@@ -714,11 +721,17 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     unset($row);
 
     if ($scopeUid !== null) {
+        /* Dates are the one thing here with a visibility setting, so the city rule is narrower than
+           everywhere else: a plan reaches somebody who follows the city only when its author made
+           it public. 'followers' stays what it says -- for followers. */
         $goingSql = "(g.user_id=? OR (
                         g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?)
                         AND (g.visibility='public' OR g.visibility='followers')
+                     ) OR (
+                        g.visibility='public'
+                        AND g.destination_id IN (SELECT target_id FROM saves WHERE user_id=? AND target_type='destination')
                      ))";
-        $goingArgs = [$scopeUid, $scopeUid];
+        $goingArgs = [$scopeUid, $scopeUid, $scopeUid];
     } else {
         $goingSql = "g.visibility='public'";
         $goingArgs = [];
@@ -745,7 +758,7 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
                 LEFT JOIN destinations d ON d.id=p.destination_id
                 LEFT JOIN posts o ON o.id = p.repost_of AND o.status='published'
                 LEFT JOIN users ou ON ou.id = o.user_id
-                    WHERE p.status='published' AND " . str_replace('user_id', 'p.user_id', $followedPlain) . "
+                    WHERE p.status='published' AND $followedP
                  ORDER BY p.created_at DESC, p.id DESC LIMIT $limitEach", $args);
     foreach ($talk as &$row) {
         $row['kind'] = 'post';
@@ -764,7 +777,30 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk);
+    /* Meetups were the one thing the site does that never reached the feed, so the part of the loop
+       that puts two people in the same place depended entirely on somebody thinking to open
+       /meetups. Cancelled ones are left out -- a called-off plan is not an invitation -- and so are
+       ones that already happened. */
+    $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
+                             (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going_count
+                        FROM meetups m LEFT JOIN destinations d ON d.id=m.destination_id
+                       WHERE m.status='published' AND m.date_start >= ? AND $followedM
+                       ORDER BY m.created_at DESC, m.id DESC LIMIT $limitEach",
+                     array_merge([date('Y-m-d H:i:s')], $args));
+    foreach ($meetups as &$row) {
+        $row['kind'] = 'meetup';
+        $row['user_id'] = $row['host_id'];        // authors_fill() reads user_id; a meetup calls it host_id
+        $row['cover_url'] = null;
+        $row['subject'] = $row['dest_name'] ?: null;
+        $row['subject_url'] = $row['dest_slug'] ? url('d/' . $row['dest_slug']) : null;
+        $row['feed_url'] = url('meetup/' . (int) $row['id']);
+        $row['feed_excerpt'] = date('D, M j · g:ia', strtotime((string) $row['date_start'])) . ' · '
+            . ((int) $row['going_count'] === 1 ? '1 person going' : (int) $row['going_count'] . ' people going')
+            . '. ' . mb_strimwidth(strip_tags((string) $row['description']), 0, 120, '…');
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk, $meetups);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -786,7 +822,10 @@ function feed(array $a): void {
         $items = rmt_activity_items(null);
         $isEveryone = (bool) $items;
     }
-    view('feed', compact('items','me','isEveryone','scope'), [
+    // Named on the page, because a feed that mixes in a city's activity without saying which
+    // cities reads as strangers appearing in a list you thought you had chosen.
+    $cities = rmt_feed_followed_destinations($uid);
+    view('feed', compact('items','me','isEveryone','scope','cities'), [
         'title' => 'Your feed — RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);

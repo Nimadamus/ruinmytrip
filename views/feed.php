@@ -1,11 +1,11 @@
-<?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope */
+<?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope @var array $cities */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
-                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said'];
-$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk'];
+                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting'];
+$rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk', 'meetup' => 'Meetup'];
 ?>
 <div class="wrap" style="max-width:760px">
   <h1 style="margin-top:24px">Your feed</h1>
-  <p class="muted">Latest trips, reviews, guides and blog posts from you and the travelers you follow.</p>
+  <p class="muted">Trips, reviews, guides, talk and meetups from the travelers you follow and the cities you saved.</p>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 20px">
     <a class="btn btn-primary btn-sm" href="<?= e(url('trip/new')) ?>">Share a trip</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('review/new')) ?>">Write a review</a>
@@ -18,9 +18,10 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
              version of it points at the three things that actually fill it: following somebody,
              going somewhere, or writing the first thing yourself. */ ?>
     <div class="callout">
-      Nothing here yet &mdash; this fills up as the travelers you follow post.
+      Nothing here yet &mdash; this fills up as the travelers you follow post, and as anything
+      happens in a city you saved.
       <a href="<?= e(url('travelers')) ?>">Find travelers</a>,
-      <a href="<?= e(url('explore')) ?>">explore destinations</a>, or
+      <a href="<?= e(url('explore')) ?>">save the cities you care about</a>, or
       <a data-review-cta="feed" href="<?= e(url('contribute')) ?>">review a place you went to</a>.
     </div>
   <?php endif; ?>
@@ -31,10 +32,18 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
        href="<?= e(url('feed?scope=everyone')) ?>">Everyone</a>
   </p>
 
+  <?php if (!empty($cities) && ($scope ?? 'following') === 'following'): ?>
+    <?php /* Which cities are in here. Also the fastest way back to one of them. */ ?>
+    <p class="hint" style="margin:0 0 14px">Cities in your feed:
+      <?php foreach ($cities as $i => $c): ?><?= $i ? ' · ' : ' ' ?><a href="<?= e(url('d/'.$c['slug'])) ?>"><?= e($c['name']) ?></a><?php endforeach; ?>
+    </p>
+  <?php endif; ?>
+
   <?php if (!empty($isEveryone) && ($scope ?? '') !== 'everyone'): ?>
     <?php /* Say whose activity this is. A feed that quietly shows strangers as if they were people
              you chose to follow is a small lie that gets found out the moment somebody checks. */ ?>
-    <p class="hint">You are not following anybody yet, so this is everyone on RuinMyTrip.
+    <p class="hint">You are not following anybody yet and nothing has happened in the cities you saved,
+      so this is everyone on RuinMyTrip.
       <a href="<?= e(url('travelers')) ?>">Find people to follow</a>.</p>
   <?php endif; ?>
 

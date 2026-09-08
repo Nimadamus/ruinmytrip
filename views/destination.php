@@ -26,6 +26,14 @@
         <?php else: ?>
           <a class="btn btn-ghost btn-sm" href="<?= e(url('register')) ?>">Join to mark been / want</a>
         <?php endif; ?>
+        <?php /* Saving a city fed nothing for a long time: the button counted you into a number
+                 and that was all. It is a follow now, so the page says so, once, where the button is. */ ?>
+        <?php if ($me): ?>
+          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0">
+            <?= $saved ? 'This city is in your feed: its reviews, questions and meetups come to you.'
+                       : 'Want to visit puts this city in your feed: its reviews, questions and meetups.' ?>
+          </p>
+        <?php endif; ?>
         <?php if ($wantCount > 0 || !empty($beenCount)): ?>
           <p class="hint" style="color:#e8eef5;margin:.4rem 0 0">
             <?php if (!empty($beenCount)): ?><?= (int)$beenCount ?> been here<?php endif; ?>
