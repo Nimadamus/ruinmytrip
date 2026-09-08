@@ -1195,7 +1195,14 @@ function blog_show(array $a): void {
            'url'=>url('blog/'.$p['slug'])];
     if ($isEd) $ld['author'] = ['@type'=>'Organization','name'=>rmt_editorial_name()];
     $askDests = all_dests();
-    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests'), [
+    /* Which city this post is about. There is no column for it: the publisher appends a link to the
+       destination page, so the post already says which city, and reading it back is better than
+       adding a column that would then need backfilling for 143 posts. */
+    $blogDest = null;
+    if (preg_match('#/d/([a-z0-9\-]+)#', (string) ($p['body'] ?? ''), $bm)) {
+        $blogDest = q_one('SELECT slug, name FROM destinations WHERE slug = ?', [$bm[1]]);
+    }
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest'), [
         'title' => $p['title'].' | RuinMyTrip',
         'description' => $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
@@ -1790,7 +1797,16 @@ function going_index(array $a): void {
                    WHERE u.status='active' AND $visSql
                    ORDER BY g.date_from", $visArgs);
     $dests = all_dests();
-    view('going_index', compact('rows','me','dests'), [
+    /* Cities with somebody in them first. This page is where a search for "travel buddy" or "who is
+       going to X" lands, and the useful next click from it is the city, not another explanation. */
+    $cities = q_all("SELECT d.slug, d.name,
+                            (SELECT COUNT(*) FROM going g2 WHERE g2.destination_id=d.id
+                               AND g2.visibility='public' AND g2.date_to >= ?) going_count,
+                            (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
+                               AND m.status='published' AND m.date_start >= ?) meetup_count
+                       FROM destinations d
+                   ORDER BY going_count DESC, meetup_count DESC, d.name", [date('Y-m-d'), date('Y-m-d H:i:s')]);
+    view('going_index', compact('rows','me','dests','cities'), [
         'title'=>'Who is going where, and when — find a travel buddy',
         'description'=>'Travelers post the city and the dates they will be there, so you can find the ones whose trip overlaps yours. Destination and date range only, never a precise location.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>"Who's going",'url'=>url('going')]],

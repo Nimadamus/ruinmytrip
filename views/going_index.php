@@ -1,4 +1,4 @@
-<?php /** @var array $rows @var ?array $me @var array $dests */ ?>
+<?php /** @var array $rows @var ?array $me @var array $dests @var array $cities */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Who's going</p>
   <h1>Who's going</h1>
@@ -13,10 +13,41 @@
     <p style="margin:16px 0"><a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free to share dates</a></p>
   <?php endif; ?>
 
+  <?php /* Three sentences, because somebody who arrived from a search for "travel buddy" has never
+           heard of this site and will not read a paragraph to find out what it does. */ ?>
+  <div class="grid g-3" style="gap:14px;margin:18px 0">
+    <div class="card"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 6px">1</p>
+      <b>Post the city and the dates.</b>
+      <p class="muted" style="margin:.3rem 0 0">Twenty seconds. Nothing finer than the city and the range, ever.</p>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 6px">2</p>
+      <b>See whose trip overlaps yours.</b>
+      <p class="muted" style="margin:.3rem 0 0">Same city, same days. You are told when somebody new lands on your dates.</p>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 6px">3</p>
+      <b>Meet in public, or do not.</b>
+      <p class="muted" style="margin:.3rem 0 0">Message first, meet if you want to. Meetups are public and 18+.</p>
+    </div></div>
+  </div>
+
+  <?php if (!empty($cities)): ?>
+    <h2 style="margin:26px 0 10px">Find travelers by city</h2>
+    <div class="tag-list" style="margin-bottom:26px">
+      <?php foreach ($cities as $c): $n = (int)$c['going_count'] + (int)$c['meetup_count']; ?>
+        <a class="chip" href="<?= e(url('d/'.$c['slug'].'/travelers')) ?>"><?= e($c['name']) ?><?php
+          if ($n): ?> <span class="hint"><?= $n ?></span><?php endif; ?></a>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
   <?php if (!$rows): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
-      <h3>Nobody's shared public travel plans yet.</h3>
-      <p class="muted" style="margin:0">When a traveler shares where they're headed, you'll see the destination and date range here — never a precise location.</p>
+      <h3>Nobody has posted public travel plans yet.</h3>
+      <p class="muted" style="margin:0">Whoever goes first is the traveler everybody arriving after them
+        sees. Post the city and the range; nothing finer is ever shown.</p>
     </div>
   <?php else: ?>
     <div class="grid g-2" style="padding:14px 0 50px">

@@ -29,6 +29,14 @@
     <?php endif; ?>
   </div>
 
+  <?php /* These posts are what search currently lands on, and they ended at a comment box. When
+           the post is about a city, the reader gets the one thing this site has that the article
+           does not: the people going there. */ ?>
+  <?php if (!empty($blogDest)): ?>
+    <?php $destSlug = (string) $blogDest['slug']; $destName = (string) $blogDest['name'];
+          include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
   <?php
     $targetType = 'blog_post'; $targetId = (int)$p['id']; $ownerId = (int)$p['user_id'];
     $returnUrl = url('blog/'.$p['slug']);
