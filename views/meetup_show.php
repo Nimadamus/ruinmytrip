@@ -1,4 +1,5 @@
-<?php /** @var array $m @var array $rsvps @var ?array $me @var bool $mine @var bool $isHost @var int $going @var bool $isFull @var bool $isPast @var array $hostStats @var array $hostBadges @var ?string $hostSince */ ?>
+<?php /** @var array $m @var array $rsvps @var ?array $me @var bool $mine @var bool $isHost @var int $going @var bool $isFull @var bool $isPast @var array $hostStats @var array $hostBadges @var ?string $hostSince
+ *  @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('meetups')) ?>">Meetups</a> / <?= e($m['title']) ?></p></div>
 <div class="wrap" style="max-width:820px">
   <span class="chip"><?= e($m['dest_name']) ?></span>
@@ -45,6 +46,16 @@
         <?= csrf_field() ?><button class="btn btn-ghost">Cancel meetup</button>
       </form>
     <?php endif; ?>
+    <?php if ($me): ?>
+      <?php /* Keeping an eye on a meetup is not the same as committing to turn up to it, and the
+               site had only the committing half. A save puts it on /saved while you decide. */ ?>
+      <form class="inline-form" method="post" action="<?= e(url('react')) ?>" style="margin:0"><?= csrf_field() ?>
+        <input type="hidden" name="kind" value="save"><input type="hidden" name="target_type" value="meetup">
+        <input type="hidden" name="target_id" value="<?= (int)$m['id'] ?>">
+        <input type="hidden" name="return" value="<?= e(url('meetup/'.(int)$m['id'])) ?>">
+        <button class="btn <?= $saved?'btn-primary':'btn-ghost' ?>" aria-pressed="<?= $saved?'true':'false' ?>">
+          <?= $saved?'⭑ Saved':'⭑ Save' ?><?= $saveCount?' · '.$saveCount:'' ?></button></form>
+    <?php endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('report?target_type=meetup&target_id='.$m['id'])) ?>">⚑ Report</a>
   </div>
 
@@ -82,5 +93,15 @@
     <?php endforeach; ?>
     <?php if(!$rsvps):?><span class="muted">Be the first to RSVP.</span><?php endif;?>
   </div>
+
+  <?php
+    /* The discussion. showActionsBar is off because this page already carries its own RSVP, save
+       and report row above; a second one under the going list would just be a second place to
+       press the same buttons. Everyone going is notified when a line lands here. */
+    $targetType = 'meetup'; $targetId = (int)$m['id']; $ownerId = (int)$m['host_id'];
+    $returnUrl = url('meetup/'.(int)$m['id']); $showActionsBar = false;
+    $commentsHeading = 'Discussion';
+    include __DIR__ . '/_engagement.php';
+  ?>
   <div style="height:50px"></div>
 </div>

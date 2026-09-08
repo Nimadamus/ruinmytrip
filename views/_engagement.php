@@ -6,6 +6,9 @@
  *  votes and their own edit/report links) and only wants the comments block from here.
  */
 $showActionsBar ??= true;
+/* Most pages call this a comment. On a meetup it is the discussion the people going are having
+   about a plan, so the page gets to name it. */
+$commentsHeading ??= 'Comments';
 ?>
 <?php if ($showActionsBar): ?>
 <div style="display:flex;gap:10px;margin:24px 0;flex-wrap:wrap">
@@ -29,7 +32,7 @@ $showActionsBar ??= true;
 </div>
 <?php endif; ?>
 
-<h2>Comments</h2>
+<h2><?= e($commentsHeading) ?></h2>
 <?php
 /* One level of threading: replies hang under the comment they answer, and a reply to a reply
    joins the same group. A tree that nests without limit is unreadable on a phone and every

@@ -45,6 +45,7 @@ function rmt_saved_path(string $kind, int $id, string $slug): string {
         'trip'       => '/trip/' . $id . ($slug !== '' ? '/' . $slug : ''),
         'review'     => '/review/' . $id . ($slug !== '' ? '/' . $slug : ''),
         'post'       => '/post/' . $id,
+        'meetup'     => '/meetup/' . $id,
         default      => '/',
     };
 }

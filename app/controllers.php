@@ -1525,7 +1525,19 @@ function meetup_show(array $a): void {
     $hostStats = rmt_profile_stats((int) $m['host_id']);
     $hostBadges = rmt_user_badges((int) $m['host_id']);
     $hostSince = q_one('SELECT created_at FROM users WHERE id=?', [(int)$m['host_id']])['created_at'] ?? null;
-    view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast','hostStats','hostBadges','hostSince'), [
+    /* Comments have always been accepted on a meetup by the interaction endpoints; the page just
+       never rendered them, the same gap guides had. "Which exit of the metro" and "is this
+       beginner friendly" are the questions that decide whether somebody turns up. */
+    $mid = (int) $m['id'];
+    $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id
+                       LEFT JOIN profiles p ON p.user_id=u.id
+                       WHERE c.target_type='meetup' AND c.target_id=? AND c.status='published' ORDER BY c.id", [$mid]);
+    $likeCount = (int) q_one("SELECT COUNT(*) n FROM likes WHERE target_type='meetup' AND target_id=?", [$mid])['n'];
+    $saveCount = (int) q_one("SELECT COUNT(*) n FROM saves WHERE target_type='meetup' AND target_id=?", [$mid])['n'];
+    $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'meetup',$mid]);
+    $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'meetup',$mid]);
+    view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast','hostStats','hostBadges','hostSince',
+                                'comments','likeCount','saveCount','liked','saved'), [
         'title'=>$m['title'].' — RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
         'og_image'=>rmt_card_url('meetup', (string) (int) $m['id']),
@@ -3004,6 +3016,11 @@ function saved_index(array $a): void {
         "SELECT 'post' kind, p.body title, p.id, '' slug, s.created_at saved_at, p.user_id
            FROM saves s JOIN posts p ON p.id = s.target_id AND p.status = 'published'
           WHERE s.user_id = ? AND s.target_type = 'post'",
+        // A meetup you are still deciding about. Cancelled ones stay listed rather than vanishing:
+        // the whole reason you saved it was that you were planning around the date.
+        "SELECT 'meetup' kind, m.title, m.id, '' slug, s.created_at saved_at, m.host_id user_id
+           FROM saves s JOIN meetups m ON m.id = s.target_id
+          WHERE s.user_id = ? AND s.target_type = 'meetup'",
     ];
     foreach ($sources as $sql) {
         foreach (q_all($sql, [$uid]) as $row) {
@@ -3161,7 +3178,18 @@ function comment_action(array $a): void {
                 [$parentAuthor, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
         }
     }
-    rmt_notify_mentions($tt, $tid, (int)$me['id'], [$owner], $body);
+    /* A meetup is a plan other people arranged their day around, so a new line on its page is
+       news to everyone going, not only to the host. Without this the discussion existed and
+       nobody was told it did: the question "where exactly are we meeting" sat unread until
+       somebody happened to reload. The host is not in this list -- the comment notification
+       above already reached them. */
+    $meetupCrowd = [];
+    if ($tt === 'meetup') {
+        $hostId = (int) (q_one('SELECT host_id FROM meetups WHERE id=?', [$tid])['host_id'] ?? 0);
+        $meetupCrowd = rmt_meetup_discussion_recipients($tid, (int) $me['id'], $hostId);
+        rmt_meetup_notify($meetupCrowd, 'meetup_comment', (int) $me['id'], $tid);
+    }
+    rmt_notify_mentions($tt, $tid, (int)$me['id'], array_merge([$owner], $meetupCrowd), $body);
     redirect(rmt_return_to());
 }
 

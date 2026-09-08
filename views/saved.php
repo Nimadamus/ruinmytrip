@@ -1,7 +1,7 @@
 <?php /** @var ?array $me @var array $places @var array $dests @var array $reading */
 // Labels for the reading list. Kept here rather than in the controller: it is presentation, and a
 // kind with no label would still render (falling back to the raw key) instead of vanishing.
-$kindLabels = ['guide'=>'Guide', 'blog_post'=>'Post', 'collection'=>'Collection', 'trip'=>'Trip', 'review'=>'Review'];
+$kindLabels = ['guide'=>'Guide', 'blog_post'=>'Post', 'collection'=>'Collection', 'trip'=>'Trip', 'review'=>'Review', 'post'=>'Talk', 'meetup'=>'Meetup'];
 $total = count($places) + count($dests) + count($reading);
 ?>
 <section class="block"><div class="wrap">

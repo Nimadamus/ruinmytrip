@@ -223,13 +223,14 @@ function rmt_push_line(array $n): ?array {
             $dest = q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid])['name'] ?? null;
             $body = $dest ? "$who will be in $dest while you are." : "$who has dates that overlap yours.";
             $url = url('matches'); break;
-        case 'meetup_rsvp': case 'meetup_changed': case 'meetup_cancelled': case 'meetup_nearby':
+        case 'meetup_rsvp': case 'meetup_changed': case 'meetup_cancelled': case 'meetup_nearby': case 'meetup_comment':
             $title = q_one('SELECT title FROM meetups WHERE id=?', [$tid])['title'] ?? null;
             $what = $title ? '"' . $title . '"' : 'a meetup';
             $body = ['meetup_rsvp' => "$who is going to " . ($title ? $what : 'your meetup') . '.',
                      'meetup_changed' => "The time changed for $what.",
                      'meetup_cancelled' => "Cancelled: $what.",
-                     'meetup_nearby' => "$who is hosting $what while you are in town."][$type];
+                     'meetup_nearby' => "$who is hosting $what while you are in town.",
+                     'meetup_comment' => "$who posted on $what."][$type];
             $url = url('meetup/' . $tid); break;
         default: return null;
     }

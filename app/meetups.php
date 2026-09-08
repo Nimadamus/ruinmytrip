@@ -144,8 +144,8 @@ function rmt_meetups_attending_upcoming(int $userId, int $limit = 10): array {
                  [$userId, date('Y-m-d H:i:s')]);
 }
 
-/** The three things that happen to a meetup which the other people involved need told about. */
-const RMT_MEETUP_NOTIFY_TYPES = ['meetup_rsvp', 'meetup_changed', 'meetup_cancelled', 'meetup_nearby'];
+/** The things that happen to a meetup which the other people involved need told about. */
+const RMT_MEETUP_NOTIFY_TYPES = ['meetup_rsvp', 'meetup_changed', 'meetup_cancelled', 'meetup_nearby', 'meetup_comment'];
 
 /** Everyone currently going, except one person (normally the host, who is doing the thing). */
 function rmt_meetup_going_user_ids(int $meetupId, int $exceptUserId = 0): array {
@@ -186,4 +186,26 @@ function rmt_meetup_notify(array $userIds, string $type, int $actorId, int $meet
 function rmt_meetup_time_changed(array $before, array $after): bool {
     return (string) ($before['date_start'] ?? '') !== (string) ($after['date_start'] ?? '')
         || (string) ($before['date_end'] ?? '')   !== (string) ($after['date_end'] ?? '');
+}
+
+/**
+ * Who hears about a new comment on a meetup, besides the host.
+ *
+ * A meetup page had a discussion nobody was told about, which is the same as having none: the
+ * question "is this beginner friendly, and where exactly are we meeting" sat there until whoever
+ * happened to reload the page saw it. Everybody who said they are going is planning around this
+ * meetup, so they are the people a new line on it concerns.
+ *
+ * The host is left out here because the ordinary comment notification already tells them, and
+ * being told twice about one sentence reads as a bug. The author is left out by
+ * rmt_meetup_going_user_ids(), which is also what covers the host commenting on their own meetup.
+ *
+ * @return int[]
+ */
+function rmt_meetup_discussion_recipients(int $meetupId, int $actorId, int $hostId): array {
+    $ids = rmt_meetup_going_user_ids($meetupId, $actorId);
+    if ($hostId !== $actorId) {
+        $ids = array_values(array_filter($ids, static fn(int $id) => $id !== $hostId));
+    }
+    return $ids;
 }
