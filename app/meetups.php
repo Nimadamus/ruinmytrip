@@ -209,3 +209,56 @@ function rmt_meetup_discussion_recipients(int $meetupId, int $actorId, int $host
     }
     return $ids;
 }
+
+/**
+ * A meetup as schema.org Event.
+ *
+ * Meetups are the one thing here that Google has a rich result for, and they were emitting no
+ * structured data at all: a real, dated, public event with a host and an attendee count was being
+ * read as an anonymous page of text. Everything below is a fact already printed on the page.
+ *
+ * The location is the destination and nothing finer, which is the same promise the page makes to
+ * the people attending. schema.org is happy with a Place carrying only addressLocality and
+ * addressCountry, and inventing a street to satisfy a validator would break the one rule this
+ * feature has.
+ *
+ * A cancelled meetup keeps its markup and says EventCancelled, because that is exactly the state
+ * somebody holding the link needs to be told about, in the result as well as on the page.
+ */
+function rmt_meetup_jsonld(array $m, int $goingCount = 0): array {
+    $start = strtotime((string) ($m['date_start'] ?? ''));
+    $ld = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Event',
+        'name' => (string) $m['title'],
+        'url' => url('meetup/' . (int) $m['id']),
+        'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+        'eventStatus' => ($m['status'] ?? '') === 'cancelled'
+            ? 'https://schema.org/EventCancelled' : 'https://schema.org/EventScheduled',
+        'isAccessibleForFree' => true,
+    ];
+    if ($start) $ld['startDate'] = date('c', $start);
+    $end = $m['date_end'] ? strtotime((string) $m['date_end']) : false;
+    if ($end) $ld['endDate'] = date('c', $end);
+    if (!empty($m['description'])) {
+        $ld['description'] = mb_strimwidth(strip_tags((string) $m['description']), 0, 300, '…');
+    }
+    if (!empty($m['dest_name'])) {
+        $addr = ['@type' => 'PostalAddress', 'addressLocality' => (string) $m['dest_name']];
+        if (!empty($m['dest_country'])) $addr['addressCountry'] = (string) $m['dest_country'];
+        $ld['location'] = ['@type' => 'Place', 'name' => (string) $m['dest_name'], 'address' => $addr];
+    }
+    if (!empty($m['host']['username'])) {
+        $ld['organizer'] = ['@type' => 'Person', 'name' => '@' . $m['host']['username'],
+                            'url' => url('u/' . $m['host']['username'])];
+    }
+    // Capacity and attendance are published on the page, so they are published here too. Neither is
+    // ever rounded up: a going count is a COUNT(*), not a marketing number.
+    if ((int) ($m['capacity'] ?? 0) > 0) {
+        $ld['maximumAttendeeCapacity'] = (int) $m['capacity'];
+        // Zero remaining is a fact worth publishing: a full meetup should read as full rather than
+        // as a meetup that declined to say. Uncapped meetups claim neither number.
+        $ld['remainingAttendeeCapacity'] = max(0, (int) $m['capacity'] - $goingCount);
+    }
+    return $ld;
+}

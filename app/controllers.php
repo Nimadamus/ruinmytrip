@@ -1589,14 +1589,14 @@ function meetups_index(array $a): void {
     $me = current_user();
     $canHost = can_host_meetups($me);
     view('meetups_index', compact('meetups', 'me', 'canHost'), [
-        'title'=>'Public travel meetups — RuinMyTrip',
-        'description'=>'Optional, public, safety-first travel meetups. Meet fellow travelers in a destination — never dating, never precise location sharing.',
+        'title'=>'Travel meetups — meet other travelers in person',
+        'description'=>'Public travel meetups posted by members: coffee, a walk, dinner with other travelers in the city you are in. Never dating, never precise location, always 18+.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')]],
     ]);
 }
 
 function meetup_show(array $a): void {
-    $m = q_one("SELECT m.*, d.name dest_name, d.slug dest_slug FROM meetups m
+    $m = q_one("SELECT m.*, d.name dest_name, d.slug dest_slug, d.country dest_country FROM meetups m
                 LEFT JOIN destinations d ON d.id=m.destination_id WHERE m.id=?", [(int)$a['id']]);
     // A cancelled meetup still renders. People RSVPed to it and are holding the link; 404ing them
     // tells them nothing, and "it vanished" is the worst version of "it is off".
@@ -1633,6 +1633,9 @@ function meetup_show(array $a): void {
         'title'=>$m['title'].' — RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
         'og_image'=>rmt_card_url('meetup', (string) (int) $m['id']),
+        // A dated public event with a host, a city and an attendee count was being served as an
+        // anonymous page of text. Every field here is already printed on the page.
+        'jsonld'=>jsonld(rmt_meetup_jsonld($m, $going)),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')],['name'=>$m['title'],'url'=>url('meetup/'.$m['id'])]],
     ]);
 }
@@ -1785,8 +1788,8 @@ function going_index(array $a): void {
                    ORDER BY g.date_from", $visArgs);
     $dests = all_dests();
     view('going_index', compact('rows','me','dests'), [
-        'title'=>"Who's going — find travelers by destination & date | RuinMyTrip",
-        'description'=>'Discover travelers heading to the same destination in your date range. Destination and date-range only — never precise location.',
+        'title'=>'Who is going where, and when — find a travel buddy',
+        'description'=>'Travelers post the city and the dates they will be there, so you can find the ones whose trip overlaps yours. Destination and date range only, never a precise location.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>"Who's going",'url'=>url('going')]],
     ]);
 }
@@ -1850,8 +1853,8 @@ function travelers_index(array $a): void {
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name",
                     [date('Y-m-d'), date('Y-m-d H:i:s')]);
     view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities], [
-        'title' => 'Travelers on RuinMyTrip',
-        'description' => 'Real traveler profiles on RuinMyTrip. Follow people whose trips and reviews you trust.',
+        'title' => 'Travelers — meet the people going where you are going',
+        'description' => 'Real members of RuinMyTrip, and the city pages that show who is going where and when. Follow the travelers whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
     ]);
 }
