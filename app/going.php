@@ -130,6 +130,15 @@ function rmt_going_delete(int $userId, int $destId): void {
 /** Tell followers a public plan was posted. Followers-only and private plans do not notify. */
 function rmt_going_notify_followers(int $actorId, int $goingId, string $visibility): void {
     if ($visibility !== 'public' || $goingId < 1) return;
+    /* The people who saved this city, as well as the people who follow this traveler. On a young
+       network the first is the one that matters: somebody who marked Lisbon has said what they
+       want to hear about, and until now nothing ever told them. */
+    if (function_exists('rmt_city_notify')) {
+        $g = q_one('SELECT destination_id FROM going WHERE id = ?', [$goingId]);
+        if ($g && (int) $g['destination_id'] > 0) {
+            rmt_city_notify((int) $g['destination_id'], 'city_going', $actorId, 'going', $goingId);
+        }
+    }
     $fol = q_all('SELECT follower_id FROM follows WHERE followee_id = ?', [$actorId]);
     $now = date('Y-m-d H:i:s');
     foreach ($fol as $f) {

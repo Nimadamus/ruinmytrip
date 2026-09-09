@@ -59,6 +59,29 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif (in_array($n['type'], RMT_CITY_NOTIFY_TYPES, true)):
+          $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $city = null;
+          if ($n['type'] === 'city_going') {
+              $city = q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',
+                            [(int)$n['target_id']]);
+          } else {
+              $city = q_one('SELECT d.name, d.slug FROM meetups m JOIN destinations d ON d.id=m.destination_id WHERE m.id=?',
+                            [(int)$n['target_id']]);
+          }
+          /* The city is the reason this notification exists, so it is in the sentence and it is the
+             link: the useful next move is that city's people page, not a generic feed. */
+          $href = $city ? url('d/'.$city['slug'].'/travelers')
+                        : rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
+          $line = $n['type'] === 'city_going'
+              ? $who . ' posted dates for ' . ($city ? $city['name'] : 'a city you saved') . '.'
+              : $who . ' is hosting a meetup in ' . ($city ? $city['name'] : 'a city you saved') . '.';
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+          <?php else: ?>
+            <b><?= e($line) ?></b>
+          <?php endif; ?>
         <?php elseif ($n['type']==='invite_joined' && $n['actor']): ?>
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> joined from your invite link. Say hi.</a>
         <?php elseif ($n['type']==='invite_joined'): ?>

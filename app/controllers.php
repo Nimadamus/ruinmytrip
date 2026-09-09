@@ -1711,6 +1711,10 @@ function meetup_create(array $a): void {
     // The people most likely to come are the ones who already said they will be in that city on
     // that day. The site knew who they were and, until this, never told them.
     rmt_meetup_notify_travelers($id, (int) $me['id'], (int) $d['destination_id'], (string) $d['date_start']);
+    /* And the people who saved the city, who may have no dates at all yet. A meetup is the thing
+       most likely to give them some. Deduped inside, so the two notifiers cannot both land on one
+       person for one meetup. */
+    rmt_city_notify((int) $d['destination_id'], 'city_meetup', (int) $me['id'], 'meetup', $id);
     flash('Meetup published. Travelers with dates in town have been told.');
     redirect('/meetup/' . $id);
 }
