@@ -4751,7 +4751,23 @@ function matches_index(array $a): void {
     $shared = rmt_match_shared_destinations($uid, array_column($wishlist, 'user_id'));
     $myPlans = rmt_going_list_for_profile($uid, $me);
 
-    view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me'), [
+    /* Who is coming to where you live. Everywhere else on this site "matching" means two people
+       travelling to the same place; for somebody at home it means a visitor, and the person who
+       lives there is the one a visitor most wants to meet. Reads the home city they set on their
+       profile, which until now only ever put them in a list on that city's page. */
+    $home = q_one('SELECT d.id, d.slug, d.name FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
+                    WHERE p.user_id = ?', [$uid]);
+    $visitors = [];
+    $neighbours = [];
+    if ($home) {
+        $visitors = rmt_plans_for_destination((int) $home['id'], $me, 12);
+        // Drop yourself: a plan to the city you live in is a real trip, just not a visitor to meet.
+        $visitors = array_values(array_filter($visitors, static fn(array $v) => (int) $v['user_id'] !== $uid));
+        $neighbours = array_values(array_filter(rmt_city_locals((int) $home['id'], 12),
+                                                static fn(array $l) => $l['user_id'] !== $uid));
+    }
+
+    view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me', 'home', 'visitors', 'neighbours'), [
         'title' => 'Your trip matches — RuinMyTrip',
         'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader

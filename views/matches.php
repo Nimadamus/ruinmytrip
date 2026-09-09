@@ -1,4 +1,4 @@
-<?php /** @var array $byDest @var array $wishlist @var array $shared @var array $myPlans @var array $me */ ?>
+<?php /** @var array $byDest @var array $wishlist @var array $shared @var array $myPlans @var array $me @var ?array $home @var array $visitors @var array $neighbours */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Matches</p></div>
 <div class="wrap">
   <h1>Your matches</h1>
@@ -65,6 +65,45 @@
         <p style="margin:16px 0 0"><a class="btn btn-ghost" href="<?= e(url('going')) ?>">See everyone's plans</a></p>
       <?php endif; ?>
     </div>
+  <?php endif; ?>
+
+  <?php /* Where you live, pointed the other way round. Matching everywhere else means two people
+           going to the same city; for somebody at home it means a visitor, and a local is the
+           person a visitor most wants to meet. */ ?>
+  <?php if ($home && ($visitors || $neighbours)): ?>
+    <hr style="margin:32px 0">
+    <h2>In <?= e($home['name']) ?>, where you live</h2>
+    <?php if ($visitors): ?>
+      <p class="hint" style="margin:0 0 10px">Travelers coming to your city. You are the local here.</p>
+      <div class="tag-list" style="margin-bottom:18px">
+        <?php foreach ($visitors as $v): ?>
+          <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
+             href="<?= e(url('u/'.$v['username'])) ?>">
+            <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($v['avatar_url'] ?? null)) ?>" alt="">
+            @<?= e($v['username']) ?>
+            <span class="hint"><?= e(date('M j', strtotime((string)$v['date_from']))) ?>&ndash;<?= e(date('M j', strtotime((string)$v['date_to']))) ?></span>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+    <?php if ($neighbours): ?>
+      <p class="hint" style="margin:0 0 10px">Members who live in <?= e($home['name']) ?> too.</p>
+      <div class="tag-list" style="margin-bottom:8px">
+        <?php foreach ($neighbours as $nb): ?>
+          <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
+             href="<?= e(url('u/'.$nb['username'])) ?>">
+            <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($nb['avatar_url'])) ?>" alt="">
+            @<?= e($nb['username']) ?>
+          </a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+    <p style="margin:6px 0 0"><a href="<?= e(url('d/'.$home['slug'].'/travelers')) ?>">Everyone in <?= e($home['name']) ?> &rarr;</a></p>
+  <?php elseif (!$home): ?>
+    <hr style="margin:32px 0">
+    <p class="hint" style="margin:0">Set the city you live in on
+      <a href="<?= e(url('u/'.($me['username'] ?? '').'/edit')) ?>">your profile</a> and travelers heading
+      there will find you, and you will see them coming.</p>
   <?php endif; ?>
 
   <?php /* The cold-start tier. Somebody who joined an hour ago has saved cities and booked nothing,
