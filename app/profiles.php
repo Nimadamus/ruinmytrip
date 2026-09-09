@@ -49,6 +49,18 @@ function rmt_profile_stats(int $uid): array {
                                SELECT destination_id FROM trips
                                 WHERE user_id=? AND status='published' AND destination_id IS NOT NULL
                              ) x", [$uid, $uid]),
+        // Countries, counted over the same three ways this site lets somebody record a visit.
+        // A traveler who has been to nine countries has a different profile from one who has been
+        // to nine neighbourhoods of the same city, and the old row could not tell them apart.
+        'countries' => $one("SELECT COUNT(DISTINCT d.country) c FROM destinations d WHERE d.id IN (
+                               SELECT destination_id FROM reviews
+                                WHERE user_id=? AND status='published' AND destination_id IS NOT NULL
+                               UNION
+                               SELECT destination_id FROM trips
+                                WHERE user_id=? AND status='published' AND destination_id IS NOT NULL
+                               UNION
+                               SELECT destination_id FROM visits WHERE user_id=?
+                             ) AND d.country IS NOT NULL AND d.country <> ''", [$uid, $uid, $uid]),
         // Times other travelers marked this person's reviews useful. Their own votes never count.
         'helpful'   => $one("SELECT COUNT(*) c FROM review_votes rv JOIN reviews r ON r.id=rv.review_id
                               WHERE r.user_id=? AND r.status='published'

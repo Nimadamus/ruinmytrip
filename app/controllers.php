@@ -560,8 +560,24 @@ function profile(array $a): void {
     $me = current_user();
     $isMe = $me && (int)$me['id'] === $uid;
 
-    $trips = q_all("SELECT t.*, d.name dest_name FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
-                    WHERE t.user_id=? AND t.status='published' ORDER BY t.id DESC", [$uid]);
+    /* Trips carry dates and a visibility since migration 071, so this list has to respect both.
+       Without the visibility clause a plan somebody marked "only you" would appear on their public
+       profile the moment plans became trips, which is the kind of privacy bug a merge introduces
+       quietly. Ordered by when the trip is, not by when the row was written. */
+    [$tripVisSql, $tripVisArgs] = rmt_plan_visibility_sql('t', $me);
+    $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
+                    LEFT JOIN destinations d ON d.id=t.destination_id
+                    WHERE t.user_id=? AND t.status='published' AND $tripVisSql
+                    ORDER BY COALESCE(t.date_from, t.visited_on, t.created_at) DESC, t.id DESC",
+                   array_merge([$uid], $tripVisArgs));
+    $upcomingTrips = [];
+    $pastTrips = [];
+    foreach ($trips as $t) {
+        if (in_array(rmt_trip_phase($t), ['upcoming', 'current'], true)) $upcomingTrips[] = $t;
+        else $pastTrips[] = $t;
+    }
+    // Upcoming reads soonest first: it is a plan, not an archive.
+    usort($upcomingTrips, static fn(array $x, array $y) => strcmp((string) $x['date_from'], (string) $y['date_from']));
     $reviews = q_all("SELECT * FROM reviews WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     $guides = q_all("SELECT * FROM guides WHERE user_id=? AND status='published' ORDER BY id DESC", [$uid]);
     // Split by kind, because a list can hold places as well as cities and "3 destinations" over a
@@ -586,15 +602,18 @@ function profile(array $a): void {
     // deciding whether to meet a stranger looks here. Attending is NOT -- see rmt_meetups_* .
     $hostedMeetups = rmt_meetups_hosted_upcoming($uid);
     $attendingMeetups = $isMe ? rmt_meetups_attending_upcoming($uid) : [];
-    $plans = rmt_going_list_for_profile($uid, $me);
     $beenPlaces = rmt_visits_for_user($uid);
+    // Where they live, when it is a city this site has a page for. Shown as a chip, because a
+    // local is the person a traveler most wants to find and the profile never said so.
+    $homeDest = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
+                        WHERE p.user_id = ?', [$uid]);
 
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','plans','beenPlaces'), [
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),

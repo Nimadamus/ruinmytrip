@@ -32,6 +32,9 @@ function check(string $name, $got, $expect): void {
 
 $pdo = db();
 $pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT, invited_by INT)");
+/* rmt_profile_stats counts countries now, which means it joins destinations. */
+$pdo->exec('CREATE TABLE IF NOT EXISTS destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT)');
+$pdo->exec('CREATE TABLE IF NOT EXISTS visits (user_id INT, destination_id INT, created_at TEXT)');
 $pdo->exec("CREATE TABLE profiles (user_id INTEGER PRIMARY KEY, display_name TEXT, avatar_url TEXT, bio TEXT, home_city TEXT, credibility_score INT)");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT, place_id INT, status TEXT, rating INT, created_at TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT, status TEXT)");

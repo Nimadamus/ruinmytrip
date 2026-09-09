@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups @var array $upcomingTrips @var array $pastTrips @var ?array $homeDest */ ?>
 <div class="wrap">
   <div class="profile-cover<?= $u['cover_url'] ? ' has-image' : '' ?>" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -47,6 +47,14 @@
         <?php endif; ?>
         <?php if ((int) $stats['photos'] > 0): ?>
           <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
+        <?php endif; ?>
+        <?php if (!empty($homeDest)): ?>
+          <?php /* The one fact a traveler heading somewhere most wants on a profile: this person is
+                   there all the time. Links to that city's people page. */ ?>
+          <span><a class="chip" href="<?= e(url('d/'.$homeDest['slug'].'/travelers')) ?>">Local in <?= e($homeDest['name']) ?></a></span>
+        <?php endif; ?>
+        <?php if ((int) ($stats['countries'] ?? 0) > 0): ?>
+          <span><b><?= (int)$stats['countries'] ?></b> <?= $stats['countries'] === 1 ? 'country' : 'countries' ?></span>
         <?php endif; ?>
         <?php if ((int) $stats['places'] > 0): ?>
           <?php /* "80 places visited" on the editorial account directly contradicted the editorial
@@ -160,20 +168,26 @@
     </div></div>
   <?php endif; ?>
 
-  <?php if (!empty($plans)): ?>
+  <?php if (!empty($upcomingTrips)): ?>
+    <?php /* A trip is one object now: the dates, the page it will fill with updates, and the story
+             afterwards. Soonest first, and each one links to its own page rather than to the city,
+             because that page is where somebody says they are coming too. */ ?>
     <div class="card" style="margin:18px 0"><div class="card-body">
       <p class="eyebrow" style="margin:0 0 8px"><?= $isMe ? 'Your upcoming trips' : 'Upcoming trips' ?></p>
       <ul class="list-plain" style="margin:0">
-        <?php foreach ($plans as $pl): ?>
+        <?php foreach ($upcomingTrips as $ut): ?>
           <li style="padding:6px 0;border-bottom:1px solid var(--line)">
-            <a href="<?= e(url('d/'.$pl['dest_slug'])) ?>"><?= e($pl['dest_name']) ?></a>
-            <span class="muted"> · <?= e(date('M j', strtotime((string)$pl['date_from']))) ?> – <?= e(date('M j, Y', strtotime((string)$pl['date_to']))) ?></span>
-            <?php if ($isMe && $pl['visibility'] !== 'public'): ?>
-              <span class="hint"> · <?= $pl['visibility'] === 'followers' ? 'followers' : 'only you' ?></span>
+            <a href="<?= e(url('trip/'.(int)$ut['id'].'/'.$ut['slug'])) ?>"><b><?= e($ut['dest_name'] ?: $ut['title']) ?></b></a>
+            <span class="muted"> · <?= e(date('M j', strtotime((string)$ut['date_from']))) ?> &ndash; <?= e(date('M j, Y', strtotime((string)$ut['date_to']))) ?></span>
+            <?php if ($isMe && ($ut['visibility'] ?? 'public') !== 'public'): ?>
+              <span class="hint"> · <?= ($ut['visibility'] === 'followers') ? 'followers' : 'only you' ?></span>
             <?php endif; ?>
           </li>
         <?php endforeach; ?>
       </ul>
+      <?php if ($isMe): ?>
+        <p style="margin:10px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('going')) ?>">Add another trip</a></p>
+      <?php endif; ?>
     </div></div>
   <?php endif; ?>
 
@@ -255,13 +269,20 @@
   <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
            was the FIRST section on a profile carrying 185 reviews: the page led with the one thing
            this traveler had not done. */ ?>
-  <?php if ($trips): ?>
-  <h2 style="margin-top:24px">Trips</h2>
+  <?php if ($pastTrips): ?>
+  <h2 style="margin-top:24px">Trips taken</h2>
   <div class="grid g-3">
-    <?php foreach ($trips as $t): ?>
+    <?php foreach ($pastTrips as $t): ?>
       <article class="card"><a href="<?= e(url('trip/'.$t['id'].'/'.$t['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e(abs_url($t['cover_url'])) ?>" alt="<?= e($t['title']) ?>">
-        <div class="card-body"><?php if($t['dest_name']):?><span class="chip"><?= e($t['dest_name']) ?></span><?php endif;?><h3 style="font-size:1.05rem"><?= e($t['title']) ?></h3></div></a></article>
+        <?php if (!empty($t['cover_url'])): ?>
+          <img class="card-media" loading="lazy" src="<?= e(abs_url($t['cover_url'])) ?>" alt="<?= e($t['title']) ?>">
+        <?php endif; ?>
+        <div class="card-body">
+          <?php if($t['dest_name']):?><span class="chip"><?= e($t['dest_name']) ?></span><?php endif;?>
+          <h3 style="font-size:1.05rem"><?= e($t['title']) ?></h3>
+          <?php $when = $t['date_from'] ?: $t['visited_on']; ?>
+          <?php if ($when): ?><p class="hint" style="margin:0"><?= e(date('M Y', strtotime((string) $when))) ?></p><?php endif; ?>
+        </div></a></article>
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
