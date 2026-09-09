@@ -15,7 +15,7 @@
            first job is to make you click "new post" gets one post a week. */ ?>
   <?php if ($me): ?>
     <div class="card" style="margin:18px 0"><div class="card-body">
-      <form method="post" action="<?= e(url('post/new')) ?>" enctype="multipart/form-data">
+      <form id="say" method="post" action="<?= e(url('post/new')) ?>" enctype="multipart/form-data">
         <?= csrf_field() ?><input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
         <input type="hidden" name="return" value="<?= e(url('talk')) ?>">
         <label for="body" class="sr-only">What do you want to say?</label>

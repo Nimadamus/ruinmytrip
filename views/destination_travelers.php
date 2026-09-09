@@ -111,7 +111,7 @@ $here = '/d/' . $d['slug'] . '/travelers';
     <?php /* The box is here rather than behind a link because the gap between wanting to ask
              something and finding the form is where the question is lost. It posts to the same
              endpoint /talk uses, tagged to this city, and comes straight back here. */ ?>
-    <form method="post" action="<?= e(url('post/new')) ?>" style="margin:0 0 16px"><?= csrf_field() ?>
+    <form id="say" method="post" action="<?= e(url('post/new')) ?>" style="margin:0 0 16px"><?= csrf_field() ?>
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
       <input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
       <input type="hidden" name="return" value="<?= e($here) ?>">

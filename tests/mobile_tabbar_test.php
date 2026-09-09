@@ -43,9 +43,20 @@ ok('the bar clears the iPhone home indicator', str_contains($css, 'env(safe-area
 ok('page content is not hidden behind it', (bool) preg_match('/body\{padding-bottom:\d+px\}/', $css));
 
 // The action in the middle, and what it does for somebody with no account.
-ok('the middle button posts dates', str_contains($footer, "url('going')"));
-ok('a logged-out visitor is asked to join and brought back',
-   str_contains($footer, "register?return=' . rawurlencode('/going')"));
+ok('the middle button posts dates by default', str_contains($footer, "\$rmt_post_to = '/going'"));
+/* On a city page it means "say something about this city": sending somebody looking at Lisbon to a
+   generic form is how the thought gets lost between the tap and the box. */
+ok('on a city page it points at that city composer',
+   str_contains($footer, "'/d/' . \$rmt_m[1] . '/travelers#say'"));
+ok('on talk it points at the talk composer', str_contains($footer, "'/talk#say'"));
+$city = (string) file_get_contents($root . '/views/destination_travelers.php');
+$talk = (string) file_get_contents($root . '/views/posts_index.php');
+ok('both composers are somewhere a link can land',
+   str_contains($city, 'id="say"') && str_contains($talk, 'id="say"'));
+/* The return path is whatever the button was pointing at, so joining from Lisbon's page brings you
+   back to Lisbon's composer rather than to a generic form. */
+ok('a logged-out visitor is asked to join and brought back to where they tapped',
+   str_contains($footer, "register?return=' . rawurlencode(\$rmt_post_to)"));
 ok('the unread dot only renders when there is something unread',
    str_contains($footer, 'rmt_unread_notification_count') && str_contains($footer, 'tabbar-dot'));
 

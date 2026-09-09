@@ -63,8 +63,23 @@
     <span aria-hidden="true">&#8962;</span><span class="tabbar-l">Home</span></a>
   <a href="<?= e(url('travelers')) ?>" class="<?= str_starts_with($rmt_path, '/travelers') || str_starts_with($rmt_path, '/explore') ? 'on' : '' ?>" aria-label="Travelers">
     <span aria-hidden="true">&#9906;</span><span class="tabbar-l">Travelers</span></a>
-  <?php /* One tap to the thing the site is for: say where you are going. */ ?>
-  <a class="tabbar-post" href="<?= e($rmt_me ? url('going') : url('register?return=' . rawurlencode('/going'))) ?>" aria-label="Post your dates">
+  <?php
+    /* One tap to the thing the site is for. Where that leads depends on where the reader is
+       standing: on a city page it is that city's composer, because somebody looking at Lisbon who
+       taps + means "say something about Lisbon", and sending them to a generic form is how the
+       thought gets lost on the way. */
+    $rmt_post_to = '/going';
+    $rmt_post_label = 'Post your dates';
+    if (preg_match('#^/d/([a-z0-9\-]+)#', $rmt_path, $rmt_m)) {
+        $rmt_post_to = '/d/' . $rmt_m[1] . '/travelers#say';
+        $rmt_post_label = 'Post about this city';
+    } elseif (str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/')) {
+        $rmt_post_to = '/talk#say';
+        $rmt_post_label = 'Say something';
+    }
+  ?>
+  <a class="tabbar-post" aria-label="<?= e($rmt_post_label) ?>"
+     href="<?= e($rmt_me ? url(ltrim($rmt_post_to, '/')) : url('register?return=' . rawurlencode($rmt_post_to))) ?>">
     <span aria-hidden="true">+</span></a>
   <a href="<?= e(url('talk')) ?>" class="<?= str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/') ? 'on' : '' ?>" aria-label="Talk">
     <span aria-hidden="true">&#9993;</span><span class="tabbar-l">Talk</span></a>
