@@ -363,3 +363,42 @@ function rmt_profile_validate(array $in): array {
             ? rmt_resolve_home_destination($home) : null,
     ]];
 }
+
+/**
+ * Every photo a member has posted, newest first, with the thing it belongs to.
+ *
+ * The profile already counted photos and then showed none of them, which is the least useful place
+ * a number can sit. They live in three tables because they were added in three places -- a trip, a
+ * review, a short post -- and the reader does not care which, so this is one list.
+ *
+ * @return list<array{url:string, href:string, what:string, at:string}>
+ */
+function rmt_profile_photos(int $uid, int $limit = 12): array {
+    $rows = [];
+    foreach (q_all("SELECT tp.url, tp.created_at, t.id, t.slug, t.title
+                      FROM trip_photos tp JOIN trips t ON t.id = tp.trip_id
+                     WHERE t.user_id = ? AND t.status = 'published'
+                       AND COALESCE(t.visibility, 'public') = 'public'
+                  ORDER BY tp.id DESC LIMIT " . max(1, $limit), [$uid]) as $r) {
+        $rows[] = ['url' => (string) $r['url'], 'href' => url('trip/' . (int) $r['id'] . '/' . $r['slug']),
+                   'what' => (string) $r['title'], 'at' => (string) ($r['created_at'] ?? '')];
+    }
+    foreach (q_all("SELECT rp.url, rp.created_at, r.id, r.slug, r.title, r.subject_name
+                      FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
+                     WHERE r.user_id = ? AND r.status = 'published'
+                  ORDER BY rp.id DESC LIMIT " . max(1, $limit), [$uid]) as $r) {
+        $rows[] = ['url' => (string) $r['url'], 'href' => url(ltrim(rmt_review_path($r), '/')),
+                   'what' => (string) ($r['title'] ?: $r['subject_name']), 'at' => (string) ($r['created_at'] ?? '')];
+    }
+    foreach (q_all("SELECT p.image_url, p.created_at, p.id, p.body
+                      FROM posts p
+                     WHERE p.user_id = ? AND p.status = 'published'
+                       AND p.image_url IS NOT NULL AND p.image_url <> ''
+                  ORDER BY p.id DESC LIMIT " . max(1, $limit), [$uid]) as $r) {
+        $rows[] = ['url' => (string) $r['image_url'], 'href' => url('post/' . (int) $r['id']),
+                   'what' => mb_strimwidth(strip_tags((string) $r['body']), 0, 60, '\u{2026}'),
+                   'at' => (string) ($r['created_at'] ?? '')];
+    }
+    usort($rows, static fn(array $a, array $b) => strcmp($b['at'], $a['at']));
+    return array_slice($rows, 0, $limit);
+}

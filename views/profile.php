@@ -1,4 +1,4 @@
-<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups @var array $upcomingTrips @var array $pastTrips @var ?array $homeDest */ ?>
+<?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups @var array $upcomingTrips @var array $pastTrips @var ?array $homeDest @var array $photoWall */ ?>
 <div class="wrap">
   <div class="profile-cover<?= $u['cover_url'] ? ' has-image' : '' ?>" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
   <div class="profile-head">
@@ -273,6 +273,21 @@
   <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
            was the FIRST section on a profile carrying 185 reviews: the page led with the one thing
            this traveler had not done. */ ?>
+  <?php if (!empty($photoWall)): ?>
+    <?php /* Their photographs, from wherever they posted them: a trip, a review, a short post. The
+             reader does not care which table it came out of, so it is one grid, and each one goes
+             back to the thing it belongs to. */ ?>
+    <h2 style="margin-top:24px">Photos</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:8px">
+      <?php foreach ($photoWall as $ph): ?>
+        <a href="<?= e($ph['href']) ?>" title="<?= e($ph['what']) ?>">
+          <img loading="lazy" src="<?= e(abs_url($ph['url'])) ?>" alt="<?= e($ph['what']) ?>"
+               style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block">
+        </a>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+
   <?php if ($pastTrips): ?>
   <h2 style="margin-top:24px">Trips taken</h2>
   <div class="grid g-3">

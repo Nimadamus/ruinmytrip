@@ -603,6 +603,9 @@ function profile(array $a): void {
     $hostedMeetups = rmt_meetups_hosted_upcoming($uid);
     $attendingMeetups = $isMe ? rmt_meetups_attending_upcoming($uid) : [];
     $beenPlaces = rmt_visits_for_user($uid);
+    // The profile counted photos and showed none of them, which is the least useful place a number
+    // can sit. Public trips only, so a private trip's photos never surface here.
+    $photoWall = rmt_profile_photos($uid);
     // Where they live, when it is a city this site has a page for. Shown as a chip, because a
     // local is the person a traveler most wants to find and the profile never said so.
     $homeDest = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
@@ -613,7 +616,7 @@ function profile(array $a): void {
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces'), [
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
