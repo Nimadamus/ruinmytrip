@@ -157,7 +157,12 @@ function rmt_sitemap_group(string $group): array {
                              WHERE status='published'") as $r) {
                 $add('review/' . $r['id'] . '/' . ($r['slug'] ?: rmt_review_slug($r)), $r['created_at'] ?? null);
             }
-            foreach (q_all("SELECT id, slug, created_at FROM trips WHERE status='published'") as $t) {
+            /* Public trips that have something on them. A trip marked for followers or for
+               nobody must never be handed to a crawler, and a bare plan -- a city and two dates --
+               is a real page but not one to ask Google to index while it is still empty. */
+            foreach (q_all("SELECT id, user_id, slug, body, visibility, created_at FROM trips
+                             WHERE status='published' AND COALESCE(visibility,'public')='public'") as $t) {
+                if (!rmt_trip_has_substance($t)) continue;
                 $add('trip/' . $t['id'] . '/' . $t['slug'], $t['created_at'] ?? null);
             }
             break;

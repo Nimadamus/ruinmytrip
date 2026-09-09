@@ -960,6 +960,11 @@ function trip_show(array $a): void {
     $t = q_one("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                 LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.id=?", [(int)$a['id']]);
     if (!$t || $t['status']!=='published') not_found();
+    /* Trips carry a visibility since plans became trips (migration 071), and this page predates
+       that: a trip somebody marked "only you" was readable by anyone holding the link, because
+       every trip used to be a public story. 404 rather than 403 on purpose -- a page that says
+       "forbidden" confirms the trip exists, which is itself the thing being kept private. */
+    if (!rmt_trip_visible_to($t, current_user())) not_found();
     $t['author'] = author((int)$t['user_id']);
     $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort,id', [(int)$t['id']]);
     $comments = q_all("SELECT c.*, u.username, p.avatar_url FROM comments c JOIN users u ON u.id=c.user_id

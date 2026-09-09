@@ -240,3 +240,39 @@ function rmt_traveler_history(int $userId): array {
     );
     return ['cities' => (int) ($row['cities'] ?? 0), 'countries' => (int) ($row['countries'] ?? 0)];
 }
+
+/**
+ * May this person read this trip?
+ *
+ * The owner always can. Everybody else sees public trips, and followers see the ones marked for
+ * followers. Kept here rather than in the controller because the sitemap has to ask the same
+ * question, and two places deciding who may read something is how one of them ends up wrong.
+ */
+function rmt_trip_visible_to(array $t, ?array $viewer): bool {
+    $vis = (string) ($t['visibility'] ?? 'public');
+    if ($vis === 'public') return true;
+    if (!$viewer) return false;
+    $uid = (int) $viewer['id'];
+    if ((int) $t['user_id'] === $uid) return true;
+    if ($vis === 'followers') {
+        return (bool) q_one('SELECT 1 FROM follows WHERE followee_id = ? AND follower_id = ?',
+                            [(int) $t['user_id'], $uid]);
+    }
+    return false;
+}
+
+/**
+ * Is there anything on this trip yet?
+ *
+ * A trip with dates and nothing else is a real page and stays reachable, but it is not something to
+ * put in front of a search engine: the site would be submitting one near-empty page per plan. It
+ * earns a place in the sitemap when somebody has written on it, added a photo, or posted an update.
+ * No noindex is involved; this only decides what we ASK to have crawled.
+ */
+function rmt_trip_has_substance(array $t): bool {
+    if (trim((string) ($t['body'] ?? '')) !== '') return true;
+    $id = (int) $t['id'];
+    if ((int) (q_one('SELECT COUNT(*) c FROM trip_photos WHERE trip_id = ?', [$id])['c'] ?? 0) > 0) return true;
+    return (int) (q_one("SELECT COUNT(*) c FROM posts WHERE trip_id = ? AND status = 'published'",
+                        [$id])['c'] ?? 0) > 0;
+}
