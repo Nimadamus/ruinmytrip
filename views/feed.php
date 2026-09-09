@@ -3,7 +3,11 @@ $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' =>
                    'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting'];
 /* An update posted from a trip is not somebody "saying" something into the void: it is a person
    in a city, mid-trip, and the feed row reads wrong without that. */
-$rmt_post_verb = static fn(array $it): string =>
+/* Nullable on purpose: every row that is not a trip update falls through to the ordinary verb.
+   Typed as string, this returned null for the first plain post in the feed and killed the page
+   halfway down with a TypeError -- the rows above it had already been printed, so the response was
+   still 200 and looked fine to anything that only checked a status code. */
+$rmt_post_verb = static fn(array $it): ?string =>
     ($it['kind'] === 'post' && !empty($it['trip_id'])) ? 'posted an update from' : null;
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk', 'meetup' => 'Meetup'];
 ?>
