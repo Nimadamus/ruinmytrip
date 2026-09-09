@@ -104,6 +104,25 @@ $here = '/d/' . $d['slug'] . '/travelers';
   <?php endif; ?>
 
   <h2 style="margin-top:28px">What people are asking</h2>
+  <?php if ($me): ?>
+    <?php /* The box is here rather than behind a link because the gap between wanting to ask
+             something and finding the form is where the question is lost. It posts to the same
+             endpoint /talk uses, tagged to this city, and comes straight back here. */ ?>
+    <form method="post" action="<?= e(url('post/new')) ?>" style="margin:0 0 16px"><?= csrf_field() ?>
+      <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
+      <input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
+      <input type="hidden" name="return" value="<?= e($here) ?>">
+      <textarea name="body" rows="2" maxlength="1000"
+                placeholder="Ask <?= e($city) ?> travelers something, or say what you found"
+                style="width:100%"></textarea>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <button class="btn btn-primary btn-sm">Post to <?= e($city) ?></button>
+        <span class="hint">Goes to your followers and to everyone watching this city.</span>
+      </div>
+    </form>
+  <?php else: ?>
+    <p style="margin:0 0 14px"><a class="btn btn-accent btn-sm" href="<?= e($join($here)) ?>">Join to ask <?= e($city) ?> travelers</a></p>
+  <?php endif; ?>
   <?php if ($hub['talk']): ?>
     <ul class="list-plain">
       <?php foreach ($hub['talk'] as $p): ?>
@@ -117,6 +136,29 @@ $here = '/d/' . $d['slug'] . '/travelers';
     <p class="muted">Nothing asked about <?= e($city) ?> yet.
       <?php if ($me): ?><a href="<?= e(url('talk')) ?>">Ask the first question</a>.
       <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and ask the first question.<?php endif; ?></p>
+  <?php endif; ?>
+
+  <h2 style="margin-top:28px">Reviews from travelers</h2>
+  <?php if (!empty($hub['reviews'])): ?>
+    <ul class="list-plain">
+      <?php foreach ($hub['reviews'] as $rv): ?>
+        <li class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+          <span class="hint">@<?= e($rv['username']) ?> · <?= e(ago($rv['created_at'])) ?><?php
+            if (!empty($rv['rating'])): ?> · <?= str_repeat('★', max(0, min(5, (int) $rv['rating']))) ?><?php endif; ?></span>
+          <p style="margin:.25rem 0 0">
+            <a href="<?= e(url(ltrim(rmt_review_path($rv), '/'))) ?>"><b><?= e($rv['title'] ?: $rv['subject_name']) ?></b></a>
+          </p>
+          <?php if (!empty($rv['what_ruined'])): ?>
+            <p class="muted" style="margin:.25rem 0 0"><?= e(mb_strimwidth((string) $rv['what_ruined'], 0, 140, '…')) ?></p>
+          <?php endif; ?>
+        </div></li>
+      <?php endforeach; ?>
+    </ul>
+    <p style="margin:.4rem 0 0"><a href="<?= e(url('d/'.$d['slug'])) ?>">Everything written about <?= e($city) ?> &rarr;</a></p>
+  <?php else: ?>
+    <p class="muted">No traveler has reviewed anything in <?= e($city) ?> yet.
+      <?php if ($me): ?><a href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=travelers')) ?>">Write the first one</a>.
+      <?php else: ?><a href="<?= e($join($here)) ?>">Join and write the first one</a>.<?php endif; ?></p>
   <?php endif; ?>
 
   <h2 style="margin-top:28px">Travelers who have been</h2>

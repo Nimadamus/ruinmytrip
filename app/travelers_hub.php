@@ -85,14 +85,24 @@ function rmt_city_traveler_hub(int $destId, ?array $viewer): array {
     $going   = rmt_city_going($destId, $viewer);
     $talk    = function_exists('rmt_posts_recent') ? rmt_posts_recent(8, $destId) : [];
     $people  = rmt_city_travelers($destId);
+    /* Reviews by members, newest first. Editorial is excluded here on purpose: this page is the
+       part of the site that is made of people, and our own writing has the rest of the city to
+       live on. */
+    $reviews = q_all("SELECT r.*, u.username, p.avatar_url
+                        FROM reviews r JOIN users u ON u.id = r.user_id
+                   LEFT JOIN profiles p ON p.user_id = u.id
+                       WHERE r.destination_id = ? AND r.status = 'published'
+                         AND u.status = 'active' AND u.role <> ?
+                    ORDER BY r.created_at DESC, r.id DESC LIMIT 6", [$destId, RMT_EDITORIAL_ROLE]);
     /* The people who are there all the time. A traveler asking where to actually eat wants one of
        these more than they want another tourist, and until now the site had no way to say who they
        were even though the answer was sitting in profiles as free text. */
     $locals  = function_exists('rmt_city_locals') ? rmt_city_locals($destId) : [];
     return [
         'meetups' => $meetups, 'going' => $going, 'talk' => $talk, 'people' => $people,
-        'locals' => $locals,
+        'locals' => $locals, 'reviews' => $reviews,
         // "Is anybody here" answered as one number, because that is the question the page is for.
-        'active'  => count($meetups) + count($going) + count($talk) + count($people) + count($locals),
+        'active'  => count($meetups) + count($going) + count($talk) + count($people)
+                     + count($locals) + count($reviews),
     ];
 }

@@ -37,7 +37,10 @@ $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT, role TEXT)');
 $pdo->exec('CREATE TABLE profiles (user_id INT, avatar_url TEXT, display_name TEXT)');
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
-$pdo->exec('CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, status TEXT)');
+/* The hub lists a city's traveler reviews now, so the fixture carries the columns it reads. */
+$pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
+              status TEXT, title TEXT, subject_name TEXT, rating INT, what_ruined TEXT,
+              slug TEXT, place_id INT, created_at TEXT)");
 $pdo->exec('CREATE TABLE going (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
               date_from TEXT, date_to TEXT, visibility TEXT)');
 /* Plans are trips now (migration 071). The legacy table above is kept in the fixture for the same
@@ -70,8 +73,10 @@ $m->execute([1, 1, 1, 'Coffee by the river', $soonTs, 'published']);
 $m->execute([2, 1, 1, 'The one that happened', $pastTs, 'published']);
 $m->execute([3, 1, 1, 'Called off',           $soonTs, 'cancelled']);
 $pdo->exec("INSERT INTO meetup_rsvps (meetup_id,user_id,status) VALUES (1,2,'going')");
-$pdo->exec("INSERT INTO reviews (id,user_id,destination_id,status) VALUES
-              (1,1,1,'published'), (2,3,1,'published'), (3,2,1,'draft')");
+$pdo->exec("INSERT INTO reviews (id,user_id,destination_id,status,title,created_at) VALUES
+              (1,1,1,'published','A queue and a view',datetime('now')),
+              (2,3,1,'published','Ours, not a traveler''s',datetime('now')),
+              (3,2,1,'draft','Unfinished',datetime('now'))");
 /* leo also published a trip story about the city, which is what makes him a traveler who has been
    as well as one with dates. Ids 1 to 3 are the plans inserted above, so this one is explicit. */
 $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,created_at)
@@ -102,8 +107,16 @@ ok('the house account is never a traveler', !in_array('house', $names, true));
 ok('review and trip counts are per city', $people[0]['reviews'] + $people[0]['trips'] >= 1);
 
 $hub = rmt_city_traveler_hub(1, null);
+/* The count is the sum of every section the page renders, so a section added to the hub without
+   being counted would leave "is anybody here" answering for a page that shows more than it says. */
 ok('the hub reports what it has', $hub['active'] === count($hub['meetups']) + count($hub['going'])
-    + count($hub['talk']) + count($hub['people']));
+    + count($hub['talk']) + count($hub['people']) + count($hub['locals']) + count($hub['reviews']));
+ok('the hub carries the city reviews', isset($hub['reviews']));
+ok('an editorial review is not a traveler review',
+   !in_array('house', array_column($hub['reviews'], 'username'), true),
+   json_encode(array_column($hub['reviews'], 'username')));
+ok('a draft is not published to the city page',
+   !in_array('Unfinished', array_column($hub['reviews'], 'title'), true));
 ok('a quiet city reports nothing rather than borrowing', rmt_city_traveler_hub(9, null)['active'] === 0);
 
 // The page has to be reachable and in the sitemap, or it is a page that exists and nobody is sent to.
