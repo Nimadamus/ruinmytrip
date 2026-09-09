@@ -19,6 +19,9 @@ $GLOBALS['config'] = [
 
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
+/* The trip validator asks plans.php what a visibility may be, since a trip and a plan are the
+   same object since migration 071. */
+require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/controllers.php';
 
 $pdo = db();
@@ -66,5 +69,38 @@ $check('a different user cannot edit', rmt_trip_can_edit($trip, ['id' => 6]), fa
 $check('logged-out user cannot edit', rmt_trip_can_edit($trip, null), false);
 
 echo "\n";
+/* Dates and visibility, which the form did not ask for until trips and plans became one object.
+   A trip can be one you have not taken yet, so "when did you visit" was the wrong question. */
+$v = rmt_trip_validate(['title' => 'Prague in October', 'body' => str_repeat('a', 40),
+                        'date_from' => '2027-10-02', 'date_to' => '2027-10-09', 'visibility' => 'followers']);
+$check('a future range is accepted', $v['ok'], true);
+$check('the range is stored', ($v['data']['date_from'] ?? '') . '..' . ($v['data']['date_to'] ?? ''), '2027-10-02..2027-10-09');
+$check('visibility is kept', $v['data']['visibility'] ?? '', 'followers');
+
+$v = rmt_trip_validate(['title' => 'Half a range', 'body' => str_repeat('a', 40), 'date_from' => '2027-10-02']);
+$check('half a range is refused', $v['ok'], false);
+
+$v = rmt_trip_validate(['title' => 'Backwards', 'body' => str_repeat('a', 40),
+                        'date_from' => '2027-10-09', 'date_to' => '2027-10-02']);
+$check('leaving before arriving is refused', $v['ok'], false);
+
+$v = rmt_trip_validate(['title' => 'A life change', 'body' => str_repeat('a', 40),
+                        'date_from' => '2027-01-01', 'date_to' => '2029-01-01']);
+$check('a range longer than a year is refused', $v['ok'], false);
+
+$v = rmt_trip_validate(['title' => 'Old form', 'body' => str_repeat('a', 40), 'visited_on' => '2026-05-04']);
+$check('an older form with only visited_on still works', $v['ok'], true);
+$check('one day becomes a range of one day', ($v['data']['date_from'] ?? '') . '..' . ($v['data']['date_to'] ?? ''), '2026-05-04..2026-05-04');
+
+$v = rmt_trip_validate(['title' => 'Made up privacy', 'body' => str_repeat('a', 40), 'visibility' => 'secret']);
+$check('an unknown visibility falls back to public', $v['data']['visibility'] ?? '', 'public');
+
+$new = (string) file_get_contents(BASE_PATH . '/views/trip_new.php');
+$edit = (string) file_get_contents(BASE_PATH . '/views/trip_edit.php');
+$check('the create form asks both dates', str_contains($new, 'name="date_from"') && str_contains($new, 'name="date_to"'), true);
+$check('the edit form asks them too, so an edit cannot strip them', str_contains($edit, 'name="date_from"'), true);
+$check('both forms ask who can see it', str_contains($new, 'name="visibility"') && str_contains($edit, 'name="visibility"'), true);
+
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed\n"; exit(1); }
+
 echo "ALL TRIP EDIT TESTS PASS\n";

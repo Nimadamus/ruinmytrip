@@ -2293,9 +2293,38 @@ function rmt_trip_validate(array $in): array {
     if ($visited !== '' && (strtotime($visited) === false || strtotime($visited) > time())) {
         $errors[] = 'That trip date is not valid.';
     }
+
+    /* Dates and visibility, which the form never asked for because a trip used to be a story about
+       something already over. A trip is the container now: it can be one you are going on, and the
+       dates are what put it in front of the other travelers who will be there. Both dates or
+       neither -- half a range tells nobody anything. */
+    $from = trim((string) ($in['date_from'] ?? ''));
+    $to   = trim((string) ($in['date_to'] ?? ''));
+    $fromTs = $from !== '' ? strtotime($from) : false;
+    $toTs   = $to !== '' ? strtotime($to) : false;
+    if (($from !== '') !== ($to !== '')) {
+        $errors[] = 'Give both the day you arrive and the day you leave, or neither.';
+    } elseif ($from !== '' && (!$fromTs || !$toTs)) {
+        $errors[] = 'Those dates are not real dates.';
+    } elseif ($fromTs && $toTs && $toTs < $fromTs) {
+        $errors[] = 'The day you leave cannot be before the day you arrive.';
+    } elseif ($fromTs && $toTs && ($toTs - $fromTs) > 400 * 86400) {
+        $errors[] = 'That range is longer than a year.';
+    }
+    // An older form that only knows visited_on still works: one day is a range of one day.
+    if (!$fromTs && $visited !== '' && strtotime($visited)) {
+        $fromTs = $toTs = strtotime($visited);
+    }
+
+    $vis = (string) ($in['visibility'] ?? 'public');
+    if (!in_array($vis, RMT_PLAN_VISIBILITIES, true)) $vis = 'public';
+
     return ['ok' => !$errors, 'errors' => $errors, 'data' => [
         'title' => $title, 'body' => $body, 'destination_id' => $dest ?: null,
         'cover_url' => $cover, 'visited_on' => $visited ?: null,
+        'date_from' => $fromTs ? date('Y-m-d', $fromTs) : null,
+        'date_to'   => $toTs ? date('Y-m-d', $toTs) : null,
+        'visibility' => $vis,
     ]];
 }
 
@@ -2320,10 +2349,11 @@ function trip_create(array $a): void {
     $d = $v['data'];
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
     $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
-    $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,verified,status,created_at)
-                 VALUES (?,?,?,?,?,?,?,?, 'published', ?)",
+    $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,
+                                         date_from,date_to,visibility,verified,status,created_at)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
         [(int)$me['id'], $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
-         $d['visited_on'], 0, date('Y-m-d H:i:s')]);
+         $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'], 0, date('Y-m-d H:i:s')]);
     rmt_sync_tags('trip', $id, $d['title'], $d['body']);
     rmt_notify_mentions('trip', $id, (int)$me['id'], [], $d['title'], $d['body']);
     // Photo failures must never be silent, and must never cost the user their written story --
@@ -2362,8 +2392,10 @@ function trip_edit_submit(array $a): void {
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
     $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? $t['cover_url']);
     $slug = slugify($d['title']);
-    db()->prepare("UPDATE trips SET destination_id=?, title=?, slug=?, body=?, cover_url=?, visited_on=?, updated_at=? WHERE id=?")
+    db()->prepare("UPDATE trips SET destination_id=?, title=?, slug=?, body=?, cover_url=?, visited_on=?,
+                                   date_from=?, date_to=?, visibility=?, updated_at=? WHERE id=?")
         ->execute([$d['destination_id'], $d['title'], $slug, $d['body'], $cover, $d['visited_on'],
+                   $d['date_from'], $d['date_to'], $d['visibility'],
                    date('Y-m-d H:i:s'), (int)$t['id']]);
     rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
     rmt_notify_mentions('trip', (int)$t['id'], (int)current_user()['id'], [], $d['title'], $d['body']);

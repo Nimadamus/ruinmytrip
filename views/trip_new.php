@@ -15,8 +15,30 @@
     </select>
     <label for="cover_url">Cover image URL <span class="hint">(optional — defaults to the destination photo)</span></label>
     <input type="url" id="cover_url" name="cover_url" value="<?= e(input('cover_url')) ?>" placeholder="https://…">
-    <label for="visited_on">When did you visit?</label>
-    <input type="date" id="visited_on" name="visited_on" value="<?= e(input('visited_on')) ?>">
+    <?php /* A trip is one object now, so the form asks the two questions that make it one: when it
+             is, and who may see it. A range rather than a single day, because "when did you visit"
+             could never describe a trip you have not taken yet. Both dates or neither. */ ?>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px">
+        <label for="date_from">Arriving</label>
+        <input type="date" id="date_from" name="date_from" value="<?= e(input('date_from')) ?>">
+      </div>
+      <div style="flex:1;min-width:150px">
+        <label for="date_to">Leaving</label>
+        <input type="date" id="date_to" name="date_to" value="<?= e(input('date_to')) ?>">
+      </div>
+    </div>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
+      Dates are optional. If the trip is still ahead, they are what put you in front of the other
+      travelers who will be there. City and dates only, never anything finer.
+    </p>
+    <label for="visibility">Who can see this trip</label>
+    <select id="visibility" name="visibility">
+      <option value="public"<?= input('visibility') === 'public' || input('visibility') === '' ? ' selected' : '' ?>>Everyone</option>
+      <option value="followers"<?= input('visibility') === 'followers' ? ' selected' : '' ?>>People who follow me</option>
+      <option value="private"<?= input('visibility') === 'private' ? ' selected' : '' ?>>Only me</option>
+    </select>
+
     <label for="body">Your story</label>
     <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?" required><?= e(input('body')) ?></textarea>
     <label for="photos">Photos <span class="muted">(optional, up to 6)</span></label>

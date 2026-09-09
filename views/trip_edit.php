@@ -16,8 +16,26 @@
     <input type="url" id="cover_url" name="cover_url"
            value="<?= e(editable_url_value($t['cover_url'] ?? null)) ?>"
            placeholder="https://…">
-    <label for="visited_on">When did you visit?</label>
-    <input type="date" id="visited_on" name="visited_on" value="<?= e($t['visited_on'] ?? '') ?>">
+    <?php /* Same two questions the create form asks. Leaving them off the edit form would mean an
+             edit silently stripped the dates and the visibility off a trip that had them. */ ?>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:150px">
+        <label for="date_from">Arriving</label>
+        <input type="date" id="date_from" name="date_from" value="<?= e($t['date_from'] ?? '') ?>">
+      </div>
+      <div style="flex:1;min-width:150px">
+        <label for="date_to">Leaving</label>
+        <input type="date" id="date_to" name="date_to" value="<?= e($t['date_to'] ?? '') ?>">
+      </div>
+    </div>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">City and dates only, never anything finer.</p>
+    <label for="visibility">Who can see this trip</label>
+    <select id="visibility" name="visibility">
+      <?php $vis = (string) ($t['visibility'] ?? 'public'); ?>
+      <option value="public"<?= $vis === 'public' ? ' selected' : '' ?>>Everyone</option>
+      <option value="followers"<?= $vis === 'followers' ? ' selected' : '' ?>>People who follow me</option>
+      <option value="private"<?= $vis === 'private' ? ' selected' : '' ?>>Only me</option>
+    </select>
     <label for="body">Your story</label>
     <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?" required><?= e($t['body'] ?? '') ?></textarea>
 
