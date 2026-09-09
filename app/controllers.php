@@ -2675,6 +2675,12 @@ function review_create(array $a): void {
     // Drafts must not ping anyone; the mention fires when the review later publishes via edit.
     if ($status === 'published') {
         rmt_notify_mentions('review', $id, (int)$me['id'], [], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+        /* And the people who saved this city. A review is the thing this site is for, and until now
+           saving a city told you when somebody was going there or hosting something, but not when
+           somebody had actually written about it. */
+        if (!empty($d['destination_id'])) {
+            rmt_city_notify((int) $d['destination_id'], 'city_review', (int) $me['id'], 'review', $id);
+        }
     }
 
     // Photo failures must never be silent: the review still publishes (losing written text

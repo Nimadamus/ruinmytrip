@@ -63,7 +63,12 @@
           $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $city = null;
           if ($n['type'] === 'city_going') {
-              $city = q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',
+              $city = q_one('SELECT d.name, d.slug FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?',
+                            [(int)$n['target_id']])
+                   ?: q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',
+                            [(int)$n['target_id']]);
+          } elseif ($n['type'] === 'city_review') {
+              $city = q_one('SELECT d.name, d.slug FROM reviews r JOIN destinations d ON d.id=r.destination_id WHERE r.id=?',
                             [(int)$n['target_id']]);
           } else {
               $city = q_one('SELECT d.name, d.slug FROM meetups m JOIN destinations d ON d.id=m.destination_id WHERE m.id=?',
@@ -73,9 +78,16 @@
              link: the useful next move is that city's people page, not a generic feed. */
           $href = $city ? url('d/'.$city['slug'].'/travelers')
                         : rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
-          $line = $n['type'] === 'city_going'
-              ? $who . ' posted dates for ' . ($city ? $city['name'] : 'a city you saved') . '.'
-              : $who . ' is hosting a meetup in ' . ($city ? $city['name'] : 'a city you saved') . '.';
+          $where = $city ? $city['name'] : 'a city you saved';
+          $line = [
+              'city_going'  => $who . ' posted dates for ' . $where . '.',
+              'city_meetup' => $who . ' is hosting a meetup in ' . $where . '.',
+              'city_review' => $who . ' reviewed something in ' . $where . '.',
+          ][$n['type']];
+          // A review links to itself; the other two are best answered by the city's people page.
+          if ($n['type'] === 'city_review') {
+              $href = rmt_notification_target_url('review', (int) $n['target_id']) ?: $href;
+          }
         ?>
           <?php if ($href): ?>
             <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>

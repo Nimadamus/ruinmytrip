@@ -82,6 +82,15 @@ ok('another city hears nothing', rmt_city_notify(11, 'city_meetup', 1, 'meetup',
 ok('a city nobody saved notifies nobody', rmt_city_notify(99, 'city_meetup', 1, 'meetup', 7) === 0);
 ok('an unknown type writes nothing', rmt_city_notify(10, 'city_whatever', 1, 'meetup', 8) === 0);
 
+/* A published review is the third thing worth telling a city's watchers about, and the one the
+   site is actually for: saving a city used to tell you somebody was going there or hosting
+   something, and never that somebody had written about it. */
+ok('city_review is a known type', in_array('city_review', RMT_CITY_NOTIFY_TYPES, true));
+ok('a review reaches everybody watching', rmt_city_notify(10, 'city_review', 1, 'review', 42) === 3);
+ok('the same review does not notify twice', rmt_city_notify(10, 'city_review', 1, 'review', 42) === 0);
+ok('the review rows point at the review',
+   (bool) q_one("SELECT 1 FROM notifications WHERE type='city_review' AND target_type='review' AND target_id=42"));
+
 // Both types must be renderable, or the page shows a row it cannot describe.
 $view = (string) file_get_contents(BASE_PATH . '/views/notifications.php');
 $push = (string) file_get_contents(BASE_PATH . '/app/push.php');

@@ -218,14 +218,23 @@ function rmt_push_line(array $n): ?array {
         case 'repost':      $body = "$who reposted you."; $url = rmt_notification_target_url('post', $tid, (int) $n['user_id']); break;
         case 'message':     $body = "$who sent you a message."; $url = rmt_notification_target_url($tt, $tid, (int) $n['user_id']); break;
         case 'going':       $body = "$who shared upcoming travel dates."; $url = rmt_notification_target_url('going', $tid, (int) $n['user_id']); break;
-        case 'city_going': case 'city_meetup':
-            $city = $type === 'city_going'
-                ? (q_one('SELECT d.name, d.slug FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid])
-                   ?: q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid]))
-                : q_one('SELECT d.name, d.slug FROM meetups m JOIN destinations d ON d.id=m.destination_id WHERE m.id=?', [$tid]);
+        case 'city_going': case 'city_meetup': case 'city_review':
+            if ($type === 'city_going') {
+                $city = q_one('SELECT d.name, d.slug FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid])
+                     ?: q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid]);
+            } elseif ($type === 'city_review') {
+                $city = q_one('SELECT d.name, d.slug FROM reviews r JOIN destinations d ON d.id=r.destination_id WHERE r.id=?', [$tid]);
+            } else {
+                $city = q_one('SELECT d.name, d.slug FROM meetups m JOIN destinations d ON d.id=m.destination_id WHERE m.id=?', [$tid]);
+            }
             $where = $city['name'] ?? 'a city you saved';
-            $body = $type === 'city_going' ? "$who posted dates for $where." : "$who is hosting a meetup in $where.";
-            $url = isset($city['slug']) ? url('d/' . $city['slug'] . '/travelers') : url('notifications');
+            $body = ['city_going' => "$who posted dates for $where.",
+                     'city_meetup' => "$who is hosting a meetup in $where.",
+                     'city_review' => "$who reviewed something in $where."][$type];
+            // A review is best answered by the review itself; the other two by the city's people.
+            $url = $type === 'city_review'
+                ? (rmt_notification_target_url('review', $tid, (int) $n['user_id']) ?: url('notifications'))
+                : (isset($city['slug']) ? url('d/' . $city['slug'] . '/travelers') : url('notifications'));
             break;
         case 'invite_joined': $body = "$who joined from your invite link. Say hi."; $url = $actor ? url('u/' . $actor['username']) : url('invite'); break;
         case 'trip_match':

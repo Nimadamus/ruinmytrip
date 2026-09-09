@@ -15,7 +15,7 @@ declare(strict_types=1);
  */
 
 /** Notification types this file writes. Both render on /notifications and in a push. */
-const RMT_CITY_NOTIFY_TYPES = ['city_going', 'city_meetup'];
+const RMT_CITY_NOTIFY_TYPES = ['city_going', 'city_meetup', 'city_review'];
 
 /** At most this many people are told about one event, newest savers first. */
 const RMT_CITY_NOTIFY_MAX = 50;
