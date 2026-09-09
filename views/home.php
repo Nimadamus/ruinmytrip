@@ -38,13 +38,29 @@
       <a class="btn btn-ghost" data-review-cta="home" href="<?= e(url('contribute')) ?>"
          style="color:#fff;border-color:rgba(255,255,255,.45)">Been somewhere? Review it</a>
     </p>
-    <?php /* People first, and every number is a live COUNT(*) of something real. A stat row that
-             leads with how much WE wrote is the old positioning restated in numbers. */ ?>
+    <?php /* People first, and every number is a live COUNT(*) of something real.
+
+             A zero is dropped rather than printed. "0 Traveler reviews" in the first screenful is
+             not honesty, it is an advertisement for an empty room, and it sat directly under the
+             Join button the same visitor is being asked to press. Nothing is padded or invented to
+             replace it: the row carries the counts that have something behind them, and grows back
+             to three the moment the third one does. */ ?>
+    <?php
+      $heroStats = [];
+      if ((int)($stat_travelers ?? 0) > 0)
+          $heroStats[] = [(int)$stat_travelers, (int)$stat_travelers === 1 ? 'Traveler' : 'Travelers'];
+      if ((int)$stat_community_reviews > 0)
+          $heroStats[] = [(int)$stat_community_reviews, (int)$stat_community_reviews === 1 ? 'Traveler review' : 'Traveler reviews'];
+      if ((int)$stat_destinations > 0)
+          $heroStats[] = [(int)$stat_destinations, (int)$stat_destinations === 1 ? 'City' : 'Cities'];
+    ?>
+    <?php if ($heroStats): ?>
     <div class="hero-stats">
-      <div><b><?= (int)($stat_travelers ?? 0) ?></b><span><?= (int)($stat_travelers ?? 0) === 1 ? 'Traveler' : 'Travelers' ?></span></div>
-      <div><b><?= (int)$stat_community_reviews ?></b><span><?= $stat_community_reviews === 1 ? 'Traveler review' : 'Traveler reviews' ?></span></div>
-      <div><b><?= (int)$stat_destinations ?></b><span><?= $stat_destinations === 1 ? 'City' : 'Cities' ?></span></div>
+      <?php foreach ($heroStats as $hs): ?>
+      <div><b><?= (int)$hs[0] ?></b><span><?= e($hs[1]) ?></span></div>
+      <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -88,13 +104,21 @@
     </div>
   <?php endif; ?>
 
+  <?php /* The badge used to be going + meetups + talk added together under the heading "Who is
+           going, by city", so a city with one question and nobody travelling read as one traveller
+           going there. Three different things summed under the name of one of them is a number that
+           lies. Each chip now says which signal it actually has, strongest first, and the heading
+           only promises travellers when a traveller has posted dates. */ ?>
   <?php if (!empty($liveCities)): ?>
-    <h3 style="margin:24px 0 10px">Who is going, by city</h3>
+    <h3 style="margin:24px 0 10px"><?= !empty($goingSoon) ? 'Who is going, by city' : 'Cities with something happening' ?></h3>
     <div class="tag-list">
       <?php foreach ($liveCities as $c):
-          $n = (int)$c['going_count'] + (int)$c['meetup_count'] + (int)$c['talk_count']; ?>
+          $going = (int)$c['going_count']; $meets = (int)$c['meetup_count']; $talk = (int)$c['talk_count'];
+          $hint = $going ? $going . ' going'
+                : ($meets ? $meets . ($meets === 1 ? ' meetup' : ' meetups')
+                : ($talk ? $talk . ($talk === 1 ? ' question' : ' questions') : '')); ?>
         <a class="chip" href="<?= e(url('d/'.$c['slug'].'/travelers')) ?>"><?= e($c['name']) ?><?php
-          if ($n): ?> <span class="hint"><?= $n ?></span><?php endif; ?></a>
+          if ($hint !== ''): ?> <span class="hint"><?= e($hint) ?></span><?php endif; ?></a>
       <?php endforeach; ?>
       <a class="chip" href="<?= e(url('travelers')) ?>">Every city &rarr;</a>
     </div>
