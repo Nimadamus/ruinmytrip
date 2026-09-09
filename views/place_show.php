@@ -349,6 +349,19 @@
         <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Answer it' ?></a></p>
     </div></div>
   <?php endforeach; ?>
+  <?php /* The box is shown to everybody, which it was not.
+
+           Search sends people here, not to the homepage: the queries this site actually ranks for
+           are "ekstedt stockholm price" and "cycladic art athens opening hours" and they land on a
+           place page. A logged-out visitor got no box at all, only a muted line under fourteen
+           sections of guide offering to let them join and ask. So the one moment they have a
+           question -- the moment they are reading the page about the thing -- was the moment the
+           site had nothing to catch it with.
+
+           Logged out, the box submits back to this page with the question in the URL, and the page
+           holds it up and asks them to join. Their words are never retyped and never lost: they
+           come back through the join door in the return address and prefill the composer. */ ?>
+  <?php $asked = trim((string) input('ask')); ?>
   <?php if ($me): ?>
     <div class="card" style="margin:0 0 26px"><div class="card-body">
       <form method="post" action="<?= e(url('post/new')) ?>">
@@ -357,15 +370,35 @@
         <input type="hidden" name="return" value="<?= e(url('p/'.$p['slug'])) ?>">
         <label class="sr-only" for="place_question">Ask about <?= e($p['name']) ?></label>
         <textarea id="place_question" name="body" rows="2" required maxlength="<?= RMT_POST_MAX ?>"
-                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."></textarea>
+                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."><?= e(mb_substr($asked, 0, RMT_POST_MAX)) ?></textarea>
         <p style="margin:8px 0 0"><button class="btn btn-ghost btn-sm">Ask</button>
           <?php if ($talk): ?><a class="hint" style="margin-left:8px" href="<?= e(url('talk?p='.$p['slug'])) ?>">All questions</a><?php endif; ?>
         </p>
       </form>
     </div></div>
-  <?php elseif (!$talk): ?>
-    <p class="muted" style="margin:0 0 26px">Nobody has asked anything about <?= e($p['name']) ?> yet.
-      <a href="<?= e(url('register')) ?>">Join free</a> to ask.</p>
+  <?php elseif ($asked !== ''): ?>
+    <?php $back = 'p/' . $p['slug'] . '?ask=' . rawurlencode(mb_substr($asked, 0, RMT_POST_MAX)); ?>
+    <div class="card" style="margin:0 0 26px"><div class="card-body">
+      <p class="hint" style="margin:0 0 6px">Your question</p>
+      <p style="margin:0 0 12px;white-space:pre-wrap"><b><?= e(mb_strimwidth($asked, 0, 300, '…')) ?></b></p>
+      <p style="margin:0"><a class="btn btn-primary btn-sm"
+         href="<?= e(url('register?return=' . rawurlencode('/' . $back))) ?>">Join free and post it</a>
+        <a class="hint" style="margin-left:10px"
+           href="<?= e(url('login?return=' . rawurlencode('/' . $back))) ?>">or sign in</a></p>
+      <p class="hint" style="margin:8px 0 0">It goes up under your name and travelers who have been here answer it.</p>
+    </div></div>
+  <?php else: ?>
+    <div class="card" style="margin:0 0 26px"><div class="card-body">
+      <form method="get" action="<?= e(url('p/'.$p['slug'])) ?>">
+        <label class="sr-only" for="place_question">Ask about <?= e($p['name']) ?></label>
+        <textarea id="place_question" name="ask" rows="2" required maxlength="<?= RMT_POST_MAX ?>"
+                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."></textarea>
+        <p style="margin:8px 0 0"><button class="btn btn-ghost btn-sm">Ask</button>
+          <span class="hint" style="margin-left:8px">Free account, one minute.</span>
+          <?php if ($talk): ?><a class="hint" style="margin-left:8px" href="<?= e(url('talk?p='.$p['slug'])) ?>">All questions</a><?php endif; ?>
+        </p>
+      </form>
+    </div></div>
   <?php endif; ?>
 
   <h2 style="font-size:1.1rem;margin:0 0 10px">

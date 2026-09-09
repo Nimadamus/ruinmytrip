@@ -244,6 +244,18 @@ function rmt_join_intent_line(string $return): ?string {
         return 'Join to RSVP. Meetups are public, 18+, and you can leave any time.';
     }
     if ($path === '/talk')     return 'Join and ask the travelers who have actually been.';
+    // A question typed into a place page, carried here in the return address. Search traffic lands
+    // on those pages, so this is the commonest thing a stranger has written by the time they are
+    // asked to make an account, and showing it back is the whole reason they finish.
+    if (preg_match('#^/p/[a-z0-9\-]+$#', $path)) {
+        parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
+        $ask = trim((string) ($q['ask'] ?? ''));
+        if ($ask !== '') {
+            return 'Your question is saved: "' . mb_strimwidth($ask, 0, 140, '...')
+                 . '" Make an account and travelers who have been there can answer it.';
+        }
+        return null;
+    }
     if ($path === '/review/new' || $path === '/contribute') {
         parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
         $line = trim((string) ($q['ruined'] ?? ''));

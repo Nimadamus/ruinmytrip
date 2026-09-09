@@ -52,5 +52,14 @@ ok('a long line is trimmed rather than pasted whole',
    mb_strlen((string) rmt_join_intent_line('/review/new?ruined=' . rawurlencode(str_repeat('a', 400)))) < 260);
 ok('a route with nothing to say returns null', rmt_join_intent_line('/feed') === null);
 
+/* A question typed into a place page by somebody with no account. Search lands on those pages, so
+   this is the commonest thing a stranger has written by the time they are asked to join. */
+$q = rmt_join_intent_line('/p/ekstedt-stockholm?ask=' . rawurlencode('Is the wine pairing worth it?'));
+ok('the question is quoted on the join page', $q !== null && str_contains($q, 'wine pairing worth it'), (string) $q);
+ok('and it says who answers it', $q !== null && str_contains($q, 'answer'));
+ok('a place page with no question says nothing', rmt_join_intent_line('/p/ekstedt-stockholm') === null);
+ok('a long question is trimmed',
+   mb_strlen((string) rmt_join_intent_line('/p/x?ask=' . rawurlencode(str_repeat('b', 400)))) < 260);
+
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);
