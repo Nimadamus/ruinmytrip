@@ -236,6 +236,12 @@ function rmt_push_line(array $n): ?array {
                 ? (rmt_notification_target_url('review', $tid, (int) $n['user_id']) ?: url('notifications'))
                 : (isset($city['slug']) ? url('d/' . $city['slug'] . '/travelers') : url('notifications'));
             break;
+        case 'trip_update':
+            $where = q_one('SELECT d.name FROM posts p LEFT JOIN destinations d ON d.id=p.destination_id
+                             WHERE p.id=?', [$tid])['name'] ?? null;
+            $body = "$who posted an update from " . ($where ?: 'a trip on your dates') . '.';
+            $url = rmt_notification_target_url('post', $tid, (int) $n['user_id']) ?: url('feed');
+            break;
         case 'going_too':
             $trip = q_one('SELECT t.id, t.slug, d.name dest_name FROM trips t
                            LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid]);

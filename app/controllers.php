@@ -4868,6 +4868,12 @@ function post_create(array $a): void {
     }
     $id = rmt_post_create((int) $me['id'], $v['data']);
     if ($poll['options']) rmt_poll_create($id, $poll['options'], $poll['days']);
+    /* An update on a trip is news to the people who will be in that city on those days: they said
+       so by posting their own dates, which is the same set the matching page pairs up anyway. */
+    if (!empty($v['data']['trip_id'])) {
+        $trip = q_one("SELECT * FROM trips WHERE id=? AND status='published'", [(int) $v['data']['trip_id']]);
+        if ($trip) rmt_trip_update_notify($trip, $id, (int) $me['id']);
+    }
     rmt_sync_tags('post', $id, (string) $v['data']['body']);
     if (!empty($_FILES['photo'])) {
         $img = rmt_post_attach_image($id, $_FILES['photo'], (int) $me['id']);

@@ -78,6 +78,23 @@ ok('you cannot go too on your own trip', !$own['ok'], $own['error']);
 $undated = rmt_plan_join($get(11), $leo);
 ok('a trip with no dates has nothing to copy', !$undated['ok'], $undated['error']);
 
+/* The other half of pressing it: when they post an update from that trip, the people who will be
+   there on the same days hear about it. Without this, saying "I am going too" bought you nothing
+   but a row in a table. */
+$pdo->exec("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, status TEXT)");
+$pdo->exec("INSERT OR IGNORE INTO users (id,status) VALUES (1,'active'),(2,'active')");
+$pdo->exec("CREATE TABLE IF NOT EXISTS blocks (blocker_id INT, blocked_id INT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS posts (id INTEGER PRIMARY KEY, user_id INT, trip_id INT,
+              destination_id INT, status TEXT)");
+$pdo->exec("INSERT INTO posts (id,user_id,trip_id,destination_id,status) VALUES (500,1,10,1,'published')");
+require_once BASE_PATH . '/app/matching.php';
+$told = rmt_trip_update_notify($get(10), 500, 1);
+ok('the traveler on the same days hears about the update', $told === 1, (string) $told);
+ok('the notification points at the update',
+   (bool) q_one("SELECT 1 FROM notifications WHERE type='trip_update' AND target_type='post' AND target_id=500 AND user_id=2"));
+ok('the same update never notifies twice', rmt_trip_update_notify($get(10), 500, 1) === 0);
+ok('an undated trip has nobody to tell', rmt_trip_update_notify($get(11), 501, 1) === 0);
+
 // Wiring: the route, the button, and both renderers.
 $routes = (string) file_get_contents(BASE_PATH . '/public/index.php');
 ok('the action is routed', str_contains($routes, "going-too$#', 'trip_going_too'"));

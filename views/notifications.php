@@ -94,6 +94,18 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='trip_update'):
+          $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $where = q_one('SELECT d.name FROM posts p LEFT JOIN destinations d ON d.id=p.destination_id
+                           WHERE p.id=?', [(int)$n['target_id']])['name'] ?? null;
+          $href = rmt_notification_target_url('post', (int)$n['target_id']);
+          $line = $who . ' posted an update from ' . ($where ?: 'a trip on your dates') . '.';
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+          <?php else: ?>
+            <b><?= e($line) ?></b>
+          <?php endif; ?>
         <?php elseif ($n['type']==='going_too'):
           $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $trip = q_one('SELECT t.id, t.slug, d.name dest_name FROM trips t

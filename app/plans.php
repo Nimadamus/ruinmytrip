@@ -321,3 +321,36 @@ function rmt_plan_join(array $theirTrip, array $me): array {
     }
     return ['ok' => true, 'trip_id' => $id, 'error' => ''];
 }
+
+/**
+ * Tell the other travelers on the same days that this trip has an update.
+ *
+ * Who hears: anybody whose own plan is in the same city and overlaps these dates. That is exactly
+ * the set of people the matching page would have shown each other anyway, so it is news they asked
+ * for by posting their own dates rather than a broadcast.
+ *
+ * Deduped per update, capped, and never sent to the author. Blocks are honoured through the same
+ * clause the matching page uses, because this is the feature that ends with two people meeting.
+ *
+ * @return int how many were told
+ */
+function rmt_trip_update_notify(array $trip, int $postId, int $actorId, int $limit = 20): int {
+    $destId = (int) ($trip['destination_id'] ?? 0);
+    $from = (string) ($trip['date_from'] ?? '');
+    $to   = (string) ($trip['date_to'] ?? '');
+    if ($destId < 1 || $from === '' || $to === '' || $postId < 1) return 0;
+    if (!function_exists('rmt_trip_match_user_ids')) return 0;
+
+    $now = date('Y-m-d H:i:s');
+    $sent = 0;
+    foreach (rmt_trip_match_user_ids($actorId, $destId, $from, $to, $limit) as $uid) {
+        if ($uid === $actorId) continue;
+        $seen = q_one('SELECT 1 x FROM notifications WHERE user_id=? AND type=? AND target_type=? AND target_id=?',
+                      [$uid, 'trip_update', 'post', $postId]);
+        if ($seen) continue;
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at)
+               VALUES (?,?,?,?,?,?)', [$uid, 'trip_update', $actorId, 'post', $postId, $now]);
+        $sent++;
+    }
+    return $sent;
+}
