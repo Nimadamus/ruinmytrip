@@ -21,7 +21,7 @@ function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations 
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT)');
-$pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT)');
+$pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT, travel_style TEXT)');
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT, PRIMARY KEY (follower_id, followee_id))');
 $pdo->exec("CREATE TABLE going (

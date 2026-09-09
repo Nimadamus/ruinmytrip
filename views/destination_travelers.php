@@ -55,8 +55,11 @@ $here = '/d/' . $d['slug'] . '/travelers';
         </a>
       <?php endforeach; ?>
     </div>
-    <p class="hint" style="margin:.6rem 0 0">Destination and date range only. RuinMyTrip never shows
-      anybody's precise or live location.</p>
+    <p class="hint" style="margin:.6rem 0 0">
+      <?php if (!empty($hub['solo'])): ?>
+        <?= (int) $hub['solo'] ?> of them <?= (int) $hub['solo'] === 1 ? 'says they travel' : 'say they travel' ?> solo.
+      <?php endif; ?>
+      Destination and date range only. RuinMyTrip never shows anybody's precise or live location.</p>
   <?php else: ?>
     <p class="muted">No dates posted for <?= e($city) ?> yet.
       <?php if ($me): ?><a href="<?= e(url('going')) ?>">Post yours</a> and travelers arriving after you will see them.

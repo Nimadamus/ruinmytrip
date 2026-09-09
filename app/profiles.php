@@ -17,6 +17,17 @@ const RMT_ELITE_MIN_REVIEWS = 10;
 const RMT_ELITE_MIN_DESTINATIONS = 5;
 const RMT_ELITE_MIN_VOTES = 15;
 
+/**
+ * How somebody travels. A closed list because the site groups people by it, and a free-text field
+ * is a filter nobody can build. Not saying is the default and is never shown as an answer.
+ */
+const RMT_TRAVEL_STYLES = [
+    'solo'    => 'Solo',
+    'couple'  => 'As a couple',
+    'family'  => 'With family',
+    'friends' => 'With friends',
+];
+
 /** The three vote flavors a review can receive, and the compliment types a profile can receive. */
 const RMT_REVIEW_VOTE_TYPES = ['useful', 'funny', 'cool'];
 const RMT_COMPLIMENT_TYPES = [
@@ -345,6 +356,9 @@ function rmt_profile_validate(array $in): array {
         'bio'          => $bio ?: null,
         'home_city'    => $home ?: null,
         'avatar_url'   => $avatar ?: null,
+        // Self-declared and optional. Anything not on the list is treated as not said.
+        'travel_style' => isset(RMT_TRAVEL_STYLES[(string) ($in['travel_style'] ?? '')])
+            ? (string) $in['travel_style'] : null,
         'home_destination_id' => function_exists('rmt_resolve_home_destination')
             ? rmt_resolve_home_destination($home) : null,
     ]];

@@ -98,9 +98,15 @@ function rmt_city_traveler_hub(int $destId, ?array $viewer): array {
        these more than they want another tourist, and until now the site had no way to say who they
        were even though the answer was sitting in profiles as free text. */
     $locals  = function_exists('rmt_city_locals') ? rmt_city_locals($destId) : [];
+    /* How many of the people going said they travel alone. The question a solo traveler is really
+       asking of a city page, and the one thing the site could not answer until profiles carried it. */
+    $solo = 0;
+    foreach ($going as $g) {
+        if (($g['travel_style'] ?? null) === 'solo') $solo++;
+    }
     return [
         'meetups' => $meetups, 'going' => $going, 'talk' => $talk, 'people' => $people,
-        'locals' => $locals, 'reviews' => $reviews,
+        'locals' => $locals, 'reviews' => $reviews, 'solo' => $solo,
         // "Is anybody here" answered as one number, because that is the question the page is for.
         'active'  => count($meetups) + count($going) + count($talk) + count($people)
                      + count($locals) + count($reviews),

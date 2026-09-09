@@ -37,6 +37,21 @@
     <textarea id="bio" name="bio" rows="4" maxlength="600"
               placeholder="Where you have been, what you look for in a trip."><?= e($p['bio'] ?? '') ?></textarea>
 
+    <?php /* Optional, and a short list rather than a text box, because this is something other
+             travelers filter by: "solo travelers in Lisbon" is a question the site can only answer
+             if the answers are comparable. */ ?>
+    <label for="travel_style">How you usually travel <span class="hint">(optional)</span></label>
+    <select id="travel_style" name="travel_style">
+      <option value="">Rather not say</option>
+      <?php foreach (RMT_TRAVEL_STYLES as $k => $label): ?>
+        <option value="<?= e($k) ?>"<?= ($p['travel_style'] ?? '') === $k ? ' selected' : '' ?>><?= e($label) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
+      Shown on your profile and used to answer "who else is travelling solo here". Leave it unset
+      and nothing about it is displayed.
+    </p>
+
     <label for="home_city">Home location</label>
     <input type="text" id="home_city" name="home_city" maxlength="80"
            value="<?= e($p['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">

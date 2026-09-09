@@ -77,7 +77,9 @@ $check('both auth checks run before the UPDATE (no write path skips them)',
 // $d['display_name']-style nested brackets of its own. Check the two load-bearing facts
 // independently instead of trying to match the whole statement in one pattern.
 $check("settings_save()'s UPDATE targets rows by user_id",
-    (bool) preg_match('/UPDATE profiles SET .*WHERE user_id\s*=\s*\?/', $saveBody));
+    // The s modifier because the statement is spread over two lines now that the profile carries
+    // more columns; the rule this guards is the WHERE clause, not where the newlines fall.
+    (bool) preg_match('/UPDATE profiles SET .*WHERE user_id\s*=\s*\?/s', $saveBody));
 $check("...and the bound value is (int)\$me['id'] (current_user()'s own id, never user-supplied)",
     (bool) preg_match('/\(int\)\s*\$me\[.id.\]\]\);/', $saveBody));
 $check("settings_save() never reads a user id out of \$_POST/\$_GET for the target row",

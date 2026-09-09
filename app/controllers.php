@@ -553,7 +553,7 @@ function place_show(array $a): void {
 }
 
 function profile(array $a): void {
-    $u = q_one('SELECT u.*, p.display_name,p.bio,p.home_city,p.avatar_url,p.cover_url,p.credibility_score
+    $u = q_one('SELECT u.*, p.display_name,p.bio,p.home_city,p.avatar_url,p.cover_url,p.credibility_score,p.travel_style
                 FROM users u LEFT JOIN profiles p ON p.user_id=u.id WHERE u.username=?', [$a['username']]);
     if (!$u) not_found();
     $uid = (int)$u['id'];
@@ -692,9 +692,10 @@ function profile_edit_submit(array $a): void {
         if (!empty($old['avatar_key'])) rmt_storage_delete((string)$old['avatar_key']);
     }
 
-    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?, home_destination_id=? WHERE user_id=?')
+    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
+                                       home_destination_id=?, travel_style=? WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
-                   $d['home_destination_id'] ?? null, (int)$me['id']]);
+                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null, (int)$me['id']]);
     flash('Profile updated.');
     redirect('/u/'.$me['username']);
 }
@@ -3739,9 +3740,10 @@ function settings_save(array $a): void {
              ['title'=>'Edit your profile — RuinMyTrip']); return;
     }
     $d = $v['data'];
-    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?, home_destination_id=? WHERE user_id=?')
+    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
+                                       home_destination_id=?, travel_style=? WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
-                   $d['home_destination_id'] ?? null, (int)$me['id']]);
+                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null, (int)$me['id']]);
     flash('Profile updated.'); redirect('/u/'.$me['username']);
 }
 

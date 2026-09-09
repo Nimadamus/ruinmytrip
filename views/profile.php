@@ -48,6 +48,10 @@
         <?php if ((int) $stats['photos'] > 0): ?>
           <span><b><?= (int)$stats['photos'] ?></b> <?= $stats['photos'] === 1 ? 'photo' : 'photos' ?></span>
         <?php endif; ?>
+        <?php if (!empty($u['travel_style']) && isset(RMT_TRAVEL_STYLES[$u['travel_style']])): ?>
+          <?php /* Self-declared, so it is stated as a preference and never as a fact about them. */ ?>
+          <span><span class="chip">Travels <?= e(strtolower(RMT_TRAVEL_STYLES[$u['travel_style']])) ?></span></span>
+        <?php endif; ?>
         <?php if (!empty($homeDest)): ?>
           <?php /* The one fact a traveler heading somewhere most wants on a profile: this person is
                    there all the time. Links to that city's people page. */ ?>

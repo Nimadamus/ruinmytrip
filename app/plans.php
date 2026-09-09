@@ -179,7 +179,9 @@ function rmt_plan_clear(int $userId, int $destId): void {
 function rmt_plans_for_destination(int $destId, ?array $viewer, int $limit = 50): array {
     [$vis, $args] = rmt_plan_visibility_sql('t', $viewer);
     return q_all(
-        "SELECT t.*, u.username, p.avatar_url, p.display_name
+        // travel_style comes along because the city page counts how many of the people going said
+        // they travel alone, and a second query per traveler to ask that would be absurd.
+        "SELECT t.*, u.username, p.avatar_url, p.display_name, p.travel_style
            FROM trips t JOIN users u ON u.id = t.user_id
       LEFT JOIN profiles p ON p.user_id = u.id
           WHERE t.destination_id = ? AND t.status = 'published' AND u.status = 'active'

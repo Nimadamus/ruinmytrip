@@ -35,7 +35,7 @@ require BASE_PATH . '/app/travelers_hub.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT, role TEXT)');
-$pdo->exec('CREATE TABLE profiles (user_id INT, avatar_url TEXT, display_name TEXT)');
+$pdo->exec('CREATE TABLE profiles (user_id INT, avatar_url TEXT, display_name TEXT, travel_style TEXT)');
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
 /* The hub lists a city's traveler reviews now, so the fixture carries the columns it reads. */
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
