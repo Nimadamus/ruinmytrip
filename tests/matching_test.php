@@ -14,8 +14,11 @@ $GLOBALS['config'] = [
 
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/matching.php';
+
+function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations WHERE id = ?', [$id]); }
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT)');
@@ -30,6 +33,12 @@ $pdo->exec("CREATE TABLE notifications (
 $pdo->exec("CREATE TABLE going (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT NOT NULL,
     date_from TEXT, date_to TEXT, visibility TEXT NOT NULL DEFAULT 'public', created_at TEXT NOT NULL)");
+$pdo->exec("CREATE TABLE trips (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT,
+              title TEXT NOT NULL, slug TEXT NOT NULL, body TEXT, cover_url TEXT, visited_on TEXT,
+              verified INT DEFAULT 0, status TEXT NOT NULL DEFAULT 'published',
+              visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
+              created_at TEXT NOT NULL, updated_at TEXT)");
 $pdo->exec('CREATE UNIQUE INDEX idx_going_user_dest ON going (user_id, destination_id)');
 
 $pdo->exec("INSERT INTO users (id,username,status) VALUES

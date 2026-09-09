@@ -251,8 +251,9 @@ function rmt_card_spec(string $kind, string $key): ?array {
             $d = q_one('SELECT id, name, country FROM destinations WHERE slug = ?', [$key]);
             if (!$d) return null;
             $did = (int) $d['id'];
-            $going = (int) (q_one("SELECT COUNT(*) c FROM going
-                                    WHERE destination_id = ? AND visibility = 'public' AND date_to >= ?",
+            $going = (int) (q_one("SELECT COUNT(*) c FROM trips t
+                                    WHERE t.destination_id = ? AND t.visibility = 'public'
+                                      AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL AND t.date_to >= ?",
                                   [$did, date('Y-m-d')])['c'] ?? 0);
             $meets = (int) (q_one("SELECT COUNT(*) c FROM meetups
                                     WHERE destination_id = ? AND status = 'published' AND date_start >= ?",

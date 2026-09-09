@@ -135,7 +135,7 @@ function rmt_sitemap_entries(): array {
     $nMeet = (int) (q_one("SELECT COUNT(*) c FROM meetups WHERE status='published'")['c'] ?? 0);
     if ($nMeet > 0) $add('/meetups');
 
-    $nGoing = (int) (q_one("SELECT COUNT(*) c FROM going WHERE visibility='public'")['c'] ?? 0);
+    $nGoing = (int) (q_one("SELECT COUNT(*) c FROM trips t WHERE t.visibility='public' AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL")['c'] ?? 0);
     if ($nGoing > 0) $add('/going');
 
     $nActivity = (int) (q_one("SELECT (

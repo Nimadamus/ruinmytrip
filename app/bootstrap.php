@@ -32,6 +32,7 @@ require BASE_PATH . '/app/moderation.php';
 require BASE_PATH . '/app/feedback.php';
 require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/meetups.php';
+require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/feed_scope.php';
 require BASE_PATH . '/app/travelers_hub.php';

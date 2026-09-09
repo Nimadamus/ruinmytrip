@@ -82,13 +82,15 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
                 g.date_from my_from, g.date_to my_to,
                 d.slug dest_slug, d.name dest_name, d.id dest_id,
                 u.username, p.display_name, p.avatar_url, p.home_city
-           FROM going g
-           JOIN going o ON o.destination_id = g.destination_id AND o.user_id <> g.user_id
+           FROM trips g
+           JOIN trips o ON o.destination_id = g.destination_id AND o.user_id <> g.user_id
            JOIN destinations d ON d.id = g.destination_id
            JOIN users u ON u.id = o.user_id
       LEFT JOIN profiles p ON p.user_id = o.user_id
           WHERE g.user_id = ?
             AND u.status = 'active'
+            AND g.status = 'published' AND o.status = 'published'
+            AND g.date_from IS NOT NULL AND o.date_from IS NOT NULL
             AND o.date_from <= g.date_to AND o.date_to >= g.date_from
             AND g.date_to >= ?
             AND $visSql
@@ -118,9 +120,10 @@ function rmt_trip_match_user_ids(int $actorId, int $destId, string $from, string
     [$blockSql] = rmt_match_block_sql('o.user_id');
     $rows = q_all(
         "SELECT o.user_id
-           FROM going o JOIN users u ON u.id = o.user_id
+           FROM trips o JOIN users u ON u.id = o.user_id
           WHERE o.destination_id = ? AND o.user_id <> ?
-            AND u.status = 'active'
+            AND u.status = 'active' AND o.status = 'published'
+            AND o.date_from IS NOT NULL AND o.date_to IS NOT NULL
             AND o.date_from <= ? AND o.date_to >= ?
             AND $blockSql
        ORDER BY o.date_from
@@ -259,9 +262,10 @@ function rmt_meetup_notify_travelers(int $meetupId, int $hostId, int $destId, st
     [$blockSql] = rmt_match_block_sql('o.user_id');
     $rows = q_all(
         "SELECT o.user_id
-           FROM going o JOIN users u ON u.id = o.user_id
+           FROM trips o JOIN users u ON u.id = o.user_id
           WHERE o.destination_id = ? AND o.user_id <> ?
-            AND u.status = 'active'
+            AND u.status = 'active' AND o.status = 'published'
+            AND o.date_from IS NOT NULL AND o.date_to IS NOT NULL
             AND o.date_from <= ? AND o.date_to >= ?
             AND $blockSql
        ORDER BY o.date_from

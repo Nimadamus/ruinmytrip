@@ -220,7 +220,8 @@ function rmt_push_line(array $n): ?array {
         case 'going':       $body = "$who shared upcoming travel dates."; $url = rmt_notification_target_url('going', $tid, (int) $n['user_id']); break;
         case 'city_going': case 'city_meetup':
             $city = $type === 'city_going'
-                ? q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid])
+                ? (q_one('SELECT d.name, d.slug FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid])
+                   ?: q_one('SELECT d.name, d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid]))
                 : q_one('SELECT d.name, d.slug FROM meetups m JOIN destinations d ON d.id=m.destination_id WHERE m.id=?', [$tid]);
             $where = $city['name'] ?? 'a city you saved';
             $body = $type === 'city_going' ? "$who posted dates for $where." : "$who is hosting a meetup in $where.";
@@ -228,7 +229,8 @@ function rmt_push_line(array $n): ?array {
             break;
         case 'invite_joined': $body = "$who joined from your invite link. Say hi."; $url = $actor ? url('u/' . $actor['username']) : url('invite'); break;
         case 'trip_match':
-            $dest = q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid])['name'] ?? null;
+            $dest = (q_one('SELECT d.name FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid])
+                     ?: q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?', [$tid]))['name'] ?? null;
             $body = $dest ? "$who will be in $dest while you are." : "$who has dates that overlap yours.";
             $url = url('matches'); break;
         case 'meetup_rsvp': case 'meetup_changed': case 'meetup_cancelled': case 'meetup_nearby': case 'meetup_comment':

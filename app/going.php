@@ -2,151 +2,82 @@
 declare(strict_types=1);
 
 /**
- * "Who's going": destination + date range only. Never coordinates, never a live location.
+ * Travel dates, as the rest of the app still calls them.
  *
- * One plan per traveler per destination. Visibility is public | followers | private.
- * Public plans are the matching surface; followers plans are for people you already follow;
- * private plans exist only on your own profile.
+ * The `going` table is retired. A member's dates are a trip now, because that is the object the
+ * product is built around: an upcoming trip other travelers can find you on, that becomes the page
+ * you post updates and photos to while you are there, and the story afterwards. See app/plans.php.
+ *
+ * These functions are kept because roughly twenty call sites use them and a rename would have been
+ * twenty chances to get something wrong in the same commit as a data migration. They now read and
+ * write trips, and return rows shaped the way their callers already expect, including a `going`-era
+ * `id` field that is the trip id.
  */
-const RMT_GOING_VIS = ['public', 'followers', 'private'];
 
+/** One member's dates for one city, as a row. */
 function rmt_going_for_user_dest(int $userId, int $destId): ?array {
-    if ($userId < 1 || $destId < 1) return null;
-    return q_one('SELECT * FROM going WHERE user_id = ? AND destination_id = ?', [$userId, $destId]);
+    $t = rmt_plan_for_user_dest($userId, $destId);
+    return $t ? rmt_going_row($t) : null;
+}
+
+/** A trip row in the shape the who-is-going views read. */
+function rmt_going_row(array $t): array {
+    $t['going_id'] = (int) $t['id'];
+    $t['trip_id']  = (int) $t['id'];
+    return $t;
 }
 
 /**
- * Plans a viewer is allowed to see for one destination.
- *
- * @return list<array<string,mixed>>
+ * Who is going to this city. Visibility is decided in one place, app/plans.php, which is also
+ * where the promise that this is destination and dates only is kept.
  */
 function rmt_going_list_for_destination(int $destId, ?array $viewer): array {
-    [$visSql, $visArgs] = rmt_going_visibility_sql('g', $viewer);
-    return q_all(
-        "SELECT g.*, u.username, p.avatar_url, p.display_name
-         FROM going g JOIN users u ON u.id = g.user_id
-         LEFT JOIN profiles p ON p.user_id = u.id
-         WHERE g.destination_id = ? AND u.status = 'active' AND $visSql
-         ORDER BY g.date_from",
-        array_merge([$destId], $visArgs)
-    );
+    return array_map('rmt_going_row', rmt_plans_for_destination($destId, $viewer));
 }
 
-/**
- * Plans visible on a profile. Owner sees all of their own; everyone else sees public, plus
- * followers-visibility if they follow.
- *
- * @return list<array<string,mixed>>
- */
+/** Plans visible on a profile. The owner sees their own history as well as what is coming. */
 function rmt_going_list_for_profile(int $profileUid, ?array $viewer): array {
     $isOwner = $viewer && (int) $viewer['id'] === $profileUid;
-    if ($isOwner) {
-        return q_all(
-            "SELECT g.*, d.name dest_name, d.slug dest_slug
-             FROM going g JOIN destinations d ON d.id = g.destination_id
-             WHERE g.user_id = ? ORDER BY g.date_from",
-            [$profileUid]
-        );
-    }
-    [$visSql, $visArgs] = rmt_going_visibility_sql('g', $viewer);
-    return q_all(
-        "SELECT g.*, d.name dest_name, d.slug dest_slug
-         FROM going g JOIN destinations d ON d.id = g.destination_id
-         WHERE g.user_id = ? AND $visSql
-         ORDER BY g.date_from",
-        array_merge([$profileUid], $visArgs)
-    );
+    return array_map('rmt_going_row', rmt_plans_for_user($profileUid, $viewer, !$isOwner));
 }
 
-/** @return array{0:string,1:list<mixed>} SQL fragment + bound args */
+/** Kept for callers that build their own query around the visibility rule. */
 function rmt_going_visibility_sql(string $alias, ?array $viewer): array {
-    if (!$viewer) return ["{$alias}.visibility = 'public'", []];
-    $uid = (int) $viewer['id'];
-    return [
-        "({$alias}.user_id = ?
-          OR {$alias}.visibility = 'public'
-          OR ({$alias}.visibility = 'followers'
-              AND EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = ? AND f.followee_id = {$alias}.user_id)))",
-        [$uid, $uid],
-    ];
+    return rmt_plan_visibility_sql($alias, $viewer);
 }
 
-/**
- * @return array{ok:bool, errors:string[], data:array<string,mixed>}
- */
+/** Validate submitted dates. */
 function rmt_going_validate(array $in): array {
-    $errors = [];
-    $destId = (int) ($in['destination_id'] ?? 0);
-    if ($destId < 1 || !q_one('SELECT id FROM destinations WHERE id = ?', [$destId])) {
-        $errors[] = 'Pick a destination.';
-    }
-    $from = trim((string) ($in['date_from'] ?? ''));
-    $to = trim((string) ($in['date_to'] ?? ''));
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) || !strtotime($from)) {
-        $errors[] = 'Start date must be a real calendar day.';
-        $from = '';
-    }
-    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $to) || !strtotime($to)) {
-        $errors[] = 'End date must be a real calendar day.';
-        $to = '';
-    }
-    if ($from !== '' && $to !== '' && $from > $to) {
-        $errors[] = 'End date cannot be before the start date.';
-    }
-    if ($to !== '' && $to < gmdate('Y-m-d')) {
-        $errors[] = 'This is for upcoming trips. Share a past trip as a trip story instead.';
-    }
-    $vis = (string) ($in['visibility'] ?? 'public');
-    if (!in_array($vis, RMT_GOING_VIS, true)) $vis = 'public';
-    return ['ok' => $errors === [], 'errors' => $errors, 'data' => [
-        'destination_id' => $destId, 'date_from' => $from, 'date_to' => $to, 'visibility' => $vis,
-    ]];
+    return rmt_plan_validate($in);
+}
+
+/** Create or move a member's dates for a city. Returns the trip id. */
+function rmt_going_upsert(int $userId, array $data): int {
+    return rmt_plan_upsert($userId, $data);
+}
+
+/** Remove the dates. A trip that has been written into keeps its words and loses only its dates. */
+function rmt_going_delete(int $userId, int $destId): void {
+    rmt_plan_clear($userId, $destId);
 }
 
 /**
- * Insert or replace this traveler's plan for one destination. Returns the going id, or 0 on
- * validation failure (errors are left for the caller).
+ * Tell people a public plan exists: the traveler's followers, and the people who saved that city.
+ *
+ * Both are deliberate acts by the person being notified. The notification target is the trip, so
+ * it links to a page that will fill up with the trip itself rather than to a bare date range.
  */
-function rmt_going_upsert(int $userId, array $data): int {
+function rmt_going_notify_followers(int $actorId, int $tripId, string $visibility): void {
+    if ($visibility !== 'public' || $tripId < 1) return;
+    $t = q_one('SELECT destination_id FROM trips WHERE id = ?', [$tripId]);
     $now = date('Y-m-d H:i:s');
-    $have = rmt_going_for_user_dest($userId, (int) $data['destination_id']);
-    if ($have) {
-        db()->prepare('UPDATE going SET date_from=?, date_to=?, visibility=? WHERE id=?')
-           ->execute([$data['date_from'], $data['date_to'], $data['visibility'], (int) $have['id']]);
-        return (int) $have['id'];
-    }
-    q_run(
-        'INSERT INTO going (user_id, destination_id, date_from, date_to, visibility, created_at) VALUES (?,?,?,?,?,?)',
-        [$userId, (int) $data['destination_id'], $data['date_from'], $data['date_to'], $data['visibility'], $now]
-    );
-    $row = rmt_going_for_user_dest($userId, (int) $data['destination_id']);
-    return (int) ($row['id'] ?? 0);
-}
-
-function rmt_going_delete(int $userId, int $destId): void {
-    db()->prepare('DELETE FROM going WHERE user_id = ? AND destination_id = ?')->execute([$userId, $destId]);
-}
-
-/** Tell followers a public plan was posted. Followers-only and private plans do not notify. */
-function rmt_going_notify_followers(int $actorId, int $goingId, string $visibility): void {
-    if ($visibility !== 'public' || $goingId < 1) return;
-    /* The people who saved this city, as well as the people who follow this traveler. On a young
-       network the first is the one that matters: somebody who marked Lisbon has said what they
-       want to hear about, and until now nothing ever told them. */
-    if (function_exists('rmt_city_notify')) {
-        $g = q_one('SELECT destination_id FROM going WHERE id = ?', [$goingId]);
-        if ($g && (int) $g['destination_id'] > 0) {
-            rmt_city_notify((int) $g['destination_id'], 'city_going', $actorId, 'going', $goingId);
-        }
-    }
-    $fol = q_all('SELECT follower_id FROM follows WHERE followee_id = ?', [$actorId]);
-    $now = date('Y-m-d H:i:s');
-    foreach ($fol as $f) {
+    foreach (q_all('SELECT follower_id FROM follows WHERE followee_id = ?', [$actorId]) as $f) {
         $fid = (int) $f['follower_id'];
         if ($fid < 1 || $fid === $actorId) continue;
-        q_run(
-            'INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
-            [$fid, 'going', $actorId, 'going', $goingId, $now]
-        );
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [$fid, 'going', $actorId, 'trip', $tripId, $now]);
+    }
+    if ($t && (int) $t['destination_id'] > 0 && function_exists('rmt_city_notify')) {
+        rmt_city_notify((int) $t['destination_id'], 'city_going', $actorId, 'trip', $tripId);
     }
 }

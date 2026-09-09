@@ -79,18 +79,20 @@ function home(array $a): void {
     /* Who is actually going somewhere, soonest first. This is the site's own answer to "is anybody
        here", and it belongs above the research: a visitor deciding whether to join is deciding
        whether there are people, not whether we can compile a ticket price. Public plans only. */
-    $goingSoon = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url
-                          FROM going g
-                          JOIN destinations d ON d.id = g.destination_id
-                          JOIN users u ON u.id = g.user_id AND u.status = 'active'
+    $goingSoon = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url
+                          FROM trips t
+                          JOIN destinations d ON d.id = t.destination_id
+                          JOIN users u ON u.id = t.user_id AND u.status = 'active'
                      LEFT JOIN profiles p ON p.user_id = u.id
-                         WHERE g.visibility = 'public' AND g.date_to >= ?
-                      ORDER BY g.date_from LIMIT 8", [date('Y-m-d')]);
+                         WHERE t.visibility = 'public' AND t.status = 'published'
+                           AND t.date_from IS NOT NULL AND t.date_to >= ?
+                      ORDER BY t.date_from LIMIT 8", [date('Y-m-d')]);
     /* The cities with people in them, for the row that sends a stranger to a page made of members
        rather than to another article. Ordered by activity so the first chips are never empty rooms. */
     $liveCities = q_all("SELECT d.slug, d.name,
-                                (SELECT COUNT(*) FROM going g WHERE g.destination_id=d.id
-                                   AND g.visibility='public' AND g.date_to >= ?) going_count,
+                                (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id
+                                   AND t.visibility='public' AND t.status='published'
+                                   AND t.date_from IS NOT NULL AND t.date_to >= ?) going_count,
                                 (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
                                    AND m.status='published' AND m.date_start >= ?) meetup_count,
                                 (SELECT COUNT(*) FROM posts p2 WHERE p2.destination_id=d.id AND p2.status='published') talk_count
@@ -781,22 +783,26 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
         /* Dates are the one thing here with a visibility setting, so the city rule is narrower than
            everywhere else: a plan reaches somebody who follows the city only when its author made
            it public. 'followers' stays what it says -- for followers. */
-        $goingSql = "(g.user_id=? OR (
-                        g.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?)
-                        AND (g.visibility='public' OR g.visibility='followers')
+        $goingSql = "(t2.user_id=? OR (
+                        t2.user_id IN (SELECT followee_id FROM follows WHERE follower_id=?)
+                        AND (t2.visibility='public' OR t2.visibility='followers')
                      ) OR (
-                        g.visibility='public'
-                        AND g.destination_id IN (SELECT target_id FROM saves WHERE user_id=? AND target_type='destination')
+                        t2.visibility='public'
+                        AND t2.destination_id IN (SELECT target_id FROM saves WHERE user_id=? AND target_type='destination')
                      ))";
         $goingArgs = [$scopeUid, $scopeUid, $scopeUid];
     } else {
-        $goingSql = "g.visibility='public'";
+        $goingSql = "t2.visibility='public'";
         $goingArgs = [];
     }
-    $goings = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug FROM going g
-                     JOIN destinations d ON d.id=g.destination_id
-                     WHERE $goingSql
-                     ORDER BY g.created_at DESC, g.id DESC LIMIT $limitEach", $goingArgs);
+    /* Upcoming trips, which used to be their own object. A trip that has been written into appears
+       in the feed as a trip story; this row is the plan, so it is limited to ones still ahead. */
+    $goings = q_all("SELECT t2.*, d.name dest_name, d.slug dest_slug FROM trips t2
+                     JOIN destinations d ON d.id=t2.destination_id
+                     WHERE t2.status='published' AND t2.date_from IS NOT NULL AND t2.date_to >= ?
+                       AND $goingSql
+                     ORDER BY t2.created_at DESC, t2.id DESC LIMIT $limitEach",
+                    array_merge([date('Y-m-d')], $goingArgs));
     foreach ($goings as &$row) {
         $row['kind'] = 'going';
         $row['title'] = 'Heading to '.$row['dest_name'];
@@ -1795,18 +1801,21 @@ function meetup_cancel(array $a): void {
 
 function going_index(array $a): void {
     $me = current_user();
-    [$visSql, $visArgs] = rmt_going_visibility_sql('g', $me);
-    $rows = q_all("SELECT g.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url, p.display_name
-                   FROM going g JOIN destinations d ON d.id=g.destination_id JOIN users u ON u.id=g.user_id
+    [$visSql, $visArgs] = rmt_going_visibility_sql('t', $me);
+    $rows = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url, p.display_name
+                   FROM trips t JOIN destinations d ON d.id=t.destination_id JOIN users u ON u.id=t.user_id
                    LEFT JOIN profiles p ON p.user_id=u.id
-                   WHERE u.status='active' AND $visSql
-                   ORDER BY g.date_from", $visArgs);
+                   WHERE u.status='active' AND t.status='published'
+                     AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL AND t.date_to >= ?
+                     AND $visSql
+                   ORDER BY t.date_from", array_merge([date('Y-m-d')], $visArgs));
     $dests = all_dests();
     /* Cities with somebody in them first. This page is where a search for "travel buddy" or "who is
        going to X" lands, and the useful next click from it is the city, not another explanation. */
     $cities = q_all("SELECT d.slug, d.name,
-                            (SELECT COUNT(*) FROM going g2 WHERE g2.destination_id=d.id
-                               AND g2.visibility='public' AND g2.date_to >= ?) going_count,
+                            (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id
+                               AND t.visibility='public' AND t.status='published'
+                               AND t.date_from IS NOT NULL AND t.date_to >= ?) going_count,
                             (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
                                AND m.status='published' AND m.date_start >= ?) meetup_count
                        FROM destinations d
@@ -1868,8 +1877,8 @@ function travelers_index(array $a): void {
     /* Every city's people page hangs off this one. Cities with somebody in them come first, because
        a browse list whose first ten entries are empty rooms teaches the reader to stop clicking. */
     $cities = q_all("SELECT d.id, d.slug, d.name, d.country,
-                            (SELECT COUNT(*) FROM going g WHERE g.destination_id=d.id AND g.visibility='public'
-                               AND g.date_to >= ?) going_count,
+                            (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id AND t.visibility='public'
+                               AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to >= ?) going_count,
                             (SELECT COUNT(*) FROM meetups m WHERE m.destination_id=d.id
                                AND m.status='published' AND m.date_start >= ?) meetup_count,
                             (SELECT COUNT(*) FROM posts p2 WHERE p2.destination_id=d.id AND p2.status='published') talk_count

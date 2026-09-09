@@ -24,14 +24,25 @@ require BASE_PATH . '/app/cards.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT)');
+/* Plans live in trips since migration 071, so anything that counts travelers reads this. */
+$pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT,
+              destination_id INT, title TEXT NOT NULL DEFAULT '', slug TEXT NOT NULL DEFAULT '',
+              body TEXT, visited_on TEXT, status TEXT NOT NULL DEFAULT 'published',
+              visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
+              created_at TEXT, updated_at TEXT)");
 $pdo->exec('CREATE TABLE going (id INTEGER PRIMARY KEY, destination_id INT, visibility TEXT, date_to TEXT)');
 $pdo->exec('CREATE TABLE meetups (id INTEGER PRIMARY KEY, destination_id INT, status TEXT, date_start TEXT)');
 $pdo->exec("INSERT INTO destinations (id,slug,name,country) VALUES
               (1,'lisbon-portugal','Lisbon','Portugal'), (2,'quiet-town','Quiet Town','Nowhere')");
 $soon = date('Y-m-d', time() + 86400 * 20);
 $past = date('Y-m-d', time() - 86400 * 20);
-$pdo->exec("INSERT INTO going (destination_id,visibility,date_to) VALUES
-              (1,'public','$soon'), (1,'public','$past'), (1,'followers','$soon'), (2,'public','$soon')");
+/* One public plan still running, one that has ended, one visible only to followers, and one in
+   another city. Only the first counts on Lisbon's card. */
+$pdo->exec("INSERT INTO trips (destination_id,title,slug,status,visibility,date_from,date_to) VALUES
+              (1,'a','a','published','public','2020-01-01','$soon'),
+              (1,'b','b','published','public','2020-01-01','$past'),
+              (1,'c','c','published','followers','2020-01-01','$soon'),
+              (2,'d','d','published','public','2020-01-01','$soon')");
 $soonTs = date('Y-m-d H:i:s', time() + 86400 * 3);
 $pastTs = date('Y-m-d H:i:s', time() - 86400 * 3);
 $pdo->exec("INSERT INTO meetups (destination_id,status,date_start) VALUES
@@ -56,7 +67,7 @@ ok('only upcoming, uncancelled meetups are counted', in_array('1 meetup', $spec[
 // A quiet city gets a card with no numbers rather than a card advertising zeroes.
 $quiet = rmt_card_spec('city', 'quiet-town');
 ok('a city with one plan says one', $quiet['pills'] === ['1 traveler going'], json_encode($quiet['pills']));
-$pdo->exec('DELETE FROM going WHERE destination_id = 2');
+$pdo->exec('DELETE FROM trips WHERE destination_id = 2');
 $empty = rmt_card_spec('city', 'quiet-town');
 ok('an empty city claims nothing', $empty['pills'] === [], json_encode($empty['pills']));
 ok('an empty city still gets a card', ($empty['title'] ?? '') === 'Travelers in Quiet Town');

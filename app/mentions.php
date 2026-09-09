@@ -118,7 +118,10 @@ function rmt_notification_target_url(string $type, int $id, int $forUserId = 0):
             $r = q_one('SELECT id FROM meetups WHERE id=?', [$id]);
             return $r ? url('meetup/' . (int)$r['id']) : null;
         case 'going':
-            $r = q_one("SELECT d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?", [$id]);
+            /* Plans are trips now. Rows written before that migration still point at a going id,
+               so both are resolved and the newer shape is tried first. */
+            $r = q_one("SELECT d.slug FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?", [$id])
+              ?: q_one("SELECT d.slug FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?", [$id]);
             return $r ? url('d/' . $r['slug']) : url('going');
         case 'collection':
             $r = q_one("SELECT slug FROM collections WHERE id=? AND status='published'", [$id]);
