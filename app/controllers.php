@@ -971,7 +971,14 @@ function trip_show(array $a): void {
     $liked = $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'trip',(int)$t['id']]);
     $tags = rmt_tags_for('trip', (int)$t['id']);
-    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags'), [
+    /* The updates posted to this trip, and whether the reader is the person on it. A trip is the
+       container the product is built around, so this page has to be somewhere you post while you
+       are there, not a story written once. */
+    $updates = rmt_posts_for_trip((int) $t['id']);
+    $isOwner = $me && (int) $me['id'] === (int) $t['user_id'];
+    $phase = rmt_trip_phase($t);
+    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags',
+                              'updates','isOwner','phase'), [
         'title' => rmt_meta_title((string) $t['title']),
         'description' => rmt_meta_description((string) $t['body']),
         'og_image' => abs_url($t['cover_url']),

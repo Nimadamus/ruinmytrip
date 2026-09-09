@@ -32,7 +32,11 @@ $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id
 $pdo->exec("CREATE TABLE posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT NOT NULL, destination_id INT, collection_id INT,
     body TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'published', created_at TEXT NOT NULL, updated_at TEXT,
-    image_url TEXT, image_key TEXT, image_w INT, image_h INT, repost_of INT, place_id INT)");
+    image_url TEXT, image_key TEXT, image_w INT, image_h INT, repost_of INT, place_id INT,
+    trip_id INT)");
+/* An update on a trip is a post (migration 072), so this table carries the trip it belongs to. */
+$pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
+    title TEXT, slug TEXT, status TEXT, date_from TEXT, date_to TEXT)");
 $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, destination_id INT, status TEXT)");
 $pdo->exec("INSERT INTO places (id,slug,name,destination_id,status) VALUES (60,'anne-frank-house-amsterdam','Anne Frank House',10,'active')");
 

@@ -54,6 +54,23 @@ function rmt_post_validate(array $in, ?array $user): array {
         }
     }
 
+    /* An update belongs to a trip, and only to your own: posting into somebody else's trip page
+       would put words on their story that they cannot edit. The city is filled in from the trip so
+       an update is findable from the city page as well, which is where other travelers are. */
+    $tripId = (int) ($in['trip_id'] ?? 0);
+    if ($tripId > 0) {
+        $t = q_one("SELECT id, user_id, destination_id FROM trips WHERE id=? AND status='published'", [$tripId]);
+        if (!$t) {
+            $errors[] = 'That trip does not exist.';
+            $tripId = 0;
+        } elseif (!$user || (int) $t['user_id'] !== (int) $user['id']) {
+            $errors[] = 'You can only post updates to your own trip.';
+            $tripId = 0;
+        } elseif ($t['destination_id'] && !$destId) {
+            $destId = (int) $t['destination_id'];
+        }
+    }
+
     $colId = (int) ($in['collection_id'] ?? 0);
     if ($colId > 0) {
         $c = q_one("SELECT * FROM collections WHERE id=? AND status='published'", [$colId]);
@@ -69,16 +86,16 @@ function rmt_post_validate(array $in, ?array $user): array {
 
     return ['ok' => $errors === [], 'errors' => $errors, 'data' => [
         'body' => $body, 'destination_id' => $destId ?: null, 'collection_id' => $colId ?: null,
-        'place_id' => $placeId ?: null,
+        'place_id' => $placeId ?: null, 'trip_id' => $tripId ?: null,
     ]];
 }
 
 function rmt_post_create(int $userId, array $data): int {
     $now = date('Y-m-d H:i:s');
-    q_run('INSERT INTO posts (user_id, destination_id, collection_id, place_id, body, status, created_at)
-           VALUES (?,?,?,?,?,?,?)',
+    q_run('INSERT INTO posts (user_id, destination_id, collection_id, place_id, trip_id, body, status, created_at)
+           VALUES (?,?,?,?,?,?,?,?)',
           [$userId, $data['destination_id'], $data['collection_id'], $data['place_id'] ?? null,
-           $data['body'], 'published', $now]);
+           $data['trip_id'] ?? null, $data['body'], 'published', $now]);
     return (int) (q_one('SELECT id FROM posts WHERE user_id=? ORDER BY id DESC', [$userId])['id'] ?? 0);
 }
 
@@ -456,4 +473,24 @@ function rmt_post_jsonld(array $p, array $comments, int $likeCount = 0): array {
             'author' => $author((string) $c['username']),
         ], $comments),
     ];
+}
+
+/**
+ * The updates posted to one trip, oldest first.
+ *
+ * Oldest first on purpose: a trip reads forwards. Everywhere else on this site the newest thing
+ * goes on top, because everywhere else is a feed; a trip is a sequence of days.
+ */
+function rmt_posts_for_trip(int $tripId, int $limit = 200): array {
+    if ($tripId < 1) return [];
+    return q_all(
+        "SELECT p.*, u.username, pr.avatar_url, pr.display_name,
+                (SELECT COUNT(*) FROM comments cm
+                  WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') reply_count
+           FROM posts p JOIN users u ON u.id = p.user_id
+      LEFT JOIN profiles pr ON pr.user_id = p.user_id
+          WHERE p.trip_id = ? AND p.status = 'published' AND u.status = 'active'
+       ORDER BY p.created_at, p.id LIMIT " . max(1, $limit),
+        [$tripId]
+    );
 }

@@ -1,4 +1,4 @@
-<?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved */ $me = current_user(); ?>
+<?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var array $updates @var bool $isOwner @var string $phase */ $me = current_user(); ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if($t['dest_slug']):?><a href="<?= e(url('d/'.$t['dest_slug'])) ?>"><?= e($t['dest_name']) ?></a> / <?php endif;?><?= e($t['title']) ?></p>
 </div>
@@ -21,6 +21,54 @@
   <?php endif; ?>
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
         include __DIR__ . '/_share.php'; ?>
+
+  <?php /* When the trip is, in words. A page that says "2027-04-02" tells the reader a date; a page
+           that says "coming up" tells them whether to bother saying hello. */ ?>
+  <?php if (!empty($t['date_from'])): ?>
+    <p class="muted" style="margin:.2rem 0 1rem">
+      <?php $label = ['upcoming' => 'Coming up', 'current' => 'Happening now', 'past' => 'Trip taken'][$phase] ?? ''; ?>
+      <?php if ($label): ?><b><?= e($label) ?></b> · <?php endif; ?>
+      <?= e(date('j M Y', strtotime((string) $t['date_from']))) ?>
+      <?php if (!empty($t['date_to']) && $t['date_to'] !== $t['date_from']): ?>
+        &ndash; <?= e(date('j M Y', strtotime((string) $t['date_to']))) ?>
+      <?php endif; ?>
+      <?php if (!empty($t['dest_slug'])): ?>
+        · <a href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">who else is going to <?= e($t['dest_name']) ?></a>
+      <?php endif; ?>
+    </p>
+  <?php endif; ?>
+
+  <?php /* The updates. Oldest first, because a trip reads forwards: everywhere else on this site is
+           a feed and puts the newest on top, but a trip is a sequence of days. */ ?>
+  <?php if ($isOwner): ?>
+    <form method="post" action="<?= e(url('post/new')) ?>" style="margin:0 0 18px"><?= csrf_field() ?>
+      <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
+      <input type="hidden" name="trip_id" value="<?= (int)$t['id'] ?>">
+      <input type="hidden" name="return" value="<?= e('/trip/'.(int)$t['id'].'/'.$t['slug']) ?>">
+      <textarea name="body" rows="2" maxlength="1000" style="width:100%"
+                placeholder="<?= $phase === 'past' ? 'Add something you remember' : 'Post an update from this trip' ?>"></textarea>
+      <button class="btn btn-primary btn-sm" style="margin-top:6px">Post update</button>
+    </form>
+  <?php endif; ?>
+
+  <?php if (!empty($updates)): ?>
+    <h2 style="font-size:1.15rem;margin:0 0 10px">Updates</h2>
+    <ol class="list-plain" style="margin:0 0 22px">
+      <?php foreach ($updates as $up): ?>
+        <li class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
+          <span class="hint"><?= e(date('j M, H:i', strtotime((string) $up['created_at']))) ?></span>
+          <p style="margin:.25rem 0 0"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e($up['body'])))) ?></p>
+          <?php if (!empty($up['image_url'])): ?>
+            <p style="margin:.5rem 0 0"><img class="card-media" loading="lazy" style="border-radius:10px"
+                 src="<?= e(abs_url($up['image_url'])) ?>" alt=""></p>
+          <?php endif; ?>
+          <p class="hint" style="margin:.35rem 0 0">
+            <a href="<?= e(url('post/'.(int)$up['id'])) ?>"><?= (int)$up['reply_count'] === 1 ? '1 reply' : (int)$up['reply_count'] . ' replies' ?></a>
+          </p>
+        </div></li>
+      <?php endforeach; ?>
+    </ol>
+  <?php endif; ?>
 
   <?php if (!empty($t['dest_slug'])): ?>
     <?php $destSlug = (string) $t['dest_slug']; $destName = (string) $t['dest_name'];
