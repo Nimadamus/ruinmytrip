@@ -63,6 +63,29 @@ pages made of members.
 * `python scripts/gsc_report.py --days 28` for search, `/admin/funnel` for joining and contributing.
 * The measure that matters is members who post: signups per week and reviews by distinct travelers.
 
+## The signup funnel, as it now stands (2026-09-09)
+
+Prod is 4 users and 185 reviews, all editorial: `stat_community_reviews` is genuinely 0. Four leaks
+were closed on 9 September, all live:
+
+* The hero printed "0 Traveler reviews" under the Join button. A zero count is dropped now.
+* The city chips summed going + meetups + talk under the heading "Who is going, by city". Each chip
+  names its own signal, and the heading only claims travellers when somebody posted dates.
+* `require_login()` sent everybody to "Welcome back". A contribution route opens on Join, and the
+  join page quotes back whatever they had typed (`rmt_return_is_join_intent`, `rmt_join_intent_line`).
+* A first review held for an unconfirmed email stayed a draft forever. Migration 076 marks it and
+  confirming the address publishes it (`rmt_reviews_release_held`).
+* Place pages show the question box to logged-out visitors; the question rides through the join door
+  in the return address. Search lands on `/p/`, so this is where strangers actually arrive.
+
+## Waiting on Nima
+
+* **No acquisition channel points at RuinMyTrip.** Every `dm_variants.txt` line sends people to
+  TrustMyRecord. Needs its own account or its own variant.
+* Instagram / TikTok / Facebook accounts (SETUP.md is ready), R2 (`10042`, enable in the dashboard),
+  `gh auth refresh -h github.com -s workflow`, paid acquisition budget.
+* Signup requires a birthdate. Heaviest field on the form; age gating is a real reason to keep it.
+
 ## Next, in order
 
 1. R2 once enabled, then multi-photo posts.
