@@ -94,6 +94,19 @@
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif ($n['type']==='going_too'):
+          $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $trip = q_one('SELECT t.id, t.slug, d.name dest_name FROM trips t
+                         LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [(int)$n['target_id']]);
+          $href = $trip ? url('trip/'.(int)$trip['id'].'/'.$trip['slug']) : null;
+          $line = $who . ' is going to ' . ($trip && $trip['dest_name'] ? $trip['dest_name'] : 'the same place')
+                . ' on your dates.';
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+          <?php else: ?>
+            <b><?= e($line) ?></b>
+          <?php endif; ?>
         <?php elseif ($n['type']==='invite_joined' && $n['actor']): ?>
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> joined from your invite link. Say hi.</a>
         <?php elseif ($n['type']==='invite_joined'): ?>

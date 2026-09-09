@@ -2333,6 +2333,30 @@ function rmt_trip_can_edit(array $t, ?array $user): bool {
     return $user !== null && (int) $t['user_id'] === (int) $user['id'];
 }
 
+/**
+ * POST /trip/{id}/going-too -- copy somebody's dates into a plan of your own.
+ *
+ * The site could already tell you that a stranger's trip overlapped yours and then left you to
+ * type the same dates into a different form. This is that form, pressed once.
+ */
+function trip_going_too(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id=? AND status='published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    // You can only copy dates off a trip you are allowed to be reading in the first place.
+    if (!rmt_trip_visible_to($t, $me)) not_found();
+    if (rmt_blocked_from((int) $me['id'], 'trip', (int) $t['id'])) {
+        flash('You cannot do that.');
+        redirect(rmt_return_to('/trip/' . (int) $t['id']));
+    }
+    $r = rmt_plan_join($t, $me);
+    flash($r['ok']
+        ? 'Your dates are posted. You will see each other on the city page and in matches.'
+        : $r['error']);
+    redirect(rmt_return_to('/trip/' . (int) $t['id']));
+}
+
 function trip_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
     if (!rmt_submit_ok('trip_new', input('_submit'))) {

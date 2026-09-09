@@ -236,6 +236,12 @@ function rmt_push_line(array $n): ?array {
                 ? (rmt_notification_target_url('review', $tid, (int) $n['user_id']) ?: url('notifications'))
                 : (isset($city['slug']) ? url('d/' . $city['slug'] . '/travelers') : url('notifications'));
             break;
+        case 'going_too':
+            $trip = q_one('SELECT t.id, t.slug, d.name dest_name FROM trips t
+                           LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid]);
+            $body = "$who is going to " . ($trip['dest_name'] ?? 'the same place') . " on your dates.";
+            $url = $trip ? url('trip/' . (int) $trip['id'] . '/' . $trip['slug']) : url('matches');
+            break;
         case 'invite_joined': $body = "$who joined from your invite link. Say hi."; $url = $actor ? url('u/' . $actor['username']) : url('invite'); break;
         case 'trip_match':
             $dest = (q_one('SELECT d.name FROM trips t JOIN destinations d ON d.id=t.destination_id WHERE t.id=?', [$tid])

@@ -39,6 +39,7 @@ $routes = [
     ['GET',  '#^/trip/(?<id>\d+)/edit$#',      'trip_edit_form'],
     ['POST', '#^/trip/(?<id>\d+)/edit$#',      'trip_edit_submit'],
     ['POST', '#^/trip/(?<id>\d+)/delete$#',    'trip_delete'],
+    ['POST', '#^/trip/(?<id>\d+)/going-too$#', 'trip_going_too'],
     ['GET',  '#^/trip/(?<id>\d+)(?:/[a-z0-9\-]+)?$#', 'trip_show'],
     ['GET',  '#^/reviews$#',                   'reviews_index'],
     ['GET',  '#^/ruined$#',                    'ruined_page'],

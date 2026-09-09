@@ -276,3 +276,48 @@ function rmt_trip_has_substance(array $t): bool {
     return (int) (q_one("SELECT COUNT(*) c FROM posts WHERE trip_id = ? AND status = 'published'",
                         [$id])['c'] ?? 0) > 0;
 }
+
+/**
+ * "I am going too."
+ *
+ * The site could tell you that somebody's trip overlaps yours, and the only thing you could do
+ * about it was write your own dates somewhere else and hope they matched. This copies the dates you
+ * are looking at into a plan of your own, which is what the button means, and tells the person
+ * whose trip it was.
+ *
+ * It is a plan, not a shared trip: their page stays theirs, and yours is yours. Trips are the only
+ * thing here that lead to two strangers in the same place, so nothing about this puts anybody on
+ * somebody else's page without their say.
+ *
+ * @return array{ok:bool, trip_id:int, error:string}
+ */
+function rmt_plan_join(array $theirTrip, array $me): array {
+    $destId = (int) ($theirTrip['destination_id'] ?? 0);
+    if ($destId < 1 || empty($theirTrip['date_from']) || empty($theirTrip['date_to'])) {
+        return ['ok' => false, 'trip_id' => 0, 'error' => 'That trip has no city and dates to copy.'];
+    }
+    if ((int) $theirTrip['user_id'] === (int) $me['id']) {
+        return ['ok' => false, 'trip_id' => 0, 'error' => 'That is your own trip.'];
+    }
+    $v = rmt_plan_validate([
+        'destination_id' => $destId,
+        'date_from' => (string) $theirTrip['date_from'],
+        'date_to'   => (string) $theirTrip['date_to'],
+        // Public by default, because the point of pressing it is to be findable by the other
+        // people going. They can narrow it afterwards like any other plan.
+        'visibility' => 'public',
+    ]);
+    if (!$v['ok']) return ['ok' => false, 'trip_id' => 0, 'error' => $v['errors'][0]];
+
+    $id = rmt_plan_upsert((int) $me['id'], $v['data']);
+    // The person whose trip it was hears about it once, on the trip they posted.
+    $seen = q_one('SELECT 1 x FROM notifications WHERE user_id=? AND type=? AND target_type=? AND target_id=?',
+                  [(int) $theirTrip['user_id'], 'going_too', 'trip', (int) $theirTrip['id']]);
+    if (!$seen && (int) $theirTrip['user_id'] !== (int) $me['id']) {
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at)
+               VALUES (?,?,?,?,?,?)',
+              [(int) $theirTrip['user_id'], 'going_too', (int) $me['id'], 'trip',
+               (int) $theirTrip['id'], date('Y-m-d H:i:s')]);
+    }
+    return ['ok' => true, 'trip_id' => $id, 'error' => ''];
+}

@@ -38,6 +38,24 @@
     </p>
   <?php endif; ?>
 
+  <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
+           this the site would tell you a stranger's trip overlapped yours and then leave you to
+           type the same dates into a different form. */ ?>
+  <?php if (!$isOwner && in_array($phase, ['upcoming', 'current'], true) && !empty($t['destination_id'])): ?>
+    <?php if ($me): ?>
+      <form method="post" action="<?= e(url('trip/'.(int)$t['id'].'/going-too')) ?>" style="margin:0 0 18px">
+        <?= csrf_field() ?>
+        <input type="hidden" name="return" value="<?= e('/trip/'.(int)$t['id'].'/'.$t['slug']) ?>">
+        <button class="btn btn-primary">I am going too</button>
+        <span class="hint">Posts the same city and dates as your own plan, and tells @<?= e($t['author']['username'] ?? '') ?>.</span>
+      </form>
+    <?php else: ?>
+      <p style="margin:0 0 18px">
+        <a class="btn btn-accent" href="<?= e(url('register?return=' . rawurlencode('/trip/'.(int)$t['id']))) ?>">Join to say you are going too</a>
+      </p>
+    <?php endif; ?>
+  <?php endif; ?>
+
   <?php /* The updates. Oldest first, because a trip reads forwards: everywhere else on this site is
            a feed and puts the newest on top, but a trip is a sequence of days. */ ?>
   <?php if ($isOwner): ?>
