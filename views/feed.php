@@ -1,6 +1,10 @@
 <?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope @var array $cities */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
                    'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting'];
+/* An update posted from a trip is not somebody "saying" something into the void: it is a person
+   in a city, mid-trip, and the feed row reads wrong without that. */
+$rmt_post_verb = static fn(array $it): string =>
+    ($it['kind'] === 'post' && !empty($it['trip_id'])) ? 'posted an update from' : null;
 $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 'blog_post' => 'Blog', 'collection' => 'Collection', 'going' => "Who's going", 'post' => 'Talk', 'meetup' => 'Meetup'];
 ?>
 <div class="wrap" style="max-width:760px">
@@ -62,7 +66,7 @@ $rmt_kind_labels = ['trip' => 'Trip', 'review' => 'Review', 'guide' => 'Guide', 
                      entry exists to carry. The verb does the work the chip was doing, so the chip
                      goes. */ ?>
             <a href="<?= e(url('u/'.($it['author']['username']??''))) ?>">@<?= e($it['author']['username']??'') ?></a>
-            <?= e($rmt_kind_verbs[$it['kind']] ?? 'posted') ?><?php if (!empty($it['subject'])): ?>
+            <?= e($rmt_post_verb($it) ?? ($rmt_kind_verbs[$it['kind']] ?? 'posted')) ?><?php if (!empty($it['subject'])): ?>
               <?php if (!empty($it['subject_url'])): ?><a href="<?= e($it['subject_url']) ?>"><b><?= e((string) $it['subject']) ?></b></a><?php
                     else: ?><b><?= e((string) $it['subject']) ?></b><?php endif; ?><?php endif; ?>
             <span class="hint">&middot; <?= e(ago($it['created_at'])) ?><?= !empty($it['dest_name'])?' · '.e($it['dest_name']):'' ?></span>
