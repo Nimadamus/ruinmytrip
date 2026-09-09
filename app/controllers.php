@@ -568,7 +568,7 @@ function profile(array $a): void {
     $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                     LEFT JOIN destinations d ON d.id=t.destination_id
                     WHERE t.user_id=? AND t.status='published' AND $tripVisSql
-                    ORDER BY COALESCE(t.date_from, t.visited_on, t.created_at) DESC, t.id DESC",
+                    ORDER BY COALESCE(CAST(t.date_from AS TEXT), t.visited_on, t.created_at) DESC, t.id DESC",
                    array_merge([$uid], $tripVisArgs));
     $upcomingTrips = [];
     $pastTrips = [];
