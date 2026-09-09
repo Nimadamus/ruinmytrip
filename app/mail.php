@@ -208,6 +208,37 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
         $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'traveler' : 'travelers')
                  . ' with dates that overlap yours — <a href="' . e(url('matches')) . '">see who</a></li>';
     }
+    /* The city subscriptions. Somebody who saved four cities and had a quiet week of their own
+       still has a reason to come back if one of those cities did not, and until now the weekly
+       email was silent about the thing they had explicitly asked to hear about. */
+    $cities = $activity['cities'] ?? [];
+    if ((int) ($activity['city_total'] ?? 0) > 0) {
+        $bits = [];
+        if ((int) ($cities['dates'] ?? 0) > 0) {
+            $n = (int) $cities['dates'];
+            $bits[] = $n . ' ' . ($n === 1 ? 'traveler posted dates' : 'travelers posted dates');
+        }
+        if ((int) ($cities['meetups'] ?? 0) > 0) {
+            $n = (int) $cities['meetups'];
+            $bits[] = $n . ' ' . ($n === 1 ? 'meetup' : 'meetups');
+        }
+        if ((int) ($cities['reviews'] ?? 0) > 0) {
+            $n = (int) $cities['reviews'];
+            $bits[] = $n . ' ' . ($n === 1 ? 'review' : 'reviews');
+        }
+        $lines[] = '<li>' . e(implode(', ', $bits)) . ' in cities you follow — '
+                 . '<a href="' . e(url('travelers')) . '">see them</a></li>';
+    }
+    if ((int) ($activity['going_too'] ?? 0) > 0) {
+        $n = (int) $activity['going_too'];
+        $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'traveler is' : 'travelers are')
+                 . ' going on your dates — <a href="' . e(url('matches')) . '">see who</a></li>';
+    }
+    if ((int) ($activity['trip_updates'] ?? 0) > 0) {
+        $n = (int) $activity['trip_updates'];
+        $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'update' : 'updates')
+                 . ' from a trip on your dates — <a href="' . e(url('feed')) . '">read them</a></li>';
+    }
     if ((int) ($activity['unread_messages'] ?? 0) > 0) {
         $n = (int) $activity['unread_messages'];
         $lines[] = '<li>' . $n . ' unread ' . ($n === 1 ? 'message' : 'messages')

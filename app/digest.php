@@ -83,6 +83,29 @@ function rmt_digest_activity(int $uid, string $since): array {
                          AND m.status = 'published'
                     ORDER BY m.date_start LIMIT 5", [$uid, $since]);
 
+    /* The city subscriptions, read the same way matches and nearby meetups are: from the
+       notifications the site already decided were worth making. Somebody who saved four cities and
+       had a quiet week of their own still has a reason to come back if one of those cities did
+       not. */
+    $cityRows = q_all("SELECT type, COUNT(*) c FROM notifications
+                        WHERE user_id = ? AND created_at > ?
+                          AND type IN ('city_going','city_meetup','city_review')
+                     GROUP BY type", [$uid, $since]);
+    $cities = ['dates' => 0, 'meetups' => 0, 'reviews' => 0];
+    foreach ($cityRows as $r) {
+        $cities[['city_going' => 'dates', 'city_meetup' => 'meetups', 'city_review' => 'reviews'][$r['type']]] = (int) $r['c'];
+    }
+    $cityTotal = array_sum($cities);
+
+    // Somebody said they are coming on your dates, which is the point of the whole trip half.
+    $goingToo = (int) (q_one("SELECT COUNT(*) c FROM notifications
+                               WHERE user_id=? AND type='going_too' AND created_at > ?",
+                             [$uid, $since])['c'] ?? 0);
+    // And the updates from trips you will be on at the same time as somebody else.
+    $tripUpdates = (int) (q_one("SELECT COUNT(*) c FROM notifications
+                                  WHERE user_id=? AND type='trip_update' AND created_at > ?",
+                                [$uid, $since])['c'] ?? 0);
+
     $unread = (int) (q_one("SELECT COUNT(*) c FROM messages ms
                               JOIN conversations cv ON cv.id = ms.conversation_id
                              WHERE ms.sender_id <> ? AND ms.read_at IS NULL
@@ -111,6 +134,10 @@ function rmt_digest_activity(int $uid, string $since): array {
             'url'       => url('post/' . (int) $r['id']),
         ], $community),
         'matches' => $matches,
+        'cities' => $cities,
+        'city_total' => $cityTotal,
+        'going_too' => $goingToo,
+        'trip_updates' => $tripUpdates,
         'meetups' => array_map(static fn(array $m): array => [
             'title' => (string) $m['title'],
             'when'  => date('D M j', strtotime((string) $m['date_start'])),
@@ -120,15 +147,18 @@ function rmt_digest_activity(int $uid, string $since): array {
     ];
     $out['any'] = $out['followers'] > 0 || $out['votes'] > 0 || $out['compliments'] > 0
                 || $out['reviews'] || $out['replies'] || $out['community']
-                || $out['matches'] > 0 || $out['meetups'] || $out['unread_messages'] > 0;
+                || $out['matches'] > 0 || $out['meetups'] || $out['unread_messages'] > 0
+                || $out['city_total'] > 0 || $out['going_too'] > 0 || $out['trip_updates'] > 0;
     return $out;
 }
 
 /** One line summarising a digest, for the script's log and for a dry run. */
 function rmt_digest_summary(array $a): string {
     return sprintf('%d follower(s), %d vote(s), %d compliment(s), %d review(s), %d repl(y/ies), '
-                 . '%d community post(s), %d match(es), %d meetup(s), %d unread message(s)',
+                 . '%d community post(s), %d match(es), %d meetup(s), %d unread message(s), '
+                 . '%d city update(s), %d going-too, %d trip update(s)',
         (int) $a['followers'], (int) $a['votes'], (int) $a['compliments'], count($a['reviews']),
         count($a['replies']), count($a['community']), (int) $a['matches'], count($a['meetups']),
-        (int) $a['unread_messages']);
+        (int) $a['unread_messages'], (int) ($a['city_total'] ?? 0), (int) ($a['going_too'] ?? 0),
+        (int) ($a['trip_updates'] ?? 0));
 }
