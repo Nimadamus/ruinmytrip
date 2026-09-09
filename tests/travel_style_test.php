@@ -74,5 +74,22 @@ ok('the city page counts who travels solo', str_contains($hub, "=== 'solo'"));
 $plans = (string) file_get_contents(BASE_PATH . '/app/plans.php');
 ok('the who-is-going query carries it', str_contains($plans, 'p.travel_style'));
 
+/* A member whose profile row never existed would save into nothing and be told it worked. Six such
+   accounts exist on the live database, predating the row being created at registration. */
+db()->exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT)');
+db()->exec("CREATE TABLE IF NOT EXISTS profiles (user_id INT PRIMARY KEY, display_name TEXT,
+              credibility_score INT, home_city TEXT, home_destination_id INT, travel_style TEXT)");
+db()->exec("INSERT OR IGNORE INTO users (id,username) VALUES (41,'rowless')");
+ok('a member with no profile row gets one', rmt_profile_ensure(41));
+ok('and it is not created twice', !rmt_profile_ensure(41));
+ok('the row is really there',
+   (bool) q_one('SELECT 1 FROM profiles WHERE user_id = 41'));
+ok('a member id that is not a member is refused', !rmt_profile_ensure(0));
+$controllers = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+ok('every profile write ensures the row first', substr_count($controllers, 'rmt_profile_ensure(') === 3);
+$welcome = (string) file_get_contents(BASE_PATH . '/views/welcome.php');
+ok('the welcome screen asks where they live', str_contains($welcome, 'name="home_city"'));
+ok('and how they travel', str_contains($welcome, 'name="travel_style"'));
+
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

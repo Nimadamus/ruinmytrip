@@ -402,3 +402,27 @@ function rmt_profile_photos(int $uid, int $limit = 12): array {
     usort($rows, static fn(array $a, array $b) => strcmp($b['at'], $a['at']));
     return array_slice($rows, 0, $limit);
 }
+
+/**
+ * Make sure this member has a profile row before writing to it.
+ *
+ * Registration has created one since profiles existed, but six accounts on the live database
+ * predate that and every profile save is an UPDATE: for them, editing a profile did nothing at all
+ * and said it had worked. A missing row also hides somebody from the weekly digest, which joins
+ * users to profiles, so this is not only cosmetic.
+ *
+ * Returns true when a row had to be created.
+ */
+function rmt_profile_ensure(int $uid): bool {
+    if ($uid < 1) return false;
+    if (q_one('SELECT 1 x FROM profiles WHERE user_id = ?', [$uid])) return false;
+    $u = q_one('SELECT username FROM users WHERE id = ?', [$uid]);
+    try {
+        q_run('INSERT INTO profiles (user_id, display_name, credibility_score) VALUES (?,?,0)',
+              [$uid, $u['username'] ?? null]);
+    } catch (\PDOException $e) {
+        // Two requests can race here; the row existing is the outcome either of them wanted.
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+    }
+    return true;
+}

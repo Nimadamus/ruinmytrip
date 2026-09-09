@@ -6,6 +6,30 @@
 
   <form method="post" action="<?= e(url('welcome')) ?>">
     <?= csrf_field() ?>
+    <?php /* Where they live and how they travel. Both optional, both asked here because this is the
+             one moment a new member is certainly paying attention, and every discovery feature the
+             site has -- locals, who is coming to your city, solo travelers here -- is blank until
+             somebody answers them. */ ?>
+    <h2 style="font-size:1.15rem">About you (optional)</h2>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
+      <div style="flex:1;min-width:220px">
+        <label for="home_city">Where do you live?</label>
+        <input type="text" id="home_city" name="home_city" maxlength="80"
+               value="<?= e($me['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">
+        <p class="muted" style="margin:.3rem 0 0;font-size:.9rem">City only. If we have a page for
+          it you will be listed as a local, where travelers heading there can find you.</p>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <label for="travel_style">How do you usually travel?</label>
+        <select id="travel_style" name="travel_style">
+          <option value="">Rather not say</option>
+          <?php foreach (RMT_TRAVEL_STYLES as $k => $label): ?>
+            <option value="<?= e($k) ?>"<?= ($me['travel_style'] ?? '') === $k ? ' selected' : '' ?>><?= e($label) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+
     <h2 style="font-size:1.15rem">Want to visit</h2>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 22px">
       <?php foreach ($dests as $dd): $on = !empty($saved[(int)$dd['id']]); ?>

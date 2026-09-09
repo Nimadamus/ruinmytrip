@@ -695,6 +695,9 @@ function profile_edit_submit(array $a): void {
         if (!empty($old['avatar_key'])) rmt_storage_delete((string)$old['avatar_key']);
     }
 
+    // A member whose profile row never existed would otherwise save into nothing and be told it
+    // worked. Six such accounts exist on the live database.
+    rmt_profile_ensure((int) $me['id']);
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
                                        home_destination_id=?, travel_style=? WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
@@ -1939,6 +1942,8 @@ function welcome_form(array $a): void {
     foreach (q_all("SELECT target_id FROM saves WHERE user_id=? AND target_type='destination'", [(int)$me['id']]) as $r) {
         $saved[(int)$r['target_id']] = true;
     }
+    $me = $me + (q_one('SELECT home_city, travel_style, display_name, bio, avatar_url FROM profiles
+                         WHERE user_id = ?', [(int) $me['id']]) ?: []);
     view('welcome', compact('dests','saved','me','communities','suggested'), [
         'title' => 'Start your traveler profile — RuinMyTrip',
         'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
@@ -1950,6 +1955,24 @@ function welcome_submit(array $a): void {
     csrf_check();
     $me = current_user();
     $uid = (int)$me['id'];
+    /* Where they live and how they travel, through the profile validator rather than a second set
+       of rules: the home city is resolved to one of our cities the same way, and a travel style
+       that is not on the list is treated as not said. Only written when something was actually
+       filled in, so a member who skipped this screen keeps whatever they had. */
+    $ident = rmt_profile_validate($_POST + [
+        'display_name' => $me['display_name'] ?? null,
+        'bio' => $me['bio'] ?? null,
+        'avatar_url' => $me['avatar_url'] ?? null,
+    ]);
+    if ($ident['ok'] && (trim((string) ($_POST['home_city'] ?? '')) !== ''
+                         || (string) ($_POST['travel_style'] ?? '') !== '')) {
+        rmt_profile_ensure($uid);
+        db()->prepare('UPDATE profiles SET home_city = ?, home_destination_id = ?, travel_style = ?
+                        WHERE user_id = ?')
+            ->execute([$ident['data']['home_city'], $ident['data']['home_destination_id'] ?? null,
+                       $ident['data']['travel_style'] ?? null, $uid]);
+    }
+
     $wants = array_slice(array_unique(array_map('intval', (array)($_POST['want'] ?? []))), 0, 12);
     $now = date('Y-m-d H:i:s');
     foreach ($wants as $did) {
@@ -3743,6 +3766,9 @@ function settings_save(array $a): void {
              ['title'=>'Edit your profile — RuinMyTrip']); return;
     }
     $d = $v['data'];
+    // A member whose profile row never existed would otherwise save into nothing and be told it
+    // worked. Six such accounts exist on the live database.
+    rmt_profile_ensure((int) $me['id']);
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
                                        home_destination_id=?, travel_style=? WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
