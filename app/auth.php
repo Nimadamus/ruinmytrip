@@ -31,6 +31,17 @@ function require_login(): void {
         // %2Fcomment, and GET /comment is a 404). Those forms already carry their own `return`
         // field pointing at that real page for their own post-success redirect; prefer it here.
         $return = (string) (input('return') ?: ($_SERVER['REQUEST_URI'] ?? '/'));
+        // Which door. Every protected route sent everybody to "Welcome back / Sign in to your
+        // RuinMyTrip account", including a stranger who had just typed the thing that ruined their
+        // trip into the box on the homepage: their sentence vanished and they were asked to sign
+        // in to an account they have never had. That is the wrong door for the only visitors this
+        // site is short of. A route somebody reaches by trying to CONTRIBUTE opens on Join, which
+        // carries the same return target and links Sign in for the members who do have an account;
+        // a notification link or a bookmark still opens on Sign in, because that is a member.
+        if (rmt_return_is_join_intent($return)) {
+            flash('Make an account and we will take you straight back.');
+            redirect('/register?return=' . urlencode($return));
+        }
         flash('Please sign in to continue.');
         redirect('/login?return=' . urlencode($return));
     }
@@ -204,6 +215,22 @@ function can_host_meetups(?array $u): bool {
  * Returns null when the destination is not one of the paths that carries an obvious intent, in
  * which case the page keeps its general pitch.
  */
+/**
+ * Is this somewhere a person goes to GIVE the site something, rather than to read their own mail?
+ *
+ * The list is deliberately the contribution routes only. Getting it wrong in the generous direction
+ * costs a member one extra click through "Already have an account? Sign in"; getting it wrong in
+ * the other direction costs the site the signup entirely, which is the whole reason this exists.
+ */
+function rmt_return_is_join_intent(string $return): bool {
+    $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
+    if ($path === '') return false;
+    $exact = ['/review/new', '/trip/new', '/going', '/contribute', '/matches', '/talk', '/meetups'];
+    if (in_array($path, $exact, true)) return true;
+    return (bool) preg_match('#^/d/[a-z0-9\-]+/(travelers|going)$#', $path)
+        || str_starts_with($path, '/meetup/');
+}
+
 function rmt_join_intent_line(string $return): ?string {
     if ($return === '') return null;
     $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
@@ -217,5 +244,14 @@ function rmt_join_intent_line(string $return): ?string {
         return 'Join to RSVP. Meetups are public, 18+, and you can leave any time.';
     }
     if ($path === '/talk')     return 'Join and ask the travelers who have actually been.';
+    if ($path === '/review/new' || $path === '/contribute') {
+        parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
+        $line = trim((string) ($q['ruined'] ?? ''));
+        if ($line !== '') {
+            return 'Your line is saved: "' . mb_strimwidth($line, 0, 140, '...')
+                 . '" Make an account and it becomes your first review.';
+        }
+        return 'Join and your review is published under your name, next to the people who were there.';
+    }
     return null;
 }
