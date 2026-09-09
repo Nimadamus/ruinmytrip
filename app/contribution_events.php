@@ -39,11 +39,22 @@ const RMT_CONTRIB_EVENTS = [
     'review_draft_restored',       // saved text was put back into an empty form
     'review_photo_added',
     'place_suggested',             // a place we do not have was suggested
+    /* The signup funnel. The review funnel has been measured since it was built and the JOIN
+       funnel never was, which is the wrong way round for a site whose stated problem is that it
+       has no members: every change to the front door was an opinion with nothing behind it. */
+    'join_view',                   // the join form was rendered
+    'join_submit',                 // create account was pressed
+    'join_failure',                // ...and refused, with a reason
+    'join_created',                // an account now exists
+    'join_confirmed',              // the email address was confirmed
+    'join_first_action',           // dates, a room, a follow or a first post, in the first session
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
 const RMT_CONTRIB_SOURCES = [
     'place', 'destination', 'browse', 'contribute', 'profile', 'search', 'home', 'review', 'feed',
+    // The surfaces a signup can come from, so "which page recruits" is a question with an answer.
+    'travelers', 'going', 'meetups', 'talk', 'blog', 'matches', 'invite',
     'other',
 ];
 
@@ -221,4 +232,66 @@ function rmt_funnel_steps(int $days = 30): array {
     foreach ($steps as &$s) $s['count'] = (int) ($c[$s['key']] ?? 0);
     unset($s);
     return $steps;
+}
+
+/**
+ * Which surface sent somebody to the join form.
+ *
+ * Read from the return path the form already carries, because that is the page they were on when
+ * they decided an account was worth it. Anything unrecognised is 'other' rather than a guess: a
+ * source nobody can group by is worse than no source.
+ */
+function rmt_join_source(string $return): string {
+    $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
+    if ($path === '') return 'other';
+    if (preg_match('#^/d/[a-z0-9\-]+/travelers$#', $path)) return 'travelers';
+    if (preg_match('#^/d/[a-z0-9\-]+#', $path))            return 'destination';
+    if ($path === '/going')                                 return 'going';
+    if ($path === '/matches')                               return 'matches';
+    if ($path === '/meetups' || str_starts_with($path, '/meetup/')) return 'meetups';
+    if ($path === '/talk' || str_starts_with($path, '/post/'))      return 'talk';
+    if (str_starts_with($path, '/blog'))                    return 'blog';
+    if (str_starts_with($path, '/p/'))                      return 'place';
+    if (str_starts_with($path, '/review'))                  return 'review';
+    if ($path === '/invite')                                return 'invite';
+    if ($path === '/')                                      return 'home';
+    if ($path === '/travelers')                             return 'travelers';
+    return 'other';
+}
+
+/**
+ * The join funnel: how many saw the form, how many finished, how many confirmed, how many did
+ * anything at all afterwards, and which page each of them came from.
+ *
+ * Counted by journey like the rest of this table, so one person reloading the form twice is one
+ * person. Sources are only counted on the view, since that is the step that knows where they were.
+ *
+ * @return array{steps:array<string,int>, by_source:array<string,array{views:int,created:int}>}
+ */
+function rmt_signup_funnel(int $days = 30): array {
+    $since = rmt_funnel_since($days);
+    $steps = [];
+    foreach (['join_view', 'join_submit', 'join_created', 'join_confirmed', 'join_first_action', 'join_failure'] as $e) {
+        $steps[$e] = 0;
+    }
+    foreach (q_all("SELECT event, COUNT(DISTINCT COALESCE(journey, CAST(id AS TEXT))) c
+                      FROM contribution_events
+                     WHERE created_at >= ? AND event LIKE 'join_%' GROUP BY event", [$since]) as $r) {
+        $steps[(string) $r['event']] = (int) $r['c'];
+    }
+
+    $by = [];
+    foreach (q_all("SELECT COALESCE(source,'other') s, event,
+                           COUNT(DISTINCT COALESCE(journey, CAST(id AS TEXT))) c
+                      FROM contribution_events
+                     WHERE created_at >= ? AND event IN ('join_view','join_created')
+                  GROUP BY COALESCE(source,'other'), event", [$since]) as $r) {
+        $src = (string) $r['s'];
+        $by[$src] ??= ['views' => 0, 'created' => 0];
+        $by[$src][$r['event'] === 'join_created' ? 'created' : 'views'] = (int) $r['c'];
+    }
+    // Busiest first, and deterministic when two pages tie: the one that actually converted leads,
+    // so a tie in a quiet week is not reported in whatever order the database happened to group.
+    uasort($by, static fn(array $x, array $y) => [$y['views'], $y['created']] <=> [$x['views'], $x['created']]);
+    return ['steps' => $steps, 'by_source' => $by];
 }

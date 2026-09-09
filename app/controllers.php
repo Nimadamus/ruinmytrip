@@ -1983,6 +1983,9 @@ function welcome_submit(array $a): void {
         flash('Profile started. Here is who else will be there.');
         redirect('/matches');
     }
+    if ($wants || $joined || $followed || $said || $datesHeld || trim((string) ($_POST['date_from'] ?? '')) !== '') {
+        rmt_track('join_first_action');
+    }
     if ($said || $joined || $followed) {
         flash($joined ? 'You are in. This is what people are saying.' : 'Posted. This is what people are saying.');
         redirect('/talk');
@@ -3420,18 +3423,25 @@ function login_submit(array $a): void {
  */
 function register_form(array $a): void {
     if (is_logged_in()) redirect('/feed');
-    view('auth/register', ['errors' => [], 'return' => rmt_safe_return_path((string) input('return'))],
+    $return = rmt_safe_return_path((string) input('return'));
+    // Which page talked them into it. Recorded here rather than on submit, because the drop
+    // between seeing this form and finishing it is the number worth watching.
+    rmt_track('join_view', ['source' => rmt_join_source($return)]);
+    view('auth/register', ['errors' => [], 'return' => $return],
          ['title' => 'Join RuinMyTrip']);
 }
 function register_submit(array $a): void {
     csrf_check();
     $return = rmt_safe_return_path((string) input('return'));
     if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
+        rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'rate_limit']);
         view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.'], 'return'=>$return],
              ['title'=>'Join RuinMyTrip']); return;
     }
+    rmt_track('join_submit', ['source' => rmt_join_source($return)]);
     $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
     if ($r['ok']) {
+        rmt_track('join_created', ['source' => rmt_join_source($return)]);
         $mailed = (bool) ($r['mail_ok'] ?? false);
         // Somebody who came here to write a review goes back to writing it. Publishing still needs
         // a confirmed email, and the flash says so rather than the redirect silently deciding it:
@@ -3451,6 +3461,7 @@ function register_submit(array $a): void {
         flash($heading);
         redirect('/verify-email');
     }
+    rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'validation']);
     view('auth/register', ['errors'=>$r['errors'], 'return'=>$return], ['title'=>'Join RuinMyTrip']);
 }
 function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
@@ -3506,6 +3517,7 @@ function verify_email_confirm(array $a): void {
     db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
         ->execute([date('Y-m-d H:i:s'), (int)$row['user_id']]);
     rmt_token_consume((int)$row['id']);
+    rmt_track('join_confirmed');
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$row['user_id'];
     /* Whatever they wrote before the email arrived goes live now, in the same request. Making
@@ -4010,7 +4022,10 @@ function admin_funnel(array $a): void {
         'bySource'  => rmt_funnel_by_source($days),
         'failures'  => rmt_funnel_failures($days),
         'counts'    => rmt_funnel_counts($days),
-    ], ['title' => 'Contribution funnel — RuinMyTrip admin']);
+        // The join funnel sits above the contribution one now, because a site with no members has
+        // no contributions to measure and the order of the page should say which problem is first.
+        'signup'    => rmt_signup_funnel($days),
+    ], ['title' => 'Signup and contribution funnels — RuinMyTrip admin']);
 }
 
 /**

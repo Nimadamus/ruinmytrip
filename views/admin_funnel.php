@@ -1,7 +1,7 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
-  <h1 style="margin:.2rem 0 .4rem">Contribution funnel</h1>
+  <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
   <p class="hint" style="margin:0 0 6px">
     Attempts, not people. This table holds no user id, no address and no review text &mdash; the
     questions it answers do not need any of them. An attempt is one journey through the flow, so
@@ -12,6 +12,68 @@
       <a href="<?= e(url('admin/funnel') . '?days=' . $d) ?>"<?= $d === $days ? ' style="font-weight:700"' : '' ?>><?= e($lbl) ?></a>
     <?php endforeach; ?>
   </p>
+
+  <?php
+  /* The join funnel, first, because the site's problem is members rather than throughput. Each row
+     is attempts, counted by journey, so one person reloading the form is one person. */
+  $sv = $signup['steps'];
+  $joinRows = [
+      ['Saw the join form', (int) $sv['join_view']],
+      ['Pressed create account', (int) $sv['join_submit']],
+      ['Account created', (int) $sv['join_created']],
+      ['Email confirmed', (int) $sv['join_confirmed']],
+      ['Did something in the first session', (int) $sv['join_first_action']],
+  ];
+  $joinTop = max(1, $joinRows[0][1]);
+  ?>
+  <h2 style="margin:6px 0 10px">Joining</h2>
+  <?php if (!array_sum(array_column($joinRows, 1))): ?>
+    <p class="muted" style="margin:0 0 20px">Nobody has reached the join form in this window.</p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 10px">
+      <tbody>
+      <?php foreach ($joinRows as $i => [$label, $n]): $pct = (int) round($n * 100 / $joinTop); ?>
+        <tr>
+          <td style="width:16rem"><?= e($label) ?></td>
+          <td style="width:5rem;text-align:right"><b><?= $n ?></b></td>
+          <td>
+            <div style="background:#eef2f6;height:12px;border-radius:6px;overflow:hidden">
+              <div style="background:#0f766e;height:12px;width:<?= $pct ?>%"></div>
+            </div>
+          </td>
+          <td style="width:9rem;text-align:right" class="hint">
+            <?php $prev = $i > 0 ? $joinRows[$i - 1][1] : 0; ?>
+            <?php if ($i > 0 && $prev > 0): ?><?= (int) round($n * 100 / $prev) ?>% of the step above<?php endif; ?>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+    <?php if ((int) $sv['join_failure'] > 0): ?>
+      <p class="hint" style="margin:0 0 14px"><?= (int) $sv['join_failure'] ?> refused: a validation error or the
+        per connection rate limit. A number that climbs here is a form problem, not a demand problem.</p>
+    <?php endif; ?>
+  <?php endif; ?>
+
+  <?php if (!empty($signup['by_source'])): ?>
+    <h3 style="margin:16px 0 8px">Which page recruits</h3>
+    <table class="table" style="margin:0 0 26px">
+      <thead><tr><th>Page they came from</th><th style="text-align:right">Saw the form</th>
+        <th style="text-align:right">Joined</th><th style="text-align:right">Rate</th></tr></thead>
+      <tbody>
+      <?php foreach ($signup['by_source'] as $src => $row): ?>
+        <tr>
+          <td><?= e($src) ?></td>
+          <td style="text-align:right"><?= (int) $row['views'] ?></td>
+          <td style="text-align:right"><b><?= (int) $row['created'] ?></b></td>
+          <td style="text-align:right" class="hint"><?= $row['views'] > 0 ? (int) round($row['created'] * 100 / $row['views']) . '%' : '' ?></td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
+  <h2 style="margin:22px 0 10px">Contributing</h2>
 
   <?php
   /* The scoreboard. Whether this is a review site yet is one number, and it is the first thing on
