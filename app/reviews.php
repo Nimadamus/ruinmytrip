@@ -197,3 +197,37 @@ function rmt_reviews_ruined_count(?int $destId = null): int {
     if ($destId) { $where .= ' AND r.destination_id = ?'; $args[] = $destId; }
     return (int) (q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id WHERE $where", $args)['c'] ?? 0);
 }
+
+/**
+ * Publish the reviews that were only drafts because an address was unconfirmed.
+ *
+ * Somebody who signs up and writes their first review in the same five minutes presses Publish, is
+ * told the review is saved and the address needs confirming, and confirms it a minute later. Until
+ * now that was the end of it: the review stayed a draft behind /reviews?mine=1, a page they had no
+ * reason to open, and the site quietly kept the one contribution it had asked them for. They
+ * already pressed Publish. The address was the only thing outstanding, and it is settled.
+ *
+ * Deliberate drafts are untouched: only rows the publish path itself marked held_for_verification
+ * are released, and the flag is cleared as they go so this can never fire twice on the same row.
+ *
+ * @return int how many went live, for the sentence the caller shows.
+ */
+function rmt_reviews_release_held(int $userId): int {
+    if ($userId <= 0) return 0;
+    $rows = q_all("SELECT id, slug FROM reviews
+                    WHERE user_id = ? AND status = 'draft' AND held_for_verification = 1", [$userId]);
+    if (!$rows) return 0;
+    $now = date('Y-m-d H:i:s');
+    $up = db()->prepare("UPDATE reviews SET status = 'published', held_for_verification = 0, updated_at = ?
+                          WHERE id = ? AND status = 'draft' AND held_for_verification = 1");
+    $n = 0;
+    foreach ($rows as $r) {
+        $up->execute([$now, (int) $r['id']]);
+        if ($up->rowCount() < 1) continue;
+        $n++;
+        // Same two things a normal publish does, in the same order.
+        if (function_exists('rmt_seo_announce')) rmt_seo_announce('/review/' . (int) $r['id'] . '/' . $r['slug']);
+    }
+    if ($n && function_exists('rmt_award_badges')) rmt_award_badges($userId);
+    return $n;
+}

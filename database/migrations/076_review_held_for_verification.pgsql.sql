@@ -1,0 +1,11 @@
+-- Which drafts are only drafts because an email had not been confirmed yet.
+--
+-- Publishing needs a confirmed address. A first review written minutes after signing up is
+-- therefore saved as a draft rather than thrown away, which was the right fix -- but nothing ever
+-- released it. The member confirmed the address, landed on /welcome, and their review stayed a
+-- draft behind a link they had no reason to revisit. They had already pressed Publish; the only
+-- thing standing in the way was the address, and that is now settled.
+--
+-- A deliberate draft ("action=draft") must never be published by this, hence a flag rather than
+-- inferring intent from status and a timestamp.
+ALTER TABLE reviews ADD COLUMN held_for_verification SMALLINT NOT NULL DEFAULT 0;

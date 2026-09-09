@@ -2741,11 +2741,14 @@ function review_create(array $a): void {
         ?? rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)$me['id']);
     $id = (int) q_run("INSERT INTO reviews
         (user_id,destination_id,place_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
-         visited_on,safety_rating,value_rating,traveler_type,verified,status,created_at,updated_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)",
+         visited_on,safety_rating,value_rating,traveler_type,verified,status,held_for_verification,created_at,updated_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?)",
         [(int)$me['id'], $d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'],
          $d['title'], $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'],
-         $d['safety_rating'], $d['value_rating'], $travelerType, $status, $now, $now]);
+         $d['safety_rating'], $d['value_rating'], $travelerType, $status,
+         // Marked here so confirming the address can finish the job they already asked for. A
+         // deliberate draft is not marked and is never published by anything but its author.
+         $holdForVerification ? 1 : 0, $now, $now]);
 
     // Written after the insert because they need the review id. rmt_review_save_aspects() also
     // re-derives safety_rating and value_rating from the aspect rows, so the two legacy columns end
@@ -2775,7 +2778,7 @@ function review_create(array $a): void {
 
     $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Your review is live.';
     if ($holdForVerification) {
-        $msg = 'Saved as a draft — nothing was lost. Confirm your email address and you can publish it.';
+        $msg = 'Saved as a draft — nothing was lost. Confirm your email address and it publishes itself.';
     }
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
@@ -2928,10 +2931,10 @@ function review_edit_submit(array $a): void {
     $placeId = rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)current_user()['id']);
     db()->prepare("UPDATE reviews SET destination_id=?, place_id=?, subject_type=?, subject_name=?, rating=?, title=?,
                    body=?, what_great=?, what_ruined=?, visited_on=?, safety_rating=?, value_rating=?,
-                   traveler_type=?, status=?, slug=?, updated_at=? WHERE id=?")
+                   traveler_type=?, status=?, slug=?, held_for_verification=?, updated_at=? WHERE id=?")
         ->execute([$d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'], $d['title'],
                    $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'], $d['safety_rating'],
-                   $d['value_rating'], $travelerType, $status, $slug, date('Y-m-d H:i:s'), (int)$r['id']]);
+                   $d['value_rating'], $travelerType, $status, $slug, $holdForVerification ? 1 : 0, date('Y-m-d H:i:s'), (int)$r['id']]);
 
     // Inserts new ratings, updates changed ones and deletes the ones the author cleared. Aspects
     // belonging to a category this review is no longer filed under are left alone rather than
@@ -3658,6 +3661,7 @@ function verify_email_confirm(array $a): void {
        somebody retype their travel dates as the price of confirming an address is how a new
        member's first five minutes end. */
     $applied = rmt_pending_apply((array) current_user());
+    $released = rmt_reviews_release_held((int) $row['user_id']);
     if ($applied['going'] && $applied['hello']) {
         flash('Email confirmed. Your dates and your first post are live.');
         redirect('/matches');
@@ -3669,6 +3673,11 @@ function verify_email_confirm(array $a): void {
     if ($applied['hello']) {
         flash('Email confirmed. Your first post is live.');
         redirect('/talk');
+    }
+    if ($released) {
+        flash($released === 1 ? 'Email confirmed. Your review is live.'
+                              : 'Email confirmed. Your ' . $released . ' reviews are live.');
+        redirect('/reviews?mine=1');
     }
     flash('Email confirmed. Welcome to RuinMyTrip.');
     redirect('/welcome');
