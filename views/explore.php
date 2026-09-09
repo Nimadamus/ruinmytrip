@@ -55,7 +55,11 @@
             · <?= (int)$d['trips'] ?> <?= (int)$d['trips'] === 1 ? 'trip' : 'trips' ?>
             <?php if ((int)$d['wants'] > 0): ?> · ★ <?= (int)$d['wants'] ?> want to visit<?php endif; ?>
           </div>
-        </div></a></article>
+        </div></a>
+        <?php /* A card that only opens the guidebook page hides the half of the site that is
+                 people. One line, outside the card's own link, so both doors are reachable. */ ?>
+        <p style="margin:0;padding:0 16px 14px"><a class="hint" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Travelers in <?= e($d['name']) ?> &rarr;</a></p>
+      </article>
     <?php endforeach; ?>
   </div>
 </div>

@@ -22,6 +22,11 @@
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
         include __DIR__ . '/_share.php'; ?>
 
+  <?php if (!empty($t['dest_slug'])): ?>
+    <?php $destSlug = (string) $t['dest_slug']; $destName = (string) $t['dest_name'];
+          include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
   <?php
     $targetType = 'trip'; $targetId = (int)$t['id']; $ownerId = (int)$t['user_id'];
     $returnUrl = url('trip/'.$t['id'].'/'.$t['slug']);
