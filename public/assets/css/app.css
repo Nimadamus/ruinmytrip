@@ -310,3 +310,38 @@ a.chip:hover{border-color:var(--ink)}
    context but a label is still required for anyone not looking at the context. */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------------------------------------------------------------- mobile app bar
+   A fixed bottom bar on phones only. The header nav stays exactly as it is on desktop, so this
+   adds a thumb-reachable path without taking anything away. Safe-area padding because a bar
+   pinned to the bottom of an iPhone sits under the home indicator otherwise. */
+.tabbar{display:none}
+.tabbar-post{}
+@media (max-width:860px){
+  .tabbar{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:60;
+    background:rgba(255,255,255,.97);backdrop-filter:saturate(1.4) blur(8px);
+    border-top:1px solid var(--line);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+    justify-content:space-around;align-items:center;
+  }
+  .tabbar a{
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    color:var(--ink-2);font-size:1.15rem;text-decoration:none;
+    /* 44px is the smallest target a thumb hits reliably. */
+    min-width:56px;min-height:44px;justify-content:center;position:relative;
+  }
+  .tabbar a.on{color:var(--brand)}
+  .tabbar-l{font-size:.66rem;font-weight:600;letter-spacing:.01em}
+  .tabbar .tabbar-post{
+    background:var(--brand);color:#fff;border-radius:50%;
+    width:46px;height:46px;min-width:46px;font-size:1.5rem;line-height:1;
+    box-shadow:0 4px 14px rgba(13,148,136,.35);margin-top:-14px;
+  }
+  .tabbar-dot{
+    position:absolute;top:6px;right:12px;width:8px;height:8px;border-radius:50%;
+    background:#b42318;
+  }
+  /* Nothing at the end of a page should hide behind the bar. */
+  body{padding-bottom:64px}
+}

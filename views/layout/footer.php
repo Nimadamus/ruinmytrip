@@ -53,6 +53,32 @@
     © <?= date('Y') ?> RuinMyTrip · Travel boldly, travel safe · <a href="<?= e(url('safety')) ?>">Safety first</a>
   </div>
 </footer>
+<?php /* The app bar. Most of this site's readers arrive on a phone, where the whole navigation was
+         behind a hamburger: five taps to reach the thing they came for. These are the five places
+         worth a permanent thumb-reach target, and the middle one is the only thing we actually want
+         people to do. Server rendered like everything else, so it costs nothing in speed or SEO. */ ?>
+<?php $rmt_me = current_user(); $rmt_path = parse_url(rmt_current_url(), PHP_URL_PATH) ?: '/'; ?>
+<nav class="tabbar" aria-label="Primary mobile">
+  <a href="<?= e(url()) ?>" class="<?= $rmt_path === '/' ? 'on' : '' ?>" aria-label="Home">
+    <span aria-hidden="true">&#8962;</span><span class="tabbar-l">Home</span></a>
+  <a href="<?= e(url('travelers')) ?>" class="<?= str_starts_with($rmt_path, '/travelers') || str_starts_with($rmt_path, '/explore') ? 'on' : '' ?>" aria-label="Travelers">
+    <span aria-hidden="true">&#9906;</span><span class="tabbar-l">Travelers</span></a>
+  <?php /* One tap to the thing the site is for: say where you are going. */ ?>
+  <a class="tabbar-post" href="<?= e($rmt_me ? url('going') : url('register?return=' . rawurlencode('/going'))) ?>" aria-label="Post your dates">
+    <span aria-hidden="true">+</span></a>
+  <a href="<?= e(url('talk')) ?>" class="<?= str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/') ? 'on' : '' ?>" aria-label="Talk">
+    <span aria-hidden="true">&#9993;</span><span class="tabbar-l">Talk</span></a>
+  <?php if ($rmt_me): ?>
+    <a href="<?= e(url('notifications')) ?>" class="<?= str_starts_with($rmt_path, '/notifications') ? 'on' : '' ?>" aria-label="Notifications">
+      <span aria-hidden="true">&#9788;</span><span class="tabbar-l">Alerts</span>
+      <?php $rmt_n = rmt_unread_notification_count((int) $rmt_me['id']); if ($rmt_n): ?>
+        <span class="tabbar-dot" aria-hidden="true"></span>
+      <?php endif; ?></a>
+  <?php else: ?>
+    <a href="<?= e(url('register')) ?>" aria-label="Join"><span aria-hidden="true">&#9734;</span><span class="tabbar-l">Join</span></a>
+  <?php endif; ?>
+</nav>
+
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/contribute-track.js')) ?>" defer></script>
