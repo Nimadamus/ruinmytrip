@@ -85,9 +85,14 @@ function rmt_city_traveler_hub(int $destId, ?array $viewer): array {
     $going   = rmt_city_going($destId, $viewer);
     $talk    = function_exists('rmt_posts_recent') ? rmt_posts_recent(8, $destId) : [];
     $people  = rmt_city_travelers($destId);
+    /* The people who are there all the time. A traveler asking where to actually eat wants one of
+       these more than they want another tourist, and until now the site had no way to say who they
+       were even though the answer was sitting in profiles as free text. */
+    $locals  = function_exists('rmt_city_locals') ? rmt_city_locals($destId) : [];
     return [
         'meetups' => $meetups, 'going' => $going, 'talk' => $talk, 'people' => $people,
+        'locals' => $locals,
         // "Is anybody here" answered as one number, because that is the question the page is for.
-        'active'  => count($meetups) + count($going) + count($talk) + count($people),
+        'active'  => count($meetups) + count($going) + count($talk) + count($people) + count($locals),
     ];
 }

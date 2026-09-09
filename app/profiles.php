@@ -325,10 +325,15 @@ function rmt_profile_validate(array $in): array {
         if (mb_strlen($avatar) > 500) $errors[] = 'That photo URL is too long.';
     }
 
+    /* The member's own words are kept exactly as typed, including for the many people who live
+       somewhere this site has no page for. The resolved id is the machine-readable half, and it is
+       what the city pages read to answer "who lives here". */
     return ['ok' => !$errors, 'errors' => $errors, 'data' => [
         'display_name' => $display ?: null,
         'bio'          => $bio ?: null,
         'home_city'    => $home ?: null,
         'avatar_url'   => $avatar ?: null,
+        'home_destination_id' => function_exists('rmt_resolve_home_destination')
+            ? rmt_resolve_home_destination($home) : null,
     ]];
 }

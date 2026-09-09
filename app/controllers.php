@@ -671,8 +671,9 @@ function profile_edit_submit(array $a): void {
         if (!empty($old['avatar_key'])) rmt_storage_delete((string)$old['avatar_key']);
     }
 
-    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=? WHERE user_id=?')
-        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'], (int)$me['id']]);
+    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?, home_destination_id=? WHERE user_id=?')
+        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
+                   $d['home_destination_id'] ?? null, (int)$me['id']]);
     flash('Profile updated.');
     redirect('/u/'.$me['username']);
 }
@@ -3636,8 +3637,9 @@ function settings_save(array $a): void {
              ['title'=>'Edit your profile — RuinMyTrip']); return;
     }
     $d = $v['data'];
-    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=? WHERE user_id=?')
-        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'], (int)$me['id']]);
+    db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?, home_destination_id=? WHERE user_id=?')
+        ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
+                   $d['home_destination_id'] ?? null, (int)$me['id']]);
     flash('Profile updated.'); redirect('/u/'.$me['username']);
 }
 

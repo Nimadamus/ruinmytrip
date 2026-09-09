@@ -63,6 +63,27 @@ $here = '/d/' . $d['slug'] . '/travelers';
       <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and post yours.<?php endif; ?></p>
   <?php endif; ?>
 
+  <h2 style="margin-top:28px">Locals</h2>
+  <?php if (!empty($hub['locals'])): ?>
+    <div class="tag-list">
+      <?php foreach ($hub['locals'] as $l): ?>
+        <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
+           href="<?= e(url('u/'.$l['username'])) ?>">
+          <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($l['avatar_url'])) ?>" alt="">
+          @<?= e($l['username']) ?>
+          <?php if ($l['reviews']): ?><span class="hint"><?= $l['reviews'] ?> <?= $l['reviews'] === 1 ? 'review' : 'reviews' ?></span><?php endif; ?>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <p class="hint" style="margin:.6rem 0 0">People who live in <?= e($city) ?>. Ask them what a
+      visitor gets wrong.</p>
+  <?php else: ?>
+    <p class="muted">No members live in <?= e($city) ?> yet.
+      <?php if ($me): ?>Live here? <a href="<?= e(url('u/'.$me['username'].'/edit')) ?>">Put it on your profile</a>
+        and travelers heading over will find you.
+      <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and put it on your profile if you live here.<?php endif; ?></p>
+  <?php endif; ?>
+
   <h2 style="margin-top:28px">Meetups</h2>
   <?php if ($hub['meetups']): ?>
     <ul class="list-plain">

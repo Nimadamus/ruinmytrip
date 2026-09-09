@@ -41,7 +41,8 @@
     <input type="text" id="home_city" name="home_city" maxlength="80"
            value="<?= e($p['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
-      City-level only. Never a precise address.
+      City-level only. Never a precise address. If it is a city we have a page for, you will be
+      listed as a local there, where travelers heading over can find you.
     </p>
 
     <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
