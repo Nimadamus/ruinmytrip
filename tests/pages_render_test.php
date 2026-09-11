@@ -367,6 +367,23 @@ if ($acct) {
             stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
         ok('and a stranger still cannot open it', !str_contains((string) $anonMember, $openMarker));
 
+        /* A place page is public and now carries other people's plans, which makes it the newest
+           surface where a private trip could surface. The plan on the hidden trip is attached to a
+           real place; that place's page must show the place and not the plan. */
+        $anyPlace = $pdo->query("SELECT id, slug FROM places WHERE status = 'active' LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+        if ($anyPlace) {
+            $pdo->prepare('UPDATE trip_activities SET place_id = ? WHERE trip_id = ?')
+                ->execute([(int) $anyPlace['id'], $hiddenTrip]);
+            [$stP, $bodyP] = $req('/p/' . $anyPlace['slug'], null, $cookie);
+            ok('a place page opens', $stP === 200, "status $stP");
+            ok('and a plan on a private trip is not on it', !str_contains($bodyP, $openMarker));
+
+            $anonPlace = @file_get_contents($base . '/p/' . $anyPlace['slug'], false,
+                stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+            ok('nor on it for a stranger', !str_contains((string) $anonPlace, $openMarker));
+            $pdo->prepare('UPDATE trip_activities SET place_id = NULL WHERE trip_id = ?')->execute([$hiddenTrip]);
+        }
+
         $pdo->prepare('DELETE FROM trip_members WHERE trip_id = ?')->execute([$hiddenTrip]);
         [$stG] = $req('/trip/' . $hiddenTrip, null, $cookie);
         ok('and once they are off it, it is shut to them again', $stG === 404, "status $stG");
