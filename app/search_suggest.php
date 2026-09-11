@@ -782,7 +782,15 @@ function rmt_places_by_kind_words(string $q, int $ctxId = 0, int $limit = 10): a
               JOIN destinations dd ON dd.id = p.destination_id
              WHERE p.status = 'active' AND (" . implode(' OR ', $where) . ')';
     if ($destId > 0) { $sql .= ' AND p.destination_id = ?'; $args[] = $destId; }
-    $sql .= ' ORDER BY p.name LIMIT ' . max(1, min(50, $limit));
+    /* Not alphabetical. Ordering a category listing by name answers "parks in Amsterdam" with
+       Amstelpark every time, which is a fact about the alphabet rather than about the city. The
+       places we hold most about come first instead: an address, a website and opening hours are
+       what make a place page worth opening, and all three are counts of real fields rather than
+       any kind of popularity. */
+    $sql .= " ORDER BY (CASE WHEN COALESCE(p.street_address,'') <> '' THEN 1 ELSE 0 END
+                      + CASE WHEN COALESCE(p.website_url,'') <> '' THEN 1 ELSE 0 END
+                      + CASE WHEN EXISTS (SELECT 1 FROM place_hours h WHERE h.place_id = p.id) THEN 1 ELSE 0 END) DESC,
+                      p.name LIMIT " . max(1, min(50, $limit));
     return q_all($sql, $args);
 }
 

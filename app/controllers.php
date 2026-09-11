@@ -2794,8 +2794,15 @@ function search(array $a): void {
            folding, run once here rather than reinvented. */
         if (count($places) < 10) {
             $have = array_flip(array_map(static fn(array $r) => (int) $r['id'], $places));
-            foreach ([rmt_places_by_kind_words($qs, $ctxId, 10),
-                      rmt_places_by_name_norm($qs, $ctxId, 10)] as $more) {
+            /* Name before kind, and the order is the whole point.
+               "Park Guell" and "Time Out Market" both contain a word that is also a category, so
+               the category pass ran first and filled all ten slots with every park and every
+               market in alphabetical order. Amstelpark led a search for Park Guell, which never
+               appeared at all. Somebody typing a name means the place; somebody typing "parks"
+               means the category; the name pass is the more certain of the two and now goes
+               first. */
+            foreach ([rmt_places_by_name_norm($qs, $ctxId, 10),
+                      rmt_places_by_kind_words($qs, $ctxId, 10)] as $more) {
                 foreach ($more as $row) {
                     if (isset($have[(int) $row['id']])) continue;
                     $have[(int) $row['id']] = true;

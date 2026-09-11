@@ -333,5 +333,23 @@ check('and a word nothing is called finds nothing', rmt_places_by_name_norm('zzz
 /* A LIKE wildcard somebody typed is a character they typed, not a wildcard. */
 check('a percent sign is not a wildcard', rmt_places_by_name_norm('%', 0, 5), []);
 
+echo "\n-- a name that contains a category word --\n";
+/* "Park Guell" and "Time Out Market" both contain a word that is also a category. The category
+   pass used to run first and fill every slot with parks and markets in alphabetical order, so a
+   search for Park Guell led with Amstelpark and never showed Park Guell at all. */
+$pdo->exec("INSERT INTO place_categories (id,slug,name,plural,bucket,status)
+            VALUES (3,'park','Park','Parks','attraction','active')");
+$pdo->exec("INSERT INTO places (id,destination_id,slug,name,name_key,type,status,category_id,name_norm)
+            VALUES (910,2,'amstelpark','Amstelpark','amstelpark','attraction','active',3,'amstelpark'),
+                   (911,2,'park-guell','Park Guell','park guell','attraction','active',3,'park guell')");
+$names = static fn(array $rows): array => array_map(static fn(array $r) => (string) $r['name'], $rows);
+check('the name pass finds the place itself', $names(rmt_places_by_name_norm('Park Guell', 0, 5)), ['Park Guell']);
+$kind = $names(rmt_places_by_kind_words('parks', 0, 5));
+check('and the category pass still answers the category', in_array('Amstelpark', $kind, true), true);
+/* The controller runs the name pass first for exactly this reason; what is pinned here is that
+   the two passes really do return different things, so the order between them decides the answer. */
+check('the two passes disagree, which is why their order matters',
+      $names(rmt_places_by_name_norm('Park Guell', 0, 5)) !== $kind, true);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
