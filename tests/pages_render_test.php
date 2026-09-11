@@ -201,6 +201,13 @@ if ($acct) {
             ok("a private trip stays out of $path", !str_contains($body, $marker),
                'the canary was in the page');
         }
+        /* Search is checked on the link rather than on the word, because the results page echoes
+           the query back in its title and in the box: looking for the marker there would fail for
+           a page that is behaving perfectly. What must not appear is a link to the trip. */
+        $canarySlug = 'canary-' . strtolower($marker);
+        [, $searchBody] = $req('/search?q=' . $marker, null, $cookie);
+        ok('a private trip is not a search result', !str_contains($searchBody, $canarySlug),
+           'the trip was linked from the results');
         // And logged out, where /discover is the public front door.
         $anon = @file_get_contents($base . '/discover', false,
             stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));

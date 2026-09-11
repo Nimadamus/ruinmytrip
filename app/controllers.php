@@ -2424,15 +2424,22 @@ function suggest_click(array $a): void {
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
     $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=$talk=[];
+    $me = current_user();
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
+        /* Trips are the one searchable type that carries a visibility, and this page did not read
+           it: a trip marked "only you" was findable by typing a word from it into the search box.
+           Third place this has been wrong, after the feed and the photo walls, which is why the
+           clause is a function and why the test plants a canary in all of them. */
+        [$tripVis, $tripVisArgs] = rmt_plan_visibility_sql('t', $me);
         if ($driver === 'pgsql') {
             $tsq = "plainto_tsquery('english', ?)";
             $dests = q_all("SELECT * FROM destinations WHERE search_vector @@ $tsq
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $trips = q_all("SELECT t.*,d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
-                            WHERE t.status='published' AND t.search_vector @@ $tsq
-                            ORDER BY ts_rank(t.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+                            WHERE t.status='published' AND $tripVis AND t.search_vector @@ $tsq
+                            ORDER BY ts_rank(t.search_vector, $tsq) DESC LIMIT 10",
+                           array_merge($tripVisArgs, [$qs, $qs]));
             $guides = q_all("SELECT * FROM guides WHERE status='published' AND search_vector @@ $tsq
                              ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $reviews = q_all("SELECT r.*,d.slug dest_slug,d.name dest_name FROM reviews r LEFT JOIN destinations d ON d.id=r.destination_id
@@ -2451,7 +2458,8 @@ function search(array $a): void {
                             WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
             $trips = q_all("SELECT t.*,dd.slug dest_slug FROM trips t JOIN trips_fts f ON f.rowid=t.id
                             LEFT JOIN destinations dd ON dd.id=t.destination_id
-                            WHERE trips_fts MATCH ? AND t.status='published' ORDER BY rank LIMIT 10", [$qs]);
+                            WHERE trips_fts MATCH ? AND t.status='published' AND $tripVis
+                            ORDER BY rank LIMIT 10", array_merge([$qs], $tripVisArgs));
             $guides = q_all("SELECT g.* FROM guides g JOIN guides_fts f ON f.rowid=g.id
                              WHERE guides_fts MATCH ? AND g.status='published' ORDER BY rank LIMIT 10", [$qs]);
             $reviews = q_all("SELECT r.*,dd.slug dest_slug,dd.name dest_name FROM reviews r JOIN reviews_fts f ON f.rowid=r.id
@@ -2470,10 +2478,15 @@ function search(array $a): void {
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
         // that, so this stays LIKE-based on purpose.
         $like = '%'.mb_strtolower($qs).'%';
+        /* Blocks apply here as they do everywhere else people are listed. Somebody who blocked you
+           should not be findable by typing their name, and neither should somebody you blocked. */
+        $blockSql = '1=1'; $blockArgs = [];
+        if ($me) { [$blockSql] = rmt_match_block_sql('u.id'); $blockArgs = [(int) $me['id'], (int) $me['id']]; }
         $people = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city FROM users u
                          LEFT JOIN profiles p ON p.user_id=u.id
                          WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
-                         LIMIT 10", [$like,$like]);
+                           AND $blockSql
+                         LIMIT 10", array_merge([$like, $like], $blockArgs));
         /* Talk is searched with LIKE rather than the full-text index the long-form types use. A
            post is a few sentences somebody typed in a hurry: stemming buys little on that length,
            and a missing FTS row would silently hide a whole content type from search. */
