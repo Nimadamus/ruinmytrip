@@ -24,6 +24,23 @@
     </nav>
   <?php endif; ?>
 
+  <?php /* The finer word: museums, parks, bars. Built from the categories this city actually holds,
+           so a chip never opens an empty list, and scrolling sideways rather than wrapping into a
+           block that pushes the places themselves off a phone screen. */ ?>
+  <?php $catCounts = $catCounts ?? []; $cat = $cat ?? ''; ?>
+  <?php if (count($catCounts) > 1): ?>
+    <nav class="plan-filters" aria-label="Filter by category" style="margin:0 0 10px">
+      <?php $rmt_base = 'd/'.$d['slug'].'/places'.($type !== '' ? '?type='.$type : ''); ?>
+      <?php $rmt_sep = $type !== '' ? '&' : '?'; ?>
+      <a class="chip<?= $cat === '' ? ' is-on' : '' ?>" href="<?= e(url($rmt_base)) ?>">All kinds</a>
+      <?php foreach ($catCounts as $c): ?>
+        <a class="chip<?= $cat === $c['slug'] ? ' is-on' : '' ?>"
+           href="<?= e(url($rmt_base . ($cat === $c['slug'] ? '' : $rmt_sep.'cat='.$c['slug']))) ?>">
+          <?= e((string) ($c['plural'] ?: $c['name'])) ?> <span class="hint"><?= (int) $c['n'] ?></span></a>
+      <?php endforeach; ?>
+    </nav>
+  <?php endif; ?>
+
   <?php /* Sorting is a way to read the same list. Every option is a plain link, so it works with
            no JavaScript and a crawler can follow it; all four canonicalise to the unsorted URL. */ ?>
   <?php if (count($places) > 1): ?>

@@ -337,11 +337,18 @@ const RMT_BROWSE_SORTS = [
  * @param string $type '' for all, otherwise one of RMT_PLACE_TYPES
  * @param string $sort a key of RMT_BROWSE_SORTS
  */
-function rmt_destination_browse(int $destId, string $type = '', string $sort = 'best'): array {
+function rmt_destination_browse(int $destId, string $type = '', string $sort = 'best',
+                               string $catSlug = ''): array {
     if (!isset(RMT_BROWSE_SORTS[$sort])) $sort = 'best';
     $args = [RMT_EDITORIAL_ROLE, $destId];
     $where = '';
     if (in_array($type, RMT_PLACE_TYPES, true)) { $where = ' AND p.type = ?'; $args[] = $type; }
+    /* The finer category, which is the word a person browsing actually thinks in: museums, parks,
+       bars. Resolved to an id here rather than joined, so the query stays the same shape. */
+    if ($catSlug !== '') {
+        $cat = q_one("SELECT id FROM place_categories WHERE slug = ? AND status = 'active'", [$catSlug]);
+        if ($cat) { $where .= ' AND p.category_id = ?'; $args[] = (int) $cat['id']; }
+    }
 
     $rows = q_all(
         "SELECT p.id, p.slug, p.name, p.type, p.category_id, p.neighborhood, p.price_level, p.created_at,
@@ -527,4 +534,24 @@ function rmt_destination_quality(int $limit = 300): array {
           ORDER BY places DESC, d.name
           LIMIT " . max(1, $limit),
         array_fill(0, 5, RMT_EDITORIAL_ROLE));
+}
+
+/**
+ * Which fine categories this city actually holds, and how many of each.
+ *
+ * Counted from the places that are here, so a chip only appears when there is something behind it.
+ * Offering "Museums" over an empty list is a small lie about how much this site knows about a city.
+ *
+ * @return list<array{slug:string,plural:string,bucket:string,n:int}>
+ */
+function rmt_place_category_counts(int $destId): array {
+    return q_all(
+        "SELECT c.slug, c.plural, c.name, c.bucket, COUNT(p.id) n
+           FROM places p
+           JOIN place_categories c ON c.id = p.category_id AND c.status = 'active'
+          WHERE p.destination_id = ? AND p.status = 'active'
+       GROUP BY c.slug, c.plural, c.name, c.bucket
+       ORDER BY n DESC, c.plural",
+        [$destId]
+    );
 }

@@ -485,10 +485,19 @@ function destination_places(array $a): void {
     if (!in_array($type, RMT_PLACE_TYPES, true)) $type = '';
     $sort = (string) ($_GET['sort'] ?? 'best');
     if (!isset(RMT_BROWSE_SORTS[$sort])) $sort = 'best';
-    $places = rmt_destination_browse($id, $type, $sort);
+    /* The finer category, which is how somebody browsing actually thinks: museums, parks, bars.
+       It narrows what the type filter already chose and never widens it. */
+    $cat = (string) ($_GET['cat'] ?? '');
+    $catCounts = rmt_place_category_counts($id);
+    $catKnown = [];
+    foreach ($catCounts as $c) $catKnown[(string) $c['slug']] = $c;
+    if (!isset($catKnown[$cat])) $cat = '';
+
+    $places = rmt_destination_browse($id, $type, $sort, $cat);
     $counts = rmt_place_type_counts($id);
     $total = array_sum($counts);
-    $label = $type === '' ? 'Places' : rmt_place_type_label($type, true);
+    $label = $cat !== '' ? (string) ($catKnown[$cat]['plural'] ?: $catKnown[$cat]['name'])
+                         : ($type === '' ? 'Places' : rmt_place_type_label($type, true));
     // Two batched lookups for the whole page, never one per card.
     $me = current_user();
     $ids = array_map(static fn(array $p) => (int) $p['id'], $places);
@@ -500,7 +509,9 @@ function destination_places(array $a): void {
     // it -- two URLs listing the same hotels in the same city is one page and one duplicate, and
     // the landing page is the one written for the query. Filters without a landing page (below the
     // threshold, or a sort) canonicalise to the unfiltered browse page.
-    $catSlug = $type !== '' ? rmt_category_slug($type) : null;
+    /* A fine category has no landing page of its own, so a filtered view points back at the page
+       that does. One set of museums under two URLs is one page and one duplicate. */
+    $catSlug = ($cat === '' && $type !== '') ? rmt_category_slug($type) : null;
     $hasLanding = $catSlug !== null
         && rmt_indexable('category', ['place_count' => (int) ($counts[$type] ?? 0)])['ok'];
     if ($hasLanding) {
@@ -512,7 +523,7 @@ function destination_places(array $a): void {
         // itself stays indexable; every permutation of it does not.
         $robots = ($type === '' && $sort === 'best') ? 'index, follow' : 'noindex,follow';
     }
-    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort'), [
+    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort','cat','catCounts'), [
         'canonical' => $canonical,
         'robots' => $robots,
         'title' => $label.' in '.$d['name'].' 2026: tickets, prices and reviews | RuinMyTrip',
