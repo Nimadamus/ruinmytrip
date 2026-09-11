@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (fifth pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (sixth pass).
 
 ## What the product is
 
@@ -38,7 +38,8 @@ pages made of members.
 `073` social indexes · `074` travel_style · `075` a profile row for everybody · `076` held reviews ·
 `077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key ·
 `080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
-meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips).
+meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
+the reads this product actually does.
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -114,6 +115,11 @@ a written reason. Seven visibility leaks were found and fixed on 9 and 10 Septem
 queue, and the traveler directory ignoring blocks. Every one was found by planting a canary and
 looking, never by reading the query. Add a query that forgets and the suite goes red.
 
+`tests/adversarial_test.php` is the third: it starts from the attacker's end and tries to get at
+what it should not have, so a regression reads as "somebody got in" rather than as an assertion
+changing. `tests/query_budget_test.php` holds eight pages to a query count. `tests/vocabulary_test.php`
+keeps one word per idea in the text a reader sees.
+
 `tests/pages_render_test.php` is the other half: it signs in and greps rendered pages for planted
 canaries. It currently guards a private trip, a private trip's photograph, a private plan, an open
 plan sitting on a private trip, and a meeting point (absent for somebody who only asked, present
@@ -121,9 +127,13 @@ once they are accepted). Backend rules are not the thing that leaks; pages are.
 
 ## The thing that is blocking most of what is left
 
-`places` is empty. The place layer, the map and half of "destination intelligence" are built,
-tested and have no data to stand on, because places are added by hand after checking and there is
-no way to do that at volume. It is the top item in BACKLOG.md.
+`places` is empty IN PRODUCTION. The pipeline that fills it is built, tested and proved against the
+live provider: `php scripts/import_places.php --city=lisbon-portugal --type=all`, or the button on
+`/admin/places`. It needs no key, no account and no payment, it is safe to run twice, and it
+imports no ratings or popularity, only facts. Until somebody runs it for the cities that already
+have trips on them, every place page, the map and half of city search stand on an empty table.
+
+That is P0 in BACKLOG.md and it is the single highest-value thing left.
 
 ## Waiting on Nima
 

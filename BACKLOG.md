@@ -1,7 +1,9 @@
 # RuinMyTrip backlog
 
-Ordered by how much each item moves growth, retention, interaction or shareability, not by how
-hard it is. Anything blocked on Nima is marked and stays visible rather than dropping off.
+Four bands, and the band is the decision: P0 means the product does not work properly without it,
+P1 is core product, P2 is growth, P3 is worth doing and not worth doing first. Anything blocked on
+Nima is marked and stays visible rather than dropping off. If a band grows past about five items it
+is not a band any more, it is a junk drawer with a label, and something has to be cut or demoted.
 Last reordered 2026-09-11.
 
 The product in one sentence, which everything here is measured against: *"I am going to Lisbon
@@ -11,42 +13,69 @@ actually want to meet?"*
 ## Blocked on Nima (nothing here can be done from a session)
 
 1. **Switch R2 on in the Cloudflare dashboard.** Creating a bucket answers `10042` until somebody
-   clicks it. Everything on this side is finished and tested: the driver signs SigV4 by hand against
-   AWS's published vector, `scripts/storage_migrate.php` moves objects in batches while the site is
-   up and verifies each by hash, `docs/STORAGE_R2.md` is the runbook. Photographs work today either
-   way, stored in the database.
+   clicks it. Everything on this side is finished and tested. Photographs work today either way,
+   stored in the database.
 2. **Instagram, TikTok and Facebook accounts.** `SETUP.md` is written and waiting.
 3. **An acquisition channel that points here.** Every `dm_variants.txt` line sends people to
    TrustMyRecord.
 4. **`gh auth refresh -h github.com -s workflow`.** No token here can push `.github/workflows/*`, so
-   the trip notification sweep rides on a page load rather than a schedule (`app/lifecycle.php`).
+   the trip notification sweep rides on a page load rather than a schedule.
 
-## Next, in order
+Nothing else is blocked. The place importer needs no key, no account and no payment.
 
-1. **There are no places in the database.** The place layer is built and tested and has nothing in
-   it: `places` is empty in production, so "5 travelers saved this restaurant" cannot happen yet and
-   a map would draw an empty city. Places are added by hand after checking, which is the right
-   policy; what is missing is a way to do that at any volume. This now blocks the place layer, the
-   map, and half of destination intelligence.
-2. **A map, once there are coordinates to put on it.** Destinations and places both carry lat and
-   lng. A trip map needs plans attached to places, which needs the item above. Nothing on a map may
-   be a person's current position: a plan somebody published is a plan, a location is surveillance.
-3. **Events as an object.** Sports, concerts, festivals. The architecture is a small table and a
-   column on a plan; the hard part is real event data, which needs a source. Nothing invented, so
-   this waits for a feed rather than being faked into existence.
-4. **Trip photographs from anybody planning the trip.** An editor can add plans, places and plan
-   photographs but trip photographs still go through the owner's edit form.
-5. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
-   week costs. Real sources only.
-6. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-7. **One ranked search result list.** Travelers are at the top now, which was most of the value,
-   but the page is still nine lists rather than one ordered answer.
-8. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
+## P0, the product does not work properly without these
+
+1. **Import places for the cities this site actually covers.** The pipeline is built, tested and
+   idempotent; production has run none of it, so every place page, the map, "who has this planned"
+   and half of city search are standing on an empty table. One button per city on `/admin/places`,
+   or `php scripts/import_places.php --city=<slug> --type=all`. Start with the cities that already
+   have trips on them.
+2. **Opening hours and a price band.** A place page that cannot say whether somewhere is open is
+   not yet worth linking from an itinerary. OSM carries `opening_hours` for a good fraction of
+   venues and the column already exists; the importer does not read it yet.
+
+## P1, core product
+
+3. **Plans need a place picker that finds places.** Typing an exact name matches; typing three
+   letters does not. The datalist is sixty names, which stops being enough at the first city with
+   four hundred.
+4. **A day view on the trip map.** The pins are all one colour: on a six day trip the useful
+   question is "what is Tuesday", and the map cannot answer it.
+5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
    it: no "you were both at this", no second invitation.
-9. **Performance when this gets busy.** `/explore` ships 100KB and the feed ranking loads every
-   follow and save for the member on each page.
+6. **One ranked search result list.** Travelers are at the top and the city is preferred, but the
+   page is still nine lists rather than one ordered answer.
+7. **Trip photographs during the trip.** Uploading works; a phone camera roll of forty pictures
+   from one afternoon does not have a good path yet.
+
+## P2, growth
+
+8. **Events as an object.** Sports, concerts, festivals. The architecture is a small table and a
+   column on a plan; the hard part is real event data, which needs a source. Nothing invented.
+9. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+10. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
+    week costs. Real sources only.
+11. **Place pages as landing pages.** Once places are real they are the most searchable thing this
+    site has, and they are not in the sitemap.
+
+## P3, worth doing, not worth doing first
+
+12. **Photo posting from the trip page during the trip** beyond one file at a time.
+13. **`/explore` ships 100KB** and could ship a third of that.
+14. **A second place provider**, for cities where OSM is thin. Every candidate needs a key or
+    forbids storage, so this is a research task before it is a build task.
 
 ## Done (2026-09-11, later)
+
+* **A real place pipeline** (migrations 084, 085): provider abstraction, OpenStreetMap, canonical
+  records, source ids, aliases, four-pass deduplication, timid merging, attribution on the page, a
+  CLI and an admin button. Proved against the live provider and proved idempotent.
+* **Maps** of published things, and only published things.
+* **The signed-in home is a dashboard** that leads with the member's own trip.
+* **Query budgets** on eight pages, with the counter built into the database layer.
+* **An adversarial test suite** written as attempts and refusals.
+* **A vocabulary gate**: one word per idea, checked in the text a reader sees.
+* **A removed member kept a key to the room**, and does not any more.
 
 * **Collaborative trips** (migration 083). One owner, any number of invited editors, a permission
   split where an editor adds and only an owner publishes or destroys, and the visibility hole cut
