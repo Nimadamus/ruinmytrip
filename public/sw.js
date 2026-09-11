@@ -6,7 +6,7 @@
  * caches is the shell: stylesheet, script, icons, and an offline page to land on instead of the
  * browser's dinosaur.
  */
-const VERSION = 'rmt-v3';
+const VERSION = 'rmt-v4';
 const SHELL = [
   '/offline.html',
   '/assets/css/app.css',

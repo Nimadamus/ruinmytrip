@@ -86,7 +86,22 @@ ok('the row is really there',
    (bool) q_one('SELECT 1 FROM profiles WHERE user_id = 41'));
 ok('a member id that is not a member is refused', !rmt_profile_ensure(0));
 $controllers = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
-ok('every profile write ensures the row first', substr_count($controllers, 'rmt_profile_ensure(') === 3);
+/* The real invariant, rather than a count that has to be edited every time a field is added:
+   inside every function that writes to profiles, rmt_profile_ensure() appears BEFORE the first
+   write. Order is the whole point. The avatar branch used to write avatar_key before the ensure
+   ran, so for a member whose row did not exist that write silently did nothing and the uploaded
+   file was orphaned in storage. */
+$funcs = preg_split('/
+function /', $controllers);
+$offenders = [];
+foreach ($funcs as $fn) {
+    $write = strpos($fn, 'UPDATE profiles SET');
+    if ($write === false) continue;
+    $ensure = strpos($fn, 'rmt_profile_ensure(');
+    if ($ensure === false || $ensure > $write) $offenders[] = trim((string) strtok($fn, '('));
+}
+ok('every function that writes a profile ensures the row first'
+   . ($offenders ? ' (' . implode(', ', $offenders) . ')' : ''), $offenders === []);
 $welcome = (string) file_get_contents(BASE_PATH . '/views/welcome.php');
 ok('the welcome screen asks where they live', str_contains($welcome, 'name="home_city"'));
 ok('and how they travel', str_contains($welcome, 'name="travel_style"'));

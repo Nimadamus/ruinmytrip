@@ -29,6 +29,21 @@
     <label for="avatar_url">…or paste a photo URL</label>
     <input type="url" id="avatar_url" name="avatar_url" maxlength="500"
            value="<?= e(editable_url_value($p['avatar_url'] ?? null)) ?>" placeholder="https://…">
+
+    <?php /* A cover. profiles.cover_url has been in the schema since the beginning and nothing
+             could set it, so every profile fell back to a gradient and then to the member's own
+             most recent trip photograph. This is the way to put a real one there. */ ?>
+    <label for="cover">Cover photo <span class="hint">(optional, wide works best)</span></label>
+    <?php if (!empty($p['cover_url'])): ?>
+      <img src="<?= e(abs_url((string) $p['cover_url'])) ?>" alt=""
+           style="width:100%;max-width:380px;aspect-ratio:3/1;object-fit:cover;border-radius:10px;display:block;margin-bottom:8px">
+      <label class="opt-in" style="padding:8px 12px">
+        <input type="checkbox" name="remove_cover" value="1">
+        <span><b>Remove this cover</b>
+          <span class="hint">Your profile goes back to using your most recent trip photo.</span></span>
+      </label>
+    <?php endif; ?>
+    <input type="file" id="cover" name="cover" accept="image/jpeg,image/png,image/webp">
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
       An uploaded file takes priority over this field.
     </p>

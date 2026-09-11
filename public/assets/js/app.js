@@ -136,3 +136,48 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(function () { /* fine without it */ });
   });
 }
+
+/* ------------------------------------------------------------------ photo pickers
+ * A bare <input type="file"> tells you "3 files" and nothing else: not which ones, not whether the
+ * one you meant is among them, not whether it is a photograph at all. Everything here is an
+ * enhancement of a control that already works, so the form is unchanged with JavaScript off: the
+ * input stays in the DOM, keeps its name, and keeps its keyboard behaviour.
+ */
+(function () {
+  var inputs = document.querySelectorAll('input[type="file"][accept*="image"]');
+  if (!inputs.length || !window.FileReader) return;
+
+  Array.prototype.forEach.call(inputs, function (input) {
+    var strip = document.createElement('div');
+    strip.className = 'pick-preview';
+    input.parentNode.insertBefore(strip, input.nextSibling);
+
+    input.addEventListener('change', function () {
+      strip.innerHTML = '';
+      var files = Array.prototype.slice.call(input.files || []);
+      if (!files.length) return;
+
+      files.forEach(function (f) {
+        if (!/^image\//.test(f.type)) return;
+        var cell = document.createElement('figure');
+        cell.className = 'pick-preview-cell';
+        var img = document.createElement('img');
+        img.alt = '';
+        var cap = document.createElement('figcaption');
+        /* Size shown up front, because 8MB is the limit and finding that out after the upload
+           fails is the worst moment to find it out. */
+        cap.textContent = f.size < 1024 ? f.size + ' B' : Math.round(f.size / 1024) + ' KB';
+        if (f.size > 8 * 1024 * 1024) {
+          cell.classList.add('too-big');
+          cap.textContent = Math.round(f.size / 1048576 * 10) / 10 + ' MB, too large';
+        }
+        var reader = new FileReader();
+        reader.onload = function (e) { img.src = e.target.result; };
+        reader.readAsDataURL(f);
+        cell.appendChild(img);
+        cell.appendChild(cap);
+        strip.appendChild(cell);
+      });
+    });
+  });
+})();

@@ -704,8 +704,8 @@ function profile_edit_form(array $a): void {
        the editor reads its own row. Without this the two newest fields, travel style and the open
        to meeting opt-in, rendered as unset every time somebody opened the form and were then
        saved back as unset: a setting that quietly turns itself off is worse than no setting. */
-    $p = array_merge($me, q_one('SELECT display_name, bio, home_city, avatar_url, travel_style,
-                                        open_to_meeting, home_destination_id
+    $p = array_merge($me, q_one('SELECT display_name, bio, home_city, avatar_url, cover_url,
+                                        travel_style, open_to_meeting, home_destination_id
                                    FROM profiles WHERE user_id = ?', [(int) $me['id']]) ?: []);
     view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$p], ['title'=>'Edit your profile | RuinMyTrip']);
 }
@@ -714,6 +714,12 @@ function profile_edit_form(array $a): void {
 function profile_edit_submit(array $a): void {
     require_login(); csrf_check();
     $me = current_user();
+    /* Ensure the row before anything writes to it, not after. Six accounts on the live database
+       predate profile rows being created at registration, and the avatar branch below wrote
+       avatar_key before the old ensure ran: for those six that write silently did nothing and the
+       key was lost, which leaves the uploaded file in storage forever with nothing pointing at
+       it. Calling it twice is free; calling it late is not. */
+    rmt_profile_ensure((int) $me['id']);
     if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
 
     $v = rmt_profile_validate($_POST);
@@ -734,6 +740,28 @@ function profile_edit_submit(array $a): void {
         $old = q_one('SELECT avatar_key FROM profiles WHERE user_id=?', [(int)$me['id']]);
         db()->prepare('UPDATE profiles SET avatar_key=? WHERE user_id=?')->execute([$res['key'], (int)$me['id']]);
         if (!empty($old['avatar_key'])) rmt_storage_delete((string)$old['avatar_key']);
+    }
+
+    /* The cover, uploaded through exactly the same path as everything else: size capped before
+       decoding, type sniffed from content, re-encoded so no EXIF and no GPS survives. Replacing
+       one deletes the file it replaced rather than leaving it in storage forever. */
+    $coverUrl = null; $coverKey = null; $coverTouched = false;
+    if (!empty($_FILES['cover']['name'] ?? '')) {
+        $res = rmt_upload_image($_FILES['cover'], (int) $me['id']);
+        if (!$res['ok']) {
+            view('profile_edit', ['me'=>$me, 'errors'=>[$res['error']], 'p'=>array_merge($me, $_POST)],
+                 ['title'=>'Edit your profile | RuinMyTrip']); return;
+        }
+        $coverUrl = $res['url']; $coverKey = $res['key']; $coverTouched = true;
+    } elseif (!empty($_POST['remove_cover'])) {
+        $coverTouched = true;   // both stay null: the profile goes back to its trip photo
+    }
+    if ($coverTouched) {
+        $oldCover = q_one('SELECT cover_key FROM profiles WHERE user_id = ?', [(int) $me['id']]);
+        rmt_profile_ensure((int) $me['id']);
+        db()->prepare('UPDATE profiles SET cover_url = ?, cover_key = ? WHERE user_id = ?')
+            ->execute([$coverUrl, $coverKey, (int) $me['id']]);
+        if (!empty($oldCover['cover_key'])) rmt_storage_delete((string) $oldCover['cover_key']);
     }
 
     // A member whose profile row never existed would otherwise save into nothing and be told it
@@ -2492,6 +2520,9 @@ function unsubscribe_action(array $a): void {
     $token = (string) ($_GET['t'] ?? '');
     $ok = $uid > 0 && rmt_unsubscribe_verify($uid, $token);
     if ($ok) {
+        /* Same reason as the profile editor: a member with no row would be told they had
+           unsubscribed and would keep getting the email. */
+        rmt_profile_ensure($uid);
         db()->prepare('UPDATE profiles SET digest_opt_out=1 WHERE user_id=?')->execute([$uid]);
     }
     view('unsubscribe', ['ok' => $ok], [

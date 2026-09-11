@@ -940,3 +940,12 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* Why a feed row is where it is. Quiet, one line, above the headline. */
 .feed-why{font-size:.82rem;font-weight:600;color:var(--brand);margin:0 0 4px;
   text-transform:none;letter-spacing:0}
+
+/* What you just chose to upload, before you upload it. */
+.pick-preview{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+.pick-preview-cell{margin:0;width:88px}
+.pick-preview-cell img{width:88px;height:88px;object-fit:cover;border-radius:10px;display:block;
+  background:var(--surface-3)}
+.pick-preview-cell figcaption{font-size:.72rem;color:var(--muted);margin-top:3px;text-align:center}
+.pick-preview-cell.too-big img{outline:2px solid #b42318;outline-offset:-2px}
+.pick-preview-cell.too-big figcaption{color:#b42318;font-weight:600}
