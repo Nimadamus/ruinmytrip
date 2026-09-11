@@ -4659,8 +4659,18 @@ function healthz(array $a): void {
 // Separate readiness probe that DOES check the DB (for manual/diagnostic use, not the Render health path).
 function readyz(array $a): void {
     header('Content-Type: text/plain');
-    try { db()->query('SELECT 1'); echo 'ready db=ok'; }
-    catch (Throwable $e) { http_response_code(503); echo 'db=down'; }
+    try {
+        db()->query('SELECT 1');
+        /* Which migration the running database is actually at. A green deploy is not a migration:
+           071 rolled back once while the deploy went live, and the only way anybody found out was
+           a page falling over hours later. This is the cheapest possible way to check from
+           outside, without opening the database firewall to ask. */
+        $m = q_one('SELECT COUNT(*) n, MAX(version) latest FROM schema_migrations');
+        echo 'ready db=ok migrations=' . (int) ($m['n'] ?? 0) . ' latest=' . (string) ($m['latest'] ?? 'none');
+    } catch (Throwable $e) {
+        http_response_code(503);
+        echo 'db=down';
+    }
 }
 
 /* ---------- sitemap ---------- */
