@@ -50,6 +50,14 @@ $backTo = '/activity/' . (int) $act['id'];
     <p class="hint">A meeting point is set. It is shown to people who are coming.</p>
   <?php endif; ?>
 
+  <?php /* Said once, where somebody is deciding whether to meet a stranger, and not repeated on
+           every screen afterwards. A warning nobody reads is not a safety feature. */ ?>
+  <?php if (in_array((string) $act['join_mode'], ['ask','open'], true) && empty($act['cancelled_at'])): ?>
+    <p class="hint" style="margin:10px 0 0">Meeting people you do not know: somewhere public, tell
+      somebody where you are going, leave whenever you want.
+      <a href="<?= e(url('safety')) ?>">Safety guidance</a>.</p>
+  <?php endif; ?>
+
   <?php if ($photos): ?>
     <?php $gridPhotos = array_map(static fn(array $ph) => [
             'url' => (string) $ph['url'], 'caption' => (string) ($ph['caption'] ?? ''), 'href' => ''], $photos);

@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (second pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (third pass).
 
 ## What the product is
 
@@ -36,7 +36,9 @@ pages made of members.
 
 `070` home_destination_id · `071` trips carry dates and visibility · `072` posts.trip_id ·
 `073` social indexes · `074` travel_style · `075` a profile row for everybody · `076` held reviews ·
-`077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key.
+`077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key ·
+`080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
+meeting point, end time, cancellation, activity photos).
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -71,14 +73,24 @@ highest applied migration. A green deploy is not a migration.
 
 ## What the product does now
 
-A member lands on a ranked feed with a composer and rails (dates that overlap yours, your trips,
-people to follow, meetups). A trip can be just a city and two dates and names itself. Photographs
-are objects with their own pages, captions, likes and replies. `/travelers` finds people six ways
-and says why each one is there. A city page leads with who is there today. Every empty page offers
-real cities and real people and invents nothing.
+A member lands on a ranked feed with a composer, an expiring "how was it?" card above it, and rails
+(plans you could join, dates that overlap yours, your trips, people to follow). A trip can be just a
+city and two dates and names itself, and on it is a plan: a line of typing and a day, with time,
+place, notes, who may come and who may see it behind one disclosure.
 
-Files worth knowing: `app/photos.php`, `app/discovery.php`, `app/feed_home.php` (rails, engagement,
-ranking), `app/lifecycle.php` (trip notifications), `app/storage.php` (R2 driver).
+A plan is the social object. It has its own page with photographs, who is coming, a short
+coordination thread, a meeting point only the people accepted can read, and a join lifecycle that
+runs ask, accept, decline, withdraw, remove, cancel. `/meetups` shows meetups and open plans as one
+list, interleaved by day, because they are the same offer. A city page shows what travelers are
+doing, narrowed to your dates by default, with two filters: open to join, and a category.
+
+Then the loop closes. Once a plan's day has passed its owner is asked once, two taps, whether it was
+worth it, and the answer appears on the city page as a recommendation with a real name and a count
+of people. If one person said it, it says one person.
+
+Files worth knowing: `app/activities.php` (the plan model and every read of it), `app/photos.php`,
+`app/discovery.php`, `app/feed_home.php` (rails, engagement, ranking), `app/lifecycle.php` (trip
+notifications), `app/storage.php` (R2 driver).
 
 ## The safety audit is a test
 
@@ -89,6 +101,11 @@ a written reason. Seven visibility leaks were found and fixed on 9 and 10 Septem
 queue, and the traveler directory ignoring blocks. Every one was found by planting a canary and
 looking, never by reading the query. Add a query that forgets and the suite goes red.
 
+`tests/pages_render_test.php` is the other half: it signs in and greps rendered pages for planted
+canaries. It currently guards a private trip, a private trip's photograph, a private plan, an open
+plan sitting on a private trip, and a meeting point (absent for somebody who only asked, present
+once they are accepted). Backend rules are not the thing that leaks; pages are.
+
 ## Waiting on Nima
 
 Four things, all in BACKLOG.md with the detail: R2 (`10042`, enable it in the Cloudflare
@@ -97,6 +114,6 @@ RuinMyTrip rather than TrustMyRecord, and `gh auth refresh -h github.com -s work
 
 ## Next, in order
 
-The prioritised list lives in BACKLOG.md and is kept current. In short: R2 and photos the moment
-Nima enables it, notification rollup, discovery past exact date overlap, and a weekly email about
-the cities somebody saved.
+The prioritised list lives in BACKLOG.md and is kept current. In short: photo posting from the
+composer, message requests, and somewhere to find plans for the member who has not posted a trip
+yet, which is most new accounts. R2 and photos at scale the moment Nima enables it.

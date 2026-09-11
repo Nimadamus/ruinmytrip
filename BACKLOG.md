@@ -23,32 +23,47 @@ actually want to meet?"*
 
 ## Next, in order
 
-1. **Photos on an activity.** A plan with a picture of the thing is the strongest content this
-   site could carry, and the column is already there waiting for the upload path.
-2. **Turn a plan into a meetup, and a meetup into a plan.** The two are the same object seen from
-   different ends and they do not know about each other yet.
-3. **"Ask to join" needs an answer.** The asking works; the owner has no accept or decline, so an
-   ask is currently just an expression of interest with a hopeful name.
-4. **Photo posts straight from the composer.** Uploading happens on a trip, a review or a talk
-   post. One tap from the feed is what makes a travel network visual day to day.
-5. **Message requests.** A first message from a stranger should be acceptable or ignorable, and
+1. **Photo posts straight from the composer.** Uploading happens on a trip, a review, a plan or a
+   talk post. One tap from the feed is what makes a travel network visual day to day.
+2. **Message requests.** A first message from a stranger should be acceptable or ignorable, and
    should not sit in the same list as a conversation. The ceiling on new threads is in; the
    inbox split is not.
+3. **Somewhere to find plans when you have no trip yet.** The joinable rail and the city filters
+   both start from dates the member has already published. Somebody who has not posted a trip sees
+   none of it, and they are the majority of new accounts.
+4. **Notification rollup.** They fire correctly, one per event. "Three people liked your review"
+   is the version nobody turns off.
+5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
 6. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
    week costs. Real sources only, and none of it invented.
 7. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
    trips and would make every city page a doorway rather than a leaf.
-8. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-9. **Notification rollup.** They fire correctly, one per event. "Three people liked your review"
-   is the version nobody turns off.
-10. **Search that ranks across types.** It searches everything and presents nine separate lists;
+8. **Search that ranks across types.** It searches everything and presents nine separate lists;
    one ranked list with faces in it is the fastest path from a name to a person.
-11. **Meetups that fill.** Attendance is the strongest signal on the site and the thinnest feature:
-   no reminders, no "who else is going" before you commit, no repeat.
-12. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
+9. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
+   it: no reminder the day before, no "you were both at this", no second invitation.
+10. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
     and the feed ranking loads every follow and save for the member on each page.
 
 ## Done (2026-09-11, later)
+
+* **The join lifecycle, end to end** (migration 082). Ask, accept, decline, withdraw, remove,
+  capacity, meeting point, end time, cancel. The meeting point is for the owner and the people
+  accepted, never for somebody who only asked.
+* **A plan has its own page**, with photographs, who is coming, a short coordination thread that is
+  not a second inbox, and one safety line where somebody is deciding whether to meet a stranger.
+* **Plans you could join**, on the feed: open plans in a city the member is going to, inside their
+  own dates, that they have not already answered.
+* **Two filters on a city, and only two**: open to join, and a category. Both in the URL, both
+  built from the plans that actually exist, and a filter can only narrow what the viewer could
+  already see.
+* **The loop closes.** "How was it?" appears above the feed once a plan's day has passed, two taps
+  wide. The answer lands on the city page as "travelers who went say these were worth it", with the
+  name of the person who said it and a count of people, never rounded.
+* **A meetup and an open plan are one list.** `/meetups` reads both and interleaves them by day.
+  Past meetups leave it.
+* **People who are coming are told when the time or the place moves**, once an hour at most, and
+  nobody else is told anything.
 
 * **Activities: what a traveler is actually doing there** (migration 081). A plan is a line of
   typing and a day; time, place, notes, link, who may come and who may see it are behind one
