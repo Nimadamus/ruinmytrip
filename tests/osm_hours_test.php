@@ -69,7 +69,6 @@ foreach ([
     'Mo-Fr 09:00+'                         => 'an open ended time',
     'Mo-Fr 09:00-17:00 "by appointment"'   => 'a comment',
     '2024-2025 Mo-Fr 09:00-17:00'          => 'a year range',
-    'Mo-Fr 22:00-02:00'                    => 'a span across midnight',
     'Mo-Fr 25:00-99:00'                    => 'times that are not times',
     'Xx-Yy 09:00-17:00'                    => 'days that are not days',
     'open'                                 => 'a word with no hours in it',
@@ -77,6 +76,19 @@ foreach ([
 ] as $raw => $why) {
     ok(rmt_osm_hours_parse((string) $raw) === null, "refused: $why");
 }
+
+// --- the small hours ------------------------------------------------------------------------------
+/* Half the bars in any city close after midnight. "11:30 to 02:00" IS "11:30 to midnight, then
+   midnight to 02:00 the next day", so it is stored that way: the same fact in the shape the table
+   holds, not a guess about anything. */
+ok(shape(rmt_osm_hours_parse('Fr-Sa 22:00-04:00'))
+   === '4 22:00-23:59|5 22:00-23:59|5 00:00-04:00|6 00:00-04:00',
+   'a night that ends after midnight lands on both days');
+ok(shape(rmt_osm_hours_parse('Mo-Sa 20:00-02:00; Su off'))
+   === '0 20:00-23:59|1 20:00-23:59|1 00:00-02:00|2 20:00-23:59|2 00:00-02:00|3 20:00-23:59|3 00:00-02:00'
+     . '|4 20:00-23:59|4 00:00-02:00|5 20:00-23:59|5 00:00-02:00|6 closed',
+   'and a day that is explicitly shut stays shut rather than opening for two hours');
+ok(rmt_osm_hours_parse('Mo-Fr 09:00-09:00') === null, 'a span of no length is still refused');
 
 // --- storing ---------------------------------------------------------------------------------------
 $pdo = db();

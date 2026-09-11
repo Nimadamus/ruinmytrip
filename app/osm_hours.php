@@ -55,6 +55,10 @@ function rmt_osm_hours_parse(string $raw): ?array {
     }
 
     $byDay = [];
+    /* The small hours that belong to the night before. Held apart until the end so that an explicit
+       rule for a day always wins over a spill into it: "Mo-Sa 20:00-02:00; Su off" means Sunday is
+       shut, not shut with a two hour window at the start. */
+    $spill = [];
     foreach (explode(';', $s) as $chunk) {
         $chunk = trim($chunk);
         if ($chunk === '') continue;
@@ -78,22 +82,39 @@ function rmt_osm_hours_parse(string $raw): ?array {
             $from = sprintf('%02d:%02d', (int) $t[1], (int) $t[2]);
             $to   = sprintf('%02d:%02d', (int) $t[3], (int) $t[4]);
             if ((int) $t[1] > 24 || (int) $t[3] > 24 || (int) $t[2] > 59 || (int) $t[4] > 59) return null;
-            // A closing time before an opening one means it runs past midnight, which this does not
-            // model. Refused rather than stored backwards.
-            if ($to <= $from) return null;
-            $spans[] = [$from, $to];
+            /* A closing time before the opening one runs past midnight, which half the bars in
+               any city do. Split across the two days rather than refused: "11:30 to 02:00" IS
+               "11:30 to midnight, then midnight to 02:00 the next day", so this is the same fact
+               written in the shape the table holds, not a guess about anything. */
+            if ($to === $from) return null;
+            $spans[] = [$from, $to, $to < $from];
         }
         if (!$spans) return null;
 
         foreach ($days as $d) {
-            $byDay[$d] = [];
-            foreach ($spans as [$from, $to]) {
-                $byDay[$d][] = ['day_of_week' => $d, 'opens' => $from, 'closes' => $to, 'closed' => 0];
+            $byDay[$d] = $byDay[$d] ?? [];
+            foreach ($spans as [$from, $to, $wraps]) {
+                if (!$wraps) {
+                    $byDay[$d][] = ['day_of_week' => $d, 'opens' => $from, 'closes' => $to, 'closed' => 0];
+                    continue;
+                }
+                $byDay[$d][] = ['day_of_week' => $d, 'opens' => $from, 'closes' => '23:59', 'closed' => 0];
+                $next = ($d + 1) % 7;
+                $spill[$next][] = ['day_of_week' => $next, 'opens' => '00:00', 'closes' => $to, 'closed' => 0];
             }
         }
     }
 
     if (!$byDay) return null;
+    foreach ($spill as $d => $rows) {
+        /* A day that is explicitly shut stays shut: "Mo-Sa 20:00-02:00; Su off" means Sunday is
+           closed, not closed with a two hour window at the start of it. Any other day simply also
+           has those small hours, which is what "until two" means on the night before. */
+        $shut = false;
+        foreach ($byDay[$d] ?? [] as $r) if ((int) $r['closed'] === 1) { $shut = true; break; }
+        if ($shut) continue;
+        foreach ($rows as $r) $byDay[$d][] = $r;
+    }
     ksort($byDay);
     $out = [];
     foreach ($byDay as $rows) foreach ($rows as $r) $out[] = $r;
