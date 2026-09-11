@@ -142,7 +142,8 @@ function rmt_place_name_key(string $name): string {
  * reads as a real place rather than a bare name that could be in any of eighty cities, and so two
  * "Old Town Walking Tour"s in different countries do not fight over one slug.
  */
-function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 0): string {
+function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 0,
+                              array $fallbacks = []): string {
     // Travelers routinely type the city into the name themselves ("Skyline Gondola, Queenstown").
     // Appending it again would give "skyline-gondola-queenstown-queenstown", so only add the
     // destination when the name does not already carry it.
@@ -152,8 +153,20 @@ function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 
     // before they are stripped. Done here rather than in slugify() because that helper generates
     // destination, review, guide and forum slugs across the whole site, and this is a place-URL
     // problem, not a sitewide one.
+    /* A name written in a script the URL cannot carry leaves slugify() with nothing, and the whole
+       place ends up at /p/item-tokyo-31: stable, honest, and not a link anybody would send to a
+       friend. OpenStreetMap usually records name:en or alt_name for exactly these, and those are
+       passed in here. Another real name for the same place beats a serial number; transliterating
+       the original is not an option, because the readings an ICU rule gives a Japanese name are
+       Chinese ones, and a plausible wrong word is worse than an honest placeholder. */
     $spoken = strtr($name, ['+' => ' plus ', '&' => ' and ', '@' => ' at ']);
     $nameSlug = slugify($spoken);
+    if ($nameSlug === 'item') {
+        foreach ($fallbacks as $alt) {
+            $try = slugify(strtr((string) $alt, ['+' => ' plus ', '&' => ' and ', '@' => ' at ']));
+            if ($try !== 'item') { $nameSlug = $try; break; }
+        }
+    }
     $destSlug = slugify($destName);
     $base = str_contains($nameSlug, $destSlug) ? $nameSlug : $nameSlug . '-' . $destSlug;
     $base = mb_substr($base, 0, 80);

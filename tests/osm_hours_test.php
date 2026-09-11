@@ -90,6 +90,26 @@ ok(shape(rmt_osm_hours_parse('Mo-Sa 20:00-02:00; Su off'))
    'and a day that is explicitly shut stays shut rather than opening for two hours');
 ok(rmt_osm_hours_parse('Mo-Fr 09:00-09:00') === null, 'a span of no length is still refused');
 
+// --- the forms London writes ----------------------------------------------------------------------
+/* Measured, not guessed: every value in this block was refused by the first version of this parser
+   and every one of them was a real London pub, gallery or museum saying something unambiguous. */
+ok(shape(rmt_osm_hours_parse('Mo-Th, Su 12:00-00:00'))
+   === '0 12:00-23:59|1 12:00-23:59|2 12:00-23:59|3 12:00-23:59|6 12:00-23:59',
+   'a day list written with spaces is the same day list');
+ok(shape(rmt_osm_hours_parse('09:00 - 23:00'))
+   === '0 09:00-23:00|1 09:00-23:00|2 09:00-23:00|3 09:00-23:00|4 09:00-23:00|5 09:00-23:00|6 09:00-23:00',
+   'hours with no day at all are the same hours every day');
+ok(shape(rmt_osm_hours_parse('Mo 12:00-00:00')) === '0 12:00-23:59',
+   'midnight at the end of a day is the end of that day, not a nothing on the next one');
+ok(shape(rmt_osm_hours_parse('Fr 12:00-01:00')) === '4 12:00-23:59|5 00:00-01:00',
+   'and one in the morning is still the night before');
+/* Still refused, and still for the right reasons. A public holiday rule is a fact about days this
+   parser does not model, and dropping it is how a page tells somebody a museum is open on a day it
+   is shut. */
+ok(rmt_osm_hours_parse('Mo-We,Fr 09:30-18:00; Su,PH off') === null,
+   'a week that hangs a public holiday rule off it is still refused whole');
+ok(rmt_osm_hours_parse('"by appointment"') === null, 'and so is a sentence in quotation marks');
+
 // --- storing ---------------------------------------------------------------------------------------
 $pdo = db();
 $pdo->exec("CREATE TABLE place_hours (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,

@@ -63,12 +63,19 @@ function rmt_osm_hours_parse(string $raw): ?array {
         $chunk = trim($chunk);
         if ($chunk === '') continue;
 
-        // "mo-fr 09:00-17:00" or "su off"
-        if (!preg_match('/^([a-z,\-]+)\s+(.+)$/', $chunk, $m)) return null;
-        $days = rmt_osm_hours_days($m[1]);
-        if ($days === null) return null;
-
-        $spec = trim($m[2]);
+        /* "mo-fr 09:00-17:00", "mo-th, su 12:00-00:00", "su off", or a bare span with no days at
+           all, which is how a place that keeps the same hours every day writes it. The day list
+           may carry spaces: "Mo-Th, Su" is as common in the wild as "Mo-Th,Su" and refusing it
+           threw away every London pub that writes its week that way. */
+        if (preg_match('/^\d{1,2}:\d{2}\s*-/', $chunk)) {
+            $days = [0, 1, 2, 3, 4, 5, 6];
+            $spec = $chunk;
+        } else {
+            if (!preg_match('/^([a-z][a-z,\s\-]*?)\s+(\d{1,2}:.*|off|closed)$/', $chunk, $m)) return null;
+            $days = rmt_osm_hours_days(preg_replace('/\s+/', '', $m[1]) ?? '');
+            if ($days === null) return null;
+            $spec = trim($m[2]);
+        }
         if ($spec === 'off' || $spec === 'closed') {
             foreach ($days as $d) $byDay[$d] = [['day_of_week' => $d, 'opens' => null,
                                                  'closes' => null, 'closed' => 1]];
@@ -82,6 +89,9 @@ function rmt_osm_hours_parse(string $raw): ?array {
             $from = sprintf('%02d:%02d', (int) $t[1], (int) $t[2]);
             $to   = sprintf('%02d:%02d', (int) $t[3], (int) $t[4]);
             if ((int) $t[1] > 24 || (int) $t[3] > 24 || (int) $t[2] > 59 || (int) $t[4] > 59) return null;
+            /* "12:00-00:00" is midnight at the END of this day, not a zero length span starting
+               tomorrow. Written as the last minute of the day, which is how the table holds it. */
+            if ($to === '00:00') $to = '23:59';
             /* A closing time before the opening one runs past midnight, which half the bars in
                any city do. Split across the two days rather than refused: "11:30 to 02:00" IS
                "11:30 to midnight, then midnight to 02:00 the next day", so this is the same fact

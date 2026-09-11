@@ -184,7 +184,14 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
         // Asked directly rather than through dest_by_id(), which lives in controllers.php: this
         // file has to be loadable by a script and by a test without the whole application.
         $destName = (string) (q_one('SELECT name FROM destinations WHERE id = ?', [$destId])['name'] ?? '');
-        $slug = rmt_place_unique_slug($name, $destName);
+        /* The other names this place goes by, used only when its own name leaves the slugifier
+           with nothing to work with. They are not written here: aliases are added by the caller
+           after the row exists. */
+        $alts = [];
+        foreach ((array) ($row['aliases'] ?? []) as $alt) {
+            if (is_string($alt) && trim($alt) !== '') $alts[] = trim($alt);
+        }
+        $slug = rmt_place_unique_slug($name, $destName, 0, $alts);
         /* name_norm is what the suggest box matches on, accents folded, so "geolog" finds
            "Museu Geologico". A row created without it is a place nobody can find by typing. */
         $cols = ['destination_id', 'slug', 'name', 'name_key', 'name_norm', 'status', 'created_at',

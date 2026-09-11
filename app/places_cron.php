@@ -141,6 +141,34 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* Give a serial number a real URL.
+       A place whose name is written in a script the slugifier cannot carry ends up at
+       /p/item-tokyo-31, which is stable and honest and is not a link anybody would send to a
+       friend. OpenStreetMap usually records name:en or alt_name for exactly these, and this site
+       already stores those as aliases. The NAME is not touched: アーティゾン美術館 is what the
+       place is called, and replacing it with an English one would be editorial, not repair. Only
+       the slug moves, and the old one is retired into place_slug_history so every URL already
+       published keeps resolving. */
+    if ($op === 'reslug') {
+        $moved = []; $stuck = 0;
+        $rows = q_all("SELECT id, slug, name FROM places
+                        WHERE destination_id = ? AND slug LIKE 'item-%'", [(int) $dest['id']]);
+        foreach ($rows as $r) {
+            $alts = array_column(q_all('SELECT alias FROM place_aliases WHERE place_id = ? ORDER BY id',
+                                       [(int) $r['id']]), 'alias');
+            $new = rmt_place_unique_slug((string) $r['name'], (string) $dest['name'], (int) $r['id'], $alts);
+            if ($new === (string) $r['slug'] || str_starts_with($new, 'item-')) { $stuck++; continue; }
+            q_run('UPDATE places SET slug = ?, updated_at = ? WHERE id = ?',
+                  [$new, date('Y-m-d H:i:s'), (int) $r['id']]);
+            rmt_place_retire_slug((int) $r['id'], (string) $r['slug'], $new);
+            $moved[(string) $r['slug']] = $new;
+        }
+        echo json_encode(['city' => $dest['slug'], 'looked_at' => count($rows),
+                          'moved' => count($moved), 'no_other_name' => $stuck, 'slugs' => $moved],
+                         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
     /* Re-derive every category from the provider's own word, using the mapping as it stands today.
        This is what source_kind is for: a mapping is a decision, decisions get revised, and the
        alternative to storing the raw kind was asking the provider for four hundred rows again.
@@ -220,6 +248,17 @@ function cron_places(array $a): void {
         if (count($in['rows']) > 200) { echo "at most 200 rows in one request
 "; return; }
         $dry = (string) input('dry') === '1';
+        /* The other names a place goes by ride along with the row, not only afterwards, because a
+           name written in a script the URL cannot carry needs one of them to build a slug. A place
+           called アーティゾン美術館 otherwise lands at /p/item-tokyo-27. */
+        if (!empty($in['aliases']) && is_array($in['aliases'])) {
+            foreach ($in['rows'] as $i => $row) {
+                $ref = (string) ($row['source_ref'] ?? '');
+                if ($ref !== '' && !empty($in['aliases'][$ref])) {
+                    $in['rows'][$i]['aliases'] = array_values((array) $in['aliases'][$ref]);
+                }
+            }
+        }
         $res = rmt_place_import_batch((int) $dest['id'], $in['rows'], $dry);
 
         $aliases = 0;
