@@ -292,3 +292,100 @@ if ('serviceWorker' in navigator) {
     Array.prototype.forEach.call(rows, mark);
   }, { passive: true });
 })();
+
+/* Choosing photographs should look like something happened.
+ *
+ * Every photo input on this site takes several files at once and, until now, showed nothing at all
+ * between choosing them and the page reloading. On a phone that is a tap, a file picker, and then
+ * a form that looks exactly as it did before: the most common reaction is to choose them again.
+ *
+ * This draws what was chosen, lets one be taken back out before anything is sent, and says what is
+ * happening while it sends. All of it is decoration: with JavaScript off the input still works,
+ * still takes several files, and still submits. Nothing here uploads anything or reads a file
+ * beyond making a thumbnail in the browser.
+ */
+(function () {
+  var inputs = document.querySelectorAll('input[type=file][name="photos[]"]');
+  if (!inputs.length || typeof DataTransfer === 'undefined') return;
+
+  Array.prototype.forEach.call(inputs, function (input) {
+    var strip = document.createElement('div');
+    strip.className = 'photo-picked';
+    strip.hidden = true;
+    // After the input, or after the label wrapping it, so the strip never lands inside a button.
+    var anchor = input.closest('label') || input;
+    anchor.parentNode.insertBefore(strip, anchor.nextSibling);
+
+    function render() {
+      strip.textContent = '';
+      var files = Array.prototype.slice.call(input.files || []);
+      strip.hidden = files.length === 0;
+      if (!files.length) return;
+
+      files.forEach(function (file, i) {
+        var cell = document.createElement('figure');
+        cell.className = 'photo-picked-item';
+
+        var img = document.createElement('img');
+        img.alt = '';
+        try {
+          img.src = URL.createObjectURL(file);
+          img.onload = function () { URL.revokeObjectURL(img.src); };
+        } catch (e) { /* a browser that will not make a preview still shows the name below */ }
+        cell.appendChild(img);
+
+        var drop = document.createElement('button');
+        drop.type = 'button';
+        drop.className = 'photo-picked-x';
+        drop.setAttribute('aria-label', 'Remove ' + file.name);
+        drop.textContent = '×';
+        drop.addEventListener('click', function () {
+          var keep = new DataTransfer();
+          Array.prototype.slice.call(input.files).forEach(function (f, j) {
+            if (j !== i) keep.items.add(f);
+          });
+          input.files = keep.files;
+          render();
+        });
+        cell.appendChild(drop);
+
+        var name = document.createElement('figcaption');
+        name.textContent = file.name;
+        cell.appendChild(name);
+
+        strip.appendChild(cell);
+      });
+
+      var count = document.createElement('p');
+      count.className = 'hint photo-picked-count';
+      count.textContent = files.length === 1 ? '1 photo ready' : files.length + ' photos ready';
+      strip.appendChild(count);
+    }
+
+    input.addEventListener('change', render);
+
+    /* And say what is happening while it happens. An upload of several photographs over a phone
+       connection is not instant, and a form that looks unchanged invites a second submit. */
+    var form = input.form;
+    if (!form || form.dataset.photoBusy) return;
+    form.dataset.photoBusy = '1';
+    form.addEventListener('submit', function () {
+      var n = (input.files || []).length;
+      if (!n) return;
+      /* Disabled on the NEXT tick, never during the submit event. A button disabled inside that
+         handler is not submitted with the form, so its name and value never arrive, and a form
+         that relies on which button was pressed quietly does the wrong thing or nothing at all.
+         Measured: doing it synchronously uploaded zero of three photographs. */
+      setTimeout(function () {
+        Array.prototype.forEach.call(form.querySelectorAll('button'), function (btn) {
+          btn.disabled = true;
+        });
+      }, 0);
+      var say = document.createElement('p');
+      say.className = 'hint';
+      say.setAttribute('role', 'status');
+      say.textContent = n === 1 ? 'Adding a photo…' : 'Adding ' + n + ' photos…';
+      form.appendChild(say);
+    });
+  });
+})();

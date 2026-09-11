@@ -1217,3 +1217,16 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .leaflet-popup-content span{color:var(--muted);font-size:.85rem}
 .leaflet-popup-tip{background:var(--card)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--muted);padding:8px 8px 0 0}
+
+/* The photographs somebody just chose, before anything is sent. Small enough that four fit across
+   a phone, large enough to tell two sunsets apart. */
+.photo-picked{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;align-items:flex-start}
+.photo-picked-item{position:relative;margin:0;width:84px}
+.photo-picked-item img{width:84px;height:84px;object-fit:cover;border-radius:10px;display:block;
+  background:var(--tint)}
+.photo-picked-item figcaption{font-size:.68rem;color:var(--muted);margin-top:4px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.photo-picked-x{position:absolute;top:-6px;right:-6px;width:26px;height:26px;border-radius:50%;
+  border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;line-height:1;
+  cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(13,24,38,.18)}
+.photo-picked-count{flex-basis:100%;margin:2px 0 0}
