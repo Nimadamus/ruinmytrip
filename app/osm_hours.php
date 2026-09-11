@@ -178,7 +178,12 @@ function rmt_osm_hours_store(int $placeId, string $raw, string $source = 'openst
     foreach ($rows as $i => $r) {
         q_run('INSERT INTO place_hours (place_id, day_of_week, opens, closes, closed, sort, source, created_at)
                VALUES (?,?,?,?,?,?,?,?)',
-              [$placeId, $r['day_of_week'], $r['opens'], $r['closes'], $r['closed'], $i, $source, $now]);
+              [$placeId, $r['day_of_week'], $r['opens'], $r['closes'],
+               /* Postgres holds this as a boolean and SQLite as an integer, and PDO will not cast
+                  an int to a bool for Postgres: it refuses the whole INSERT. Sent as the string
+                  both drivers accept, which is the same trick the rest of this codebase uses for
+                  flags that straddle the two. */
+               $r['closed'] ? '1' : '0', $i, $source, $now]);
         $n++;
     }
     return $n;

@@ -115,5 +115,12 @@ ok(rmt_osm_hours_store(3, 'Mo-Fr 09:00-17:00') === 0, 'hours a person typed are 
 $kept = q_one('SELECT opens FROM place_hours WHERE place_id = 3');
 ok((string) $kept['opens'] === '08:00', 'and they still say what the person said');
 
+/* The flag has to survive both drivers. Postgres holds `closed` as a boolean and SQLite as an
+   integer, and PDO will not cast an int to a bool for Postgres: it refuses the whole INSERT and the
+   hours silently never arrive, which is exactly what happened to a city of imported museums. */
+$src = (string) file_get_contents(BASE_PATH . '/app/osm_hours.php');
+ok(str_contains($src, "\$r['closed'] ? '1' : '0'"),
+   'the closed flag is sent as a string both drivers accept');
+
 echo "osm_hours_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
