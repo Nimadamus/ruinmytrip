@@ -2557,6 +2557,52 @@ function leaderboard(array $a): void {
  * together: the ranking that decides what actually leads the list can only be done where all the
  * candidates are, and doing it in the client would mean shipping the scoring rules to it.
  */
+/**
+ * GET /suggest/places?q=&dest=  -- places in one city, for the "where" field on a plan.
+ *
+ * The composer used to offer a datalist of sixty names, which is fine for a city with sixty places
+ * and useless for one with four hundred: the place somebody means is simply not in the list. This
+ * asks the server for what matches, in the city the trip is to, and matches on aliases as well, so
+ * "Tile Museum" finds the Museu Nacional do Azulejo.
+ *
+ * Public because a place is public, scoped to one city because that is the whole point, and
+ * rate limited because it runs a query per keystroke-ish.
+ */
+function suggest_places_json(array $a): void {
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+
+    $who = (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon');
+    if (!rmt_rate_ok('suggest_places', $who, 240, 60)) {
+        http_response_code(429);
+        echo json_encode(['places' => [], 'throttled' => true]);
+        return;
+    }
+
+    $q = trim((string) ($_GET['q'] ?? ''));
+    $dest = (int) ($_GET['dest'] ?? 0);
+    if (mb_strlen($q) < 2 || $dest < 1) { echo json_encode(['places' => []]); return; }
+
+    $like = '%' . mb_strtolower($q) . '%';
+    $rows = q_all(
+        "SELECT p.id, p.name, p.slug, p.type
+           FROM places p
+          WHERE p.destination_id = ? AND p.status = 'active'
+            AND (LOWER(p.name) LIKE ?
+                 OR EXISTS (SELECT 1 FROM place_aliases pa
+                             WHERE pa.place_id = p.id AND LOWER(pa.alias) LIKE ?))
+       ORDER BY CASE WHEN LOWER(p.name) LIKE ? THEN 0 ELSE 1 END, LENGTH(p.name), p.name
+          LIMIT 8",
+        [$dest, $like, $like, mb_strtolower($q) . '%']
+    );
+    $out = [];
+    foreach ($rows as $r) {
+        $out[] = ['name' => (string) $r['name'], 'slug' => (string) $r['slug'],
+                  'type' => rmt_place_type_label((string) $r['type'])];
+    }
+    echo json_encode(['places' => $out], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
 function suggest_json(array $a): void {
     $q = trim((string) ($_GET['q'] ?? ''));
 

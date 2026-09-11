@@ -199,7 +199,17 @@ function rmt_osm_to_place(array $el): array {
  *
  * @return array{ok:bool,rows:list<array>,aliases:array<string,list<string>>,error:?string,seen:int}
  */
-function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 60, float $km = 12.0): array {
+function rmt_osm_default_km(string $type): float {
+    /* How far out to look, by how dense the thing is. A city centre holds thousands of cafes and a
+       handful of museums, and Overpass scans the whole box whatever the output limit says: asking
+       for restaurants across 24km of Lisbon takes over a minute and times out, while the same
+       question over 12km answers in under three seconds. Sparse kinds keep the wider net because
+       otherwise the good ones outside the centre are simply never found. */
+    return in_array($type, ['restaurant', 'hotel'], true) ? 6.0 : 12.0;
+}
+
+function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 60, ?float $km = null): array {
+    $km = $km !== null && $km > 0 ? $km : rmt_osm_default_km($type);
     $lat = $dest['lat'] ?? null;
     $lng = $dest['lng'] ?? null;
     if ($lat === null || $lng === null) {

@@ -190,3 +190,52 @@ if ('serviceWorker' in navigator) {
     });
   });
 })();
+
+/* The "where" field on a plan: places this site holds, in the city the trip is to.
+ *
+ * A native <datalist> filled from the server. No custom dropdown, no keyboard handling to get
+ * wrong, and no dependency: with JavaScript off the field is a plain text box and typing an exact
+ * name still attaches the plan on the server side.
+ *
+ * Careful about the same thing the header suggest is careful about: responses can arrive out of
+ * order, so one that does not answer what is in the box now is dropped.
+ */
+(function () {
+  'use strict';
+  var input = document.querySelector('input[data-place-suggest]');
+  if (!input || !window.fetch) return;
+  var list = document.getElementById(input.getAttribute('list'));
+  var dest = parseInt(input.getAttribute('data-dest') || '0', 10);
+  if (!list || !dest) return;
+
+  var timer = null;
+  var latest = '';
+
+  function fill(places) {
+    list.innerHTML = '';
+    places.forEach(function (p) {
+      var o = document.createElement('option');
+      o.value = p.name;
+      if (p.type) o.label = p.type;
+      list.appendChild(o);
+    });
+  }
+
+  input.addEventListener('input', function () {
+    var q = input.value.trim();
+    latest = q;
+    if (timer) clearTimeout(timer);
+    if (q.length < 2) { fill([]); return; }
+    timer = setTimeout(function () {
+      fetch('/suggest/places?q=' + encodeURIComponent(q) + '&dest=' + dest, {
+        headers: { 'Accept': 'application/json' }
+      }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d || !d.places) return;
+          if (input.value.trim() !== latest) return;   // a slow answer for an older query
+          fill(d.places);
+        })
+        .catch(function () { /* the plain text box still works */ });
+    }, 180);
+  });
+})();

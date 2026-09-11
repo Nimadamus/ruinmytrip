@@ -92,7 +92,7 @@ function cron_places(array $a): void {
 
     $type  = (string) (input('type') ?: 'all');
     $limit = max(1, min(120, (int) input('limit') ?: 40));
-    $km    = (float) (input('km') ?: 12);
+    $km    = (float) (input('km') ?: 0);   // 0 means: use the density default for this kind
     $dry   = (string) input('dry') === '1';
     $types = $type === 'all' ? RMT_PLACE_TYPES : [$type];
     foreach ($types as $t) {

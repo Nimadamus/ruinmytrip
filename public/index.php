@@ -135,6 +135,7 @@ $routes = [
     ['GET',  '#^/search$#',                    'search'],
     ['GET',  '#^/suggest$#',                   'suggest_json'],
     ['GET',  '#^/suggest/users$#',             'suggest_users_json'],
+    ['GET',  '#^/suggest/places$#',            'suggest_places_json'],
     ['POST', '#^/suggest/click$#',             'suggest_click'],
     ['POST', '#^/push/subscribe$#',            'push_subscribe'],
     ['POST', '#^/push/unsubscribe$#',          'push_unsubscribe'],

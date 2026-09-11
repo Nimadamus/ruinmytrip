@@ -200,22 +200,19 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
           <div>
             <label for="plan-where">Where</label>
             <input type="text" id="plan-where" name="location_text" maxlength="120"
-                   placeholder="Alfama" list="plan-places" autocomplete="off">
-            <?php /* The places this site actually holds for this city. Picking one from the list
-                     attaches the plan to that place's page, which is how a restaurant stops being
-                     a word and becomes somewhere with other travelers going to it. Typing
-                     something we do not hold is still fine: it stays as text rather than inventing
-                     a place nobody checked. A datalist rather than a script, because a native one
-                     works on a phone keyboard and weighs nothing. */ ?>
-            <?php $rmt_places = !empty($t['destination_id']) && function_exists('rmt_places_for_destination')
-                    ? rmt_places_for_destination((int) $t['destination_id'], '', 60) : []; ?>
-            <?php if ($rmt_places): ?>
-              <datalist id="plan-places">
-                <?php foreach ($rmt_places as $rp): ?>
-                  <option value="<?= e((string) $rp['name']) ?>"></option>
-                <?php endforeach; ?>
-              </datalist>
-            <?php endif; ?>
+                   placeholder="Alfama, or a place by name" autocomplete="off"
+                   list="plan-places" data-place-suggest
+                   data-dest="<?= (int) ($t['destination_id'] ?? 0) ?>">
+            <?php /* The datalist is filled by the server as somebody types, from the places this
+                     site holds for THIS city, matching aliases as well so "Tile Museum" finds the
+                     Museu Nacional do Azulejo. Picking one attaches the plan to that place's page,
+                     which is how a restaurant stops being a word.
+
+                     It was a fixed list of sixty names, which is fine for a city with sixty places
+                     and useless for one with four hundred: the place somebody meant was simply not
+                     in it. With no JavaScript the field is still a plain text box, and typing an
+                     exact name still matches on the server. */ ?>
+            <datalist id="plan-places"></datalist>
           </div>
           <div>
             <label for="plan-join">Can anybody come?</label>

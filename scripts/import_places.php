@@ -33,7 +33,7 @@ foreach (array_slice($argv, 1) as $arg) {
 $citySlug = (string) ($opts['city'] ?? '');
 $type     = (string) ($opts['type'] ?? 'all');
 $limit    = max(1, (int) ($opts['limit'] ?? 40));
-$km       = (float) ($opts['km'] ?? 12);
+$km       = (float) ($opts['km'] ?? 0);   // 0 means: use the density default for this kind
 $provider = (string) ($opts['provider'] ?? 'openstreetmap');
 $dry      = isset($opts['dry-run']);
 
