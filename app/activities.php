@@ -448,3 +448,47 @@ function rmt_activity_attach_photos(int $activityId, int $ownerId): array {
     }
     return $errors;
 }
+
+/**
+ * Plans somebody could actually join, on the dates they are there.
+ *
+ * The whole sentence this product is built toward ends "...and I can join whichever fits me". That
+ * needs one list: open or ask-to-join plans, in a city the member has a trip to, inside the days
+ * their own trip covers, not their own, not cancelled, and not full.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_activities_joinable_for(int $uid, int $limit = 6): array {
+    if ($uid < 1) return [];
+    $viewer = ['id' => $uid];
+    [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
+    [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
+    [$blockSql] = rmt_match_block_sql('a.user_id');
+
+    return q_all(
+        "SELECT a.id, a.title, a.day, a.start_time, a.category, a.join_mode, a.capacity,
+                a.location_text, t.slug trip_slug, u.username, p.avatar_url,
+                d.name dest_name, d.slug dest_slug,
+                (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'going') going_count
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+           JOIN users u ON u.id = a.user_id AND u.status = 'active'
+      LEFT JOIN profiles p ON p.user_id = a.user_id
+      LEFT JOIN destinations d ON d.id = a.destination_id
+           JOIN trips mine ON mine.user_id = ? AND mine.status = 'published'
+                          AND mine.destination_id = a.destination_id
+                          AND mine.date_from IS NOT NULL AND mine.date_to IS NOT NULL
+          WHERE a.status = 'published' AND t.status = 'published'
+            AND a.user_id <> ?
+            AND a.cancelled_at IS NULL
+            AND a.join_mode IN ('open','ask')
+            AND (a.day IS NULL OR (a.day >= mine.date_from AND a.day <= mine.date_to))
+            AND NOT EXISTS (SELECT 1 FROM activity_joins j2
+                             WHERE j2.activity_id = a.id AND j2.user_id = ?)
+            AND $tripVis AND $actVis AND $blockSql
+       ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
+                COALESCE(a.start_time,'99:99'), a.id
+          LIMIT " . (int) $limit,
+        array_merge([$uid, $uid, $uid], $tripArgs, $actArgs, [$uid, $uid])
+    );
+}

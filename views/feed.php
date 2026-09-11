@@ -9,7 +9,8 @@ $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' =>
    still 200 and looked fine to anything that only checked a status code. */
 $rmt_post_verb = static fn(array $it): ?string =>
     ($it['kind'] === 'post' && !empty($it['trip_id'])) ? 'posted an update from' : null;
-$rails = $rails ?? ['matches' => [], 'trips' => [], 'suggested' => [], 'meetups' => [], 'match_count' => 0];
+$rails = $rails ?? ['joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [],
+                    'meetups' => [], 'match_count' => 0];
 $rmt_day = static fn(?string $d): string => $d ? date('j M', strtotime($d)) : '';
 $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
 $threads = $threads ?? [];
@@ -171,6 +172,23 @@ $threads = $threads ?? [];
   </div>
 
   <aside class="feed-rail">
+    <?php /* Things the member could actually walk into while they are there. This is the end of
+             the sentence the product is built toward, so it is the first thing in the rail. */ ?>
+    <?php if (!empty($rails['joinable'])): ?>
+      <section class="rail-card">
+        <h2 class="rail-h">You could join these</h2>
+        <?php foreach ($rails['joinable'] as $j): ?>
+          <a class="rail-row" href="<?= e(url('activity/'.(int) $j['id'])) ?>">
+            <b><?= e((string) $j['title']) ?></b>
+            <span class="hint">@<?= e((string) $j['username']) ?><?php
+              if (!empty($j['day'])): ?> &middot; <?= e(date('D j M', strtotime((string) $j['day']))) ?><?php endif; ?><?php
+              if (!empty($j['start_time'])): ?> &middot; <?= e((string) $j['start_time']) ?><?php endif; ?>
+              &middot; <?= $j['join_mode'] === 'open' ? 'anyone can join' : 'ask to join' ?></span>
+          </a>
+        <?php endforeach; ?>
+      </section>
+    <?php endif; ?>
+
     <?php if ($rails['matches']): ?>
       <?php /* The most valuable box on the site: people whose dates land on top of yours. */ ?>
       <section class="rail-card">

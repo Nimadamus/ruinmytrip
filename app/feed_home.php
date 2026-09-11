@@ -24,7 +24,8 @@ declare(strict_types=1);
  */
 function rmt_feed_rails(int $uid): array {
     if ($uid < 1) {
-        return ['matches' => [], 'trips' => [], 'suggested' => [], 'meetups' => [], 'match_count' => 0];
+        return ['joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [], 'meetups' => [],
+                'match_count' => 0];
     }
 
     /* Overlaps, nearest first. rmt_trip_matches() already applies visibility and blocks, so this
@@ -74,7 +75,13 @@ function rmt_feed_rails(int $uid): array {
         foreach ($meetups as $i => $_) $meetups[$i]['elsewhere'] = true;
     }
 
+    /* Plans the member could walk into, on the days they are actually there. This is the end of
+       the sentence the whole product is built toward: three people overlap my dates, one is going
+       to the match, and I can join whichever fits me. */
+    $joinable = function_exists('rmt_activities_joinable_for') ? rmt_activities_joinable_for($uid, 4) : [];
+
     return [
+        'joinable'    => $joinable,
         'matches'     => $matches,
         'trips'       => $trips,
         'suggested'   => $suggested,

@@ -203,5 +203,30 @@ ok(count(rmt_activity_requests(1, $owner, 'declined')) === 0,
    'somebody who blocked you does not appear in your own lists');
 $pdo->exec('DELETE FROM blocks');
 
+
+// --- what I could join ------------------------------------------------------------------------
+/* The end of the sentence the product is built toward: people overlap my dates and I can join
+   whichever fits me. Ben gets a trip to Lisbon in the same window as Ana's plans. */
+$pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,visibility,date_from,date_to)
+            VALUES (9,2,7,'Ben in Lisbon','bl','','published','public','$from','$to')");
+/* Ben said yes to the match earlier in this file. Something already answered is not something to
+   offer again, which is itself the rule being relied on here, so the row goes first. */
+$pdo->exec('DELETE FROM activity_joins WHERE user_id = 2');
+$joinTitles = static fn(int $uid): array =>
+    array_map(static fn(array $r) => (string) $r['title'], rmt_activities_joinable_for($uid));
+
+ok(in_array('Benfica vs Porto', $joinTitles(2), true), 'an open plan on my dates is offered');
+ok(!in_array('Dinner in Alfama', $joinTitles(2), true), 'a plan nobody can join is not');
+ok(!in_array('A private dinner', $joinTitles(2), true), 'and a private one never is');
+ok(!in_array('On a private trip', $joinTitles(2), true), 'nor one on a trip I cannot see');
+
+$pdo->exec("UPDATE trip_activities SET cancelled_at = '$now' WHERE id = 5");
+ok(!in_array('Benfica vs Porto', $joinTitles(2), true), 'a cancelled plan is not something to join');
+$pdo->exec("UPDATE trip_activities SET cancelled_at = NULL WHERE id = 5");
+ok(in_array('Benfica vs Porto', $joinTitles(2), true), 'and it is back when the plan is back on');
+
+ok($joinTitles(3) === [], 'somebody with no trip to that city is offered nothing');
+ok(!in_array('Benfica vs Porto', $joinTitles(1), true), 'and nobody is offered their own plan');
+
 echo "activities_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
