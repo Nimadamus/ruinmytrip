@@ -17,7 +17,13 @@
              a stranger has to read first, because it is the only one they cannot get elsewhere. */ ?>
     <p class="eyebrow" style="color:#7dd3c8">A travel community, not a guidebook</p>
     <h1>Find the people going where you are going.</h1>
-    <p>Post your dates and see whose overlap. Meet up in public. Ask travelers who have actually been, and read reviews written by them rather than by us.</p>
+    <?php /* The five things the product does, in the order somebody does them. The old line
+             covered the people half and left the other half invisible: a visitor could read the
+             whole hero and never learn there are real places to browse in eighty five cities,
+             which is the part that works on day one whether or not anybody else is here. */ ?>
+    <p>Post your dates and see whose overlap. Browse real places in the city you are going to,
+      build the trip, and meet up in public. Then read what travelers who actually went said about
+      it, rather than what we did.</p>
     <form class="hero-search" action="<?= e(url('explore')) ?>" method="get">
       <input type="search" name="q" placeholder="Which city? Try Lisbon, Tokyo, Mexico City…" aria-label="Search destinations">
       <button class="btn btn-primary" type="submit">Search</button>
@@ -64,7 +70,7 @@
     <?php if ($heroStats): ?>
     <div class="hero-stats">
       <?php foreach ($heroStats as $hs): ?>
-      <div><b><?= (int)$hs[0] ?></b><span><?= e($hs[1]) ?></span></div>
+      <div><b><?= e(number_format((int)$hs[0])) ?></b><span><?= e($hs[1]) ?></span></div>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
