@@ -146,12 +146,14 @@ function cron_places(array $a): void {
        Two things, and both of them are deletions rather than corrections, because deleting a wrong
        fact is safe and inventing a right one is not.
 
-       The hours: "12:00-00:00" and "09:00-02:00" are rows written before the parser understood
-       that midnight is the end of a day and that half the bars in any city close after it. They
-       say a restaurant shuts twelve hours before it opens. Every provider written row for such a
-       place is removed, not only the malformed one, because that is what puts the place back into
-       needs_hours so the next backfill can fetch and parse it properly. A place whose hours
-       somebody typed by hand is not touched at all.
+       The hours: a span of no length, or a row that claims to be open with no times on it. Every
+       provider written row for such a place is removed, not only the malformed one, because that
+       is what puts the place back into needs_hours so the next backfill can fetch and parse it
+       properly. A place whose hours somebody typed by hand is not touched at all.
+
+       What is NOT removed, and was very nearly removed by the first version of this: a closing
+       time earlier than the opening one. "13:00 to 01:00" is how half the restaurants in Barcelona
+       describe themselves and is exactly how schema.org expects it to be written.
 
        The aliases: an alias whose normalised key equals the place's own is not another name, it
        is the same name with different capitals.
@@ -171,7 +173,7 @@ function cron_places(array $a): void {
                              AND (h.source = 'openstreetmap' OR h.source IS NULL)
                              AND COALESCE(p.source_ref,'') <> ''
                              AND ((COALESCE(h.closed,0) = 0
-                                   AND (h.opens IS NULL OR h.closes IS NULL OR h.opens >= h.closes))
+                                   AND (h.opens IS NULL OR h.closes IS NULL OR h.opens = h.closes))
                                OR h.day_of_week < 0 OR h.day_of_week > 6)", [$destId]);
         $cleared = 0;
         foreach ($suspect as $r) {
@@ -250,13 +252,18 @@ function cron_places(array $a): void {
                                              OR LENGTH(a.alias) > 120 OR TRIM(a.alias) = '')
                                       LIMIT 20", [$destId]);
 
-        /* Hours that do not describe a day. The parser refuses these at the door, so anything here
-           arrived before it did or was typed by hand. */
+        /* Hours that do not describe a day.
+           A closing time EARLIER than the opening one is not one of them, which is what the first
+           version of this check got wrong and flagged 66 correct rows for: "13:00 to 01:00" is how
+           half the restaurants in Barcelona describe themselves, it is how schema.org expects a
+           past midnight closing time to be written, and it is what this site already publishes.
+           What genuinely does not describe a day is a span of no length at all, a row that claims
+           to be open with no times on it, and a day that is not a day. */
         $out['bad_hours'] = q_all("SELECT h.place_id, p.name, h.day_of_week, h.opens, h.closes
                                      FROM place_hours h JOIN places p ON p.id = h.place_id
                                     WHERE p.destination_id = ?
                                       AND ((COALESCE(h.closed,0) = 0
-                                            AND (h.opens IS NULL OR h.closes IS NULL OR h.opens >= h.closes))
+                                            AND (h.opens IS NULL OR h.closes IS NULL OR h.opens = h.closes))
                                         OR h.day_of_week < 0 OR h.day_of_week > 6)
                                     LIMIT 20", [$destId]);
 

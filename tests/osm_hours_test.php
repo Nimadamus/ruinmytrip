@@ -110,6 +110,14 @@ ok(rmt_osm_hours_parse('Mo-We,Fr 09:30-18:00; Su,PH off') === null,
    'a week that hangs a public holiday rule off it is still refused whole');
 ok(rmt_osm_hours_parse('"by appointment"') === null, 'and so is a sentence in quotation marks');
 
+/* A closing time earlier than the opening one is not a fault, it is a night.
+   An audit that read it as one flagged 66 correct rows across three cities, which is the shape
+   every useless audit has: it cries wolf until nobody reads it. The parser splits such a span
+   across two days; older rows on this site state it directly as 13:00 to 01:00, and schema.org
+   expects exactly that. Both are right and neither is a defect. */
+ok(rmt_osm_hours_parse('Mo 13:00-01:00') !== null, 'a night that runs past midnight parses');
+ok(rmt_osm_hours_parse('Mo 13:00-13:00') === null, 'a span of no length does not');
+
 // --- storing ---------------------------------------------------------------------------------------
 $pdo = db();
 $pdo->exec("CREATE TABLE place_hours (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,
