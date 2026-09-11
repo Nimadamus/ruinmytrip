@@ -20,7 +20,7 @@
   <h2>Tools we give you</h2>
   <ul>
     <li><b>Age requirements:</b> 16+ to use RuinMyTrip, 18+ to host or attend meetups.</li>
-    <li><b>Report & block:</b> one tap to report content or block a user.</li>
+    <li><b>Report & block:</b> one tap to report content or block a traveler.</li>
     <li><b>Moderation:</b> a human team reviews reports and removes bad actors.</li>
     <li><b>Privacy controls:</b> you decide who sees your travel plans.</li>
   </ul>

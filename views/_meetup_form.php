@@ -62,7 +62,7 @@ $ackChecked = $_SERVER['REQUEST_METHOD'] === 'POST' ? !empty(input('safety_ack')
   <p class="hint" style="margin:.2rem 0 0">Whatever meeting spot you name here is visible to everyone who opens the page. There is no private-location feature, deliberately.</p>
 
   <div class="callout warn" style="margin-top:18px">
-    <b>Hosting a meetup means:</b> it is public and open to any member 18 or over, it is not dating,
+    <b>Hosting a meetup means:</b> it is public and open to any traveler 18 or over, it is not dating,
     you will meet somewhere public, and you will use <a href="<?= e(url('report')) ?>">report</a> or block if
     something is wrong. <a href="<?= e(url('safety')) ?>">Full safety guide →</a>
   </div>
