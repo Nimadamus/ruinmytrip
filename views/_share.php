@@ -19,9 +19,12 @@ $shareText ??= 'RuinMyTrip';
 $rmt_share_u = rawurlencode($shareUrl);
 $rmt_share_t = rawurlencode($shareText);
 ?>
-<div class="share-row" data-share-url="<?= e($shareUrl) ?>" data-share-text="<?= e($shareText) ?>"
-     style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0">
-  <span class="hint">Share</span>
+<?php /* One control that opens, rather than five buttons in a row. Five is a wall on a phone, and
+         four of the five are for the one person in ten who wants that particular app. The native
+         sheet, where the browser has it, is promoted out of the disclosure by share.js. */ ?>
+<details class="share-row" data-share-url="<?= e($shareUrl) ?>" data-share-text="<?= e($shareText) ?>">
+  <summary class="btn btn-ghost btn-sm">Share</summary>
+  <div class="share-opts">
   <button type="button" class="btn btn-ghost btn-sm js-share-native" hidden>Share…</button>
   <button type="button" class="btn btn-ghost btn-sm" data-copy="<?= e($shareUrl) ?>">Copy link</button>
   <a class="btn btn-ghost btn-sm" rel="noopener nofollow" target="_blank"
@@ -30,4 +33,5 @@ $rmt_share_t = rawurlencode($shareText);
      href="https://x.com/intent/tweet?text=<?= $rmt_share_t ?>&url=<?= $rmt_share_u ?>">X</a>
   <a class="btn btn-ghost btn-sm" rel="noopener nofollow" target="_blank"
      href="https://reddit.com/submit?title=<?= $rmt_share_t ?>&url=<?= $rmt_share_u ?>">Reddit</a>
-</div>
+  </div>
+</details>

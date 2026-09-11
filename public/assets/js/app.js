@@ -27,6 +27,15 @@ document.addEventListener('click', function (e) {
   if (!navigator.share) return;
   document.querySelectorAll('.share-row .js-share-native').forEach(function (b) {
     b.hidden = false;
+    /* Where the browser has a share sheet, that IS sharing: it reaches every app the person has,
+       including the three we link by hand. So the summary becomes the button and the list of
+       destinations underneath never has to open. */
+    var row0 = b.closest('.share-row');
+    var sum = row0 && row0.querySelector('summary');
+    if (sum) {
+      sum.addEventListener('click', function (ev) { ev.preventDefault(); b.click(); });
+      sum.textContent = 'Share';
+    }
     b.addEventListener('click', function () {
       const row = b.closest('.share-row');
       navigator.share({

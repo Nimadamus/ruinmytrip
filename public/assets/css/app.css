@@ -1150,3 +1150,10 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* Searching a city from its own page. */
 .city-search{display:flex;gap:8px;margin:14px 0 0}
 .city-search input[type=search]{flex:1;min-width:0}
+
+/* Sharing: one control that opens. Five buttons in a row is a wall on a phone, and four of them
+   are for the one person in ten who wants that particular app. */
+.share-row{margin:18px 0}
+.share-row > summary{display:inline-flex;align-items:center;list-style:none;cursor:pointer}
+.share-row > summary::-webkit-details-marker{display:none}
+.share-opts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}

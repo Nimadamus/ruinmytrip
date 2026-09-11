@@ -46,24 +46,6 @@ $authorSaid = $authorSaid ?? [];
           include __DIR__ . '/_photo_grid.php'; ?>
   <?php endif; ?>
 
-  <?php /* A photograph from anybody planning the trip, straight from the page, because during a
-           trip the person holding the picture is as often the one who was invited. Up to six on a
-           trip, the same cap the form has. */ ?>
-  <?php if ($canEdit ?? false): ?>
-    <form id="photos" class="trip-photo-add" method="post" enctype="multipart/form-data"
-          action="<?= e(url('trip/'.(int) $t['id'].'/photos')) ?>">
-      <?= csrf_field() ?>
-      <label class="btn btn-ghost btn-sm" style="cursor:pointer">Add a photo
-        <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
-               style="display:none" onchange="this.form.submit()"></label>
-      <?php if ($me && (int) $t['user_id'] === (int) $me['id']): ?>
-        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
-      <?php endif; ?>
-    </form>
-  <?php endif; ?>
-  <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
-        include __DIR__ . '/_share.php'; ?>
-
   <?php /* When the trip is, in words. A page that says "2027-04-02" tells the reader a date; a page
            that says "coming up" tells them whether to bother saying hello. */ ?>
   <?php if (!empty($t['date_from'])): ?>
@@ -94,9 +76,9 @@ $authorSaid = $authorSaid ?? [];
       <div class="trip-city-main">
         <?php if ($rmt_days !== null): ?>
           <span class="trip-count"><?= $rmt_days <= 0 ? 'Starts today' : ($rmt_days === 1 ? 'Tomorrow' : 'In ' . $rmt_days . ' days') ?></span>
-        <?php elseif ($phase === 'current'): ?>
-          <span class="trip-count on">Happening now</span>
         <?php endif; ?>
+        <?php /* No "Happening now" badge here: the line directly above already says it, and the
+                 same words twice in twenty pixels reads as a template repeating itself. */ ?>
         <b><a href="<?= e(url('d/'.$t['dest_slug'])) ?>"><?= e((string) $t['dest_name']) ?></a></b>
         <span class="hint">
           <?php if ($destGoing > 0): ?>
@@ -129,6 +111,27 @@ $authorSaid = $authorSaid ?? [];
            is a map, and only one of those is the question somebody opens this page with. */ ?>
   <?php $mapPoints = $tripMap ?? []; $mapId = 'trip-map'; $mapTitle = 'On a map';
         include __DIR__ . '/_map.php'; ?>
+
+  <?php /* Adding to the trip and passing it on, together, under the thing they are about. At the
+           top they were a wall of six buttons between the reader and the story. */ ?>
+  <?php /* A photograph from anybody planning the trip, straight from the page, because during a
+           trip the person holding the picture is as often the one who was invited. Up to six on a
+           trip, the same cap the form has. */ ?>
+  <?php if ($canEdit ?? false): ?>
+    <form id="photos" class="trip-photo-add" method="post" enctype="multipart/form-data"
+          action="<?= e(url('trip/'.(int) $t['id'].'/photos')) ?>">
+      <?= csrf_field() ?>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer">Add a photo
+        <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
+               style="display:none" onchange="this.form.submit()"></label>
+      <?php if ($me && (int) $t['user_id'] === (int) $me['id']): ?>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
+      <?php endif; ?>
+    </form>
+  <?php endif; ?>
+  <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
+        include __DIR__ . '/_share.php'; ?>
+
 
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
            this the site would tell you a stranger's trip overlapped yours and then leave you to
