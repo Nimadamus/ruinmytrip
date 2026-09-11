@@ -2790,18 +2790,21 @@ function notifications(array $a): void {
     /* Everything the plan rows need, in one query rather than two per row. A page of fifty
        notifications was a hundred round trips on a free instance, and the join lifecycle is the
        type that arrives in bursts, so this is the row that multiplies. */
-    $actIds = [];
-    foreach ($items as $n) {
-        if ((string) $n['target_type'] === 'activity') $actIds[(int) $n['target_id']] = true;
-    }
     $actMap = [];
-    if ($actIds) {
-        $in = implode(',', array_fill(0, count($actIds), '?'));
+    $hasAct = false;
+    foreach ($items as $n) if ((string) $n['target_type'] === 'activity') { $hasAct = true; break; }
+    if ($hasAct) {
+        /* Scoped through the member's own notifications rather than through a list of ids
+           collected in PHP. It reads the same rows either way, and this way the scope is in the
+           query, where the safety audit and the next person to read it can both see it. */
         foreach (q_all("SELECT a.id, a.title, a.day, a.cancelled_at, d.name dest_name
                           FROM trip_activities a
+                          JOIN notifications n ON n.target_type = 'activity' AND n.target_id = a.id
+                                              AND n.user_id = ?
                      LEFT JOIN destinations d ON d.id = a.destination_id
-                         WHERE a.status = 'published' AND a.id IN ($in)",
-                       array_keys($actIds)) as $r) {
+                         WHERE a.status = 'published'
+                      GROUP BY a.id, a.title, a.day, a.cancelled_at, d.name",
+                       [(int) $me['id']]) as $r) {
             $actMap[(int) $r['id']] = $r;
         }
     }
