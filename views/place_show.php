@@ -303,6 +303,23 @@
     </div></section>
   <?php endif; ?>
 
+  <?php /* The map, on the page rather than behind a link.
+           The old reasoning was that a third party iframe costs more than a map nobody opened is
+           worth, and it was right about iframes. This is not one: Leaflet and OpenStreetMap tiles,
+           the same partial the city and trip pages already use, loaded only when the place has a
+           point. "Where is it" is the question a place page exists to answer, and answering it
+           with a link to somebody else's website was sending the reader away to find out. */ ?>
+  <?php if ($coords): ?>
+    <?php $mapPoints = [[
+            'lat' => (float) $coords[0], 'lng' => (float) $coords[1],
+            'label' => (string) $p['name'], 'href' => null,
+            'meta' => trim(($catName ?? '') !== '' ? (string) $catName : rmt_place_type_label((string) $p['type'])),
+            'group' => 'place',
+          ]];
+          $mapId = 'place-map'; $mapTitle = null;
+          include __DIR__ . '/_map.php'; ?>
+  <?php endif; ?>
+
   <?php /* Outside the card on purpose. "The basics" only renders when we hold some basics, so
            putting the correction link inside it meant the places we know NOTHING about -- exactly
            the ones most likely to be wrong, and the ones a traveler is most able to help with --

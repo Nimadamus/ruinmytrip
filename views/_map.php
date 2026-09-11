@@ -26,7 +26,7 @@ $mapId = $mapId ?? ('map-' . substr(sha1(serialize($mapPoints)), 0, 8));
   <?php endif; ?>
   <div class="map-canvas" id="<?= e($mapId) ?>"
        data-points="<?= e(json_encode($mapPoints, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '[]') ?>"
-       role="img" aria-label="Map of <?= count($mapPoints) ?> places"></div>
+       role="img" aria-label="Map of <?= count($mapPoints) ?> <?= count($mapPoints) === 1 ? 'place' : 'places' ?>"></div>
   <p class="hint map-credit">Map data and tiles from
     <a href="https://www.openstreetmap.org/copyright" rel="nofollow noopener" target="_blank">OpenStreetMap</a>
     contributors. Nothing here is anybody's current location.</p>
