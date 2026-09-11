@@ -54,8 +54,14 @@ $t = rmt_destination_page_title(['name' => 'Barcelona', 'country' => 'Spain']);
 check('destination title is 2026-cost shaped', str_contains($t, '2026') && str_contains($t, 'taxes') && !str_contains($t, 'meetups'), true);
 check('destination title includes city', str_starts_with($t, 'Barcelona 2026'), true);
 
-$pt = rmt_place_page_title(['name' => 'Park Guell', 'dest_name' => 'Barcelona', 'type' => 'attraction']);
-check('place title is ticket-shaped', str_contains($pt, 'tickets') && str_contains($pt, 'Park Guell'), true);
+/* A place title may only promise what the page can answer. An attraction with a price band and
+   opening hours earns the ticket question; the same attraction with neither gets the duller line
+   that happens to be true, which is the state every freshly imported place starts in. */
+$pt = rmt_place_page_title(['name' => 'Park Guell', 'dest_name' => 'Barcelona', 'type' => 'attraction',
+                            'price_level' => 2, 'hours_count' => 7]);
+check('a place with prices and hours is asked about them', str_contains($pt, 'prices & hours') && str_contains($pt, 'Park Guell'), true);
+$pb = rmt_place_page_title(['name' => 'Park Guell', 'dest_name' => 'Barcelona', 'type' => 'attraction']);
+check('a place with neither promises neither', str_contains($pb, 'address & map') && !str_contains($pb, 'prices'), true);
 check('place title does not claim traveler reviews', str_contains($pt, 'reviewed by travelers'), false);
 
 echo "\n-- sitemap --\n";
