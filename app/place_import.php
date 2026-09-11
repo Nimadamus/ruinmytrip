@@ -69,10 +69,18 @@ function rmt_place_distance_m(float $lat1, float $lng1, float $lat2, float $lng2
  *
  * @return array{data:array<string,mixed>,refused:list<string>}
  */
+/** Keys the importer reads but never stores. Not columns, and not mistakes either. */
+const RMT_PLACE_IMPORT_SIDECAR = ['aliases'];
+
 function rmt_place_import_clean(array $row): array {
     $data = [];
     $refused = [];
     foreach ($row as $k => $v) {
+        /* Read by the importer and deliberately not stored on the row: the other names a place
+           goes by are used to mint a slug when its own name is in a script the URL cannot carry,
+           and are written to place_aliases by the caller afterwards. Reporting them as "refused"
+           made a clean run look like it had found two problems per city. */
+        if (in_array($k, RMT_PLACE_IMPORT_SIDECAR, true)) continue;
         if (!in_array($k, RMT_PLACE_IMPORT_FIELDS, true)) { $refused[] = (string) $k; continue; }
         if ($v === '' || $v === null) continue;
         $data[$k] = $v;

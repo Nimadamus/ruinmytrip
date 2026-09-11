@@ -80,6 +80,10 @@ function home(array $a): void {
     $stat_editorial_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
                                             WHERE r.status='published' AND u.role = ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $stat_travelers = (int)(q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
+    /* The number that is actually large and actually true. A first time visitor is being asked
+       what this site has, and "1,211 places across 85 cities" answers it; three travellers does
+       not, however honest it is. Nothing is invented to get there: this is a count of rows. */
+    $stat_places = (int)(q_one("SELECT COUNT(*) c FROM places WHERE status = 'active'")['c'] ?? 0);
     $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
     $latestPosts = q_all("SELECT slug, title, summary, cover_url, category, created_at FROM blog_posts WHERE status='published' ORDER BY created_at DESC, id DESC LIMIT 3");
     $refUser = current_user() ? null : rmt_invite_referrer();
@@ -109,7 +113,7 @@ function home(array $a): void {
                            FROM destinations d
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name
                           LIMIT 12", [date('Y-m-d'), date('Y-m-d H:i:s')]);
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.

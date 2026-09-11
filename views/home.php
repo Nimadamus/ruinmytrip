@@ -47,12 +47,19 @@
              to three the moment the third one does. */ ?>
     <?php
       $heroStats = [];
-      if ((int)($stat_travelers ?? 0) > 0)
-          $heroStats[] = [(int)$stat_travelers, (int)$stat_travelers === 1 ? 'Traveler' : 'Travelers'];
-      if ((int)$stat_community_reviews > 0)
-          $heroStats[] = [(int)$stat_community_reviews, (int)$stat_community_reviews === 1 ? 'Traveler review' : 'Traveler reviews'];
+      /* A number below ten reads as "nobody is here", which is the opposite of what a row sitting
+         under the Join button should say, and it is the same reasoning that already drops a
+         count of zero. Nothing is padded: a small number is left out rather than rounded up, and
+         it comes back the moment it is worth reading. */
+      if ((int)($stat_travelers ?? 0) >= 10)
+          $heroStats[] = [(int)$stat_travelers, 'Travelers'];
+      if ((int)$stat_community_reviews >= 10)
+          $heroStats[] = [(int)$stat_community_reviews, 'Traveler reviews'];
+      if ((int)($stat_places ?? 0) > 0)
+          $heroStats[] = [(int)$stat_places, (int)$stat_places === 1 ? 'Place' : 'Places'];
       if ((int)$stat_destinations > 0)
           $heroStats[] = [(int)$stat_destinations, (int)$stat_destinations === 1 ? 'City' : 'Cities'];
+      $heroStats = array_slice($heroStats, 0, 3);
     ?>
     <?php if ($heroStats): ?>
     <div class="hero-stats">
