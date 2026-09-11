@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11.
+Replace stale lines here; do not append history. Last touched 2026-09-11 (second pass).
 
 ## What the product is
 
@@ -69,20 +69,25 @@ highest applied migration. A green deploy is not a migration.
 * `python scripts/gsc_report.py --days 28` for search, `/admin/funnel` for joining and contributing.
 * The measure that matters is members who post: signups per week and reviews by distinct travelers.
 
-## The signup funnel, as it now stands (2026-09-09)
+## What the product does now
 
-Prod is 4 users and 185 reviews, all editorial: `stat_community_reviews` is genuinely 0. Four leaks
-were closed on 9 September, all live:
+A member lands on a ranked feed with a composer and rails (dates that overlap yours, your trips,
+people to follow, meetups). A trip can be just a city and two dates and names itself. Photographs
+are objects with their own pages, captions, likes and replies. `/travelers` finds people six ways
+and says why each one is there. A city page leads with who is there today. Every empty page offers
+real cities and real people and invents nothing.
 
-* The hero printed "0 Traveler reviews" under the Join button. A zero count is dropped now.
-* The city chips summed going + meetups + talk under the heading "Who is going, by city". Each chip
-  names its own signal, and the heading only claims travellers when somebody posted dates.
-* `require_login()` sent everybody to "Welcome back". A contribution route opens on Join, and the
-  join page quotes back whatever they had typed (`rmt_return_is_join_intent`, `rmt_join_intent_line`).
-* A first review held for an unconfirmed email stayed a draft forever. Migration 076 marks it and
-  confirming the address publishes it (`rmt_reviews_release_held`).
-* Place pages show the question box to logged-out visitors; the question rides through the join door
-  in the return address. Search lands on `/p/`, so this is where strangers actually arrive.
+Files worth knowing: `app/photos.php`, `app/discovery.php`, `app/feed_home.php` (rails, engagement,
+ranking), `app/lifecycle.php` (trip notifications), `app/storage.php` (R2 driver).
+
+## The safety audit is a test
+
+`tests/safety_test.php` reads every query in `app/` that touches the trips table and fails unless it
+filters by visibility, is a single lookup, belongs to one member, is a count, or is allowlisted with
+a written reason. Seven visibility leaks were found and fixed on 9 and 10 September: the feed and
+`/discover`, the city photo wall, the city page itself, search, tag pages, the search-engine ping
+queue, and the traveler directory ignoring blocks. Every one was found by planting a canary and
+looking, never by reading the query. Add a query that forgets and the suite goes red.
 
 ## Waiting on Nima
 
