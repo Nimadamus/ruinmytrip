@@ -517,7 +517,23 @@
         <?php endforeach; ?>
       </div>
 
-      <?php /* The city as a shape rather than a list. Places we hold, with a link into each one. */ ?>
+      <?php /* What this site actually holds for the city, by the word a person would use. Only the
+           categories with something in them, only when there is more than one, and a link into the
+           full list. A city with four places does not need a directory front page. */ ?>
+  <?php $rmt_cats = function_exists('rmt_place_category_counts')
+          ? array_slice(rmt_place_category_counts((int) $d['id']), 0, 10) : []; ?>
+  <?php if (count($rmt_cats) > 1): ?>
+    <div class="section-rule" style="margin-top:30px"><h2>Places in <?= e($d['name']) ?></h2></div>
+    <div class="tag-list" style="margin-bottom:18px">
+      <?php foreach ($rmt_cats as $rc): ?>
+        <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places?cat='.$rc['slug'])) ?>">
+          <?= e((string) ($rc['plural'] ?: $rc['name'])) ?> <span class="hint"><?= (int) $rc['n'] ?></span></a>
+      <?php endforeach; ?>
+      <a class="chip" href="<?= e(url('d/'.$d['slug'].'/places')) ?>">All places</a>
+    </div>
+  <?php endif; ?>
+
+  <?php /* The city as a shape rather than a list. Places we hold, with a link into each one. */ ?>
   <?php $mapPoints = $cityMap ?? []; $mapId = 'city-map'; $mapTitle = 'On a map';
         include __DIR__ . '/_map.php'; ?>
 
