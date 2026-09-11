@@ -87,5 +87,16 @@ ok(str_contains($src, '$i === $last ? max($timeout, 45) : min($timeout, 12)'),
 ok(!str_contains($src, 'overpass.osm.jp'),
    'a mirror that never completed a TLS handshake from here is not in the list');
 
+/* An empty answer is not the same as an answer.
+
+   Some public instances host only a regional extract and answer a question about the rest of the
+   world with a cheerful empty list: HTTP 200, zero elements, no error. overpass.osm.ch did exactly
+   that for Tokyo, which reads as "that city has no bars" and silently under-imports a whole city.
+   It is the most dangerous failure mode there is, because it does not look like one. */
+ok(str_contains($src, "if (!\$json['elements'] && \$i < \$last)"),
+   'an empty result is checked against a second mirror before it is believed');
+ok(!in_array('https://overpass.osm.ch/api/interpreter', RMT_OSM_DEFAULT_ENDPOINTS, true),
+   'and the regional instance that caused it is not in the list');
+
 echo "osm_mirrors_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

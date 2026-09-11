@@ -30,7 +30,6 @@ declare(strict_types=1);
  */
 const RMT_OSM_DEFAULT_ENDPOINTS = [
     'https://overpass-api.de/api/interpreter',
-    'https://overpass.osm.ch/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',
     'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
 ];
@@ -195,6 +194,7 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
        failed by a hair's breadth and never recorded a success. */
     $ranked = rmt_osm_endpoints_ranked();
     $last = count($ranked) - 1;
+    $sawEmpty = false;
     if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.', 'tries' => []];
     $lastError = 'No endpoint answered.';
     $tries = [];
@@ -237,7 +237,20 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
             rmt_osm_health_note($host, false);
             continue;
         }
-        $tries[] = $host . ': ok';
+        /* An empty answer is not the same as an answer.
+ 
+           Some public instances host only a regional extract and answer a question about the rest
+           of the world with a cheerful empty list. overpass.osm.ch did exactly that for Tokyo:
+           HTTP 200, zero elements, no error, which reads as "that city has no bars" and silently
+           under-imports a city. So an empty result is only believed once a second mirror has been
+           asked and agrees, and a mirror that returns empty where another returns rows is not
+           credited with a success. */
+        if (!$json['elements'] && $i < $last) {
+            $tries[] = $host . ': empty, asking another';
+            $sawEmpty = true;
+            continue;
+        }
+        $tries[] = $host . ': ok' . ($sawEmpty && $json['elements'] ? ' (the previous one was wrong)' : '');
         rmt_osm_health_note($host, true);
         return ['ok' => true, 'elements' => $json['elements'], 'error' => null, 'tries' => $tries];
     }
