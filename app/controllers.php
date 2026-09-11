@@ -647,9 +647,19 @@ function place_show(array $a): void {
     $desc = $ed['meta_description'] ?? null;
     if (!$desc && $ed && !empty($ed['what_it_is'])) $desc = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 155, '…');
     if (!$desc) {
-        $desc = $stats['c'] > 0
-            ? $p['name'].' in '.$p['dest_name'].': '.$stats['a'].'/5 from '.$stats['c'].' traveler '.($stats['c']===1?'review':'reviews').'.'
-            : $p['name'].' in '.$p['dest_name'].'. No traveler reviews yet, be the first to write one.';
+        if ($stats['c'] > 0) {
+            $desc = $p['name'].' in '.$p['dest_name'].': '.$stats['a'].'/5 from '.$stats['c']
+                  . ' traveler '.($stats['c']===1?'review':'reviews').'.';
+        } else {
+            /* What this page actually holds, said plainly. "No traveler reviews yet" was honest
+               and is an advertisement for not clicking; where it is and what it is are the facts a
+               searcher came with. */
+            $what = $category ? mb_strtolower((string) $category['name']) : mb_strtolower($typeLabel);
+            $desc = $p['name'] . ' is a ' . $what . ' in ' . $p['dest_name'] . '.';
+            if (!empty($address['lines'])) $desc .= ' ' . implode(', ', $address['lines']) . '.';
+            $desc .= ' See it on a map, save it to a trip, and read what travelers say.';
+            $desc = mb_strimwidth($desc, 0, 300, '…');
+        }
     }
 
     // Robots from the same rule the sitemap uses, so the two can never disagree about this page.
@@ -671,7 +681,10 @@ function place_show(array $a): void {
        into a page about somewhere other travelers are actually going. */
     $network = rmt_place_network($id, $me);
     view('place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
-        'title' => rmt_place_page_title($p),
+        /* The title claims only what this page can answer, so it needs to know what is on it:
+           how many days of hours we hold, and whether there is anything to say about price. */
+        'title' => rmt_place_page_title($p + ['hours_count' => count($hours),
+                                              'editorial_prices' => (string) ($ed['prices'] ?? '')]),
         'description' => $desc,
         'canonical' => $canonical,
         'robots' => rmt_robots_for($placeVerdict),

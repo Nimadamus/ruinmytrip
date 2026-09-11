@@ -63,10 +63,18 @@ function rmt_place_page_title(array $p): string {
        So it is assembled to a budget instead, dropping the least load-bearing part first: the
        brand, then the year, then the city. The name and what the page answers always survive,
        because those are the two things somebody is searching for. */
-    $answer = match ((string) ($p['type'] ?? '')) {
-        'hotel'      => 'prices & fees',
-        'restaurant' => 'prices & hours',
-        default      => 'tickets & prices',
+    /* The answer has to be one the page can actually give. "prices & hours" over a page with
+       neither is a promise broken in the first second, which is worse for a reader than a duller
+       title and worse for the site than no click. A page we hold only an address and a point for
+       says so, and that is still a real answer to "where is it". */
+    $hasHours  = (int) ($p['hours_count'] ?? 0) > 0;
+    $hasPrices = ($p['price_level'] ?? null) !== null
+              || trim((string) ($p['editorial_prices'] ?? '')) !== '';
+    $answer = match (true) {
+        $hasPrices && $hasHours => 'prices & hours',
+        $hasPrices              => (string) ($p['type'] ?? '') === 'hotel' ? 'prices & fees' : 'prices',
+        $hasHours               => 'opening hours',
+        default                 => 'address & map',
     };
     $name = trim((string) ($p['name'] ?? 'Place'));
     $city = trim((string) ($p['dest_name'] ?? ''));

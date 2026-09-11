@@ -55,22 +55,35 @@ check('a two-word first sentence does not become the description',
 
 echo "\n-- place titles --\n";
 $fits = static fn(array $p): bool => mb_strlen(rmt_place_page_title($p)) <= 60;
-$anne = ['name' => 'Anne Frank House', 'dest_name' => 'Amsterdam', 'type' => 'attraction'];
+/* A title may only promise what the page can answer. These fixtures carry hours and a price band
+   because that is what earns the words "prices" and "hours"; a page holding neither says
+   "address & map", which is duller and is true. */
+$anne = ['name' => 'Anne Frank House', 'dest_name' => 'Amsterdam', 'type' => 'attraction',
+         'hours_count' => 7, 'price_level' => 2];
 check('the city and the year fit here', str_contains(rmt_place_page_title($anne), 'Amsterdam ' . date('Y')), true);
-check('and it says what the page answers', str_contains(rmt_place_page_title($anne), 'tickets & prices'), true);
+check('and it says what the page answers', str_contains(rmt_place_page_title($anne), 'prices & hours'), true);
 check('inside the budget', $fits($anne), true);
 
-$long = ['name' => 'Book of Kells Experience at Trinity College', 'dest_name' => 'Dublin', 'type' => 'attraction'];
+$long = ['name' => 'Book of Kells Experience at Trinity College', 'dest_name' => 'Dublin',
+         'type' => 'attraction', 'hours_count' => 7, 'price_level' => 2];
 check('a long name loses the city, not the question',
-      str_contains(rmt_place_page_title($long), 'tickets & prices'), true);
+      str_contains(rmt_place_page_title($long), 'prices & hours'), true);
 check('still inside the budget', $fits($long), true);
 check('and the name is trimmed rather than dropped',
       str_starts_with(rmt_place_page_title($long), 'Book of Kells'), true);
 
 check('a hotel is asked a hotel question',
-      str_contains(rmt_place_page_title(['name' => 'Hotel Danieli', 'dest_name' => 'Venice', 'type' => 'hotel']), 'prices & fees'), true);
+      str_contains(rmt_place_page_title(['name' => 'Hotel Danieli', 'dest_name' => 'Venice',
+                                         'type' => 'hotel', 'price_level' => 4]), 'prices & fees'), true);
 check('a restaurant too',
-      str_contains(rmt_place_page_title(['name' => 'Chez Janou', 'dest_name' => 'Paris', 'type' => 'restaurant']), 'prices & hours'), true);
+      str_contains(rmt_place_page_title(['name' => 'Chez Janou', 'dest_name' => 'Paris',
+                                         'type' => 'restaurant', 'price_level' => 2,
+                                         'hours_count' => 7]), 'prices & hours'), true);
+/* And the page that holds neither says so. This is the case every imported place starts in, and
+   the old title promised prices and hours to every one of them. */
+check('a page with no prices and no hours promises neither',
+      rmt_place_page_title(['name' => 'Jardim da Estrela', 'dest_name' => 'Lisbon',
+                            'type' => 'attraction']), 'Jardim da Estrela, Lisbon ' . date('Y') . ': address & map | RuinMyTrip');
 check('no city is not a stray comma',
       str_contains(rmt_place_page_title(['name' => 'Somewhere', 'dest_name' => '', 'type' => 'attraction']), ', '), false);
 
