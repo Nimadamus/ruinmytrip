@@ -113,7 +113,23 @@ function messages_index(array $a): void {
         if ((int) $r['mine_count'] > 0) $threads[] = $r; else $requests[] = $r;
     }
 
-    view('messages_index', compact('rows', 'threads', 'requests'), [
+    /* Somebody whose dates land on yours and who you have never written to. An inbox with two
+       threads in it is a page with nothing to do on it, and the thing to do is the whole reason
+       this site exists. Real rows only: the same overlap query the travellers page uses, with
+       everybody already in a conversation removed, so this disappears the moment it would be
+       repeating what is above it. */
+    $couldWrite = [];
+    if (function_exists('rmt_trip_matches') && count($threads) + count($requests) < 5) {
+        $known = [];
+        foreach (array_merge($threads, $requests) as $r) $known[(string) $r['username']] = true;
+        foreach (rmt_trip_matches((int) $me['id'], 12) as $m) {
+            if (isset($known[(string) $m['username']])) continue;
+            $couldWrite[] = $m;
+            if (count($couldWrite) >= 3) break;
+        }
+    }
+
+    view('messages_index', compact('rows', 'threads', 'requests', 'couldWrite'), [
         'title' => 'Messages | RuinMyTrip',
         'description' => 'Your RuinMyTrip conversations.',
     ]);

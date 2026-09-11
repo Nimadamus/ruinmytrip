@@ -49,5 +49,31 @@ $rmtRow = static function (array $r): void { ?>
       <?php foreach ($requests as $r) $rmtRow($r); ?>
     </ul>
   <?php endif; ?>
+  <?php /* An inbox with two threads is a page with nothing to do on it, and the thing to do is
+           the whole reason this site exists: somebody is in the same city on the same days and
+           nobody has said hello. Real overlaps, and anybody already in the lists above is
+           excluded, so this disappears rather than repeating them. */ ?>
+  <?php if (!empty($couldWrite)): ?>
+    <h2 style="margin:28px 0 4px">On your dates</h2>
+    <p class="hint" style="margin:0 0 10px">Same city, same days, and no conversation yet.</p>
+    <ul class="list-plain">
+      <?php foreach ($couldWrite as $c): ?>
+        <li class="card" style="margin-bottom:8px"><div class="card-body"
+             style="padding:12px 16px;display:flex;align-items:center;gap:10px">
+          <img class="avatar" src="<?= e(avatar_url($c['avatar_url'] ?? null)) ?>" alt="">
+          <div style="flex:1;min-width:0">
+            <div class="inbox-who">
+              <b><a href="<?= e(url('u/'.$c['username'])) ?>"><?= e($c['display_name'] ?: $c['username']) ?></a></b>
+              <span class="muted">@<?= e($c['username']) ?></span>
+            </div>
+            <p class="muted" style="margin:.2rem 0 0"><?= e((string) $c['dest_name']) ?> ·
+              <?= (int) $c['overlap_days'] ?> <?= (int) $c['overlap_days'] === 1 ? 'day' : 'days' ?> with you</p>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('messages/'.$c['username'])) ?>">Say hello</a>
+        </div></li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+
   <div style="height:40px"></div>
 </div>

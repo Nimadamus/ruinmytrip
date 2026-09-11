@@ -50,7 +50,15 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:var(--sans);color:var(--text);background:var(--paper);line-height:1.6}
+body{margin:0;font-family:var(--sans);color:var(--text);background:var(--paper);line-height:1.6;
+  /* A short page used to end wherever its content ended, leaving the dark footer floating in the
+     middle of the screen with empty paper below it. Messages with two threads, an empty saved
+     list, a city with one plan: every one of them looked unfinished for the same reason. The
+     column fills the viewport and the footer is pushed to the bottom of it, which costs nothing
+     on a long page and is the difference between "quiet" and "broken" on a short one. */
+  min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+body > main{flex:1 0 auto}
+body > .site-footer{flex-shrink:0}
 img{max-width:100%;display:block}
 a{color:var(--brand);text-decoration:none}
 a:hover{text-decoration:underline}
