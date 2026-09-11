@@ -34,27 +34,28 @@ holidays, month ranges or open ended times it will not guess at.
 
 ## P1, core product
 
-1. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
-   editorial work rather than import work, and making the importer happy is the wrong reason to do
-   it. Left alone deliberately, as asked.
-2. **Photo upload during a trip**, beyond one file at a time.
+1. **Miami itself.** The workflow exists now: `/admin/destination/new`, a draft table nothing else
+   reads, and a publish gate that refuses a half written city. What it needs is a decision and a
+   paragraph, both of which are Nima's: a category from city / culture / beach / nature / food /
+   adventure, and a summary of at least 120 characters in the site's voice. The coordinates are
+   25.7743, -80.1937 and the rest is typing. No content will be generated for it.
 
 ## P2, growth
 
-3. **Events as an object.** The architecture is small; real event data needs a source. Nothing
+2. **Events as an object.** The architecture is small; real event data needs a source. Nothing
    invented.
-4. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
+3. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
    "Alfama" and "6th Arrondissement" are how people actually choose where to stay.
-5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-6. **Seasonal and practical answers on a city page.** Real sources only.
+4. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+5. **Seasonal and practical answers on a city page.** Real sources only.
 
 ## P3, worth doing, not worth doing first
 
-7. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
+6. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
     is the case where clustering earns its dependency.
-8. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
+7. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
     a fixture; reads nodes only, so a venue mapped as a building outline is missed.
-9. **`/explore` ships 100KB** and could ship a third of that.
+8. **`/explore` ships 100KB** and could ship a third of that.
 
 ## Done (2026-09-11, later)
 
@@ -66,6 +67,10 @@ holidays, month ranges or open ended times it will not guess at.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **A city can be added without a deploy** (migration 089), and a half written one cannot reach a
+  reader, because it does not exist in the destinations table until it is finished.
+* **Multi photo upload verified end to end** and the control now says how many it will take and
+  what it is doing while it does it.
 * **Every place has a human readable URL.** The 43 with only a Japanese or Thai name carry that
   name in the path, percent encoded on the wire, with the old URL 301ing and the canonical, the
   sitemap and every internal link following. `tests/place_url_test.php` tries a traversal, a dot,
