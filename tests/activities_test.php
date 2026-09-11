@@ -247,5 +247,55 @@ ok(in_array('Benfica vs Porto', $joinTitles(2), true), 'and it is back when the 
 ok($joinTitles(3) === [], 'somebody with no trip to that city is offered nothing');
 ok(!in_array('Benfica vs Porto', $joinTitles(1), true), 'and nobody is offered their own plan');
 
+
+// --- the loop closing -------------------------------------------------------------------------
+/* PLAN then DO then SAY SO. Only the member's own plans, only after the day, only while the answer
+   is still easy, and only until it is answered. */
+$pdo->exec("UPDATE trip_activities SET day = '2026-09-08' WHERE id = 1");
+$revTitles = static fn(int $uid): array =>
+    array_map(static fn(array $r) => (string) $r['title'], rmt_activities_to_review($uid, 10));
+
+ok(in_array('Dinner in Alfama', $revTitles(1), true), 'a plan whose day has passed is asked about');
+ok(!in_array('Dinner in Alfama', $revTitles(2), true), 'and only of the person whose plan it is');
+ok(!in_array('Benfica vs Porto', $revTitles(1), true), 'a plan that has not happened yet is not');
+
+$pdo->exec('UPDATE trip_activities SET done = 1 WHERE id = 1');
+ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'once answered it stops asking');
+$pdo->exec('UPDATE trip_activities SET done = 0 WHERE id = 1');
+
+$pdo->exec("UPDATE trip_activities SET cancelled_at = '$now' WHERE id = 1");
+ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'and nobody is asked how a cancelled plan went');
+$pdo->exec('UPDATE trip_activities SET cancelled_at = NULL WHERE id = 1');
+
+$pdo->exec("UPDATE trip_activities SET day = '2026-07-12' WHERE id = 1");
+ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'a plan from two months ago is homework, so it is dropped');
+
+
+// --- what the people who went say --------------------------------------------------------------
+/* A recommendation is the most reusable thing on the site, and also the easiest thing to leak: it
+   carries a name, a place and a date range. It obeys exactly the same visibility rule as the plan
+   it came from. */
+$pdo->exec('UPDATE trip_activities SET recommend = 1, done = 1 WHERE id IN (1,3,4,6)');
+$recLabels = static fn(?array $viewer): array =>
+    array_map(static fn(array $r) => (string) $r['label'], rmt_activity_recommended_in_city(7, $viewer));
+
+$anonRecs = $recLabels(null);
+ok(in_array('Dinner in Alfama', $anonRecs, true), 'a public plan that was worth it is said so');
+ok(!in_array('A private dinner', $anonRecs, true), 'a private plan never is');
+ok(!in_array('On a private trip', $anonRecs, true), 'nor one on a private trip');
+ok(!in_array('Followers-only plan', $anonRecs, true), 'nor a followers-only one, to a stranger');
+ok(in_array('Followers-only plan', $recLabels($follower), true), 'a follower does see theirs');
+
+$recRow = null;
+foreach (rmt_activity_recommended_in_city(7, null) as $r) if ($r['label'] === 'Dinner in Alfama') $recRow = $r;
+ok($recRow !== null && $recRow['n'] === 1, 'one person who went is counted as one, never rounded up');
+ok($recRow !== null && $recRow['users'] === ['ana'], 'and named, because a name is the point');
+
+$pdo->exec('INSERT INTO blocks VALUES (2,1)');
+ok(!in_array('Dinner in Alfama', $recLabels($stranger), true),
+   'somebody who blocked you does not recommend anything to you');
+$pdo->exec('DELETE FROM blocks');
+$pdo->exec('UPDATE trip_activities SET recommend = NULL, done = 0');
+
 echo "activities_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

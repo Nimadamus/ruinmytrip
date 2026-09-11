@@ -80,7 +80,12 @@ function rmt_feed_rails(int $uid): array {
        to the match, and I can join whichever fits me. */
     $joinable = function_exists('rmt_activities_joinable_for') ? rmt_activities_joinable_for($uid, 4) : [];
 
+    /* The other end of the same loop. A plan whose day has passed and which its owner has not
+       answered for is the one piece of knowledge the next traveler needs and nobody else has. */
+    $toReview = function_exists('rmt_activities_to_review') ? rmt_activities_to_review($uid, 3) : [];
+
     return [
+        'review'      => $toReview,
         'joinable'    => $joinable,
         'matches'     => $matches,
         'trips'       => $trips,

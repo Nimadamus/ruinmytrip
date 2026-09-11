@@ -507,3 +507,91 @@ function rmt_activities_joinable_for(int $uid, int $limit = 6): array {
         array_merge([$uid, $uid, $uid], $tripArgs, $actArgs, [$uid, $uid])
     );
 }
+
+/**
+ * Plans whose day has been and gone and which their owner has not answered for yet.
+ *
+ * This is the hinge of the loop the whole site depends on: somebody planned a thing, went to it,
+ * and now knows something the next traveler does not. Asking once, on the days right after, is the
+ * only moment that question is easy to answer. A fortnight later it is homework.
+ *
+ * Only the member's own plans, so there is nothing here to leak. Somebody who was accepted onto
+ * another traveler's dinner is not asked, because the rating lives on that traveler's plan and
+ * answering for them would be putting words in their mouth.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_activities_to_review(int $uid, int $limit = 3): array {
+    if ($uid < 1) return [];
+    $today = date('Y-m-d');
+    $floor = date('Y-m-d', strtotime('-21 days'));
+    return q_all(
+        "SELECT a.*, t.slug trip_slug, t.title trip_title, d.name dest_name
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+      LEFT JOIN destinations d ON d.id = a.destination_id
+          WHERE a.status = 'published' AND a.cancelled_at IS NULL
+            AND a.day IS NOT NULL AND a.day < ? AND a.day >= ?
+            AND (a.rating IS NULL OR a.rating = 0) AND (a.done IS NULL OR a.done = 0)
+            AND a.user_id = ?
+       ORDER BY a.day DESC, a.id DESC
+          LIMIT " . (int) $limit,
+        [$today, $floor, $uid]
+    );
+}
+
+/**
+ * What travelers who actually went say is worth it.
+ *
+ * The other end of the loop, and the reason the loop exists: somebody planned a thing, went to it,
+ * said whether it was worth it, and the next traveler reading the city page gets that answer with
+ * a real name attached. Counted in people, never rounded, and if one person said it, it says one.
+ *
+ * Visibility is the same rule as everywhere else, so a recommendation on a private trip stays on
+ * that private trip.
+ *
+ * @return list<array{label:string,category:string,n:int,place_slug:?string,users:list<string>,activity_id:int}>
+ */
+function rmt_activity_recommended_in_city(int $destId, ?array $viewer, int $limit = 8): array {
+    if ($destId < 1) return [];
+    [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
+    [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
+    $blockSql = '1=1';
+    $blockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$blockSql] = rmt_match_block_sql('a.user_id');
+        $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+
+    $rows = q_all(
+        "SELECT a.id, a.title, a.category, a.user_id, u.username, p.name place_name, p.slug place_slug
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+           JOIN users u ON u.id = a.user_id AND u.status = 'active'
+      LEFT JOIN places p ON p.id = a.place_id
+          WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
+            AND a.recommend = 1 AND a.cancelled_at IS NULL
+            AND $tripVis AND $actVis AND $blockSql
+       ORDER BY a.id DESC LIMIT 200",
+        array_merge([$destId], $tripArgs, $actArgs, $blockArgs)
+    );
+
+    $seen = [];
+    foreach ($rows as $r) {
+        $label = trim((string) ($r['place_name'] ?: $r['title']));
+        if ($label === '') continue;
+        $key = mb_strtolower($label);
+        if (!isset($seen[$key])) {
+            $seen[$key] = ['label' => $label, 'category' => (string) $r['category'],
+                           'place_slug' => $r['place_slug'] ?: null, 'activity_id' => (int) $r['id'],
+                           'users' => [], 'n' => 0];
+        }
+        // The same person saying it twice is still one person saying it.
+        $seen[$key]['users'][(int) $r['user_id']] = (string) $r['username'];
+        $seen[$key]['n'] = count($seen[$key]['users']);
+    }
+    $out = array_values($seen);
+    usort($out, static fn(array $x, array $y) => $y['n'] <=> $x['n']);
+    foreach ($out as $i => $r) $out[$i]['users'] = array_values($r['users']);
+    return array_slice($out, 0, $limit);
+}

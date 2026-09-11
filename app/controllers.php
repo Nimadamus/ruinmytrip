@@ -429,6 +429,9 @@ function destination_travelers(array $a): void {
                                  $winFrom !== '' ? $winFrom : null,
                                  $winTo !== '' ? $winTo : null, 24,
                                  ['category' => $planCat, 'joinable' => $planOpen]);
+    /* Deliberately not windowed. "Worth it" does not expire on the day somebody leaves, and
+       narrowing it to a date range would throw away every answer this city has. */
+    $cityRecs = rmt_activity_recommended_in_city((int) $d['id'], $me, 8);
     $cityPopular = rmt_activity_popular_in_city((int) $d['id'], $me,
                                                 $winFrom !== '' ? $winFrom : null,
                                                 $winTo !== '' ? $winTo : null, 8);
@@ -438,7 +441,8 @@ function destination_travelers(array $a): void {
                                    'cityPopular' => $cityPopular, 'winFrom' => $winFrom,
                                    'winTo' => $winTo, 'winSource' => $winSource,
                                    'planCats' => $planCats, 'planCat' => $planCat,
-                                   'planOpen' => $planOpen, 'planOpenCount' => $planOpenCount], [
+                                   'planOpen' => $planOpen, 'planOpenCount' => $planOpenCount,
+                                   'cityRecs' => $cityRecs], [
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',
@@ -5859,8 +5863,42 @@ function trip_activity_settings(array $a): void {
         ->execute([$d['join_mode'], $cap ?: null, $d['meeting_point'],
                    $d['start_time'] ?: $act['start_time'], $d['end_time'],
                    date('Y-m-d H:i:s'), (int) $act['id']]);
+
+    /* People who said they would be somewhere at a time are the one group who has to be told when
+       that time or that place moves. Nobody else is told anything: a capacity change, a join-mode
+       change and a typo fix are the owner's business. */
+    $movedTime  = (string) ($d['start_time'] ?: $act['start_time']) !== (string) ($act['start_time'] ?? '');
+    $movedPlace = (string) $d['meeting_point'] !== (string) ($act['meeting_point'] ?? '');
+    if ($movedTime || $movedPlace) rmt_activity_notify_changed((int) $act['id'], (int) $me['id']);
+
     flash('Updated.');
     redirect($back);
+}
+
+/**
+ * Tell the people who are coming that the plan moved.
+ *
+ * Once per hour at most, per plan. Somebody fiddling with a meeting point five times in a row is
+ * one change as far as anybody else is concerned, and five buzzes is how a person turns
+ * notifications off for good.
+ */
+function rmt_activity_notify_changed(int $activityId, int $actorId): void {
+    $since = date('Y-m-d H:i:s', time() - 3600);
+    $rows = q_all("SELECT user_id FROM activity_joins WHERE activity_id = ? AND state = 'going'",
+                  [$activityId]);
+    $now = date('Y-m-d H:i:s');
+    foreach ($rows as $r) {
+        $uid = (int) $r['user_id'];
+        if ($uid === $actorId) continue;
+        $dup = q_one("SELECT 1 FROM notifications
+                       WHERE user_id = ? AND type = 'activity_changed' AND target_type = 'activity'
+                         AND target_id = ? AND created_at > ?",
+                     [$uid, $activityId, $since]);
+        if ($dup) continue;
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at)
+               VALUES (?,?,?,?,?,?)',
+              [$uid, 'activity_changed', $actorId, 'activity', $activityId, $now]);
+    }
 }
 
 /** POST /activity/{id}/photos — the owner adds photographs, during or after. */
@@ -6026,7 +6064,8 @@ function trip_activity_done(array $a): void {
     db()->prepare('UPDATE trip_activities SET done = ?, rating = ?, recommend = ?, updated_at = ? WHERE id = ?')
         ->execute([$done, $rating ?: null, $recommend, date('Y-m-d H:i:s'), (int) $act['id']]);
     flash($done ? 'Marked as done.' : 'Marked as not done.');
-    redirect('/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan');
+    // Answered from the feed, the answer should not throw somebody onto a different page.
+    redirect(rmt_return_to('/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan'));
 }
 
 function share_card(array $a): void {

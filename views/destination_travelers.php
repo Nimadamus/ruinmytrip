@@ -21,6 +21,7 @@ $planCats = $planCats ?? [];
 $planCat = $planCat ?? '';
 $planOpen = $planOpen ?? false;
 $planOpenCount = $planOpenCount ?? 0;
+$cityRecs = $cityRecs ?? [];
 /* Every chip keeps the date window it was clicked in, because the window is the whole reason
    somebody is on this page. */
 $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, $planCat, $planOpen): string {
@@ -131,6 +132,31 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
     <?php if (!$cityPlans): ?>
       <p class="hint">Nothing here matches that yet. <a href="<?= e($planUrl(['cat'=>'','open'=>false])) ?>">Show everything</a>.</p>
     <?php endif; ?>
+  <?php endif; ?>
+
+  <?php /* The answer half of the loop. Somebody planned it, went, and said it was worth it, and
+           that sentence is the thing the next traveler came here for. Names attached, counts of
+           people, and nothing at all when nobody has answered yet. */ ?>
+  <?php if (!empty($cityRecs)): ?>
+    <h2 style="margin-top:28px">Travelers who went say these were worth it</h2>
+    <ul class="city-plans">
+      <?php foreach ($cityRecs as $rc): ?>
+        <li>
+          <span>
+            <?php if (!empty($rc['place_slug'])): ?>
+              <a href="<?= e(url('p/'.$rc['place_slug'])) ?>"><b><?= e((string) $rc['label']) ?></b></a>
+            <?php else: ?>
+              <a href="<?= e(url('activity/'.(int) $rc['activity_id'])) ?>"><b><?= e((string) $rc['label']) ?></b></a>
+            <?php endif; ?>
+            <span class="hint"><?php
+              $rcWho = array_slice($rc['users'], 0, 3);
+              foreach ($rcWho as $i => $un): ?><?= $i ? ', ' : '' ?><a href="<?= e(url('u/'.$un)) ?>">@<?= e($un) ?></a><?php endforeach;
+              if ($rc['n'] > count($rcWho)): ?> and <?= (int) $rc['n'] - count($rcWho) ?> more<?php endif; ?>
+              went, and would do it again</span>
+          </span>
+        </li>
+      <?php endforeach; ?>
+    </ul>
   <?php endif; ?>
 
   <?php /* What more than one person planned. Counted in people, never rounded: if one person

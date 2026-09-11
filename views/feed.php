@@ -9,13 +9,37 @@ $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' =>
    still 200 and looked fine to anything that only checked a status code. */
 $rmt_post_verb = static fn(array $it): ?string =>
     ($it['kind'] === 'post' && !empty($it['trip_id'])) ? 'posted an update from' : null;
-$rails = $rails ?? ['joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [],
+$rails = $rails ?? ['review' => [], 'joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [],
                     'meetups' => [], 'match_count' => 0];
 $rmt_day = static fn(?string $d): string => $d ? date('j M', strtotime($d)) : '';
 $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
 $threads = $threads ?? [];
 ?>
 <div class="wrap feed-shell">
+
+  <?php /* The day has passed and nobody has said how it went. One tap, and the answer is a real
+           recommendation with a real person's name on it, which is the only kind this site has.
+           Above the feed rather than beside it, because it expires: ask a fortnight later and it
+           is homework. */ ?>
+  <?php if (!empty($rails['review'])): ?>
+    <section class="rail-card feed-nudge">
+      <h2 class="rail-h">How was it?</h2>
+      <?php foreach ($rails['review'] as $rv): ?>
+        <div class="rail-row rail-review">
+          <b><?= e((string) $rv['title']) ?></b>
+          <span class="hint"><?= e(date('D j M', strtotime((string) $rv['day']))) ?><?php
+            if (!empty($rv['dest_name'])): ?> &middot; <?= e((string) $rv['dest_name']) ?><?php endif; ?></span>
+          <form method="post" action="<?= e(url('activity/'.(int) $rv['id'].'/done')) ?>" class="review-yn">
+            <?= csrf_field() ?>
+            <input type="hidden" name="done" value="1">
+            <input type="hidden" name="return" value="/feed">
+            <button class="btn btn-primary btn-sm" name="recommend" value="1">Worth it</button>
+            <button class="btn btn-sm btn-ghost" name="recommend" value="0">Skip it</button>
+          </form>
+        </div>
+      <?php endforeach; ?>
+    </section>
+  <?php endif; ?>
 
   <div class="feed-main">
     <?php /* The composer is the first thing in the column, because the difference between a feed

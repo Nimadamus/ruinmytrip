@@ -1040,3 +1040,11 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .plan-filters .chip.is-on .hint{color:var(--paper);opacity:.7}
 .chip-join{font-size:.72rem;padding:.1rem .45rem;margin-left:6px;vertical-align:1px;
   background:var(--tint);border-color:transparent;color:var(--brand);font-weight:600}
+
+/* The "how was it" answer. Two taps wide, thumb sized, and it never wraps into a column. */
+.rail-review{display:block;text-decoration:none}
+.review-yn{display:flex;gap:8px;margin-top:8px}
+.review-yn .btn{flex:1 1 0;min-height:36px}
+/* The "how was it" nudge spans both columns and sits above them, on a phone and on a desktop
+   alike. It is the member's own unfinished business, and it stops existing once answered. */
+.feed-nudge{grid-column:1/-1;order:0}
