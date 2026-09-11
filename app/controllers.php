@@ -2819,6 +2819,25 @@ function search(array $a): void {
     }
 
 
+    /* Places whose category is the word that was typed, in the city being read about. "museum" in
+       Barcelona finds nothing by name, because every museum there is called Museu, and the category
+       is the word this site already holds in the reader's language. Merged in front, deduplicated,
+       and capped, so it improves the ten rows rather than replacing them. */
+    if ($ctxId > 0 && $qs !== '') {
+        $byCat = rmt_places_by_category_term($ctxId, $qs, 6);
+        if ($byCat) {
+            $seenPlace = [];
+            $merged = [];
+            foreach (array_merge($byCat, $places) as $pl) {
+                $pid = (int) ($pl['id'] ?? 0);
+                if ($pid === 0 || isset($seenPlace[$pid])) continue;
+                $seenPlace[$pid] = true;
+                $merged[] = $pl;
+            }
+            $places = array_slice($merged, 0, 10);
+        }
+    }
+
     // A search results page is a view of the index we already have, in somebody's words.
     view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
         'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',

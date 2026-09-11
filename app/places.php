@@ -618,3 +618,33 @@ function rmt_place_map_points(int $destId, int $limit = 120): array {
         [$destId]
     );
 }
+
+/**
+ * Places in one city whose CATEGORY matches what somebody typed.
+ *
+ * Full text search matches a name against a name, so "museum" typed while reading about Barcelona
+ * finds nothing, because every museum there is called Museu. The category is the word this site
+ * already holds in the reader's language, and matching it is the difference between a search that
+ * knows what a museum is and one that matches strings.
+ *
+ * Scoped to one city on purpose: a bare "museums" with no context is a browse, not a search, and
+ * that page already exists.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_places_by_category_term(int $destId, string $term, int $limit = 6): array {
+    $term = trim(mb_strtolower($term));
+    if ($destId < 1 || mb_strlen($term) < 3) return [];
+    $like = '%' . $term . '%';
+    return q_all(
+        "SELECT p.*, d.name dest_name, d.country dest_country
+           FROM places p
+           JOIN destinations d ON d.id = p.destination_id
+           JOIN place_categories c ON c.id = p.category_id AND c.status = 'active'
+          WHERE p.destination_id = ? AND p.status = 'active'
+            AND (LOWER(c.name) LIKE ? OR LOWER(c.plural) LIKE ? OR LOWER(c.slug) LIKE ?)
+       ORDER BY p.name
+          LIMIT " . (int) $limit,
+        [$destId, $like, $like, $like]
+    );
+}
