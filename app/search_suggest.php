@@ -821,21 +821,32 @@ function rmt_search_section_order(string $q, array $names): array {
         foreach ($names[$key] as $name) {
             $n = function_exists('rmt_search_norm') ? rmt_search_norm((string) $name) : mb_strtolower((string) $name);
             if ($n === '') continue;
+            /* Two signals, and both are things a person can check by looking at the names.
+
+               WHERE it matched. Being the whole name is overwhelming evidence and sits far above
+               everything else. Below that, starting with the query and containing it as a whole
+               word are close together on purpose: "Basilica de la Sagrada Familia" contains the
+               query as a complete phrase, and the fact that three words of preamble come first is
+               a fact about Catalan naming, not about relevance. Matching inside a word is weak and
+               stays weak, because "museum" inside "Rijksmuseum" is a coincidence of spelling.
+
+               HOW MUCH of the name the query accounts for. "Sagrada Familia" is half of the
+               basilica's name and a fifth of "Sagrada Familia tickets 2026: 26 euros, 36 with
+               towers, timed entry, now finished". The reader typing it meant the church, and the
+               reason is that the church is almost entirely the thing they typed.
+
+               Completeness is weighted enough to decide between the two middle tiers and never
+               enough to touch an exact match, so "Lisbon" always answers with Lisbon. Nothing here
+               knows or cares what KIND of thing it is scoring. */
             $tier = 0.0;
-            if ($n === $needle)                                              $tier = 4.0;
-            elseif (str_starts_with($n, $needle))                            $tier = 3.0;
+            if ($n === $needle)                                                  $tier = 4.0;
+            elseif (str_starts_with($n, $needle))                                $tier = 2.2;
             elseif (preg_match('/(^|\s)' . preg_quote($needle, '/') . '/u', $n)) $tier = 2.0;
-            elseif (str_contains($n, $needle))                               $tier = 1.0;
+            elseif (str_contains($n, $needle))                                   $tier = 1.0;
             if ($tier === 0.0) continue;
-            /* How much of the name the query accounts for, worth less than a whole tier so it can
-               only order things that matched the same way. "Sagrada Familia" is half of "Basilica
-               de la Sagrada Familia" and a fifth of "Sagrada Familia tickets 2026: 26 euros, 36
-               with towers, timed entry, now finished", and the reader typing it meant the church.
-               Neutral about what kind of thing something is: an article with a tight title still
-               beats a place with a rambling one, which is the correct answer when it happens. */
-            $tier += 0.9 * (mb_strlen($needle) / max(1, mb_strlen($n)));
+            $tier += 1.2 * (mb_strlen($needle) / max(1, mb_strlen($n)));
             $best = max($best, $tier);
-            if ($best >= 4.9) break;
+            if ($best >= 5.2) break;
         }
         $scored[] = ['key' => $key, 'score' => $best, 'was' => $i];
     }
