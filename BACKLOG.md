@@ -25,12 +25,12 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 
 ## P0, the product does not work properly without these
 
-1. **Finish the opening hours backfill.** `scripts/backfill_hours.php` asks the provider for the
-   objects we already hold, by id, rather than scanning a city again, and puts the answer back
-   through the ordinary ingest door. It is running city by city. A batch that times out is simply
-   lost until the next run, which is the right behaviour but means it needs a second pass. What it
-   cannot fix is coverage: only about one imported place in six carries an `opening_hours` value in
-   OpenStreetMap at all, and the parser refuses the ambiguous ones on purpose.
+Nothing. The opening hours backfill is finished as far as the provider allows: 257 of 1,211
+places carry hours, up from 155, and every city has now been asked by id for every place it holds
+without them. What remains is not ours to fix, and the numbers are worth writing down rather than
+being rediscovered: only about one imported place in six states `opening_hours` in OpenStreetMap
+at all, and of those the parser refuses roughly a third, on purpose, because they carry public
+holidays, month ranges or open ended times it will not guess at.
 
 ## P1, core product
 
