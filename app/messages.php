@@ -54,10 +54,34 @@ function rmt_get_or_create_conversation(int $a, int $b): int {
 
 /** Unread message count across all of a user's conversations, for the nav badge. */
 function rmt_unread_message_count(int $uid): int {
+    /* Conversations the member has actually taken part in. A first message from somebody they have
+       never answered is a request, and a request does not get to light up the navigation: that is
+       the entire difference between an inbox and a channel strangers can ring. It is still in the
+       inbox, counted, on the requests line. */
     $row = q_one(
         "SELECT COUNT(*) c FROM messages m JOIN conversations c ON c.id=m.conversation_id
-         WHERE (c.user_lo_id=? OR c.user_hi_id=?) AND m.sender_id<>? AND m.read_at IS NULL",
-        [$uid, $uid, $uid]
+         WHERE (c.user_lo_id=? OR c.user_hi_id=?) AND m.sender_id<>? AND m.read_at IS NULL
+           AND EXISTS (SELECT 1 FROM messages mine WHERE mine.conversation_id=c.id AND mine.sender_id=?)",
+        [$uid, $uid, $uid, $uid]
+    );
+    return (int) ($row['c'] ?? 0);
+}
+
+/**
+ * How many people are waiting on a first answer.
+ *
+ * A conversation is a request until the member has said something in it. Nothing is stored to
+ * decide that: the messages already know who sent them, and a flag would only be a thing to get
+ * out of step with them.
+ */
+function rmt_message_request_count(int $uid): int {
+    $row = q_one(
+        "SELECT COUNT(*) c FROM conversations c
+           JOIN users u ON u.id = (CASE WHEN c.user_lo_id=? THEN c.user_hi_id ELSE c.user_lo_id END)
+          WHERE (c.user_lo_id=? OR c.user_hi_id=?) AND u.status='active'
+            AND EXISTS (SELECT 1 FROM messages m WHERE m.conversation_id=c.id)
+            AND NOT EXISTS (SELECT 1 FROM messages mine WHERE mine.conversation_id=c.id AND mine.sender_id=?)",
+        [$uid, $uid, $uid, $uid]
     );
     return (int) ($row['c'] ?? 0);
 }
@@ -70,15 +94,26 @@ function messages_index(array $a): void {
         "SELECT c.id conversation_id, c.last_message_at,
                 u.username, u.id other_id, p.display_name, p.avatar_url,
                 (SELECT body FROM messages WHERE conversation_id=c.id ORDER BY id DESC LIMIT 1) last_body,
-                (SELECT COUNT(*) FROM messages WHERE conversation_id=c.id AND sender_id<>? AND read_at IS NULL) unread
+                (SELECT COUNT(*) FROM messages WHERE conversation_id=c.id AND sender_id<>? AND read_at IS NULL) unread,
+                (SELECT COUNT(*) FROM messages mine WHERE mine.conversation_id=c.id AND mine.sender_id=?) mine_count
          FROM conversations c
          JOIN users u ON u.id = (CASE WHEN c.user_lo_id=? THEN c.user_hi_id ELSE c.user_lo_id END)
          LEFT JOIN profiles p ON p.user_id = u.id
          WHERE (c.user_lo_id=? OR c.user_hi_id=?) AND u.status='active'
          ORDER BY c.last_message_at DESC NULLS LAST, c.id DESC",
-        [$uid, $uid, $uid, $uid]
+        [$uid, $uid, $uid, $uid, $uid]
     );
-    view('messages_index', compact('rows'), [
+
+    /* Two lists, from one query. Conversations the member has answered are their inbox; the rest
+       are people who wrote to them and are waiting. A stranger asking to join a Friday dinner is
+       a good message and still does not belong in the same list as a conversation. */
+    $threads = [];
+    $requests = [];
+    foreach ($rows as $r) {
+        if ((int) $r['mine_count'] > 0) $threads[] = $r; else $requests[] = $r;
+    }
+
+    view('messages_index', compact('rows', 'threads', 'requests'), [
         'title' => 'Messages | RuinMyTrip',
         'description' => 'Your RuinMyTrip conversations.',
     ]);

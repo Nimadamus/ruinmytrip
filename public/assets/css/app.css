@@ -1048,3 +1048,15 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* The "how was it" nudge spans both columns and sits above them, on a phone and on a desktop
    alike. It is the member's own unfinished business, and it stops existing once answered. */
 .feed-nudge{grid-column:1/-1;order:0}
+
+/* An inbox row on a phone. A long display name used to wrap under the avatar and shove the unread
+   chip on top of the timestamp; the name is allowed to truncate instead, and the chip never does. */
+.inbox-who{display:flex;align-items:baseline;gap:8px;min-width:0}
+.inbox-who b{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* The handle gives way first: a truncated name is a person you cannot recognise, a truncated
+   handle is one you can still tap. */
+.inbox-who .muted{flex:0 4 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox-new{flex:0 0 auto;white-space:nowrap;background:var(--brand);color:#fff;border-color:transparent}
+/* On a phone there is room for a name, an unread chip and a time, and not also for a handle. The
+   handle is the one of the four that tells the reader nothing they do not already know. */
+@media (max-width:560px){ .inbox-who:has(.inbox-new) .muted{display:none} }

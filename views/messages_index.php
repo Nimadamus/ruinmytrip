@@ -1,31 +1,53 @@
-<?php /** @var array $rows */ ?>
+<?php /** @var array $rows @var array $threads @var array $requests */
+$threads = $threads ?? $rows;
+$requests = $requests ?? [];
+
+/* One row, drawn the same way in both lists, because a request is not a lesser kind of message.
+   It is a message from somebody the member has not answered yet, and the only difference is which
+   heading it sits under. */
+$rmtRow = static function (array $r): void { ?>
+  <li class="card" style="margin-bottom:8px">
+    <a href="<?= e(url('messages/'.$r['username'])) ?>" style="color:inherit;text-decoration:none">
+      <div class="card-body" style="padding:12px 16px;display:flex;align-items:center;gap:10px">
+        <img class="avatar" src="<?= e(avatar_url($r['avatar_url'])) ?>" alt="<?= e($r['username']) ?>">
+        <div style="flex:1;min-width:0">
+          <div class="inbox-who">
+            <b><?= e($r['display_name'] ?: $r['username']) ?></b>
+            <span class="muted">@<?= e($r['username']) ?></span>
+            <?php if ((int) $r['unread'] > 0): ?><span class="chip inbox-new"><?= (int) $r['unread'] ?> new</span><?php endif; ?>
+          </div>
+          <p class="muted" style="margin:.2rem 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= e($r['last_body'] ?? '') ?></p>
+        </div>
+        <span class="hint"><?= $r['last_message_at'] ? e(ago($r['last_message_at'])) : '' ?></span>
+      </div>
+    </a>
+  </li>
+<?php }; ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Messages</h1>
-  <?php if (!$rows): ?>
+  <?php if (!$threads && !$requests): ?>
     <?php $emptyTitle = 'No conversations yet';
           $emptyWhy = 'Messages start from somebody\'s profile, or from a match. The people below are real members, and the cities are ones somebody has actually posted dates for.';
           $emptyCtaText = 'Find travelers'; $emptyCtaUrl = url('travelers');
           include __DIR__ . '/_nothing_yet.php'; ?>
   <?php endif; ?>
-  <ul class="list-plain">
-    <?php foreach ($rows as $r): ?>
-      <li class="card" style="margin-bottom:8px">
-        <a href="<?= e(url('messages/'.$r['username'])) ?>" style="color:inherit;text-decoration:none">
-          <div class="card-body" style="padding:12px 16px;display:flex;align-items:center;gap:10px">
-            <img class="avatar" src="<?= e(avatar_url($r['avatar_url'])) ?>" alt="<?= e($r['username']) ?>">
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px">
-                <b><?= e($r['display_name'] ?: $r['username']) ?></b>
-                <span class="muted">@<?= e($r['username']) ?></span>
-                <?php if ((int)$r['unread'] > 0): ?><span class="chip" style="background:#0f766e;color:#fff"><?= (int)$r['unread'] ?> new</span><?php endif; ?>
-              </div>
-              <p class="muted" style="margin:.2rem 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= e($r['last_body'] ?? '') ?></p>
-            </div>
-            <span class="hint"><?= $r['last_message_at'] ? e(ago($r['last_message_at'])) : '' ?></span>
-          </div>
-        </a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
+
+  <?php if ($threads): ?>
+    <ul class="list-plain">
+      <?php foreach ($threads as $r) $rmtRow($r); ?>
+    </ul>
+  <?php endif; ?>
+
+  <?php /* People who wrote and are waiting on a first answer. Separate, because the moment a
+           stranger can put something in the same list as a conversation, the list stops being
+           worth opening. Nothing is hidden: it is right here, counted, one tap away. */ ?>
+  <?php if ($requests): ?>
+    <h2 style="margin:28px 0 4px">Requests <span class="hint" style="font-family:var(--sans);font-size:.8rem;text-transform:none;letter-spacing:0"><?= count($requests) ?></span></h2>
+    <p class="hint" style="margin:0 0 10px">People you have not written back to. Answer one and it
+      moves up. You can block anybody from their profile.</p>
+    <ul class="list-plain">
+      <?php foreach ($requests as $r) $rmtRow($r); ?>
+    </ul>
+  <?php endif; ?>
   <div style="height:40px"></div>
 </div>
