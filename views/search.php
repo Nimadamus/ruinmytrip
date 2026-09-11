@@ -22,6 +22,20 @@
         </p>
       <?php endif; ?>
     <?php endif; ?>
+    <?php /* People first. A search on this site is nearly always somebody looking for a person or
+             a city, and travelers were below a wall of headings: nine lists on a phone means
+             scrolling past six of them to reach a name. Every list is still here, in the same
+             order, with this one moved to the front. */ ?>
+    <?php if ($people): ?><h2>Travelers</h2><div class="grid" style="gap:10px">
+      <?php foreach($people as $p):?>
+        <article class="card"><div class="card-body" style="display:flex;gap:10px;align-items:center">
+          <?php if (!empty($p['avatar_url'])): ?><img class="avatar" style="width:36px;height:36px" src="<?= e(avatar_url($p['avatar_url'])) ?>" alt=""><?php endif; ?>
+          <a href="<?= e(url('u/'.$p['username'])) ?>"><?= e($p['display_name'] ?: $p['username']) ?></a>
+          <span class="muted">@<?= e($p['username']) ?></span>
+        </div></article>
+      <?php endforeach;?>
+    </div><?php endif; ?>
+
     <?php if ($dests): ?><h2>Destinations</h2><div class="grid g-3">
       <?php foreach($dests as $d):?><article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($d['name']) ?></h3></div></a></article><?php endforeach;?>
     </div><?php endif; ?>
@@ -68,15 +82,7 @@
     <?php if ($collections): ?><h2 style="margin-top:24px">Collections</h2><ul class="list-plain">
       <?php foreach($collections as $c):?><li style="padding:8px 0;border-bottom:1px solid var(--line)"><a href="<?= e(url('c/'.$c['slug'])) ?>"><?= e($c['title']) ?></a></li><?php endforeach;?>
     </ul><?php endif; ?>
-    <?php if ($people): ?><h2 style="margin-top:24px">Travelers</h2><div class="grid" style="gap:10px">
-      <?php foreach($people as $p):?>
-        <article class="card"><div class="card-body" style="display:flex;gap:10px;align-items:center">
-          <?php if (!empty($p['avatar_url'])): ?><img class="avatar" style="width:36px;height:36px" src="<?= e(avatar_url($p['avatar_url'])) ?>" alt=""><?php endif; ?>
-          <a href="<?= e(url('u/'.$p['username'])) ?>"><?= e($p['display_name'] ?: $p['username']) ?></a>
-          <span class="muted">@<?= e($p['username']) ?></span>
-        </div></article>
-      <?php endforeach;?>
-    </div><?php endif; ?>
+
   <?php endif; ?>
   <div style="height:50px"></div>
 </div>
