@@ -46,7 +46,10 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
           <li class="plan-item<?= (int) $act['done'] === 1 ? ' done' : '' ?>">
             <span class="plan-when"><?= e((string) ($act['start_time'] ?? '')) ?></span>
             <div class="plan-what">
-              <b><?= e((string) $act['title']) ?></b>
+              <?php /* Every plan has a page now: who is coming, how to ask, where everybody is
+                       meeting, and the thread for sorting it out. The title is the way in. */ ?>
+              <b><a href="<?= e(url('activity/'.(int) $act['id'])) ?>"><?= e((string) $act['title']) ?></a></b>
+              <?php if (!empty($act['cancelled_at'])): ?> <span class="chip">Cancelled</span><?php endif; ?>
               <?php /* The category line only when it says something. Printing "Something else"
                        under every quickly added plan is noise, and the quick path is the one
                        almost everybody uses. */ ?>

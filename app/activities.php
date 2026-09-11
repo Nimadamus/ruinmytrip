@@ -193,6 +193,22 @@ function rmt_activity_validate(array $in, array $trip): array {
     $place = (int) ($in['place_id'] ?? 0);
     if ($place > 0 && !q_one("SELECT 1 FROM places WHERE id = ? AND status = 'active'", [$place])) $place = 0;
 
+    /* The three things a plan needs once other people can come to it. All optional: most plans
+       have no capacity, no meeting point and no end time, and inventing any of them would be
+       theatre. */
+    $cap = (int) ($in['capacity'] ?? 0);
+    if ($cap < 0) $cap = 0;
+    if ($cap > 100) $cap = 100;
+
+    $end = trim((string) ($in['end_time'] ?? ''));
+    if ($end !== '' && !preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $end)) {
+        $errors[] = 'That end time should look like 23:30.';
+        $end = '';
+    }
+
+    $point = trim((string) ($in['meeting_point'] ?? ''));
+    if (mb_strlen($point) > 300) $point = mb_substr($point, 0, 300);
+
     return ['ok' => !$errors, 'errors' => $errors, 'data' => [
         'title' => $title,
         'category' => $cat,
@@ -204,6 +220,9 @@ function rmt_activity_validate(array $in, array $trip): array {
         'place_id' => $place ?: null,
         'visibility' => $vis,
         'join_mode' => $join,
+        'capacity' => $cap ?: null,
+        'end_time' => $end !== '' ? $end : null,
+        'meeting_point' => $point !== '' ? $point : null,
     ]];
 }
 
@@ -213,13 +232,14 @@ function rmt_activity_add(array $trip, array $data): int {
     $sort = (int) (q_one('SELECT COALESCE(MAX(sort), 0) + 1 m FROM trip_activities WHERE trip_id = ?',
                          [(int) $trip['id']])['m'] ?? 1);
     q_run('INSERT INTO trip_activities
-             (trip_id, user_id, destination_id, day, start_time, title, category, place_id,
-              location_text, notes, link, visibility, join_mode, sort, status, created_at)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+             (trip_id, user_id, destination_id, day, start_time, end_time, title, category, place_id,
+              location_text, notes, link, visibility, join_mode, capacity, meeting_point, sort, status, created_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
           [(int) $trip['id'], (int) $trip['user_id'], $trip['destination_id'] ?: null,
-           $data['day'], $data['start_time'], $data['title'], $data['category'], $data['place_id'],
-           $data['location_text'], $data['notes'], $data['link'], $data['visibility'],
-           $data['join_mode'], $sort, 'published', $now]);
+           $data['day'], $data['start_time'], $data['end_time'], $data['title'], $data['category'],
+           $data['place_id'], $data['location_text'], $data['notes'], $data['link'],
+           $data['visibility'], $data['join_mode'], $data['capacity'], $data['meeting_point'],
+           $sort, 'published', $now]);
     return (int) (q_one('SELECT MAX(id) m FROM trip_activities WHERE trip_id = ?', [(int) $trip['id']])['m'] ?? 0);
 }
 
@@ -330,4 +350,101 @@ function rmt_activity_joiners(int $activityId, ?array $viewer, int $limit = 12):
           LIMIT " . (int) $limit,
         array_merge([$activityId], $blockArgs)
     );
+}
+
+/* ------------------------------------------------------------------ joining, properly
+ *
+ * Four states, and no row is the fifth:
+ *   interested  a soft yes on an open plan, or on one whose owner wants to be asked
+ *   requested   an ask waiting for the owner
+ *   going       accepted, or an instant yes on an open plan
+ *   declined    answered no, remembered on purpose so the same person cannot ask again every hour
+ *               and so the page can tell them what actually happened
+ */
+
+/** Everybody attached to a plan, in the states that matter to the owner. */
+function rmt_activity_requests(int $activityId, ?array $viewer, string $state = 'requested', int $limit = 20): array {
+    if ($activityId < 1) return [];
+    $blockSql = '1=1';
+    $blockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$blockSql] = rmt_match_block_sql('u.id');
+        $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+    return q_all(
+        "SELECT j.state, j.created_at, u.id user_id, u.username, p.avatar_url, p.display_name
+           FROM activity_joins j
+           JOIN users u ON u.id = j.user_id AND u.status = 'active'
+      LEFT JOIN profiles p ON p.user_id = u.id
+          WHERE j.activity_id = ? AND j.state = ? AND $blockSql
+       ORDER BY j.created_at LIMIT " . (int) $limit,
+        array_merge([$activityId, $state], $blockArgs)
+    );
+}
+
+/** How many people are accepted. The owner is not counted: it is their plan. */
+function rmt_activity_going_count(int $activityId): int {
+    return (int) (q_one("SELECT COUNT(*) n FROM activity_joins WHERE activity_id = ? AND state = 'going'",
+                        [$activityId])['n'] ?? 0);
+}
+
+/**
+ * Is there room for one more?
+ *
+ * A capacity of nothing means no limit, which is what almost every plan is. A capacity that is
+ * already met stops an instant join and stops an accept, and says so rather than silently failing.
+ */
+function rmt_activity_has_room(array $activity): bool {
+    $cap = (int) ($activity['capacity'] ?? 0);
+    if ($cap < 1) return true;
+    return rmt_activity_going_count((int) $activity['id']) < $cap;
+}
+
+/**
+ * The meeting point, which is the one piece of an activity that is not for everybody.
+ *
+ * "By the fountain at the top of the steps, 8pm" is exactly the information a stranger should not
+ * have about a small group of people, and exactly what the people coming need. Owner and accepted
+ * attendees; nobody else, ever, including people who asked and were not answered yet.
+ */
+function rmt_activity_meeting_point_visible(array $activity, ?array $viewer): bool {
+    if (trim((string) ($activity['meeting_point'] ?? '')) === '') return false;
+    if (!$viewer) return false;
+    if ((int) $viewer['id'] === (int) $activity['user_id']) return true;
+    return rmt_activity_join_state((int) $activity['id'], $viewer) === 'going';
+}
+
+/** Photographs of one plan, respecting the plan's own visibility through its caller. */
+function rmt_activity_photos(int $activityId): array {
+    if ($activityId < 1) return [];
+    return q_all("SELECT * FROM activity_photos WHERE activity_id = ? AND status = 'published'
+                  ORDER BY sort, id", [$activityId]);
+}
+
+/** Attach uploaded photos to a plan. Same path, same guarantees, as every other upload here. */
+function rmt_activity_attach_photos(int $activityId, int $ownerId): array {
+    $errors = [];
+    if (empty($_FILES['photos']) || !is_array($_FILES['photos']['name'] ?? null)) return $errors;
+    $existing = (int) (q_one('SELECT COUNT(*) c FROM activity_photos WHERE activity_id = ?', [$activityId])['c'] ?? 0);
+    $slots = max(0, 6 - $existing);
+    $n = count($_FILES['photos']['name']);
+    for ($i = 0; $i < $n; $i++) {
+        if ((int) $_FILES['photos']['error'][$i] === UPLOAD_ERR_NO_FILE) continue;
+        if ($slots <= 0) { $errors[] = 'Up to six photos on one plan.'; break; }
+        if (!rmt_rate_ok('upload', (string) $ownerId, 40, 3600)) { $errors[] = 'Too many uploads. Try again later.'; break; }
+        $file = [
+            'name' => $_FILES['photos']['name'][$i], 'type' => $_FILES['photos']['type'][$i],
+            'tmp_name' => $_FILES['photos']['tmp_name'][$i], 'error' => $_FILES['photos']['error'][$i],
+            'size' => $_FILES['photos']['size'][$i],
+        ];
+        $res = rmt_upload_image($file, $ownerId);
+        if (!$res['ok']) { $errors[] = $res['error']; continue; }
+        $cap = trim((string) ($_POST['photo_caption'][$i] ?? ''));
+        q_run('INSERT INTO activity_photos (activity_id, user_id, url, storage_key, caption, width, height, bytes, sort, status, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+              [$activityId, $ownerId, $res['url'], $res['key'], $cap !== '' ? mb_substr($cap, 0, 300) : null,
+               $res['w'], $res['h'], $res['bytes'], $existing + $i, 'published', date('Y-m-d H:i:s')]);
+        $slots--;
+    }
+    return $errors;
 }

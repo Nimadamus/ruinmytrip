@@ -1021,3 +1021,11 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .city-plans li:last-child{border-bottom:0}
 .city-plans b{font-weight:650}
 .city-plans .hint{display:block;font-size:.82rem}
+
+/* The can-I-come box on a plan's own page. */
+.join-box{background:var(--tint);border:1px solid #cbe7e2;border-radius:var(--radius);
+  padding:16px 18px;margin:16px 0}
+.join-box p{margin:0 0 10px}
+.join-box p:last-child{margin-bottom:0}
+.join-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.join-acts form{margin:0}

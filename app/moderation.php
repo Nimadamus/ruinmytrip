@@ -111,6 +111,29 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
     $out = ['title' => null, 'excerpt' => null, 'author' => null, 'status' => null,
             'url' => null, 'where' => null, 'rating' => null];
 
+    /* A plan, which is the newest thing a moderator can be asked to look at, and the one where
+       real people are meeting in real places. The context has to name the city and the day. */
+    if ($targetType === 'activity') {
+        $r = q_one("SELECT a.id, a.title, a.notes, a.day, a.start_time, a.status, a.cancelled_at,
+                           u.username, d.name dest_name
+                      FROM trip_activities a
+                      JOIN users u ON u.id = a.user_id
+                 LEFT JOIN destinations d ON d.id = a.destination_id
+                     WHERE a.id = ?", [$targetId]);
+        if (!$r) return $out;
+        $when = $r['day'] ? date('j M Y', strtotime((string) $r['day'])) : 'no day set';
+        if (!empty($r['start_time'])) $when .= ', ' . (string) $r['start_time'];
+        return [
+            'title' => (string) $r['title'],
+            'excerpt' => mb_strimwidth(strip_tags((string) ($r['notes'] ?? '')), 0, 200, '...'),
+            'author' => (string) $r['username'],
+            'status' => !empty($r['cancelled_at']) ? 'cancelled' : (string) $r['status'],
+            'url' => url('activity/' . (int) $r['id']),
+            'where' => trim((string) ($r['dest_name'] ?? '') . ' · ' . $when, ' ·'),
+            'rating' => null,
+        ];
+    }
+
     if ($targetType === 'review') {
         $r = q_one("SELECT r.id, r.slug, r.title, r.body, r.rating, r.status, r.subject_name,
                            u.username, p.slug place_slug, p.name place_name,

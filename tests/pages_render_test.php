@@ -222,6 +222,68 @@ if ($acct) {
         $pdo->prepare('DELETE FROM trips WHERE title = ?')->execute([$marker]);
     }
 
+    /* A plan's own page, and the three things on it that are not for everybody.
+
+       The meeting point is the one that would actually hurt: "by the fountain at the top of the
+       steps at eight" is exactly what a small group of strangers should not be broadcasting. It is
+       for the owner and the people accepted, and for nobody who merely asked. The list of people
+       who asked and have not been answered is the owner's business alone, because it is a list of
+       people who can be embarrassed. */
+    if ($otherId > 0) {
+        $pointMarker = 'MEETINGPOINTCANARY' . bin2hex(random_bytes(4));
+        $askerMarker = null;
+        $destRow3 = $pdo->query('SELECT id, slug FROM destinations ORDER BY id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, date_from, date_to, created_at)
+                       VALUES (?,?,?,?,'','published','public',?,?,?)")
+            ->execute([$otherId, (int) $destRow3['id'], 'canary meet trip', 'canary-meet-' . bin2hex(random_bytes(3)),
+                       date('Y-m-d', strtotime('+5 days')), date('Y-m-d', strtotime('+9 days')),
+                       date('Y-m-d H:i:s')]);
+        $meetTrip = (int) $pdo->lastInsertId();
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, day, title, category,
+                         visibility, join_mode, meeting_point, status, created_at)
+                       VALUES (?,?,?,?,'Canary drinks','drinks','trip','ask',?,'published',?)")
+            ->execute([$meetTrip, $otherId, (int) $destRow3['id'], date('Y-m-d', strtotime('+6 days')),
+                       $pointMarker, date('Y-m-d H:i:s')]);
+        $meetAct = (int) $pdo->lastInsertId();
+
+        // The signed-in account asks to join, and is not answered.
+        $pdo->prepare("INSERT INTO activity_joins (activity_id, user_id, state, created_at) VALUES (?,?,'requested',?)")
+            ->execute([$meetAct, (int) $acct['id'], date('Y-m-d H:i:s')]);
+
+        [$st, $body] = $req('/activity/' . $meetAct, null, $cookie);
+        ok('a plan on a public trip has a page', $st === 200, "status $st");
+        ok('somebody who only asked does not see the meeting point', !str_contains($body, $pointMarker));
+        ok('and does not see the list of who else asked', !str_contains($body, 'want to join'));
+
+        $anonAct = @file_get_contents($base . '/activity/' . $meetAct, false,
+            stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        ok('a stranger never sees the meeting point', !str_contains((string) $anonAct, $pointMarker));
+
+        // Accepted: now it is theirs to know.
+        $pdo->prepare("UPDATE activity_joins SET state = 'going' WHERE activity_id = ? AND user_id = ?")
+            ->execute([$meetAct, (int) $acct['id']]);
+        [, $body2] = $req('/activity/' . $meetAct, null, $cookie);
+        ok('somebody who was accepted does see it', str_contains($body2, $pointMarker));
+
+        // A plan on a private trip has no page for anybody else at all.
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, created_at)
+                       VALUES (?,?,?,?,'','published','private',?)")
+            ->execute([$otherId, (int) $destRow3['id'], 'canary private trip', 'canary-priv-' . bin2hex(random_bytes(3)),
+                       date('Y-m-d H:i:s')]);
+        $privTrip = (int) $pdo->lastInsertId();
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, title, category,
+                         visibility, join_mode, status, created_at)
+                       VALUES (?,?,?,'Canary hidden','other','trip','open','published',?)")
+            ->execute([$privTrip, $otherId, (int) $destRow3['id'], date('Y-m-d H:i:s')]);
+        $privAct = (int) $pdo->lastInsertId();
+        [$st2] = $req('/activity/' . $privAct, null, $cookie);
+        ok('a plan on a private trip 404s for everybody else', $st2 === 404, "status $st2");
+
+        $pdo->prepare('DELETE FROM activity_joins WHERE activity_id IN (?,?)')->execute([$meetAct, $privAct]);
+        $pdo->prepare('DELETE FROM trip_activities WHERE trip_id IN (?,?)')->execute([$meetTrip, $privTrip]);
+        $pdo->prepare('DELETE FROM trips WHERE id IN (?,?)')->execute([$meetTrip, $privTrip]);
+    }
+
     /* A plan marked private must not reach a page anybody else can open.
 
        Activities are the newest thing here that reads another person's plans, and they carry two

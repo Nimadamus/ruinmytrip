@@ -30,6 +30,36 @@
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> sent you a compliment.</a>
         <?php elseif ($n['type']==='compliment'): ?>
           <b>Someone</b> sent you a compliment, then deleted their account.
+        <?php elseif (in_array($n['type'], ['activity_join','activity_request','activity_accepted',
+                                            'activity_declined','activity_removed','activity_cancelled'], true)):
+          /* Everything that happens around a plan somebody else may be coming to. The activity is
+             named, because "your request was accepted" with no subject is a riddle. */
+          $ac = q_one("SELECT a.id, a.title, a.day, a.cancelled_at, d.name dest_name
+                         FROM trip_activities a
+                    LEFT JOIN destinations d ON d.id = a.destination_id
+                        WHERE a.id = ? AND a.status = 'published'", [(int) $n['target_id']]);
+          $who = $n['actor'] ? '@' . $n['actor'] : 'Somebody';
+          $what = $ac ? (string) $ac['title'] : 'a plan';
+          $href = $ac ? url('activity/' . (int) $ac['id']) : null;
+          $line = [
+            'activity_join'      => $who . ' is coming to ' . $what . '.',
+            'activity_request'   => $who . ' asked to join ' . $what . '.',
+            'activity_accepted'  => 'You are in: ' . $what . '.',
+            'activity_declined'  => $who . ' said no to your ask for ' . $what . '.',
+            'activity_removed'   => $who . ' removed you from ' . $what . '.',
+            'activity_cancelled' => 'Cancelled: ' . $what . '.',
+          ][$n['type']] ?? $what;
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+            <?php if ($n['type'] === 'activity_request'): ?>
+              <span class="hint">Accept or decline on the plan.</span>
+            <?php elseif ($n['type'] === 'activity_accepted'): ?>
+              <span class="hint">The meeting point is on the plan, if there is one.</span>
+            <?php endif; ?>
+          <?php else: ?>
+            <b><?= e($line) ?></b>
+          <?php endif; ?>
         <?php elseif ($n['type'] === 'save'):
           /* No actor, ever: who bookmarked something is their business. The number is the news. */
           $saves = function_exists('rmt_save_count') ? rmt_save_count((string) $n['target_type'], (int) $n['target_id']) : 0;

@@ -45,9 +45,13 @@ $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY AUTOINCREMENT, 
               location_text TEXT, notes TEXT, link TEXT, photo_url TEXT, storage_key TEXT,
               visibility TEXT DEFAULT 'trip', join_mode TEXT DEFAULT 'no', done INT DEFAULT 0,
               rating INT, recommend INT, sort INT DEFAULT 0, status TEXT DEFAULT 'published',
-              created_at TEXT, updated_at TEXT)");
+              created_at TEXT, updated_at TEXT, capacity INT, meeting_point TEXT, end_time TEXT,
+              cancelled_at TEXT)");
 $pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT, created_at TEXT,
-              PRIMARY KEY (activity_id, user_id))");
+              decided_at TEXT, decided_by INT, PRIMARY KEY (activity_id, user_id))");
+$pdo->exec("CREATE TABLE activity_photos (id INTEGER PRIMARY KEY AUTOINCREMENT, activity_id INT,
+              user_id INT, url TEXT, storage_key TEXT, caption TEXT, width INT, height INT,
+              bytes INT, sort INT, status TEXT DEFAULT 'published', created_at TEXT)");
 $pdo->exec('CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)');
 $pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY, trip_id INT, status TEXT)");
 
@@ -152,12 +156,51 @@ $open = q_one('SELECT * FROM trip_activities WHERE id = 5');
 ok(($open['join_mode'] ?? '') === 'open', 'the match is open to others');
 ok((string) (q_one('SELECT join_mode FROM trip_activities WHERE id = 1')['join_mode'] ?? '') === 'no',
    'and a dinner is not, by default');
-$pdo->exec("INSERT INTO activity_joins VALUES (5,2,'going','$now')");
+$pdo->exec("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (5,2,'going','$now')");
 ok(rmt_activity_join_state(5, $stranger) === 'going', 'a join is remembered');
 ok(rmt_activity_join_state(5, $follower) === null, 'and belongs to one person');
 ok(count(rmt_activity_joiners(5, $owner)) === 1, 'the owner can see who is coming');
 $pdo->exec('INSERT INTO blocks VALUES (2,3)');
 ok(count(rmt_activity_joiners(5, $follower)) === 0, 'a blocked person is not shown in the list of who is coming');
+$pdo->exec('DELETE FROM blocks');
+
+
+// --- capacity ---------------------------------------------------------------------------------
+$pdo->exec('UPDATE trip_activities SET capacity = 2 WHERE id = 5');
+$capped = q_one('SELECT * FROM trip_activities WHERE id = 5');
+ok(rmt_activity_going_count(5) === 1, 'one person is already coming');
+ok(rmt_activity_has_room($capped), 'and there is room for one more');
+$pdo->exec("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (5,3,'going','$now')");
+ok(!rmt_activity_has_room(q_one('SELECT * FROM trip_activities WHERE id = 5')),
+   'a full plan says it is full');
+$pdo->exec('UPDATE trip_activities SET capacity = NULL WHERE id = 5');
+ok(rmt_activity_has_room(q_one('SELECT * FROM trip_activities WHERE id = 5')),
+   'and no capacity means no limit, which is what almost every plan is');
+$pdo->exec('DELETE FROM activity_joins WHERE activity_id = 5 AND user_id = 3');
+
+// --- the meeting point ------------------------------------------------------------------------
+$pdo->exec("UPDATE trip_activities SET meeting_point = 'By the fountain' WHERE id = 5");
+$withPoint = q_one('SELECT * FROM trip_activities WHERE id = 5');
+ok(rmt_activity_meeting_point_visible($withPoint, $owner), 'the owner sees the meeting point');
+ok(rmt_activity_meeting_point_visible($withPoint, $stranger), 'and so does somebody who is going');
+ok(!rmt_activity_meeting_point_visible($withPoint, $follower), 'somebody who is not coming does not');
+ok(!rmt_activity_meeting_point_visible($withPoint, null), 'and a stranger who is not signed in never does');
+$pdo->exec("UPDATE activity_joins SET state = 'requested' WHERE activity_id = 5 AND user_id = 2");
+ok(!rmt_activity_meeting_point_visible($withPoint, $stranger),
+   'somebody who has only asked, and not been answered, does not see it either');
+$pdo->exec("UPDATE activity_joins SET state = 'going' WHERE activity_id = 5 AND user_id = 2");
+
+// --- the request lifecycle ---------------------------------------------------------------------
+$pdo->exec("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (1,3,'requested','$now')");
+ok(count(rmt_activity_requests(1, $owner, 'requested')) === 1, 'the owner can see who asked');
+ok(count(rmt_activity_requests(1, $owner, 'going')) === 0, 'and they are not counted as coming');
+$pdo->exec("UPDATE activity_joins SET state = 'declined' WHERE activity_id = 1 AND user_id = 3");
+ok(rmt_activity_join_state(1, $follower) === 'declined', 'a no is remembered rather than forgotten');
+ok(count(rmt_activity_requests(1, $owner, 'requested')) === 0, 'and the ask leaves the pending list');
+
+$pdo->exec('INSERT INTO blocks VALUES (3,1)');
+ok(count(rmt_activity_requests(1, $owner, 'declined')) === 0,
+   'somebody who blocked you does not appear in your own lists');
 $pdo->exec('DELETE FROM blocks');
 
 echo "activities_test: $pass passed, $fail failed\n";

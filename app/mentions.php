@@ -107,6 +107,8 @@ function rmt_notification_target_url(string $type, int $id, int $forUserId = 0):
             return $r ? url('trip/' . (int)$r['id'] . '/' . $r['slug']) : null;
         /* A photograph has a page of its own, so a like or a reply on one has somewhere to send
            the person it happened to. Without this the notification existed and went nowhere. */
+        case 'activity':
+            return q_one('SELECT id FROM trip_activities WHERE id = ?', [$id]) ? url('activity/' . $id) : null;
         case 'trip_photo':
             return q_one('SELECT id FROM trip_photos WHERE id=?', [$id]) ? url('photo/trip/' . $id) : null;
         case 'review_photo':

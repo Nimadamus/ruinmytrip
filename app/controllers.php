@@ -3499,6 +3499,10 @@ const RMT_INTERACT_TARGETS = [
        only says what a row is, never who may see it. */
     'trip_photo'   => 'trip_photos',
     'review_photo' => 'review_photos',
+    /* A plan is where people coordinate: where are we meeting, I will be there at half past, does
+       anybody want to share a taxi. That is a comment thread on the plan, not a private message,
+       and it is deliberately not a second messaging system. */
+    'activity'     => 'trip_activities',
 ];
 
 /**
@@ -3565,6 +3569,10 @@ function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
     if ($tt === 'trip_photo' || $tt === 'review_photo') {
         $photo = rmt_photo_get($tt === 'trip_photo' ? 'trip' : 'review', $tid);
         return $photo !== null && rmt_photo_visible_to($photo, $user);
+    }
+    if ($tt === 'activity') {
+        $act = rmt_activity_get($tid);
+        return $act !== null && empty($act['cancelled_at']) && rmt_activity_visible_to($act, $user);
     }
 
     $col = rmt_interact_owner_column($tt);
@@ -4313,6 +4321,8 @@ const RMT_REPORT_TARGETS = [
     'user'       => 'users',
     'collection' => 'collections',
     'post'       => 'posts',
+    /* A plan can now be the thing somebody needs to report: strangers turn up to these. */
+    'activity'   => 'trip_activities',
 ];
 const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
 
@@ -5641,6 +5651,204 @@ function photo_show(array $a): void {
     ]);
 }
 
+/**
+ * GET /activity/{id} — one plan, as a page of its own.
+ *
+ * A plan inside somebody's itinerary can be read and not acted on. On its own page it answers the
+ * three questions that matter to a stranger who overlaps those dates: what is happening, who is
+ * involved, and can I come. It is also the thing somebody sends to a friend, so it has a share
+ * row and a preview image.
+ */
+function activity_show(array $a): void {
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    $me = current_user();
+    if (!rmt_activity_visible_to($act, $me)) not_found();
+
+    $isOwner = $me && (int) $me['id'] === (int) $act['user_id'];
+    $myState = rmt_activity_join_state((int) $act['id'], $me);
+    $going = rmt_activity_requests((int) $act['id'], $me, 'going', 24);
+    $interested = rmt_activity_requests((int) $act['id'], $me, 'interested', 24);
+    /* Pending asks are the owner's business and nobody else's: a list of people who asked and were
+       not answered is a list of people who can be embarrassed. */
+    $requests = $isOwner ? rmt_activity_requests((int) $act['id'], $me, 'requested', 30) : [];
+    $photos = rmt_activity_photos((int) $act['id']);
+    $comments = q_all("SELECT c.*, u.username, p.avatar_url
+                         FROM comments c JOIN users u ON u.id = c.user_id
+                    LEFT JOIN profiles p ON p.user_id = u.id
+                        WHERE c.target_type = 'activity' AND c.target_id = ? AND c.status = 'published'
+                     ORDER BY c.id", [(int) $act['id']]);
+    $showPoint = rmt_activity_meeting_point_visible($act, $me);
+    $isPrivate = ($act['visibility'] ?? 'trip') === 'private' || ($act['trip_visibility'] ?? 'public') !== 'public';
+
+    $when = '';
+    if (!empty($act['day'])) {
+        $when = date('l j F', strtotime((string) $act['day']));
+        if (!empty($act['start_time'])) $when .= ', ' . (string) $act['start_time'];
+    }
+
+    view('activity_show', compact('act', 'me', 'isOwner', 'myState', 'going', 'interested',
+                                  'requests', 'photos', 'comments', 'showPoint', 'isPrivate', 'when'), [
+        'title' => rmt_meta_title((string) $act['title'] . ($act['dest_name'] ? ', ' . $act['dest_name'] : '')),
+        'description' => trim((string) $act['title'] . ($when !== '' ? ' on ' . $when : '')
+            . ($act['dest_name'] ? ' in ' . $act['dest_name'] : '')
+            . '. A plan on RuinMyTrip, posted by @' . (string) $act['username'] . '.'),
+        'og_image' => $photos ? abs_url((string) $photos[0]['url']) : rmt_default_og_image(),
+        /* A plan on a trip that is not public, or marked private, is never offered to a crawler. */
+        'robots' => $isPrivate ? 'noindex, nofollow' : 'index, follow',
+        'breadcrumbs' => array_values(array_filter([
+            ['name' => 'Home', 'url' => url()],
+            $act['dest_slug'] ? ['name' => (string) $act['dest_name'], 'url' => url('d/' . $act['dest_slug'])] : null,
+            ['name' => (string) $act['trip_title'], 'url' => url('trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'])],
+        ])),
+    ]);
+}
+
+/**
+ * POST /activity/{id}/decide — the owner answers an ask.
+ *
+ * The half that was missing. Somebody asking to join and never being answered is worse than not
+ * being able to ask: they are left waiting for a decision nobody can make.
+ */
+function trip_activity_decide(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can answer.');
+
+    $who = (int) input('user_id');
+    $decision = (string) input('decision');
+    $back = '/activity/' . (int) $act['id'];
+    if ($who < 1 || !in_array($decision, ['accept', 'decline', 'remove'], true)) redirect($back);
+
+    $row = q_one('SELECT state FROM activity_joins WHERE activity_id = ? AND user_id = ?', [(int) $act['id'], $who]);
+    if (!$row) redirect($back);
+
+    if ($decision === 'accept') {
+        if (!rmt_activity_has_room($act)) {
+            flash('That plan is full. Remove somebody first, or raise the limit.');
+            redirect($back);
+        }
+        db()->prepare("UPDATE activity_joins SET state = 'going', decided_at = ?, decided_by = ?
+                        WHERE activity_id = ? AND user_id = ?")
+            ->execute([date('Y-m-d H:i:s'), (int) $me['id'], (int) $act['id'], $who]);
+        $type = 'activity_accepted';
+        flash('Accepted.');
+    } elseif ($decision === 'decline') {
+        db()->prepare("UPDATE activity_joins SET state = 'declined', decided_at = ?, decided_by = ?
+                        WHERE activity_id = ? AND user_id = ?")
+            ->execute([date('Y-m-d H:i:s'), (int) $me['id'], (int) $act['id'], $who]);
+        $type = 'activity_declined';
+        flash('Declined.');
+    } else {
+        /* Removing somebody already accepted. The row goes rather than being marked declined: the
+           person was in and is now not, and a "declined" row would misdescribe what happened. */
+        db()->prepare('DELETE FROM activity_joins WHERE activity_id = ? AND user_id = ?')
+            ->execute([(int) $act['id'], $who]);
+        $type = 'activity_removed';
+        flash('Removed from the plan.');
+    }
+
+    /* The requester is told, once per decision, because the whole problem with the first version
+       was somebody waiting for an answer they never saw. */
+    q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+          [$who, $type, (int) $me['id'], 'activity', (int) $act['id'], date('Y-m-d H:i:s')]);
+    redirect($back);
+}
+
+/** POST /activity/{id}/cancel-request — the asker takes it back. */
+function trip_activity_cancel_request(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    db()->prepare("DELETE FROM activity_joins WHERE activity_id = ? AND user_id = ? AND state IN ('requested','interested','going')")
+        ->execute([(int) $act['id'], (int) $me['id']]);
+    flash('Withdrawn.');
+    redirect('/activity/' . (int) $act['id']);
+}
+
+/**
+ * POST /activity/{id}/cancel — the owner calls the plan off.
+ *
+ * Cancelled rather than deleted: people said they were coming, and they need to be told, and the
+ * page they have the link to has to say what happened rather than becoming a 404.
+ */
+function trip_activity_cancel(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can cancel it.');
+
+    $on = empty($act['cancelled_at']);
+    db()->prepare('UPDATE trip_activities SET cancelled_at = ?, updated_at = ? WHERE id = ?')
+        ->execute([$on ? date('Y-m-d H:i:s') : null, date('Y-m-d H:i:s'), (int) $act['id']]);
+
+    if ($on) {
+        foreach (q_all("SELECT user_id FROM activity_joins WHERE activity_id = ? AND state IN ('going','requested','interested')",
+                       [(int) $act['id']]) as $r) {
+            if ((int) $r['user_id'] === (int) $me['id']) continue;
+            q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+                  [(int) $r['user_id'], 'activity_cancelled', (int) $me['id'], 'activity', (int) $act['id'],
+                   date('Y-m-d H:i:s')]);
+        }
+    }
+    flash($on ? 'Cancelled, and everybody coming has been told.' : 'Back on.');
+    redirect('/activity/' . (int) $act['id']);
+}
+
+/**
+ * POST /activity/{id}/settings — the owner changes how social a plan is, after the fact.
+ *
+ * Almost nobody decides on capacity and a meeting point while typing "drinks in Bairro Alto". They
+ * decide once two people have said they are coming, which is why this lives on the plan's page
+ * rather than only in the composer.
+ */
+function trip_activity_settings(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can change it.');
+
+    $back = '/activity/' . (int) $act['id'];
+    $trip = q_one('SELECT * FROM trips WHERE id = ?', [(int) $act['trip_id']]);
+    $v = rmt_activity_validate($_POST + ['title' => (string) $act['title']], $trip ?: []);
+    if (!$v['ok']) { flash(implode(' ', $v['errors'])); redirect($back); }
+    $d = $v['data'];
+
+    /* Lowering the capacity below the number already accepted would silently un-invite somebody.
+       It is refused instead, and the owner is told to remove people if that is what they mean. */
+    $cap = (int) ($d['capacity'] ?? 0);
+    if ($cap > 0 && $cap < rmt_activity_going_count((int) $act['id'])) {
+        flash('More people are already coming than that. Remove somebody first.');
+        redirect($back);
+    }
+
+    db()->prepare('UPDATE trip_activities SET join_mode = ?, capacity = ?, meeting_point = ?,
+                                              start_time = ?, end_time = ?, updated_at = ?
+                    WHERE id = ?')
+        ->execute([$d['join_mode'], $cap ?: null, $d['meeting_point'],
+                   $d['start_time'] ?: $act['start_time'], $d['end_time'],
+                   date('Y-m-d H:i:s'), (int) $act['id']]);
+    flash('Updated.');
+    redirect($back);
+}
+
+/** POST /activity/{id}/photos — the owner adds photographs, during or after. */
+function trip_activity_photos(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler can add photos here.');
+    $errors = rmt_activity_attach_photos((int) $act['id'], (int) $me['id']);
+    flash($errors ? implode(' ', array_unique($errors)) : 'Photos added.');
+    redirect('/activity/' . (int) $act['id']);
+}
+
 /* ---------- trip activities: what somebody is actually doing there ---------- */
 
 /**
@@ -5702,7 +5910,7 @@ function trip_activity_join(array $a): void {
     if (!$act) not_found();
     if (!rmt_activity_visible_to($act, $me)) not_found();
 
-    $back = '/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan';
+    $back = '/activity/' . (int) $act['id'];
     if ((int) $act['user_id'] === (int) $me['id']) redirect($back);
     if (($act['join_mode'] ?? 'no') === 'no') {
         flash('That plan is not open to others.');
@@ -5714,11 +5922,27 @@ function trip_activity_join(array $a): void {
         redirect($back);
     }
 
+    if (!empty($act['cancelled_at'])) {
+        flash('That plan was cancelled.');
+        redirect($back);
+    }
+
+    /* An open plan takes a yes directly, subject to room. An ask-to-join plan takes a request,
+       which the owner then answers: pressing the button on one of those is asking, not arriving. */
     $want = (string) input('state');
     if (!in_array($want, RMT_ACTIVITY_JOIN_STATES, true)) $want = 'interested';
-    /* An "open" plan takes a yes directly; an "ask to join" plan can only ever be an expression of
-       interest from this button, because the owner has said they want to be asked. */
-    if (($act['join_mode'] ?? 'no') === 'ask') $want = 'interested';
+    if (($act['join_mode'] ?? 'no') === 'ask') $want = 'requested';
+    if ($want === 'going' && !rmt_activity_has_room($act)) {
+        flash('That plan is full.');
+        redirect($back);
+    }
+
+    /* A no is remembered. Somebody who was declined cannot ask again by pressing the same button,
+       which is the difference between a request and a way to pester people. */
+    if (rmt_activity_join_state((int) $act['id'], $me) === 'declined') {
+        flash('You asked already and the traveler said no.');
+        redirect($back);
+    }
 
     $current = rmt_activity_join_state((int) $act['id'], $me);
     if ($current === $want) {
@@ -5740,13 +5964,14 @@ function trip_activity_join(array $a): void {
 
     /* Tell the traveler whose plan it is, once per person per plan: somebody saying they will come
        to your dinner is the most useful notification this site can send. */
+    $type = $want === 'requested' ? 'activity_request' : 'activity_join';
     $seen = q_one("SELECT 1 x FROM notifications
-                    WHERE user_id = ? AND type = 'activity_join' AND actor_id = ?
+                    WHERE user_id = ? AND type = ? AND actor_id = ?
                       AND target_type = 'activity' AND target_id = ?",
-                  [(int) $act['user_id'], (int) $me['id'], (int) $act['id']]);
+                  [(int) $act['user_id'], $type, (int) $me['id'], (int) $act['id']]);
     if (!$seen) {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
-              [(int) $act['user_id'], 'activity_join', (int) $me['id'], 'activity', (int) $act['id'],
+              [(int) $act['user_id'], $type, (int) $me['id'], 'activity', (int) $act['id'],
                date('Y-m-d H:i:s')]);
     }
     redirect($back);
