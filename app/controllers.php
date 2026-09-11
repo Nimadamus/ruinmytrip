@@ -692,7 +692,14 @@ function profile_edit_form(array $a): void {
     require_login();
     $me = current_user();
     if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
-    view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$me], ['title'=>'Edit your profile | RuinMyTrip']);
+    /* current_user() carries the handful of profile columns the header needs, not all of them, so
+       the editor reads its own row. Without this the two newest fields, travel style and the open
+       to meeting opt-in, rendered as unset every time somebody opened the form and were then
+       saved back as unset: a setting that quietly turns itself off is worse than no setting. */
+    $p = array_merge($me, q_one('SELECT display_name, bio, home_city, avatar_url, travel_style,
+                                        open_to_meeting, home_destination_id
+                                   FROM profiles WHERE user_id = ?', [(int) $me['id']]) ?: []);
+    view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$p], ['title'=>'Edit your profile | RuinMyTrip']);
 }
 
 /** POST /u/{username}/edit */
@@ -725,9 +732,11 @@ function profile_edit_submit(array $a): void {
     // worked. Six such accounts exist on the live database.
     rmt_profile_ensure((int) $me['id']);
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
-                                       home_destination_id=?, travel_style=? WHERE user_id=?')
+                                       home_destination_id=?, travel_style=?, open_to_meeting=?
+                                 WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
-                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null, (int)$me['id']]);
+                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null,
+                   (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
     flash('Profile updated.');
     redirect('/u/'.$me['username']);
 }
@@ -2021,8 +2030,19 @@ function travelers_index(array $a): void {
                      WHERE u.status='active' AND u.role <> ?
                      ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80", [RMT_EDITORIAL_ROLE]);
     $me = current_user();
-    // Who is here, for you. A directory sorted by review count answers a different question.
-    $suggested = $me ? rmt_follow_suggestions((int) $me['id'], 8) : [];
+    /* Six ways to find somebody, not one. The page was a directory ordered by review count, which
+       answers "who writes the most here" rather than "who will be where I am going". */
+    $find = $me ? rmt_discover_all((int) $me['id']) : ['overlapping' => [], 'same_city' => [],
+                                                      'kindred' => [], 'meetup_peers' => [], 'suggested' => []];
+    $suggested = $find['suggested'];
+    $matchCount = $me ? rmt_match_count((int) $me['id']) : 0;
+    /* A city can be asked directly, so the page works for somebody with no trip posted, which is
+       everybody on their first visit. */
+    $cityId = (int) ($_GET['city'] ?? 0);
+    $cityRow = $cityId > 0 ? q_one('SELECT id, name, slug FROM destinations WHERE id = ?', [$cityId]) : null;
+    $hereNow = $cityRow ? rmt_discover_here_now((int) $cityRow['id'], $me, 12) : [];
+    $cityLocals = $cityRow ? rmt_discover_locals((int) $cityRow['id'], $me, 8) : [];
+    $allDests = all_dests();
     /* Every city's people page hangs off this one. Cities with somebody in them come first, because
        a browse list whose first ten entries are empty rooms teaches the reader to stop clicking. */
     $cities = q_all("SELECT d.id, d.slug, d.name, d.country,
@@ -2034,7 +2054,9 @@ function travelers_index(array $a): void {
                        FROM destinations d
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name",
                     [date('Y-m-d'), date('Y-m-d H:i:s')]);
-    view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities], [
+    view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities,
+                             'find'=>$find, 'matchCount'=>$matchCount, 'cityRow'=>$cityRow,
+                             'hereNow'=>$hereNow, 'cityLocals'=>$cityLocals, 'allDests'=>$allDests], [
         'title' => 'Travelers: meet the people going where you are going',
         'description' => 'Real members of RuinMyTrip, and the city pages that show who is going where and when. Follow the travelers whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
@@ -3943,9 +3965,11 @@ function settings_save(array $a): void {
     // worked. Six such accounts exist on the live database.
     rmt_profile_ensure((int) $me['id']);
     db()->prepare('UPDATE profiles SET display_name=?, bio=?, home_city=?, avatar_url=?,
-                                       home_destination_id=?, travel_style=? WHERE user_id=?')
+                                       home_destination_id=?, travel_style=?, open_to_meeting=?
+                                 WHERE user_id=?')
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
-                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null, (int)$me['id']]);
+                   $d['home_destination_id'] ?? null, $d['travel_style'] ?? null,
+                   (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
     flash('Profile updated.'); redirect('/u/'.$me['username']);
 }
 

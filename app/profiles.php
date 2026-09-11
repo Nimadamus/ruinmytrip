@@ -376,6 +376,10 @@ function rmt_profile_validate(array $in): array {
             ? (string) $in['travel_style'] : null,
         'home_destination_id' => function_exists('rmt_resolve_home_destination')
             ? rmt_resolve_home_destination($home) : null,
+        /* Opt in, and only meaningful for somebody whose home city is one we have a page for:
+           being listed as a local of nowhere is not a thing. Absent means no, which is what an
+           unticked checkbox sends. */
+        'open_to_meeting' => !empty($in['open_to_meeting']) ? 1 : 0,
     ]];
 }
 

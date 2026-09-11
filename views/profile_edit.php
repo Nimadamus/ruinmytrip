@@ -40,6 +40,19 @@
     <?php /* Optional, and a short list rather than a text box, because this is something other
              travelers filter by: "solo travelers in Lisbon" is a question the site can only answer
              if the answers are comparable. */ ?>
+    <?php /* Opt in, off by default, and described exactly as what it is. Living somewhere is
+             never taken as consent to be listed as available to strangers, so this is a box
+             somebody has to find and tick, and the sentence under it is the whole promise. */ ?>
+    <label class="opt-in">
+      <input type="checkbox" name="open_to_meeting" value="1"<?= !empty($p['open_to_meeting']) ? ' checked' : '' ?>>
+      <span>
+        <b>I am open to meeting travelers in my city</b>
+        <span class="hint">Puts you on your city's page under "locals open to meeting travelers".
+          It means you are happy to answer a question or meet in a public place. It shares nothing
+          else: no address, no live location, and you can untick it at any time.</span>
+      </span>
+    </label>
+
     <label for="travel_style">How you usually travel <span class="hint">(optional)</span></label>
     <select id="travel_style" name="travel_style">
       <option value="">Rather not say</option>

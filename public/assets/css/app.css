@@ -908,3 +908,28 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .edit-photo-rm{display:flex;align-items:center;gap:6px;margin:8px 0 0;font-size:.85rem;
   font-weight:500;color:var(--muted)}
 .edit-photo-rm input{width:auto}
+
+/* ================================================================ people
+   A person in a row: face, who, why they are here, and one thing to do. The reason is the point:
+   a list of strangers with a Follow button is a directory, and a list where each row says "four
+   days with you in Lisbon" is an introduction. */
+.person{display:flex;align-items:center;gap:12px;padding:11px 0;
+  border-bottom:1px solid var(--line-soft)}
+.person:last-child{border-bottom:0}
+.person-face .avatar{width:44px;height:44px}
+.person-who{min-width:0;flex:1}
+.person-who b{font-weight:650}
+.person-who .hint{display:block;font-size:.82rem}
+.person-why{display:block;font-size:.86rem;color:var(--brand);font-weight:550;margin-top:2px}
+.person-do{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.person-do form{margin:0}
+
+.find-block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px 20px;margin:16px 0;box-shadow:var(--shadow)}
+.find-h{font-size:1.12rem;margin:0 0 4px}
+.find-block .hint{display:block;margin:0 0 10px}
+
+@media (max-width:560px){
+  .person{flex-wrap:wrap}
+  .person-do{width:100%;justify-content:flex-start;padding-left:56px}
+}
