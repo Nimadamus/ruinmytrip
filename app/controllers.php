@@ -2702,6 +2702,26 @@ function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
     $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=$talk=$activities=[];
     $me = current_user();
+
+    /* City context. "Time Out Market" means the one in Lisbon when the reader is reading about
+       Lisbon, and full text ranking has no idea about that: it scores a name against a name.
+
+       The context is whichever is true first: a city named in the URL, because that is the reader
+       saying it out loud; then the city they are going to soonest, because somebody with Lisbon
+       dates in a fortnight is asking about Lisbon. It REORDERS what the search already found and
+       never adds a row, so nothing here can widen what somebody may see. */
+    $inSlug = trim((string) ($_GET['in'] ?? ''));
+    $ctx = null;
+    if ($inSlug !== '') $ctx = q_one('SELECT id, name, slug FROM destinations WHERE slug = ?', [$inSlug]);
+    if (!$ctx && $me) {
+        $ctx = q_one("SELECT d.id, d.name, d.slug
+                        FROM trips t JOIN destinations d ON d.id = t.destination_id
+                       WHERE t.user_id = ? AND t.status = 'published'
+                         AND t.date_to IS NOT NULL AND t.date_to >= ?
+                    ORDER BY t.date_from LIMIT 1", [(int) $me['id'], date('Y-m-d')]);
+    }
+    $ctxId = $ctx ? (int) $ctx['id'] : 0;
+
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
         /* Trips are the one searchable type that carries a visibility, and this page did not read
@@ -2726,10 +2746,15 @@ function search(array $a): void {
                             ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
             $collections = q_all("SELECT * FROM collections WHERE status='published' AND search_vector @@ $tsq
                                   ORDER BY ts_rank(search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+            /* The city comes first INSIDE the query rather than after it. Reordering ten rows
+               cannot promote a Paris hotel that global ranking never returned, which is exactly
+               what happened: searching "hotel" while reading about Paris led with Lisbon. */
             $places = q_all("SELECT p.*, d.name dest_name, d.country dest_country FROM places p
                              JOIN destinations d ON d.id=p.destination_id
                              WHERE p.status='active' AND p.search_vector @@ $tsq
-                             ORDER BY ts_rank(p.search_vector, $tsq) DESC LIMIT 10", [$qs,$qs]);
+                             ORDER BY CASE WHEN p.destination_id = ? THEN 0 ELSE 1 END,
+                                      ts_rank(p.search_vector, $tsq) DESC LIMIT 10",
+                            [$qs, $ctxId, $qs]);
         } else {
             $dests = q_all("SELECT d.* FROM destinations d JOIN destinations_fts f ON f.rowid=d.id
                             WHERE destinations_fts MATCH ? ORDER BY rank LIMIT 10", [$qs]);
@@ -2749,7 +2774,9 @@ function search(array $a): void {
             $places = q_all("SELECT p.*, dd.name dest_name, dd.country dest_country FROM places p
                              JOIN places_fts f ON f.rowid=p.id
                              JOIN destinations dd ON dd.id=p.destination_id
-                             WHERE places_fts MATCH ? AND p.status='active' ORDER BY rank LIMIT 10", [$qs]);
+                             WHERE places_fts MATCH ? AND p.status='active'
+                             ORDER BY CASE WHEN p.destination_id = ? THEN 0 ELSE 1 END, rank
+                             LIMIT 10", [$qs, $ctxId]);
         }
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
@@ -2796,31 +2823,6 @@ function search(array $a): void {
         $activities = [];
     }
 
-    /* City context. "Time Out Market" means the one in Lisbon when the reader is reading about
-       Lisbon, and full text ranking has no idea about that: it scores a name against a name.
-
-       The context is whichever is true first: a city named in the URL, because that is the reader
-       saying it out loud; then the city they are going to soonest, because somebody with Lisbon
-       dates in a fortnight is asking about Lisbon. It REORDERS what the search already found and
-       never adds a row, so nothing here can widen what somebody may see. */
-    $inSlug = trim((string) ($_GET['in'] ?? ''));
-    $ctx = null;
-    if ($inSlug !== '') $ctx = q_one('SELECT id, name, slug FROM destinations WHERE slug = ?', [$inSlug]);
-    if (!$ctx && $me) {
-        $ctx = q_one("SELECT d.id, d.name, d.slug
-                        FROM trips t JOIN destinations d ON d.id = t.destination_id
-                       WHERE t.user_id = ? AND t.status = 'published'
-                         AND t.date_to IS NOT NULL AND t.date_to >= ?
-                    ORDER BY t.date_from LIMIT 1", [(int) $me['id'], date('Y-m-d')]);
-    }
-    if ($ctx) {
-        $ctxId = (int) $ctx['id'];
-        $places     = rmt_prefer_city($places, 'destination_id', $ctxId);
-        $trips      = rmt_prefer_city($trips, 'destination_id', $ctxId);
-        $activities = rmt_prefer_city($activities, 'destination_id', $ctxId);
-        $reviews    = rmt_prefer_city($reviews, 'destination_id', $ctxId);
-        $dests      = rmt_prefer_city($dests, 'id', $ctxId);
-    }
 
     // A search results page is a view of the index we already have, in somebody's words.
     view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
