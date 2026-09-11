@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-09.
+Replace stale lines here; do not append history. Last touched 2026-09-10.
 
 ## What the product is
 
@@ -28,12 +28,21 @@ pages made of members.
 * `app/locals.php` resolves a free-text home city to one of ours (`profiles.home_destination_id`).
 * `app/feed_scope.php` decides whose activity reaches a feed: people you follow plus cities you saved.
 * `app/contribution_events.php` measures both funnels; the join funnel leads `/admin/funnel`.
+* `app/cards.php` draws the 1200x630 share card behind `/card/{kind}/{key}.png`, used as og:image.
+  Kinds: post, review, c, u, meetup, tag, city and now trip. A trip card refuses to draw anything
+  for a trip that is not public, because the route is open to anybody holding the link.
 
 ## Migrations added this week
 
 `070` profiles.home_destination_id · `071` trips carry dates/visibility and `going` rows became trips
 · `072` posts.trip_id (trip updates) · `073` social indexes · `074` profiles.travel_style ·
 `075` a profile row for every member.
+
+## House style is a test now
+
+`tests/no_dashes_test.php` fails on an em or en dash in anything under `app/` or `views/` that
+reaches the browser. It tokenises, so a dash in a comment is fine; `app/seo.php` is allowed because
+its dashes are in the rtrim class that strips one off a truncated title. 208 were live before this.
 
 ## Traps that have already cost outages
 
