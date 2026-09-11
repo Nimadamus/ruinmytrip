@@ -17,16 +17,89 @@
  */
 declare(strict_types=1);
 
-/* Overpass mirrors, tried in order. A public endpoint under load returns 429 or simply hangs, and
-   the main instance applies per-address slot limits: from a shared cloud address, which is what a
-   platform like Render gives you, a request can sit in a queue behind every other tenant until it
-   times out. The mirror is tried first for that reason, each attempt gets a short timeout so both
-   fit inside one web request, and rmt_place_ingest() exists so the fetching need not happen on the
-   server at all. */
-const RMT_OSM_ENDPOINTS = [
+/* Overpass mirrors.
+ *
+ * One public endpoint is a single point of failure, and it is somebody else's free service. These
+ * are the public instances that publish an open usage policy; the list is configurable so it can be
+ * changed without a deploy, and ordered at runtime by which of them has been answering.
+ *
+ * The main instance applies per-address slot limits: from a shared cloud address, which is what a
+ * platform gives you, a request can sit in a queue behind every other tenant until it times out.
+ * That is why there is a list at all, why each attempt gets a short timeout, and why
+ * rmt_place_ingest() exists so the fetching need not happen on the server.
+ */
+const RMT_OSM_DEFAULT_ENDPOINTS = [
     'https://overpass.kumi.systems/api/interpreter',
     'https://overpass-api.de/api/interpreter',
+    'https://overpass.private.coffee/api/interpreter',
+    'https://overpass.osm.jp/api/interpreter',
 ];
+
+/** The mirrors to use, from config when set. */
+function rmt_osm_endpoints(): array {
+    $c = $GLOBALS['config']['osm_mirrors'] ?? null;
+    if (is_string($c) && trim($c) !== '') {
+        $c = array_values(array_filter(array_map('trim', explode(',', $c))));
+    }
+    return is_array($c) && $c ? $c : RMT_OSM_DEFAULT_ENDPOINTS;
+}
+
+/**
+ * Where the note of which mirrors are answering lives.
+ *
+ * A small JSON file rather than a table: it is operational state about somebody else's servers, it
+ * is worthless after a day, and it has to work from a CLI script and a web request alike without a
+ * migration. Missing, unreadable or corrupt all mean "no history", which is the safe answer.
+ */
+function rmt_osm_health_path(): string {
+    $p = (string) ($GLOBALS['config']['osm_health_file'] ?? '');
+    return $p !== '' ? $p : rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . '/rmt_osm_health.json';
+}
+
+function rmt_osm_health_read(): array {
+    $f = rmt_osm_health_path();
+    if (!is_file($f)) return [];
+    $j = json_decode((string) @file_get_contents($f), true);
+    return is_array($j) ? $j : [];
+}
+
+/**
+ * Record how a mirror behaved, and how long to leave it alone.
+ *
+ * Failures compound: thirty seconds, then a minute, then two, capped at a quarter of an hour. A
+ * mirror that is struggling is not helped by being asked again immediately, and the whole point of
+ * having four is that one being tired costs nothing.
+ */
+function rmt_osm_health_note(string $host, bool $ok): void {
+    $h = rmt_osm_health_read();
+    $row = $h[$host] ?? ['ok' => 0, 'fails' => 0, 'until' => 0];
+    if ($ok) {
+        $row['ok'] = (int) $row['ok'] + 1;
+        $row['fails'] = 0;
+        $row['until'] = 0;
+    } else {
+        $row['fails'] = (int) $row['fails'] + 1;
+        $row['until'] = time() + (int) min(900, 30 * (2 ** min(5, (int) $row['fails'] - 1)));
+    }
+    $h[$host] = $row;
+    @file_put_contents(rmt_osm_health_path(), json_encode($h), LOCK_EX);
+}
+
+/** Mirrors in the order worth trying: the ones not cooling off first, freshest failure last. */
+function rmt_osm_endpoints_ranked(): array {
+    $h = rmt_osm_health_read();
+    $now = time();
+    $urls = rmt_osm_endpoints();
+    usort($urls, static function (string $a, string $b) use ($h, $now): int {
+        $ha = $h[(string) parse_url($a, PHP_URL_HOST)] ?? [];
+        $hb = $h[(string) parse_url($b, PHP_URL_HOST)] ?? [];
+        $ca = (int) ($ha['until'] ?? 0) > $now ? 1 : 0;
+        $cb = (int) ($hb['until'] ?? 0) > $now ? 1 : 0;
+        if ($ca !== $cb) return $ca <=> $cb;                 // not cooling off first
+        return (int) ($ha['fails'] ?? 0) <=> (int) ($hb['fails'] ?? 0);
+    });
+    return $urls;
+}
 
 /**
  * OSM tags to this site's four types.
@@ -115,7 +188,7 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
     if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.', 'tries' => []];
     $lastError = 'No endpoint answered.';
     $tries = [];
-    foreach (RMT_OSM_ENDPOINTS as $url) {
+    foreach (rmt_osm_endpoints_ranked() as $url) {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
@@ -139,6 +212,7 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
         if ($body === false || $code !== 200) {
             $lastError = $err !== '' ? $err : ('HTTP ' . $code);
             $tries[] = $host . ': ' . $lastError;
+            rmt_osm_health_note($host, false);
             /* 429 is the provider saying "not now" in as many words. Backing off is the difference
                between being a heavy user of a free service and being the reason it gets locked
                down. Anything else, move on to the next mirror immediately. */
@@ -149,9 +223,11 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
         if (!is_array($json) || !isset($json['elements'])) {
             $lastError = 'Unreadable response.';
             $tries[] = $host . ': ' . $lastError;
+            rmt_osm_health_note($host, false);
             continue;
         }
         $tries[] = $host . ': ok';
+        rmt_osm_health_note($host, true);
         return ['ok' => true, 'elements' => $json['elements'], 'error' => null, 'tries' => $tries];
     }
     return ['ok' => false, 'elements' => [], 'error' => $lastError, 'tries' => $tries];

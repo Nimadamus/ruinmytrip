@@ -20,10 +20,20 @@ KIT=(
   "hotel:hotel:12" "hotel:hostel:4"
 )
 
+# Resumable. A run that dies halfway, or a mirror having a bad afternoon, should not mean
+# starting the city again: every kind that lands is written down and a second run skips it.
+DONE_FILE=${DONE_FILE:-/tmp/rmt_import_done.txt}
+touch "$DONE_FILE"
+
 echo "### $CITY"
 fails=0
+skipped=0
 for spec in "${KIT[@]}"; do
   IFS=: read -r ty kind n <<< "$spec"
+  mark="$CITY:$kind:$n"
+  if [ -z "${FORCE:-}" ] && grep -qxF "$mark" "$DONE_FILE" 2>/dev/null; then
+    skipped=$((skipped+1)); continue
+  fi
   out=$($PHP scripts/push_places.php --site="$SITE" --key="$KEY" --city="$CITY" \
         --type="$ty" --osm="$kind" --limit="$n" ${DRY:+--dry} 2>&1)
   line=$(echo "$out" | grep -E '^offered=' || true)
@@ -33,7 +43,8 @@ for spec in "${KIT[@]}"; do
     fails=$((fails+1))
   else
     echo "  $kind: $line"
+    [ -z "${DRY:-}" ] && echo "$mark" >> "$DONE_FILE"
   fi
   sleep 7
 done
-echo "### $CITY done, $fails kind(s) failed"
+echo "### $CITY done, $fails kind(s) failed, $skipped already done"
