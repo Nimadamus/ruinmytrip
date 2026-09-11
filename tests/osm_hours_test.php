@@ -1,0 +1,107 @@
+<?php
+/**
+ * Reading OpenStreetMap opening hours, and refusing to guess.
+ *
+ * A wrong opening time is the worst kind of wrong fact this site can publish: it sends somebody
+ * across a city to a locked door, and the page that did it looked authoritative. So the parser
+ * takes the common unambiguous forms and refuses everything else WHOLE, rather than keeping the
+ * part it understood and quietly dropping "except in August".
+ *
+ * Half the assertions here are refusals. That is the point of it.
+ *
+ *   php tests/osm_hours_test.php
+ */
+declare(strict_types=1);
+
+define('BASE_PATH', dirname(__DIR__));
+$GLOBALS['config'] = [
+    'app_env' => 'test', 'app_url' => 'https://example.test', 'app_name' => 'RuinMyTrip',
+    'db_driver' => 'sqlite', 'sqlite_path' => ':memory:',
+];
+require BASE_PATH . '/app/db.php';
+require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/osm_hours.php';
+
+$pass = 0; $fail = 0;
+function ok(bool $c, string $what): void {
+    global $pass, $fail;
+    if ($c) { $pass++; echo "  PASS  $what\n"; } else { $fail++; echo "FAIL: $what\n"; }
+}
+
+/** A compact view of a parse: "day opens-closes" per row, or "day closed". */
+function shape(?array $rows): ?string {
+    if ($rows === null) return null;
+    $out = [];
+    foreach ($rows as $r) {
+        $out[] = $r['closed'] ? $r['day_of_week'] . ' closed'
+                              : $r['day_of_week'] . ' ' . $r['opens'] . '-' . $r['closes'];
+    }
+    return implode('|', $out);
+}
+
+// --- the forms we take ----------------------------------------------------------------------------
+ok(shape(rmt_osm_hours_parse('Mo-Fr 09:00-17:00'))
+   === '0 09:00-17:00|1 09:00-17:00|2 09:00-17:00|3 09:00-17:00|4 09:00-17:00',
+   'a weekday range opens five days');
+ok(shape(rmt_osm_hours_parse('Sa 10:00-14:00')) === '5 10:00-14:00', 'one day is one day');
+ok(shape(rmt_osm_hours_parse('Mo,We,Fr 10:00-14:00')) === '0 10:00-14:00|2 10:00-14:00|4 10:00-14:00',
+   'a list of days is a list of days');
+ok(shape(rmt_osm_hours_parse('Tu 10:00-14:00,16:00-20:00')) === '1 10:00-14:00|1 16:00-20:00',
+   'a lunch break is two spans on one day');
+ok(shape(rmt_osm_hours_parse('Su off')) === '6 closed', 'off is closed, not absent');
+ok(shape(rmt_osm_hours_parse('Mo-Fr 09:00-17:00; Sa 10:00-13:00; Su off'))
+   === '0 09:00-17:00|1 09:00-17:00|2 09:00-17:00|3 09:00-17:00|4 09:00-17:00|5 10:00-13:00|6 closed',
+   'a full week reads as a full week');
+ok(shape(rmt_osm_hours_parse('Sa-Su 11:00-18:00')) === '5 11:00-18:00|6 11:00-18:00',
+   'a weekend range wraps the end of the week');
+$always = rmt_osm_hours_parse('24/7');
+ok($always !== null && count($always) === 7, 'around the clock is seven open days');
+ok(shape(rmt_osm_hours_parse('mo-fr 9:00-17:00')) === shape(rmt_osm_hours_parse('Mo-Fr 09:00-17:00')),
+   'case and a missing leading zero do not change the answer');
+
+// --- the forms we refuse, whole -------------------------------------------------------------------
+foreach ([
+    'Mo-Fr 09:00-17:00; PH off'            => 'public holidays',
+    'Mo-Su 10:00-18:00; Dec 25 off'        => 'a date exception',
+    'Jan-Mar 10:00-16:00'                  => 'a month range',
+    'Mo-Fr sunset-24:00'                   => 'sunset',
+    'week 1-20 Mo-Fr 09:00-17:00'          => 'week numbers',
+    'Mo-Fr 09:00+'                         => 'an open ended time',
+    'Mo-Fr 09:00-17:00 "by appointment"'   => 'a comment',
+    '2024-2025 Mo-Fr 09:00-17:00'          => 'a year range',
+    'Mo-Fr 22:00-02:00'                    => 'a span across midnight',
+    'Mo-Fr 25:00-99:00'                    => 'times that are not times',
+    'Xx-Yy 09:00-17:00'                    => 'days that are not days',
+    'open'                                 => 'a word with no hours in it',
+    ''                                     => 'nothing at all',
+] as $raw => $why) {
+    ok(rmt_osm_hours_parse((string) $raw) === null, "refused: $why");
+}
+
+// --- storing ---------------------------------------------------------------------------------------
+$pdo = db();
+$pdo->exec("CREATE TABLE place_hours (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,
+              day_of_week INT, opens TEXT, closes TEXT, closed INT, valid_from TEXT,
+              valid_through TEXT, sort INT, source TEXT, created_at TEXT)");
+
+ok(rmt_osm_hours_store(1, 'Mo-Fr 09:00-17:00') === 5, 'five rows are written for five days');
+ok(rmt_osm_hours_store(1, 'Mo-Fr 10:00-18:00') === 5, 'and a later run replaces its own rows');
+$first = q_one('SELECT opens FROM place_hours WHERE place_id = 1 ORDER BY day_of_week LIMIT 1');
+ok((string) $first['opens'] === '10:00', 'with the new value, not the old one');
+ok((int) (q_one('SELECT COUNT(*) c FROM place_hours WHERE place_id = 1')['c'] ?? 0) === 5,
+   'and not ten rows, which is what replacing badly looks like');
+
+ok(rmt_osm_hours_store(2, 'Mo-Fr 09:00+') === 0, 'a value we do not trust writes nothing');
+ok((int) (q_one('SELECT COUNT(*) c FROM place_hours WHERE place_id = 2')['c'] ?? 0) === 0,
+   'and leaves no half written week behind');
+
+/* Hours somebody typed by hand are not overruled by a provider, which is the same rule the field
+   merge follows. The provider reports that it wrote nothing rather than winning the argument. */
+$pdo->exec("INSERT INTO place_hours (place_id, day_of_week, opens, closes, closed, sort, source)
+            VALUES (3, 0, '08:00', '12:00', 0, 0, NULL)");
+ok(rmt_osm_hours_store(3, 'Mo-Fr 09:00-17:00') === 0, 'hours a person typed are left alone');
+$kept = q_one('SELECT opens FROM place_hours WHERE place_id = 3');
+ok((string) $kept['opens'] === '08:00', 'and they still say what the person said');
+
+echo "osm_hours_test: $pass passed, $fail failed\n";
+exit($fail ? 1 : 0);

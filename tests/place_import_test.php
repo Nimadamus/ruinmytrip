@@ -45,6 +45,9 @@ $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY AUTOINCREMENT, destinati
               website_url TEXT, price_level INT, timezone TEXT, data_source TEXT,
               data_source_url TEXT, data_checked_at TEXT, name_norm TEXT, neighborhood_id INT,
               source_ref TEXT, source_updated_at TEXT, source_kind TEXT)");
+$pdo->exec("CREATE TABLE place_hours (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,
+              day_of_week INT, opens TEXT, closes TEXT, closed INT, valid_from TEXT,
+              valid_through TEXT, sort INT, source TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE place_aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,
               alias TEXT, alias_key TEXT, source TEXT, created_at TEXT)");
 $pdo->exec("INSERT INTO destinations VALUES (1,'Lisbon','lisbon','Portugal',38.7223,-9.1393)");

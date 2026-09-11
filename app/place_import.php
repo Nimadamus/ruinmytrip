@@ -35,6 +35,9 @@ const RMT_PLACE_IMPORT_FIELDS = [
     'name', 'type', 'category_id', 'lat', 'lng', 'street_address', 'neighborhood', 'region',
     'postal_code', 'phone', 'website_url', 'price_level', 'timezone',
     'data_source', 'data_source_url', 'source_ref', 'source_kind', 'category_slug',
+    /* Not a column on places: pulled out below and stored in place_hours, and only when the value
+       is one of the forms the parser is willing to trust. */
+    'opening_hours',
 ];
 
 /** How far apart two records can be and still be the same building, in metres. */
@@ -163,6 +166,8 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
        defined is worse than none, because it sends somebody looking for a museum to a car park. */
     $catSlug = (string) ($data['category_slug'] ?? '');
     unset($data['category_slug']);
+    $openingHours = (string) ($data['opening_hours'] ?? '');
+    unset($data['opening_hours']);
     if ($catSlug !== '') {
         $cat = q_one("SELECT id FROM place_categories WHERE slug = ? AND status = 'active'", [$catSlug]);
         if ($cat) $data['category_id'] = (int) $cat['id'];
@@ -196,6 +201,9 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
               . implode(',', array_fill(0, count($cols), '?')) . ')', $vals);
         $out['place_id'] = (int) (q_one('SELECT id FROM places WHERE destination_id = ? AND name_key = ?',
                                         [$destId, rmt_place_name_key($name)])['id'] ?? 0);
+        if ($openingHours !== '' && $out['place_id'] > 0 && function_exists('rmt_osm_hours_store')) {
+            if (rmt_osm_hours_store($out['place_id'], $openingHours) > 0) $out['filled'][] = 'hours';
+        }
         return $out;
     }
 
@@ -246,6 +254,10 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
     $set[] = 'updated_at = ?'; $args[] = $now;
     $args[] = $match['id'];
     q_run('UPDATE places SET ' . implode(', ', $set) . ' WHERE id = ?', $args);
+
+    if ($openingHours !== '' && function_exists('rmt_osm_hours_store')) {
+        if (rmt_osm_hours_store($match['id'], $openingHours) > 0) $out['filled'][] = 'hours';
+    }
 
     // A name we matched but did not adopt becomes an alias, so the next spelling finds it faster.
     if (rmt_place_name_key($name) !== (string) $cur['name_key']) {

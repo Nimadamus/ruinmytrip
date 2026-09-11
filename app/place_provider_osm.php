@@ -297,6 +297,10 @@ function rmt_osm_to_place(array $el): array {
         'postal_code'     => trim((string) ($tags['addr:postcode'] ?? '')) ?: null,
         'phone'           => trim((string) ($tags['phone'] ?? $tags['contact:phone'] ?? '')) ?: null,
         'website_url'     => trim((string) ($tags['website'] ?? $tags['contact:website'] ?? '')) ?: null,
+        /* Not a place column: hours live in their own table and are stored separately, only when
+           the value is one of the forms the parser trusts. Carried on the row so the importer can
+           hand it on without a second request. */
+        'opening_hours'   => trim((string) ($tags['opening_hours'] ?? '')) ?: null,
         'source_kind'     => $kind,
         'category_slug'   => rmt_osm_category_slug($kind),
         'data_source'     => 'openstreetmap',
