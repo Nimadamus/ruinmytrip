@@ -72,7 +72,14 @@ function rmt_pending_apply(array $user): array {
         // Re-validated, not trusted, for the same reason the other two are.
         $tv = rmt_trip_validate($held['trip']);
         if ($tv['ok'] && function_exists('rmt_trip_create_row')) {
-            $done['trip'] = rmt_trip_create_row($uid, $tv['data']) > 0;
+            $tid = rmt_trip_create_row($uid, $tv['data']);
+            // The id and the slug travel back so the caller can land them ON the trip rather than
+            // telling them it exists somewhere and leaving them to find it.
+            if ($tid > 0) {
+                $done['trip'] = true;
+                $done['trip_id'] = $tid;
+                $done['trip_slug'] = function_exists('slugify') ? slugify((string) $tv['data']['title']) : '';
+            }
         }
     }
     if (!empty($held['hello'])) {

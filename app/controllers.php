@@ -4626,6 +4626,13 @@ function verify_email_confirm(array $a): void {
        member's first five minutes end. */
     $applied = rmt_pending_apply((array) current_user());
     $released = rmt_reviews_release_held((int) $row['user_id']);
+    /* A first trip that was waiting on this click is the most valuable thing that just happened,
+       and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
+       the trip you wrote ten minutes ago sits somewhere unmentioned, is how the moment is lost. */
+    if (!empty($applied['trip']) && !empty($applied['trip_id'])) {
+        flash('Email confirmed. Your trip is live -- here it is.');
+        redirect('/trip/' . (int) $applied['trip_id'] . '/' . (string) ($applied['trip_slug'] ?? ''));
+    }
     if ($applied['going'] && $applied['hello']) {
         flash('Email confirmed. Your dates and your first post are live.');
         redirect('/matches');
