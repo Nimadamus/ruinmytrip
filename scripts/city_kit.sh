@@ -38,7 +38,11 @@ for spec in "${KIT[@]}"; do
         --type="$ty" --osm="$kind" --limit="$n" ${DRY:+--dry} 2>&1)
   line=$(echo "$out" | grep -E '^offered=' || true)
   if [ -z "$line" ]; then
-    echo "  $kind: FAILED"
+    if echo "$out" | grep -q "^fetched 0 "; then
+      echo "  $kind: NOTHING FOUND (the provider answered, with nothing)"
+    else
+      echo "  $kind: FAILED"
+    fi
     echo "$out" | sed 's/^/     /' | tail -3
     fails=$((fails+1))
   else
