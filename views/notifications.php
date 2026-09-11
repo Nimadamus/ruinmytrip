@@ -1,4 +1,5 @@
-<?php /** @var array $items @var array $me @var array $unreadIds */ $unreadIds = $unreadIds ?? []; ?>
+<?php /** @var array $items @var array $me @var array $unreadIds @var array $actMap */
+$unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Notifications</h1>
   <?php if (rmt_push_enabled()): ?>
@@ -35,10 +36,8 @@
                                             'activity_changed', 'activity_tomorrow'], true)):
           /* Everything that happens around a plan somebody else may be coming to. The activity is
              named, because "your request was accepted" with no subject is a riddle. */
-          $ac = q_one("SELECT a.id, a.title, a.day, a.cancelled_at, d.name dest_name
-                         FROM trip_activities a
-                    LEFT JOIN destinations d ON d.id = a.destination_id
-                        WHERE a.id = ? AND a.status = 'published'", [(int) $n['target_id']]);
+          // Loaded for the whole page at once by the controller; see $actMap there.
+          $ac = $actMap[(int) $n['target_id']] ?? null;
           $who = $n['actor'] ? '@' . $n['actor'] : 'Somebody';
           $what = $ac ? (string) $ac['title'] : 'a plan';
           $href = $ac ? url('activity/' . (int) $ac['id']) : null;

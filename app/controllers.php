@@ -2786,8 +2786,27 @@ function notifications(array $a): void {
     foreach ($items as $n) if (empty($n['read_at'])) $unreadIds[(int) $n['id']] = true;
 
     $items = rmt_notifications_rollup($items);
+
+    /* Everything the plan rows need, in one query rather than two per row. A page of fifty
+       notifications was a hundred round trips on a free instance, and the join lifecycle is the
+       type that arrives in bursts, so this is the row that multiplies. */
+    $actIds = [];
+    foreach ($items as $n) {
+        if ((string) $n['target_type'] === 'activity') $actIds[(int) $n['target_id']] = true;
+    }
+    $actMap = [];
+    if ($actIds) {
+        $in = implode(',', array_fill(0, count($actIds), '?'));
+        foreach (q_all("SELECT a.id, a.title, a.day, a.cancelled_at, d.name dest_name
+                          FROM trip_activities a
+                     LEFT JOIN destinations d ON d.id = a.destination_id
+                         WHERE a.status = 'published' AND a.id IN ($in)",
+                       array_keys($actIds)) as $r) {
+            $actMap[(int) $r['id']] = $r;
+        }
+    }
     db()->prepare("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL")->execute([date('Y-m-d H:i:s'),(int)$me['id']]);
-    view('notifications', compact('items','me','unreadIds'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
+    view('notifications', compact('items','me','unreadIds','actMap'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
 }
 
 /**
