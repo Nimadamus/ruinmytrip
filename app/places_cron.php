@@ -64,11 +64,23 @@ function rmt_places_verify(int $destId): array {
        carrying a character that reads as a typo in the source: "Mercado Munici+al" is a real venue
        whose name is misspelt in OpenStreetMap, and we copy what the source says rather than
        correcting it, so the right response is to show it to somebody rather than to guess. */
-    $out['odd_names'] = q_all("SELECT id, name, slug FROM places
-                                WHERE destination_id = ? AND (TRIM(COALESCE(name,'')) = ''
-                                   OR name LIKE 'http%' OR LENGTH(name) < 2
-                                   OR name LIKE '%+%' OR name LIKE '%  %'
-                                   OR name LIKE '%?%' OR name LIKE '%|%') LIMIT 20", [$destId]);
+    $rows = q_all("SELECT id, name, slug FROM places
+                    WHERE destination_id = ? AND (TRIM(COALESCE(name,'')) = ''
+                       OR name LIKE 'http%' OR LENGTH(name) < 2
+                       OR name LIKE '%+%' OR name LIKE '%  %'
+                       OR name LIKE '%?%' OR name LIKE '%|%') LIMIT 40", [$destId]);
+    /* "Craft + Carry" and "Bar + Bistro" are real names of real places. "Mercado Munici+al" is a
+       typo in the source. A plus between words is ordinary; a plus INSIDE a word is the one worth
+       a person's attention, and an audit that cries wolf on two thirds of its findings stops being
+       read. The narrowing happens here rather than in SQL because neither driver has the same
+       regular expressions. */
+    $out['odd_names'] = [];
+    foreach ($rows as $r) {
+        $name = (string) $r['name'];
+        if (str_contains($name, '+') && !preg_match('/\p{L}\+\p{L}/u', $name)) continue;
+        $out['odd_names'][] = $r;
+        if (count($out['odd_names']) >= 20) break;
+    }
     $out['wrong_city'] = 0;   // every row is selected by destination_id, so this is definitional
     return $out;
 }
