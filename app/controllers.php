@@ -282,7 +282,10 @@ function destination(array $a): void {
     $discovery = rmt_destination_discovery($id);
     // What travelers are saying about the city right now, above the archive of finished writing.
     $talk = rmt_posts_for_destination($id, 3);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
+    /* Where the people who come here also go. A real query over real trips, counted in travelers,
+       which turns every city page from a leaf into a doorway. */
+    $related = rmt_related_destinations($id, 6);
+    view('destination', compact('related','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),

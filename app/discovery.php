@@ -272,3 +272,34 @@ function rmt_empty_state_suggestions(?array $viewer, int $cityLimit = 6, int $pe
 
     return ['cities' => $cities, 'people' => $people];
 }
+
+/**
+ * Cities the people going to this one also go to.
+ *
+ * A real query over real trips, and the only honest form of "you might also like" this site can
+ * make: no model, no similarity score, no editorial guess about which cities are alike. If two
+ * travelers who posted Lisbon dates also posted Porto dates, that is two travelers, and it says
+ * two. If nobody has, it says nothing at all and the section does not appear.
+ *
+ * Public trips only. This is shown to everybody, including a crawler, so counting a trip somebody
+ * limited to followers would publish a fact they chose not to.
+ *
+ * @return list<array{id:int,name:string,slug:string,country:string,n:int}>
+ */
+function rmt_related_destinations(int $destId, int $limit = 6): array {
+    if ($destId < 1) return [];
+    return q_all(
+        "SELECT d.id, d.name, d.slug, d.country, COUNT(DISTINCT other.user_id) n
+           FROM trips mine
+           JOIN trips other ON other.user_id = mine.user_id
+                           AND other.destination_id <> mine.destination_id
+                           AND other.status = 'published' AND other.visibility = 'public'
+           JOIN destinations d ON d.id = other.destination_id
+          WHERE mine.destination_id = ? AND mine.status = 'published' AND mine.visibility = 'public'
+            AND other.destination_id IS NOT NULL
+       GROUP BY d.id, d.name, d.slug, d.country
+       ORDER BY n DESC, d.name
+          LIMIT " . (int) $limit,
+        [$destId]
+    );
+}

@@ -485,6 +485,19 @@
         <?php endforeach; ?>
       </div>
 
+      <?php /* Where the travelers who came here also went. Nothing is inferred and nothing is
+               recommended: these are people who posted dates for both cities, counted. If nobody
+               has, the section is not here, which is the honest version of "no suggestions". */ ?>
+      <?php if (!empty($related)): ?>
+        <div class="section-rule" style="margin-top:34px"><h2>Travelers here also go to</h2></div>
+        <div class="tag-list">
+          <?php foreach ($related as $rd): ?>
+            <a class="chip" href="<?= e(url('d/'.$rd['slug'])) ?>"><?= e((string) $rd['name']) ?>
+              <span class="hint"><?= (int) $rd['n'] ?> <?= (int) $rd['n'] === 1 ? 'traveler' : 'travelers' ?></span></a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
       <p style="margin:18px 0 0">
         <button class="btn btn-ghost btn-sm" type="button" data-copy="<?= e(url('d/'.$d['slug'])) ?>">Copy link</button>
       </p>
