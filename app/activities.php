@@ -696,7 +696,7 @@ function rmt_activity_has_substance(array $a): bool {
  */
 function rmt_place_network(int $placeId, ?array $viewer): array {
     $empty = ['planned' => [], 'recommended' => [], 'planned_n' => 0, 'recommended_n' => 0,
-              'overlapping' => 0];
+              'trips_n' => 0, 'overlapping' => 0];
     if ($placeId < 1) return $empty;
 
     [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
@@ -710,7 +710,7 @@ function rmt_place_network(int $placeId, ?array $viewer): array {
 
     $rows = q_all(
         "SELECT a.id, a.day, a.start_time, a.join_mode, a.recommend, a.cancelled_at,
-                a.user_id, u.username, pr.avatar_url,
+                a.user_id, a.trip_id, u.username, pr.avatar_url,
                 t.date_from trip_from, t.date_to trip_to
            FROM trip_activities a
            JOIN trips t ON t.id = a.trip_id
@@ -756,11 +756,22 @@ function rmt_place_network(int $placeId, ?array $viewer): array {
         }
     }
 
+    /* How many separate trips include this place, which is a different fact from how many people:
+       one traveler who has been three times is one person and three trips. Both are true and the
+       page says which is which. */
+    $tripIds = [];
+    foreach ($rows as $r) {
+        if (!empty($r['cancelled_at'])) continue;
+        $tripIds[(int) ($r['trip_id'] ?? 0)] = true;
+    }
+    unset($tripIds[0]);
+
     return [
         'planned' => array_slice(array_values($planned), 0, 8),
         'recommended' => array_slice(array_values($recommended), 0, 8),
         'planned_n' => count($planned),
         'recommended_n' => count($recommended),
+        'trips_n' => count($tripIds),
         'overlapping' => $overlapping,
     ];
 }

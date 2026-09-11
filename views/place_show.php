@@ -187,8 +187,28 @@
     </div>
   <?php endif; ?>
 
-  <?php if ($saveCount > 0): ?>
-    <p class="hint" style="margin:0 0 26px"><?= $saveCount ?> <?= $saveCount === 1 ? 'traveler has' : 'travelers have' ?> saved this</p>
+  <?php /* What is actually true about this place on this site, in one line, and nothing when
+           nothing is. Counts of rows a person could go and count: no "popular", no "trending", no
+           badge that means whatever the reader assumes it means. */ ?>
+  <?php
+    $rmt_signals = [];
+    if ($saveCount > 0) {
+        $rmt_signals[] = $saveCount . ' ' . ($saveCount === 1 ? 'traveler has' : 'travelers have') . ' saved this';
+    }
+    if (($network['trips_n'] ?? 0) > 0) {
+        $n = (int) $network['trips_n'];
+        $rmt_signals[] = $n . ($n === 1 ? ' trip includes it' : ' trips include it');
+    }
+    if (!empty($stats['reviews'])) {
+        $n = (int) $stats['reviews'];
+        $rmt_signals[] = $n . ($n === 1 ? ' review' : ' reviews');
+    }
+    if ($photoCount > 0) {
+        $rmt_signals[] = $photoCount . ($photoCount === 1 ? ' photo' : ' photos');
+    }
+  ?>
+  <?php if ($rmt_signals): ?>
+    <p class="hint" style="margin:0 0 26px"><?= e(implode(' &middot; ', $rmt_signals)) ?></p>
   <?php endif; ?>
 
   <?php /* Practical detail. The whole card is skipped when we hold none of it, and each row is
