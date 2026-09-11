@@ -2,6 +2,13 @@
 $city = (string) $d['name'];
 $join = static fn(string $path): string => url('register?return=' . rawurlencode($path));
 $here = '/d/' . $d['slug'] . '/travelers';
+/* Which modules have nothing in them. A city nobody has posted about used to print six separate
+   paragraphs, one under each heading, each of them saying a version of "nobody is here yet". Six
+   statements of absence in a row is the strongest possible argument to close the tab, and it is
+   the same fact repeated. The page says it once now, at the end, as an invitation with the actions
+   attached, and skips the headings whose modules are empty. Nothing is pretended: a city with
+   nobody in it still says so. */
+$rmt_gaps = [];
 ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> /
   <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($city) ?></a> / Travelers</p></div>
@@ -44,7 +51,7 @@ $here = '/d/' . $d['slug'] . '/travelers';
     </div>
   <?php endif; ?>
 
-  <h2>Who is going</h2>
+  <?php if ($hub['going']): ?><h2>Who is going</h2><?php endif; ?>
   <?php if ($hub['going']): ?>
     <div class="tag-list">
       <?php foreach ($hub['going'] as $g): ?>
@@ -60,13 +67,9 @@ $here = '/d/' . $d['slug'] . '/travelers';
         <?= (int) $hub['solo'] ?> of them <?= (int) $hub['solo'] === 1 ? 'says they travel' : 'say they travel' ?> solo.
       <?php endif; ?>
       Destination and date range only. RuinMyTrip never shows anybody's precise or live location.</p>
-  <?php else: ?>
-    <p class="muted">No dates posted for <?= e($city) ?> yet.
-      <?php if ($me): ?><a href="<?= e(url('going')) ?>">Post yours</a> and travelers arriving after you will see them.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and post yours.<?php endif; ?></p>
-  <?php endif; ?>
+<?php else: $rmt_gaps['going'] = true; endif; ?>
 
-  <h2 style="margin-top:28px">Locals</h2>
+  <?php if (!empty($hub['locals'])): ?><h2 style="margin-top:28px">Locals</h2><?php endif; ?>
   <?php if (!empty($hub['locals'])): ?>
     <div class="tag-list">
       <?php foreach ($hub['locals'] as $l): ?>
@@ -80,14 +83,9 @@ $here = '/d/' . $d['slug'] . '/travelers';
     </div>
     <p class="hint" style="margin:.6rem 0 0">People who live in <?= e($city) ?>. Ask them what a
       visitor gets wrong.</p>
-  <?php else: ?>
-    <p class="muted">No members live in <?= e($city) ?> yet.
-      <?php if ($me): ?>Live here? <a href="<?= e(url('u/'.$me['username'].'/edit')) ?>">Put it on your profile</a>
-        and travelers heading over will find you.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and put it on your profile if you live here.<?php endif; ?></p>
-  <?php endif; ?>
+<?php else: $rmt_gaps['locals'] = true; endif; ?>
 
-  <h2 style="margin-top:28px">Meetups</h2>
+  <?php if ($hub['meetups']): ?><h2 style="margin-top:28px">Meetups</h2><?php endif; ?>
   <?php if ($hub['meetups']): ?>
     <ul class="list-plain">
       <?php foreach ($hub['meetups'] as $m): ?>
@@ -100,11 +98,7 @@ $here = '/d/' . $d['slug'] . '/travelers';
         </div></li>
       <?php endforeach; ?>
     </ul>
-  <?php else: ?>
-    <p class="muted">No meetups planned in <?= e($city) ?> yet.
-      <?php if ($me): ?><a href="<?= e(url('meetup/new?destination='.(int)$d['id'])) ?>">Host the first one</a>. Coffee counts.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> to host or attend one.<?php endif; ?></p>
-  <?php endif; ?>
+<?php else: $rmt_gaps['meetups'] = true; endif; ?>
 
   <h2 style="margin-top:28px">What people are asking</h2>
   <?php if ($me): ?>
@@ -135,13 +129,9 @@ $here = '/d/' . $d['slug'] . '/travelers';
         </div></li>
       <?php endforeach; ?>
     </ul>
-  <?php else: ?>
-    <p class="muted">Nothing asked about <?= e($city) ?> yet.
-      <?php if ($me): ?><a href="<?= e(url('talk')) ?>">Ask the first question</a>.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> and ask the first question.<?php endif; ?></p>
-  <?php endif; ?>
+<?php else: $rmt_gaps['talk'] = true; endif; ?>
 
-  <h2 style="margin-top:28px">Reviews from travelers</h2>
+  <?php if (!empty($hub['reviews'])): ?><h2 style="margin-top:28px">Reviews from travelers</h2><?php endif; ?>
   <?php if (!empty($hub['reviews'])): ?>
     <ul class="list-plain">
       <?php foreach ($hub['reviews'] as $rv): ?>
@@ -158,13 +148,9 @@ $here = '/d/' . $d['slug'] . '/travelers';
       <?php endforeach; ?>
     </ul>
     <p style="margin:.4rem 0 0"><a href="<?= e(url('d/'.$d['slug'])) ?>">Everything written about <?= e($city) ?> &rarr;</a></p>
-  <?php else: ?>
-    <p class="muted">No traveler has reviewed anything in <?= e($city) ?> yet.
-      <?php if ($me): ?><a href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=travelers')) ?>">Write the first one</a>.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join and write the first one</a>.<?php endif; ?></p>
-  <?php endif; ?>
+<?php else: $rmt_gaps['reviews'] = true; endif; ?>
 
-  <h2 style="margin-top:28px">Travelers who have been</h2>
+  <?php if ($hub['people']): ?><h2 style="margin-top:28px">Travelers who have been</h2><?php endif; ?>
   <?php if ($hub['people']): ?>
     <div class="tag-list">
       <?php foreach ($hub['people'] as $p): ?>
@@ -177,10 +163,40 @@ $here = '/d/' . $d['slug'] . '/travelers';
       <?php endforeach; ?>
     </div>
     <p class="hint" style="margin:.6rem 0 0">Message any of them. They wrote about <?= e($city) ?> themselves.</p>
-  <?php else: ?>
-    <p class="muted">Nobody has written about <?= e($city) ?> here yet.
-      <?php if ($me): ?><a href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=travelers')) ?>">Be the first</a>.
-      <?php else: ?><a href="<?= e($join($here)) ?>">Join and be the first</a>.<?php endif; ?></p>
+<?php else: $rmt_gaps['people'] = true; endif; ?>
+
+  <?php if ($rmt_gaps): ?>
+    <?php /* One invitation, naming only what is actually missing, with the action beside each
+             thing rather than six paragraphs of absence. Whoever does any of these first is the
+             person every traveler searching this city next month will find, which is true and is
+             the only argument worth making on an empty page. */ ?>
+    <section class="first-in">
+      <h2 style="margin:0 0 6px">Be the first in <?= e($city) ?></h2>
+      <p class="muted" style="margin:0 0 16px;max-width:60ch">Nobody has done these yet. Whoever goes
+        first is the traveler everybody searching <?= e($city) ?> next month finds.</p>
+      <div class="first-in-grid">
+        <?php if (!empty($rmt_gaps['going'])): ?>
+          <a class="first-in-act" href="<?= e($me ? url('trip/new?destination='.(int)$d['id']) : $join($here)) ?>">
+            <b>Post your dates</b><span class="hint">See whose trip overlaps yours</span></a>
+        <?php endif; ?>
+        <?php if (!empty($rmt_gaps['meetups'])): ?>
+          <a class="first-in-act" href="<?= e($me ? url('meetup/new?destination='.(int)$d['id']) : $join($here)) ?>">
+            <b>Host a meetup</b><span class="hint">Public place, any day. Coffee counts</span></a>
+        <?php endif; ?>
+        <?php if (!empty($rmt_gaps['talk'])): ?>
+          <a class="first-in-act" href="<?= e($me ? '#say' : $join($here)) ?>">
+            <b>Ask a question</b><span class="hint">Somebody who has been will answer</span></a>
+        <?php endif; ?>
+        <?php if (!empty($rmt_gaps['reviews']) || !empty($rmt_gaps['people'])): ?>
+          <a class="first-in-act" href="<?= e($me ? url('review/new?destination='.(int)$d['id'].'&src=travelers') : $join($here)) ?>">
+            <b>Review somewhere</b><span class="hint">What nearly ruined it counts double</span></a>
+        <?php endif; ?>
+        <?php if (!empty($rmt_gaps['locals'])): ?>
+          <a class="first-in-act" href="<?= e($me ? url('u/'.$me['username'].'/edit') : $join($here)) ?>">
+            <b>Live in <?= e($city) ?>?</b><span class="hint">Put it on your profile and be findable</span></a>
+        <?php endif; ?>
+      </div>
+    </section>
   <?php endif; ?>
 
   <p style="margin:26px 0 60px">

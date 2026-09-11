@@ -638,3 +638,16 @@ section.block{padding:64px 0}
 .more-menu-panel a:hover{background:#f4f6f5;text-decoration:none}
 .more-menu-danger{color:#b42318}
 .more-menu-danger:hover{background:#fdeceb}
+
+/* One invitation instead of six statements of absence, on a city page nobody has posted about. */
+.first-in{background:linear-gradient(140deg,#0f2430,var(--brand-deep));color:#fff;
+  border-radius:var(--radius-lg);padding:28px;margin:34px 0 10px}
+.first-in h2{color:#fff}
+.first-in .muted{color:#cfe3e0}
+.first-in-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.first-in-act{display:block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);
+  border-radius:var(--radius);padding:14px 16px;color:#fff}
+.first-in-act:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.5);
+  text-decoration:none;transform:translateY(-2px)}
+.first-in-act b{display:block;font-weight:650;margin-bottom:3px}
+.first-in-act .hint{color:#cfe3e0;font-size:.84rem}
