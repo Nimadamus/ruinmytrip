@@ -2580,7 +2580,13 @@ function suggest_places_json(array $a): void {
     }
 
     $q = trim((string) ($_GET['q'] ?? ''));
+    /* By id, or by slug, because a page knows its city by slug and should not have to look up a
+       number to ask a question about it. */
     $dest = (int) ($_GET['dest'] ?? 0);
+    $citySlug = trim((string) ($_GET['city'] ?? ''));
+    if ($dest < 1 && $citySlug !== '') {
+        $dest = (int) (q_one('SELECT id FROM destinations WHERE slug = ?', [$citySlug])['id'] ?? 0);
+    }
     if (mb_strlen($q) < 2 || $dest < 1) { echo json_encode(['places' => []]); return; }
 
     $like = '%' . mb_strtolower($q) . '%';

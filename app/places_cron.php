@@ -57,10 +57,15 @@ function rmt_places_verify(int $destId): array {
                                   WHERE destination_id = ? AND lat IS NOT NULL
                                GROUP BY lat, lng HAVING COUNT(*) > 1 LIMIT 10', [$destId]);
 
-    // Names that would embarrass a page: empty, or a URL somebody mapped into a name field.
-    $out['odd_names'] = q_all("SELECT id, name FROM places
+    /* Names a person should look at. Empty, a URL somebody mapped into a name field, or a name
+       carrying a character that reads as a typo in the source: "Mercado Munici+al" is a real venue
+       whose name is misspelt in OpenStreetMap, and we copy what the source says rather than
+       correcting it, so the right response is to show it to somebody rather than to guess. */
+    $out['odd_names'] = q_all("SELECT id, name, slug FROM places
                                 WHERE destination_id = ? AND (TRIM(COALESCE(name,'')) = ''
-                                   OR name LIKE 'http%' OR LENGTH(name) < 2) LIMIT 10", [$destId]);
+                                   OR name LIKE 'http%' OR LENGTH(name) < 2
+                                   OR name LIKE '%+%' OR name LIKE '%  %'
+                                   OR name LIKE '%?%' OR name LIKE '%|%') LIMIT 20", [$destId]);
     $out['wrong_city'] = 0;   // every row is selected by destination_id, so this is definitional
     return $out;
 }
