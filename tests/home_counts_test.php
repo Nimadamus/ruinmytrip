@@ -26,10 +26,18 @@ function ok(string $name, bool $cond, string $detail = ''): void {
 
 $home = (string) file_get_contents($root . '/views/home.php');
 
-/* Hero stats: built into a list first, and only counts above zero go into it. */
-ok('a hero stat is only added when it is above zero',
-   preg_match_all('/\$heroStats\[\] = \[/', $home) === 3
-   && substr_count($home, '> 0)') >= 3);
+/* Hero stats: built into a list first, and a count only goes in when it is worth reading.
+
+   Above zero was the original rule and it was not enough. "3 Travelers" sitting directly under
+   the Join button is honest and is an advertisement for an empty room, which is the same failure
+   the zero rule exists to prevent, one order of magnitude up. A small number is left out rather
+   than rounded up, and it comes back the moment it is worth reading. */
+ok('a hero stat is only added when it is worth reading',
+   preg_match_all('/\$heroStats\[\] = \[/', $home) === 4
+   && substr_count($home, '>= 10)') >= 2
+   && substr_count($home, '> 0)') >= 2);
+ok('and the row never grows past three',
+   str_contains($home, 'array_slice($heroStats, 0, 3)'));
 ok('the hero row disappears entirely rather than printing an empty strip',
    str_contains($home, 'if ($heroStats):'));
 ok('nothing prints a raw stat outside that list',
