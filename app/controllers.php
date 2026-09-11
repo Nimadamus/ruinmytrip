@@ -5807,6 +5807,15 @@ function trip_activity_decide(array $a): void {
        was somebody waiting for an answer they never saw. */
     q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
           [$who, $type, (int) $me['id'], 'activity', (int) $act['id'], date('Y-m-d H:i:s')]);
+
+    /* A yes is worth an email and a no is not. Somebody who has been accepted onto a dinner on
+       Friday has something to do about it today; somebody who was declined has nothing to do at
+       all, and mailing them about it is just making them read it twice. */
+    if ($type === 'activity_accepted' && function_exists('rmt_notify_email_direct')) {
+        rmt_notify_email_direct($who, 'You are in',
+            '@' . (string) $me['username'] . ' said yes: ' . (string) $act['title'] . '.',
+            '/activity/' . (int) $act['id']);
+    }
     redirect($back);
 }
 
@@ -5846,6 +5855,13 @@ function trip_activity_cancel(array $a): void {
             q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
                   [(int) $r['user_id'], 'activity_cancelled', (int) $me['id'], 'activity', (int) $act['id'],
                    date('Y-m-d H:i:s')]);
+            /* The one message on this whole site that somebody must not miss: they were going to
+               turn up somewhere and now nobody will be there. */
+            if (function_exists('rmt_notify_email_direct')) {
+                rmt_notify_email_direct((int) $r['user_id'], 'Cancelled: ' . (string) $act['title'],
+                    '@' . (string) $me['username'] . ' called it off, so do not turn up.',
+                    '/activity/' . (int) $act['id']);
+            }
         }
     }
     flash($on ? 'Cancelled, and everybody coming has been told.' : 'Back on.');
@@ -6060,6 +6076,15 @@ function trip_activity_join(array $a): void {
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
               [(int) $act['user_id'], $type, (int) $me['id'], 'activity', (int) $act['id'],
                date('Y-m-d H:i:s')]);
+
+        /* An ask is somebody waiting on an answer with a date attached, which is the one shape of
+           notification that goes stale. The owner is mailed, at most once an hour by the cap in
+           rmt_notify_email_direct(), so a plan that fills up does not fill an inbox. */
+        if ($type === 'activity_request' && function_exists('rmt_notify_email_direct')) {
+            rmt_notify_email_direct((int) $act['user_id'], 'Somebody wants to join you',
+                '@' . (string) $me['username'] . ' asked to join ' . (string) $act['title'] . '.',
+                '/activity/' . (int) $act['id']);
+        }
     }
     redirect($back);
 }
