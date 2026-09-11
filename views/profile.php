@@ -91,6 +91,13 @@
           <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
         <?php endif; ?>
       </div>
+      <?php /* The same public facts the plan page shows, where somebody is deciding whether to
+               meet a stranger. Not on your own profile: it is your account, you know when you
+               joined, and a box of facts about yourself is a mirror nobody asked for. */ ?>
+      <?php if (!$isMe && !rmt_is_editorial($u)): ?>
+        <?php $trustUserId = (int) $u['id']; $trustUsername = (string) $u['username'];
+              include __DIR__ . '/_trust.php'; ?>
+      <?php endif; ?>
       <?php if ($badges): ?>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
           <?php foreach ($badges as $b): ?>

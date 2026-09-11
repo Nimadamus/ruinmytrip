@@ -1098,3 +1098,15 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   color:var(--muted)}
 .today-acts{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
 @media (max-width:480px){ .today-time{flex-basis:52px} }
+
+/* Public facts about an account, shown where somebody is deciding whether to meet them. Plain
+   list, no badges, no colour coding: a green tick next to a person is a claim this site cannot
+   make. */
+.trust{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;margin:14px 0;
+  background:var(--surface-2,transparent)}
+.trust-who{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--muted);margin-bottom:6px}
+.trust-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem}
+.trust-list li{position:relative;padding-left:14px}
+.trust-list li::before{content:"";position:absolute;left:0;top:.55em;width:5px;height:5px;
+  border-radius:50%;background:var(--brand)}

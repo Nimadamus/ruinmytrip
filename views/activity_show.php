@@ -50,6 +50,14 @@ $backTo = '/activity/' . (int) $act['id'];
     <p class="hint">A meeting point is set. It is shown to people who are coming.</p>
   <?php endif; ?>
 
+  <?php /* Who the person organising this is, in public facts. It sits next to the join button
+           because that is the moment the question is actually being asked. */ ?>
+  <?php if ($me && (int) $act['user_id'] !== (int) $me['id']
+            && in_array((string) $act['join_mode'], ['ask','open'], true)): ?>
+    <?php $trustUserId = (int) $act['user_id']; $trustUsername = (string) $act['username'];
+          include __DIR__ . '/_trust.php'; ?>
+  <?php endif; ?>
+
   <?php /* Said once, where somebody is deciding whether to meet a stranger, and not repeated on
            every screen afterwards. A warning nobody reads is not a safety feature. */ ?>
   <?php if (in_array((string) $act['join_mode'], ['ask','open'], true) && empty($act['cancelled_at'])): ?>
