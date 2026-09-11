@@ -48,6 +48,8 @@ require BASE_PATH . '/app/lifecycle.php';
 require BASE_PATH . '/app/activities.php';
 require BASE_PATH . '/app/trip_members.php';
 require BASE_PATH . '/app/trust.php';
+require BASE_PATH . '/app/place_import.php';
+require BASE_PATH . '/app/place_provider_osm.php';
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/polls.php';
 require BASE_PATH . '/app/cards.php';

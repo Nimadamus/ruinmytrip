@@ -4641,6 +4641,50 @@ function admin_dashboard(array $a): void {
  * ======================================================================== */
 
 /** GET /admin/places — everything an editor might want to fill in, with a filter. */
+/**
+ * POST /admin/places/import -- pull real places for one city from a provider.
+ *
+ * The same work the CLI script does, behind a button, because the person who decides which cities
+ * this site should cover should not need a shell to act on it. Admin only, rate limited, and it
+ * runs one city and one type at a time: a public Overpass endpoint answers a narrow question and
+ * times out on a greedy one.
+ */
+function admin_places_import(array $a): void {
+    require_role('admin');
+    csrf_check();
+
+    $slug = trim((string) input('city'));
+    $type = (string) input('type');
+    $limit = max(1, min(120, (int) input('limit') ?: 40));
+    $back = '/admin/places';
+
+    $dest = q_one('SELECT * FROM destinations WHERE slug = ?', [$slug]);
+    if (!$dest) { flash('No city with that slug.'); redirect($back); }
+    if (!in_array($type, RMT_PLACE_TYPES, true)) { flash('Pick a kind of place.'); redirect($back); }
+
+    /* One import at a time. Overpass is a free public service run by volunteers and hammering it
+       is how this site loses access to the only place data it is allowed to keep. */
+    if (!rmt_rate_ok('place_import', 'global', 6, 600)) {
+        flash('That is a lot of importing at once. Give the provider a few minutes.');
+        redirect($back);
+    }
+
+    $pull = rmt_osm_places_for_destination($dest, $type, $limit);
+    if (!$pull['ok']) { flash('The provider did not answer: ' . (string) $pull['error']); redirect($back); }
+
+    $res = rmt_place_import_batch((int) $dest['id'], $pull['rows']);
+    foreach ($res['details'] as $i => $d) {
+        $ref = (string) ($pull['rows'][$i]['source_ref'] ?? '');
+        if (!$d['place_id'] || $ref === '') continue;
+        foreach ($pull['aliases'][$ref] ?? [] as $alias) {
+            rmt_place_alias_add((int) $d['place_id'], $alias, 'openstreetmap');
+        }
+    }
+    flash(sprintf('%s: %d new, %d updated, %d skipped.', (string) $dest['name'],
+                  $res['created'], $res['updated'], $res['skipped']));
+    redirect($back);
+}
+
 function admin_places_index(array $a): void {
     require_role('admin', 'mod');
     $q = trim((string) input('q'));

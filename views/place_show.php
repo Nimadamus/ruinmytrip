@@ -237,6 +237,20 @@
         <?php endif; ?>
       </dl>
 
+      <?php /* Where the address, the coordinates and the phone number came from. Attribution is a
+               condition of using this data, not a courtesy, and it also tells a reader why a field
+               is missing: nobody has mapped it yet, rather than this site being careless. */ ?>
+      <?php $rmt_prov = rmt_place_providers()[(string) ($p['data_source'] ?? '')] ?? null; ?>
+      <?php if ($rmt_prov): ?>
+        <p class="hint" style="margin:10px 0 0">
+          <?= e((string) $rmt_prov['attribution']) ?>
+          <?php if (!empty($p['data_source_url'])): ?>
+            <a href="<?= e((string) $p['data_source_url']) ?>" rel="nofollow noopener" target="_blank">This record</a>.
+          <?php endif; ?>
+          <a href="<?= e((string) $rmt_prov['url']) ?>" rel="nofollow noopener" target="_blank">Licence</a>.
+        </p>
+      <?php endif; ?>
+
       <?php if ($hoursByDay): ?>
         <?php /* Only days we hold are listed. A missing day is left out rather than printed as
                  "Closed", which would assert something we were never told. */ ?>

@@ -2,6 +2,26 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Places</p>
   <h1 style="margin:.2rem 0 .4rem">Places</h1>
+
+  <?php /* Import real places for a city. One city and one kind at a time: the provider is a free
+           public service run by volunteers, it answers a narrow question and times out on a greedy
+           one, and hammering it is how this site loses the only place data it may legally keep. */ ?>
+  <form method="post" action="<?= e(url('admin/places/import')) ?>" class="admin-import">
+    <?= csrf_field() ?>
+    <label class="sr-only" for="imp-city">City slug</label>
+    <input type="text" id="imp-city" name="city" placeholder="lisbon-portugal" required>
+    <label class="sr-only" for="imp-type">Kind</label>
+    <select id="imp-type" name="type">
+      <?php foreach (RMT_PLACE_TYPES as $t): ?>
+        <option value="<?= e($t) ?>"><?= e(rmt_place_type_label($t, true)) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <label class="sr-only" for="imp-limit">How many</label>
+    <input type="number" id="imp-limit" name="limit" value="40" min="1" max="120" style="width:5.5rem">
+    <button class="btn btn-ghost btn-sm">Import from OpenStreetMap</button>
+  </form>
+  <p class="hint" style="margin:6px 0 16px">Safe to run twice: a place already here is updated, not
+    duplicated. Ratings and popularity are never imported.</p>
   <p class="muted" style="margin:0 0 16px">
     <?= count($rows) ?> active <?= count($rows) === 1 ? 'place' : 'places' ?>.
     "Filled" counts the eight fields a place page can show: address, coordinates, phone, website,

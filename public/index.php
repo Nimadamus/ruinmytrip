@@ -170,6 +170,7 @@ $routes = [
     ['POST', '#^/report$#',                    'report_submit'],
     ['GET',  '#^/admin$#',                     'admin_dashboard'],
     ['GET',  '#^/admin/places$#',               'admin_places_index'],
+    ['POST', '#^/admin/places/import$#',        'admin_places_import'],
     ['GET',  '#^/admin/search$#',               'admin_search_report'],
     ['GET',  '#^/admin/destinations$#',         'admin_destinations_report'],
     ['GET',  '#^/admin/suggestions$#',          'admin_suggestions'],
