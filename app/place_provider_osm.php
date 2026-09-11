@@ -42,6 +42,11 @@ function rmt_osm_type_map(): array {
             'tourism'    => ['museum', 'attraction', 'gallery', 'viewpoint', 'aquarium', 'zoo', 'theme_park'],
             'historic'   => ['castle', 'monument', 'memorial', 'ruins', 'archaeological_site'],
             'leisure'    => ['park', 'garden'],
+            /* A covered market or a landmark department store is somewhere travelers go on
+               purpose, which is the only test that matters here. Ordinary shops are not: a city
+               has ten thousand of them and none of them is a page. */
+            'amenity'    => ['marketplace'],
+            'shop'       => ['department_store', 'mall'],
         ],
         'experience' => [
             'amenity' => ['theatre', 'cinema', 'nightclub', 'casino'],
