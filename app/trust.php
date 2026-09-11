@@ -80,6 +80,23 @@ function rmt_trust_signals(int $userId, ?array $viewer = null): array {
                   'href' => null];
     }
 
+    /* And the other side of it: plans by other people that this person joined and that have since
+       happened. Counted only once the day is past, because saying yes to a Friday is a click and
+       turning up to it is not, and this site should not treat the two as the same fact. A plan
+       with no date is not counted at all rather than guessed at. */
+    $attended = (int) (q_one("SELECT COUNT(*) c
+                                FROM activity_joins j
+                                JOIN trip_activities a ON a.id = j.activity_id
+                               WHERE j.user_id = ? AND j.state = 'going' AND a.user_id <> ?
+                                 AND a.status = 'published'
+                                 AND a.day IS NOT NULL AND a.day < ?",
+                             [$userId, $userId, date('Y-m-d')])['c'] ?? 0);
+    if ($attended > 0) {
+        $out[] = ['key' => 'attended',
+                  'label' => $attended === 1 ? 'Turned up to a plan' : 'Turned up to ' . $attended . ' plans',
+                  'href' => null];
+    }
+
     /* People you both follow. Public on both sides already, and the one signal that is about the
        two of you rather than about them. Never shown to somebody asking about themselves. */
     if ($viewer && (int) $viewer['id'] !== $userId) {

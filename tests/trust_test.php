@@ -38,7 +38,7 @@ $pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, created_a
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, status TEXT DEFAULT 'published',
               visibility TEXT DEFAULT 'public')");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, status TEXT DEFAULT 'published')");
-$pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, user_id INT, status TEXT DEFAULT 'published')");
+$pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, user_id INT, day TEXT, status TEXT DEFAULT 'published')");
 $pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT)");
 $pdo->exec("CREATE TABLE follows (followee_id INT, follower_id INT)");
 
@@ -51,8 +51,12 @@ $pdo->exec("UPDATE users SET status='deleted' WHERE id=4");
 $pdo->exec("INSERT INTO trips (id,user_id,visibility) VALUES (1,1,'public'),(2,1,'public'),
   (3,1,'private'),(4,1,'followers')");
 $pdo->exec("INSERT INTO reviews (id,user_id) VALUES (1,1)");
-$pdo->exec("INSERT INTO trip_activities (id,user_id) VALUES (1,1)");
-$pdo->exec("INSERT INTO activity_joins VALUES (1,2,'going'),(1,3,'going'),(1,1,'going'),(1,9,'requested')");
+$past = date('Y-m-d', strtotime('-30 days'));
+$soon = date('Y-m-d', strtotime('+30 days'));
+$pdo->exec("INSERT INTO trip_activities (id,user_id,day) VALUES (1,1,NULL),
+  (2,3,'$past'), (3,3,'$past'), (4,3,'$soon'), (5,3,NULL), (6,1,'$past')");
+$pdo->exec("INSERT INTO activity_joins VALUES (1,2,'going'),(1,3,'going'),(1,1,'going'),(1,9,'requested'),
+  (2,1,'going'), (3,1,'going'), (4,1,'going'), (5,1,'going'), (6,1,'going')");
 
 $keys = static fn(array $sigs): array => array_column($sigs, 'key');
 $labelOf = static function (array $sigs, string $key): string {
@@ -68,6 +72,18 @@ ok($labelOf($ana, 'reviews') === '1 review written', 'one review is one review, 
 ok($labelOf($ana, 'hosted') === '2 travelers have joined their plans',
    'people who turned up are counted, and never the host themselves');
 ok(!str_contains(implode('|', $keys($ana)), 'requested'), 'somebody who only asked has not turned up');
+
+/* The other side of hosting. Saying yes to a Friday is a click and turning up to it is not, so
+   this counts only plans whose day has already passed, never one that is still to come and never
+   one with no date to be past. Joining your own plan is not evidence of anything. */
+ok($labelOf($ana, 'attended') === 'Turned up to 2 plans',
+   'a plan that has already happened counts, and one still to come does not');
+ok(!str_contains($labelOf($ana, 'attended'), '4'), 'nor does a plan with no date at all');
+$oneOnly = static function () use ($pdo, $labelOf) {
+    $pdo->exec("DELETE FROM activity_joins WHERE activity_id = 3 AND user_id = 1");
+    return $labelOf(rmt_trust_signals(1), 'attended');
+};
+ok($oneOnly() === 'Turned up to a plan', 'one is said in the singular, without the number');
 
 $ben = rmt_trust_signals(2);
 ok(!in_array('email', $keys($ben), true), 'an unconfirmed address produces no line at all');
