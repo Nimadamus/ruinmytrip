@@ -46,6 +46,43 @@
   </div>
   <?= rmt_photo_credit_html($d) ?>
 
+  <?php /* The people, directly under the hero. This page had a "Who's going" card, and it was in
+           the sidebar below the guides, which is to say below everything the site wrote about the
+           city and above nothing. On a page somebody reaches by searching a city name, the fact
+           that four travelers will be there next month is the most interesting thing on it.
+
+           Drawn only when it is true. A strip reading "0 going, 0 meetups" is an advert for an
+           empty room, and this site's rule is that a count appears when it is real. */ ?>
+  <?php $rmt_meets = array_slice($meetups ?? [], 0, 3); ?>
+  <?php if (!empty($going) || $rmt_meets): ?>
+    <div class="city-people">
+      <?php if (!empty($going)): ?>
+        <div class="city-people-row">
+          <?php foreach (array_slice($going, 0, 6) as $g): ?>
+            <a class="city-face" href="<?= e(url('u/'.$g['username'])) ?>" title="@<?= e($g['username']) ?>">
+              <img class="avatar" src="<?= e(avatar_url($g['avatar_url'] ?? null)) ?>" alt="@<?= e($g['username']) ?>">
+            </a>
+          <?php endforeach; ?>
+          <span class="city-people-said">
+            <b><?= count($going) ?> <?= count($going) === 1 ? 'traveler is' : 'travelers are' ?>
+              going to <?= e($d['name']) ?></b>
+            <span class="hint">Destination and dates only. See whose overlap yours.</span>
+          </span>
+        </div>
+      <?php endif; ?>
+      <?php if ($rmt_meets): ?>
+        <p class="hint" style="margin:<?= empty($going) ? '0' : '10px 0 0' ?>">
+          <?= count($rmt_meets) === 1 ? 'A meetup is' : count($rmt_meets) . ' meetups are' ?> planned here:
+          <?php foreach ($rmt_meets as $i => $mm): ?><?= $i ? ', ' : '' ?><a href="<?= e(url('meetup/'.(int) $mm['id'])) ?>"><?= e((string) $mm['title']) ?></a><?php endforeach; ?>
+        </p>
+      <?php endif; ?>
+      <div class="city-people-acts">
+        <a class="btn btn-primary btn-sm" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Who is going, and when</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e($me ? url('trip/new?destination='.(int) $d['id']) : url('register?return='.rawurlencode('/d/'.$d['slug'].'/travelers'))) ?>">Post your dates</a>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <?php if (!empty($relatedPosts)): ?>
     <div class="callout" style="margin-top:16px">
       <p style="margin:0 0 8px"><b>2026 costs for <?= e($d['name']) ?></b></p>

@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-10.
+Replace stale lines here; do not append history. Last touched 2026-09-10 (second pass).
 
 ## What the product is
 
@@ -37,6 +37,27 @@ pages made of members.
 `070` profiles.home_destination_id · `071` trips carry dates/visibility and `going` rows became trips
 · `072` posts.trip_id (trip updates) · `073` social indexes · `074` profiles.travel_style ·
 `075` a profile row for every member.
+
+## What the product looks like now (2026-09-10)
+
+A signed in member lands on the feed, not on the pitch: composer at the top, a scope switch, and a
+rail of people and dates beside it (who is in the same city on the same days, your own trips,
+travelers to follow, meetups in your cities). Every row can be liked, replied to in place and
+saved; the counts and the last two replies for a whole page cost three queries and one,
+respectively, not three per row (`app/feed_home.php`).
+
+A stranger lands on a marketing homepage that leads with people and collapses the research into one
+strip, a city page whose first module under the hero is the faces of who is going, and a city
+travelers hub that says "nobody yet" once rather than six times.
+
+Design is Inter plus Fraunces, self hosted, with one elevation and motion language, a nav of four
+links and a `<details>` disclosure, and dark mode from a single palette swap. Every surface in the
+stylesheet is a token: there are no literal whites left, which is the only reason the second theme
+is fifty lines.
+
+Trips are the shareable object: a drawn share card (`/card/trip/{id}.png`, public trips only),
+`TouristTrip` structured data, and an "Also there then" block that names the other travelers whose
+public trip overlaps, behind `tests/trip_overlappers_test.php`.
 
 ## House style is a test now
 
@@ -89,14 +110,12 @@ were closed on 9 September, all live:
 
 ## Waiting on Nima
 
-* **No acquisition channel points at RuinMyTrip.** Every `dm_variants.txt` line sends people to
-  TrustMyRecord. Needs its own account or its own variant.
-* Instagram / TikTok / Facebook accounts (SETUP.md is ready), R2 (`10042`, enable in the dashboard),
-  `gh auth refresh -h github.com -s workflow`, paid acquisition budget.
-* Signup requires a birthdate. Heaviest field on the form; age gating is a real reason to keep it.
+Four things, all in BACKLOG.md with the detail: R2 (`10042`, enable it in the Cloudflare
+dashboard), the Instagram/TikTok/Facebook accounts, an acquisition channel that points at
+RuinMyTrip rather than TrustMyRecord, and `gh auth refresh -h github.com -s workflow`.
 
 ## Next, in order
 
-1. R2 once enabled, then multi-photo posts.
-2. Feed ranking when there is enough activity for chronological to hurt.
-3. Nothing here needs more editorial content.
+The prioritised list lives in BACKLOG.md and is kept current. In short: R2 and photos the moment
+Nima enables it, notification rollup, discovery past exact date overlap, and a weekly email about
+the cities somebody saved.

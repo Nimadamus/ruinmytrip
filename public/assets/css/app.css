@@ -841,3 +841,15 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   .pick:has(input:checked) .pick-sub{color:#bfe7e1}
   img{opacity:.94}
 }
+
+/* The people strip under a city hero: faces first, then what they add up to. */
+.city-people{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin:18px 0;box-shadow:var(--shadow)}
+.city-people-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.city-face{display:inline-block;margin-right:-10px}
+.city-face:last-of-type{margin-right:0}
+.city-face .avatar{width:38px;height:38px;box-shadow:0 0 0 2px var(--card)}
+.city-people-said{min-width:200px}
+.city-people-said b{display:block;font-weight:650}
+.city-people-said .hint{display:block;font-size:.85rem}
+.city-people-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
