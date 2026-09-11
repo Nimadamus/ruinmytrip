@@ -2773,6 +2773,18 @@ function search(array $a): void {
                              ORDER BY CASE WHEN p.destination_id = ? THEN 0 ELSE 1 END, rank
                              LIMIT 10", [$qs, $ctxId]);
         }
+        /* And the places found by the KIND somebody typed. Full text runs over a name and an
+           address, so "museum tokyo" finds the one Tokyo museum with an English name and none of
+           the eleven called something in Japanese. Appended rather than merged into the ranking:
+           a place whose name you actually typed still comes first. */
+        if (count($places) < 10) {
+            $have = array_flip(array_map(static fn(array $r) => (int) $r['id'], $places));
+            foreach (rmt_places_by_kind_words($qs, $ctxId, 10) as $row) {
+                if (isset($have[(int) $row['id']])) continue;
+                $places[] = $row;
+                if (count($places) >= 10) break;
+            }
+        }
         // People: usernames/display names are short strings where substring matching is what
         // users actually expect ("mar" finding "maya_wanders") — full-text stemming would miss
         // that, so this stays LIKE-based on purpose.

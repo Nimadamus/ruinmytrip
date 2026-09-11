@@ -712,3 +712,70 @@ function rmt_search_suggestable(string $q): bool {
     }
     return true;
 }
+
+/**
+ * Places found by the kind somebody typed rather than by their name.
+ *
+ * Full text search over a place looks at its name and its address, so "museum tokyo" finds the
+ * one Tokyo museum with the English word in its name and none of the eleven called something in
+ * Japanese. That is a real gap: "museum" is not a name, it is the thing a reader is asking for,
+ * and the site already knows which places are museums.
+ *
+ * So the query is read for words that name a category this site carries, or one of the four
+ * coarse types, and those places are returned. City context wins first, the same way it does for
+ * the name search, because "museum tokyo" and reading about Tokyo are the same request.
+ *
+ * @return list<array> place rows, or [] when the query names no kind at all
+ */
+function rmt_places_by_kind_words(string $q, int $ctxId = 0, int $limit = 10): array {
+    $words = preg_split('/[^\p{L}\p{N}]+/u', mb_strtolower(trim($q)), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+    if (!$words) return [];
+
+    $catIds = [];
+    $types  = [];
+    foreach (q_all("SELECT id, slug, name, plural FROM place_categories WHERE status = 'active'") as $c) {
+        foreach (['slug', 'name', 'plural'] as $field) {
+            $v = mb_strtolower(trim((string) ($c[$field] ?? '')));
+            if ($v === '') continue;
+            foreach ($words as $w) {
+                // "museums" and "museum" are the same request; so are "theatre" and "theater".
+                if ($w === $v || $w === $v . 's' || $v === $w . 's') { $catIds[] = (int) $c['id']; }
+            }
+        }
+    }
+    foreach (RMT_PLACE_TYPES as $t) {
+        foreach ([$t, mb_strtolower(rmt_place_type_label($t)), mb_strtolower(rmt_place_type_label($t, true))] as $v) {
+            if (in_array($v, $words, true)) $types[] = $t;
+        }
+    }
+    $catIds = array_values(array_unique($catIds));
+    $types  = array_values(array_unique($types));
+    if (!$catIds && !$types) return [];
+
+    /* A city named in the same breath narrows it. Without this "museum tokyo" would answer with
+       whatever museums the database reached first, which is a worse answer than none. */
+    $destId = $ctxId;
+    if ($destId <= 0) {
+        foreach ($words as $w) {
+            if (mb_strlen($w) < 3) continue;
+            $d = q_one('SELECT id FROM destinations WHERE LOWER(name) = ?', [$w]);
+            if ($d) { $destId = (int) $d['id']; break; }
+        }
+    }
+
+    $where = []; $args = [];
+    if ($catIds) {
+        $where[] = 'p.category_id IN (' . implode(',', array_fill(0, count($catIds), '?')) . ')';
+        array_push($args, ...$catIds);
+    }
+    if ($types) {
+        $where[] = 'p.type IN (' . implode(',', array_fill(0, count($types), '?')) . ')';
+        array_push($args, ...$types);
+    }
+    $sql = "SELECT p.*, dd.name dest_name, dd.country dest_country FROM places p
+              JOIN destinations dd ON dd.id = p.destination_id
+             WHERE p.status = 'active' AND (" . implode(' OR ', $where) . ')';
+    if ($destId > 0) { $sql .= ' AND p.destination_id = ?'; $args[] = $destId; }
+    $sql .= ' ORDER BY p.name LIMIT ' . max(1, min(50, $limit));
+    return q_all($sql, $args);
+}

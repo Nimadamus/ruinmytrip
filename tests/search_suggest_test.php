@@ -266,5 +266,32 @@ check('not suggestable: over 80 chars', rmt_search_suggestable(str_repeat('ab', 
 // Whitespace is not meaning: the same query padded and doubled-spaced decides the same way.
 check('suggestable: whitespace normalised', rmt_search_suggestable('   The   Ivy   '), true);
 
+echo "\n-- found by the kind you asked for --\n";
+/* "museum tokyo" is not a name, it is a request for a kind, and full text over a name and an
+   address answers it with the one museum whose name happens to be in English. The site already
+   knows which of its places are museums, so it should say so. */
+$pdo->exec("DELETE FROM place_categories");
+$pdo->exec("INSERT INTO place_categories (id,slug,name,plural,bucket,status)
+            VALUES (1,'museum','Museum','Museums','attraction','active'),
+                   (2,'bar','Bar','Bars','restaurant','active')");
+$pdo->exec("INSERT INTO places (id,destination_id,slug,name,name_key,type,status,category_id)
+            VALUES (900,2,'rijks','Rijksmuseum','rijksmuseum','attraction','active',1),
+                   (901,2,'stedel','Stedelijk','stedelijk','attraction','active',1),
+                   (902,1,'leopold','Leopold Museum','leopold museum','attraction','active',1),
+                   (903,2,'brouwerij','Brouwerij','brouwerij','restaurant','active',2)");
+$names = static fn(array $rows): array => array_map(static fn($r) => (string) $r['name'], $rows);
+
+$got = $names(rmt_places_by_kind_words('museums amsterdam'));
+sort($got);
+check('a kind and a city answer with that kind in that city', $got, ['Rijksmuseum', 'Stedelijk']);
+check('the singular is the same request', count(rmt_places_by_kind_words('museum amsterdam')), 2);
+check('a city in context narrows it without being typed',
+      $names(rmt_places_by_kind_words('bars', 2)), ['Brouwerij']);
+$att = rmt_places_by_kind_words('attractions amsterdam');
+check('a coarse type is a kind too',
+      $att !== [] && count(array_filter($att, static fn($r) => (string) $r['type'] !== 'attraction')) === 0, true);
+check('a word that names no kind asks for nothing', rmt_places_by_kind_words('rooftop terrace'), []);
+check('and neither does an empty query', rmt_places_by_kind_words(''), []);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
