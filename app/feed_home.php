@@ -135,3 +135,56 @@ function rmt_feed_engagement(array $items, ?int $uid): array {
     }
     return $out;
 }
+
+/**
+ * The last two comments on each row of a feed, in one query for the whole page.
+ *
+ * A like is a dead end: it says somebody was here and nothing about what they thought. Comments
+ * are the part that turns a feed into a conversation, and a feed that hides them behind a click
+ * has no conversation on it, because nobody clicks into a thread they cannot see the start of.
+ *
+ * One statement, ordered newest first, capped well above what the page can show, then grouped and
+ * trimmed in PHP. A per-target LIMIT in SQL means a window function or one query per row, and the
+ * cap does the same job at a fraction of the cost.
+ *
+ * @param list<array<string,mixed>> $items
+ * @return array<string,list<array<string,mixed>>> keyed "type:id", oldest first within each
+ */
+function rmt_feed_comments(array $items, int $perTarget = 2): array {
+    $ids = [];
+    foreach ($items as $it) {
+        $type = (string) ($it['kind'] ?? '');
+        if ($type === 'going') $type = 'trip';
+        if (!isset(RMT_INTERACT_TARGETS[$type])) continue;
+        $id = (int) ($it['id'] ?? 0);
+        if ($id > 0) $ids[$type][$id] = true;
+    }
+    if (!$ids) return [];
+
+    $where = [];
+    $args  = [];
+    foreach ($ids as $type => $set) {
+        $marks = implode(',', array_fill(0, count($set), '?'));
+        $where[] = "(c.target_type = ? AND c.target_id IN ($marks))";
+        $args[]  = $type;
+        foreach (array_keys($set) as $id) $args[] = $id;
+    }
+    $clause = implode(' OR ', $where);
+
+    $rows = q_all("SELECT c.id, c.target_type, c.target_id, c.body, c.created_at,
+                          u.username, p.avatar_url
+                     FROM comments c
+                     JOIN users u ON u.id = c.user_id AND u.status = 'active'
+                LEFT JOIN profiles p ON p.user_id = c.user_id
+                    WHERE c.status = 'published' AND ($clause)
+                 ORDER BY c.id DESC LIMIT 300", $args);
+
+    $out = [];
+    foreach ($rows as $r) {
+        $key = $r['target_type'] . ':' . (int) $r['target_id'];
+        if (count($out[$key] ?? []) >= $perTarget) continue;
+        $out[$key][] = $r;
+    }
+    foreach ($out as $k => $v) $out[$k] = array_reverse($v);   // a thread reads oldest first
+    return $out;
+}

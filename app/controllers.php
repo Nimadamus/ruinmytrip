@@ -937,7 +937,8 @@ function feed(array $a): void {
     $cities = rmt_feed_followed_destinations($uid);
     $rails = rmt_feed_rails($uid);
     $engagement = rmt_feed_engagement($items, $uid);
-    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement'), [
+    $threads = rmt_feed_comments($items);
+    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);

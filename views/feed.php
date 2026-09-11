@@ -12,6 +12,7 @@ $rmt_post_verb = static fn(array $it): ?string =>
 $rails = $rails ?? ['matches' => [], 'trips' => [], 'suggested' => [], 'meetups' => [], 'match_count' => 0];
 $rmt_day = static fn(?string $d): string => $d ? date('j M', strtotime($d)) : '';
 $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
+$threads = $threads ?? [];
 ?>
 <div class="wrap feed-shell">
 
@@ -129,6 +130,35 @@ $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
                 <button class="act" title="Save" aria-label="Save this"><span aria-hidden="true">&#9733;</span></button>
               </form>
             </div>
+
+            <?php /* The thread, in place. A like says somebody was here and nothing about what
+                     they thought, and a feed that hides its replies behind a click has no
+                     conversation on it, because nobody opens a thread whose first line they
+                     cannot see. Two lines and a box: enough to read the room and answer it. */ ?>
+            <?php $rmt_thread = $threads[$rmt_k] ?? []; ?>
+            <?php if ($rmt_thread): ?>
+              <div class="thread">
+                <?php foreach ($rmt_thread as $c): ?>
+                  <div class="thread-line">
+                    <img class="avatar" style="width:24px;height:24px" src="<?= e(avatar_url($c['avatar_url'] ?? null)) ?>" alt="">
+                    <span><a href="<?= e(url('u/'.$c['username'])) ?>"><b>@<?= e($c['username']) ?></b></a>
+                      <?= e(mb_strimwidth((string) $c['body'], 0, 180, '...')) ?></span>
+                  </div>
+                <?php endforeach; ?>
+                <?php if ($rmt_comments > count($rmt_thread)): ?>
+                  <a class="thread-more" href="<?= e($it['feed_url']) ?>#comments">Read all <?= $rmt_comments ?> replies</a>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
+            <form class="thread-reply" method="post" action="<?= e(url('comment')) ?>"><?= csrf_field() ?>
+              <input type="hidden" name="target_type" value="<?= e($rmt_t) ?>">
+              <input type="hidden" name="target_id" value="<?= (int) $it['id'] ?>">
+              <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_'.$rmt_t.'_'.(int) $it['id'])) ?>">
+              <input type="hidden" name="return" value="<?= e($scope === 'everyone' ? '/feed?scope=everyone' : '/feed') ?>">
+              <img class="avatar" style="width:24px;height:24px" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
+              <input type="text" name="body" maxlength="2000" placeholder="Reply to @<?= e($it['author']['username'] ?? '') ?>">
+              <button class="btn btn-ghost btn-sm">Reply</button>
+            </form>
           <?php endif; ?>
         </div>
       </article>
