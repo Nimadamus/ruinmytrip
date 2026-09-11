@@ -1,97 +1,138 @@
-<?php /** @var array $dests @var array $saved @var array $me @var array $communities @var array $suggested */ ?>
-<section class="block"><div class="wrap" style="max-width:760px">
+<?php /** @var array $dests @var array $saved @var array $me @var array $communities @var array $suggested @var array $popular */
+/* Ordered by what the product is, not by what is easy to ask. The first thing on the page is the
+   trip, because a member with dates posted is a member the whole site works for: they turn up in a
+   city's people page, they appear in somebody's matches, and their own feed has something in it on
+   day one. Everything after it is optional and says so.
+
+   What this replaced: eighty four checkboxes, alphabetical, above the fold. That is a form, and a
+   form is what somebody closes. */
+$rmt_popular_ids = [];
+foreach ($popular as $pp) $rmt_popular_ids[(int) $pp['id']] = true;
+?>
+<section class="block"><div class="wrap" style="max-width:720px">
   <p class="eyebrow">You're in</p>
-  <h1>Start your traveler profile</h1>
-  <p class="muted">Pick a few places you want to visit. Optionally share one upcoming trip: destination and dates only, never a precise location.</p>
+  <h1 style="margin-bottom:.2rem">Two minutes, and people can find you</h1>
+  <p class="muted" style="max-width:58ch">Destination and dates only, never a precise location. Every
+    field here is optional, and you can change any of it later.</p>
 
-  <form method="post" action="<?= e(url('welcome')) ?>">
+  <form method="post" action="<?= e(url('welcome')) ?>" class="onboard">
     <?= csrf_field() ?>
-    <?php /* Where they live and how they travel. Both optional, both asked here because this is the
-             one moment a new member is certainly paying attention, and every discovery feature the
-             site has -- locals, who is coming to your city, solo travelers here -- is blank until
-             somebody answers them. */ ?>
-    <h2 style="font-size:1.15rem">About you (optional)</h2>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 22px">
-      <div style="flex:1;min-width:220px">
-        <label for="home_city">Where do you live?</label>
-        <input type="text" id="home_city" name="home_city" maxlength="80"
-               value="<?= e($me['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">
-        <p class="muted" style="margin:.3rem 0 0;font-size:.9rem">City only. If we have a page for
-          it you will be listed as a local, where travelers heading there can find you.</p>
-      </div>
-      <div style="flex:1;min-width:220px">
-        <label for="travel_style">How do you usually travel?</label>
-        <select id="travel_style" name="travel_style">
-          <option value="">Rather not say</option>
-          <?php foreach (RMT_TRAVEL_STYLES as $k => $label): ?>
-            <option value="<?= e($k) ?>"<?= ($me['travel_style'] ?? '') === $k ? ' selected' : '' ?>><?= e($label) ?></option>
-          <?php endforeach; ?>
-        </select>
-      </div>
-    </div>
 
-    <h2 style="font-size:1.15rem">Want to visit</h2>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 22px">
-      <?php foreach ($dests as $dd): $on = !empty($saved[(int)$dd['id']]); ?>
-        <label class="chip" style="cursor:pointer;<?= $on ? 'background:var(--ink);color:#fff' : '' ?>">
-          <input type="checkbox" name="want[]" value="<?= (int)$dd['id'] ?>" <?= $on ? 'checked' : '' ?> style="margin-right:6px">
-          <?= e($dd['name']) ?>
-        </label>
-      <?php endforeach; ?>
-    </div>
-
-    <h2 style="font-size:1.15rem">One upcoming trip (optional)</h2>
-    <label>Destination
-      <select name="destination_id">
-        <option value="">Skip for now</option>
+    <section class="onboard-step">
+      <h2><span class="onboard-n">1</span> Where are you going next?</h2>
+      <p class="hint">This is the one that does the work. Post it and the travelers whose dates
+        overlap yours can find you, in that city, on those days.</p>
+      <label for="destination_id">City</label>
+      <select id="destination_id" name="destination_id">
+        <option value="">Not sure yet</option>
         <?php foreach ($dests as $dd): ?>
-          <option value="<?= (int)$dd['id'] ?>"><?= e($dd['name']) ?>, <?= e($dd['country']) ?></option>
+          <option value="<?= (int) $dd['id'] ?>"><?= e($dd['name']) ?>, <?= e($dd['country']) ?></option>
         <?php endforeach; ?>
       </select>
-    </label>
-    <div class="grid g-2" style="gap:10px">
-      <label>From <input type="date" name="date_from"></label>
-      <label>Until <input type="date" name="date_to"></label>
-    </div>
-    <input type="hidden" name="visibility" value="public">
+      <div class="grid g-2" style="gap:12px;margin-top:10px">
+        <div><label for="date_from">From</label><input type="date" id="date_from" name="date_from"></div>
+        <div><label for="date_to">Until</label><input type="date" id="date_to" name="date_to"></div>
+      </div>
+      <input type="hidden" name="visibility" value="public">
+    </section>
 
-    <?php /* Rooms first, then words. Both optional, both here rather than "later", because later
-             is where new members go to never come back. */ ?>
-    <?php if ($communities): ?>
-      <h2 style="font-size:1.15rem;margin-top:26px">Join a community (optional)</h2>
-      <p class="hint" style="margin:0 0 10px">Groups other travelers started. You can leave any of them whenever.</p>
-      <?php foreach ($communities as $cc): ?>
-        <label class="card" style="display:block;margin-bottom:8px;cursor:pointer"><span class="card-body" style="display:block;padding:12px 16px">
-          <input type="checkbox" name="join[]" value="<?= (int) $cc['id'] ?>" style="margin-right:8px">
-          <b><?= e((string) $cc['title']) ?></b>
-          <span class="hint"> · <?= (int) $cc['member_count'] ?> members</span>
-          <?php if (!empty($cc['summary'])): ?><span class="muted" style="display:block;margin-top:.2rem"><?= e((string) $cc['summary']) ?></span><?php endif; ?>
-        </span></label>
-      <?php endforeach; ?>
-    <?php endif; ?>
+    <section class="onboard-step">
+      <h2><span class="onboard-n">2</span> Where do you live?</h2>
+      <p class="hint">City only. If we have a page for it you are listed as a local, which is the
+        person a traveler heading there most wants to find.</p>
+      <div class="grid g-2" style="gap:12px">
+        <div>
+          <label for="home_city">Your city</label>
+          <input type="text" id="home_city" name="home_city" maxlength="80"
+                 value="<?= e($me['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">
+        </div>
+        <div>
+          <label for="travel_style">How do you usually travel?</label>
+          <select id="travel_style" name="travel_style">
+            <option value="">Rather not say</option>
+            <?php foreach (RMT_TRAVEL_STYLES as $k => $label): ?>
+              <option value="<?= e($k) ?>"<?= ($me['travel_style'] ?? '') === $k ? ' selected' : '' ?>><?= e($label) ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      </div>
+    </section>
 
-    <?php /* People first among the optional steps: following somebody is the one action that makes
-             the next screen worth opening. */ ?>
+    <section class="onboard-step">
+      <h2><span class="onboard-n">3</span> Cities you want to see</h2>
+      <p class="hint">Anything happening in one of these reaches your feed: somebody going, a meetup,
+        a question asked.</p>
+      <div class="pick-grid">
+        <?php foreach ($popular as $pp): $on = !empty($saved[(int) $pp['id']]); ?>
+          <label class="pick<?= $on ? ' on' : '' ?>">
+            <input type="checkbox" name="want[]" value="<?= (int) $pp['id'] ?>"<?= $on ? ' checked' : '' ?>>
+            <span class="pick-name"><?= e($pp['name']) ?></span>
+            <span class="pick-sub"><?= e((string) $pp['country']) ?></span>
+          </label>
+        <?php endforeach; ?>
+      </div>
+      <details class="onboard-more">
+        <summary>Every other city we have a page for</summary>
+        <div class="pick-chips">
+          <?php foreach ($dests as $dd): if (isset($rmt_popular_ids[(int) $dd['id']])) continue; $on = !empty($saved[(int) $dd['id']]); ?>
+            <label class="chip pick-chip<?= $on ? ' on' : '' ?>">
+              <input type="checkbox" name="want[]" value="<?= (int) $dd['id'] ?>"<?= $on ? ' checked' : '' ?>>
+              <?= e($dd['name']) ?>
+            </label>
+          <?php endforeach; ?>
+        </div>
+      </details>
+    </section>
+
+    <?php /* People before rooms: following somebody is the one action that makes the next screen
+             worth opening, because it is the only one that puts other people's activity in it. */ ?>
     <?php if ($suggested): ?>
-      <h2 style="font-size:1.15rem;margin-top:26px">Follow a few travelers (optional)</h2>
-      <?php foreach ($suggested as $sg): ?>
-        <label class="card" style="display:block;margin-bottom:8px;cursor:pointer"><span class="card-body" style="display:block;padding:12px 16px">
-          <input type="checkbox" name="follow[]" value="<?= (int) $sg['id'] ?>" style="margin-right:8px">
-          <b>@<?= e((string) $sg['username']) ?></b>
-          <?php if (!empty($sg['home_city'])): ?><span class="hint"> · <?= e((string) $sg['home_city']) ?></span><?php endif; ?>
-          <span class="hint"> · <?= e((string) $sg['reason']) ?></span>
-        </span></label>
-      <?php endforeach; ?>
+      <section class="onboard-step">
+        <h2><span class="onboard-n">4</span> Follow a few travelers</h2>
+        <div class="pick-people">
+          <?php foreach ($suggested as $sg): ?>
+            <label class="pick-person">
+              <input type="checkbox" name="follow[]" value="<?= (int) $sg['id'] ?>">
+              <img class="avatar" src="<?= e(avatar_url($sg['avatar_url'] ?? null)) ?>" alt="">
+              <span>
+                <b>@<?= e((string) $sg['username']) ?></b>
+                <span class="hint"><?php if (!empty($sg['home_city'])): ?><?= e((string) $sg['home_city']) ?> · <?php endif; ?><?= e((string) $sg['reason']) ?></span>
+              </span>
+            </label>
+          <?php endforeach; ?>
+        </div>
+      </section>
     <?php endif; ?>
 
-    <h2 style="font-size:1.15rem;margin-top:26px">Say something (optional)</h2>
-    <p class="hint" style="margin:0 0 8px">A question counts. So does a warning about the last place that ruined your trip.</p>
-    <textarea name="hello" rows="3" maxlength="<?= RMT_POST_MAX ?>"
-              placeholder="Where are you going next, or what should the rest of us avoid?"></textarea>
+    <?php if ($communities): ?>
+      <section class="onboard-step">
+        <h2><span class="onboard-n"><?= $suggested ? '5' : '4' ?></span> Join a community</h2>
+        <p class="hint">Groups other travelers started. Leave any of them whenever you like.</p>
+        <div class="pick-people">
+          <?php foreach ($communities as $cc): ?>
+            <label class="pick-person">
+              <input type="checkbox" name="join[]" value="<?= (int) $cc['id'] ?>">
+              <span>
+                <b><?= e((string) $cc['title']) ?></b>
+                <span class="hint"><?= (int) $cc['member_count'] ?> members<?php
+                  if (!empty($cc['summary'])): ?> · <?= e((string) $cc['summary']) ?><?php endif; ?></span>
+              </span>
+            </label>
+          <?php endforeach; ?>
+        </div>
+      </section>
+    <?php endif; ?>
 
-    <p style="margin:22px 0 0;display:flex;gap:10px;flex-wrap:wrap">
+    <section class="onboard-step">
+      <h2><span class="onboard-n"><?= 4 + (int) (bool) $suggested + (int) (bool) $communities ?></span> Say something</h2>
+      <p class="hint">A question counts. So does a warning about the last place that ruined your trip.</p>
+      <textarea name="hello" rows="3" maxlength="<?= RMT_POST_MAX ?>"
+                placeholder="Where are you going next, or what should the rest of us avoid?"></textarea>
+    </section>
+
+    <p style="margin:26px 0 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
       <button class="btn btn-primary" type="submit">Save and get started</button>
-      <a class="btn btn-ghost" href="<?= e(url('feed')) ?>">Skip</a>
+      <a class="btn btn-ghost" href="<?= e(url('feed')) ?>">Skip for now</a>
     </p>
   </form>
 </div></section>

@@ -1962,6 +1962,14 @@ function welcome_form(array $a): void {
     require_login();
     $me = current_user();
     $dests = q_all('SELECT id, slug, name, country FROM destinations ORDER BY name');
+    /* The twelve cities with the most going on, for the row a new member actually reads. The full
+       list is still below it in a disclosure: eighty four checkboxes as the first screen after
+       signing up is a form, and a form is what somebody closes. */
+    $popular = q_all("SELECT d.id, d.slug, d.name, d.country, d.hero_url,
+                             (SELECT COUNT(*) FROM trips t WHERE t.destination_id = d.id
+                                AND t.status = 'published') trips
+                        FROM destinations d
+                    ORDER BY trips DESC, d.name LIMIT 12");
     // Rooms that already have somebody in them. An empty one is a worse first experience than none.
     $communities = rmt_community_browse(6);
     // And people. A social site whose first screen asks only about places is still a directory.
@@ -1972,7 +1980,7 @@ function welcome_form(array $a): void {
     }
     $me = $me + (q_one('SELECT home_city, travel_style, display_name, bio, avatar_url FROM profiles
                          WHERE user_id = ?', [(int) $me['id']]) ?: []);
-    view('welcome', compact('dests','saved','me','communities','suggested'), [
+    view('welcome', compact('dests','saved','me','communities','suggested','popular'), [
         'title' => 'Start your traveler profile | RuinMyTrip',
         'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
     ]);

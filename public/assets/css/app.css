@@ -661,3 +661,42 @@ section.block{padding:64px 0}
 .thread-reply input[type=text]{flex:1;border-radius:999px;background:#f6f6f3;border-color:transparent;
   padding:.45rem .9rem;font-size:.9rem}
 .thread-reply input[type=text]:focus{background:#fff;border-color:var(--brand-2)}
+
+/* ================================================================ onboarding
+   Numbered steps on a card each, so the first screen after signing up reads as a short sequence
+   with a beginning rather than as one long form. */
+.onboard-step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
+.onboard-step h2{font-size:1.18rem;display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.onboard-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+  border-radius:50%;background:var(--brand);color:#fff;font-family:var(--sans);font-size:.82rem;
+  font-weight:700;flex:none}
+.onboard-step .hint{margin:0 0 14px;display:block}
+.onboard-more{margin-top:14px}
+.onboard-more>summary{cursor:pointer;font-size:.9rem;font-weight:600;color:var(--brand)}
+
+/* A city is picked by pressing a tile, not by hitting a checkbox the size of a full stop. */
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.pick{position:relative;display:block;border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:12px 14px;cursor:pointer;background:#fff}
+.pick:hover{border-color:var(--brand-2)}
+.pick input{position:absolute;opacity:0;width:0;height:0}
+.pick-name{display:block;font-weight:650;letter-spacing:-.01em}
+.pick-sub{display:block;font-size:.8rem;color:var(--muted)}
+.pick:has(input:checked){background:var(--brand);border-color:var(--brand);color:#fff}
+.pick:has(input:checked) .pick-sub{color:#cfe7e4}
+.pick:has(input:focus-visible){outline:2px solid var(--brand-2);outline-offset:2px}
+
+.pick-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;max-height:260px;overflow:auto;
+  padding:2px}
+.pick-chip{cursor:pointer}
+.pick-chip input{margin-right:6px}
+.pick-chip:has(input:checked){background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.pick-people{display:grid;gap:8px}
+.pick-person{display:flex;align-items:center;gap:10px;border:1px solid var(--line);
+  border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;background:#fff}
+.pick-person:hover{border-color:var(--brand-2)}
+.pick-person b{display:block;font-weight:650}
+.pick-person .hint{display:block;font-size:.84rem}
+.pick-person:has(input:checked){border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset}
