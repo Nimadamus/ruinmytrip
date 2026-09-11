@@ -97,16 +97,39 @@
     }
 
     if (byDay) {
+      /* The key is also the filter. On a six day trip the useful question is "what is Tuesday",
+         and a legend that only explains the colours makes the reader answer it by squinting. */
       var key = document.createElement('div');
       key.className = 'map-key';
+      var select = function (g) {
+        var keep = [];
+        markers.forEach(function (m) {
+          var show = g === null || m.p.group === g;
+          if (show) { m.layer.addTo(map); keep.push([m.p.lat, m.p.lng]); }
+          else map.removeLayer(m.layer);
+        });
+        if (keep.length) map.fitBounds(keep, { padding: [30, 30], maxZoom: 16 });
+        key.querySelectorAll('.map-key-item').forEach(function (n) {
+          n.classList.toggle('is-on', n.getAttribute('data-day') === (g === null ? '' : g));
+        });
+      };
+      var item = function (label, g, colour) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'map-key-item' + (g === null ? ' is-on' : '');
+        b.setAttribute('data-day', g === null ? '' : g);
+        if (colour) {
+          var dot = document.createElement('i');
+          dot.style.background = colour;
+          b.appendChild(dot);
+        }
+        b.appendChild(document.createTextNode(label));
+        b.addEventListener('click', function () { select(g); });
+        return b;
+      };
+      key.appendChild(item('All days', null, null));
       dayOrder.forEach(function (g, i) {
-        var item = document.createElement('span');
-        item.className = 'map-key-item';
-        var dot = document.createElement('i');
-        dot.style.background = palette[i % palette.length];
-        item.appendChild(dot);
-        item.appendChild(document.createTextNode(dayLabel(g)));
-        key.appendChild(item);
+        key.appendChild(item(dayLabel(g), g, palette[i % palette.length]));
       });
       el.parentNode.insertBefore(key, el.nextSibling);
     }
