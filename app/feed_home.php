@@ -80,6 +80,25 @@ function rmt_feed_rails(int $uid): array {
        to the match, and I can join whichever fits me. */
     $joinable = function_exists('rmt_activities_joinable_for') ? rmt_activities_joinable_for($uid, 4) : [];
 
+    /* Almost nobody has posted a trip on their first day, and the rail above starts from dates the
+       member has already published. Rather than show them nothing, show them what is open anywhere,
+       labelled as exactly that. It is the difference between a new account seeing a live site and a
+       new account seeing an empty one, and it invents nothing to do it. */
+    $joinableAnywhere = [];
+    if (!$joinable && function_exists('rmt_open_plans_upcoming')) {
+        /* The rails are built for one member, who is normally the person asking. Fall back to an
+           id-only viewer rather than to nobody, or a signed-in member would be shown the public
+           subset of a question they are entitled to a fuller answer to. */
+        $railViewer = current_user();
+        if (!$railViewer || (int) $railViewer['id'] !== $uid) $railViewer = ['id' => $uid];
+        foreach (rmt_open_plans_upcoming($railViewer, null, 12) as $pl) {
+            if ((int) $pl['user_id'] === $uid) continue;
+            if (rmt_activity_join_state((int) $pl['id'], ['id' => $uid]) !== null) continue;
+            $joinableAnywhere[] = $pl;
+            if (count($joinableAnywhere) >= 4) break;
+        }
+    }
+
     /* The other end of the same loop. A plan whose day has passed and which its owner has not
        answered for is the one piece of knowledge the next traveler needs and nobody else has. */
     $toReview = function_exists('rmt_activities_to_review') ? rmt_activities_to_review($uid, 3) : [];
@@ -87,6 +106,7 @@ function rmt_feed_rails(int $uid): array {
     return [
         'review'      => $toReview,
         'joinable'    => $joinable,
+        'joinable_anywhere' => $joinableAnywhere,
         'matches'     => $matches,
         'trips'       => $trips,
         'suggested'   => $suggested,

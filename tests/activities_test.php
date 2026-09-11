@@ -247,6 +247,15 @@ ok(in_array('Benfica vs Porto', $joinTitles(2), true), 'and it is back when the 
 ok($joinTitles(3) === [], 'somebody with no trip to that city is offered nothing');
 ok(!in_array('Benfica vs Porto', $joinTitles(1), true), 'and nobody is offered their own plan');
 
+/* Two trips to the same city, overlapping. The same plan offered twice is the bug that a join
+   instead of an EXISTS gives you, and it looks like the site is inventing activity. */
+$pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,visibility,date_from,date_to)
+            VALUES (11,2,7,'Ben again','bl2','','published','public','$from','$to')");
+$again = $joinTitles(2);
+ok(count($again) === count(array_unique($again)), 'two trips to one city never offer the same plan twice');
+$pdo->exec('DELETE FROM trips WHERE id = 11');
+
+
 
 // --- the loop closing -------------------------------------------------------------------------
 /* PLAN then DO then SAY SO. Only the member's own plans, only after the day, only while the answer

@@ -198,13 +198,19 @@ $threads = $threads ?? [];
   <aside class="feed-rail">
     <?php /* Things the member could actually walk into while they are there. This is the end of
              the sentence the product is built toward, so it is the first thing in the rail. */ ?>
-    <?php if (!empty($rails['joinable'])): ?>
+    <?php $railJoin = !empty($rails['joinable']) ? $rails['joinable'] : ($rails['joinable_anywhere'] ?? []);
+          $railJoinMine = !empty($rails['joinable']); ?>
+    <?php if ($railJoin): ?>
       <section class="rail-card">
-        <h2 class="rail-h">You could join these</h2>
-        <?php foreach ($rails['joinable'] as $j): ?>
+        <h2 class="rail-h"><?= $railJoinMine ? 'You could join these' : 'Open to anyone, anywhere' ?></h2>
+        <?php if (!$railJoinMine): ?>
+          <p class="hint" style="margin:-4px 0 8px">Post where you are going and this becomes plans on your own dates.</p>
+        <?php endif; ?>
+        <?php foreach ($railJoin as $j): ?>
           <a class="rail-row" href="<?= e(url('activity/'.(int) $j['id'])) ?>">
             <b><?= e((string) $j['title']) ?></b>
             <span class="hint">@<?= e((string) $j['username']) ?><?php
+              if (!$railJoinMine && !empty($j['dest_name'])): ?> &middot; <?= e((string) $j['dest_name']) ?><?php endif; ?><?php
               if (!empty($j['day'])): ?> &middot; <?= e(date('D j M', strtotime((string) $j['day']))) ?><?php endif; ?><?php
               if (!empty($j['start_time'])): ?> &middot; <?= e((string) $j['start_time']) ?><?php endif; ?>
               &middot; <?= $j['join_mode'] === 'open' ? 'anyone can join' : 'ask to join' ?></span>

@@ -490,21 +490,25 @@ function rmt_activities_joinable_for(int $uid, int $limit = 6): array {
            JOIN users u ON u.id = a.user_id AND u.status = 'active'
       LEFT JOIN profiles p ON p.user_id = a.user_id
       LEFT JOIN destinations d ON d.id = a.destination_id
-           JOIN trips mine ON mine.user_id = ? AND mine.status = 'published'
-                          AND mine.destination_id = a.destination_id
-                          AND mine.date_from IS NOT NULL AND mine.date_to IS NOT NULL
           WHERE a.status = 'published' AND t.status = 'published'
             AND a.user_id <> ?
             AND a.cancelled_at IS NULL
             AND a.join_mode IN ('open','ask')
-            AND (a.day IS NULL OR (a.day >= mine.date_from AND a.day <= mine.date_to))
+            AND (a.day IS NULL OR a.day >= ?)
+            /* EXISTS rather than a join: somebody with two trips to the same city would otherwise
+               be offered the same plan twice, once per trip. */
+            AND EXISTS (SELECT 1 FROM trips mine
+                         WHERE mine.user_id = ? AND mine.status = 'published'
+                           AND mine.destination_id = a.destination_id
+                           AND mine.date_from IS NOT NULL AND mine.date_to IS NOT NULL
+                           AND (a.day IS NULL OR (a.day >= mine.date_from AND a.day <= mine.date_to)))
             AND NOT EXISTS (SELECT 1 FROM activity_joins j2
                              WHERE j2.activity_id = a.id AND j2.user_id = ?)
             AND $tripVis AND $actVis AND $blockSql
        ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
                 COALESCE(a.start_time,'99:99'), a.id
           LIMIT " . (int) $limit,
-        array_merge([$uid, $uid, $uid], $tripArgs, $actArgs, [$uid, $uid])
+        array_merge([$uid, date('Y-m-d'), $uid, $uid], $tripArgs, $actArgs, [$uid, $uid])
     );
 }
 
