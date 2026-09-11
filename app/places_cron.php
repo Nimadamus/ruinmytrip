@@ -141,6 +141,50 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* Repair what the audit found, narrowly.
+
+       Two things, and both of them are deletions rather than corrections, because deleting a wrong
+       fact is safe and inventing a right one is not.
+
+       The hours: "12:00-00:00" and "09:00-02:00" are rows written before the parser understood
+       that midnight is the end of a day and that half the bars in any city close after it. They
+       say a restaurant shuts twelve hours before it opens. Every provider written row for such a
+       place is removed, not only the malformed one, because that is what puts the place back into
+       needs_hours so the next backfill can fetch and parse it properly. A place whose hours
+       somebody typed by hand is not touched at all.
+
+       The aliases: an alias whose normalised key equals the place's own is not another name, it
+       is the same name with different capitals.
+
+       Nothing is written. Anything deleted here comes back correctly on the next backfill, or does
+       not come back, which is the honest state. */
+    if ($op === 'hours_repair') {
+        $destId = (int) $dest['id'];
+        $suspect = q_all("SELECT DISTINCT h.place_id FROM place_hours h
+                            JOIN places p ON p.id = h.place_id
+                           WHERE p.destination_id = ? AND h.source = 'openstreetmap'
+                             AND ((COALESCE(h.closed,0) = 0
+                                   AND (h.opens IS NULL OR h.closes IS NULL OR h.opens >= h.closes))
+                               OR h.day_of_week < 0 OR h.day_of_week > 6)", [$destId]);
+        $cleared = 0;
+        foreach ($suspect as $r) {
+            $pid = (int) $r['place_id'];
+            // Only ours. A person's hours are never removed to make room for a provider's.
+            $mine = (int) (q_one("SELECT COUNT(*) c FROM place_hours WHERE place_id = ? AND source = 'openstreetmap'", [$pid])['c'] ?? 0);
+            $all  = (int) (q_one('SELECT COUNT(*) c FROM place_hours WHERE place_id = ?', [$pid])['c'] ?? 0);
+            if ($mine !== $all || $mine === 0) continue;
+            q_run("DELETE FROM place_hours WHERE place_id = ? AND source = 'openstreetmap'", [$pid]);
+            $cleared++;
+        }
+        $aliases = q_all("SELECT a.id FROM place_aliases a JOIN places p ON p.id = a.place_id
+                           WHERE p.destination_id = ? AND a.alias_key = p.name_key", [$destId]);
+        foreach ($aliases as $a) q_run('DELETE FROM place_aliases WHERE id = ?', [(int) $a['id']]);
+        echo json_encode(['city' => $dest['slug'], 'places_hours_cleared' => $cleared,
+                          'aliases_removed' => count($aliases)],
+                         JSON_UNESCAPED_SLASHES), "\n";
+        return;
+    }
+
     /* The deeper audit. Kept apart from `verify` because verify is the cheap one that a tally
        script runs ten times in a row; this one asks harder questions and is meant to be read.
 
