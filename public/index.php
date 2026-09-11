@@ -214,6 +214,8 @@ $routes = [
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
     ['GET',  '#^/cron/places$#',               'cron_places'],
+    ['GET',  '#^/cron/destinations$#',         'cron_destinations'],
+    ['POST', '#^/cron/destinations$#',         'cron_destinations'],
     ['POST', '#^/cron/places$#',               'cron_places'],
     ['GET',  '#^/photo/(?<kind>trip|review|post)/(?<id>\d+)$#', 'photo_show'],
     ['GET',  '#^/card/(?<kind>post|review|c|u|meetup|tag|city|trip|activity)/(?<key>[A-Za-z0-9_\-]+)\.png$#', 'share_card'],

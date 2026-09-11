@@ -177,3 +177,67 @@ function rmt_dest_drafts(): array {
     return q_all('SELECT * FROM destination_drafts WHERE published_destination_id IS NULL
                   ORDER BY id DESC LIMIT 100');
 }
+
+/**
+ * GET/POST /cron/destinations -- the same draft and publish path, driven by a key.
+ *
+ * Not a shortcut around the workflow: it calls rmt_dest_draft_validate(), rmt_dest_draft_save()
+ * and rmt_dest_draft_publish(), which are the same three functions the admin form calls, in the
+ * same order, with the same refusals. What it is not is a direct write to the destinations table.
+ * A city added this way went through the publish gate exactly as one added by hand does.
+ *
+ * It exists because the admin form needs a session and this side of the deployment has a key, the
+ * same arrangement /cron/places already uses for importing places.
+ *
+ * 404 without the key rather than 403: an endpoint that answers differently when it is guessed at
+ * is an endpoint that confirms it exists.
+ */
+function cron_destinations(array $a): void {
+    $key = (string) (getenv('CRON_KEY') ?: '');
+    $given = (string) input('key');
+    if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
+
+    header('Content-Type: text/plain; charset=utf-8');
+    header('X-Robots-Tag: noindex');
+
+    $op = (string) (input('op') ?: 'list');
+
+    if ($op === 'list') {
+        $rows = array_map(static fn(array $d): array => [
+            'id' => (int) $d['id'], 'slug' => $d['slug'], 'name' => $d['name'],
+            'has_point' => $d['lat'] !== null && $d['lng'] !== null,
+            'summary_chars' => mb_strlen((string) ($d['summary'] ?? '')),
+            'category' => $d['category'],
+        ], rmt_dest_drafts());
+        echo json_encode(['drafts' => $rows], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
+    if ($op === 'draft') {
+        $in = $_POST ?: [];
+        $raw = file_get_contents('php://input') ?: '';
+        if (!$in && $raw !== '') {
+            $j = json_decode($raw, true);
+            if (is_array($j)) $in = $j;
+        }
+        $id = (int) (input('id') ?: 0);
+        $v = rmt_dest_draft_validate($in, false, $id);
+        if (!$v['ok']) {
+            echo json_encode(['ok' => false, 'errors' => $v['errors']], JSON_UNESCAPED_SLASHES), "\n";
+            return;
+        }
+        $saved = rmt_dest_draft_save($v['data'], 0, $id);
+        echo json_encode(['ok' => true, 'draft_id' => $saved, 'slug' => $v['data']['slug'],
+                          'ready' => rmt_dest_draft_validate($v['data'], true, $saved)['errors']],
+                         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
+    if ($op === 'publish') {
+        $res = rmt_dest_draft_publish((int) (input('id') ?: 0));
+        echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
+    echo "unknown op\n";
+}
