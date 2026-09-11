@@ -25,47 +25,49 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 
 ## P0, the product does not work properly without these
 
-1. **Import places for the cities this site actually covers.** The pipeline is built, tested and
-   idempotent; production has run none of it, so every place page, the map, "who has this planned"
-   and half of city search are standing on an empty table. One button per city on `/admin/places`,
-   or `php scripts/import_places.php --city=<slug> --type=all`. Start with the cities that already
-   have trips on them.
-2. **Opening hours and a price band.** A place page that cannot say whether somewhere is open is
-   not yet worth linking from an itinerary. OSM carries `opening_hours` for a good fraction of
-   venues and the column already exists; the importer does not read it yet.
+1. **Overpass is the single point of failure, and it is somebody else's free service.** Roughly one
+   kind in seven times out on a first attempt, retries fix most of it, and this is at four cities.
+   At fifty it is a job that never finishes cleanly. Either a second provider (every candidate needs
+   a key or forbids storage, so this is Nima's call) or a downloaded extract processed offline. Flag
+   raised before expanding aggressively, as asked.
+2. **Opening hours and a price band.** A place page that cannot say whether somewhere is open is not
+   yet worth linking from an itinerary. OSM carries `opening_hours` for a good fraction of venues
+   and the column exists; the importer does not read it yet. This is the single biggest quality
+   gain available per unit of work.
 
 ## P1, core product
 
-3. **Plans need a place picker that finds places.** Typing an exact name matches; typing three
-   letters does not. The datalist is sixty names, which stops being enough at the first city with
-   four hundred.
-4. **A day view on the trip map.** The pins are all one colour: on a six day trip the useful
-   question is "what is Tuesday", and the map cannot answer it.
-5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
-   it: no "you were both at this", no second invitation.
-6. **One ranked search result list.** Travelers are at the top and the city is preferred, but the
-   page is still nine lists rather than one ordered answer.
-7. **Trip photographs during the trip.** Uploading works; a phone camera roll of forty pictures
-   from one afternoon does not have a good path yet.
+3. **The remaining six cities**: London, Tokyo, New York, Las Vegas, Bangkok, Amsterdam. Miami has
+   no destination row at all, so it needs one before it can have places, and writing a city page is
+   editorial work rather than import work.
+4. **A day view on the trip map** beyond colour: tapping a day should filter the pins.
+5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
+6. **One ranked search result list.** City context and travelers-first landed; the page is still
+   nine lists rather than one ordered answer.
+7. **Photo upload during a trip**, beyond one file at a time.
 
 ## P2, growth
 
-8. **Events as an object.** Sports, concerts, festivals. The architecture is a small table and a
-   column on a plan; the hard part is real event data, which needs a source. Nothing invented.
+8. **Events as an object.** The architecture is small; the hard part is real event data, which needs
+   a source. Nothing invented.
 9. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-10. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
-    week costs. Real sources only.
-11. **Place pages as landing pages.** Once places are real they are the most searchable thing this
-    site has, and they are not in the sitemap.
+10. **Seasonal and practical answers on a city page.** Real sources only.
+11. **Neighbourhood pages.** Places carry a neighbourhood string from the provider and nothing reads
+    it; "Alfama" is how somebody actually chooses where to stay.
 
 ## P3, worth doing, not worth doing first
 
-12. **Photo posting from the trip page during the trip** beyond one file at a time.
-13. **`/explore` ships 100KB** and could ship a third of that.
-14. **A second place provider**, for cities where OSM is thin. Every candidate needs a key or
-    forbids storage, so this is a research task before it is a build task.
+12. **`/explore` ships 100KB** and could ship a third of that.
+13. **Marker clustering** on a city map, if a city ever holds more than a few hundred pins.
+14. **A second place provider**, for cities where OSM is thin. Research before build.
 
 ## Done (2026-09-11, later)
+
+* **Four cities of real places** (Lisbon, Paris, Rome, Barcelona), categories a reader would use,
+  provider kind kept so a mapping decision can be revised without re-fetching, nine shapes of
+  malformed record quarantined at the door, retries and backoff, and an audit endpoint.
+* **Category browsing** on a city and its places page, **category filtering on the map**, honest
+  page titles, schema.org types that match the category, and city context inside the search query.
 
 * **A real place pipeline** (migrations 084, 085): provider abstraction, OpenStreetMap, canonical
   records, source ids, aliases, four-pass deduplication, timid merging, attribution on the page, a

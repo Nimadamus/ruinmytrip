@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (sixth pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (seventh pass).
 
 ## What the product is
 
@@ -39,7 +39,7 @@ pages made of members.
 `077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key ·
 `080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
-the reads this product actually does.
+the reads this product actually does · `086` provider kind on a place, and a stadium category.
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -125,15 +125,22 @@ canaries. It currently guards a private trip, a private trip's photograph, a pri
 plan sitting on a private trip, and a meeting point (absent for somebody who only asked, present
 once they are accepted). Backend rules are not the thing that leaks; pages are.
 
-## The thing that is blocking most of what is left
+## Places are real now, and the provider is the weak link
 
-`places` is empty IN PRODUCTION. The pipeline that fills it is built, tested and proved against the
-live provider: `php scripts/import_places.php --city=lisbon-portugal --type=all`, or the button on
-`/admin/places`. It needs no key, no account and no payment, it is safe to run twice, and it
-imports no ratings or popularity, only facts. Until somebody runs it for the cities that already
-have trips on them, every place page, the map and half of city search stand on an empty table.
+Four cities hold real, checkable places: Lisbon, Paris, Rome, Barcelona. Every row carries
+coordinates, a provider record id, the provider's own word for what it is, and an attribution line
+that links the record and the licence. No ratings, no popularity, no reviews come from a provider,
+and a whitelist test fails the build if anybody adds one.
 
-That is P0 in BACKLOG.md and it is the single highest-value thing left.
+Importing is two commands. `scripts/push_places.php` fetches here and posts to the site;
+`scripts/city_kit.sh <slug>` does a whole city's mix. Both are safe to run twice: a second run
+updates and creates nothing. `/cron/places?op=verify` audits a city, `op=recategorize` re-derives
+categories from the stored provider kind, `op=backfill` fills folded names.
+
+The weak link is the provider. The public Overpass endpoint queues per address and times out on
+roughly one kind in seven at four cities. Retries recover most of it. At fifty cities it is a job
+that never finishes cleanly, which is P0 in BACKLOG.md and is Nima's decision, because every
+alternative provider needs a key, a payment, or forbids storing what it returns.
 
 ## Waiting on Nima
 
