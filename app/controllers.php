@@ -290,7 +290,11 @@ function destination(array $a): void {
     $cityMap = [];
     /* The category rides along so the map can be filtered by it: on a city with a hundred pins the
        useful question is "where are the museums", not "where is everything". */
-    foreach (rmt_place_map_points($id, 120) as $pl) {
+    /* The cap is above the largest city this site holds, on purpose: a map headed "120 places" on
+       a city that has 128 of them is a quiet lie about the coverage, and eighty more pins is
+       about eight kilobytes. It is still a cap, because an unbounded one is a page that gets
+       slower as the database grows. */
+    foreach (rmt_place_map_points($id, 200) as $pl) {
         $catName = $pl['category'] !== null ? (string) $pl['category'] : null;
         $cityMap[] = ['lat' => (float) $pl['lat'], 'lng' => (float) $pl['lng'],
                       'label' => (string) $pl['name'], 'href' => url('p/' . $pl['slug']),

@@ -93,18 +93,21 @@ foreach ($cities as $slug) {
 
         /* Only rows that actually gained an hours value are sent on. An object whose record says
            nothing about opening is not worth a write, and posting it back would be churn. */
-        $rows = []; $aliases = [];
+        $rows = []; $aliases = []; $stated = 0; $refused = 0;
         foreach ($res['elements'] as $el) {
             $c = rmt_osm_to_place($el);
             if ($c['row'] === null) continue;
             if (trim((string) ($c['row']['opening_hours'] ?? '')) === '') continue;
-            if (rmt_osm_hours_parse((string) $c['row']['opening_hours']) === null) continue;
+            $stated++;
+            /* Counted separately on purpose. "No hours" and "hours in a form we will not guess at"
+               are different facts about this pipeline, and only one of them is ours to fix. */
+            if (rmt_osm_hours_parse((string) $c['row']['opening_hours']) === null) { $refused++; continue; }
             $rows[] = $c['row'];
             $aliases[(string) $c['row']['source_ref']] = $c['aliases'];
         }
         $carried += count($rows);
-        echo '  asked for ' . count($chunk) . ', ' . count($res['elements']) . ' came back, '
-           . count($rows) . " carry hours we trust\n";
+        printf("  asked for %d, %d came back, %d state hours, %d refused, %d kept\n",
+               count($chunk), count($res['elements']), $stated, $refused, count($rows));
 
         if ($rows && !$dry) {
             $body = json_encode(['rows' => $rows, 'aliases' => $aliases],
