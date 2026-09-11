@@ -993,7 +993,11 @@ function trip_show(array $a): void {
                               'updates','isOwner','phase'), [
         'title' => rmt_meta_title((string) $t['title']),
         'description' => rmt_meta_description((string) $t['body']),
-        'og_image' => abs_url($t['cover_url']),
+        /* A trip with no cover used to share as an empty og:image, which is the same as no
+           image at all in every app people paste trip links into. The generated card carries
+           the city, the dates and who else is there, and only public trips have one. */
+        'og_image' => trim((string) $t['cover_url']) !== '' ? abs_url((string) $t['cover_url'])
+                      : (($t['visibility'] ?? 'public') === 'public' ? rmt_card_url('trip', (string) (int) $t['id']) : rmt_default_og_image()),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>$t['dest_name']?:'Trips','url'=>$t['dest_slug']?url('d/'.$t['dest_slug']):url('explore')],['name'=>$t['title'],'url'=>url('trip/'.$t['id'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$t['title'],
             'datePublished'=>$t['created_at'],'author'=>['@type'=>'Person','name'=>$t['author']['display_name']??$t['author']['username']]]),

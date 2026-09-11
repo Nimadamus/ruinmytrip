@@ -14,6 +14,7 @@ $GLOBALS['config'] = [
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/cards.php';
+require BASE_PATH . '/app/plans.php';
 const RMT_MEETUP_STATUSES = ['published', 'cancelled'];
 
 $pdo = db();
@@ -29,6 +30,8 @@ $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, name TEXT)");
 $pdo->exec("CREATE TABLE follows (follower_id INT, followee_id INT)");
 $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, host_id INT, destination_id INT, title TEXT, date_start TEXT, status TEXT)");
 $pdo->exec("CREATE TABLE meetup_rsvps (meetup_id INT, user_id INT, status TEXT)");
+$pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT, slug TEXT, body TEXT, cover_url TEXT, date_from TEXT, date_to TEXT, visibility TEXT DEFAULT 'public', status TEXT DEFAULT 'published', created_at TEXT)");
+$pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT, url TEXT, sort INT)");
 $pdo->exec("CREATE TABLE tags (id INTEGER PRIMARY KEY, name TEXT)");
 $pdo->exec("CREATE TABLE taggings (id INTEGER PRIMARY KEY, tag_id INT, target_type TEXT, target_id INT)");
 $pdo->exec("INSERT INTO users VALUES (1,'ana','active','user'),(2,'gone','suspended','user')");
@@ -42,6 +45,16 @@ $pdo->exec("INSERT INTO posts (user_id,destination_id,collection_id,body,status,
 $pdo->exec("INSERT INTO comments (user_id,target_type,target_id) VALUES (1,'post',1),(1,'post',1)");
 $pdo->exec("INSERT INTO reviews VALUES (1,1,1,NULL,'Hotel Foo',2,'Lovely lobby, broken everything else','body','No hot water for three days','published')");
 $pdo->exec("INSERT INTO meetups VALUES (1,1,1,'Sunset walk to Miradouro','2026-10-04','published'),(2,1,1,'draft','2026-10-04','draft')");
+$soon  = date('Y-m-d', strtotime('+40 days'));
+$soon2 = date('Y-m-d', strtotime('+47 days'));
+$pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,date_from,date_to,visibility,status) VALUES
+  (1,1,1,'Lisbon, slowly','lisbon-slowly','$soon','$soon2','public','published'),
+  (2,2,1,'Same week','same-week','$soon','$soon2','public','published'),
+  (3,1,1,'Only me','only-me','$soon','$soon2','private','published'),
+  (4,1,1,'Draft','draft','$soon','$soon2','public','draft'),
+  (5,1,1,'No dates','no-dates',NULL,NULL,'public','published'),
+  (6,1,1,'Followers only','followers-only','$soon','$soon2','followers','published')");
+$pdo->exec("INSERT INTO trip_photos VALUES (1,1,'/media/a.jpg',0)");
 $pdo->exec("INSERT INTO tags VALUES (1,'scams')");
 $pdo->exec("INSERT INTO taggings VALUES (1,1,'post',1)");
 
@@ -79,6 +92,32 @@ ok(rmt_card_spec('meetup', '2') === null, 'draft meetup has no card');
 $s = rmt_card_spec('tag', 'scams');
 ok($s !== null && $s['title'] === '#scams' && $s['pills'] === ['1 post'], 'tag spec');
 ok(rmt_card_spec('bogus', '1') === null, 'unknown kind');
+
+/* Trips. A trip is the object people actually paste into a group chat, so the card has to carry
+   the city, the dates and the fact that somebody else is there in the same week, and it has to
+   refuse to draw anything at all for a trip its owner did not make public. */
+$dot = " \u{b7} ";
+$s = rmt_card_spec('trip', '1');
+ok($s !== null && $s['title'] === 'Lisbon, slowly', 'trip spec has the title');
+ok($s !== null && str_starts_with($s['meta'], '@ana' . $dot . 'Lisbon' . $dot), 'trip meta carries author and city');
+ok($s !== null && $s['kicker'] === 'Going', 'an upcoming trip says Going');
+ok($s !== null && in_array('1 other traveler there', $s['pills'], true), 'overlapping public trip is counted');
+ok($s !== null && in_array('1 photo', $s['pills'], true), 'photos are counted');
+ok(rmt_card_spec('trip', '3') === null, 'a private trip has no card');
+ok(rmt_card_spec('trip', '6') === null, 'a followers-only trip has no card');
+ok(rmt_card_spec('trip', '4') === null, 'a draft trip has no card');
+ok(rmt_card_spec('trip', '999') === null, 'unknown trip has no card');
+$s = rmt_card_spec('trip', '5');
+ok($s !== null && $s['kicker'] === 'Trip' && $s['meta'] === '@ana' . $dot . 'Lisbon', 'an undated trip says Trip and shows no dates');
+ok($s !== null && $s['pills'] === [], 'an undated trip claims no company');
+ok(getimagesizefromstring(rmt_card_render(rmt_card_spec('trip', '1'))) !== false, 'trip card renders');
+
+/* Date ranges read as a person would write them, and never with a dash. */
+ok(rmt_card_date_range('2026-03-12', '2026-03-19') === '12 to 19 Mar 2026', 'same month range');
+ok(rmt_card_date_range('2026-03-28', '2026-04-02') === '28 Mar to 2 Apr 2026', 'range across months');
+ok(rmt_card_date_range('2026-12-28', '2027-01-03') === '28 Dec 2026 to 3 Jan 2027', 'range across years');
+ok(rmt_card_date_range('2026-03-12', '2026-03-12') === '12 Mar 2026', 'a single day is one date');
+ok(rmt_card_date_range('', '') === '', 'no dates is empty');
 
 // wrapping
 $font = rmt_card_font(true);

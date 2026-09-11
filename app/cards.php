@@ -163,6 +163,25 @@ function rmt_card_quote(string $body, int $max = 180): string {
  * Build the spec for one shareable thing, or null when it must not have a card (removed, hidden,
  * unknown). Every branch applies the same visibility rule as the page it previews.
  */
+/**
+ * "12 to 19 Mar 2026", or "12 Mar 2026" for a single day, or "" when the trip has no dates.
+ *
+ * Both ends are formatted from the same string the database holds, so this works whether the
+ * column is a Postgres DATE or the TEXT that SQLite keeps in development.
+ */
+function rmt_card_date_range(string $from, string $to): string {
+    $from = trim($from); $to = trim($to);
+    if ($from === '') return '';
+    $a = strtotime($from);
+    if ($a === false) return '';
+    if ($to === '' || $to === $from) return date('j M Y', $a);
+    $b = strtotime($to);
+    if ($b === false) return date('j M Y', $a);
+    if (date('Y', $a) !== date('Y', $b)) return date('j M Y', $a) . ' to ' . date('j M Y', $b);
+    if (date('m', $a) !== date('m', $b)) return date('j M', $a) . ' to ' . date('j M Y', $b);
+    return date('j', $a) . ' to ' . date('j M Y', $b);
+}
+
 function rmt_card_spec(string $kind, string $key): ?array {
     switch ($kind) {
         case 'post':
@@ -264,6 +283,45 @@ function rmt_card_spec(string $kind, string $key): ?array {
             return ['kicker' => 'Travelers', 'title' => 'Travelers in ' . $d['name'],
                     'meta' => trim((string) $d['country'] . ' · who is going, meetups and questions', ' ·'),
                     'pills' => $pills];
+
+        case 'trip':
+            /* A trip is the object the whole product turns on, and it was the one thing with no
+               card: pasted into a group chat or a story it shared as the site default, so the
+               city, the dates and the fact that other people are there at the same time -- the
+               three things that make somebody tap, were missing from the picture.
+
+               Only a public trip gets a card. The route is open to anybody holding the link, so
+               reading visibility here is what stops a "followers" or "only you" trip leaking its
+               title through an image the owner never asked for. */
+            $t = q_one("SELECT t.*, u.username, u.status ustatus, d.name dest_name
+                          FROM trips t JOIN users u ON u.id = t.user_id
+                     LEFT JOIN destinations d ON d.id = t.destination_id
+                         WHERE t.id = ?", [(int) $key]);
+            if (!$t || $t['status'] !== 'published' || $t['ustatus'] !== 'active') return null;
+            if (($t['visibility'] ?? 'public') !== 'public') return null;
+            $from = trim((string) ($t['date_from'] ?? ''));
+            $to   = trim((string) ($t['date_to'] ?? ''));
+            $phase = function_exists('rmt_trip_phase') ? rmt_trip_phase($t) : ($from === '' ? 'undated' : 'upcoming');
+            $kicker = ['upcoming' => 'Going', 'current' => 'On the trip', 'past' => 'Trip', 'undated' => 'Trip'][$phase] ?? 'Trip';
+            $meta = '@' . $t['username'];
+            if ($t['dest_name']) $meta .= ' · ' . $t['dest_name'];
+            $when = rmt_card_date_range($from, $to);
+            if ($when !== '') $meta .= ' · ' . $when;
+            $pills = [];
+            /* Who else is in that city while they are. This is the social claim on the card, so it
+               counts only public trips that really overlap, and never itself. */
+            if ($from !== '' && $to !== '' && (int) $t['destination_id'] > 0 && $phase !== 'past') {
+                $others = (int) (q_one("SELECT COUNT(*) c FROM trips
+                                         WHERE destination_id = ? AND id <> ? AND user_id <> ?
+                                           AND status = 'published' AND visibility = 'public'
+                                           AND date_from IS NOT NULL AND date_to IS NOT NULL
+                                           AND date_from <= ? AND date_to >= ?",
+                                       [(int) $t['destination_id'], (int) $t['id'], (int) $t['user_id'], $to, $from])['c'] ?? 0);
+                if ($others > 0) $pills[] = $others . ($others === 1 ? ' other traveler there' : ' other travelers there');
+            }
+            $photos = (int) (q_one('SELECT COUNT(*) c FROM trip_photos WHERE trip_id=?', [(int) $t['id']])['c'] ?? 0);
+            if ($photos > 0) $pills[] = $photos . ($photos === 1 ? ' photo' : ' photos');
+            return ['kicker' => $kicker, 'title' => (string) $t['title'], 'meta' => $meta, 'pills' => $pills];
 
         case 'tag':
             $t = q_one('SELECT * FROM tags WHERE name=?', [$key]);

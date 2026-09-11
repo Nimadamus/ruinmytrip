@@ -129,6 +129,16 @@ function editable_url_value(?string $u): string {
     return preg_match('#^https://#i', (string) $u) ? (string) $u : '';
 }
 
+/**
+ * The picture a page shares with when it has nothing better of its own.
+ *
+ * It is named rather than repeated because a page that wants the default back, after deciding it
+ * cannot use its own image, has to be able to ask for it by name instead of copying the key.
+ */
+function rmt_default_og_image(): string {
+    return url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg');
+}
+
 /** Render a view within the layout. */
 function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);
@@ -136,7 +146,7 @@ function view(string $name, array $data = [], array $meta = []): void {
         'title' => cfg('app_name'),
         'description' => 'RuinMyTrip — a trustworthy travel community for real trips, honest reviews, and safe meetups.',
         'canonical' => rmt_current_url(),
-        'og_image' => url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg'),
+        'og_image' => rmt_default_og_image(),
         'jsonld' => null,
         // Indexable unless a page says otherwise. A page type that has not earned a place in the
         // index says 'noindex,follow': invisible to the index, still crawled for its links.
