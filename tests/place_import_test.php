@@ -218,5 +218,35 @@ ok($r['error'] !== null && str_contains($r['error'], 'URL in the name'),
 ok((int) (q_one("SELECT COUNT(*) c FROM places WHERE source_ref = 'node/500'")['c'] ?? 0) === 0,
    'and nothing was written for it');
 
+/* The data quality audit, as a set of rules rather than a habit. Each of these is a shape of bad
+   record that a real import has produced somewhere, and every one is about the RECORD: a place is
+   quarantined for being malformed, never for being unpopular or obscure. */
+$quarantined = [];
+foreach ([
+    ['name' => '', 'why' => 'blank name'],
+    ['name' => ' ', 'why' => 'whitespace name'],
+    ['name' => 'http://spam.example', 'why' => 'a URL in the name'],
+    ['name' => '???', 'why' => 'no letters'],
+    ['name' => 'Ã‰glise', 'why' => 'mojibake'],
+    ['lat' => 200.0, 'why' => 'impossible latitude'],
+    ['lng' => 999.0, 'why' => 'impossible longitude'],
+    ['lat' => 0.0, 'lng' => 0.0, 'why' => 'null island'],
+    ['website_url' => 'javascript:alert(1)', 'why' => 'a website that is not http'],
+] as $case) {
+    $why = $case['why'];
+    unset($case['why']);
+    $case['source_ref'] = 'node/' . mt_rand(100000, 999999);
+    $r = rmt_place_import_one(1, $osm($case));
+    if ($r['error'] === null) $quarantined[] = $why;
+}
+ok($quarantined === [], 'every malformed shape is quarantined at the door'
+   . ($quarantined ? ': ' . implode(', ', $quarantined) : ''));
+
+/* And a good record is not caught by any of them, which is the half that matters: an audit that
+   refuses everything is not an audit. */
+$r = rmt_place_import_one(1, $osm(['name' => 'Cantina Zé dos Cornos', 'source_ref' => 'node/771',
+                                   'lat' => 38.715, 'lng' => -9.137, 'website_url' => 'https://ok.example']));
+ok($r['error'] === null, 'a real name with accents and a real website is accepted');
+
 echo "place_import_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
