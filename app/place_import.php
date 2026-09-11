@@ -34,7 +34,7 @@ declare(strict_types=1);
 const RMT_PLACE_IMPORT_FIELDS = [
     'name', 'type', 'category_id', 'lat', 'lng', 'street_address', 'neighborhood', 'region',
     'postal_code', 'phone', 'website_url', 'price_level', 'timezone',
-    'data_source', 'data_source_url', 'source_ref',
+    'data_source', 'data_source_url', 'source_ref', 'source_kind', 'category_slug',
 ];
 
 /** How far apart two records can be and still be the same building, in metres. */
@@ -153,6 +153,21 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
         return $out;
     }
 
+    /* Fit to be a page? Checked before anything is written: a bad row is far easier to refuse than
+       to find later among four hundred good ones. */
+    $fault = rmt_place_record_fault($data, $destId);
+    if ($fault !== null) { $out['error'] = $name . ': ' . $fault; return $out; }
+
+    /* The provider's own word for the thing is stored as it came; the category is resolved to the
+       row this site already has, and dropped if the taxonomy does not know it. A category nobody
+       defined is worse than none, because it sends somebody looking for a museum to a car park. */
+    $catSlug = (string) ($data['category_slug'] ?? '');
+    unset($data['category_slug']);
+    if ($catSlug !== '') {
+        $cat = q_one("SELECT id FROM place_categories WHERE slug = ? AND status = 'active'", [$catSlug]);
+        if ($cat) $data['category_id'] = (int) $cat['id'];
+    }
+
     $match = rmt_place_import_match($destId, $data);
     $now = date('Y-m-d H:i:s');
 
@@ -260,4 +275,54 @@ function rmt_place_import_batch(int $destId, array $rows, bool $dryRun = false):
         else $sum['skipped']++;
     }
     return $sum;
+}
+
+/**
+ * Is this record fit to be a page?
+ *
+ * Checked before anything is written, because a bad row is far easier to refuse than to find later
+ * among four hundred good ones. Everything here is a fact about the record itself, never a
+ * judgement about the venue: a place is rejected for being malformed, never for being obscure.
+ *
+ * A rejected record is reported with a reason, so a run says what it would not take and somebody
+ * can decide whether the rule or the data is wrong.
+ *
+ * @return ?string the reason to refuse, or null to accept
+ */
+function rmt_place_record_fault(array $data, int $destId): ?string {
+    $name = trim((string) ($data['name'] ?? ''));
+    if ($name === '') return 'no name';
+    if (mb_strlen($name) < 2) return 'name too short to be a name';
+    if (preg_match('#^https?://#i', $name)) return 'a URL in the name field';
+    if (preg_match('/^[\W_]+$/u', $name)) return 'a name with no letters or digits in it';
+    /* Mojibake: a name that came through the wrong decoder reads as Ã© rather than é, and the page
+       it makes looks broken in a way no reader will report. */
+    if (str_contains($name, 'Ã') || str_contains($name, 'â€') || str_contains($name, "\u{FFFD}")) {
+        return 'the name looks like it was decoded wrongly';
+    }
+
+    $lat = $data['lat'] ?? null;
+    $lng = $data['lng'] ?? null;
+    if ($lat !== null || $lng !== null) {
+        if ($lat === null || $lng === null) return 'half a coordinate';
+        $lat = (float) $lat;
+        $lng = (float) $lng;
+        if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) return 'a coordinate off the planet';
+        // 0,0 is in the Atlantic and is what a missing coordinate looks like when somebody used zero.
+        if (abs($lat) < 0.0001 && abs($lng) < 0.0001) return 'null island';
+
+        /* Far from the city it claims to be in. A bounding box query should make this impossible,
+           and it happens anyway when a provider record carries the wrong point. */
+        $d = q_one('SELECT lat, lng FROM destinations WHERE id = ?', [$destId]);
+        if ($d && $d['lat'] !== null && $d['lng'] !== null) {
+            $km = rmt_place_distance_m((float) $d['lat'], (float) $d['lng'], $lat, $lng) / 1000;
+            if ($km > 80) return 'more than 80km from the city it is filed under';
+        }
+    }
+
+    $url = trim((string) ($data['website_url'] ?? ''));
+    if ($url !== '' && !filter_var($url, FILTER_VALIDATE_URL)) return 'a website that is not a URL';
+    if ($url !== '' && !preg_match('#^https?://#i', $url)) return 'a website with no usable scheme';
+
+    return null;
 }

@@ -55,6 +55,8 @@ function rmt_osm_type_map(): array {
         ],
         'experience' => [
             'amenity' => ['theatre', 'cinema', 'nightclub', 'casino'],
+            /* A stadium sits here rather than under attraction because "experience" is this site's
+               bucket for a thing you go and do at a time, which is what a match is. */
             'leisure' => ['stadium'],
         ],
     ];
@@ -110,8 +112,9 @@ function rmt_osm_bbox(float $lat, float $lng, float $km = 12.0): array {
  * @return array{ok:bool,elements:list<array>,error:?string}
  */
 function rmt_osm_fetch(string $query, int $timeout = 25): array {
-    if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.'];
+    if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.', 'tries' => []];
     $lastError = 'No endpoint answered.';
+    $tries = [];
     foreach (RMT_OSM_ENDPOINTS as $url) {
         $ch = curl_init($url);
         curl_setopt_array($ch, [
@@ -132,18 +135,26 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
         $code = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $err  = curl_error($ch);
         curl_close($ch);
+        $host = (string) (parse_url($url, PHP_URL_HOST) ?: $url);
         if ($body === false || $code !== 200) {
             $lastError = $err !== '' ? $err : ('HTTP ' . $code);
+            $tries[] = $host . ': ' . $lastError;
+            /* 429 is the provider saying "not now" in as many words. Backing off is the difference
+               between being a heavy user of a free service and being the reason it gets locked
+               down. Anything else, move on to the next mirror immediately. */
+            if ($code === 429) sleep(3);
             continue;
         }
         $json = json_decode((string) $body, true);
         if (!is_array($json) || !isset($json['elements'])) {
             $lastError = 'Unreadable response.';
+            $tries[] = $host . ': ' . $lastError;
             continue;
         }
-        return ['ok' => true, 'elements' => $json['elements'], 'error' => null];
+        $tries[] = $host . ': ok';
+        return ['ok' => true, 'elements' => $json['elements'], 'error' => null, 'tries' => $tries];
     }
-    return ['ok' => false, 'elements' => [], 'error' => $lastError];
+    return ['ok' => false, 'elements' => [], 'error' => $lastError, 'tries' => $tries];
 }
 
 /** Which of our types an OSM element is, or null when it is something we do not carry. */
@@ -185,8 +196,10 @@ function rmt_osm_to_place(array $el): array {
     $name = trim((string) ($tags['name'] ?? ''));
     if ($name === '') return ['row' => null, 'aliases' => []];
 
-    $type = rmt_osm_element_type($tags);
+    $match = rmt_osm_element_match($tags);
+    $type = $match['type'];
     if ($type === null) return ['row' => null, 'aliases' => []];
+    $kind = (string) $match['tag'];
 
     $lat = $el['lat'] ?? ($el['center']['lat'] ?? null);
     $lng = $el['lon'] ?? ($el['center']['lon'] ?? null);
@@ -208,6 +221,8 @@ function rmt_osm_to_place(array $el): array {
         'postal_code'     => trim((string) ($tags['addr:postcode'] ?? '')) ?: null,
         'phone'           => trim((string) ($tags['phone'] ?? $tags['contact:phone'] ?? '')) ?: null,
         'website_url'     => trim((string) ($tags['website'] ?? $tags['contact:website'] ?? '')) ?: null,
+        'source_kind'     => $kind,
+        'category_slug'   => rmt_osm_category_slug($kind),
         'data_source'     => 'openstreetmap',
         'data_source_url' => 'https://www.openstreetmap.org/' . $osmType . '/' . $osmId,
         'source_ref'      => $osmType . '/' . $osmId,
@@ -256,8 +271,10 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
                 'error' => 'Nothing in that kind belongs to that type.'];
     }
     $res = rmt_osm_fetch($q);
-    if (!$res['ok']) return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
-                             'error' => $res['error']];
+    if (!$res['ok']) {
+        return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
+                'error' => $res['error'], 'tries' => $res['tries'] ?? []];
+    }
 
     $rows = [];
     $aliases = [];
@@ -278,5 +295,61 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
     }
     arsort($tags);
     return ['ok' => true, 'rows' => $rows, 'aliases' => $aliases, 'tags' => $tags,
-            'seen' => count($res['elements']), 'error' => null];
+            'seen' => count($res['elements']), 'error' => null, 'tries' => $res['tries'] ?? []];
+}
+
+/**
+ * The provider's word for a thing, mapped to the category a reader would use.
+ *
+ * Two separate questions, deliberately. The type map above decides which of this site's four coarse
+ * buckets a venue belongs in, because that drives pages that already exist. This decides what to
+ * CALL it, and "Cafe", "Bar", "Museum", "Park" are the words somebody browsing actually thinks in.
+ * A cafe and a steakhouse are both restaurants to the database and are not the same thing to a
+ * person deciding where to have breakfast.
+ *
+ * A tag with no good category returns null rather than a guess: an uncategorised place still has a
+ * type, a name and a map pin, and a wrong category is worse than an absent one because it sends
+ * somebody looking for a museum to a car park.
+ */
+function rmt_osm_category_slug(string $kind): ?string {
+    static $map = [
+        // eating and drinking
+        'restaurant'    => 'bistro',
+        'cafe'          => 'cafe',
+        'fast_food'     => 'street-food',
+        'ice_cream'     => 'cafe',
+        'bar'           => 'bar',
+        'pub'           => 'pub',
+        'nightclub'     => 'nightclub',
+        // staying
+        'hotel'         => 'luxury-hotel',
+        'hostel'        => 'hostel',
+        'guest_house'   => 'guesthouse',
+        'apartment'     => 'vacation-rental',
+        // seeing
+        'museum'        => 'museum',
+        'gallery'       => 'art-gallery',
+        'artwork'       => 'landmark',
+        'attraction'    => 'landmark',
+        'viewpoint'     => 'viewpoint',
+        'aquarium'      => 'zoo-aquarium',
+        'zoo'           => 'zoo-aquarium',
+        'theme_park'    => 'theme-park',
+        'castle'        => 'historic-site',
+        'monument'      => 'landmark',
+        'memorial'      => 'landmark',
+        'ruins'         => 'historic-site',
+        'archaeological_site' => 'historic-site',
+        'park'          => 'park',
+        'garden'        => 'garden',
+        // doing
+        'marketplace'   => 'market',
+        'department_store' => 'shopping',
+        'mall'          => 'shopping',
+        'theatre'       => 'theater',
+        'cinema'        => 'theater',
+        'casino'        => 'casino',
+        'stadium'       => 'stadium',
+    ];
+    return $map[$kind] ?? null;
 }

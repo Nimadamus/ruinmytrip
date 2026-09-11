@@ -44,7 +44,7 @@ $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY AUTOINCREMENT, destinati
               neighborhood TEXT, region TEXT, postal_code TEXT, lat REAL, lng REAL, phone TEXT,
               website_url TEXT, price_level INT, timezone TEXT, data_source TEXT,
               data_source_url TEXT, data_checked_at TEXT, name_norm TEXT, neighborhood_id INT,
-              source_ref TEXT, source_updated_at TEXT)");
+              source_ref TEXT, source_updated_at TEXT, source_kind TEXT)");
 $pdo->exec("CREATE TABLE place_aliases (id INTEGER PRIMARY KEY AUTOINCREMENT, place_id INT,
               alias TEXT, alias_key TEXT, source TEXT, created_at TEXT)");
 $pdo->exec("INSERT INTO destinations VALUES (1,'Lisbon','lisbon','Portugal',38.7223,-9.1393)");
@@ -149,6 +149,68 @@ foreach (rmt_place_providers() as $slug => $prov) {
     ok(trim((string) ($prov['attribution'] ?? '')) !== '', "$slug states how it must be credited");
     ok(trim((string) ($prov['url'] ?? '')) !== '', "$slug links its licence");
 }
+
+/* Categories. The four types are what the database calls things; a category is what a person
+   calls them, and a cafe and a steakhouse are both restaurants to the database and are not the
+   same thing to somebody deciding where to have breakfast. */
+$pdo->exec("CREATE TABLE place_categories (id INTEGER PRIMARY KEY AUTOINCREMENT, bucket TEXT,
+              slug TEXT, name TEXT, plural TEXT, sort INT, status TEXT DEFAULT 'active')");
+$pdo->exec("INSERT INTO place_categories (bucket,slug,name,plural,sort,status) VALUES
+              ('restaurant','cafe','Cafe','Cafes',1,'active'),
+              ('attraction','museum','Museum','Museums',2,'active'),
+              ('experience','stadium','Stadium','Stadiums',3,'active')");
+
+ok(rmt_osm_category_slug('cafe') === 'cafe', 'a cafe is a cafe, not just a restaurant');
+ok(rmt_osm_category_slug('memorial') === 'landmark', 'a memorial is a landmark a person would look for');
+ok(rmt_osm_category_slug('stadium') === 'stadium', 'and a stadium has a word of its own now');
+ok(rmt_osm_category_slug('bench') === null, 'a tag with no good category gets none rather than a guess');
+
+$el = ['type' => 'node', 'id' => 7001, 'lat' => 38.7, 'lon' => -9.1,
+       'tags' => ['name' => 'A Brasileira', 'amenity' => 'cafe']];
+$m = rmt_osm_to_place($el);
+ok($m['row']['type'] === 'restaurant', 'the coarse bucket is still the coarse bucket');
+ok($m['row']['source_kind'] === 'cafe', "and the provider's own word is kept, so this can be redone later");
+ok($m['row']['category_slug'] === 'cafe', 'with the category a reader would use');
+
+$r = rmt_place_import_one(1, $m['row']);
+$row = q_one('SELECT category_id, source_kind FROM places WHERE id = ?', [$r['place_id']]);
+ok((string) $row['source_kind'] === 'cafe', 'the raw kind lands in the row');
+$cat = q_one('SELECT slug FROM place_categories WHERE id = ?', [(int) $row['category_id']]);
+ok($cat && $cat['slug'] === 'cafe', 'and the category is resolved to the taxonomy this site has');
+
+/* A category the taxonomy does not define is dropped rather than stored as a dangling id. */
+$el2 = $el;
+$el2['id'] = 7002;
+$el2['tags'] = ['name' => 'Teatro Nacional', 'amenity' => 'theatre'];
+$m2 = rmt_osm_to_place($el2);
+$r2 = rmt_place_import_one(1, $m2['row']);
+$row2 = q_one('SELECT category_id, source_kind FROM places WHERE id = ?', [$r2['place_id']]);
+ok((string) $row2['source_kind'] === 'theatre', 'the kind is still kept');
+ok($row2['category_id'] === null, 'and an undefined category is left empty rather than invented');
+
+/* Records that are not fit to be a page. Every rule here is about the RECORD, never about the
+   venue: a place is refused for being malformed, never for being obscure. A refusal carries a
+   reason so a person can decide whether the rule or the data is wrong. */
+$bad = static fn(array $over): ?string => rmt_place_record_fault($osm($over), 1);
+
+ok($bad([]) === null, 'a good record passes');
+ok($bad(['name' => 'X']) !== null, 'a one character name is not a name');
+ok($bad(['name' => 'https://example.com']) !== null, 'a URL in the name field is refused');
+ok($bad(['name' => '---']) !== null, 'and so is a name with no letters in it');
+ok($bad(['name' => 'CafÃ© Central']) !== null, 'a name decoded through the wrong charset is refused');
+ok($bad(['lat' => 91.0]) !== null, 'a coordinate off the planet is refused');
+ok($bad(['lat' => 0.0, 'lng' => 0.0]) !== null, 'and so is null island, which is what a zero looks like');
+ok($bad(['lat' => 38.72, 'lng' => null]) !== null, 'half a coordinate is not a location');
+ok($bad(['lat' => 55.95, 'lng' => -3.19]) !== null, 'Edinburgh is not in Lisbon, whatever the record says');
+ok($bad(['website_url' => 'not a url']) !== null, 'a website that is not a URL is refused');
+ok($bad(['website_url' => 'https://ok.example']) === null, 'and a real one is fine');
+
+/* And the refusal reaches the caller rather than being swallowed. */
+$r = rmt_place_import_one(1, $osm(['name' => 'https://spam.example', 'source_ref' => 'node/500']));
+ok($r['error'] !== null && str_contains($r['error'], 'URL in the name'),
+   'the reason a record was refused is reported');
+ok((int) (q_one("SELECT COUNT(*) c FROM places WHERE source_ref = 'node/500'")['c'] ?? 0) === 0,
+   'and nothing was written for it');
 
 echo "place_import_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
