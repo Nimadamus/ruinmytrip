@@ -44,6 +44,9 @@ function rmt_places_verify(int $destId): array {
     $out['aliases'] = (int) (q_one('SELECT COUNT(*) c FROM place_aliases a
                                       JOIN places p ON p.id = a.place_id WHERE p.destination_id = ?',
                                    [$destId])['c'] ?? 0);
+    $out['with_hours'] = (int) (q_one('SELECT COUNT(DISTINCT h.place_id) c FROM place_hours h
+                                         JOIN places p ON p.id = h.place_id
+                                        WHERE p.destination_id = ?', [$destId])['c'] ?? 0);
 
     /* Duplicates, three ways, because three is how many ways they get in: the same normalised name,
        the same provider record, and the same coordinates to five decimal places. */
