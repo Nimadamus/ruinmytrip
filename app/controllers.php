@@ -2718,6 +2718,42 @@ function invite_page(array $a): void {
         'robots' => 'noindex, follow']);
 }
 
+/**
+ * Collapse repeats of the same thing on the same object into one row.
+ *
+ * "Three people liked your review" is the version nobody turns off; three separate lines saying
+ * the same sentence with a different name is the version that teaches somebody to stop looking.
+ * Only the kinds where a name is interchangeable are rolled: a like and a save. An ask to join, a
+ * reply and a message are each addressed to the reader personally and stay one row each.
+ *
+ * The newest row of a group is kept, so its id, its read state and its position are the group's.
+ *
+ * @param list<array<string,mixed>> $items newest first
+ * @return list<array<string,mixed>>
+ */
+function rmt_notifications_rollup(array $items): array {
+    $rollable = ['like' => true, 'save' => true];
+    $out = [];
+    $index = [];
+    foreach ($items as $n) {
+        $type = (string) $n['type'];
+        if (!isset($rollable[$type])) { $out[] = $n; continue; }
+        $key = $type . '|' . (string) $n['target_type'] . '|' . (int) $n['target_id'];
+        if (!isset($index[$key])) {
+            $n['others'] = 0;
+            $n['also'] = [];
+            $index[$key] = count($out);
+            $out[] = $n;
+            continue;
+        }
+        $at = $index[$key];
+        $out[$at]['others'] = (int) $out[$at]['others'] + 1;
+        // The second name is worth saying. After that it is a number.
+        if (count($out[$at]['also']) < 1 && !empty($n['actor'])) $out[$at]['also'][] = (string) $n['actor'];
+    }
+    return $out;
+}
+
 function notifications(array $a): void {
     require_login(); $me = current_user();
     /* The actor's face comes with the row: a list of sentences all starting with a bold @name is
@@ -2736,6 +2772,8 @@ function notifications(array $a): void {
        integer, and every row renders as already read. */
     $unreadIds = [];
     foreach ($items as $n) if (empty($n['read_at'])) $unreadIds[(int) $n['id']] = true;
+
+    $items = rmt_notifications_rollup($items);
     db()->prepare("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL")->execute([date('Y-m-d H:i:s'),(int)$me['id']]);
     view('notifications', compact('items','me','unreadIds'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
 }

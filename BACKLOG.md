@@ -23,29 +23,32 @@ actually want to meet?"*
 
 ## Next, in order
 
-1. **Photo posts straight from the composer.** Uploading happens on a trip, a review, a plan or a
-   talk post. One tap from the feed is what makes a travel network visual day to day.
-2. **Message requests.** A first message from a stranger should be acceptable or ignorable, and
-   should not sit in the same list as a conversation. The ceiling on new threads is in; the
-   inbox split is not.
-3. **Somewhere to find plans when you have no trip yet.** The joinable rail and the city filters
-   both start from dates the member has already published. Somebody who has not posted a trip sees
-   none of it, and they are the majority of new accounts.
-4. **Notification rollup.** They fire correctly, one per event. "Three people liked your review"
-   is the version nobody turns off.
-5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-6. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
+1. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
    week costs. Real sources only, and none of it invented.
-7. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
+2. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
    trips and would make every city page a doorway rather than a leaf.
-8. **Search that ranks across types.** It searches everything and presents nine separate lists;
+3. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+4. **Search that ranks across types.** It searches everything and presents nine separate lists;
    one ranked list with faces in it is the fastest path from a name to a person.
-9. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
+5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
    it: no reminder the day before, no "you were both at this", no second invitation.
-10. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
-    and the feed ranking loads every follow and save for the member on each page.
+6. **A reminder the day before.** Somebody accepted onto a plan eleven days ago is told nothing on
+   the day it matters. The notification exists; the timing does not.
+7. **Plans as a reason to come back daily.** Everything now happens on the day somebody posts. A
+   plan that fills, or nearly fills, or changes, should be a reason to open the site tomorrow.
+8. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
+   and the feed ranking loads every follow and save for the member on each page.
 
 ## Done (2026-09-11, later)
+
+* **A first message from a stranger is a request.** The inbox splits; a request is counted and one
+  tap away and does not light up the navigation. Derived from the messages, never stored.
+* **A photograph straight from the feed composer**, with the filename echoed so nobody attaches the
+  same one twice.
+* **A plan has its own share card**, refusing to draw for anything not public.
+* **Notification rollup** for likes and saves. Things addressed to the reader personally never roll.
+* **Three join emails and only three**: an ask, a yes, a cancellation.
+* **Something to join before you have posted a trip**, so a new account sees a live site.
 
 * **The join lifecycle, end to end** (migration 082). Ask, accept, decline, withdraw, remove,
   capacity, meeting point, end time, cancel. The meeting point is for the owner and the people

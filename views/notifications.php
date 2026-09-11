@@ -208,6 +208,11 @@
           <?php endif; ?>
         <?php elseif ($n['type']==='like'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          /* Rolled up by the controller. One extra person is named, because a name is worth more
+             than a number; beyond that it is a count, and a count of real rows. */
+          $rmtOthers = (int) ($n['others'] ?? 0);
+          if ($rmtOthers === 1 && !empty($n['also'][0])) $who .= ' and @' . $n['also'][0];
+          elseif ($rmtOthers > 1) $who .= ' and ' . $rmtOthers . ' others';
           $noun = ['trip'=>'trip story','review'=>'review','guide'=>'guide','blog_post'=>'blog post',
                    'meetup'=>'meetup','collection'=>'list','post'=>'post'][$n['target_type']] ?? 'post';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
