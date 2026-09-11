@@ -1,4 +1,4 @@
-<?php /** @var array $items @var array $me */ ?>
+<?php /** @var array $items @var array $me @var array $unreadIds */ $unreadIds = $unreadIds ?? []; ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Notifications</h1>
   <?php if (rmt_push_enabled()): ?>
@@ -19,7 +19,10 @@
   <?php endif;?>
   <ul class="list-plain">
     <?php foreach ($items as $n): ?>
-      <li class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
+      <?php $rmt_new = !empty($unreadIds[(int) $n['id']]); ?>
+      <li class="note<?= $rmt_new ? ' note-new' : '' ?>">
+        <img class="avatar" src="<?= e(avatar_url($n['actor_avatar'] ?? null)) ?>" alt="">
+        <div class="note-body">
         <?php if ($n['type']==='follow' && $n['actor']): ?>
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> started following you.</a>
         <?php elseif ($n['type']==='follow'): ?>
@@ -173,8 +176,10 @@
         <?php else: ?>
           <b><?= e($n['type']) ?></b> from @<?= e($n['actor']) ?>
         <?php endif; ?>
-        <span class="hint"> · <?= e(ago($n['created_at'])) ?></span>
-      </div></li>
+          <span class="note-when"><?= e(ago($n['created_at'])) ?></span>
+        </div>
+        <?php if ($rmt_new): ?><span class="note-dot" aria-label="New"></span><?php endif; ?>
+      </li>
     <?php endforeach; ?>
   </ul>
   <div style="height:40px"></div>

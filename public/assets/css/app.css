@@ -732,3 +732,13 @@ section.block{padding:64px 0}
   .board-filters{border-radius:var(--radius);padding:12px}
   .board-filters select{flex:1;min-width:0}
 }
+
+/* Notifications read as people, so each row leads with a face, and the ones that were new when the
+   page was opened stay marked while it is on screen. Marking them read is what the page does; it
+   is not allowed to destroy the answer to the question the page was opened to ask. */
+.note{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-sm);
+  background:var(--card);border:1px solid var(--line);margin-bottom:8px;position:relative}
+.note-new{background:#f2faf8;border-color:#bfe5de}
+.note-body{flex:1;min-width:0;font-size:.95rem;line-height:1.5}
+.note-when{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
+.note-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex:none;margin-top:8px}

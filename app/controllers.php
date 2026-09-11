@@ -2379,10 +2379,24 @@ function invite_page(array $a): void {
 
 function notifications(array $a): void {
     require_login(); $me = current_user();
-    $items = q_all("SELECT n.*, u.username actor FROM notifications n LEFT JOIN users u ON u.id=n.actor_id
-                    WHERE n.user_id=? ORDER BY n.id DESC LIMIT 50", [(int)$me['id']]);
+    /* The actor's face comes with the row: a list of sentences all starting with a bold @name is
+       read as text, and a list with faces in it is read as people. */
+    $items = q_all("SELECT n.*, u.username actor, p.avatar_url actor_avatar
+                      FROM notifications n
+                 LEFT JOIN users u ON u.id = n.actor_id
+                 LEFT JOIN profiles p ON p.user_id = n.actor_id
+                     WHERE n.user_id = ? ORDER BY n.id DESC LIMIT 50", [(int)$me['id']]);
+    /* Which of these were new when the page was asked for. The update below marks everything read,
+       so without capturing it first the one thing the page is opened to find out, what is new, is
+       destroyed by the act of looking. */
+    /* Named unreadIds, not $unseen: view() extracts into its own scope and then requires the
+       layout header, which sets its own $unseen for the nav badge. The header runs after the
+       extract and before the page, so a page variable sharing that name is quietly replaced by an
+       integer, and every row renders as already read. */
+    $unreadIds = [];
+    foreach ($items as $n) if (empty($n['read_at'])) $unreadIds[(int) $n['id']] = true;
     db()->prepare("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL")->execute([date('Y-m-d H:i:s'),(int)$me['id']]);
-    view('notifications', compact('items','me'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
+    view('notifications', compact('items','me','unreadIds'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
 }
 
 /**

@@ -167,6 +167,29 @@ if ($acct) {
            ($hit !== '' ? "contains '$hit'" : '') . ($st === 200 ? '' : " status $st")
            . ($real ? '' : ' body ' . strlen($body) . 'B or bounced to login'));
     }
+
+    /* A notification that is new has to look new, exactly once.
+
+       This is a bug I shipped an hour before writing this check. view() extracts the page's data
+       into its own scope and then requires the layout header, and the header sets its own $unseen
+       for the nav badge. The header runs after the extract, so a page variable of that name was
+       quietly replaced by an integer and every row rendered as already read: the page marked
+       everything read, which is its job, and destroyed the answer to the only question it is
+       opened to ask. Nothing failed, nothing 500'd, the page just stopped saying anything.
+
+       So: insert one unread row, ask for the page, and require the marker. Then ask again and
+       require that it is gone, which is the other half of the contract. */
+    $pdo->prepare("INSERT INTO notifications (user_id, type, actor_id, target_type, target_id, created_at)
+                   VALUES (?, 'follow', ?, 'user', ?, ?)")
+        ->execute([(int) $acct['id'], (int) $acct['id'], (int) $acct['id'], date('Y-m-d H:i:s')]);
+    [, $first] = $req('/notifications', null, $cookie);
+    ok('an unread notification is marked as new', str_contains($first, 'note-new'),
+       'no note-new in the body on the first view');
+    [, $second] = $req('/notifications', null, $cookie);
+    ok('and is not marked new the next time', !str_contains($second, 'note-new'),
+       'still marked new after being read');
+    $pdo->prepare("DELETE FROM notifications WHERE user_id = ? AND type = 'follow' AND actor_id = ?")
+        ->execute([(int) $acct['id'], (int) $acct['id']]);
 }
 
 if ($restore) {
