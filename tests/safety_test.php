@@ -85,6 +85,32 @@ ok($offenders === [], 'every trips query filters by visibility, or is a single l
    . ($offenders ? "\n    " . implode("\n    ", $offenders) : ''));
 ok(count($files) > 20, 'the audit actually read the app directory');
 
+/* The same audit for activities, which are the newest thing on this site that reads another
+   person's plans. An activity carries its own visibility on top of its trip's, so a query that
+   reads them has to apply the activity clause too: rmt_activity_visible_sql(), an explicit filter
+   on the column, or a single lookup the page then checks in PHP. */
+$actOffenders = [];
+foreach ($files as $file) {
+    $rel = basename($file);
+    if (in_array($rel, $allowed, true)) continue;
+    $src = (string) file_get_contents($file);
+    if (!preg_match_all('/q_(?:all|one)\(\s*"([^"]*FROM\s+trip_activities[^"]*)"/is', $src, $m)) continue;
+    foreach ($m[1] as $sql) {
+        $flat = strtolower((string) preg_replace('/\s+/', ' ', $sql));
+        $safe = preg_match('/\$\w*(vis|act|where)\w*/i', $flat) === 1
+             || str_contains($flat, "visibility = 'trip'")
+             || str_contains($flat, "visibility='trip'")
+             || preg_match('/where\s+a?\.?id\s*=\s*\?/', $flat) === 1
+             || preg_match('/user_id\s*=\s*\?/', $flat) === 1
+             || str_contains($flat, 'count(')
+             || str_contains($flat, 'max(');
+        if (!$safe) $actOffenders[] = $rel . ': ' . mb_strimwidth($flat, 0, 100, '...');
+    }
+}
+ok($actOffenders === [], 'every activities query filters by visibility, or is a single lookup'
+   . ($actOffenders ? "\n    " . implode("\n    ", $actOffenders) : ''));
+
+
 /* ------------------------------------------------------------------ blocks and ceilings */
 $pdo = db();
 $pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT DEFAULT 'active')");

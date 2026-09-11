@@ -235,7 +235,7 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
 
     /* Kind weights. A meetup and a photograph are events; a collection is a list that will be just
        as good tomorrow. */
-    $kindWeight = ['meetup' => 0.40, 'photo' => 0.35, 'trip' => 0.30, 'going' => 0.25,
+    $kindWeight = ['meetup' => 0.40, 'activity' => 0.38, 'photo' => 0.35, 'trip' => 0.30, 'going' => 0.25,
                    'review' => 0.20, 'post' => 0.15, 'guide' => 0.05, 'blog_post' => 0.0,
                    'collection' => 0.0];
 

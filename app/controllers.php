@@ -382,9 +382,37 @@ function destination_travelers(array $a): void {
     $hereNow = rmt_discover_here_now((int) $d['id'], $me, 8);
     $cityPhotos = rmt_city_photos((int) $d['id'], $me, 8);
     $locals = rmt_discover_locals((int) $d['id'], $me, 6);
+
+    /* What people are doing here, and when.
+
+       The window comes from the reader's own trip when they have one, because "what is happening
+       in Lisbon" and "what is happening in Lisbon while I am there" are different questions and
+       only the second one is useful. It can also be typed into the URL, so a filtered view is a
+       link somebody can send. With no window at all this is simply everything upcoming. */
+    $winFrom = (string) ($_GET['from'] ?? '');
+    $winTo   = (string) ($_GET['to'] ?? '');
+    $winSource = 'all';
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $winFrom) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $winTo)) {
+        $winFrom = $winTo = '';
+    } else {
+        $winSource = 'url';
+    }
+    if ($winFrom === '' && $myGoing && !empty($myGoing['date_from']) && !empty($myGoing['date_to'])) {
+        $winFrom = (string) $myGoing['date_from'];
+        $winTo   = (string) $myGoing['date_to'];
+        $winSource = 'mine';
+    }
+    $cityPlans = rmt_activities_in_city((int) $d['id'], $me,
+                                        $winFrom !== '' ? $winFrom : null,
+                                        $winTo !== '' ? $winTo : null, 24);
+    $cityPopular = rmt_activity_popular_in_city((int) $d['id'], $me,
+                                                $winFrom !== '' ? $winFrom : null,
+                                                $winTo !== '' ? $winTo : null, 8);
     view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing,
                                    'hereNow' => $hereNow, 'cityPhotos' => $cityPhotos,
-                                   'openLocals' => $locals], [
+                                   'openLocals' => $locals, 'cityPlans' => $cityPlans,
+                                   'cityPopular' => $cityPopular, 'winFrom' => $winFrom,
+                                   'winTo' => $winTo, 'winSource' => $winSource], [
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',
@@ -1019,7 +1047,44 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk, $meetups, $photos);
+    /* Plans, as entries.
+
+       "Sarah added a Sintra day trip to her Lisbon trip" is a better feed row than most things on
+       this site: it is specific, it is about a place, and it is answerable. Only plans on trips the
+       reader may see, never one marked private, and never one on a trip that has already finished,
+       because a plan for last March is not news. */
+    [$actVisFeed, $actVisFeedArgs] = rmt_activity_visible_sql('a', current_user());
+    $plans = q_all("SELECT a.id, a.title, a.day, a.start_time, a.category, a.created_at, a.user_id,
+                           a.trip_id, a.location_text, a.join_mode,
+                           t.slug trip_slug, t.title trip_title, t.destination_id,
+                           d.name dest_name, d.slug dest_slug,
+                           (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'going') going_count
+                      FROM trip_activities a
+                      JOIN trips t ON t.id = a.trip_id
+                 LEFT JOIN destinations d ON d.id = t.destination_id
+                     WHERE a.status = 'published' AND t.status = 'published'
+                       AND $tripVis AND $actVisFeed AND $followedT
+                       AND (t.date_to IS NULL OR t.date_to >= ?)
+                  ORDER BY a.created_at DESC, a.id DESC LIMIT $limitEach",
+                   array_merge($tripVisArgs, $actVisFeedArgs, $args, [date('Y-m-d')]));
+    foreach ($plans as &$row) {
+        $row['kind'] = 'activity';
+        $row['cover_url'] = null;
+        $row['subject'] = $row['dest_name'] ?: null;
+        $row['subject_url'] = $row['dest_slug'] ? url('d/' . $row['dest_slug']) : null;
+        $row['feed_url'] = url('trip/' . (int) $row['trip_id'] . '/' . (string) $row['trip_slug']) . '#plan';
+        $bits = [];
+        if (!empty($row['day'])) $bits[] = date('D j M', strtotime((string) $row['day']));
+        if (!empty($row['start_time'])) $bits[] = (string) $row['start_time'];
+        if (!empty($row['location_text'])) $bits[] = (string) $row['location_text'];
+        if ((int) $row['going_count'] > 0) {
+            $bits[] = (int) $row['going_count'] . ((int) $row['going_count'] === 1 ? ' other person coming' : ' others coming');
+        }
+        $row['feed_excerpt'] = implode(' · ', $bits);
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk, $meetups, $photos, $plans);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -1176,6 +1241,9 @@ function trip_show(array $a): void {
        a travel diary and a network. Same visibility clause as everywhere else, so a followers only
        trip shows only to a follower and a private one to nobody. */
     $alsoThere = rmt_trip_overlappers($t, $me);
+    /* What they are actually doing there, which is the half of the question the site could not
+       answer until now. Grouped by day in one place so the view stays a view. */
+    $planDays = rmt_activities_by_day(rmt_activities_for_trip((int) $t['id'], $me));
 
     /* The rest of what a trip page is for. A public trip is the page a stranger arrives on from a
        search or from a link somebody sent them, and until now it ended at the comments: no way to
@@ -1217,7 +1285,7 @@ function trip_show(array $a): void {
     }
     view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags',
                               'updates','isOwner','phase','alsoThere','isFollowingAuthor','destGoing',
-                              'related','authorSaid'), [
+                              'related','authorSaid','planDays'), [
         'title' => rmt_meta_title((string) $t['title']),
         'description' => rmt_meta_description((string) $t['body']),
         /* A trip with no cover used to share as an empty og:image, which is the same as no
@@ -2452,7 +2520,7 @@ function suggest_click(array $a): void {
 
 function search(array $a): void {
     $qs = trim((string)($_GET['q'] ?? ''));
-    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=$talk=[];
+    $dests=$trips=$guides=$reviews=$people=$posts=$collections=$places=$talk=$activities=[];
     $me = current_user();
     if ($qs !== '') {
         $driver = $GLOBALS['config']['db_driver'];
@@ -2525,8 +2593,31 @@ function search(array $a): void {
                         WHERE p.status='published' AND u.status='active' AND LOWER(p.body) LIKE ?
                      ORDER BY p.created_at DESC LIMIT 10", [$like]);
     }
+    /* Plans are searchable too, which is what makes "benfica" or "sintra" a useful thing to type
+       into this site: it finds the people who are going, not only the pages about the place. LIKE
+       rather than full text, for the same reason talk uses it: a plan is a handful of words, and a
+       missing index row would hide a whole content type silently. */
+    if ($qs !== '') {
+        [$actVisSearch, $actVisSearchArgs] = rmt_activity_visible_sql('a', $me);
+        $activities = q_all("SELECT a.id, a.title, a.day, a.start_time, a.category, a.trip_id,
+                                    a.location_text, t.slug trip_slug, u.username,
+                                    d.name dest_name, d.slug dest_slug
+                               FROM trip_activities a
+                               JOIN trips t ON t.id = a.trip_id
+                               JOIN users u ON u.id = a.user_id AND u.status = 'active'
+                          LEFT JOIN destinations d ON d.id = a.destination_id
+                              WHERE a.status = 'published' AND t.status = 'published'
+                                AND $tripVis AND $actVisSearch
+                                AND (LOWER(a.title) LIKE ? OR LOWER(COALESCE(a.location_text,'')) LIKE ?)
+                           ORDER BY CASE WHEN a.day IS NULL OR a.day = '' THEN 1 ELSE 0 END, a.day, a.id DESC
+                              LIMIT 10",
+                            array_merge($tripVisArgs, $actVisSearchArgs, [$like, $like]));
+    } else {
+        $activities = [];
+    }
+
     // A search results page is a view of the index we already have, in somebody's words.
-    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections','talk'), [
+    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
         'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in
@@ -5548,6 +5639,143 @@ function photo_show(array $a): void {
             'contentLocation' => $photo['dest_name'] ? ['@type' => 'Place', 'name' => (string) $photo['dest_name']] : null,
         ]),
     ]);
+}
+
+/* ---------- trip activities: what somebody is actually doing there ---------- */
+
+/**
+ * POST /trip/{id}/activity — add one plan to a trip.
+ *
+ * Deliberately one endpoint and one line of typing. The composer on the trip page posts a title
+ * and, usually, a day; everything else is optional and most of it is never filled in, which is the
+ * point: an itinerary tool that needs six fields per dinner is one nobody uses twice.
+ */
+function trip_activity_add(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    if ((int) $t['user_id'] !== (int) $me['id']) forbidden('Only the traveler can add to this trip.');
+
+    $back = '/trip/' . (int) $t['id'] . '/' . (string) $t['slug'];
+    if (!rmt_rate_ok('activity', (string) $me['id'], 120, 3600)) {
+        flash('You are adding plans very fast. Try again shortly.');
+        redirect($back);
+    }
+    $v = rmt_activity_validate($_POST, $t);
+    if (!$v['ok']) {
+        flash(implode(' ', $v['errors']));
+        redirect($back);
+    }
+    rmt_activity_add($t, $v['data']);
+    flash('Added to your trip.');
+    redirect($back . '#plan');
+}
+
+/** POST /activity/{id}/delete — the owner removes a plan. */
+function trip_activity_delete(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']
+        && !in_array($me['role'] ?? '', ['admin', 'mod'], true)) {
+        forbidden('Only the traveler can change this trip.');
+    }
+    db()->prepare("UPDATE trip_activities SET status = 'removed', updated_at = ? WHERE id = ?")
+        ->execute([date('Y-m-d H:i:s'), (int) $act['id']]);
+    flash('Removed.');
+    redirect('/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan');
+}
+
+/**
+ * POST /activity/{id}/join — another traveler says they are interested or coming.
+ *
+ * Only for an activity whose owner opened it, only for somebody who can see it, and never for the
+ * owner themselves. Pressing it again takes it back, which is the same shape as every other toggle
+ * on this site.
+ */
+function trip_activity_join(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if (!rmt_activity_visible_to($act, $me)) not_found();
+
+    $back = '/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan';
+    if ((int) $act['user_id'] === (int) $me['id']) redirect($back);
+    if (($act['join_mode'] ?? 'no') === 'no') {
+        flash('That plan is not open to others.');
+        redirect($back);
+    }
+    if (rmt_blocked_from((int) $me['id'], 'trip', (int) $act['trip_id'])) redirect($back);
+    if (!rmt_rate_ok('activity_join', (string) $me['id'], 60, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect($back);
+    }
+
+    $want = (string) input('state');
+    if (!in_array($want, RMT_ACTIVITY_JOIN_STATES, true)) $want = 'interested';
+    /* An "open" plan takes a yes directly; an "ask to join" plan can only ever be an expression of
+       interest from this button, because the owner has said they want to be asked. */
+    if (($act['join_mode'] ?? 'no') === 'ask') $want = 'interested';
+
+    $current = rmt_activity_join_state((int) $act['id'], $me);
+    if ($current === $want) {
+        db()->prepare('DELETE FROM activity_joins WHERE activity_id = ? AND user_id = ?')
+            ->execute([(int) $act['id'], (int) $me['id']]);
+        redirect($back);
+    }
+    if ($current === null) {
+        try {
+            q_run('INSERT INTO activity_joins (activity_id, user_id, state, created_at) VALUES (?,?,?,?)',
+                  [(int) $act['id'], (int) $me['id'], $want, date('Y-m-d H:i:s')]);
+        } catch (\PDOException $e) {
+            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        }
+    } else {
+        db()->prepare('UPDATE activity_joins SET state = ? WHERE activity_id = ? AND user_id = ?')
+            ->execute([$want, (int) $act['id'], (int) $me['id']]);
+    }
+
+    /* Tell the traveler whose plan it is, once per person per plan: somebody saying they will come
+       to your dinner is the most useful notification this site can send. */
+    $seen = q_one("SELECT 1 x FROM notifications
+                    WHERE user_id = ? AND type = 'activity_join' AND actor_id = ?
+                      AND target_type = 'activity' AND target_id = ?",
+                  [(int) $act['user_id'], (int) $me['id'], (int) $act['id']]);
+    if (!$seen) {
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [(int) $act['user_id'], 'activity_join', (int) $me['id'], 'activity', (int) $act['id'],
+               date('Y-m-d H:i:s')]);
+    }
+    redirect($back);
+}
+
+/**
+ * POST /activity/{id}/done — the post-trip half.
+ *
+ * The same row that was a plan becomes the answer to "how was it": did you go, was it worth it,
+ * would you send somebody else. That loop is what makes one traveler's planning useful to the
+ * next one, and it costs two taps.
+ */
+function trip_activity_done(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $act = rmt_activity_get((int) $a['id']);
+    if (!$act) not_found();
+    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler can answer this.');
+
+    $done = input('done') === '0' ? 0 : 1;
+    $rating = (int) input('rating');
+    if ($rating < 1 || $rating > 5) $rating = 0;
+    $rec = input('recommend');
+    $recommend = $rec === '' || $rec === null ? null : ((string) $rec === '1' ? 1 : 0);
+
+    db()->prepare('UPDATE trip_activities SET done = ?, rating = ?, recommend = ?, updated_at = ? WHERE id = ?')
+        ->execute([$done, $rating ?: null, $recommend, date('Y-m-d H:i:s'), (int) $act['id']]);
+    flash($done ? 'Marked as done.' : 'Marked as not done.');
+    redirect('/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan');
 }
 
 function share_card(array $a): void {

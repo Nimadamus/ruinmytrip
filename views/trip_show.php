@@ -100,6 +100,11 @@ $authorSaid = $authorSaid ?? [];
     </div>
   <?php endif; ?>
 
+  <?php /* The plan, high on the page. It is the thing a reader came for and the thing that makes
+           this trip worth anybody else's attention, so it sits above the comments rather than
+           under them. */ ?>
+  <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
+
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
            this the site would tell you a stranger's trip overlapped yours and then leave you to
            type the same dates into a different form. */ ?>

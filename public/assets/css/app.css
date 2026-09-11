@@ -970,3 +970,54 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   padding:24px;margin:18px 0;text-align:center}
 .nothing-yet h2{font-size:1.25rem;margin:0 0 6px}
 .nothing-yet .muted{margin:0 auto;max-width:52ch}
+
+/* ================================================================ the plan
+   An itinerary that reads like somebody's notes rather than a spreadsheet: a day, a time in the
+   margin, and the thing itself. Everything optional stays out of the way until it is wanted. */
+.plan{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:20px 22px;margin:8px 0 22px;box-shadow:var(--shadow)}
+.plan-head{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+.plan-head h2{font-size:1.2rem;margin:0}
+.plan-day{margin:16px 0 0}
+.plan-day h3{font-size:.86rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);
+  font-family:var(--sans);font-weight:700;margin:0 0 6px}
+.plan-list{list-style:none;margin:0;padding:0}
+.plan-item{display:flex;gap:12px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid var(--line-soft)}
+.plan-item:last-child{border-bottom:0}
+.plan-item.done .plan-what > b{color:var(--muted)}
+.plan-when{flex:none;width:46px;font-variant-numeric:tabular-nums;font-size:.85rem;
+  color:var(--muted);padding-top:2px}
+.plan-what{flex:1;min-width:0}
+.plan-what b{font-weight:650}
+.plan-what .hint{display:block;font-size:.82rem}
+.plan-note{margin:.3rem 0 0;font-size:.9rem;color:var(--muted)}
+.plan-verdict{margin:.3rem 0 0;font-size:.88rem;font-weight:600;color:var(--brand)}
+.plan-join{margin:.4rem 0 0}
+.plan-own{display:flex;gap:6px;align-items:flex-start;flex:none}
+.plan-didyou summary{cursor:pointer;font-size:.82rem;font-weight:600;color:var(--brand);
+  list-style:none;padding:.3rem .6rem;border-radius:999px;background:var(--tint)}
+.plan-didyou form{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.plan-didyou select{width:auto;min-width:140px}
+
+.plan-add{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.plan-add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.plan-add-row input[type=text]{flex:1;min-width:180px}
+.plan-add-row select{width:auto;min-width:130px}
+.plan-more{margin-top:10px}
+.plan-more>summary{cursor:pointer;font-size:.86rem;font-weight:600;color:var(--brand)}
+.plan-more-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;
+  margin:10px 0}
+@media (max-width:560px){
+  .plan{padding:16px}
+  .plan-when{width:40px}
+  .plan-add-row select{flex:1}
+}
+
+/* What travelers are doing in a city: a line each, with the face of whoever planned it. */
+.city-plans{list-style:none;margin:0 0 6px;padding:0}
+.city-plans li{display:flex;gap:10px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid var(--line-soft)}
+.city-plans li:last-child{border-bottom:0}
+.city-plans b{font-weight:650}
+.city-plans .hint{display:block;font-size:.82rem}

@@ -1,6 +1,6 @@
 <?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope @var array $cities @var array $rails */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
-                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting', 'photo' => 'posted a photo from'];
+                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting', 'photo' => 'posted a photo from', 'activity' => 'is planning, in'];
 /* An update posted from a trip is not somebody "saying" something into the void: it is a person
    in a city, mid-trip, and the feed row reads wrong without that. */
 /* Nullable on purpose: every row that is not a trip update falls through to the ordinary verb.

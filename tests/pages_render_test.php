@@ -222,6 +222,40 @@ if ($acct) {
         $pdo->prepare('DELETE FROM trips WHERE title = ?')->execute([$marker]);
     }
 
+    /* A plan marked private must not reach a page anybody else can open.
+
+       Activities are the newest thing here that reads another person's plans, and they carry two
+       visibilities at once: their own and their trip's. The canary is a plan marked private on a
+       trip that is public, which is the combination that would look fine in a query that only
+       remembered one of them. */
+    if ($otherId > 0) {
+        $planMarker = 'PRIVATEPLANCANARY' . bin2hex(random_bytes(4));
+        $destRow2 = $pdo->query('SELECT id, slug FROM destinations ORDER BY id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, date_from, date_to, created_at)
+                       VALUES (?,?,?,?,'','published','public',?,?,?)")
+            ->execute([$otherId, (int) $destRow2['id'], 'canary public trip',
+                       'canary-pub-' . strtolower($planMarker),
+                       date('Y-m-d', strtotime('+10 days')), date('Y-m-d', strtotime('+17 days')),
+                       date('Y-m-d H:i:s')]);
+        $canaryTrip = (int) $pdo->lastInsertId();
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, day, title, category,
+                         visibility, join_mode, status, created_at)
+                       VALUES (?,?,?,?,?,'other','private','no','published',?)")
+            ->execute([$canaryTrip, $otherId, (int) $destRow2['id'], date('Y-m-d', strtotime('+11 days')),
+                       $planMarker, date('Y-m-d H:i:s')]);
+
+        foreach (['/trip/' . $canaryTrip, '/d/' . $destRow2['slug'] . '/travelers', '/discover', '/feed'] as $path) {
+            [, $body] = $req($path, null, $cookie);
+            ok("a private plan stays off $path", !str_contains($body, $planMarker));
+        }
+        $anonPlan = @file_get_contents($base . '/trip/' . $canaryTrip, false,
+            stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        ok('a private plan stays off the public trip page', !str_contains((string) $anonPlan, $planMarker));
+
+        $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$canaryTrip]);
+        $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$canaryTrip]);
+    }
+
     /* A private trip's photographs must not reach a public page either.
 
        This is the same bug as the feed one, one layer down, and it was fixed in two of the three

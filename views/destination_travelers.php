@@ -12,6 +12,11 @@ $rmt_gaps = [];
 $hereNow = $hereNow ?? [];
 $cityPhotos = $cityPhotos ?? [];
 $openLocals = $openLocals ?? [];
+$cityPlans = $cityPlans ?? [];
+$cityPopular = $cityPopular ?? [];
+$winFrom = $winFrom ?? '';
+$winTo = $winTo ?? '';
+$winSource = $winSource ?? 'all';
 ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> /
   <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($city) ?></a> / Travelers</p></div>
@@ -51,6 +56,54 @@ $openLocals = $openLocals ?? [];
       <b>Nobody has posted about <?= e($city) ?> yet.</b> Whoever goes first is the person every
       traveler who searches this next month will find. Post your dates, or ask the question you
       came here with.
+    </div>
+  <?php endif; ?>
+
+  <?php /* What people are actually doing. The question the site could not answer until now, and
+           the one that turns two overlapping date ranges into a reason to say hello: "dinner in
+           Alfama on Friday" is something another traveler can answer. Real plans by real people,
+           and the counts are counts of people. */ ?>
+  <?php if ($cityPlans): ?>
+    <h2>What travelers are doing<?php if ($winFrom !== ''): ?>
+      <span class="hint" style="font-family:var(--sans);font-size:.8rem;text-transform:none;letter-spacing:0">
+        <?= e(rmt_card_date_range($winFrom, $winTo)) ?><?= $winSource === 'mine' ? ', while you are here' : '' ?>
+      </span><?php endif; ?></h2>
+    <?php if ($winSource === 'mine'): ?>
+      <p class="hint" style="margin:0 0 10px">Narrowed to your own dates.
+        <a href="<?= e(url('d/'.$d['slug'].'/travelers?from=&to=')) ?>">Show everything upcoming</a>.</p>
+    <?php endif; ?>
+    <ul class="city-plans">
+      <?php foreach (array_slice($cityPlans, 0, 12) as $pl): ?>
+        <li>
+          <a class="city-plan-who" href="<?= e(url('u/'.$pl['username'])) ?>">
+            <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url($pl['avatar_url'] ?? null)) ?>" alt=""></a>
+          <span>
+            <b><?= e((string) $pl['title']) ?></b>
+            <span class="hint">
+              <a href="<?= e(url('trip/'.(int) $pl['trip_id'].'/'.(string) $pl['trip_slug'])) ?>">@<?= e((string) $pl['username']) ?></a>
+              <?php if (!empty($pl['day'])): ?> &middot; <?= e(date('D j M', strtotime((string) $pl['day']))) ?><?php endif; ?>
+              <?php if (!empty($pl['start_time'])): ?> &middot; <?= e((string) $pl['start_time']) ?><?php endif; ?>
+              <?php if (!empty($pl['place_name'])): ?> &middot; <?= e((string) $pl['place_name']) ?><?php
+                elseif (!empty($pl['location_text'])): ?> &middot; <?= e((string) $pl['location_text']) ?><?php endif; ?>
+              <?php if ((int) ($pl['going_count'] ?? 0) > 0): ?>
+                &middot; <?= (int) $pl['going_count'] ?> <?= (int) $pl['going_count'] === 1 ? 'other person coming' : 'others coming' ?>
+              <?php endif; ?>
+            </span>
+          </span>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+  <?php endif; ?>
+
+  <?php /* What more than one person planned. Counted in people, never rounded: if one person
+           saved it, it says one, and if nothing has two it does not appear at all. */ ?>
+  <?php $rmt_pop = array_values(array_filter($cityPopular, static fn(array $r) => (int) $r['n'] > 1)); ?>
+  <?php if ($rmt_pop): ?>
+    <h2 style="margin-top:28px">More than one traveler is doing this</h2>
+    <div class="tag-list">
+      <?php foreach ($rmt_pop as $pp): ?>
+        <span class="chip"><?= e((string) $pp['label']) ?> <span class="hint"><?= (int) $pp['n'] ?> travelers</span></span>
+      <?php endforeach; ?>
     </div>
   <?php endif; ?>
 
