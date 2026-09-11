@@ -195,7 +195,23 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
           </div>
           <div>
             <label for="plan-where">Where</label>
-            <input type="text" id="plan-where" name="location_text" maxlength="120" placeholder="Alfama">
+            <input type="text" id="plan-where" name="location_text" maxlength="120"
+                   placeholder="Alfama" list="plan-places" autocomplete="off">
+            <?php /* The places this site actually holds for this city. Picking one from the list
+                     attaches the plan to that place's page, which is how a restaurant stops being
+                     a word and becomes somewhere with other travelers going to it. Typing
+                     something we do not hold is still fine: it stays as text rather than inventing
+                     a place nobody checked. A datalist rather than a script, because a native one
+                     works on a phone keyboard and weighs nothing. */ ?>
+            <?php $rmt_places = !empty($t['destination_id']) && function_exists('rmt_places_for_destination')
+                    ? rmt_places_for_destination((int) $t['destination_id'], '', 60) : []; ?>
+            <?php if ($rmt_places): ?>
+              <datalist id="plan-places">
+                <?php foreach ($rmt_places as $rp): ?>
+                  <option value="<?= e((string) $rp['name']) ?>"></option>
+                <?php endforeach; ?>
+              </datalist>
+            <?php endif; ?>
           </div>
           <div>
             <label for="plan-join">Can anybody come?</label>

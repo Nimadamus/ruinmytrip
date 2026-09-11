@@ -1072,3 +1072,11 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .trip-who-list .hint{display:block;font-size:.8rem}
 .trip-invite{display:flex;gap:8px;margin-top:10px}
 .trip-invite input{flex:1;min-width:0}
+
+/* Who is going to a place. Faces overlap slightly so a row of six still reads as a group rather
+   than as a list, and the sentence beside them carries the number. */
+.place-network{margin:0 0 18px;display:grid;gap:8px}
+.place-net-line{display:flex;align-items:center;gap:10px;margin:0;flex-wrap:wrap}
+.place-net-line .avatar{width:26px;height:26px;margin-right:-8px;border:2px solid var(--card)}
+.place-net-line a:last-of-type .avatar{margin-right:2px}
+.place-net-line .hint{display:block;font-size:.82rem}

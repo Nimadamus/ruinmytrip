@@ -154,6 +154,39 @@
   </div>
   <?php /* Zero is not announced. "0 travelers saved this" is a fact about nobody caring and it is
            the first thing a new page would say about itself. */ ?>
+  <?php $network = $network ?? ['planned'=>[],'recommended'=>[],'planned_n'=>0,'recommended_n'=>0,'overlapping'=>0]; ?>
+  <?php /* The people layer. A place page used to be a page about a building; this is the part that
+           makes it a page about somewhere other travelers are going. Counts of real rows, named
+           where the plan is one the reader is allowed to see, and absent entirely when nobody has
+           planned anything, because "0 travelers" is an advert for an empty site.
+
+           Saves stay a number with no names on it: who bookmarked something is their business. */ ?>
+  <?php if ($network['planned_n'] > 0 || $network['recommended_n'] > 0): ?>
+    <div class="place-network">
+      <?php if ($network['planned_n'] > 0): ?>
+        <p class="place-net-line">
+          <?php foreach ($network['planned'] as $pl): ?>
+            <a href="<?= e(url('u/'.$pl['username'])) ?>" title="@<?= e((string) $pl['username']) ?>">
+              <img class="avatar" src="<?= e(avatar_url($pl['avatar_url'] ?? null)) ?>" alt=""></a>
+          <?php endforeach; ?>
+          <span><b><?= (int) $network['planned_n'] ?>
+            <?= (int) $network['planned_n'] === 1 ? 'traveler has' : 'travelers have' ?> this planned</b>
+            <?php if ($network['overlapping'] > 0): ?>
+              <span class="hint"><?= (int) $network['overlapping'] ?>
+                <?= (int) $network['overlapping'] === 1 ? 'of them is' : 'of them are' ?> there while you are.</span>
+            <?php endif; ?></span>
+        </p>
+      <?php endif; ?>
+      <?php if ($network['recommended_n'] > 0): ?>
+        <p class="place-net-line">
+          <span><b><?= (int) $network['recommended_n'] ?>
+            <?= (int) $network['recommended_n'] === 1 ? 'traveler went' : 'travelers went' ?> and would go again</b>
+            <span class="hint"><?php foreach (array_slice($network['recommended'], 0, 3) as $i => $rc): ?><?= $i ? ', ' : '' ?><a href="<?= e(url('u/'.$rc['username'])) ?>">@<?= e((string) $rc['username']) ?></a><?php endforeach; ?></span></span>
+        </p>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
+
   <?php if ($saveCount > 0): ?>
     <p class="hint" style="margin:0 0 26px"><?= $saveCount ?> <?= $saveCount === 1 ? 'traveler has' : 'travelers have' ?> saved this</p>
   <?php endif; ?>

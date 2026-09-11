@@ -194,6 +194,22 @@ function rmt_activity_validate(array $in, array $trip): array {
     $place = (int) ($in['place_id'] ?? 0);
     if ($place > 0 && !q_one("SELECT 1 FROM places WHERE id = ? AND status = 'active'", [$place])) $place = 0;
 
+    /* Typing "Time Out Market" should attach the plan to the Time Out Market we already hold,
+       not leave a string that looks like a place and links to nothing. Matched on the same
+       normalised key the places table is unique on, so "the time out market." finds it too, and
+       only within the city the trip is to, because half the world has a Central Park.
+
+       Nothing is created here. An unknown name stays a piece of text, which is honest: the site
+       adds places by hand after checking them, and a plan is not a back door around that. */
+    $typed = trim((string) ($in['location_text'] ?? ''));
+    if ($place === 0 && $typed !== '' && (int) ($trip['destination_id'] ?? 0) > 0
+        && function_exists('rmt_place_name_key')) {
+        $hit = q_one("SELECT id FROM places
+                       WHERE destination_id = ? AND name_key = ? AND status = 'active'",
+                     [(int) $trip['destination_id'], rmt_place_name_key($typed)]);
+        if ($hit) $place = (int) $hit['id'];
+    }
+
     /* The three things a plan needs once other people can come to it. All optional: most plans
        have no capacity, no meeting point and no end time, and inventing any of them would be
        theatre. */
@@ -663,4 +679,88 @@ function rmt_activity_has_substance(array $a): bool {
     if ((int) ($a['photo_count'] ?? 0) > 0) return true;
     if ((int) ($a['going_count'] ?? 0) > 0) return true;
     return false;
+}
+
+/**
+ * The people layer of a place: who is going, and who went and would go again.
+ *
+ * A place page was a page about a building. This is what makes it a page about a place other
+ * travelers are actually going to, and every number on it is a count of real rows: if one person
+ * has it planned, it says one person.
+ *
+ * Saves are deliberately not part of this. Who bookmarked something is their business, and the
+ * place page already carries the count without the names.
+ *
+ * @return array{planned:list<array<string,mixed>>,recommended:list<array<string,mixed>>,
+ *               planned_n:int,recommended_n:int,overlapping:int}
+ */
+function rmt_place_network(int $placeId, ?array $viewer): array {
+    $empty = ['planned' => [], 'recommended' => [], 'planned_n' => 0, 'recommended_n' => 0,
+              'overlapping' => 0];
+    if ($placeId < 1) return $empty;
+
+    [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
+    [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
+    $blockSql = '1=1';
+    $blockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$blockSql] = rmt_match_block_sql('a.user_id');
+        $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+
+    $rows = q_all(
+        "SELECT a.id, a.day, a.start_time, a.join_mode, a.recommend, a.cancelled_at,
+                a.user_id, u.username, pr.avatar_url,
+                t.date_from trip_from, t.date_to trip_to
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+           JOIN users u ON u.id = a.user_id AND u.status = 'active'
+      LEFT JOIN profiles pr ON pr.user_id = a.user_id
+          WHERE a.place_id = ? AND a.status = 'published' AND t.status = 'published'
+            AND $tripVis AND $actVis AND $blockSql
+       ORDER BY a.day, a.id DESC LIMIT 200",
+        array_merge([$placeId], $tripArgs, $actArgs, $blockArgs)
+    );
+
+    $today = date('Y-m-d');
+    $planned = [];
+    $recommended = [];
+    foreach ($rows as $r) {
+        if ((int) ($r['recommend'] ?? 0) === 1) {
+            // One person who went is one person, however many times they planned it.
+            $recommended[(int) $r['user_id']] = $r;
+            continue;
+        }
+        if (!empty($r['cancelled_at'])) continue;
+        $when = (string) ($r['day'] ?: $r['trip_to'] ?: '');
+        if ($when !== '' && $when < $today) continue;
+        $planned[(int) $r['user_id']] = $r;
+    }
+
+    /* How many of the people planning it will be there while the viewer is. Their own dates
+       against dates those travelers published themselves, and nothing more precise than that. */
+    $overlapping = 0;
+    if ($viewer) {
+        $mine = q_all("SELECT date_from, date_to FROM trips
+                        WHERE user_id = ? AND status = 'published'
+                          AND date_from IS NOT NULL AND date_to IS NOT NULL AND date_to >= ?",
+                      [(int) $viewer['id'], $today]);
+        foreach ($planned as $uid => $r) {
+            if ($uid === (int) $viewer['id']) continue;
+            $from = (string) ($r['day'] ?: $r['trip_from'] ?: '');
+            $to   = (string) ($r['day'] ?: $r['trip_to'] ?: '');
+            if ($from === '' || $to === '') continue;
+            foreach ($mine as $m) {
+                if ($from <= (string) $m['date_to'] && $to >= (string) $m['date_from']) { $overlapping++; break; }
+            }
+        }
+    }
+
+    return [
+        'planned' => array_slice(array_values($planned), 0, 8),
+        'recommended' => array_slice(array_values($recommended), 0, 8),
+        'planned_n' => count($planned),
+        'recommended_n' => count($recommended),
+        'overlapping' => $overlapping,
+    ];
 }

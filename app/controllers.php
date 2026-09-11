@@ -639,7 +639,10 @@ function place_show(array $a): void {
     // The question a traveler actually types belongs on the page about the thing they are asking
     // about, not two clicks away on the city page.
     $talk = rmt_posts_for_place((int) $p['id'], 3);
-    view('place_show', compact('p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
+    /* Who is going, and who went and would go again. This is what turns a page about a building
+       into a page about somewhere other travelers are actually going. */
+    $network = rmt_place_network($id, $me);
+    view('place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
         'title' => rmt_place_page_title($p),
         'description' => $desc,
         'canonical' => $canonical,
