@@ -45,6 +45,7 @@
     };
 
     var bounds = [];
+    var markers = [];
     points.forEach(function (p) {
       var col = colourFor(p);
       var marker = (dots || byDay)
@@ -56,11 +57,44 @@
       if (p.meta) html += '<br><span>' + escapeHtml(p.meta) + '</span>';
       if (p.href) html = '<a href="' + escapeAttr(p.href) + '">' + html + '</a>';
       marker.bindPopup(html);
+      markers.push({ layer: marker, cat: p.cat || null, p: p });
       bounds.push([p.lat, p.lng]);
     });
 
     if (bounds.length === 1) map.setView(bounds[0], 15);
     else map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+
+    /* Category filtering on a city map. Only where there is something to filter: a key with one
+       entry is furniture, and a row of fourteen chips over a map is a second map. */
+    var cats = [];
+    points.forEach(function (p) {
+      if (p.cat && cats.indexOf(p.cat) === -1) cats.push(p.cat);
+    });
+    if (!byDay && cats.length > 1 && cats.length <= 12) {
+      var bar = document.createElement('div');
+      bar.className = 'map-cats';
+      var mk = function (label, value) {
+        var a = document.createElement('button');
+        a.type = 'button';
+        a.className = 'chip' + (value === null ? ' is-on' : '');
+        a.textContent = label;
+        a.addEventListener('click', function () {
+          bar.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('is-on'); });
+          a.classList.add('is-on');
+          var keep = [];
+          markers.forEach(function (m) {
+            var show = value === null || m.cat === value;
+            if (show) { m.layer.addTo(map); keep.push([m.p.lat, m.p.lng]); }
+            else map.removeLayer(m.layer);
+          });
+          if (keep.length) map.fitBounds(keep, { padding: [30, 30], maxZoom: 16 });
+        });
+        return a;
+      };
+      bar.appendChild(mk('All', null));
+      cats.forEach(function (c) { bar.appendChild(mk(c, c)); });
+      el.parentNode.insertBefore(bar, el);
+    }
 
     if (byDay) {
       var key = document.createElement('div');

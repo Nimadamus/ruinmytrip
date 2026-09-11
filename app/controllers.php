@@ -288,11 +288,19 @@ function destination(array $a): void {
     /* The city on a map: places this site holds, and plans the viewer is allowed to see, from the
        same visibility-filtered list the page already built. Nothing on it is a person's position. */
     $cityMap = [];
-    foreach (rmt_places_for_destination($id, '', 80) as $pl) {
+    /* The category rides along so the map can be filtered by it: on a city with a hundred pins the
+       useful question is "where are the museums", not "where is everything". */
+    $catNames = [];
+    foreach (q_all("SELECT id, name, plural FROM place_categories WHERE status = 'active'") as $c) {
+        $catNames[(int) $c['id']] = (string) ($c['plural'] ?: $c['name']);
+    }
+    foreach (rmt_places_for_destination($id, '', 120) as $pl) {
         if ($pl['lat'] === null || $pl['lng'] === null) continue;
+        $catName = $catNames[(int) ($pl['category_id'] ?? 0)] ?? null;
         $cityMap[] = ['lat' => (float) $pl['lat'], 'lng' => (float) $pl['lng'],
                       'label' => (string) $pl['name'], 'href' => url('p/' . $pl['slug']),
-                      'meta' => rmt_place_type_label((string) $pl['type']), 'group' => 'place'];
+                      'meta' => $catName ?: rmt_place_type_label((string) $pl['type']),
+                      'cat' => $catName, 'group' => 'place'];
     }
     /* What people are doing here, on the city page a stranger actually lands on from a search.
        Upcoming only and no date window: somebody arriving from Google has not told us when they

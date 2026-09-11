@@ -1164,3 +1164,8 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* Under the plan "where" field: whether this will link to a place or stay as text. */
 .place-pick-note{margin:4px 0 0;font-size:.8rem}
 .place-pick-note.is-linked{color:var(--brand)}
+/* Filtering a city map by category. Scrolls sideways; never wraps into a block above the map. */
+.map-cats{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none}
+.map-cats::-webkit-scrollbar{display:none}
+.map-cats .chip{flex:0 0 auto;white-space:nowrap;cursor:pointer;font:inherit}
+.map-cats .chip.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
