@@ -23,29 +23,42 @@ actually want to meet?"*
 
 ## Next, in order
 
-1. **A trip that can hold a plan.** Days, places saved to a day, and "what I am doing on Tuesday".
-   This is the half of the vision sentence the site cannot answer yet: it knows who is there and
-   not what anybody is doing.
-2. **Photo posts straight from the composer.** Uploading happens on a trip, a review or a talk
+1. **Photos on an activity.** A plan with a picture of the thing is the strongest content this
+   site could carry, and the column is already there waiting for the upload path.
+2. **Turn a plan into a meetup, and a meetup into a plan.** The two are the same object seen from
+   different ends and they do not know about each other yet.
+3. **"Ask to join" needs an answer.** The asking works; the owner has no accept or decline, so an
+   ask is currently just an expression of interest with a hopeful name.
+4. **Photo posts straight from the composer.** Uploading happens on a trip, a review or a talk
    post. One tap from the feed is what makes a travel network visual day to day.
-3. **Message requests.** A first message from a stranger should be acceptable or ignorable, and
+5. **Message requests.** A first message from a stranger should be acceptable or ignorable, and
    should not sit in the same list as a conversation. The ceiling on new threads is in; the
    inbox split is not.
-4. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
+6. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
    week costs. Real sources only, and none of it invented.
-5. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
+7. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
    trips and would make every city page a doorway rather than a leaf.
-6. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-7. **Notification rollup.** They fire correctly, one per event. "Three people liked your review"
+8. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+9. **Notification rollup.** They fire correctly, one per event. "Three people liked your review"
    is the version nobody turns off.
-8. **Search that ranks across types.** It searches everything and presents nine separate lists;
+10. **Search that ranks across types.** It searches everything and presents nine separate lists;
    one ranked list with faces in it is the fastest path from a name to a person.
-9. **Meetups that fill.** Attendance is the strongest signal on the site and the thinnest feature:
+11. **Meetups that fill.** Attendance is the strongest signal on the site and the thinnest feature:
    no reminders, no "who else is going" before you commit, no repeat.
-10. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
+12. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
     and the feed ranking loads every follow and save for the member on each page.
 
-## Done (2026-09-11)
+## Done (2026-09-11, later)
+
+* **Activities: what a traveler is actually doing there** (migration 081). A plan is a line of
+  typing and a day; time, place, notes, link, who may come and who may see it are behind one
+  disclosure. Plans appear on the trip page, on the city page narrowed to your own dates, in the
+  feed, and in search. Others can join where the owner opened it. The same row becomes the
+  post-trip answer: did you go, was it any good, would you send somebody.
+* A DATE compared to an empty string took the city page down for a few minutes on Postgres.
+  Fixed, and `tests/driver_sql_test.php` now refuses the pattern; proved by reintroducing the bug.
+
+## Done (2026-09-11, earlier)
 
 * A trip can be just a city and two dates, and names itself. The form demanded a title and a
   twenty character story, so the sentence the product is built on could not be posted.
