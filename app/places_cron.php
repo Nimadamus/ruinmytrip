@@ -29,6 +29,17 @@ function rmt_places_verify(int $destId): array {
                    [$destId]) as $r) {
         $out['by_type'][(string) $r['type']] = (int) $r['c'];
     }
+    /* The finer word, which is the one a reader browses by. The coarse type says "attraction" and
+       tells you nothing about whether the city is museums or viewpoints. */
+    $out['by_category'] = [];
+    foreach (q_all("SELECT c.slug, COUNT(*) n FROM places p
+                      JOIN place_categories c ON c.id = p.category_id
+                     WHERE p.destination_id = ? GROUP BY c.slug ORDER BY n DESC", [$destId]) as $r) {
+        $out['by_category'][(string) $r['slug']] = (int) $r['n'];
+    }
+    $out['uncategorised'] = (int) (q_one('SELECT COUNT(*) c FROM places
+                                            WHERE destination_id = ? AND category_id IS NULL',
+                                         [$destId])['c'] ?? 0);
     $out['with_coords'] = (int) (q_one('SELECT COUNT(*) c FROM places
                                          WHERE destination_id = ? AND lat IS NOT NULL AND lng IS NOT NULL',
                                        [$destId])['c'] ?? 0);
@@ -110,6 +121,22 @@ function cron_places(array $a): void {
     if ($op === 'backfill') {
         $n = function_exists('rmt_search_backfill_norm') ? rmt_search_backfill_norm() : [];
         echo json_encode($n), "
+";
+        return;
+    }
+
+    /* Which of this city's imported places have no opening hours yet.
+       Read only, and it answers with OSM references rather than rows, because the point of it is
+       to let a backfill ask the provider for exactly those objects by id instead of scanning the
+       city again. Everything imported before the hours parser worked is in here. */
+    if ($op === 'needs_hours') {
+        $limit = max(1, min(400, (int) (input('limit') ?: 200)));
+        $rows = q_all("SELECT p.source_ref FROM places p
+                        WHERE p.destination_id = ? AND p.source_ref IS NOT NULL AND p.source_ref <> ''
+                          AND NOT EXISTS (SELECT 1 FROM place_hours h WHERE h.place_id = p.id)
+                        ORDER BY p.id LIMIT " . $limit, [(int) $dest['id']]);
+        echo json_encode(['city' => $dest['slug'], 'refs' => array_column($rows, 'source_ref')],
+                         JSON_UNESCAPED_SLASHES), "
 ";
         return;
     }

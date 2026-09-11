@@ -7,7 +7,13 @@
   <h1 style="margin-top:6px"><?= e($label) ?> in <?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
   <p class="muted" style="margin:0 0 4px">
     <?= (int) count($places) ?> <?= count($places) === 1 ? 'place' : 'places' ?><?= $type !== '' ? '' : ' we cover here' ?>.
-    Ratings are the community average, and our own editorial reviews are never counted in them.
+    <?php /* The sentence about how ratings are worked out only earns its place once a rating is
+             actually on the page. A city where nobody has rated anything yet was explaining the
+             arithmetic of a number that appears nowhere on it. */ ?>
+    <?php $rmt_rated = false; foreach ($places as $rmt_p) {
+            if (($rmt_p['rating_avg'] ?? null) !== null && (int) ($rmt_p['review_count'] ?? 0) > 0) { $rmt_rated = true; break; }
+          } ?>
+    <?php if ($rmt_rated): ?>Ratings are the community average, and our own editorial reviews are never counted in them.<?php endif; ?>
   </p>
 
   <?php /* Kind first, because "where do I eat" is a different question from "where do I stay", and

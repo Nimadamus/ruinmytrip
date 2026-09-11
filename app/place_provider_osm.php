@@ -167,6 +167,36 @@ function rmt_osm_query(string $type, array $bbox, int $limit, array $only = []):
 }
 
 /**
+ * A query for named objects we already hold, by their OSM reference.
+ *
+ * The gentlest thing this importer can ask a volunteer run server. A bounding box scan makes the
+ * server search an area; a list of ids makes it look rows up. It exists so that a place imported
+ * before the opening hours parser worked can be given its hours without re-scanning a city, and
+ * so that a refresh costs the provider roughly nothing.
+ *
+ * @param list<string> $refs "node/123", "way/456", "relation/789"
+ */
+function rmt_osm_query_refs(array $refs): string {
+    $byKind = ['node' => [], 'way' => [], 'relation' => []];
+    foreach ($refs as $ref) {
+        if (!preg_match('#^(node|way|relation)/(\d+)$#', (string) $ref, $m)) continue;
+        $byKind[$m[1]][] = $m[2];
+    }
+    $parts = [];
+    foreach ($byKind as $kind => $ids) {
+        if (!$ids) continue;
+        $parts[] = $kind . '(id:' . implode(',', array_unique($ids)) . ');';
+    }
+    if (!$parts) return '';
+    return "[out:json][timeout:45];
+(
+" . implode("
+", $parts) . "
+);
+out center tags;";
+}
+
+/**
  * A bounding box around a destination, in degrees.
  *
  * A city page holds one point, so the box is that point plus a radius. Twelve kilometres covers a

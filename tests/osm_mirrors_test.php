@@ -98,5 +98,17 @@ ok(str_contains($src, "if (!\$json['elements'] && \$i < \$last)"),
 ok(!in_array('https://overpass.osm.ch/api/interpreter', RMT_OSM_DEFAULT_ENDPOINTS, true),
    'and the regional instance that caused it is not in the list');
 
+/* Asking for objects by id is the cheapest question this importer can put to a volunteer run
+   server: a bounding box makes it search an area, a list of ids makes it look rows up. The hours
+   backfill is built on it, so the shape of the query is pinned here. */
+$q = rmt_osm_query_refs(['node/1', 'way/2', 'node/3', 'relation/4', 'node/1']);
+ok(str_contains($q, 'node(id:1,3);'), 'nodes are asked for in one statement');
+ok(str_contains($q, 'way(id:2);') && str_contains($q, 'relation(id:4);'), 'and so are ways and relations');
+ok(substr_count($q, 'node(id:') === 1, 'a repeated reference is not asked for twice');
+ok(str_contains($q, 'out center tags;'), 'and a way still comes back with a point');
+ok(!preg_match('/\(-?\d+\.\d+,/', $q), 'and there is no bounding box in it at all');
+ok(rmt_osm_query_refs(['nonsense', '../etc', 'node/x']) === '',
+   'anything that is not an OSM reference asks for nothing');
+
 echo "osm_mirrors_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
