@@ -34,18 +34,15 @@ holidays, month ranges or open ended times it will not guess at.
 
 ## P1, core product
 
-2. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
+1. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
    editorial work rather than import work, and making the importer happy is the wrong reason to do
    it. Left alone deliberately, as asked.
-3. **43 places still have a serial number for a URL** (32 in Tokyo, 11 in Bangkok). The rest were
+2. **43 places still have a serial number for a URL** (32 in Tokyo, 11 in Bangkok). The rest were
    moved onto the English name OpenStreetMap already records for them, with the old URL retired
    into `place_slug_history` so it still resolves. These 43 carry no other name at all, and the
    honest options are to leave them, or to add `name:en` upstream in OpenStreetMap, which is
    editorial work on somebody else's database.
-4. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
-5. **One ranked search result list.** City context, category matching and travelers-first all landed;
-   the page is still nine lists rather than one ordered answer.
-6. **Photo upload during a trip**, beyond one file at a time.
+3. **Photo upload during a trip**, beyond one file at a time.
 
 ## P2, growth
 
@@ -74,6 +71,9 @@ holidays, month ranges or open ended times it will not guess at.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **Somebody who turned up to a stranger's plan is asked how it was** (migration 088), and their
+  answer is counted on the city page beside the host's. The trust box says it from both sides.
+* **The search page leads with whatever answers the query** rather than a fixed order of sections.
 * **The trip map's day key is the day filter.** Tapping Tuesday shows Tuesday. This was still
   listed as outstanding and had already shipped in a33bea1.
 * **Three opening hours forms the parser was wrongly refusing**, found by measuring London rather
