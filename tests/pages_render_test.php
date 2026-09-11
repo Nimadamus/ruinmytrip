@@ -306,7 +306,8 @@ if ($acct) {
             ->execute([$canaryTrip, $otherId, (int) $destRow2['id'], date('Y-m-d', strtotime('+11 days')),
                        $planMarker, date('Y-m-d H:i:s')]);
 
-        foreach (['/trip/' . $canaryTrip, '/d/' . $destRow2['slug'] . '/travelers', '/discover', '/feed'] as $path) {
+        foreach (['/trip/' . $canaryTrip, '/d/' . $destRow2['slug'],
+                  '/d/' . $destRow2['slug'] . '/travelers', '/discover', '/feed'] as $path) {
             [, $body] = $req($path, null, $cookie);
             ok("a private plan stays off $path", !str_contains($body, $planMarker));
         }
@@ -328,7 +329,8 @@ if ($acct) {
             ->execute([$hiddenTrip, $otherId, (int) $destRow2['id'], date('Y-m-d', strtotime('+11 days')),
                        $openMarker, date('Y-m-d H:i:s')]);
 
-        foreach (['/meetups', '/discover', '/feed', '/d/' . $destRow2['slug'] . '/travelers'] as $path) {
+        foreach (['/meetups', '/discover', '/feed', '/d/' . $destRow2['slug'],
+                  '/d/' . $destRow2['slug'] . '/travelers'] as $path) {
             [, $body] = $req($path, null, $cookie);
             ok("an open plan on a private trip stays off $path", !str_contains($body, $openMarker));
         }

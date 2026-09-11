@@ -93,6 +93,29 @@
           <?php foreach ($rmt_meets as $i => $mm): ?><?= $i ? ', ' : '' ?><a href="<?= e(url('meetup/'.(int) $mm['id'])) ?>"><?= e((string) $mm['title']) ?></a><?php endforeach; ?>
         </p>
       <?php endif; ?>
+      <?php /* What those people are actually doing. The difference between "twelve travelers are
+               going to Lisbon", which is a statistic, and "somebody is going to the Benfica match
+               on the 13th and you can come", which is a reason to join. */ ?>
+      <?php if (!empty($cityPlans)): ?>
+        <ul class="city-plans" style="margin-top:12px">
+          <?php foreach ($cityPlans as $cp): ?>
+            <li>
+              <a class="city-plan-who" href="<?= e(url('u/'.$cp['username'])) ?>">
+                <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url($cp['avatar_url'] ?? null)) ?>" alt=""></a>
+              <span>
+                <a href="<?= e(url('activity/'.(int) $cp['id'])) ?>"><b><?= e((string) $cp['title']) ?></b></a>
+                <?php if (in_array((string) $cp['join_mode'], ['ask','open'], true)): ?>
+                  <span class="chip chip-join"><?= (string) $cp['join_mode'] === 'open' ? 'Join' : 'Ask to join' ?></span>
+                <?php endif; ?>
+                <span class="hint">@<?= e((string) $cp['username']) ?><?php
+                  if (!empty($cp['day'])): ?> &middot; <?= e(date('D j M', strtotime((string) $cp['day']))) ?><?php endif; ?><?php
+                  if ((int) ($cp['going_count'] ?? 0) > 0): ?> &middot; <?= (int) $cp['going_count'] ?> going<?php endif; ?></span>
+              </span>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+
       <div class="city-people-acts">
         <a class="btn btn-primary btn-sm" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Who is going, and when</a>
         <a class="btn btn-ghost btn-sm" href="<?= e($me ? url('trip/new?destination='.(int) $d['id']) : url('register?return='.rawurlencode('/d/'.$d['slug'].'/travelers'))) ?>">Post your dates</a>

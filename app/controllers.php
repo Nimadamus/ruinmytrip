@@ -285,7 +285,16 @@ function destination(array $a): void {
     /* Where the people who come here also go. A real query over real trips, counted in travelers,
        which turns every city page from a leaf into a doorway. */
     $related = rmt_related_destinations($id, 6);
-    view('destination', compact('related','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
+    /* What people are doing here, on the city page a stranger actually lands on from a search.
+       Upcoming only and no date window: somebody arriving from Google has not told us when they
+       are going. It is a teaser for the real list, which lives on the travelers page and can be
+       narrowed to their own dates the moment they have posted any. */
+    $cityPlans = function_exists('rmt_activities_in_city')
+        ? array_slice(array_values(array_filter(
+            rmt_activities_in_city($id, $me, date('Y-m-d'), date('Y-m-d', strtotime('+120 days')), 40),
+            static fn(array $r) => empty($r['cancelled_at']))), 0, 5)
+        : [];
+    view('destination', compact('related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
