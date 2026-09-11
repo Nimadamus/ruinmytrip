@@ -3234,8 +3234,45 @@ function trip_going_too(array $a): void {
     redirect(rmt_return_to('/trip/' . (int) $t['id']));
 }
 
+/**
+ * Write one validated trip and everything that hangs off it. Returns the new id.
+ *
+ * Pulled out of trip_create() so the deferred path can use it too: a trip posted before the
+ * confirmation email came back is held in the session and written by this same function the
+ * moment the address is confirmed, rather than the member's work being thrown away.
+ *
+ * @param array $d output of rmt_trip_validate()
+ */
+function rmt_trip_create_row(int $userId, array $d): int {
+    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
+    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
+    $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,
+                                         date_from,date_to,visibility,verified,status,created_at)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
+        [$userId, $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
+         $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'], 0, date('Y-m-d H:i:s')]);
+    rmt_sync_tags('trip', $id, $d['title'], $d['body']);
+    rmt_notify_mentions('trip', $id, $userId, [], $d['title'], $d['body']);
+    return $id;
+}
+
 function trip_create(array $a): void {
-    require_verified_email(); csrf_check(); $me = current_user();
+    /* The gate stays exactly where it was: a trip is not published by somebody whose address has
+       not come back. What changed is what happens to the work. It used to be discarded, so a
+       member who signed up two minutes earlier, chose a city, typed their dates and wrote a
+       paragraph was bounced to a page about email with all of it gone. Now it is validated here,
+       held, and written the instant the address is confirmed. */
+    require_login(); csrf_check(); $me = current_user();
+    if (!email_is_verified($me)) {
+        $hold = rmt_trip_validate($_POST);
+        if ($hold['ok']) {
+            rmt_pending_stash(['trip' => $_POST]);
+            flash('Your trip is saved. It goes live the moment you confirm your email address.');
+        } else {
+            flash('Confirm your email address before posting. Check your inbox for the link.');
+        }
+        redirect('/verify-email');
+    }
     if (!rmt_submit_ok('trip_new', input('_submit'))) {
         flash('That trip was already submitted.'); redirect('/'); return;
     }
@@ -3248,15 +3285,7 @@ function trip_create(array $a): void {
         view('trip_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Share a trip | RuinMyTrip']); return;
     }
     $d = $v['data'];
-    $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
-    $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
-    $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,
-                                         date_from,date_to,visibility,verified,status,created_at)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
-        [(int)$me['id'], $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
-         $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'], 0, date('Y-m-d H:i:s')]);
-    rmt_sync_tags('trip', $id, $d['title'], $d['body']);
-    rmt_notify_mentions('trip', $id, (int)$me['id'], [], $d['title'], $d['body']);
+    $id = rmt_trip_create_row((int) $me['id'], $d);
     // Photo failures must never be silent, and must never cost the user their written story --
     // same rule as reviews (rmt_attach_review_photos).
     $photoErrors = rmt_attach_trip_photos($id, (int)$me['id']);

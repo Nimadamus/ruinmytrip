@@ -30,6 +30,12 @@ function rmt_pending_stash(array $data): void {
     $keep = [];
     if (!empty($data['going']) && is_array($data['going'])) $keep['going'] = $data['going'];
     if (!empty($data['hello']) && is_array($data['hello'])) $keep['hello'] = $data['hello'];
+    /* A trip posted before the address came back. The same reasoning as the two above, and the
+       one most likely to happen now that the welcome screen sends people straight at it: the form
+       asks for a city, two dates and a paragraph, and throwing that away because an email is in
+       flight loses the only thing the member has made. Photographs cannot ride along in a
+       session and are not pretended to: the trip arrives without them and can be added to. */
+    if (!empty($data['trip']) && is_array($data['trip'])) $keep['trip'] = $data['trip'];
     if ($keep) $_SESSION[RMT_PENDING_KEY] = $keep;
 }
 
@@ -45,7 +51,7 @@ function rmt_pending_has(): bool {
  * Each half is independent -- a rejected post must not take the travel dates down with it.
  */
 function rmt_pending_apply(array $user): array {
-    $done = ['going' => false, 'hello' => false];
+    $done = ['going' => false, 'hello' => false, 'trip' => false];
     if (session_status() !== PHP_SESSION_ACTIVE) return $done;
     $held = $_SESSION[RMT_PENDING_KEY] ?? null;
     unset($_SESSION[RMT_PENDING_KEY]);
@@ -60,6 +66,13 @@ function rmt_pending_apply(array $user): array {
             $gid = rmt_going_upsert($uid, $v['data']);
             rmt_going_notify_followers($uid, $gid, $v['data']['visibility']);
             $done['going'] = true;
+        }
+    }
+    if (!empty($held['trip'])) {
+        // Re-validated, not trusted, for the same reason the other two are.
+        $tv = rmt_trip_validate($held['trip']);
+        if ($tv['ok'] && function_exists('rmt_trip_create_row')) {
+            $done['trip'] = rmt_trip_create_row($uid, $tv['data']) > 0;
         }
     }
     if (!empty($held['hello'])) {

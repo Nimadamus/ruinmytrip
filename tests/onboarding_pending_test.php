@@ -84,7 +84,7 @@ ok('the slot is empty afterwards', !rmt_pending_has());
 
 // Applied exactly once: a second confirmation must not post the same sentence again.
 $again = rmt_pending_apply($me);
-ok('applying twice does nothing', $again === ['going' => false, 'hello' => false]
+ok('applying twice does nothing', $again === ['going' => false, 'hello' => false, 'trip' => false]
     && (int) q_one('SELECT COUNT(*) c FROM posts')['c'] === 1);
 
 // The halves are independent.
@@ -105,6 +105,40 @@ rmt_pending_apply($me);
 ok('an empty stash is not a stash', !rmt_pending_has());
 rmt_pending_stash([]);
 ok('nothing to hold holds nothing', !rmt_pending_has());
+
+/* A trip posted before the address came back.
+   This is now the most likely thing to be lost, because the first screen a new member sees sends
+   them straight at the trip form. The gate is unchanged: nothing is written while unverified. */
+function rmt_trip_validate(array $in): array {
+    $dest = (int) ($in['destination_id'] ?? 0);
+    if ($dest < 1) return ['ok' => false, 'errors' => ['no city'], 'data' => []];
+    return ['ok' => true, 'errors' => [], 'data' => ['destination_id' => $dest,
+            'title' => (string) ($in['title'] ?? 'A trip'), 'body' => (string) ($in['body'] ?? '')]];
+}
+function rmt_trip_create_row(int $uid, array $d): int {
+    $GLOBALS['calls']['trip']++;
+    q_run('INSERT INTO trips (user_id, destination_id, title) VALUES (?,?,?)',
+          [$uid, $d['destination_id'], $d['title']]);
+    return (int) q_one('SELECT MAX(id) m FROM trips')['m'];
+}
+db()->exec('CREATE TABLE trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT, title TEXT)');
+$GLOBALS['calls']['trip'] = 0;
+
+rmt_pending_stash(['trip' => ['destination_id' => 4, 'title' => 'Lisbon in March', 'body' => 'Five days.']]);
+ok('a trip can be held', rmt_pending_has());
+ok('and nothing is written while it waits', (int) q_one('SELECT COUNT(*) c FROM trips')['c'] === 0);
+$t = rmt_pending_apply($me);
+ok('confirming writes the trip', $t['trip'] === true && (int) q_one('SELECT COUNT(*) c FROM trips')['c'] === 1);
+ok('and only once', rmt_pending_apply($me)['trip'] === false
+    && (int) q_one('SELECT COUNT(*) c FROM trips')['c'] === 1);
+rmt_pending_stash(['trip' => ['title' => 'No city named']]);
+ok('a trip that does not validate is dropped rather than written',
+   rmt_pending_apply($me)['trip'] === false && (int) q_one('SELECT COUNT(*) c FROM trips')['c'] === 1);
+
+// The trip form must hold the work rather than discard it at the gate.
+ok('trip_create holds instead of bouncing',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/controllers.php'),
+                "rmt_pending_stash(['trip' => \$_POST])"));
 
 // The welcome screen must no longer bounce the whole submission at the gate.
 $controllers = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
