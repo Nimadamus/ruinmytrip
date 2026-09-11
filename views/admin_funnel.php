@@ -3,7 +3,7 @@
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
   <p class="hint" style="margin:0 0 6px">
-    Attempts, not people. This table holds no user id, no address and no review text &mdash; the
+    Attempts, not people. This table holds no user id, no address and no review text: the
     questions it answers do not need any of them. An attempt is one journey through the flow, so
     somebody clicking a button three times before the page loads counts once.
   </p>
@@ -84,7 +84,7 @@
   <section class="card" style="margin:0 0 20px"><div class="card-body">
     <h2 style="margin:0 0 4px;font-size:1.05rem">Community scoreboard</h2>
     <p class="hint" style="margin:0 0 12px">
-      Real rows only, editorial excluded. A zero here means zero &mdash; the number does not move
+      Real rows only, editorial excluded. A zero here means zero, and the number does not move
       until a traveler writes something.
     </p>
     <div class="grid g-2" style="gap:4px 24px">
@@ -107,7 +107,7 @@
     <p style="margin:12px 0 0;font-size:.94rem">
       <span class="muted">CTA to published</span>
       <strong style="float:right">
-        <?= $clicks > 0 ? (int) round($published * 100 / $clicks) . '%' : '&mdash;' ?>
+        <?= $clicks > 0 ? (int) round($published * 100 / $clicks) . '%' : 'none' ?>
       </strong>
     </p>
     <?php if (!empty($board['last_community_review'])): ?>

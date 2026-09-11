@@ -3,7 +3,7 @@
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / SEO readiness</p>
   <h1 style="margin:.2rem 0 .4rem">SEO readiness</h1>
   <p class="hint" style="margin:0 0 20px;max-width:70ch">
-    What is in the index, what is not, and why not &mdash; every row decided by
+    What is in the index, what is not, and why not, with every row decided by
     <code>rmt_indexable()</code>, the same function the sitemap and the page's own robots tag use.
     If a row says NOINDEX here, that page says noindex and is absent from the sitemap. There is no
     second opinion to disagree with.
@@ -88,7 +88,7 @@
                 <?= e((string) ($r['metric'] ?? '')) ?></td>
               <td style="padding:5px 0 5px 8px;white-space:nowrap">
                 <span class="hint"><?= e(rmt_index_reason_label($r['verdict']['reason'])) ?><?php
-                  if (!empty($r['verdict']['detail'])): ?> &mdash; <?= e($r['verdict']['detail']) ?><?php endif; ?></span>
+                  if (!empty($r['verdict']['detail'])): ?> · <?= e($r['verdict']['detail']) ?><?php endif; ?></span>
               </td>
             </tr>
           <?php endforeach; ?>

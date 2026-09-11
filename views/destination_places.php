@@ -7,7 +7,7 @@
   <h1 style="margin-top:6px"><?= e($label) ?> in <?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
   <p class="muted" style="margin:0 0 4px">
     <?= (int) count($places) ?> <?= count($places) === 1 ? 'place' : 'places' ?><?= $type !== '' ? '' : ' we cover here' ?>.
-    Ratings are the community average &mdash; our own editorial reviews are never counted in them.
+    Ratings are the community average, and our own editorial reviews are never counted in them.
   </p>
 
   <?php /* Kind first, because "where do I eat" is a different question from "where do I stay", and
@@ -42,7 +42,7 @@
       <h3>Nothing here yet<?= $type ? ' in this category' : '' ?>.</h3>
       <p class="muted" style="margin:0">
         Places appear the moment somebody reviews one. We do not import listings or invent them to
-        look busy &mdash; if you stayed, ate, or booked something in <?= e($d['name']) ?>, you are the
+        look busy. If you stayed, ate, or booked something in <?= e($d['name']) ?>, you are the
         first entry.
       </p>
       <p style="margin:16px 0 0">

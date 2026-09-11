@@ -19,8 +19,8 @@
     We currently cover <b><?= (int) $counts['destinations'] ?></b>
     <?= (int) $counts['destinations'] === 1 ? 'destination' : 'destinations' ?> and
     <b><?= (int) $counts['places'] ?></b> individual
-    <?= (int) $counts['places'] === 1 ? 'place' : 'places' ?> &mdash; hotels, restaurants and things
-    to do &mdash; with addresses, opening hours and prices where we can source them.
+    <?= (int) $counts['places'] === 1 ? 'place' : 'places' ?> , hotels, restaurants and things
+    to do, with addresses, opening hours and prices where we can source them.
   </p>
   <p>
     <?php if ((int) $counts['community_reviews'] === 0): ?>

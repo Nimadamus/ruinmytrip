@@ -45,8 +45,8 @@
       <textarea id="message" name="message" maxlength="<?= RMT_FEEDBACK_MAX ?>" required
                 placeholder="It moved to 14 Rue Cler in March, or: it now closes at 4pm on Sundays."><?= e(input('message')) ?></textarea>
       <p class="hint" style="margin:4px 0 0">
-        If you have a link that shows it &mdash; the venue's own site, a notice on the door you
-        photographed &mdash; paste it in. It gets checked faster.
+        If you have a link that shows it, the venue's own site, a notice on the door you
+        photographed, paste it in. It gets checked faster.
       </p>
 
       <?php /* Optional and last. Requiring an address to tell us a museum moved is a good way not

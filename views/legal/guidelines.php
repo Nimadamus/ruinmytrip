@@ -19,7 +19,7 @@
     <li><b>We do not remove a review for being critical.</b> Nothing in our moderation reads a
       rating. A one-star review and a five-star review are held to the same rules and no others.</li>
     <li><b>Reporting is not deleting.</b> A report tells a person to look. It does not hide
-      anything, and no number of reports hides anything &mdash; there is no threshold, because a
+      anything, and no number of reports hides anything: there is no threshold, because a
       review that enough people dislike is not the same as a review that breaks a rule.</li>
     <li><b>Nobody can pay to change any of this.</b> A business cannot buy a rating, a position, or
       the removal of a review. We have not built a way, and we are not going to.</li>
@@ -49,7 +49,7 @@
   <h2>How enforcement works</h2>
   <p>
     A report goes to a person. They read the content itself, not just the report, and decide. A
-    review can be hidden or removed, and either way it is recorded &mdash; what happened, who
+    review can be hidden or removed, and either way it is recorded: what happened, who
     decided, and what state it was in before. Content is not deleted outright, so a decision can be
     reversed. Repeated or serious breaches can mean a warning, a suspension or a ban, and anything
     involving safety is escalated immediately. See <a href="<?= e(url('safety')) ?>">Meetup Safety</a>.

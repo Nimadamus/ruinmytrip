@@ -8,7 +8,7 @@
   <p class="hint" style="margin:0 0 18px">
     <strong>Data</strong> means five or more places across at least two kinds with coordinates on
     most of them. <strong>Community</strong> means three or more places with enough traveler
-    reviews to be ranked, written by at least three different people &mdash; forty reviews from one
+    reviews to be ranked, written by at least three different people. Forty reviews from one
     person is not a community. They are different questions and a destination can pass one and fail
     the other; today <?= $cready ?> pass the second. Nothing is published or hidden on the strength
     of either.

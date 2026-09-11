@@ -29,7 +29,7 @@
                 <?php endif; ?></td>
               <td style="padding:6px 8px"><?= e((string) $r['city']) ?></td>
               <td style="padding:6px 8px" class="muted"><?= e(rmt_place_type_label((string) $r['type'])) ?></td>
-              <td style="padding:6px 8px" class="muted"><?= $r['username'] ? '@' . e((string) $r['username']) : '&mdash;' ?></td>
+              <td style="padding:6px 8px" class="muted"><?= $r['username'] ? '@' . e((string) $r['username']) : 'none' ?></td>
               <td style="padding:6px 8px" class="muted"><?= e(substr((string) $r['created_at'], 0, 10)) ?></td>
               <td style="padding:6px 8px"><?= e((string) $r['status']) ?></td>
               <td style="padding:6px 8px">

@@ -58,7 +58,7 @@
         <p class="hint" style="margin:0">
           <?= e(ucfirst((string) $r['status'])) ?>
           <?php if (!empty($r['resolved_at'])): ?> <?= e(substr((string) $r['resolved_at'], 0, 16)) ?><?php endif; ?>
-          <?php if (!empty($r['resolution_note'])): ?> &mdash; <?= e((string) $r['resolution_note']) ?><?php endif; ?>
+          <?php if (!empty($r['resolution_note'])): ?> · <?= e((string) $r['resolution_note']) ?><?php endif; ?>
         </p>
       <?php endif; ?>
     </div></section>

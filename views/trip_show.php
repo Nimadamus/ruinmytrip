@@ -30,7 +30,7 @@
       <?php if ($label): ?><b><?= e($label) ?></b> · <?php endif; ?>
       <?= e(date('j M Y', strtotime((string) $t['date_from']))) ?>
       <?php if (!empty($t['date_to']) && $t['date_to'] !== $t['date_from']): ?>
-        &ndash; <?= e(date('j M Y', strtotime((string) $t['date_to']))) ?>
+        to <?= e(date('j M Y', strtotime((string) $t['date_to']))) ?>
       <?php endif; ?>
       <?php if (!empty($t['dest_slug'])): ?>
         · <a href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">who else is going to <?= e($t['dest_name']) ?></a>

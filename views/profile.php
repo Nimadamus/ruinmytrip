@@ -182,7 +182,7 @@
         <?php foreach ($upcomingTrips as $ut): ?>
           <li style="padding:6px 0;border-bottom:1px solid var(--line)">
             <a href="<?= e(url('trip/'.(int)$ut['id'].'/'.$ut['slug'])) ?>"><b><?= e($ut['dest_name'] ?: $ut['title']) ?></b></a>
-            <span class="muted"> · <?= e(date('M j', strtotime((string)$ut['date_from']))) ?> &ndash; <?= e(date('M j, Y', strtotime((string)$ut['date_to']))) ?></span>
+            <span class="muted"> · <?= e(date('M j', strtotime((string)$ut['date_from']))) ?> to <?= e(date('M j, Y', strtotime((string)$ut['date_to']))) ?></span>
             <?php if ($isMe && ($ut['visibility'] ?? 'public') !== 'public'): ?>
               <span class="hint"> · <?= ($ut['visibility'] === 'followers') ? 'followers' : 'only you' ?></span>
             <?php endif; ?>

@@ -238,7 +238,7 @@
            Ondine, which we deliberately hold no data for, had no correction link. */ ?>
   <p class="hint" style="margin:-14px 0 26px">
     <a href="<?= e(url(ltrim(rmt_place_path($p), '/') . '/correct')) ?>">Suggest a correction</a>
-    &mdash; closed, moved, wrong hours, anything. A person checks it.
+    : closed, moved, wrong hours, anything. A person checks it.
   </p>
 
   <?php /* Structured editorial. Only sections with content render, so a page never pads itself with

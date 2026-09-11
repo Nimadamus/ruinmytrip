@@ -5,7 +5,7 @@
   <p class="muted" style="margin:0 0 6px"><?= count($queue) ?> item<?= count($queue) === 1 ? '' : 's' ?> waiting.</p>
   <p class="hint" style="margin:0 0 20px">
     A report is not a verdict. Nothing here is hidden by report volume, and the count is shown so
-    you can see it, not so it decides anything. <strong>A negative review is not a violation</strong> &mdash;
+    you can see it, not so it decides anything. <strong>A negative review is not a violation</strong>,
     "terrible service, would not return" is an ordinary traveler opinion. Moderate spam, abuse,
     fraud, personal information and off-topic content; never criticism.
   </p>
@@ -76,7 +76,7 @@
   <?php if ($history): ?>
     <h2 style="font-size:1.05rem;margin:30px 0 8px">Recent decisions</h2>
     <p class="hint" style="margin:0 0 10px">
-      Who acted, on what, and why. Content is never physically deleted &mdash; hidden and removed are
+      Who acted, on what, and why. Content is never physically deleted: hidden and removed are
       statuses, so the history survives the decision.
     </p>
     <div style="overflow-x:auto">
@@ -94,7 +94,7 @@
               <td style="padding:6px 8px" class="muted"><?= e((string) $h['target_type']) ?> #<?= (int) $h['target_id'] ?></td>
               <td style="padding:6px 8px"><?= e((string) $h['action']) ?></td>
               <td style="padding:6px 8px" class="muted">
-                <?= $h['from_status'] ? e((string) $h['from_status']) . ' &rarr; ' . e((string) $h['to_status']) : '&mdash;' ?>
+                <?= $h['from_status'] ? e((string) $h['from_status']) . ' &rarr; ' . e((string) $h['to_status']) : 'none' ?>
               </td>
               <td style="padding:6px 8px" class="muted"><?= e((string) ($h['note'] ?? '')) ?></td>
             </tr>

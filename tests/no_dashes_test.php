@@ -17,6 +17,9 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 $dashes = ["\u{2014}", "\u{2013}", "\u{2012}", "\u{2015}"];
+/* The same character, spelled as HTML. Twenty five of these survived the first sweep precisely
+   because they are not the character: &mdash; renders as an em dash and greps as an ampersand. */
+$entities = ['&mdash;', '&ndash;', '&#8212;', '&#8211;', '&#x2014;', '&#x2013;'];
 
 /* Lines that hold a dash on purpose. Each one has to say why, because the point of an allowlist
    that anybody can append to without a reason is to grow until it means nothing. */
@@ -46,7 +49,7 @@ foreach ($files as $rel) {
         [$id, $text, $line] = $tok;
         // A comment is not copy. Everything else that carries text can reach the page.
         if ($id === T_COMMENT || $id === T_DOC_COMMENT) continue;
-        foreach ($dashes as $d) {
+        foreach (array_merge($dashes, $entities) as $d) {
             if (str_contains($text, $d)) {
                 $findings[] = $rel . ':' . $line . ' ' . trim(preg_replace('/\s+/', ' ', $text) ?? '');
                 break;

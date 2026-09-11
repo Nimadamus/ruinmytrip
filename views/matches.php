@@ -81,7 +81,7 @@
              href="<?= e(url('u/'.$v['username'])) ?>">
             <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($v['avatar_url'] ?? null)) ?>" alt="">
             @<?= e($v['username']) ?>
-            <span class="hint"><?= e(date('M j', strtotime((string)$v['date_from']))) ?>&ndash;<?= e(date('M j', strtotime((string)$v['date_to']))) ?></span>
+            <span class="hint"><?= e(date('M j', strtotime((string)$v['date_from']))) ?> to <?= e(date('M j', strtotime((string)$v['date_to']))) ?></span>
           </a>
         <?php endforeach; ?>
       </div>

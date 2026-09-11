@@ -41,6 +41,7 @@ require BASE_PATH . '/app/locals.php';
 require BASE_PATH . '/app/onboarding_pending.php';
 require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/matching.php';
+require BASE_PATH . '/app/feed_home.php';
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/polls.php';
 require BASE_PATH . '/app/cards.php';

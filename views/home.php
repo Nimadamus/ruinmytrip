@@ -79,7 +79,7 @@
            href="<?= e(url('d/'.$g['dest_slug'].'/travelers')) ?>">
           <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($g['avatar_url'] ?? null)) ?>" alt="">
           @<?= e($g['username']) ?> &middot; <?= e($g['dest_name']) ?>
-          <span class="hint"><?= e(date('M j', strtotime((string)$g['date_from']))) ?>&ndash;<?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
+          <span class="hint"><?= e(date('M j', strtotime((string)$g['date_from']))) ?> to <?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
         </a>
       <?php endforeach; ?>
     </div>

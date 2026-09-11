@@ -40,6 +40,13 @@ function forbidden(string $msg = "You don't have permission to do that."): void 
 
 /* ---------- public pages ---------- */
 function home(array $a): void {
+    /* A signed-in member does not need the pitch. Every social product sends the person who
+       already joined to the thing they joined for, and here that is the feed with its rails: what
+       the people they follow are doing, who is in the same city on the same days, and the box that
+       lets them answer without navigating. The marketing homepage below is for strangers, which is
+       also the only audience that can see it in search. */
+    if (current_user()) { feed($a); return; }
+
     $trending = q_all('SELECT d.*, (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) AS trips
                        FROM destinations d ORDER BY trips DESC, d.name LIMIT 6');
     $stories = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
@@ -914,7 +921,9 @@ function feed(array $a): void {
     // Named on the page, because a feed that mixes in a city's activity without saying which
     // cities reads as strangers appearing in a list you thought you had chosen.
     $cities = rmt_feed_followed_destinations($uid);
-    view('feed', compact('items','me','isEveryone','scope','cities'), [
+    $rails = rmt_feed_rails($uid);
+    $engagement = rmt_feed_engagement($items, $uid);
+    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);
