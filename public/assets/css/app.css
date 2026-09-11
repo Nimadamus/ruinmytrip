@@ -1169,3 +1169,8 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .map-cats::-webkit-scrollbar{display:none}
 .map-cats .chip{flex:0 0 auto;white-space:nowrap;cursor:pointer;font:inherit}
 .map-cats .chip.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* Sorting is lighter than filtering and looks it: text links, not a third row of chips. */
+.sort-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;font-size:.85rem}
+.sort-link{color:var(--muted);text-decoration:none;white-space:nowrap}
+.sort-link:hover{color:var(--ink)}
+.sort-link.is-on{color:var(--ink);font-weight:650;text-decoration:underline;text-underline-offset:3px}

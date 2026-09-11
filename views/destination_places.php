@@ -44,10 +44,14 @@
   <?php /* Sorting is a way to read the same list. Every option is a plain link, so it works with
            no JavaScript and a crawler can follow it; all four canonicalise to the unsorted URL. */ ?>
   <?php if (count($places) > 1): ?>
-    <nav class="chip-row" aria-label="Sort" style="margin:0 0 20px">
+    <?php /* Sorting is lighter than filtering and now looks it. Three rows of identical chips
+             before the first place made the page read as a control panel, and the two rows that
+             actually change WHAT you see should not compete with the one that changes the order. */ ?>
+    <nav class="sort-row" aria-label="Sort" style="margin:0 0 18px">
+      <span class="hint">Sort</span>
       <?php foreach (RMT_BROWSE_SORTS as $key => $sortLabel): ?>
-        <?php $q = array_filter(['type' => $type, 'sort' => $key === 'best' ? '' : $key]); ?>
-        <a class="chip<?= $sort === $key ? ' is-on' : '' ?>" rel="nofollow"
+        <?php $q = array_filter(['type' => $type, 'cat' => $cat, 'sort' => $key === 'best' ? '' : $key]); ?>
+        <a class="sort-link<?= $sort === $key ? ' is-on' : '' ?>" rel="nofollow"
            href="<?= e(url('d/'.$d['slug'].'/places') . ($q ? '?' . http_build_query($q) : '')) ?>">
           <?= e($sortLabel) ?></a>
       <?php endforeach; ?>
