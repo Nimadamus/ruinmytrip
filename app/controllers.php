@@ -4510,9 +4510,14 @@ function register_submit(array $a): void {
         // a confirmed email, and the flash says so rather than the redirect silently deciding it:
         // being bounced to a verification page you did not ask for, from a form you were halfway
         // through, is how a first review stops being written.
+        /* Whether the email actually went is carried to the page rather than only announced in a
+           flash, because the page asserts "We sent a link to you" on its own and the two used to
+           contradict each other on the first screen a new member ever sees. A raw path printed in
+           the sentence has also gone: the button that requests a new link is already on it. */
         $heading = $mailed
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
-            : 'Welcome to RuinMyTrip. We could not send the confirmation email. Request a new link from /verify-email.';
+            : 'Welcome to RuinMyTrip. The confirmation email did not go out. You can ask for another one below.';
+        $_SESSION['rmt_mail_ok'] = $mailed ? '1' : '0';
         if ($return !== '' && $return !== '/feed') {
             if (str_contains($return, '/review/new')) {
                 rmt_track('review_signup_completed');
@@ -4546,7 +4551,11 @@ function verify_email(array $a): void {
     $raw = (string) input('token');
     if ($raw === '') {
         $me = current_user();
-        view('auth/verify_notice', ['me'=>$me, 'verified'=>email_is_verified($me)],
+        /* Read once. If the send failed the page has to say so instead of claiming it sent, and
+           on the next visit we no longer know, so it says the neutral thing. */
+        $mailSent = !isset($_SESSION['rmt_mail_ok']) || $_SESSION['rmt_mail_ok'] === '1';
+        unset($_SESSION['rmt_mail_ok']);
+        view('auth/verify_notice', ['me'=>$me, 'verified'=>email_is_verified($me), 'mailSent'=>$mailSent],
              ['title'=>'Confirm your email | RuinMyTrip']);
         return;
     }

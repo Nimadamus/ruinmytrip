@@ -15,14 +15,28 @@
         <p style="font-size:1.05rem;margin:0 0 10px"><b>Your travel dates and your first post are saved.</b>
           They go live the moment you confirm this address.</p>
       <?php endif; ?>
-      <p class="muted">We sent a link to <b><?= e($me['email']) ?></b>. Click it to confirm this address.
-        You can browse RuinMyTrip in the meantime, but you will need a confirmed email before posting
-        trips or reviews.</p>
+      <?php /* What actually happened, not what usually happens. A page that says "we sent you a
+               link" under a banner saying the email could not be sent is the first screen a new
+               member sees, and it makes the whole product look unreliable in one glance. */ ?>
+      <?php if (($mailSent ?? true)): ?>
+        <p class="muted">We sent a link to <b><?= e($me['email']) ?></b>. Click it to confirm this address.</p>
+      <?php else: ?>
+        <p class="muted">The email to <b><?= e($me['email']) ?></b> did not go out. Ask for another
+          one below, and if it keeps failing the address may have a typo in it.</p>
+      <?php endif; ?>
+      <p class="muted">Confirming is only needed before you post a trip or a review. Everything
+        else is open to you now.</p>
       <form method="post" action="<?= e(url('verify-email/resend')) ?>" style="margin-top:18px"><?= csrf_field() ?>
         <button class="btn btn-primary">Send me a new link</button>
       </form>
       <p class="muted" style="margin-top:16px">Wrong address? Update it in
         <a href="<?= e(url('settings')) ?>">settings</a>, then request a new link.</p>
+      <?php /* And somewhere to go. This was a dead end: a new member's first screen offered one
+               button, and it was about email rather than about travelling anywhere. */ ?>
+      <p style="margin-top:22px;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Browse cities</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('travelers')) ?>">See who is going</a>
+      </p>
     <?php else: ?>
       <p class="muted">Sign in to request a confirmation link.</p>
       <p style="margin-top:20px"><a class="btn btn-primary" href="<?= e(url('login')) ?>">Sign in</a></p>
