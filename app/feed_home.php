@@ -107,7 +107,39 @@ function rmt_feed_rails(int $uid): array {
        matters: they are planning it now, and an answer next month is no answer. */
     $invites = function_exists('rmt_trip_invitations') ? rmt_trip_invitations($uid) : [];
 
+    /* The member's own next trip, which is the thing this page is ABOUT. Everything else here is
+       context for it: who overlaps it, what is open during it, who wrote to them about it. A trip
+       in progress wins over one that starts next month, and a member with no trip gets no card
+       rather than an empty one. */
+    $nextTrip = q_one(
+        "SELECT t.*, d.name dest_name, d.slug dest_slug
+           FROM trips t LEFT JOIN destinations d ON d.id = t.destination_id
+          WHERE t.user_id = ? AND t.status = 'published'
+            AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL AND t.date_to >= ?
+       ORDER BY CASE WHEN t.date_from <= ? THEN 0 ELSE 1 END, t.date_from
+          LIMIT 1",
+        [$uid, date('Y-m-d'), date('Y-m-d')]
+    );
+    $nextTripToday = [];
+    $nextTripOverlap = 0;
+    if ($nextTrip) {
+        if (function_exists('rmt_activities_for_trip')) {
+            foreach (rmt_activities_for_trip((int) $nextTrip['id'], ['id' => $uid]) as $a) {
+                if ((string) ($a['day'] ?? '') === date('Y-m-d') && empty($a['cancelled_at'])) {
+                    $nextTripToday[] = $a;
+                }
+            }
+        }
+        // People whose published dates land on this trip's, counted from the matches already built.
+        foreach ($matches as $m) {
+            if ((int) ($m['dest_id'] ?? 0) === (int) $nextTrip['destination_id']) $nextTripOverlap++;
+        }
+    }
+
     return [
+        'next_trip'        => $nextTrip,
+        'next_trip_today'  => $nextTripToday,
+        'next_trip_overlap' => $nextTripOverlap,
         'invites'     => $invites,
         'review'      => $toReview,
         'joinable'    => $joinable,
@@ -289,20 +321,24 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
         $age = max(0.0, ($now - strtotime((string) ($it['created_at'] ?? 'now'))) / 3600);
         $score = 1.6 / (1 + $age / 36);          // half of its weight after a day and a half
         $why = '';
+        $boosted = false;
 
         $author = (int) ($it['user_id'] ?? 0);
         $dest = (int) ($it['destination_id'] ?? 0);
 
         if (isset($overlap[$author])) {
             $score += 1.2;
+            $boosted = true;
             $why = 'You are both in ' . $overlap[$author] . ' at the same time';
         }
         if ($dest > 0 && isset($myCities[$dest])) {
             $score += 0.9;
+            $boosted = true;
             if ($why === '') $why = 'Because you are going to ' . (string) ($it['dest_name'] ?? 'this city');
         }
         if ($dest > 0 && isset($saved[$dest])) {
             $score += 0.5;
+            $boosted = true;
             if ($why === '') $why = 'From a city you saved';
         }
         if (isset($follows[$author])) {
@@ -320,6 +356,7 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
                 foreach ($myWindows[$dest] as [$wFrom, $wTo]) {
                     if ($day >= $wFrom && $day <= $wTo) {
                         $score += 0.8;
+                        $boosted = true;
                         $why = 'On while you are in ' . (string) ($it['dest_name'] ?? 'this city');
                         break;
                     }
@@ -327,6 +364,7 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
             }
             if (in_array((string) ($it['join_mode'] ?? 'no'), ['open', 'ask'], true)) {
                 $score += 0.3;
+                $boosted = true;
                 if ($why === '') $why = 'Open to other travelers';
             }
         }
@@ -346,8 +384,14 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
 
         /* Your own activity, which you already know about. It also carries no reason: "because you
            are going to Lisbon" under your own Lisbon plan is the site explaining you to yourself. */
-        if ($author === $uid) { $score -= 0.5; $why = ''; }
+        if ($author === $uid) { $score -= 0.5; $why = ''; $boosted = false; }
 
+        /* Whether this row was moved by a fact about the reader's travel, as opposed to by
+           freshness, by the kind of thing it is, or by their own follow graph. Anything moved by
+           travel has to be able to say so: a feed that reorders for reasons it will not give is a
+           feed asking to be trusted. Following somebody is not one of these, because on a feed of
+           people you follow it would be printed under every row and mean nothing. */
+        $items[$i]['feed_boosted'] = $boosted;
         $items[$i]['feed_score'] = round($score, 4);
         $items[$i]['feed_reason'] = $why;
     }

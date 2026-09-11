@@ -1126,3 +1126,24 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .map-credit{margin:6px 0 0;font-size:.78rem}
 .leaflet-container{font:inherit;background:var(--surface-2)}
 @media (max-width:700px){ .map-canvas{height:260px} }
+
+/* The signed-in home leads with the member's own trip. Everything under it is context for it. */
+.next-trip{grid-column:1/-1;order:-1;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);box-shadow:var(--shadow);padding:16px 18px;margin:0 0 16px}
+.next-trip-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+.next-trip-when{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;color:var(--brand);
+  font-weight:700;flex-basis:100%}
+.next-trip-title{font-family:var(--display);font-size:1.35rem;font-weight:600;text-decoration:none;
+  color:inherit;line-height:1.2}
+.next-trip-title:hover{color:var(--brand)}
+.next-trip-today{list-style:none;margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line-soft);
+  display:grid;gap:8px}
+.next-trip-today li{display:flex;gap:12px;align-items:baseline}
+.next-trip-acts{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
+/* On a phone the dashboard order is: your trip, what needs answering, the composer, the travel
+   rails, then the wider feed. A feed of other people's news is the last thing you need when you
+   are leaving in two days. */
+@media (max-width:960px){
+  .feed-rail{order:2}
+  .feed-main{order:3}
+}

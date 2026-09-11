@@ -105,5 +105,69 @@ $eng = ['likes' => ['activity:5' => 40], 'comments' => [], 'mine' => []];
 $ranked2 = rmt_feed_rank($items, 1, $eng);
 ok((int) $ranked2[0]['id'] === 1, 'forty likes elsewhere do not outrank your own dates');
 
+
+// --- the cases a ranking has to get right to be worth having -------------------------------------
+/* Each of these is a pair the feed could plausibly get backwards, written as "this beats that"
+   rather than as a score, because a score is an implementation detail and an order is a promise. */
+$pdo->exec("INSERT INTO follows VALUES (3,1)");          // the reader follows Cara
+$dayOld = date('Y-m-d H:i:s', strtotime('-4 days'));
+$minsOld = date('Y-m-d H:i:s', strtotime('-10 minutes'));
+
+$beats = static function (array $a, array $b, string $what) use ($item): void {
+    $r = rmt_feed_rank([$a, $b], 1);
+    ok((int) $r[0]['id'] === (int) $a['id'], $what);
+};
+
+// Old but relevant beats new but not.
+$beats(
+    $item(['id' => 11, 'day' => $mid, 'join_mode' => 'open', 'created_at' => $dayOld]),
+    $item(['id' => 12, 'kind' => 'post', 'destination_id' => 2, 'dest_name' => 'Porto',
+           'user_id' => 3, 'created_at' => $minsOld]),
+    'a four day old plan on your dates beats a ten minute old post from somewhere else'
+);
+
+// Somebody on your dates beats somebody you follow, somewhere you are not going.
+$beats(
+    $item(['id' => 13, 'kind' => 'trip', 'day' => null, 'user_id' => 2, 'created_at' => $hourAgo]),
+    $item(['id' => 14, 'kind' => 'trip', 'destination_id' => 2, 'dest_name' => 'Porto',
+           'user_id' => 3, 'created_at' => $hourAgo]),
+    'a traveler in the city you are going to beats one you follow who is not'
+);
+
+// Something you can join beats something you can only look at.
+$beats(
+    $item(['id' => 15, 'day' => $mid, 'join_mode' => 'ask', 'created_at' => $hourAgo]),
+    $item(['id' => 16, 'kind' => 'photo', 'created_at' => $hourAgo]),
+    'a plan you can ask to join beats a photograph of the same city'
+);
+
+// Tomorrow beats six months away.
+$soonDay = date('Y-m-d', strtotime('+11 days'));
+$farDay  = date('Y-m-d', strtotime('+180 days'));
+$pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,date_from,date_to)
+            VALUES (2,1,1,'Later','later','$farDay','" . date('Y-m-d', strtotime('+187 days')) . "')");
+$beats(
+    $item(['id' => 17, 'day' => $soonDay, 'join_mode' => 'open', 'created_at' => $hourAgo]),
+    $item(['id' => 18, 'day' => $farDay, 'join_mode' => 'open', 'created_at' => $hourAgo]),
+    'a plan on the trip that starts next week beats one on the trip six months out'
+);
+
+/* And the rule that keeps all of it honest: nothing is promoted without a reason the reader can
+   read. A row that moved up and says nothing is a feed asking to be trusted. */
+$all = rmt_feed_rank([
+    $item(['id' => 21, 'day' => $mid, 'join_mode' => 'open']),
+    $item(['id' => 22, 'day' => $farDay, 'join_mode' => 'open']),
+    $item(['id' => 23, 'kind' => 'photo']),
+    $item(['id' => 24, 'kind' => 'post', 'destination_id' => 2, 'dest_name' => 'Porto', 'user_id' => 3]),
+], 1);
+$unexplained = [];
+foreach ($all as $row) {
+    if (!empty($row['feed_boosted']) && trim((string) $row['feed_reason']) === '') {
+        $unexplained[] = (int) $row['id'];
+    }
+}
+ok($unexplained === [], 'every row the feed pushed up says why'
+   . ($unexplained ? ': ' . implode(', ', $unexplained) : ''));
+
 echo "feed_rank_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

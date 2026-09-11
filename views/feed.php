@@ -17,6 +17,54 @@ $threads = $threads ?? [];
 ?>
 <div class="wrap feed-shell">
 
+  <?php /* The trip this member is actually on, or about to be on. It is the thing the page is
+           about; everything below it is context for it. No trip, no card: an empty one would be
+           the site asking somebody to feel bad about not travelling. */ ?>
+  <?php $nt = $rails['next_trip'] ?? null; ?>
+  <?php if ($nt): ?>
+    <?php
+      $ntPhase = rmt_trip_phase($nt);
+      $ntDays  = $ntPhase === 'upcoming'
+          ? (int) ceil((strtotime((string) $nt['date_from']) - time()) / 86400) : null;
+      $ntToday = $rails['next_trip_today'] ?? [];
+    ?>
+    <section class="next-trip feed-nudge">
+      <div class="next-trip-head">
+        <span class="next-trip-when">
+          <?php if ($ntPhase === 'current'): ?>You are in <?= e((string) ($nt['dest_name'] ?: 'this city')) ?>
+          <?php elseif ($ntDays !== null && $ntDays <= 0): ?>Leaving today
+          <?php elseif ($ntDays === 1): ?>Tomorrow
+          <?php else: ?>In <?= (int) $ntDays ?> days<?php endif; ?>
+        </span>
+        <a class="next-trip-title" href="<?= e(url('trip/'.(int) $nt['id'].'/'.(string) $nt['slug'])) ?>">
+          <?= e((string) $nt['title']) ?></a>
+        <span class="hint"><?= e(rmt_card_date_range((string) $nt['date_from'], (string) $nt['date_to'])) ?></span>
+      </div>
+
+      <?php if ($ntToday): ?>
+        <ul class="next-trip-today">
+          <?php foreach (array_slice($ntToday, 0, 3) as $nta): ?>
+            <li>
+              <span class="today-time<?= empty($nta['start_time']) ? ' today-time-any' : '' ?>">
+                <?= !empty($nta['start_time']) ? e((string) $nta['start_time']) : 'any time' ?></span>
+              <a href="<?= e(url('activity/'.(int) $nta['id'])) ?>"><?= e((string) $nta['title']) ?></a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+
+      <p class="next-trip-acts">
+        <a class="btn btn-primary btn-sm" href="<?= e(url('trip/'.(int) $nt['id'].'/'.(string) $nt['slug'])) ?>">Open the trip</a>
+        <?php if (!empty($nt['dest_slug'])): ?>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$nt['dest_slug'].'/travelers')) ?>">
+            <?php if ((int) ($rails['next_trip_overlap'] ?? 0) > 0): ?>
+              <?= (int) $rails['next_trip_overlap'] ?> on your dates
+            <?php else: ?>Who else is going<?php endif; ?></a>
+        <?php endif; ?>
+      </p>
+    </section>
+  <?php endif; ?>
+
   <?php /* Somebody is waiting on an answer about a trip they are planning right now. Above even
            the "how was it" card, because it is a person waiting rather than a question. */ ?>
   <?php if (!empty($rails['invites'])): ?>
@@ -62,10 +110,10 @@ $threads = $threads ?? [];
     </section>
   <?php endif; ?>
 
-  <div class="feed-main">
-    <?php /* The composer is the first thing in the column, because the difference between a feed
-             and a network is whether the reader can answer it without going somewhere else. It
-             posts to the same endpoint /talk uses. */ ?>
+  <?php /* The composer, above both columns. The difference between a feed and a network is whether
+           the reader can answer it without going somewhere else, and on a phone that means it has
+           to be reachable before the scrolling starts. It posts to the same endpoint /talk uses. */ ?>
+  <div class="feed-nudge composer-wrap">
     <form class="composer card" method="post" enctype="multipart/form-data" action="<?= e(url('post/new')) ?>"><?= csrf_field() ?>
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
       <input type="hidden" name="return" value="/feed">
@@ -100,7 +148,9 @@ $threads = $threads ?? [];
         });
       })();
     </script>
+  </div>
 
+  <div class="feed-main">
     <div class="feed-scopes">
       <a class="feed-scope<?= ($scope ?? 'following') === 'following' ? ' on' : '' ?>"
          href="<?= e(url('feed')) ?>">Following</a>
