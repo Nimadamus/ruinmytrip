@@ -165,6 +165,23 @@ function rmt_sitemap_group(string $group): array {
                 if (!rmt_trip_has_substance($t)) continue;
                 $add('trip/' . $t['id'] . '/' . $t['slug'], $t['created_at'] ?? null);
             }
+            /* Photographs with something written on them. A photo page whose caption is empty is
+               an image on a URL, which is the definition of a thin page and is not worth asking
+               anybody to index; one with a caption is a picture of a place with a sentence about
+               it, which is exactly what image search is for. Public trips only, same rule as the
+               trips above, and a review is public by definition. */
+            foreach (q_all("SELECT tp.id, tp.created_at FROM trip_photos tp
+                              JOIN trips t ON t.id = tp.trip_id
+                             WHERE t.status='published' AND COALESCE(t.visibility,'public')='public'
+                               AND tp.caption IS NOT NULL AND tp.caption <> ''") as $ph) {
+                $add('photo/trip/' . (int) $ph['id'], $ph['created_at'] ?? null);
+            }
+            foreach (q_all("SELECT rp.id, rp.created_at FROM review_photos rp
+                              JOIN reviews r ON r.id = rp.review_id
+                             WHERE r.status='published'
+                               AND rp.caption IS NOT NULL AND rp.caption <> ''") as $ph) {
+                $add('photo/review/' . (int) $ph['id'], $ph['created_at'] ?? null);
+            }
             break;
 
         case 'profiles':
