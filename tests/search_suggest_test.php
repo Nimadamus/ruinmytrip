@@ -312,6 +312,20 @@ check('and so does an empty query', $order(''), ['people','dests','places','talk
    "museum" is a word in "Rijksmuseum" but it does not begin one. */
 check('a word boundary beats a match buried inside a word',
       rmt_search_section_order('museum', ['a' => ['Rijksmuseum'], 'b' => ['Museum of Art']])[0], 'b');
+/* Within a tier, how much of the name the query accounts for decides it. Both of these match at a
+   word boundary; "sagrada familia" is half of one and a fifth of the other. It is deliberately
+   worth less than a whole tier, so it can order two equal matches and can never promote a worse
+   one past a better one, which is the property that keeps the ranking predictable. */
+check('how much of the name you typed breaks a tie inside a tier',
+      rmt_search_section_order('sagrada familia', [
+          'long'  => ['A very long name that mentions the Sagrada Familia somewhere in the middle of it'],
+          'short' => ['Basilica de la Sagrada Familia'],
+      ])[0], 'short');
+check('and it never crosses a tier',
+      rmt_search_section_order('rijks', [
+          'contains' => ['A page about the Rijks'],
+          'starts'   => ['Rijksmuseum and a great deal of other text in the title as well'],
+      ])[0], 'starts');
 
 echo "\n-- a partial name, and an accent nobody types --\n";
 /* Three queries that answered with nothing at all on the results page while the suggestion box

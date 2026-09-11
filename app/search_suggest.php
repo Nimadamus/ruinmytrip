@@ -817,14 +817,25 @@ function rmt_search_section_order(string $q, array $names): array {
 
     $scored = [];
     foreach ($keys as $i => $key) {
-        $best = 0;
+        $best = 0.0;
         foreach ($names[$key] as $name) {
             $n = function_exists('rmt_search_norm') ? rmt_search_norm((string) $name) : mb_strtolower((string) $name);
             if ($n === '') continue;
-            if ($n === $needle)                 { $best = 4; break; }
-            if (str_starts_with($n, $needle))   { $best = max($best, 3); continue; }
-            if (preg_match('/(^|\s)' . preg_quote($needle, '/') . '/u', $n)) { $best = max($best, 2); continue; }
-            if (str_contains($n, $needle))      { $best = max($best, 1); }
+            $tier = 0.0;
+            if ($n === $needle)                                              $tier = 4.0;
+            elseif (str_starts_with($n, $needle))                            $tier = 3.0;
+            elseif (preg_match('/(^|\s)' . preg_quote($needle, '/') . '/u', $n)) $tier = 2.0;
+            elseif (str_contains($n, $needle))                               $tier = 1.0;
+            if ($tier === 0.0) continue;
+            /* How much of the name the query accounts for, worth less than a whole tier so it can
+               only order things that matched the same way. "Sagrada Familia" is half of "Basilica
+               de la Sagrada Familia" and a fifth of "Sagrada Familia tickets 2026: 26 euros, 36
+               with towers, timed entry, now finished", and the reader typing it meant the church.
+               Neutral about what kind of thing something is: an article with a tight title still
+               beats a place with a rambling one, which is the correct answer when it happens. */
+            $tier += 0.9 * (mb_strlen($needle) / max(1, mb_strlen($n)));
+            $best = max($best, $tier);
+            if ($best >= 4.9) break;
         }
         $scored[] = ['key' => $key, 'score' => $best, 'was' => $i];
     }
