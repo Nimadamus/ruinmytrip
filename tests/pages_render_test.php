@@ -371,6 +371,35 @@ if ($acct) {
         [$stG] = $req('/trip/' . $hiddenTrip, null, $cookie);
         ok('and once they are off it, it is shut to them again', $stG === 404, "status $stG");
 
+        /* The trip while it is happening. A "Today" card is a new surface that reads other
+           people's plans on somebody's own trip, so it gets the same canary as every other
+           surface: the private line must not be on it. */
+        $todayMarker = 'TODAYCANARY' . bin2hex(random_bytes(4));
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, date_from, date_to, created_at)
+                       VALUES (?,?,?,?,'','published','public',?,?,?)")
+            ->execute([$otherId, (int) $destRow2['id'], 'canary trip in progress',
+                       'canary-now-' . strtolower($todayMarker),
+                       date('Y-m-d', strtotime('-1 day')), date('Y-m-d', strtotime('+3 days')),
+                       date('Y-m-d H:i:s')]);
+        $nowTrip = (int) $pdo->lastInsertId();
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, day, start_time,
+                         title, category, visibility, join_mode, status, created_at)
+                       VALUES (?,?,?,?,'09:00','Canary breakfast','food','trip','no','published',?)")
+            ->execute([$nowTrip, $otherId, (int) $destRow2['id'], date('Y-m-d'), date('Y-m-d H:i:s')]);
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, day, start_time,
+                         title, category, visibility, join_mode, status, created_at)
+                       VALUES (?,?,?,?,'10:00',?,'other','private','no','published',?)")
+            ->execute([$nowTrip, $otherId, (int) $destRow2['id'], date('Y-m-d'), $todayMarker,
+                       date('Y-m-d H:i:s')]);
+
+        [$stT, $bodyT] = $req('/trip/' . $nowTrip, null, $cookie);
+        ok('a trip in progress leads with today', $stT === 200 && str_contains($bodyT, 'Canary breakfast'),
+           "status $stT");
+        ok('and a private line is not on it', !str_contains($bodyT, $todayMarker));
+
+        $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$nowTrip]);
+        $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$nowTrip]);
+
         $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$hiddenTrip]);
         $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$hiddenTrip]);
         $anonPlan = @file_get_contents($base . '/trip/' . $canaryTrip, false,

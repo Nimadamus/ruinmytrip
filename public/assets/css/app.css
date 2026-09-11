@@ -1080,3 +1080,21 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .place-net-line .avatar{width:26px;height:26px;margin-right:-8px;border:2px solid var(--card)}
 .place-net-line a:last-of-type .avatar{margin-right:2px}
 .place-net-line .hint{display:block;font-size:.82rem}
+
+/* The trip while it is on. One card, above everything, times down the left so the day reads as a
+   column rather than a paragraph. */
+.today-card{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+  padding:16px 18px;margin:0 0 20px;box-shadow:var(--shadow)}
+.today-head{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+.today-head h2{margin:0;font-size:1.15rem}
+.today-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.today-list li{display:flex;gap:12px;align-items:baseline}
+.today-time{flex:0 0 62px;font-variant-numeric:tabular-nums;font-weight:650;font-size:.95rem}
+.today-time-any{font-weight:400;color:var(--muted);font-size:.82rem}
+.today-what{flex:1;min-width:0}
+.today-what .hint{display:block;font-size:.82rem}
+.today-next{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.today-next h3{margin:0 0 8px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--muted)}
+.today-acts{display:flex;gap:8px;margin:14px 0 0;flex-wrap:wrap}
+@media (max-width:480px){ .today-time{flex-basis:52px} }

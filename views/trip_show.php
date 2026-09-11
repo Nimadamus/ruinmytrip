@@ -104,6 +104,10 @@ $authorSaid = $authorSaid ?? [];
   <?php /* The plan, high on the page. It is the thing a reader came for and the thing that makes
            this trip worth anybody else's attention, so it sits above the comments rather than
            under them. */ ?>
+  <?php /* While the trip is on, what is on today goes above everything else. A page written for
+           planning is the wrong page to open on the third morning in Lisbon. */ ?>
+  <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_today.php'; ?>
+
   <?php include __DIR__ . '/_trip_members.php'; ?>
 
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
