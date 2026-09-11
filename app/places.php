@@ -594,3 +594,27 @@ function rmt_place_suggestions(int $limit = 400): array {
     return q_all('SELECT p.id, p.name, p.type, p.destination_id FROM places p
                    WHERE p.status = ? ORDER BY p.destination_id, p.name LIMIT ' . max(1, $limit), ['active']);
 }
+
+/**
+ * Just enough of a place to be a pin.
+ *
+ * rmt_places_for_destination() carries review counts, averages, an editorial snippet and a
+ * per-place subquery, because a card needs them. A map marker needs a name, a point, a link and a
+ * category, and asking for the rest of it a hundred and twenty times is most of what a city page
+ * was spending its time on.
+ *
+ * @return list<array{id:int,name:string,slug:string,lat:float,lng:float,category:?string,type:string}>
+ */
+function rmt_place_map_points(int $destId, int $limit = 120): array {
+    return q_all(
+        "SELECT p.id, p.name, p.slug, p.type, p.lat, p.lng,
+                COALESCE(c.plural, c.name) category
+           FROM places p
+      LEFT JOIN place_categories c ON c.id = p.category_id AND c.status = 'active'
+          WHERE p.destination_id = ? AND p.status = 'active'
+            AND p.lat IS NOT NULL AND p.lng IS NOT NULL
+       ORDER BY p.id
+          LIMIT " . (int) $limit,
+        [$destId]
+    );
+}

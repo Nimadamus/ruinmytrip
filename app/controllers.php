@@ -290,13 +290,8 @@ function destination(array $a): void {
     $cityMap = [];
     /* The category rides along so the map can be filtered by it: on a city with a hundred pins the
        useful question is "where are the museums", not "where is everything". */
-    $catNames = [];
-    foreach (q_all("SELECT id, name, plural FROM place_categories WHERE status = 'active'") as $c) {
-        $catNames[(int) $c['id']] = (string) ($c['plural'] ?: $c['name']);
-    }
-    foreach (rmt_places_for_destination($id, '', 120) as $pl) {
-        if ($pl['lat'] === null || $pl['lng'] === null) continue;
-        $catName = $catNames[(int) ($pl['category_id'] ?? 0)] ?? null;
+    foreach (rmt_place_map_points($id, 120) as $pl) {
+        $catName = $pl['category'] !== null ? (string) $pl['category'] : null;
         $cityMap[] = ['lat' => (float) $pl['lat'], 'lng' => (float) $pl['lng'],
                       'label' => (string) $pl['name'], 'href' => url('p/' . $pl['slug']),
                       'meta' => $catName ?: rmt_place_type_label((string) $pl['type']),
