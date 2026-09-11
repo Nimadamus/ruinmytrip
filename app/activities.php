@@ -595,3 +595,52 @@ function rmt_activity_recommended_in_city(int $destId, ?array $viewer, int $limi
     foreach ($out as $i => $r) $out[$i]['users'] = array_values($r['users']);
     return array_slice($out, 0, $limit);
 }
+
+/**
+ * Open plans, anywhere, soonest first.
+ *
+ * A plan somebody opened to other people and a meetup are the same thing said twice. Rather than
+ * keep two tables pretending to be two features, the pages that ask "what could I turn up to" read
+ * both and show one list. This is the plan half of that.
+ *
+ * Same visibility rule as every other read of a plan: the trip's own setting, then the plan's, then
+ * blocks in both directions.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_open_plans_upcoming(?array $viewer, ?int $destId = null, int $limit = 30): array {
+    [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
+    [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
+    $blockSql = '1=1';
+    $blockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$blockSql] = rmt_match_block_sql('a.user_id');
+        $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+    $where = '';
+    $whereArgs = [];
+    if ($destId !== null && $destId > 0) {
+        $where = ' AND a.destination_id = ?';
+        $whereArgs = [$destId];
+    }
+
+    return q_all(
+        "SELECT a.*, t.slug trip_slug, t.date_from trip_from, t.date_to trip_to,
+                u.username, pr.avatar_url, d.name dest_name, d.slug dest_slug,
+                (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'going') going_count
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+           JOIN users u ON u.id = a.user_id AND u.status = 'active'
+      LEFT JOIN profiles pr ON pr.user_id = a.user_id
+      LEFT JOIN destinations d ON d.id = a.destination_id
+          WHERE a.status = 'published' AND t.status = 'published'
+            AND a.join_mode IN ('ask','open') AND a.cancelled_at IS NULL
+            AND (a.day IS NULL OR a.day >= ?)
+            AND (a.day IS NOT NULL OR t.date_to IS NULL OR t.date_to >= ?)
+            AND $tripVis AND $actVis AND $blockSql $where
+       ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
+                COALESCE(a.start_time,'99:99'), a.id DESC
+          LIMIT " . (int) $limit,
+        array_merge([date('Y-m-d'), date('Y-m-d')], $tripArgs, $actArgs, $blockArgs, $whereArgs)
+    );
+}

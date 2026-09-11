@@ -310,6 +310,34 @@ if ($acct) {
             [, $body] = $req($path, null, $cookie);
             ok("a private plan stays off $path", !str_contains($body, $planMarker));
         }
+
+        /* The other half of the same mistake, and the one the meetups page could make: a plan that
+           is wide open to anybody who wants to come, sitting on a trip its owner made private. The
+           join mode says yes and the trip says no, and the trip wins. */
+        $openMarker = 'OPENPLANCANARY' . bin2hex(random_bytes(4));
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, date_from, date_to, created_at)
+                       VALUES (?,?,?,?,'','published','private',?,?,?)")
+            ->execute([$otherId, (int) $destRow2['id'], 'canary hidden trip',
+                       'canary-hid-' . strtolower($openMarker),
+                       date('Y-m-d', strtotime('+10 days')), date('Y-m-d', strtotime('+17 days')),
+                       date('Y-m-d H:i:s')]);
+        $hiddenTrip = (int) $pdo->lastInsertId();
+        $pdo->prepare("INSERT INTO trip_activities (trip_id, user_id, destination_id, day, title, category,
+                         visibility, join_mode, status, created_at)
+                       VALUES (?,?,?,?,?,'other','trip','open','published',?)")
+            ->execute([$hiddenTrip, $otherId, (int) $destRow2['id'], date('Y-m-d', strtotime('+11 days')),
+                       $openMarker, date('Y-m-d H:i:s')]);
+
+        foreach (['/meetups', '/discover', '/feed', '/d/' . $destRow2['slug'] . '/travelers'] as $path) {
+            [, $body] = $req($path, null, $cookie);
+            ok("an open plan on a private trip stays off $path", !str_contains($body, $openMarker));
+        }
+        $anonMeet = @file_get_contents($base . '/meetups', false,
+            stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        ok('and off the meetups page for anybody signed out', !str_contains((string) $anonMeet, $openMarker));
+
+        $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$hiddenTrip]);
+        $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$hiddenTrip]);
         $anonPlan = @file_get_contents($base . '/trip/' . $canaryTrip, false,
             stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
         ok('a private plan stays off the public trip page', !str_contains((string) $anonPlan, $planMarker));

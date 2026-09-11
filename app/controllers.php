@@ -1968,17 +1968,40 @@ function collection_item_remove(array $a): void {
 }
 
 function meetups_index(array $a): void {
+    /* Upcoming only. A page that asks somebody to come along should not be mostly things that
+       already happened, and a meetup last August is not an invitation. */
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
                       (SELECT COUNT(*) FROM meetup_rsvps r WHERE r.meetup_id=m.id AND r.status='going') going
                       FROM meetups m LEFT JOIN destinations d ON d.id=m.destination_id
-                      WHERE m.status='published' ORDER BY m.date_start");
+                      WHERE m.status='published' AND m.date_start >= ? ORDER BY m.date_start",
+                     [date('Y-m-d H:i:s')]);
     $hosts = authors_by_ids(array_column($meetups, 'host_id'));
     foreach ($meetups as &$m) $m['host'] = $hosts[(int)$m['host_id']] ?? null; unset($m);
     $me = current_user();
     $canHost = can_host_meetups($me);
-    view('meetups_index', compact('meetups', 'me', 'canHost'), [
+
+    /* A plan somebody opened to other travelers is a meetup. It was only ever a separate word
+       because it is stored in a different table, and nobody arriving on this page cares which
+       table a Friday drink is in. Both are listed here, soonest first, and a plan keeps its own
+       page and its own join rules. */
+    $openPlans = function_exists('rmt_open_plans_upcoming') ? rmt_open_plans_upcoming($me, null, 24) : [];
+
+    /* One list, in the order the days happen. Two lists side by side would just be the two tables
+       showing through. A plan with no day yet sorts with its trip's first day, because that is
+       when it will be. */
+    $items = [];
+    foreach ($meetups as $m) {
+        $items[] = ['kind' => 'meetup', 'when' => (string) $m['date_start'], 'row' => $m];
+    }
+    foreach ($openPlans as $pl) {
+        $when = (string) ($pl['day'] ?: $pl['trip_from'] ?: '9999-12-31');
+        $items[] = ['kind' => 'plan', 'when' => $when, 'row' => $pl];
+    }
+    usort($items, static fn(array $x, array $y) => strcmp($x['when'], $y['when']));
+
+    view('meetups_index', compact('meetups', 'me', 'canHost', 'openPlans', 'items'), [
         'title'=>'Travel meetups: meet other travelers in person',
-        'description'=>'Public travel meetups posted by members: coffee, a walk, dinner with other travelers in the city you are in. Never dating, never precise location, always 18+.',
+        'description'=>'Meetups and open plans posted by members: coffee, a walk, a match, dinner with other travelers in the city you are in. Never dating, never precise location, always 18+.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')]],
     ]);
 }
