@@ -134,12 +134,25 @@ function rmt_feed_rails(int $uid): array {
         foreach ($matches as $m) {
             if ((int) ($m['dest_id'] ?? 0) === (int) $nextTrip['destination_id']) $nextTripOverlap++;
         }
+        /* What this trip is short of, so the card can say one useful thing instead of the same
+           two buttons whatever state the trip is in. Counted, never guessed: a plan is a row and
+           a saved place is a row. The order is the order somebody actually plans in. */
+        $nextTripPlans = (int) (q_one("SELECT COUNT(*) c FROM trip_activities
+                                        WHERE trip_id = ? AND status = 'published' AND cancelled_at IS NULL",
+                                      [(int) $nextTrip['id']])['c'] ?? 0);
+        $nextTripSaved = (int) (q_one("SELECT COUNT(*) c FROM saves s
+                                         JOIN places p ON p.id = s.target_id
+                                        WHERE s.user_id = ? AND s.target_type = 'place'
+                                          AND p.destination_id = ?",
+                                      [$uid, (int) $nextTrip['destination_id']])['c'] ?? 0);
     }
 
     return [
         'next_trip'        => $nextTrip,
         'next_trip_today'  => $nextTripToday,
         'next_trip_overlap' => $nextTripOverlap,
+        'next_trip_plans'   => $nextTripPlans ?? 0,
+        'next_trip_saved'   => $nextTripSaved ?? 0,
         'invites'     => $invites,
         'review'      => $toReview,
         'joinable'    => $joinable,

@@ -1230,3 +1230,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px;line-height:1;
   cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(13,24,38,.18)}
 .photo-picked-count{flex-basis:100%;margin:2px 0 0}
+
+.next-trip-next{margin:.2rem 0 .6rem;font-size:.93rem;color:var(--muted)}
+.next-trip-next a{font-weight:600}

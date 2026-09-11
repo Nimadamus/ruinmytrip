@@ -38,7 +38,7 @@ $threads = $threads ?? [];
         </span>
         <a class="next-trip-title" href="<?= e(url('trip/'.(int) $nt['id'].'/'.(string) $nt['slug'])) ?>">
           <?= e((string) $nt['title']) ?></a>
-        <span class="hint"><?= e(rmt_card_date_range((string) $nt['date_from'], (string) $nt['date_to'])) ?></span>
+        <span class="hint"><?php if (!empty($nt['dest_name']) && $ntPhase !== 'current'): ?><?= e((string) $nt['dest_name']) ?> &middot; <?php endif; ?><?= e(rmt_card_date_range((string) $nt['date_from'], (string) $nt['date_to'])) ?></span>
       </div>
 
       <?php if ($ntToday): ?>
@@ -51,6 +51,35 @@ $threads = $threads ?? [];
             </li>
           <?php endforeach; ?>
         </ul>
+      <?php endif; ?>
+
+      <?php /* One useful sentence about THIS trip, rather than the same two buttons whatever
+               state it is in. A traveller coming back tomorrow wants to know what to do next, and
+               the answer depends on what the trip is short of: nothing planned, plans but nowhere
+               to go, or a trip that is genuinely ready. Counted from real rows; a trip that is
+               ready is told so rather than nagged. Nothing is suggested about photographs before
+               the trip has happened. */ ?>
+      <?php
+        $rmt_plans = (int) ($rails['next_trip_plans'] ?? 0);
+        $rmt_saved = (int) ($rails['next_trip_saved'] ?? 0);
+        $rmt_city  = (string) ($nt['dest_name'] ?? '');
+        $rmt_next  = null;
+        if ($ntPhase !== 'past') {
+            if ($rmt_plans === 0 && $rmt_saved === 0 && $rmt_city !== '') {
+                $rmt_next = ['Nothing planned yet. Places in ' . $rmt_city . ' are a good place to start.',
+                             'Find places in ' . $rmt_city, url('d/'.$nt['dest_slug'].'/places')];
+            } elseif ($rmt_plans === 0) {
+                $rmt_next = ['You have saved places but nothing is on a day yet.',
+                             'Add your first plan', url('trip/'.(int) $nt['id'].'/'.(string) $nt['slug'].'#plan')];
+            } elseif ($rmt_saved === 0 && $rmt_city !== '') {
+                $rmt_next = [$rmt_plans === 1 ? 'One thing planned so far.' : $rmt_plans . ' things planned so far.',
+                             'Find places in ' . $rmt_city, url('d/'.$nt['dest_slug'].'/places')];
+            }
+        }
+      ?>
+      <?php if ($rmt_next && !$ntToday): ?>
+        <p class="next-trip-next"><?= e($rmt_next[0]) ?>
+          <a href="<?= e($rmt_next[2]) ?>"><?= e($rmt_next[1]) ?></a></p>
       <?php endif; ?>
 
       <p class="next-trip-acts">
