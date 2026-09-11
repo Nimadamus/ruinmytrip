@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# A red gate stops the push. Not a reminder, a refusal.
+#
+# Twice now a test suite has gone red inside a shell chain that continued anyway, and both times
+# the deploy that followed looked successful. Being more careful did not fix it. This does: the
+# push itself fails.
+#
+# PHP is found the same way the gate script finds it.
+exec scripts/gate.sh -q
+#
+# Install:  cp scripts/hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+# .git/hooks is not version controlled, so the copy in the repository is the master.
