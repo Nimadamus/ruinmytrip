@@ -17,10 +17,15 @@
  */
 declare(strict_types=1);
 
-/** Overpass mirrors, tried in order. A public endpoint under load returns 429 or simply hangs. */
+/* Overpass mirrors, tried in order. A public endpoint under load returns 429 or simply hangs, and
+   the main instance applies per-address slot limits: from a shared cloud address, which is what a
+   platform like Render gives you, a request can sit in a queue behind every other tenant until it
+   times out. The mirror is tried first for that reason, each attempt gets a short timeout so both
+   fit inside one web request, and rmt_place_ingest() exists so the fetching need not happen on the
+   server at all. */
 const RMT_OSM_ENDPOINTS = [
-    'https://overpass-api.de/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
+    'https://overpass-api.de/api/interpreter',
 ];
 
 /**
@@ -92,7 +97,7 @@ function rmt_osm_bbox(float $lat, float $lng, float $km = 12.0): array {
  *
  * @return array{ok:bool,elements:list<array>,error:?string}
  */
-function rmt_osm_fetch(string $query, int $timeout = 60): array {
+function rmt_osm_fetch(string $query, int $timeout = 25): array {
     if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.'];
     $lastError = 'No endpoint answered.';
     foreach (RMT_OSM_ENDPOINTS as $url) {

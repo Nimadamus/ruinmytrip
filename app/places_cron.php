@@ -13,7 +13,8 @@
  * Two operations, both deliberately small:
  *   verify  read only. Counts, categories, coordinates, aliases, duplicates, and a check that
  *           nothing resembling a rating came in with the data.
- *   import  one city and one kind at a time, with a dry run that writes nothing.
+ *   import  one city and one kind at a time, fetching from the provider here.
+ *   ingest  the same import, with the rows posted in, for when fetching here is unreliable.
  */
 declare(strict_types=1);
 
@@ -88,6 +89,61 @@ function cron_places(array $a): void {
                          JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
         return;
     }
+    /* Ingest: canonical rows posted in, rather than fetched here.
+     *
+     * The provider is one way to get rows; it is not the only way, and on a shared cloud address
+     * it is an unreliable one, because the public Overpass instance queues per address and a
+     * request can sit behind every other tenant of the platform until it times out. Fetching can
+     * happen anywhere with an internet connection; writing has to happen where the database
+     * credentials are. This is the seam between the two.
+     *
+     * It is not a wider door. Rows go through exactly the same rmt_place_import_one(): the field
+     * whitelist still drops anything that is not a fact, the provider must still be a registered
+     * one, the type must still be real, and deduplication still runs. Somebody holding this key
+     * can add places from a source we already trust. They cannot invent a rating.
+     */
+    if ($op === 'ingest') {
+        $raw = file_get_contents('php://input') ?: '';
+        $in = json_decode($raw, true);
+        if (!is_array($in) || !isset($in['rows']) || !is_array($in['rows'])) {
+            echo "expected a JSON body with a rows array
+";
+            return;
+        }
+        if (count($in['rows']) > 200) { echo "at most 200 rows in one request
+"; return; }
+        $dry = (string) input('dry') === '1';
+        $res = rmt_place_import_batch((int) $dest['id'], $in['rows'], $dry);
+
+        $aliases = 0;
+        if (!$dry && !empty($in['aliases']) && is_array($in['aliases'])) {
+            foreach ($res['details'] as $i => $d) {
+                $ref = (string) ($in['rows'][$i]['source_ref'] ?? '');
+                if (!$d['place_id'] || $ref === '') continue;
+                foreach ((array) ($in['aliases'][$ref] ?? []) as $alias) {
+                    if (rmt_place_alias_add((int) $d['place_id'], (string) $alias, 'openstreetmap')) $aliases++;
+                }
+            }
+        }
+        $matched = [];
+        $refused = [];
+        foreach ($res['details'] as $d) {
+            if ($d['action'] === 'update' && $d['how']) $matched[$d['how']] = ($matched[$d['how']] ?? 0) + 1;
+            foreach ($d['refused'] as $f) $refused[$f] = ($refused[$f] ?? 0) + 1;
+        }
+        printf("offered=%d created=%d updated=%d skipped=%d aliases=%d%s%s
+",
+               count($in['rows']), $res['created'], $res['updated'], $res['skipped'], $aliases,
+               $matched ? ' matched_by=' . json_encode($matched) : '',
+               $refused ? ' refused_fields=' . json_encode($refused) : '');
+        foreach (array_slice(array_unique($res['errors']), 0, 5) as $e) printf("  ! %s
+", $e);
+        echo $dry ? "dry run, nothing written
+" : "done
+";
+        return;
+    }
+
     if ($op !== 'import') { echo "unknown op\n"; return; }
 
     $type  = (string) (input('type') ?: 'all');

@@ -1157,3 +1157,7 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .share-row > summary{display:inline-flex;align-items:center;list-style:none;cursor:pointer}
 .share-row > summary::-webkit-details-marker{display:none}
 .share-opts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+/* The key under a trip map: which colour is which day. */
+.map-key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.82rem;color:var(--muted)}
+.map-key-item{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.map-key-item i{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto}
