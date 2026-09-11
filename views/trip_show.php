@@ -46,8 +46,20 @@ $authorSaid = $authorSaid ?? [];
           include __DIR__ . '/_photo_grid.php'; ?>
   <?php endif; ?>
 
-  <?php if ($me && (int)$t['user_id'] === (int)$me['id']): ?>
-    <p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a></p>
+  <?php /* A photograph from anybody planning the trip, straight from the page, because during a
+           trip the person holding the picture is as often the one who was invited. Up to six on a
+           trip, the same cap the form has. */ ?>
+  <?php if ($canEdit ?? false): ?>
+    <form id="photos" class="trip-photo-add" method="post" enctype="multipart/form-data"
+          action="<?= e(url('trip/'.(int) $t['id'].'/photos')) ?>">
+      <?= csrf_field() ?>
+      <label class="btn btn-ghost btn-sm" style="cursor:pointer">Add a photo
+        <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
+               style="display:none" onchange="this.form.submit()"></label>
+      <?php if ($me && (int) $t['user_id'] === (int) $me['id']): ?>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
+      <?php endif; ?>
+    </form>
   <?php endif; ?>
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
         include __DIR__ . '/_share.php'; ?>

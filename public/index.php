@@ -41,6 +41,7 @@ $routes = [
     ['POST', '#^/trip/(?<id>\d+)/delete$#',    'trip_delete'],
     ['POST', '#^/trip/(?<id>\d+)/going-too$#', 'trip_going_too'],
     ['POST', '#^/trip/(?<id>\d+)/activity$#',  'trip_activity_add'],
+    ['POST', '#^/trip/(?<id>\d+)/photos$#',    'trip_photos_add'],
     ['POST', '#^/trip/(?<id>\d+)/invite$#',    'trip_invite'],
     ['POST', '#^/trip/(?<id>\d+)/invite/answer$#', 'trip_invite_answer'],
     ['POST', '#^/trip/(?<id>\d+)/member/remove$#', 'trip_member_remove'],

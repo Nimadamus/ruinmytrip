@@ -2955,6 +2955,26 @@ function rmt_trip_validate(array $in): array {
  * invitation is a write to somebody else's notifications and a block has to hold here as it does
  * everywhere else.
  */
+/**
+ * POST /trip/{id}/photos -- a photograph from anybody planning the trip.
+ *
+ * Photographs used to go through the trip form, which is the owner's. On a trip two people are
+ * planning, and especially on a trip two people are ON, the person with the picture is as often
+ * the one who was invited. The photo is recorded against whoever uploaded it, like every other
+ * photograph on the site.
+ */
+function trip_photos_add(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    if (!rmt_trip_can_edit($t, $me)) forbidden('Only the travelers planning this trip can add to it.');
+
+    $errors = rmt_attach_trip_photos((int) $t['id'], (int) $me['id']);
+    flash($errors ? implode(' ', $errors) : 'Added.');
+    redirect('/trip/' . (int) $t['id'] . '/' . (string) $t['slug'] . '#photos');
+}
+
 function trip_invite(array $a): void {
     require_verified_email(); csrf_check();
     $me = current_user();
