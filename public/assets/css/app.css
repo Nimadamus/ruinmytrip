@@ -1147,3 +1147,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   .feed-rail{order:2}
   .feed-main{order:3}
 }
+/* Searching a city from its own page. */
+.city-search{display:flex;gap:8px;margin:14px 0 0}
+.city-search input[type=search]{flex:1;min-width:0}

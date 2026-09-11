@@ -303,3 +303,24 @@ function rmt_related_destinations(int $destId, int $limit = 6): array {
         [$destId]
     );
 }
+
+/**
+ * Move rows from one city to the front, keeping the order inside each group.
+ *
+ * A stable partition, not a sort. Full text ranking scores a name against a name and has no idea
+ * that "Time Out Market" means the one in Lisbon when the reader is reading about Lisbon. This
+ * reorders what a search already found and never adds a row, so it cannot widen what somebody is
+ * allowed to see, and within each group the original ranking still decides who leads.
+ *
+ * @param list<array<string,mixed>> $rows
+ * @param string $key the column holding the city id on these rows
+ */
+function rmt_prefer_city(array $rows, string $key, int $destId): array {
+    if ($destId < 1) return $rows;
+    $in = [];
+    $out = [];
+    foreach ($rows as $r) {
+        if ((int) ($r[$key] ?? 0) === $destId) $in[] = $r; else $out[] = $r;
+    }
+    return array_merge($in, $out);
+}

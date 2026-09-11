@@ -22,6 +22,14 @@
         </p>
       <?php endif; ?>
     <?php endif; ?>
+    <?php /* Which city the results were read in. Said out loud, because a reader who typed a
+             restaurant name and got the one in the right city should know that was not luck, and
+             because the way out of it has to be one tap. */ ?>
+    <?php if (!empty($ctx)): ?>
+      <p class="hint" style="margin:0 0 12px">Showing <?= e((string) $ctx['name']) ?> first.
+        <a href="<?= e(url('search?q=' . rawurlencode($qs) . '&in=')) ?>">Search everywhere</a>.</p>
+    <?php endif; ?>
+
     <?php /* People first. A search on this site is nearly always somebody looking for a person or
              a city, and travelers were below a wall of headings: nine lists on a phone means
              scrolling past six of them to reach a name. Every list is still here, in the same

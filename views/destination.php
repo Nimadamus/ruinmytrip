@@ -116,6 +116,15 @@
         </ul>
       <?php endif; ?>
 
+      <?php /* Searching from a city page should mean searching that city. A restaurant name typed
+               here finds the one on this page rather than one with the same name somewhere else. */ ?>
+      <form class="city-search" method="get" action="<?= e(url('search')) ?>">
+        <input type="hidden" name="in" value="<?= e((string) $d['slug']) ?>">
+        <label class="sr-only" for="city-q">Search <?= e($d['name']) ?></label>
+        <input type="search" id="city-q" name="q" placeholder="Search <?= e($d['name']) ?>: a place, a plan, a traveler">
+        <button class="btn btn-ghost btn-sm">Search</button>
+      </form>
+
       <div class="city-people-acts">
         <a class="btn btn-primary btn-sm" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Who is going, and when</a>
         <a class="btn btn-ghost btn-sm" href="<?= e($me ? url('trip/new?destination='.(int) $d['id']) : url('register?return='.rawurlencode('/d/'.$d['slug'].'/travelers'))) ?>">Post your dates</a>

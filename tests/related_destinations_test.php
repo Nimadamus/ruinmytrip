@@ -32,6 +32,14 @@ if ($start === false) { echo "FAIL: rmt_related_destinations not found\n"; exit(
 $end = strpos($src, "\n}\n", $start);
 eval(substr($src, $start, $end - $start + 3));
 
+$at2 = strpos($src, 'function rmt_prefer_city(array $rows, string $key, int $destId): array {');
+if ($at2 === false) { echo "FAIL: rmt_prefer_city not found
+"; exit(1); }
+$end2 = strpos($src, "
+}
+", $at2);
+eval(substr($src, $at2, $end2 - $at2 + 3));
+
 $pass = 0; $fail = 0;
 function ok(bool $c, string $what): void {
     global $pass, $fail;
@@ -74,6 +82,25 @@ $pdo->exec("INSERT INTO destinations VALUES (5,'E','e','X'),(6,'F','f','X'),(7,'
 for ($i = 5; $i <= 10; $i++) $pdo->exec("INSERT INTO trips (user_id,destination_id) VALUES (1,$i)");
 ok(count(rmt_related_destinations(1)) === 6, 'six at most');
 ok(count(rmt_related_destinations(1, 3)) === 3, 'or fewer when asked');
+
+/* City context in search. "Time Out Market" means the one in Lisbon when the reader is reading
+   about Lisbon, and full text ranking scores a name against a name. rmt_prefer_city() reorders
+   what a search already found; the rule that matters is that it NEVER adds or drops a row, because
+   a search result the viewer was not allowed to see must not appear through a reordering. */
+$rows = [
+    ['id' => 1, 'destination_id' => 2, 'n' => 'porto one'],
+    ['id' => 2, 'destination_id' => 1, 'n' => 'lisbon one'],
+    ['id' => 3, 'destination_id' => 3, 'n' => 'madrid one'],
+    ['id' => 4, 'destination_id' => 1, 'n' => 'lisbon two'],
+];
+$out = rmt_prefer_city($rows, 'destination_id', 1);
+ok(array_column($out, 'id') === [2, 4, 1, 3], 'the city asked about comes first, in its own order');
+ok(count($out) === count($rows), 'and nothing is added or dropped by reordering');
+ok(rmt_prefer_city($rows, 'destination_id', 0) === $rows, 'no city context changes nothing');
+ok(rmt_prefer_city($rows, 'destination_id', 99) === $rows, 'and a city with no rows changes nothing');
+ok(rmt_prefer_city([], 'destination_id', 1) === [], 'an empty result stays empty');
+$missing = [['id' => 9]];
+ok(rmt_prefer_city($missing, 'destination_id', 1) === $missing, 'a row with no city is left where it was');
 
 echo "related_destinations_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

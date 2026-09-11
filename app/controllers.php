@@ -2690,7 +2690,7 @@ function search(array $a): void {
        missing index row would hide a whole content type silently. */
     if ($qs !== '') {
         [$actVisSearch, $actVisSearchArgs] = rmt_activity_visible_sql('a', $me);
-        $activities = q_all("SELECT a.id, a.title, a.day, a.start_time, a.category, a.trip_id,
+        $activities = q_all("SELECT a.id, a.title, a.day, a.start_time, a.category, a.trip_id, a.destination_id,
                                     a.location_text, t.slug trip_slug, u.username,
                                     d.name dest_name, d.slug dest_slug
                                FROM trip_activities a
@@ -2707,8 +2707,34 @@ function search(array $a): void {
         $activities = [];
     }
 
+    /* City context. "Time Out Market" means the one in Lisbon when the reader is reading about
+       Lisbon, and full text ranking has no idea about that: it scores a name against a name.
+
+       The context is whichever is true first: a city named in the URL, because that is the reader
+       saying it out loud; then the city they are going to soonest, because somebody with Lisbon
+       dates in a fortnight is asking about Lisbon. It REORDERS what the search already found and
+       never adds a row, so nothing here can widen what somebody may see. */
+    $inSlug = trim((string) ($_GET['in'] ?? ''));
+    $ctx = null;
+    if ($inSlug !== '') $ctx = q_one('SELECT id, name, slug FROM destinations WHERE slug = ?', [$inSlug]);
+    if (!$ctx && $me) {
+        $ctx = q_one("SELECT d.id, d.name, d.slug
+                        FROM trips t JOIN destinations d ON d.id = t.destination_id
+                       WHERE t.user_id = ? AND t.status = 'published'
+                         AND t.date_to IS NOT NULL AND t.date_to >= ?
+                    ORDER BY t.date_from LIMIT 1", [(int) $me['id'], date('Y-m-d')]);
+    }
+    if ($ctx) {
+        $ctxId = (int) $ctx['id'];
+        $places     = rmt_prefer_city($places, 'destination_id', $ctxId);
+        $trips      = rmt_prefer_city($trips, 'destination_id', $ctxId);
+        $activities = rmt_prefer_city($activities, 'destination_id', $ctxId);
+        $reviews    = rmt_prefer_city($reviews, 'destination_id', $ctxId);
+        $dests      = rmt_prefer_city($dests, 'id', $ctxId);
+    }
+
     // A search results page is a view of the index we already have, in somebody's words.
-    view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
+    view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
         'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in
