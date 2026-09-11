@@ -141,6 +141,105 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* The deeper audit. Kept apart from `verify` because verify is the cheap one that a tally
+       script runs ten times in a row; this one asks harder questions and is meant to be read.
+
+       Everything here is a fact about a record, never a judgement about a venue. A place is
+       flagged for being malformed, for disagreeing with itself, or for being somewhere its city
+       is not; never for being obscure. Nothing is corrected automatically, because a wrong
+       correction is worse than a visible oddity. */
+    if ($op === 'audit') {
+        $destId = (int) $dest['id'];
+        $out = ['city' => $dest['slug']];
+
+        /* Somewhere its city is not. Rows are selected by destination_id, so "wrong city" cannot
+           mean a join error; what it can mean is a provider record whose point is forty kilometres
+           outside the city it was imported for, which is what a bounding box that reached into the
+           next town looks like afterwards. */
+        $far = [];
+        if ($dest['lat'] !== null && $dest['lng'] !== null) {
+            $clat = (float) $dest['lat'];
+            $clng = (float) $dest['lng'];
+            foreach (q_all('SELECT id, name, slug, lat, lng FROM places
+                             WHERE destination_id = ? AND lat IS NOT NULL AND lng IS NOT NULL',
+                           [$destId]) as $r) {
+                $dLat = ((float) $r['lat'] - $clat) * 111.0;
+                $dLng = ((float) $r['lng'] - $clng) * 111.0 * cos(deg2rad($clat));
+                $km = sqrt($dLat * $dLat + $dLng * $dLng);
+                if ($km > 40) $far[] = ['id' => (int) $r['id'], 'name' => $r['name'],
+                                        'slug' => $r['slug'], 'km' => round($km, 1)];
+            }
+            usort($far, static fn(array $a, array $b): int => $b['km'] <=> $a['km']);
+        }
+        $out['far_from_city'] = array_slice($far, 0, 20);
+
+        $out['no_coordinates'] = q_all('SELECT id, name, slug FROM places
+                                         WHERE destination_id = ? AND (lat IS NULL OR lng IS NULL)
+                                         LIMIT 20', [$destId]);
+
+        /* A link we would print. Anything that is not plainly http(s) with no whitespace in it is
+           a link we should not put in front of a reader. */
+        $bad = [];
+        foreach (q_all("SELECT id, name, slug, website_url FROM places
+                         WHERE destination_id = ? AND COALESCE(website_url,'') <> ''", [$destId]) as $r) {
+            $u = (string) $r['website_url'];
+            if (!preg_match('#^https?://[^\s<>"]+$#i', $u)) $bad[] = $r;
+            if (count($bad) >= 20) break;
+        }
+        $out['malformed_urls'] = $bad;
+
+        /* An alias is another name the same place goes by. One that repeats the name, or is a web
+           address, or is a paragraph, is none of those. */
+        $out['odd_aliases'] = q_all("SELECT a.place_id, p.name, a.alias FROM place_aliases a
+                                       JOIN places p ON p.id = a.place_id
+                                      WHERE p.destination_id = ?
+                                        AND (a.alias_key = p.name_key OR a.alias LIKE 'http%'
+                                             OR LENGTH(a.alias) > 120 OR TRIM(a.alias) = '')
+                                      LIMIT 20", [$destId]);
+
+        /* Hours that do not describe a day. The parser refuses these at the door, so anything here
+           arrived before it did or was typed by hand. */
+        $out['bad_hours'] = q_all("SELECT h.place_id, p.name, h.day_of_week, h.opens, h.closes
+                                     FROM place_hours h JOIN places p ON p.id = h.place_id
+                                    WHERE p.destination_id = ?
+                                      AND ((COALESCE(h.closed,0) = 0
+                                            AND (h.opens IS NULL OR h.closes IS NULL OR h.opens >= h.closes))
+                                        OR h.day_of_week < 0 OR h.day_of_week > 6)
+                                    LIMIT 20", [$destId]);
+
+        /* A category that no longer follows from the provider's own word. This is exactly what
+           op=recategorize would change, reported rather than done, so a mapping revision can be
+           looked at before it is applied to four hundred rows. */
+        $slugs = [];
+        foreach (q_all("SELECT id, slug FROM place_categories WHERE status = 'active'") as $c) {
+            $slugs[(string) $c['slug']] = (int) $c['id'];
+        }
+        $mismatch = [];
+        foreach (q_all("SELECT id, name, slug, source_kind, category_id FROM places
+                         WHERE destination_id = ? AND COALESCE(source_kind,'') <> ''", [$destId]) as $r) {
+            $want = rmt_osm_category_slug((string) $r['source_kind']);
+            $wantId = $want !== null ? ($slugs[$want] ?? null) : null;
+            if ((int) ($r['category_id'] ?? 0) === (int) ($wantId ?? 0)) continue;
+            $mismatch[] = ['id' => (int) $r['id'], 'name' => $r['name'],
+                           'kind' => $r['source_kind'], 'should_be' => $want];
+            if (count($mismatch) >= 20) break;
+        }
+        $out['category_mismatch'] = $mismatch;
+
+        /* How old the provider data is. Not a fault, a fact: it says when this city is worth
+           asking about again. */
+        $age = q_one("SELECT MIN(source_updated_at) oldest, MAX(source_updated_at) newest
+                        FROM places WHERE destination_id = ? AND source_updated_at IS NOT NULL",
+                     [$destId]);
+        $out['provider_data'] = ['oldest' => $age['oldest'] ?? null, 'newest' => $age['newest'] ?? null];
+
+        $out['clean'] = $out['far_from_city'] === [] && $out['no_coordinates'] === []
+                     && $out['malformed_urls'] === [] && $out['odd_aliases'] === []
+                     && $out['bad_hours'] === [] && $out['category_mismatch'] === [];
+        echo json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
     /* The places still sitting on a serial number, with the OSM object behind each one, so the
        provider can be asked what other names it holds for them. Read only. */
     if ($op === 'serials') {
