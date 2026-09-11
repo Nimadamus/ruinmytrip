@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (third pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (fourth pass).
 
 ## What the product is
 
@@ -84,9 +84,15 @@ runs ask, accept, decline, withdraw, remove, cancel. `/meetups` shows meetups an
 list, interleaved by day, because they are the same offer. A city page shows what travelers are
 doing, narrowed to your dates by default, with two filters: open to join, and a category.
 
-Then the loop closes. Once a plan's day has passed its owner is asked once, two taps, whether it was
-worth it, and the answer appears on the city page as a recommendation with a real name and a count
-of people. If one person said it, it says one person.
+Then the loop closes. The day before, the people meeting are reminded. Once a plan's day has passed
+its owner is asked once, two taps, whether it was worth it, and the answer appears on the city page
+as a recommendation with a real name and a count of people. If one person said it, it says one
+person.
+
+Three emails and only three: an ask to join, a yes, a cancellation. Everything else lives on the
+site. A first message from a stranger is a request rather than a conversation, counted separately
+and not allowed to light up the navigation. Likes and saves roll up; anything addressed to the
+reader personally never does.
 
 Files worth knowing: `app/activities.php` (the plan model and every read of it), `app/photos.php`,
 `app/discovery.php`, `app/feed_home.php` (rails, engagement, ranking), `app/lifecycle.php` (trip

@@ -24,22 +24,30 @@ actually want to meet?"*
 ## Next, in order
 
 1. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
-   week costs. Real sources only, and none of it invented.
-2. **Related destinations.** "People going to Lisbon also go to Porto" is a real query over real
-   trips and would make every city page a doorway rather than a leaf.
-3. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-4. **Search that ranks across types.** It searches everything and presents nine separate lists;
-   one ranked list with faces in it is the fastest path from a name to a person.
-5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
-   it: no reminder the day before, no "you were both at this", no second invitation.
-6. **A reminder the day before.** Somebody accepted onto a plan eleven days ago is told nothing on
-   the day it matters. The notification exists; the timing does not.
-7. **Plans as a reason to come back daily.** Everything now happens on the day somebody posts. A
-   plan that fills, or nearly fills, or changes, should be a reason to open the site tomorrow.
-8. **Performance when this gets busy.** Notifications are N+1 by target, `/explore` ships 100KB,
-   and the feed ranking loads every follow and save for the member on each page.
+   week costs. Real sources only, and none of it invented. This is the last big thing a city page
+   cannot answer.
+2. **Plans as a reason to come back tomorrow.** Everything still happens on the day somebody
+   posts. A plan that nearly fills, or changes, or is two days away should pull somebody back.
+3. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
+   it: no "you were both at this", no second invitation, no way to find the same person again.
+4. **One ranked search result list.** Travelers are at the top now, which was most of the value,
+   but the page is still nine lists rather than one ordered answer.
+5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+6. **Groups on a plan.** Four people going to the same dinner have no way to talk to all four
+   except the plan's own thread, which is the right answer until it is not.
+7. **Performance when this gets busy.** `/explore` ships 100KB and the feed ranking loads every
+   follow and save for the member on each page. Notifications are fixed.
 
 ## Done (2026-09-11, later)
+
+* **The reminder the day before**, to the traveler whose plan it is and the people coming, once
+  per plan per person, and never for a plan nobody else is coming to.
+* **Travelers here also go to**, a real query over real public trips, counted in people.
+* **Plans are in the sitemap** when they have something on them, on the same condition the page's
+  own robots tag uses, from the same function.
+* **What people are doing, on the city page strangers land on from a search.**
+* **Travelers at the top of a search.**
+* Notifications stopped being N+1 by plan.
 
 * **A first message from a stranger is a request.** The inbox splits; a request is counted and one
   tap away and does not light up the navigation. Derived from the messages, never stored.
