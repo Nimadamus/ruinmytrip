@@ -222,6 +222,16 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
             $out['kept'][] = $k;
         }
     }
+    /* A row that predates the folded name column has a NULL in it, and the picker then compares a
+       folded query against an unfolded name and finds nothing: "Museu Geologico" typed in full
+       failed to find Museu Geológico. Filled on update as well as on create, so an old row heals
+       the next time the importer touches it. */
+    if (empty($cur['name_norm']) && function_exists('rmt_search_norm')) {
+        $set[] = 'name_norm = ?';
+        $args[] = rmt_search_norm((string) ($cur['name'] ?? $name));
+        $out['filled'][] = 'name_norm';
+    }
+
     // Claim the provider ref if the row has none, so the next run matches on it directly.
     if ($source !== '' && empty($cur['source_ref']) && !empty($data['source_ref'])) {
         $set[] = 'data_source = ?'; $args[] = $source;

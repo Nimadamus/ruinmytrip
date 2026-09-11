@@ -1161,3 +1161,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .map-key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 0 0;font-size:.82rem;color:var(--muted)}
 .map-key-item{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .map-key-item i{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 auto}
+/* Under the plan "where" field: whether this will link to a place or stay as text. */
+.place-pick-note{margin:4px 0 0;font-size:.8rem}
+.place-pick-note.is-linked{color:var(--brand)}

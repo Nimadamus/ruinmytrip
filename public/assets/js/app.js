@@ -211,21 +211,50 @@ if ('serviceWorker' in navigator) {
   var timer = null;
   var latest = '';
 
+  /* A note under the field saying which of the two things is about to happen. Picking a place we
+     hold attaches the plan to that place's page; typing anything else keeps it as text. Both are
+     fine and they are not the same, and a person should not have to guess which they got. */
+  var note = document.createElement('p');
+  note.className = 'hint place-pick-note';
+  note.hidden = true;
+  input.parentNode.appendChild(note);
+
+  var known = {};
+
   function fill(places) {
     list.innerHTML = '';
+    known = {};
     places.forEach(function (p) {
       var o = document.createElement('option');
       o.value = p.name;
       if (p.type) o.label = p.type;
       list.appendChild(o);
+      known[p.name.toLowerCase()] = p;
     });
+    say();
   }
 
+  function say() {
+    var v = input.value.trim();
+    if (v.length < 2) { note.hidden = true; return; }
+    var hit = known[v.toLowerCase()];
+    if (hit) {
+      note.textContent = 'Links to ' + hit.name + (hit.type ? ' (' + hit.type + ')' : '');
+      note.classList.add('is-linked');
+    } else {
+      note.textContent = 'Saved as text. Pick from the list to link it to a place.';
+      note.classList.remove('is-linked');
+    }
+    note.hidden = false;
+  }
+
+  input.addEventListener('change', say);
   input.addEventListener('input', function () {
+    say();
     var q = input.value.trim();
     latest = q;
     if (timer) clearTimeout(timer);
-    if (q.length < 2) { fill([]); return; }
+    if (q.length < 2) { fill([]); note.hidden = true; return; }
     timer = setTimeout(function () {
       fetch('/suggest/places?q=' + encodeURIComponent(q) + '&dest=' + dest, {
         headers: { 'Accept': 'application/json' }
