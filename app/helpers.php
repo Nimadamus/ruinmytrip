@@ -76,7 +76,13 @@ function rmt_saved_path(string $kind, int $id, string $slug): string {
 }
 
 function slugify(string $s): string {
-    $s = strtolower(trim($s));
+    /* Accents are folded before anything is stripped, or they are not letters at all: "Plaça de la
+       Sagrada Família" became "pla-a-de-la-sagrada-fam-lia", a URL with two holes in it where two
+       perfectly ordinary characters used to be. rmt_search_norm() already holds the mapping the
+       search box matches on, so the address and the search agree on what a name is by
+       construction. It is loaded before this in bootstrap; the guard is for the few tests that
+       take helpers.php on its own. */
+    $s = function_exists('rmt_search_norm') ? rmt_search_norm($s) : mb_strtolower(trim($s));
     $s = preg_replace('/[^a-z0-9]+/', '-', $s);
     return trim((string)$s, '-') ?: 'item';
 }

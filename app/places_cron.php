@@ -162,20 +162,31 @@ function cron_places(array $a): void {
        published keeps resolving. */
     if ($op === 'reslug') {
         $moved = []; $stuck = 0;
-        $rows = q_all("SELECT id, slug, name FROM places
-                        WHERE destination_id = ? AND slug LIKE 'item-%'", [(int) $dest['id']]);
+        /* By default only the serial numbers. `all=1` re-mints every slug in the city against the
+           rules as they stand today, which is how the accented names were repaired: "Plaça de la
+           Sagrada Família" had been slugged to "pla-a-de-la-sagrada-fam-lia", a URL with two holes
+           in it. `dry=1` says what it would change without changing it, because re-minting every
+           URL in a city is not something to run and then look at. */
+        $all = (string) input('all') === '1';
+        $dry = (string) input('dry') === '1';
+        $rows = $all
+            ? q_all("SELECT id, slug, name FROM places WHERE destination_id = ?", [(int) $dest['id']])
+            : q_all("SELECT id, slug, name FROM places
+                      WHERE destination_id = ? AND slug LIKE 'item-%'", [(int) $dest['id']]);
         foreach ($rows as $r) {
             $alts = array_column(q_all('SELECT alias FROM place_aliases WHERE place_id = ? ORDER BY id',
                                        [(int) $r['id']]), 'alias');
             $new = rmt_place_unique_slug((string) $r['name'], (string) $dest['name'], (int) $r['id'], $alts);
-            if ($new === (string) $r['slug'] || str_starts_with($new, 'item-')) { $stuck++; continue; }
+            if ($new === (string) $r['slug'] || (!$all && str_starts_with($new, 'item-'))) { $stuck++; continue; }
+            $moved[(string) $r['slug']] = $new;
+            if ($dry) continue;
             q_run('UPDATE places SET slug = ?, updated_at = ? WHERE id = ?',
                   [$new, date('Y-m-d H:i:s'), (int) $r['id']]);
             rmt_place_retire_slug((int) $r['id'], (string) $r['slug'], $new);
-            $moved[(string) $r['slug']] = $new;
         }
-        echo json_encode(['city' => $dest['slug'], 'looked_at' => count($rows),
-                          'moved' => count($moved), 'no_other_name' => $stuck, 'slugs' => $moved],
+        echo json_encode(['city' => $dest['slug'], 'dry' => $dry, 'all' => $all,
+                          'looked_at' => count($rows),
+                          'moved' => count($moved), 'unchanged' => $stuck, 'slugs' => $moved],
                          JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
         return;
     }
