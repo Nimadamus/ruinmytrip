@@ -34,6 +34,9 @@ $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination
               slug TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
 $pdo->exec("CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, type TEXT,
               actor_id INT, target_type TEXT, target_id INT, created_at TEXT, read_at TEXT)");
+$pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, trip_id INT, user_id INT, day TEXT,
+              title TEXT, cancelled_at TEXT, status TEXT DEFAULT 'published')");
+$pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT)");
 
 $d = static fn(string $rel): string => date('Y-m-d', strtotime($rel));
 $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,status,visibility,date_from,date_to) VALUES
@@ -46,6 +49,16 @@ $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,status,visib
   (7,1,7,'A draft','g','draft','public','{$d('+2 days')}','{$d('+4 days')}'),
   (8,1,7,'No dates at all','h','published','public',NULL,NULL)");
 
+/* Plans, for the reminder the day before. One with somebody coming, one that nobody is coming to,
+   one cancelled, one the day after tomorrow, one on a trip that was never published. */
+$pdo->exec("INSERT INTO trip_activities (id,trip_id,user_id,day,title,cancelled_at,status) VALUES
+  (1,1,1,'{$d('+1 day')}','Drinks with two people',NULL,'published'),
+  (2,1,1,'{$d('+1 day')}','Something I am doing alone',NULL,'published'),
+  (3,1,1,'{$d('+1 day')}','Called off','2026-09-01 10:00:00','published'),
+  (4,1,1,'{$d('+2 days')}','Not yet',NULL,'published'),
+  (5,7,1,'{$d('+1 day')}','On a draft trip',NULL,'published')");
+$pdo->exec("INSERT INTO activity_joins VALUES (1,2,'going'),(1,3,'requested'),(5,2,'going')");
+
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass, $fail; if ($c) { $pass++; } else { $fail++; echo "FAIL: $m\n"; } }
 $countOf = static function (string $type, int $tripId): int {
@@ -54,9 +67,10 @@ $countOf = static function (string $type, int $tripId): int {
 };
 
 $made = rmt_lifecycle_run();
-/* Four: three trips start within the window (one of them private, which is still its owner's own
-   trip and still worth telling them about) and one ended yesterday. */
-ok($made === 4, "the first sweep sends exactly four, sent $made");
+/* Six: three trips start within the window (one of them private, which is still its owner's own
+   trip and still worth telling them about), one ended yesterday, and one plan tomorrow that two
+   people are meeting for, which is two notifications rather than one. */
+ok($made === 6, "the first sweep sends exactly six, sent $made");
 ok($countOf('trip_soon', 6) === 1, 'a private trip still notifies its own owner');
 $whose = q_one('SELECT user_id FROM notifications WHERE type = ? AND target_id = ?', ['trip_soon', 5]);
 ok((int) ($whose['user_id'] ?? 0) === 2, 'each notification goes to the traveler whose trip it is');
@@ -83,6 +97,19 @@ $pdo->exec("UPDATE trips SET visibility = 'private' WHERE id = 6");
 ok(rmt_lifecycle_company(1) === 1, 'and a private one drops out of it again');
 ok(rmt_lifecycle_company(8) === 0, 'a trip with no dates has no company');
 ok(rmt_lifecycle_company(999) === 0, 'an unknown trip has no company');
+
+/* The day before. Two notifications for plan 1: the traveler whose plan it is and the one person
+   coming. The person who only asked gets nothing, because they have nothing to turn up to. */
+ok($countOf('activity_tomorrow', 1) === 2, 'the owner and the one person coming are reminded');
+ok((int) (q_one("SELECT COUNT(*) n FROM notifications WHERE type='activity_tomorrow' AND user_id=3")['n'] ?? 0) === 0,
+   'somebody who only asked, and was never answered, is not');
+ok($countOf('activity_tomorrow', 2) === 0, 'a plan nobody else is coming to is not a meeting');
+ok($countOf('activity_tomorrow', 3) === 0, 'a cancelled plan reminds nobody');
+ok($countOf('activity_tomorrow', 4) === 0, 'and neither does one the day after tomorrow');
+ok($countOf('activity_tomorrow', 5) === 0, 'a plan on a trip that was never published is invisible here too');
+
+rmt_lifecycle_run();
+ok($countOf('activity_tomorrow', 1) === 2, 'a second sweep does not remind anybody twice');
 
 echo "lifecycle_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

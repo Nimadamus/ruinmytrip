@@ -104,6 +104,44 @@ function rmt_lifecycle_run(int $limit = 200): int {
         $made++;
     }
 
+    /* Tomorrow. The one reminder that is worth a person's attention, because a plan somebody said
+       yes to eleven days ago is a plan they have half forgotten, and a small group standing
+       outside a stadium waiting for a fourth person is the failure this prevents.
+
+       The owner and the people actually going. Not the people who asked and were never answered:
+       they have nothing to turn up to. Once per plan per person, ever. */
+    $tomorrow = date('Y-m-d', strtotime('+1 day'));
+    $due = q_all(
+        "SELECT a.id, a.user_id
+           FROM trip_activities a
+           JOIN trips t ON t.id = a.trip_id
+          WHERE a.status = 'published' AND t.status = 'published'
+            AND a.cancelled_at IS NULL AND a.day = ?
+          LIMIT " . (int) $limit, [$tomorrow]);
+
+    foreach ($due as $act) {
+        $people = [(int) $act['user_id'] => true];
+        foreach (q_all("SELECT user_id FROM activity_joins WHERE activity_id = ? AND state = 'going'",
+                       [(int) $act['id']]) as $j) {
+            $people[(int) $j['user_id']] = true;
+        }
+        /* One person with a plan and nobody coming does not need reminding by email of something
+           they wrote down themselves. The reminder is for a meeting. */
+        if (count($people) < 2) continue;
+
+        foreach (array_keys($people) as $uid) {
+            $seen = q_one("SELECT 1 x FROM notifications
+                            WHERE user_id = ? AND type = 'activity_tomorrow'
+                              AND target_type = 'activity' AND target_id = ?",
+                          [$uid, (int) $act['id']]);
+            if ($seen) continue;
+            q_run('INSERT INTO notifications (user_id, type, actor_id, target_type, target_id, created_at)
+                   VALUES (?,?,?,?,?,?)',
+                  [$uid, 'activity_tomorrow', null, 'activity', (int) $act['id'], $now]);
+            $made++;
+        }
+    }
+
     return $made;
 }
 

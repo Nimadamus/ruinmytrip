@@ -32,7 +32,7 @@
           <b>Someone</b> sent you a compliment, then deleted their account.
         <?php elseif (in_array($n['type'], ['activity_join','activity_request','activity_accepted',
                                             'activity_declined','activity_removed','activity_cancelled',
-                                            'activity_changed'], true)):
+                                            'activity_changed', 'activity_tomorrow'], true)):
           /* Everything that happens around a plan somebody else may be coming to. The activity is
              named, because "your request was accepted" with no subject is a riddle. */
           $ac = q_one("SELECT a.id, a.title, a.day, a.cancelled_at, d.name dest_name
@@ -50,6 +50,7 @@
             'activity_removed'   => $who . ' removed you from ' . $what . '.',
             'activity_cancelled' => 'Cancelled: ' . $what . '.',
             'activity_changed'   => 'The time or the meeting place changed: ' . $what . '.',
+            'activity_tomorrow'  => 'Tomorrow: ' . $what . '.',
           ][$n['type']] ?? $what;
         ?>
           <?php if ($href): ?>
