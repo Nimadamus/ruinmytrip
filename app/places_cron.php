@@ -160,9 +160,16 @@ function cron_places(array $a): void {
        not come back, which is the honest state. */
     if ($op === 'hours_repair') {
         $destId = (int) $dest['id'];
+        /* source is NULL on rows written before migration 087 added the column. Those are ours
+           too: the Empire State Building's hours came from the importer, and refusing to touch
+           them because a column did not exist yet would leave the wrong fact on the page
+           forever. What is still never touched is a row somebody typed, which is checked below by
+           requiring that EVERY row on the place be one of these. */
         $suspect = q_all("SELECT DISTINCT h.place_id FROM place_hours h
                             JOIN places p ON p.id = h.place_id
-                           WHERE p.destination_id = ? AND h.source = 'openstreetmap'
+                           WHERE p.destination_id = ?
+                             AND (h.source = 'openstreetmap' OR h.source IS NULL)
+                             AND COALESCE(p.source_ref,'') <> ''
                              AND ((COALESCE(h.closed,0) = 0
                                    AND (h.opens IS NULL OR h.closes IS NULL OR h.opens >= h.closes))
                                OR h.day_of_week < 0 OR h.day_of_week > 6)", [$destId]);
@@ -170,10 +177,12 @@ function cron_places(array $a): void {
         foreach ($suspect as $r) {
             $pid = (int) $r['place_id'];
             // Only ours. A person's hours are never removed to make room for a provider's.
-            $mine = (int) (q_one("SELECT COUNT(*) c FROM place_hours WHERE place_id = ? AND source = 'openstreetmap'", [$pid])['c'] ?? 0);
+            $mine = (int) (q_one("SELECT COUNT(*) c FROM place_hours
+                                    WHERE place_id = ? AND (source = 'openstreetmap' OR source IS NULL)",
+                                 [$pid])['c'] ?? 0);
             $all  = (int) (q_one('SELECT COUNT(*) c FROM place_hours WHERE place_id = ?', [$pid])['c'] ?? 0);
             if ($mine !== $all || $mine === 0) continue;
-            q_run("DELETE FROM place_hours WHERE place_id = ? AND source = 'openstreetmap'", [$pid]);
+            q_run("DELETE FROM place_hours WHERE place_id = ? AND (source = 'openstreetmap' OR source IS NULL)", [$pid]);
             $cleared++;
         }
         $aliases = q_all("SELECT a.id FROM place_aliases a JOIN places p ON p.id = a.place_id
