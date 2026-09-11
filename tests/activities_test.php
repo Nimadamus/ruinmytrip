@@ -135,6 +135,25 @@ $narrow = $titles(rmt_activities_in_city(7, null, '2026-10-07', '2026-10-08'));
 ok(in_array('Benfica vs Porto', $narrow, true), 'a date window keeps what is inside it');
 ok(!in_array('Dinner in Alfama', $narrow, true), 'and drops what is outside it');
 
+
+// --- filtering the city view --------------------------------------------------------------------
+/* A filter narrows what is already allowed. It must never widen it, which is the only way a
+   filter can become a leak. */
+$pdo->exec("UPDATE trip_activities SET category = 'sport' WHERE id = 5");
+$catted = $titles(rmt_activities_in_city(7, null, $from, $to, 30, ['category' => 'sport']));
+ok(in_array('Benfica vs Porto', $catted, true), 'a category filter keeps what is in it');
+ok(!in_array('Dinner in Alfama', $catted, true), 'and drops what is not');
+ok($titles(rmt_activities_in_city(7, null, $from, $to, 30, ['category' => 'nonsense; DROP'])) === $city,
+   'a category nobody could have chosen is ignored rather than trusted');
+
+$openOnly = $titles(rmt_activities_in_city(7, null, $from, $to, 30, ['joinable' => true]));
+ok(in_array('Benfica vs Porto', $openOnly, true), 'the open plan is offered as joinable');
+ok(!in_array('Sintra at some point', $openOnly, true), 'a plan nobody can join is not');
+ok(!in_array('A private dinner', $openOnly, true), 'and a filter never widens what a stranger can see');
+$pdo->exec("UPDATE trip_activities SET cancelled_at = '$now' WHERE id = 5");
+ok(!in_array('Benfica vs Porto', $titles(rmt_activities_in_city(7, null, $from, $to, 30, ['joinable' => true])), true),
+   'a cancelled plan is not something to join');
+$pdo->exec("UPDATE trip_activities SET cancelled_at = NULL, category = 'food' WHERE id = 5");
 $pdo->exec('INSERT INTO blocks VALUES (2,1)');
 ok(!in_array('Dinner in Alfama', $titles(rmt_activities_in_city(7, $stranger, $from, $to)), true),
    'somebody who blocked you does not appear on the city view');

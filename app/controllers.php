@@ -402,9 +402,33 @@ function destination_travelers(array $a): void {
         $winTo   = (string) $myGoing['date_to'];
         $winSource = 'mine';
     }
-    $cityPlans = rmt_activities_in_city((int) $d['id'], $me,
+    /* The filters are in the URL so a filtered view is a link somebody can send: "drinks in
+       Lisbon on my dates" is a message, not a screenshot. The chip row itself is built from the
+       unfiltered result, so a category only appears when somebody actually planned something in
+       it. Offering "Museums" over an empty list is a small lie about how busy the city is. */
+    $planCat  = (string) ($_GET['cat'] ?? '');
+    if (!isset(RMT_ACTIVITY_CATEGORIES[$planCat])) $planCat = '';
+    $planOpen = ($_GET['open'] ?? '') === '1';
+
+    $cityPlansAll = rmt_activities_in_city((int) $d['id'], $me,
                                         $winFrom !== '' ? $winFrom : null,
-                                        $winTo !== '' ? $winTo : null, 24);
+                                        $winTo !== '' ? $winTo : null, 120);
+    $planCats = [];
+    foreach ($cityPlansAll as $cp) {
+        $k = (string) $cp['category'];
+        if (isset(RMT_ACTIVITY_CATEGORIES[$k])) $planCats[$k] = ($planCats[$k] ?? 0) + 1;
+    }
+    arsort($planCats);
+    $planOpenCount = 0;
+    foreach ($cityPlansAll as $cp) {
+        if (in_array((string) $cp['join_mode'], ['ask','open'], true) && empty($cp['cancelled_at'])) $planOpenCount++;
+    }
+    $cityPlans = ($planCat === '' && !$planOpen)
+        ? array_slice($cityPlansAll, 0, 24)
+        : rmt_activities_in_city((int) $d['id'], $me,
+                                 $winFrom !== '' ? $winFrom : null,
+                                 $winTo !== '' ? $winTo : null, 24,
+                                 ['category' => $planCat, 'joinable' => $planOpen]);
     $cityPopular = rmt_activity_popular_in_city((int) $d['id'], $me,
                                                 $winFrom !== '' ? $winFrom : null,
                                                 $winTo !== '' ? $winTo : null, 8);
@@ -412,7 +436,9 @@ function destination_travelers(array $a): void {
                                    'hereNow' => $hereNow, 'cityPhotos' => $cityPhotos,
                                    'openLocals' => $locals, 'cityPlans' => $cityPlans,
                                    'cityPopular' => $cityPopular, 'winFrom' => $winFrom,
-                                   'winTo' => $winTo, 'winSource' => $winSource], [
+                                   'winTo' => $winTo, 'winSource' => $winSource,
+                                   'planCats' => $planCats, 'planCat' => $planCat,
+                                   'planOpen' => $planOpen, 'planOpenCount' => $planOpenCount], [
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',

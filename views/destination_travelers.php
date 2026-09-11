@@ -17,6 +17,23 @@ $cityPopular = $cityPopular ?? [];
 $winFrom = $winFrom ?? '';
 $winTo = $winTo ?? '';
 $winSource = $winSource ?? 'all';
+$planCats = $planCats ?? [];
+$planCat = $planCat ?? '';
+$planOpen = $planOpen ?? false;
+$planOpenCount = $planOpenCount ?? 0;
+/* Every chip keeps the date window it was clicked in, because the window is the whole reason
+   somebody is on this page. */
+$planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, $planCat, $planOpen): string {
+    $q = [];
+    if ($winSource === 'url' || ($winSource === 'mine' && $winFrom !== '')) {
+        $q['from'] = $winFrom; $q['to'] = $winTo;
+    }
+    $cat  = array_key_exists('cat', $over) ? $over['cat'] : $planCat;
+    $open = array_key_exists('open', $over) ? $over['open'] : $planOpen;
+    if ($cat !== '') $q['cat'] = $cat;
+    if ($open) $q['open'] = '1';
+    return url('d/' . $d['slug'] . '/travelers' . ($q ? '?' . http_build_query($q) : '')) . '#plans';
+};
 ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> /
   <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($city) ?></a> / Travelers</p></div>
@@ -63,8 +80,8 @@ $winSource = $winSource ?? 'all';
            the one that turns two overlapping date ranges into a reason to say hello: "dinner in
            Alfama on Friday" is something another traveler can answer. Real plans by real people,
            and the counts are counts of people. */ ?>
-  <?php if ($cityPlans): ?>
-    <h2>What travelers are doing<?php if ($winFrom !== ''): ?>
+  <?php if ($cityPlans || $planCat !== '' || $planOpen): ?>
+    <h2 id="plans">What travelers are doing<?php if ($winFrom !== ''): ?>
       <span class="hint" style="font-family:var(--sans);font-size:.8rem;text-transform:none;letter-spacing:0">
         <?= e(rmt_card_date_range($winFrom, $winTo)) ?><?= $winSource === 'mine' ? ', while you are here' : '' ?>
       </span><?php endif; ?></h2>
@@ -72,13 +89,31 @@ $winSource = $winSource ?? 'all';
       <p class="hint" style="margin:0 0 10px">Narrowed to your own dates.
         <a href="<?= e(url('d/'.$d['slug'].'/travelers?from=&to=')) ?>">Show everything upcoming</a>.</p>
     <?php endif; ?>
+
+    <?php /* Two filters, both one tap, both real. The "open to join" chip only exists when a plan
+             is actually open, and a category chip only when somebody planned something in it. */ ?>
+    <?php if ($planOpenCount > 0 || count($planCats) > 1): ?>
+      <div class="plan-filters">
+        <a class="chip<?= ($planCat === '' && !$planOpen) ? ' is-on' : '' ?>" href="<?= e($planUrl(['cat'=>'','open'=>false])) ?>">All</a>
+        <?php if ($planOpenCount > 0): ?>
+          <a class="chip<?= $planOpen ? ' is-on' : '' ?>" href="<?= e($planUrl(['open'=>!$planOpen])) ?>">Open to join <span class="hint"><?= (int) $planOpenCount ?></span></a>
+        <?php endif; ?>
+        <?php foreach ($planCats as $ck => $cn): ?>
+          <a class="chip<?= $planCat === $ck ? ' is-on' : '' ?>" href="<?= e($planUrl(['cat'=>$planCat === $ck ? '' : $ck])) ?>"><?= e(RMT_ACTIVITY_CATEGORIES[$ck]) ?> <span class="hint"><?= (int) $cn ?></span></a>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+
     <ul class="city-plans">
       <?php foreach (array_slice($cityPlans, 0, 12) as $pl): ?>
         <li>
           <a class="city-plan-who" href="<?= e(url('u/'.$pl['username'])) ?>">
             <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url($pl['avatar_url'] ?? null)) ?>" alt=""></a>
           <span>
-            <b><?= e((string) $pl['title']) ?></b>
+            <a href="<?= e(url('activity/'.(int) $pl['id'])) ?>"><b><?= e((string) $pl['title']) ?></b></a>
+            <?php if (empty($pl['cancelled_at']) && in_array((string) $pl['join_mode'], ['ask','open'], true)): ?>
+              <span class="chip chip-join"><?= (string) $pl['join_mode'] === 'open' ? 'Join' : 'Ask to join' ?></span>
+            <?php endif; ?>
             <span class="hint">
               <a href="<?= e(url('trip/'.(int) $pl['trip_id'].'/'.(string) $pl['trip_slug'])) ?>">@<?= e((string) $pl['username']) ?></a>
               <?php if (!empty($pl['day'])): ?> &middot; <?= e(date('D j M', strtotime((string) $pl['day']))) ?><?php endif; ?>
@@ -93,6 +128,9 @@ $winSource = $winSource ?? 'all';
         </li>
       <?php endforeach; ?>
     </ul>
+    <?php if (!$cityPlans): ?>
+      <p class="hint">Nothing here matches that yet. <a href="<?= e($planUrl(['cat'=>'','open'=>false])) ?>">Show everything</a>.</p>
+    <?php endif; ?>
   <?php endif; ?>
 
   <?php /* What more than one person planned. Counted in people, never rounded: if one person

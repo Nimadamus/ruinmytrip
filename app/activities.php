@@ -253,7 +253,7 @@ function rmt_activity_add(array $trip, array $data): int {
  * @return list<array<string,mixed>>
  */
 function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = null, ?string $to = null,
-                                int $limit = 30): array {
+                                int $limit = 30, array $opts = []): array {
     if ($destId < 1) return [];
     [$tripVis, $tripArgs] = rmt_plan_visibility_sql('t', $viewer);
     [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
@@ -262,6 +262,21 @@ function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = nul
     if ($viewer && function_exists('rmt_match_block_sql')) {
         [$blockSql] = rmt_match_block_sql('a.user_id');
         $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+
+    /* Two filters, and deliberately only two. A category, because "what food is anybody doing"
+       is a real question, and "open to other people", because the whole point of the page is
+       finding something to join. Anything more is a filter panel, and a filter panel on a phone
+       is a wall between somebody and the one plan they wanted. */
+    $filter = '';
+    $filterArgs = [];
+    $cat = (string) ($opts['category'] ?? '');
+    if ($cat !== '' && isset(RMT_ACTIVITY_CATEGORIES[$cat])) {
+        $filter .= ' AND a.category = ?';
+        $filterArgs[] = $cat;
+    }
+    if (!empty($opts['joinable'])) {
+        $filter .= " AND a.join_mode IN ('ask','open') AND a.cancelled_at IS NULL";
     }
 
     $window = '';
@@ -284,11 +299,11 @@ function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = nul
       LEFT JOIN profiles pr ON pr.user_id = a.user_id
       LEFT JOIN places p ON p.id = a.place_id
           WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
-            AND $tripVis AND $actVis AND $blockSql $window
+            AND $tripVis AND $actVis AND $blockSql $window $filter
        ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
                 COALESCE(a.start_time,'99:99'), a.id DESC
           LIMIT " . (int) $limit,
-        array_merge([$destId], $tripArgs, $actArgs, $blockArgs, $windowArgs)
+        array_merge([$destId], $tripArgs, $actArgs, $blockArgs, $windowArgs, $filterArgs)
     );
 }
 

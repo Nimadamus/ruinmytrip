@@ -1029,3 +1029,14 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .join-box p:last-child{margin-bottom:0}
 .join-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .join-acts form{margin:0}
+
+/* Plan filters on a city page. A single scrolling row: on a phone the chips run off the edge
+   rather than stacking into a block that pushes the plans themselves below the fold. */
+.plan-filters{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;margin:0 0 4px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.plan-filters::-webkit-scrollbar{display:none}
+.plan-filters .chip{flex:0 0 auto;white-space:nowrap;text-decoration:none}
+.plan-filters .chip.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.plan-filters .chip.is-on .hint{color:var(--paper);opacity:.7}
+.chip-join{font-size:.72rem;padding:.1rem .45rem;margin-left:6px;vertical-align:1px;
+  background:var(--tint);border-color:transparent;color:var(--brand);font-weight:600}
