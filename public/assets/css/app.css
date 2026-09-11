@@ -949,3 +949,18 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .pick-preview-cell figcaption{font-size:.72rem;color:var(--muted);margin-top:3px;text-align:center}
 .pick-preview-cell.too-big img{outline:2px solid #b42318;outline-offset:-2px}
 .pick-preview-cell.too-big figcaption{color:#b42318;font-weight:600}
+
+/* ================================================================ trip page
+   The two questions a reader has after "who wrote this": when is it, and where. */
+.trip-city{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);padding:14px 18px;margin:0 0 18px;
+  box-shadow:var(--shadow)}
+.trip-city-main{flex:1;min-width:200px}
+.trip-city-main b{display:block;font-size:1.05rem}
+.trip-city-main .hint{display:block;font-size:.86rem}
+.trip-city-acts{display:flex;gap:8px;flex-wrap:wrap}
+.trip-count{display:inline-block;background:var(--brand);color:#fff;border-radius:999px;
+  padding:.12rem .7rem;font-size:.74rem;font-weight:700;letter-spacing:.02em;margin-bottom:4px}
+.trip-count.on{background:var(--accent)}
+.trip-extra{margin:28px 0 8px}
+.trip-extra h2{font-size:1.15rem;margin:0 0 12px}

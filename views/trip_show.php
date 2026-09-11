@@ -1,4 +1,13 @@
-<?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount @var bool $liked @var bool $saved @var array $updates @var bool $isOwner @var string $phase */ $me = current_user(); ?>
+<?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount
+        @var bool $liked @var bool $saved @var array $updates @var bool $isOwner @var string $phase
+        @var array $alsoThere @var bool $isFollowingAuthor @var int $destGoing @var array $related
+        @var array $authorSaid */
+$me = current_user();
+$isFollowingAuthor = $isFollowingAuthor ?? false;
+$destGoing = $destGoing ?? 0;
+$related = $related ?? [];
+$authorSaid = $authorSaid ?? [];
+?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if($t['dest_slug']):?><a href="<?= e(url('d/'.$t['dest_slug'])) ?>"><?= e($t['dest_name']) ?></a> / <?php endif;?><?= e($t['title']) ?></p>
 </div>
@@ -8,6 +17,18 @@
     <span><a href="<?= e(url('u/'.$t['author']['username'])) ?>">@<?= e($t['author']['username']) ?></a> · <?= e(ago($t['created_at'])) ?>
     <?php if($t['visited_on']):?> · visited <?= e(date('M Y', strtotime((string)$t['visited_on']))) ?><?php endif;?></span>
     <?php if (show_verified($t)): ?><span class="verified">Verified visit</span><?php endif; ?>
+    <?php /* Following the traveler is the action a good trip page earns, and there was no way to
+             do it from here: a reader who liked this had to go and find the profile. */ ?>
+    <?php if ($me && !$isOwner): ?>
+      <form method="post" action="<?= e(url('follow')) ?>" style="margin-left:auto"><?= csrf_field() ?>
+        <input type="hidden" name="user_id" value="<?= (int) $t['user_id'] ?>">
+        <input type="hidden" name="return" value="<?= e('/trip/'.(int) $t['id'].'/'.(string) $t['slug']) ?>">
+        <button class="btn btn-ghost btn-sm"><?= $isFollowingAuthor ? 'Following' : 'Follow' ?></button>
+      </form>
+    <?php elseif (!$me): ?>
+      <a class="btn btn-ghost btn-sm" style="margin-left:auto"
+         href="<?= e(url('register?return=' . rawurlencode('/trip/'.(int) $t['id']))) ?>">Follow @<?= e($t['author']['username']) ?></a>
+    <?php endif; ?>
   </div>
   <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
   <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
@@ -44,6 +65,39 @@
         · <a href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">who else is going to <?= e($t['dest_name']) ?></a>
       <?php endif; ?>
     </p>
+  <?php endif; ?>
+
+  <?php /* A countdown and the city, together, because those are the two questions a reader has
+           after "who wrote this": when is it, and where. The city card is also the way out of this
+           page into the part of the site that has other people in it. */ ?>
+  <?php if (!empty($t['dest_slug'])): ?>
+    <?php
+      $rmt_days = null;
+      if (!empty($t['date_from']) && $phase === 'upcoming') {
+          $rmt_days = (int) ceil((strtotime((string) $t['date_from']) - time()) / 86400);
+      }
+    ?>
+    <div class="trip-city">
+      <div class="trip-city-main">
+        <?php if ($rmt_days !== null): ?>
+          <span class="trip-count"><?= $rmt_days <= 0 ? 'Starts today' : ($rmt_days === 1 ? 'Tomorrow' : 'In ' . $rmt_days . ' days') ?></span>
+        <?php elseif ($phase === 'current'): ?>
+          <span class="trip-count on">Happening now</span>
+        <?php endif; ?>
+        <b><a href="<?= e(url('d/'.$t['dest_slug'])) ?>"><?= e((string) $t['dest_name']) ?></a></b>
+        <span class="hint">
+          <?php if ($destGoing > 0): ?>
+            <?= $destGoing ?> <?= $destGoing === 1 ? 'traveler has' : 'travelers have' ?> upcoming dates here.
+          <?php else: ?>
+            Nobody else has posted dates for this city yet.
+          <?php endif; ?>
+        </span>
+      </div>
+      <div class="trip-city-acts">
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">Who is going</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$t['dest_slug'])) ?>">About <?= e((string) $t['dest_name']) ?></a>
+      </div>
+    </div>
   <?php endif; ?>
 
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
@@ -123,6 +177,42 @@
   <?php if (!empty($t['dest_slug'])): ?>
     <?php $destSlug = (string) $t['dest_slug']; $destName = (string) $t['dest_name'];
           include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
+  <?php /* What this traveler wrote about the city afterwards. The review is the thing the trip
+           was for, and the two were never linked to each other. */ ?>
+  <?php if ($authorSaid): ?>
+    <section class="trip-extra">
+      <h2>What @<?= e($t['author']['username']) ?> said about <?= e((string) $t['dest_name']) ?></h2>
+      <?php foreach ($authorSaid as $rv): ?>
+        <a class="rail-row" href="<?= e(url(ltrim(rmt_review_path($rv), '/'))) ?>">
+          <b><?= e((string) ($rv['title'] ?: $rv['subject_name'])) ?></b>
+          <span class="hint"><?php if (!empty($rv['rating'])): ?><?= str_repeat('&#9733;', max(0, min(5, (int) $rv['rating']))) ?> &middot; <?php endif; ?><?= e(mb_strimwidth(strip_tags((string) $rv['body']), 0, 120, '...')) ?></span>
+        </a>
+      <?php endforeach; ?>
+    </section>
+  <?php endif; ?>
+
+  <?php /* Somewhere to go next that is not the back button. Public trips to the same city, with
+           something actually written on them. */ ?>
+  <?php if ($related): ?>
+    <section class="trip-extra">
+      <h2>More trips to <?= e((string) $t['dest_name']) ?></h2>
+      <div class="grid g-3">
+        <?php foreach ($related as $rt): ?>
+          <article class="card"><a href="<?= e(url('trip/'.(int) $rt['id'].'/'.(string) $rt['slug'])) ?>">
+            <?php if (!empty($rt['cover_url'])): ?>
+              <img class="card-media" loading="lazy" src="<?= e(abs_url((string) $rt['cover_url'])) ?>" alt="">
+            <?php endif; ?>
+            <div class="card-body">
+              <h3 style="font-size:1rem"><?= e((string) $rt['title']) ?></h3>
+              <p class="hint" style="margin:.2rem 0 0">@<?= e((string) $rt['username']) ?><?php
+                if (!empty($rt['date_from'])): ?> &middot; <?= e(rmt_card_date_range((string) $rt['date_from'], (string) $rt['date_to'])) ?><?php endif; ?></p>
+            </div>
+          </a></article>
+        <?php endforeach; ?>
+      </div>
+    </section>
   <?php endif; ?>
 
   <?php

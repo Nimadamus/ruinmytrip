@@ -1157,8 +1157,48 @@ function trip_show(array $a): void {
        a travel diary and a network. Same visibility clause as everywhere else, so a followers only
        trip shows only to a follower and a private one to nobody. */
     $alsoThere = rmt_trip_overlappers($t, $me);
+
+    /* The rest of what a trip page is for. A public trip is the page a stranger arrives on from a
+       search or from a link somebody sent them, and until now it ended at the comments: no way to
+       follow the person whose trip it is, nothing about the city, and nothing else to read. */
+    $isFollowingAuthor = $me && (int) $me['id'] !== (int) $t['user_id']
+        && (bool) q_one('SELECT 1 FROM follows WHERE follower_id = ? AND followee_id = ?',
+                        [(int) $me['id'], (int) $t['user_id']]);
+
+    $destGoing = 0;
+    $related = [];
+    $authorSaid = [];
+    if (!empty($t['destination_id'])) {
+        $destGoing = (int) (q_one("SELECT COUNT(*) n FROM trips
+                                    WHERE destination_id = ? AND status = 'published'
+                                      AND visibility = 'public' AND date_to IS NOT NULL AND date_to >= ?",
+                                  [(int) $t['destination_id'], date('Y-m-d')])['n'] ?? 0);
+
+        /* Other public trips to the same city, with something on them: a bare plan is a real page
+           but not one worth sending a reader to. Newest first, and never this one. */
+        $related = q_all("SELECT t2.id, t2.slug, t2.title, t2.body, t2.cover_url, t2.date_from, t2.date_to,
+                                 u.username, p.avatar_url
+                            FROM trips t2
+                            JOIN users u ON u.id = t2.user_id AND u.status = 'active'
+                       LEFT JOIN profiles p ON p.user_id = t2.user_id
+                           WHERE t2.destination_id = ? AND t2.id <> ? AND t2.status = 'published'
+                             AND t2.visibility = 'public'
+                        ORDER BY t2.created_at DESC, t2.id DESC LIMIT 8",
+                         [(int) $t['destination_id'], (int) $t['id']]);
+        $related = array_values(array_filter($related,
+            static fn(array $r) => trim((string) $r['body']) !== '' || trim((string) $r['cover_url']) !== ''));
+        $related = array_slice($related, 0, 3);
+
+        /* What this traveler wrote about this city afterwards. The review is the thing the trip
+           was for, and the two were never linked to each other. */
+        $authorSaid = q_all("SELECT r.* FROM reviews r
+                              WHERE r.user_id = ? AND r.destination_id = ? AND r.status = 'published'
+                           ORDER BY r.id DESC LIMIT 2",
+                            [(int) $t['user_id'], (int) $t['destination_id']]);
+    }
     view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags',
-                              'updates','isOwner','phase','alsoThere'), [
+                              'updates','isOwner','phase','alsoThere','isFollowingAuthor','destGoing',
+                              'related','authorSaid'), [
         'title' => rmt_meta_title((string) $t['title']),
         'description' => rmt_meta_description((string) $t['body']),
         /* A trip with no cover used to share as an empty og:image, which is the same as no
