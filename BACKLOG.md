@@ -25,18 +25,22 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 
 ## P0, the product does not work properly without these
 
-1. **Opening hours for the cities imported before the parser landed.** Around 150 of 1,150 places
-   carry hours; the cities done first carry almost none, because two bugs meant nothing was written
-   until late in the run. One more pass per city fixes it and is the single biggest quality gain
-   left. Spread it out: the provider is free and run by volunteers.
+1. **Finish the opening hours backfill.** `scripts/backfill_hours.php` asks the provider for the
+   objects we already hold, by id, rather than scanning a city again, and puts the answer back
+   through the ordinary ingest door. It is running city by city. A batch that times out is simply
+   lost until the next run, which is the right behaviour but means it needs a second pass. What it
+   cannot fix is coverage: only about one imported place in six carries an `opening_hours` value in
+   OpenStreetMap at all, and the parser refuses the ambiguous ones on purpose.
 
 ## P1, core product
 
 2. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
    editorial work rather than import work, and making the importer happy is the wrong reason to do
    it. Left alone deliberately, as asked.
-3. **Opening hours coverage.** The parser is in and takes about three quarters of the values it
-   sees; the cities imported before it landed carry none, so they need one more pass.
+3. **A readable slug for a place with a non-Latin name.** Tokyo's museums are at
+   `/p/item-tokyo-31`, because the slugifier has nothing to work with in a Japanese name. It is
+   stable and honest and it is not a URL anybody would share. Changing it later costs redirects,
+   so decide before the next non-Latin city.
 4. **A day filter on the trip map**, beyond colour: tapping a day should show only that day.
 5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
 6. **One ranked search result list.** City context, category matching and travelers-first all landed;
@@ -61,6 +65,13 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 14. **`/explore` ships 100KB** and could ship a third of that.
 
 ## Done (2026-09-11, later)
+
+* **Ten cities, 1,211 real places**, no duplicates by name, by source reference or by point, and
+  none in the wrong city.
+* **Searching by the kind you asked for.** "museum tokyo" used to return the one Tokyo museum with
+  an English name; the site knows which of its places are museums and now says so.
+* **A backfill that asks the provider for rows by id** rather than re-scanning a city, which is the
+  cheapest question there is to put to Overpass.
 
 * **Eight cities of real places.** Mirror health with failover and cooldown, escalating timeouts,
   shrinking retries, resumable runs, and the fix that mattered most: an empty answer from one mirror

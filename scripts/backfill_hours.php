@@ -33,7 +33,7 @@ foreach (array_slice($argv, 1) as $arg) {
 $site  = rtrim((string) ($opts['site'] ?? ''), '/');
 $key   = (string) ($opts['key'] ?? '');
 $city  = (string) ($opts['city'] ?? '');
-$batch = max(20, min(200, (int) ($opts['batch'] ?? 120)));
+$batch = max(20, min(200, (int) ($opts['batch'] ?? 60)));
 $pause = max(5, (int) ($opts['pause'] ?? 20));
 $dry   = isset($opts['dry']);
 
@@ -74,8 +74,19 @@ foreach ($cities as $slug) {
         if ($query === '') continue;
         $asked++;
         $res = rmt_osm_fetch($query, 45);
+        /* A batch that fails takes its whole chunk with it, and the next run would ask for the
+           same ids and fail the same way. Halved once and asked again after a longer rest: a
+           shorter list is a cheaper question, and two smaller asks spread over a minute are
+           gentler on the provider than a hundred rows nobody ever gets. */
+        if ($res['error'] !== null && count($chunk) > 20) {
+            echo '  provider: ' . $res['error'] . ", halving and asking again\n";
+            sleep($pause * 2);
+            $half = (int) ceil(count($chunk) / 2);
+            $chunk = array_slice($chunk, 0, $half);
+            $res = rmt_osm_fetch(rmt_osm_query_refs($chunk), 45);
+        }
         if ($res['error'] !== null) {
-            echo '  provider: ' . $res['error'] . "\n";
+            echo '  provider: ' . $res['error'] . ", left for the next run\n";
             sleep($pause * 2);
             continue;
         }
