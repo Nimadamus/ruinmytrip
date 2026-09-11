@@ -768,10 +768,16 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
         $followedT = $followedR = $followedG = $followedP = $followedM = $followedPlain = '1=1';
     }
 
+    /* A trip carries a visibility and this query did not read it, so a trip marked "only you"
+       appeared on /discover, which is a public page, and in the feed of everybody who followed its
+       author. The scope clause above decides WHOSE activity reaches a feed; it never decided
+       whether the author meant it to be seen. Same clause as the rest of the site. */
+    [$tripVis, $tripVisArgs] = rmt_plan_visibility_sql('t', current_user());
     $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                     LEFT JOIN destinations d ON d.id=t.destination_id
-                    WHERE t.status='published' AND $followedT
-                    ORDER BY t.created_at DESC, t.id DESC LIMIT $limitEach", $args);
+                    WHERE t.status='published' AND $tripVis AND $followedT
+                    ORDER BY t.created_at DESC, t.id DESC LIMIT $limitEach",
+                   array_merge($tripVisArgs, $args));
     foreach ($trips as &$row) {
         $row['kind'] = 'trip';
         $row['feed_url'] = url('trip/'.$row['id'].'/'.$row['slug']);

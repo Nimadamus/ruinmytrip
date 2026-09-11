@@ -177,6 +177,38 @@ if ($acct) {
            . ($real ? '' : ' body ' . strlen($body) . 'B or bounced to login'));
     }
 
+    /* A private trip must not reach a feed, anybody's.
+
+       It did. The activity stream applied the scope clause, which decides WHOSE activity you see,
+       and never read the trip's own visibility, which is whether the author meant it to be seen at
+       all. So a trip marked "only you" appeared on /discover, a public page, and in the feed of
+       everybody who followed its author. Found by planting one and looking, which is the only way
+       this class of bug is ever found.
+
+       The trip is owned by somebody who is not the signed-in account, so the check is about
+       visibility and not about ownership. */
+    $otherId = (int) ($pdo->query("SELECT id FROM users WHERE status='active' AND id <> "
+                                  . (int) $acct['id'] . " ORDER BY id LIMIT 1")->fetch(PDO::FETCH_NUM)[0] ?? 0);
+    if ($otherId > 0) {
+        $marker = 'PRIVATETRIPCANARY' . bin2hex(random_bytes(4));
+        $destId = (int) ($pdo->query('SELECT id FROM destinations ORDER BY id LIMIT 1')->fetch(PDO::FETCH_NUM)[0] ?? 0);
+        $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, created_at)
+                       VALUES (?,?,?,?,?,'published','private',?)")
+            ->execute([$otherId, $destId ?: null, $marker, 'canary-' . strtolower($marker), $marker, date('Y-m-d H:i:s')]);
+
+        foreach (['/discover', '/feed', '/feed?scope=everyone'] as $path) {
+            [, $body] = $req($path, null, $cookie);
+            ok("a private trip stays out of $path", !str_contains($body, $marker),
+               'the canary was in the page');
+        }
+        // And logged out, where /discover is the public front door.
+        $anon = @file_get_contents($base . '/discover', false,
+            stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        ok('a private trip stays out of /discover for a stranger', !str_contains((string) $anon, $marker));
+
+        $pdo->prepare('DELETE FROM trips WHERE title = ?')->execute([$marker]);
+    }
+
     /* A notification that is new has to look new, exactly once.
 
        This is a bug I shipped an hour before writing this check. view() extracts the page's data
