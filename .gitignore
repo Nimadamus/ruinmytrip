@@ -31,3 +31,4 @@ database/dev.sqlite.broken-*
 
 # Cookie jars the review-flow harness writes as it runs. Session state, not source.
 scripts/ci/jar_*.txt
+tests/.adversarial_server.log
