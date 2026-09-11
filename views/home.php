@@ -68,7 +68,7 @@
          whether there are people, and no amount of research answers that question. When there is
          nobody yet the section says so and offers the empty chair, which is the only version of
          this that has ever recruited anybody. */ ?>
-<section class="block" style="background:#fff;border-bottom:1px solid var(--line)"><div class="wrap">
+<section class="block band" style="border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="section-head"><div><p class="eyebrow">Right now</p><h2>Travelers with dates coming up</h2></div>
     <a class="section-more" href="<?= e(url('travelers')) ?>">All travelers &rarr;</a></div>
 
@@ -133,7 +133,7 @@
 
 
 
-<section class="block" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
+<section class="block band" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="grid g-2" style="align-items:start">
     <div>
       <p class="eyebrow">Trusted reviews</p><h2>What nearly ruins the trip</h2>
@@ -231,7 +231,7 @@
          "destinations we researched" that much room is a guidebook with a community bolted on, and
          this site is the other way round. Every one of those pages is still one click from here,
          still in the footer, and still in the sitemap. */ ?>
-<section class="block" style="background:#fff;border-top:1px solid var(--line)"><div class="wrap">
+<section class="block band" style="border-top:1px solid var(--line)"><div class="wrap">
   <div class="section-head">
     <div><p class="eyebrow">We also do the homework</p><h2>The boring bits, checked</h2></div>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Explore all</a>

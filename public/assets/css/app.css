@@ -853,3 +853,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .city-people-said b{display:block;font-weight:650}
 .city-people-said .hint{display:block;font-size:.85rem}
 .city-people-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+/* An alternating band on the homepage. It was three inline background:#fff declarations, which is
+   exactly the thing that cannot follow a theme: in dark mode they stayed white. */
+.band{background:var(--card)}
