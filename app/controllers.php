@@ -6506,7 +6506,15 @@ function trip_activity_done(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can answer this.');
+    /* Two people can answer this, and they answer in different places. The plan belongs to whoever
+       is planning the trip, so their answer is written onto it. Somebody who joined and went has
+       an answer worth exactly as much, and it is written onto their own join row, where it cannot
+       overwrite the host's and the host cannot overwrite theirs. Anybody else is neither. */
+    $canEdit = rmt_activity_can_edit($act, $me);
+    $joined = !$canEdit && q_one("SELECT 1 x FROM activity_joins
+                                   WHERE activity_id = ? AND user_id = ? AND state = 'going'",
+                                 [(int) $act['id'], (int) $me['id']]);
+    if (!$canEdit && !$joined) forbidden('Only the travelers who planned this or went to it can answer.');
 
     $done = input('done') === '0' ? 0 : 1;
     $rating = (int) input('rating');
@@ -6514,8 +6522,14 @@ function trip_activity_done(array $a): void {
     $rec = input('recommend');
     $recommend = $rec === '' || $rec === null ? null : ((string) $rec === '1' ? 1 : 0);
 
-    db()->prepare('UPDATE trip_activities SET done = ?, rating = ?, recommend = ?, updated_at = ? WHERE id = ?')
-        ->execute([$done, $rating ?: null, $recommend, date('Y-m-d H:i:s'), (int) $act['id']]);
+    if ($canEdit) {
+        db()->prepare('UPDATE trip_activities SET done = ?, rating = ?, recommend = ?, updated_at = ? WHERE id = ?')
+            ->execute([$done, $rating ?: null, $recommend, date('Y-m-d H:i:s'), (int) $act['id']]);
+    } else {
+        db()->prepare('UPDATE activity_joins SET recommend = ?, answered_at = ?
+                        WHERE activity_id = ? AND user_id = ?')
+            ->execute([$recommend, date('Y-m-d H:i:s'), (int) $act['id'], (int) $me['id']]);
+    }
     flash($done ? 'Marked as done.' : 'Marked as not done.');
     // Answered from the feed, the answer should not throw somebody onto a different page.
     redirect(rmt_return_to('/trip/' . (int) $act['trip_id'] . '/' . (string) $act['trip_slug'] . '#plan'));

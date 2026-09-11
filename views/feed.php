@@ -97,7 +97,10 @@ $threads = $threads ?? [];
         <div class="rail-row rail-review">
           <b><?= e((string) $rv['title']) ?></b>
           <span class="hint"><?= e(date('D j M', strtotime((string) $rv['day']))) ?><?php
-            if (!empty($rv['dest_name'])): ?> &middot; <?= e((string) $rv['dest_name']) ?><?php endif; ?></span>
+            if (!empty($rv['dest_name'])): ?> &middot; <?= e((string) $rv['dest_name']) ?><?php endif; ?><?php
+            /* Whose plan it was, when it was not yours. "Worth it" about a stranger's dinner you
+               turned up to is a different sentence from "worth it" about your own. */
+            if (empty($rv['mine']) && !empty($rv['host_username'])): ?> &middot; @<?= e((string) $rv['host_username']) ?><?php endif; ?></span>
           <form method="post" action="<?= e(url('activity/'.(int) $rv['id'].'/done')) ?>" class="review-yn">
             <?= csrf_field() ?>
             <input type="hidden" name="done" value="1">

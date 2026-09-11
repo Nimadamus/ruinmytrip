@@ -49,7 +49,8 @@ $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY AUTOINCREMENT, 
               created_at TEXT, updated_at TEXT, capacity INT, meeting_point TEXT, end_time TEXT,
               cancelled_at TEXT)");
 $pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT, created_at TEXT,
-              decided_at TEXT, decided_by INT, PRIMARY KEY (activity_id, user_id))");
+              decided_at TEXT, decided_by INT, recommend INT, answered_at TEXT,
+              PRIMARY KEY (activity_id, user_id))");
 $pdo->exec("CREATE TABLE activity_photos (id INTEGER PRIMARY KEY AUTOINCREMENT, activity_id INT,
               user_id INT, url TEXT, storage_key TEXT, caption TEXT, width INT, height INT,
               bytes INT, sort INT, status TEXT DEFAULT 'published', created_at TEXT)");
@@ -272,6 +273,40 @@ ok(!in_array('Benfica vs Porto', $revTitles(1), true), 'a plan that has not happ
 $pdo->exec('UPDATE trip_activities SET done = 1 WHERE id = 1');
 ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'once answered it stops asking');
 $pdo->exec('UPDATE trip_activities SET done = 0 WHERE id = 1');
+
+/* And the other half of the loop, which the site used to drop on the floor: somebody who joined a
+   stranger's plan and turned up has an answer worth exactly as much as the host's. It is asked of
+   them separately and stored on their own join row, so neither of them overwrites the other and
+   neither is asked twice. */
+$pdo->exec("DELETE FROM activity_joins WHERE activity_id = 1");
+$pdo->exec("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (1,2,'going','$now')");
+ok(in_array('Dinner in Alfama', $revTitles(2), true), 'somebody who went is asked how it was');
+$pdo->exec('UPDATE trip_activities SET done = 1 WHERE id = 1');
+ok(in_array('Dinner in Alfama', $revTitles(2), true),
+   'and the host answering does not answer for them');
+ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'while the host is not asked again');
+$pdo->exec("UPDATE activity_joins SET answered_at = '$now', recommend = 1 WHERE activity_id = 1 AND user_id = 2");
+ok(!in_array('Dinner in Alfama', $revTitles(2), true), 'once they answer it stops asking them too');
+$pdo->exec("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (1,3,'interested','$now')");
+ok(!in_array('Dinner in Alfama', $revTitles(3), true),
+   'somebody who only said they were interested was not there and is not asked');
+$pdo->exec('UPDATE trip_activities SET done = 0 WHERE id = 1');
+$pdo->exec("UPDATE trip_activities SET recommend = 1 WHERE id = 1");
+$rec = rmt_activity_recommended_in_city(7, $owner, 8);
+$dinner = null;
+foreach ($rec as $r) if ($r['label'] === 'Dinner in Alfama') $dinner = $r;
+ok($dinner !== null && $dinner['n'] === 2,
+   'a plan the host and a guest both recommend is counted in two people, not one');
+ok($dinner !== null && in_array('ben', $dinner['users'], true), 'and the guest is named');
+$pdo->exec('INSERT INTO blocks VALUES (1,2)');
+$rec2 = rmt_activity_recommended_in_city(7, $owner, 8);
+$d2 = null;
+foreach ($rec2 as $r) if ($r['label'] === 'Dinner in Alfama') $d2 = $r;
+ok($d2 !== null && !in_array('ben', $d2['users'], true),
+   'a blocked traveler is not named on a city page just because they turned up to something');
+$pdo->exec('DELETE FROM blocks');
+$pdo->exec("DELETE FROM activity_joins WHERE activity_id = 1");
+$pdo->exec("UPDATE trip_activities SET recommend = NULL WHERE id = 1");
 
 $pdo->exec("UPDATE trip_activities SET cancelled_at = '$now' WHERE id = 1");
 ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'and nobody is asked how a cancelled plan went');

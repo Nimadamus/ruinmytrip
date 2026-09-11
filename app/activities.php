@@ -546,18 +546,30 @@ function rmt_activities_to_review(int $uid, int $limit = 3): array {
     if ($uid < 1) return [];
     $today = date('Y-m-d');
     $floor = date('Y-m-d', strtotime('-21 days'));
+    /* Two ways to have been there: you planned it, or you joined somebody else's and went. The
+       second half is the point of this query existing at all. A person who turned up to a
+       stranger's dinner has an answer worth exactly as much as the host's, and until it was asked
+       for, the site collected the strongest signal it has and then dropped it.
+
+       Each side is checked against its own answer: the owner's lives on the plan, the guest's on
+       their join row, so neither overwrites the other and neither is asked twice. */
     return q_all(
-        "SELECT a.*, t.slug trip_slug, t.title trip_title, d.name dest_name
+        "SELECT a.*, t.slug trip_slug, t.title trip_title, d.name dest_name, hu.username host_username,
+                CASE WHEN a.user_id = ? THEN 1 ELSE 0 END mine
            FROM trip_activities a
            JOIN trips t ON t.id = a.trip_id
+           JOIN users hu ON hu.id = a.user_id AND hu.status = 'active'
       LEFT JOIN destinations d ON d.id = a.destination_id
+      LEFT JOIN activity_joins j ON j.activity_id = a.id AND j.user_id = ? AND j.state = 'going'
           WHERE a.status = 'published' AND a.cancelled_at IS NULL
             AND a.day IS NOT NULL AND a.day < ? AND a.day >= ?
-            AND (a.rating IS NULL OR a.rating = 0) AND (a.done IS NULL OR a.done = 0)
-            AND a.user_id = ?
+            AND (
+                  (a.user_id = ? AND (a.rating IS NULL OR a.rating = 0) AND (a.done IS NULL OR a.done = 0))
+               OR (a.user_id <> ? AND j.user_id IS NOT NULL AND j.answered_at IS NULL)
+                )
        ORDER BY a.day DESC, a.id DESC
           LIMIT " . (int) $limit,
-        [$today, $floor, $uid]
+        [$uid, $uid, $today, $floor, $uid, $uid]
     );
 }
 
@@ -596,6 +608,35 @@ function rmt_activity_recommended_in_city(int $destId, ?array $viewer, int $limi
        ORDER BY a.id DESC LIMIT 200",
         array_merge([$destId], $tripArgs, $actArgs, $blockArgs)
     );
+
+    /* Blocks apply to whoever is being NAMED, not only to whoever planned it. A recommendation
+       prints a username, and somebody you blocked should not appear on a city page under your
+       nose because they turned up to a stranger's dinner. */
+    $guestBlockSql = '1=1';
+    $guestBlockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$guestBlockSql] = rmt_match_block_sql('j.user_id');
+        $guestBlockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+
+    /* And the people who went to somebody else's plan and said it was worth it. Same plans, same
+       visibility, a different person answering: a dinner four travelers turned up to and three
+       recommended should say three, not one. Their names are real names on real join rows, so the
+       count stays a count of people rather than a score. */
+    $guests = q_all(
+        "SELECT a.id, a.title, a.category, j.user_id, u.username, p.name place_name, p.slug place_slug
+           FROM activity_joins j
+           JOIN trip_activities a ON a.id = j.activity_id
+           JOIN trips t ON t.id = a.trip_id
+           JOIN users u ON u.id = j.user_id AND u.status = 'active'
+      LEFT JOIN places p ON p.id = a.place_id AND p.status <> 'hidden'
+          WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
+            AND j.state = 'going' AND j.recommend = 1 AND a.cancelled_at IS NULL
+            AND $tripVis AND $actVis AND $blockSql AND $guestBlockSql
+       ORDER BY a.id DESC LIMIT 200",
+        array_merge([$destId], $tripArgs, $actArgs, $blockArgs, $guestBlockArgs)
+    );
+    foreach ($guests as $g) $rows[] = $g;
 
     $seen = [];
     foreach ($rows as $r) {
