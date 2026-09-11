@@ -1,6 +1,6 @@
 <?php /** @var array $items @var array $me @var bool $isEveryone @var string $scope @var array $cities @var array $rails */
 $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' => 'wrote a guide',
-                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting'];
+                   'blog_post' => 'posted', 'collection' => 'made the list', 'going' => 'is going to', 'post' => 'said', 'meetup' => 'is hosting', 'photo' => 'posted a photo from'];
 /* An update posted from a trip is not somebody "saying" something into the void: it is a person
    in a city, mid-trip, and the feed row reads wrong without that. */
 /* Nullable on purpose: every row that is not a trip update falls through to the ordinary verb.
@@ -91,6 +91,11 @@ $threads = $threads ?? [];
               <span class="hint">· <?= e(ago($it['created_at'])) ?><?= !empty($it['dest_name'])?' · '.e($it['dest_name']):'' ?></span>
             </span>
           </div>
+          <?php if (!empty($it['feed_reason'])): ?>
+            <?php /* Why this row is where it is. A ranked feed that cannot explain itself is
+                     indistinguishable from a broken one. */ ?>
+            <p class="feed-why"><?= e((string) $it['feed_reason']) ?></p>
+          <?php endif; ?>
           <h3><a href="<?= e($it['feed_url']) ?>"><?= e($it['title']) ?></a></h3>
           <p><?= e($it['feed_excerpt']) ?></p>
           <?php

@@ -188,3 +188,116 @@ function rmt_feed_comments(array $items, int $perTarget = 2): array {
     foreach ($out as $k => $v) $out[$k] = array_reverse($v);   // a thread reads oldest first
     return $out;
 }
+
+/**
+ * Rank a page of feed rows for one member.
+ *
+ * A feed sorted purely by time is a log. It treats a photograph from somebody who will be in Lisbon
+ * the same week as you exactly like a blog post about tourist taxes, and the only thing it knows
+ * about you is when you loaded the page. That is what makes a feed feel like database rows.
+ *
+ * So: recency still leads, because a travel feed is about what is happening, and then five signals
+ * that are all things the member did on purpose rather than things guessed about them.
+ *
+ *   overlapping dates   the strongest, and the reason this product exists
+ *   a city they are going to
+ *   a city they saved
+ *   somebody they follow
+ *   how many other people already reacted to it
+ *
+ * Nothing here is a secret. Every boost that changes an item's position also writes a line on the
+ * row saying why it is there ("Because you are going to Lisbon"), because a ranked feed that cannot
+ * explain itself is indistinguishable from a broken one.
+ *
+ * @param list<array<string,mixed>> $items
+ * @return list<array<string,mixed>> same rows, reordered, each with feed_score and feed_reason
+ */
+function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
+    if (!$items) return $items;
+
+    /* The signals, fetched once for the page rather than per row. */
+    $follows = [];
+    foreach (q_all('SELECT followee_id FROM follows WHERE follower_id = ?', [$uid]) as $r) {
+        $follows[(int) $r['followee_id']] = true;
+    }
+    $saved = [];
+    foreach (q_all("SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination'", [$uid]) as $r) {
+        $saved[(int) $r['target_id']] = true;
+    }
+    $myCities = [];
+    foreach (q_all("SELECT DISTINCT destination_id FROM trips
+                     WHERE user_id = ? AND status = 'published' AND destination_id IS NOT NULL
+                       AND (date_to IS NULL OR date_to >= ?)", [$uid, date('Y-m-d')]) as $r) {
+        $myCities[(int) $r['destination_id']] = true;
+    }
+    $overlap = [];
+    foreach (rmt_trip_matches($uid, 40) as $m) $overlap[(int) $m['user_id']] = (string) $m['dest_name'];
+
+    /* Kind weights. A meetup and a photograph are events; a collection is a list that will be just
+       as good tomorrow. */
+    $kindWeight = ['meetup' => 0.40, 'photo' => 0.35, 'trip' => 0.30, 'going' => 0.25,
+                   'review' => 0.20, 'post' => 0.15, 'guide' => 0.05, 'blog_post' => 0.0,
+                   'collection' => 0.0];
+
+    $now = time();
+    foreach ($items as $i => $it) {
+        $age = max(0.0, ($now - strtotime((string) ($it['created_at'] ?? 'now'))) / 3600);
+        $score = 1.6 / (1 + $age / 36);          // half of its weight after a day and a half
+        $why = '';
+
+        $author = (int) ($it['user_id'] ?? 0);
+        $dest = (int) ($it['destination_id'] ?? 0);
+
+        if (isset($overlap[$author])) {
+            $score += 1.2;
+            $why = 'You are both in ' . $overlap[$author] . ' at the same time';
+        }
+        if ($dest > 0 && isset($myCities[$dest])) {
+            $score += 0.9;
+            if ($why === '') $why = 'Because you are going to ' . (string) ($it['dest_name'] ?? 'this city');
+        }
+        if ($dest > 0 && isset($saved[$dest])) {
+            $score += 0.5;
+            if ($why === '') $why = 'From a city you saved';
+        }
+        if (isset($follows[$author])) {
+            $score += 0.6;
+            if ($why === '') $why = '';   // following somebody is not news, it is the default
+        }
+        $score += $kindWeight[(string) ($it['kind'] ?? '')] ?? 0.0;
+
+        /* What other people did with it, capped: popularity is a tiebreak, never the ranking. */
+        $type = ($it['kind'] ?? '') === 'going' ? 'trip' : (string) ($it['kind'] ?? '');
+        $key = $type . ':' . (int) ($it['id'] ?? 0);
+        $reacted = (int) ($engagement['likes'][$key] ?? 0) + (int) ($engagement['comments'][$key] ?? 0);
+        $score += 0.10 * min($reacted, 6);
+
+        /* A meetup that is soon is worth more than one in three months, and one that has passed is
+           not in this list at all. */
+        if (($it['kind'] ?? '') === 'meetup' && !empty($it['date_start'])) {
+            $days = (strtotime((string) $it['date_start']) - $now) / 86400;
+            if ($days >= 0 && $days <= 14) $score += 0.35;
+        }
+
+        // Your own activity, which you already know about.
+        if ($author === $uid) $score -= 0.5;
+
+        $items[$i]['feed_score'] = round($score, 4);
+        $items[$i]['feed_reason'] = $why;
+    }
+
+    usort($items, static fn(array $x, array $y) => $y['feed_score'] <=> $x['feed_score']);
+
+    /* One author must not own the top of the page. Without this, somebody who posts six
+       photographs in a minute buries everybody else, and the feed reads as one person shouting. */
+    $seen = [];
+    $spread = [];
+    $held = [];
+    foreach ($items as $it) {
+        $a = (int) ($it['user_id'] ?? 0);
+        $seen[$a] = ($seen[$a] ?? 0) + 1;
+        if ($seen[$a] <= 2) $spread[] = $it;
+        else $held[] = $it;
+    }
+    return array_merge($spread, $held);
+}

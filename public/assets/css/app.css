@@ -933,3 +933,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   .person{flex-wrap:wrap}
   .person-do{width:100%;justify-content:flex-start;padding-left:56px}
 }
+/* Why a feed row is where it is. Quiet, one line, above the headline. */
+.feed-why{font-size:.82rem;font-weight:600;color:var(--brand);margin:0 0 4px;
+  text-transform:none;letter-spacing:0}

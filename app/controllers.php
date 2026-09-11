@@ -930,7 +930,37 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
     }
     unset($row);
 
-    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk, $meetups);
+    /* Photographs, as entries of their own.
+
+       A trip with six photographs reached the feed once, as a trip, and the six photographs were
+       behind that one link. On a travel network the photograph is the thing people stop scrolling
+       for, so each one is an entry, carrying its own caption and its own page. The trip visibility
+       clause is applied here as well: a picture from a private trip is exactly as private as the
+       trip. Review photographs come too, because a review with a photograph of the thing is worth
+       more than either half. */
+    $photos = q_all("SELECT tp.id, tp.url, tp.caption, tp.created_at, t.user_id,
+                            t.id trip_id, t.slug trip_slug, t.title trip_title,
+                            d.name dest_name, d.slug dest_slug
+                       FROM trip_photos tp
+                       JOIN trips t ON t.id = tp.trip_id
+                  LEFT JOIN destinations d ON d.id = t.destination_id
+                      WHERE t.status = 'published' AND $tripVis AND $followedT
+                   ORDER BY tp.created_at DESC, tp.id DESC LIMIT $limitEach",
+                    array_merge($tripVisArgs, $args));
+    foreach ($photos as &$row) {
+        $row['kind'] = 'photo';
+        $row['cover_url'] = $row['url'];
+        $row['title'] = trim((string) $row['caption']) !== ''
+            ? rmt_photo_trim((string) $row['caption'], 90)
+            : ('A photo from ' . ($row['dest_name'] ?: (string) $row['trip_title']));
+        $row['subject'] = $row['dest_name'] ?: null;
+        $row['subject_url'] = $row['dest_slug'] ? url('d/' . $row['dest_slug']) : null;
+        $row['feed_url'] = url('photo/trip/' . (int) $row['id']);
+        $row['feed_excerpt'] = 'From ' . (string) $row['trip_title'];
+    }
+    unset($row);
+
+    $items = array_merge($trips, $reviews, $guides, $posts, $collections, $goings, $talk, $meetups, $photos);
     usort($items, fn($x, $y) => strcmp((string)$y['created_at'], (string)$x['created_at']));
     $items = array_slice($items, 0, $limitEach);
     authors_fill($items);
@@ -958,6 +988,11 @@ function feed(array $a): void {
     $rails = rmt_feed_rails($uid);
     $engagement = rmt_feed_engagement($items, $uid);
     $threads = rmt_feed_comments($items);
+    /* Ranked, not merely recent. A feed sorted purely by time treats a photograph from somebody
+       who will be in Lisbon the same week as you exactly like a blog post about tourist taxes, and
+       the only thing it knows about you is when you loaded the page. Every boost that moves a row
+       also writes the line that says why it moved. */
+    $items = rmt_feed_rank($items, $uid, $engagement);
     view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
