@@ -44,6 +44,7 @@ require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/feed_home.php';
 require BASE_PATH . '/app/photos.php';
 require BASE_PATH . '/app/discovery.php';
+require BASE_PATH . '/app/lifecycle.php';
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/polls.php';
 require BASE_PATH . '/app/cards.php';

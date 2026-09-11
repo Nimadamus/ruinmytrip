@@ -977,6 +977,13 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
 
 function feed(array $a): void {
     require_login(); $me = current_user(); $uid = (int)$me['id'];
+    /* The two notifications that are about the member's own trips rather than about somebody
+       else's behaviour: one three days before they go, one the day after they get back. There is
+       no cron for this and there cannot be from a session (pushing a workflow file needs a token
+       scope this machine does not have), so it rides on a page somebody loads anyway, throttled to
+       twice an hour across the whole site, exactly as the search-engine ping queue rides on a
+       sitemap request. */
+    rmt_lifecycle_if_due();
     /* Two scopes, named. Following is the point of following somebody; Everyone is what makes the
        site readable on the day you join and on any day your follows are quiet. */
     $scope = input('scope') === 'everyone' ? 'everyone' : 'following';
@@ -3358,12 +3365,43 @@ function react_action(array $a): void {
         catch (\PDOException $e) { if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e; }
 
         /* Somebody liking what you wrote was, until now, invisible to you. It is the smallest
-           signal the site produces and the one people come back for. Saves stay silent: a save is
-           a note to yourself about somebody else's page, and telling them turns a private
-           bookmark into a public act. */
+           signal the site produces and the one people come back for.
+
+           Saves now count too, but without a name on them. The original rule here was that a save
+           is a note to yourself about somebody else's page and telling them turns a private
+           bookmark into a public act, which is right about the person who saved and wrong about
+           the person who wrote: "four people saved this trip" is the most useful thing you can
+           tell an author, and it says nothing about who. So the signal goes out and the identity
+           does not. */
         if ($kind === 'like') rmt_notify_like((int) $me['id'], $tt, $tid);
+        if ($kind === 'save') rmt_notify_save($tt, $tid);
     }
     redirect(rmt_return_to());
+}
+
+/**
+ * Tell an author that something of theirs was saved, without saying by whom.
+ *
+ * A save is a private bookmark and the person who made it never appears here: the notification
+ * carries no actor, and the copy counts rather than names. Once a day per thing at most, so a
+ * trip that is being saved steadily does not turn into a stream of identical rows.
+ */
+function rmt_notify_save(string $tt, int $tid): void {
+    $owner = rmt_content_owner_id($tt, $tid);
+    if ($owner < 1) return;
+    $recent = q_one("SELECT 1 x FROM notifications
+                      WHERE user_id = ? AND type = 'save' AND target_type = ? AND target_id = ?
+                        AND created_at > ?",
+                    [$owner, $tt, $tid, date('Y-m-d H:i:s', strtotime('-1 day'))]);
+    if ($recent) return;
+    q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+          [$owner, 'save', null, $tt, $tid, date('Y-m-d H:i:s')]);
+}
+
+/** How many people have saved one thing. Used by the notification copy, which never names them. */
+function rmt_save_count(string $tt, int $tid): int {
+    return (int) (q_one('SELECT COUNT(*) n FROM saves WHERE target_type = ? AND target_id = ?',
+                        [$tt, $tid])['n'] ?? 0);
 }
 
 /**

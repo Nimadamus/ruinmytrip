@@ -31,6 +31,46 @@
           <a href="<?= e(url('u/'.$n['actor'])) ?>"><b>@<?= e($n['actor']) ?></b> sent you a compliment.</a>
         <?php elseif ($n['type']==='compliment'): ?>
           <b>Someone</b> sent you a compliment, then deleted their account.
+        <?php elseif ($n['type'] === 'save'):
+          /* No actor, ever: who bookmarked something is their business. The number is the news. */
+          $saves = function_exists('rmt_save_count') ? rmt_save_count((string) $n['target_type'], (int) $n['target_id']) : 0;
+          $href = rmt_notification_target_url((string) $n['target_type'], (int) $n['target_id']);
+          $noun = ['trip' => 'trip', 'review' => 'review', 'guide' => 'guide', 'post' => 'post',
+                   'trip_photo' => 'photo', 'review_photo' => 'photo', 'meetup' => 'meetup',
+                   'collection' => 'list'][$n['target_type']] ?? 'post';
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= $saves > 1 ? $saves . ' people have saved' : 'Somebody saved' ?> your <?= e($noun) ?>.</b></a>
+            <span class="hint">Saves are private, so this does not say who.</span>
+          <?php else: ?>
+            <b>Something of yours was saved, and is no longer there.</b>
+          <?php endif; ?>
+        <?php elseif ($n['type'] === 'trip_soon' || $n['type'] === 'trip_over'):
+          /* The member's own trip, which is why there is no actor and no "@somebody did X". */
+          $trip = q_one("SELECT t.id, t.slug, t.date_from, t.date_to, d.name dest_name, d.slug dest_slug
+                           FROM trips t LEFT JOIN destinations d ON d.id = t.destination_id
+                          WHERE t.id = ? AND t.status = 'published'", [(int) $n['target_id']]);
+          $where = $trip ? (string) ($trip['dest_name'] ?: 'your trip') : 'your trip';
+          $href = $trip ? url('trip/' . (int) $trip['id'] . '/' . (string) $trip['slug']) : null;
+        ?>
+          <?php if (!$trip): ?>
+            <b>A trip you had posted is no longer there.</b>
+          <?php elseif ($n['type'] === 'trip_soon'): ?>
+            <?php $days = max(0, (int) ceil((strtotime((string) $trip['date_from']) - time()) / 86400));
+                  $company = function_exists('rmt_lifecycle_company') ? rmt_lifecycle_company((int) $trip['id']) : 0; ?>
+            <a href="<?= e($href) ?>"><b><?= e($where) ?><?= $days === 0 ? ' starts today' : ($days === 1 ? ' starts tomorrow' : ' starts in ' . $days . ' days') ?>.</b></a>
+            <?php if ($company > 0): ?>
+              <?= $company === 1 ? 'One other traveler will' : $company . ' other travelers will' ?> be there while you are.
+              <?php if (!empty($trip['dest_slug'])): ?>
+                <a href="<?= e(url('d/'.$trip['dest_slug'].'/travelers')) ?>">See who</a>.
+              <?php endif; ?>
+            <?php elseif (!empty($trip['dest_slug'])): ?>
+              <a href="<?= e(url('d/'.$trip['dest_slug'].'/travelers')) ?>">See who else is going</a>.
+            <?php endif; ?>
+          <?php else: ?>
+            <a href="<?= e($href) ?>"><b>How was <?= e($where) ?>?</b></a>
+            Add your photos and write what nearly ruined it. That is the thing the next person reads.
+          <?php endif; ?>
         <?php elseif ($n['type']==='comment' || $n['type']==='mention'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $verb = $n['type']==='comment' ? 'commented on your' : 'mentioned you in a';
