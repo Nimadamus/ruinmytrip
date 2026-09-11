@@ -6007,7 +6007,7 @@ function trip_activity_decide(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can answer.');
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can answer.');
 
     $who = (int) input('user_id');
     $decision = (string) input('decision');
@@ -6081,7 +6081,7 @@ function trip_activity_cancel(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can cancel it.');
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can cancel it.');
 
     $on = empty($act['cancelled_at']);
     db()->prepare('UPDATE trip_activities SET cancelled_at = ?, updated_at = ? WHERE id = ?')
@@ -6119,7 +6119,7 @@ function trip_activity_settings(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler whose plan it is can change it.');
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can change it.');
 
     $back = '/activity/' . (int) $act['id'];
     $trip = q_one('SELECT * FROM trips WHERE id = ?', [(int) $act['trip_id']]);
@@ -6185,7 +6185,7 @@ function trip_activity_photos(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler can add photos here.');
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can add photos here.');
     $errors = rmt_activity_attach_photos((int) $act['id'], (int) $me['id']);
     flash($errors ? implode(' ', array_unique($errors)) : 'Photos added.');
     redirect('/activity/' . (int) $act['id']);
@@ -6231,10 +6231,7 @@ function trip_activity_delete(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']
-        && !in_array($me['role'] ?? '', ['admin', 'mod'], true)) {
-        forbidden('Only the traveler can change this trip.');
-    }
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can change it.');
     db()->prepare("UPDATE trip_activities SET status = 'removed', updated_at = ? WHERE id = ?")
         ->execute([date('Y-m-d H:i:s'), (int) $act['id']]);
     flash('Removed.');
@@ -6343,7 +6340,7 @@ function trip_activity_done(array $a): void {
     $me = current_user();
     $act = rmt_activity_get((int) $a['id']);
     if (!$act) not_found();
-    if ((int) $act['user_id'] !== (int) $me['id']) forbidden('Only the traveler can answer this.');
+    if (!rmt_activity_can_edit($act, $me)) forbidden('Only the travelers planning this trip can answer this.');
 
     $done = input('done') === '0' ? 0 : 1;
     $rating = (int) input('rating');

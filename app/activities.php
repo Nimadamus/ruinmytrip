@@ -90,7 +90,7 @@ function rmt_activities_for_trip(int $tripId, ?array $viewer): array {
                 (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'going') going_count,
                 (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'interested') interested_count
            FROM trip_activities a
-      LEFT JOIN places p ON p.id = a.place_id
+      LEFT JOIN places p ON p.id = a.place_id AND p.status <> 'hidden'
       LEFT JOIN users u ON u.id = a.user_id
           WHERE a.trip_id = ? AND a.status = 'published' AND $actVis
        ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END,
@@ -314,7 +314,7 @@ function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = nul
            JOIN trips t ON t.id = a.trip_id
            JOIN users u ON u.id = a.user_id AND u.status = 'active'
       LEFT JOIN profiles pr ON pr.user_id = a.user_id
-      LEFT JOIN places p ON p.id = a.place_id
+      LEFT JOIN places p ON p.id = a.place_id AND p.status <> 'hidden'
           WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
             AND $tripVis AND $actVis AND $blockSql $window $filter
        ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
@@ -589,7 +589,7 @@ function rmt_activity_recommended_in_city(int $destId, ?array $viewer, int $limi
            FROM trip_activities a
            JOIN trips t ON t.id = a.trip_id
            JOIN users u ON u.id = a.user_id AND u.status = 'active'
-      LEFT JOIN places p ON p.id = a.place_id
+      LEFT JOIN places p ON p.id = a.place_id AND p.status <> 'hidden'
           WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
             AND a.recommend = 1 AND a.cancelled_at IS NULL
             AND $tripVis AND $actVis AND $blockSql
@@ -808,4 +808,24 @@ function rmt_activity_map_points(array $activities): array {
         ];
     }
     return $out;
+}
+
+/**
+ * May this person change this plan?
+ *
+ * Two conditions, and both are needed. They must have written it, or own the trip it is on; and
+ * they must still be somebody who may add to that trip. Authorship alone is not enough: an editor
+ * who was removed from a trip kept the right to edit and cancel the lines they had added to it,
+ * which is a person still holding a key to a room they were asked to leave.
+ */
+function rmt_activity_can_edit(array $act, ?array $viewer): bool {
+    if (!$viewer) return false;
+    $uid = (int) $viewer['id'];
+    if (in_array($viewer['role'] ?? '', ['admin', 'mod'], true)) return true;
+
+    $trip = q_one('SELECT * FROM trips WHERE id = ?', [(int) $act['trip_id']]);
+    if (!$trip) return false;
+    if (!function_exists('rmt_trip_can_edit') || !rmt_trip_can_edit($trip, $viewer)) return false;
+
+    return (int) $act['user_id'] === $uid || (int) $trip['user_id'] === $uid;
 }

@@ -29,6 +29,7 @@ require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/trip_members.php';
+require BASE_PATH . '/app/activities.php';
 
 $pass = 0; $fail = 0;
 function ok(bool $c, string $what): void {
@@ -167,6 +168,28 @@ $pdo->exec("INSERT INTO trip_members (trip_id,user_id,role,state,invited_by,crea
             VALUES (2,2,'editor','active',1,'2026-09-01 10:00:00')");
 $names = array_column(rmt_trip_members(2), 'username');
 ok(!in_array('ben', $names, true), 'a deleted account is not listed as planning anything');
+
+
+// --- what a removed member keeps, and what they do not -------------------------------------------
+/* A plan carries the id of whoever wrote it, and the first version of the permission check read
+   only that. So an editor who was removed from a trip kept the right to edit and cancel the lines
+   they had added to it: a person still holding a key to a room they were asked to leave. */
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_activities (id INTEGER PRIMARY KEY, trip_id INT,
+              user_id INT, title TEXT, status TEXT DEFAULT 'published')");
+$pdo->exec("INSERT INTO trip_members (trip_id,user_id,role,state,invited_by,created_at)
+            VALUES (3,4,'editor','active',1,'2026-09-01 10:00:00')");
+$pdo->exec("INSERT INTO trip_activities (id,trip_id,user_id,title) VALUES (77,3,4,'Dan added this')");
+$danPlan = q_one('SELECT * FROM trip_activities WHERE id = 77');
+
+ok(rmt_activity_can_edit($danPlan, $dan), 'a member may change the line they put on the trip');
+ok(rmt_activity_can_edit($danPlan, $ana), 'and so may the traveler whose trip it is');
+ok(!rmt_activity_can_edit($danPlan, $cara), 'somebody not on the trip may not');
+ok(!rmt_activity_can_edit($danPlan, null), 'and neither may nobody');
+
+rmt_trip_member_remove($trip(3), $ana, 4);
+ok(!rmt_activity_can_edit($danPlan, $dan),
+   'once removed from the trip they can no longer change what they left on it');
+ok(rmt_activity_can_edit($danPlan, $ana), 'while the owner still can, so the line is not stranded');
 
 echo "trip_members_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
