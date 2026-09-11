@@ -648,3 +648,18 @@ function rmt_open_plans_upcoming(?array $viewer, ?int $destId = null, int $limit
         array_merge([date('Y-m-d'), date('Y-m-d')], $tripArgs, $actArgs, $blockArgs, $whereArgs)
     );
 }
+
+/**
+ * Is this plan a page worth asking anybody to index?
+ *
+ * A title and a day is a real page for the people involved and a thin one for a search engine:
+ * "Dinner" on a Friday tells a stranger nothing. It earns a place in the index when somebody wrote
+ * something about it, photographed it, or is coming to it. The same question decides the robots tag
+ * on the page and the row in the sitemap, so the two can never disagree.
+ */
+function rmt_activity_has_substance(array $a): bool {
+    if (trim((string) ($a['notes'] ?? '')) !== '') return true;
+    if ((int) ($a['photo_count'] ?? 0) > 0) return true;
+    if ((int) ($a['going_count'] ?? 0) > 0) return true;
+    return false;
+}

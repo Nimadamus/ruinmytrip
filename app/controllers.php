@@ -5791,8 +5791,13 @@ function activity_show(array $a): void {
            what it is, when, and whether the reader can come, which the site default does not. */
         'og_image' => $photos ? abs_url((string) $photos[0]['url'])
             : (!$isPrivate ? rmt_card_url('activity', (string) (int) $act['id']) : rmt_default_og_image()),
-        /* A plan on a trip that is not public, or marked private, is never offered to a crawler. */
-        'robots' => $isPrivate ? 'noindex, nofollow' : 'index, follow',
+        /* A plan on a trip that is not public, or marked private, is never offered to a crawler,
+           and neither is a thin one. The same question decides the sitemap row, so the two can
+           never disagree about the same page. */
+        'robots' => ($isPrivate || !rmt_activity_has_substance(
+                        $act + ['photo_count' => count($photos),
+                                'going_count' => rmt_activity_going_count((int) $act['id'])]))
+            ? 'noindex, nofollow' : 'index, follow',
         'breadcrumbs' => array_values(array_filter([
             ['name' => 'Home', 'url' => url()],
             $act['dest_slug'] ? ['name' => (string) $act['dest_name'], 'url' => url('d/' . $act['dest_slug'])] : null,

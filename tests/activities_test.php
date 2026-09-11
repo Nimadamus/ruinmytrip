@@ -306,5 +306,18 @@ ok(!in_array('Dinner in Alfama', $recLabels($stranger), true),
 $pdo->exec('DELETE FROM blocks');
 $pdo->exec('UPDATE trip_activities SET recommend = NULL, done = 0');
 
+
+// --- what is worth asking anybody to index ------------------------------------------------------
+/* The sitemap and the page have to answer this the same way, so they ask the same function. A
+   title and a day is a real page for the people going and a thin one for a stranger. */
+ok(!rmt_activity_has_substance(['notes' => '', 'photo_count' => 0, 'going_count' => 0]),
+   'a title and a day is not a page to put in front of a search engine');
+ok(rmt_activity_has_substance(['notes' => 'Meet by the fountain, it is the loud one']),
+   'something written about it is');
+ok(rmt_activity_has_substance(['notes' => '', 'photo_count' => 2]), 'so is a photograph of it');
+ok(rmt_activity_has_substance(['notes' => '', 'going_count' => 1]),
+   'and so is one real person coming, which is the whole subject of the page');
+ok(!rmt_activity_has_substance([]), 'a row with none of those keys is thin, not a fatal');
+
 echo "activities_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

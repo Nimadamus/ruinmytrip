@@ -176,6 +176,24 @@ function rmt_sitemap_group(string $group): array {
                                AND tp.caption IS NOT NULL AND tp.caption <> ''") as $ph) {
                 $add('photo/trip/' . (int) $ph['id'], $ph['created_at'] ?? null);
             }
+            /* Plans on public trips, where the plan itself is not private and has something on
+               it. Same question the page asks itself, so the sitemap and the robots tag cannot
+               disagree: a title and a day is a real page for the people going and a thin one for
+               a stranger. */
+            foreach (q_all("SELECT a.id, a.notes, a.created_at,
+                                   (SELECT COUNT(*) FROM activity_photos ap
+                                     WHERE ap.activity_id = a.id AND ap.status = 'published') photo_count,
+                                   (SELECT COUNT(*) FROM activity_joins j
+                                     WHERE j.activity_id = a.id AND j.state = 'going') going_count
+                              FROM trip_activities a
+                              JOIN trips t ON t.id = a.trip_id
+                             WHERE a.status = 'published' AND t.status = 'published'
+                               AND COALESCE(t.visibility,'public') = 'public'
+                               AND COALESCE(a.visibility,'trip') = 'trip'
+                               AND a.cancelled_at IS NULL") as $ac) {
+                if (!rmt_activity_has_substance($ac)) continue;
+                $add('activity/' . (int) $ac['id'], $ac['created_at'] ?? null);
+            }
             foreach (q_all("SELECT rp.id, rp.created_at FROM review_photos rp
                               JOIN reviews r ON r.id = rp.review_id
                              WHERE r.status='published'
