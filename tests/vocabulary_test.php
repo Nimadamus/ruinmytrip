@@ -86,5 +86,22 @@ $css = (string) file_get_contents($root . '/public/assets/css/app.css');
 ok(preg_match('/\.grid\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0/', $css) === 1,
    'grid children are allowed to shrink');
 
+/* Every control that uploads photographs takes more than one at a time, and says so. The trip
+   one auto submits on choosing a file, so it is the one place where a silent control looks like a
+   broken one: choosing three pictures on a phone showed nothing at all until they had arrived. */
+foreach (['trip_show.php', 'activity_show.php', 'review_new.php', 'review_edit.php',
+          'trip_new.php', 'trip_edit.php'] as $v) {
+    $src = (string) file_get_contents($root . '/views/' . $v);
+    if (!str_contains($src, 'type="file"')) continue;
+    ok(str_contains($src, 'name="photos[]"') && str_contains($src, 'multiple'),
+       "$v takes more than one photograph at a time");
+    ok(!preg_match('/>\s*Add a photo\s*</', $src), "$v does not call a multiple control singular");
+}
+$tripSrc = (string) file_get_contents($root . '/views/trip_show.php');
+ok(str_contains($tripSrc, 'data-photo-label') && str_contains($tripSrc, 'Adding '),
+   'and the one that submits by itself says what it is doing while it does it');
+ok(str_contains($tripSrc, 'Six photos is the most'),
+   'a trip at the cap says so rather than offering a control that will refuse');
+
 echo "vocabulary_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

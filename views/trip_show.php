@@ -121,9 +121,20 @@ $authorSaid = $authorSaid ?? [];
     <form id="photos" class="trip-photo-add" method="post" enctype="multipart/form-data"
           action="<?= e(url('trip/'.(int) $t['id'].'/photos')) ?>">
       <?= csrf_field() ?>
-      <label class="btn btn-ghost btn-sm" style="cursor:pointer">Add a photo
-        <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
-               style="display:none" onchange="this.form.submit()"></label>
+      <?php /* The control has always taken several files at once; it said "a photo" and gave no
+               sign it was working, so on a phone choosing three pictures looked like nothing had
+               happened for as long as they took to arrive. It now says how many it will still
+               take, and says what it is doing while it does it. */ ?>
+      <?php $rmt_left = max(0, 6 - count($photos ?? [])); ?>
+      <?php if ($rmt_left > 0): ?>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer" data-photo-label>Add photos
+          <span class="hint"><?= $rmt_left ?> left</span>
+          <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
+                 style="display:none"
+                 onchange="var l=this.closest('[data-photo-label]'); if(l&&this.files.length){l.textContent=this.files.length===1?'Adding a photo…':'Adding '+this.files.length+' photos…';} this.form.submit();"></label>
+      <?php else: ?>
+        <span class="hint">Six photos is the most a trip carries.</span>
+      <?php endif; ?>
       <?php if ($me && (int) $t['user_id'] === (int) $me['id']): ?>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a>
       <?php endif; ?>
