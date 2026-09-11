@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (fourth pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (fifth pass).
 
 ## What the product is
 
@@ -38,7 +38,7 @@ pages made of members.
 `073` social indexes · `074` travel_style · `075` a profile row for everybody · `076` held reviews ·
 `077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key ·
 `080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
-meeting point, end time, cancellation, activity photos).
+meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips).
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -94,7 +94,14 @@ site. A first message from a stranger is a request rather than a conversation, c
 and not allowed to light up the navigation. Likes and saves roll up; anything addressed to the
 reader personally never does.
 
-Files worth knowing: `app/activities.php` (the plan model and every read of it), `app/photos.php`,
+A trip can be planned by more than one person. The owner is still `trips.user_id`; editors live in
+`trip_members` and may add plans, places and photographs and nothing else. A member sees the trip
+whatever its visibility, and that hole is cut once, inside `rmt_plan_visibility_sql()`, so every
+list on the site learned it at the same moment.
+
+Files worth knowing: `app/activities.php` (the plan model and every read of it),
+`app/trip_members.php` (who may do what to a trip), `app/trust.php` (public facts about an
+account, never a score), `app/photos.php`,
 `app/discovery.php`, `app/feed_home.php` (rails, engagement, ranking), `app/lifecycle.php` (trip
 notifications), `app/storage.php` (R2 driver).
 
@@ -111,6 +118,12 @@ looking, never by reading the query. Add a query that forgets and the suite goes
 canaries. It currently guards a private trip, a private trip's photograph, a private plan, an open
 plan sitting on a private trip, and a meeting point (absent for somebody who only asked, present
 once they are accepted). Backend rules are not the thing that leaks; pages are.
+
+## The thing that is blocking most of what is left
+
+`places` is empty. The place layer, the map and half of "destination intelligence" are built,
+tested and have no data to stand on, because places are added by hand after checking and there is
+no way to do that at volume. It is the top item in BACKLOG.md.
 
 ## Waiting on Nima
 

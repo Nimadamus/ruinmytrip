@@ -103,7 +103,12 @@ function rmt_feed_rails(int $uid): array {
        answered for is the one piece of knowledge the next traveler needs and nobody else has. */
     $toReview = function_exists('rmt_activities_to_review') ? rmt_activities_to_review($uid, 3) : [];
 
+    /* Somebody asked you to help plan their trip and is waiting. It expires in the sense that
+       matters: they are planning it now, and an answer next month is no answer. */
+    $invites = function_exists('rmt_trip_invitations') ? rmt_trip_invitations($uid) : [];
+
     return [
+        'invites'     => $invites,
         'review'      => $toReview,
         'joinable'    => $joinable,
         'joinable_anywhere' => $joinableAnywhere,

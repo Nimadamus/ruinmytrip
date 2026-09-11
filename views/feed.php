@@ -9,13 +9,34 @@ $rmt_kind_verbs = ['trip' => 'shared a trip', 'review' => 'reviewed', 'guide' =>
    still 200 and looked fine to anything that only checked a status code. */
 $rmt_post_verb = static fn(array $it): ?string =>
     ($it['kind'] === 'post' && !empty($it['trip_id'])) ? 'posted an update from' : null;
-$rails = $rails ?? ['review' => [], 'joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [],
+$rails = $rails ?? ['invites' => [], 'review' => [], 'joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [],
                     'meetups' => [], 'match_count' => 0];
 $rmt_day = static fn(?string $d): string => $d ? date('j M', strtotime($d)) : '';
 $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
 $threads = $threads ?? [];
 ?>
 <div class="wrap feed-shell">
+
+  <?php /* Somebody is waiting on an answer about a trip they are planning right now. Above even
+           the "how was it" card, because it is a person waiting rather than a question. */ ?>
+  <?php if (!empty($rails['invites'])): ?>
+    <section class="rail-card feed-nudge">
+      <h2 class="rail-h">You were asked to help plan</h2>
+      <?php foreach ($rails['invites'] as $inv): ?>
+        <div class="rail-row rail-review">
+          <b><?= e((string) $inv['title']) ?></b>
+          <span class="hint">@<?= e((string) $inv['owner_username']) ?><?php
+            if (!empty($inv['dest_name'])): ?> &middot; <?= e((string) $inv['dest_name']) ?><?php endif; ?><?php
+            if (!empty($inv['date_from'])): ?> &middot; <?= e(rmt_card_date_range((string) $inv['date_from'], (string) $inv['date_to'])) ?><?php endif; ?></span>
+          <form method="post" action="<?= e(url('trip/'.(int) $inv['trip_id'].'/invite/answer')) ?>" class="review-yn">
+            <?= csrf_field() ?>
+            <button class="btn btn-primary btn-sm" name="answer" value="yes">Join the trip</button>
+            <a class="btn btn-sm btn-ghost" href="<?= e(url('trip/'.(int) $inv['trip_id'].'/'.(string) $inv['slug'])) ?>">Look first</a>
+          </form>
+        </div>
+      <?php endforeach; ?>
+    </section>
+  <?php endif; ?>
 
   <?php /* The day has passed and nobody has said how it went. One tap, and the answer is a real
            recommendation with a real person's name on it, which is the only kind this site has.

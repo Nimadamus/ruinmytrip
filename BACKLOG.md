@@ -23,22 +23,40 @@ actually want to meet?"*
 
 ## Next, in order
 
-1. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
-   week costs. Real sources only, and none of it invented. This is the last big thing a city page
-   cannot answer.
-2. **Plans as a reason to come back tomorrow.** Everything still happens on the day somebody
-   posts. A plan that nearly fills, or changes, or is two days away should pull somebody back.
-3. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
-   it: no "you were both at this", no second invitation, no way to find the same person again.
-4. **One ranked search result list.** Travelers are at the top now, which was most of the value,
+1. **There are no places in the database.** The place layer is built and tested and has nothing in
+   it: `places` is empty in production, so "5 travelers saved this restaurant" cannot happen yet and
+   a map would draw an empty city. Places are added by hand after checking, which is the right
+   policy; what is missing is a way to do that at any volume. This now blocks the place layer, the
+   map, and half of destination intelligence.
+2. **A map, once there are coordinates to put on it.** Destinations and places both carry lat and
+   lng. A trip map needs plans attached to places, which needs the item above. Nothing on a map may
+   be a person's current position: a plan somebody published is a plan, a location is surveillance.
+3. **Events as an object.** Sports, concerts, festivals. The architecture is a small table and a
+   column on a plan; the hard part is real event data, which needs a source. Nothing invented, so
+   this waits for a feed rather than being faked into existence.
+4. **Trip photographs from anybody planning the trip.** An editor can add plans, places and plan
+   photographs but trip photographs still go through the owner's edit form.
+5. **Seasonal and practical answers on a city page.** Weather bands, what is closed when, what a
+   week costs. Real sources only.
+6. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+7. **One ranked search result list.** Travelers are at the top now, which was most of the value,
    but the page is still nine lists rather than one ordered answer.
-5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-6. **Groups on a plan.** Four people going to the same dinner have no way to talk to all four
-   except the plan's own thread, which is the right answer until it is not.
-7. **Performance when this gets busy.** `/explore` ships 100KB and the feed ranking loads every
-   follow and save for the member on each page. Notifications are fixed.
+8. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows
+   it: no "you were both at this", no second invitation.
+9. **Performance when this gets busy.** `/explore` ships 100KB and the feed ranking loads every
+   follow and save for the member on each page.
 
 ## Done (2026-09-11, later)
+
+* **Collaborative trips** (migration 083). One owner, any number of invited editors, a permission
+  split where an editor adds and only an owner publishes or destroys, and the visibility hole cut
+  in exactly one place with a test that the SQL and the PHP agree on every trip for every viewer.
+* **A plan attaches to a real place**, matched on the normalised name inside the trip's city, and a
+  place page carries who has it planned, how many are there while you are, and who would go again.
+* **The trip page knows it is the third morning in Lisbon**: a Today card during the dates.
+* **Trust signals**: public facts with a link to check them, never a score, next to the join button.
+* **Photographs and messages can be reported**, and the report route is a build gate.
+* **The feed knows the difference between a city and a date.**
 
 * **The reminder the day before**, to the traveler whose plan it is and the people coming, once
   per plan per person, and never for a plan nobody else is coming to.
