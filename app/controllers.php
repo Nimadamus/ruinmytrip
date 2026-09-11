@@ -987,6 +987,43 @@ function tag_show(array $a): void {
     ]);
 }
 
+/**
+ * Structured data for a trip.
+ *
+ * TouristTrip when there are dates and a city, because that is what the page is: a journey to a
+ * named place between two days. Article otherwise, for a trip written as a story after the fact.
+ *
+ * @return array<string,mixed>
+ */
+function rmt_trip_jsonld(array $t): array {
+    $author = ['@type' => 'Person',
+               'name' => (string) ($t['author']['display_name'] ?? $t['author']['username'] ?? '')];
+    $from = trim((string) ($t['date_from'] ?? ''));
+    $to   = trim((string) ($t['date_to'] ?? ''));
+
+    if ($from === '' || $to === '' || empty($t['dest_name'])) {
+        return ['@context' => 'https://schema.org', '@type' => 'Article',
+                'headline' => (string) $t['title'],
+                'datePublished' => (string) $t['created_at'], 'author' => $author];
+    }
+
+    $ld = [
+        '@context' => 'https://schema.org',
+        '@type' => 'TouristTrip',
+        'name' => (string) $t['title'],
+        'url' => abs_url('/trip/' . (int) $t['id'] . '/' . (string) $t['slug']),
+        'startDate' => $from,
+        'endDate' => $to,
+        'author' => $author,
+        'itinerary' => ['@type' => 'TouristDestination', 'name' => (string) $t['dest_name']]
+            + (!empty($t['dest_slug']) ? ['url' => abs_url('/d/' . (string) $t['dest_slug'])] : []),
+    ];
+    $body = trim((string) ($t['body'] ?? ''));
+    if ($body !== '') $ld['description'] = rmt_meta_description($body);
+    if (trim((string) ($t['cover_url'] ?? '')) !== '') $ld['image'] = abs_url((string) $t['cover_url']);
+    return $ld;
+}
+
 function trip_show(array $a): void {
     $t = q_one("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                 LEFT JOIN destinations d ON d.id=t.destination_id WHERE t.id=?", [(int)$a['id']]);
@@ -1028,8 +1065,12 @@ function trip_show(array $a): void {
         'og_image' => trim((string) $t['cover_url']) !== '' ? abs_url((string) $t['cover_url'])
                       : (($t['visibility'] ?? 'public') === 'public' ? rmt_card_url('trip', (string) (int) $t['id']) : rmt_default_og_image()),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>$t['dest_name']?:'Trips','url'=>$t['dest_slug']?url('d/'.$t['dest_slug']):url('explore')],['name'=>$t['title'],'url'=>url('trip/'.$t['id'])]],
-        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$t['title'],
-            'datePublished'=>$t['created_at'],'author'=>['@type'=>'Person','name'=>$t['author']['display_name']??$t['author']['username']]]),
+        /* A trip is not an article. It is a journey to a named place between two dates, and
+           schema.org has a type that says exactly that, which is what lets a result carry the city
+           and the dates rather than a headline. Article stays the fallback for a trip written as a
+           story with no dates on it. The dates are only ever the range the member published, never
+           anything finer, and a trip that is not public is noindex anyway. */
+        'jsonld' => jsonld(rmt_trip_jsonld($t)),
     ]);
 }
 

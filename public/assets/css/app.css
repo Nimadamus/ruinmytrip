@@ -710,3 +710,13 @@ section.block{padding:64px 0}
 .also-person:hover{text-decoration:none;border-color:var(--brand-2);background:#f4faf9}
 .also-person b{display:block;font-weight:650;line-height:1.2}
 .also-person .hint{display:block;font-size:.78rem}
+
+/* Any ghost button standing on a photograph. The rule that gave the light version a white fill
+   turned these into blank white pills wherever the surrounding CSS had already set white type, so
+   the on-dark treatment belongs with the surfaces themselves rather than only on a class the call
+   site remembers to add. */
+.dest-hero .btn-ghost,.hero .btn-ghost,.founding-hero .btn-ghost,.first-in .btn-ghost{
+  background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.5);
+  box-shadow:none;backdrop-filter:blur(4px)}
+.dest-hero .btn-ghost:hover,.hero .btn-ghost:hover,.founding-hero .btn-ghost:hover,
+.first-in .btn-ghost:hover{background:rgba(255,255,255,.2);border-color:#fff;color:#fff}
