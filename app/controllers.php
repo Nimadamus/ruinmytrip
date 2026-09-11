@@ -1914,13 +1914,45 @@ function meetup_cancel(array $a): void {
 function going_index(array $a): void {
     $me = current_user();
     [$visSql, $visArgs] = rmt_going_visibility_sql('t', $me);
+
+    /* This page held every upcoming trip on the site in one undifferentiated list, which answers
+       "is anybody here" and never "is anybody where I am going, when I am going". Two filters turn
+       the same rows into the question a traveler actually arrives with. Both are read from the
+       query string so a filtered view is a link somebody can send. */
+    $filterDest  = (int) ($_GET['city'] ?? 0);
+    $filterMonth = (string) ($_GET['month'] ?? '');
+    if (!preg_match('/^\d{4}-\d{2}$/', $filterMonth)) $filterMonth = '';
+
+    $where = ["u.status='active'", "t.status='published'",
+              't.date_from IS NOT NULL', 't.date_to IS NOT NULL', 't.date_to >= ?'];
+    $args  = [date('Y-m-d')];
+    if ($filterDest > 0) { $where[] = 't.destination_id = ?'; $args[] = $filterDest; }
+    if ($filterMonth !== '') {
+        /* A trip is "in" a month when it is happening at any point during it, which is what
+           somebody means when they ask who is in Lisbon in March. Compared as ISO strings so the
+           same clause works on the TEXT column in development and the DATE column in production. */
+        $first = $filterMonth . '-01';
+        $last  = date('Y-m-t', strtotime($first));
+        $where[] = 't.date_from <= ? AND t.date_to >= ?';
+        $args[] = $last;
+        $args[] = $first;
+    }
+    $where[] = $visSql;
+
     $rows = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url, p.display_name
                    FROM trips t JOIN destinations d ON d.id=t.destination_id JOIN users u ON u.id=t.user_id
                    LEFT JOIN profiles p ON p.user_id=u.id
-                   WHERE u.status='active' AND t.status='published'
-                     AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL AND t.date_to >= ?
-                     AND $visSql
-                   ORDER BY t.date_from", array_merge([date('Y-m-d')], $visArgs));
+                   WHERE " . implode(' AND ', $where) . "
+                   ORDER BY t.date_from LIMIT 120", array_merge($args, $visArgs));
+
+    /* The next six months, named, for the month filter. Generated rather than queried: a month
+       with nobody in it still has to be offerable, or the filter can only ever confirm what the
+       page already shows. */
+    $months = [];
+    for ($i = 0; $i < 6; $i++) {
+        $ts = strtotime("first day of +$i month");
+        $months[date('Y-m', $ts)] = date('F Y', $ts);
+    }
     $dests = all_dests();
     /* Cities with somebody in them first. This page is where a search for "travel buddy" or "who is
        going to X" lands, and the useful next click from it is the city, not another explanation. */
@@ -1932,7 +1964,7 @@ function going_index(array $a): void {
                                AND m.status='published' AND m.date_start >= ?) meetup_count
                        FROM destinations d
                    ORDER BY going_count DESC, meetup_count DESC, d.name", [date('Y-m-d'), date('Y-m-d H:i:s')]);
-    view('going_index', compact('rows','me','dests','cities'), [
+    view('going_index', compact('rows','me','dests','cities','filterDest','filterMonth','months'), [
         'title'=>'Who is going where, and when: find a travel buddy',
         'description'=>'Travelers post the city and the dates they will be there, so you can find the ones whose trip overlaps yours. Destination and date range only, never a precise location.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>"Who's going",'url'=>url('going')]],
