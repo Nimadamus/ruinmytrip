@@ -218,15 +218,17 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
     $lat = $dest['lat'] ?? null;
     $lng = $dest['lng'] ?? null;
     if ($lat === null || $lng === null) {
-        return ['ok' => false, 'rows' => [], 'aliases' => [], 'seen' => 0,
+        return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
                 'error' => 'That city has no coordinates, so there is nowhere to look.'];
     }
     $q = rmt_osm_query($type, rmt_osm_bbox((float) $lat, (float) $lng, $km), max(1, $limit * 3));
     $res = rmt_osm_fetch($q);
-    if (!$res['ok']) return ['ok' => false, 'rows' => [], 'aliases' => [], 'seen' => 0, 'error' => $res['error']];
+    if (!$res['ok']) return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
+                             'error' => $res['error']];
 
     $rows = [];
     $aliases = [];
+    $tags = [];
     foreach ($res['elements'] as $el) {
         $c = rmt_osm_to_place($el);
         if ($c['row'] === null) continue;
@@ -234,7 +236,16 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
         if (isset($aliases[$ref])) continue;          // the same venue mapped twice
         $rows[] = $c['row'];
         $aliases[$ref] = $c['aliases'];
+        /* What KIND of thing each row actually is, in the provider's own words. Our four types are
+           a coarse bucket and "25 attractions" does not tell anybody whether that is museums or
+           parks; this does, without storing a second taxonomy we would then have to maintain. */
+        $t = (array) ($el['tags'] ?? []);
+        foreach (['amenity', 'tourism', 'historic', 'leisure', 'shop'] as $k) {
+            if (!empty($t[$k])) { $tags[(string) $t[$k]] = ($tags[(string) $t[$k]] ?? 0) + 1; break; }
+        }
         if (count($rows) >= $limit) break;
     }
-    return ['ok' => true, 'rows' => $rows, 'aliases' => $aliases, 'seen' => count($res['elements']), 'error' => null];
+    arsort($tags);
+    return ['ok' => true, 'rows' => $rows, 'aliases' => $aliases, 'tags' => $tags,
+            'seen' => count($res['elements']), 'error' => null];
 }

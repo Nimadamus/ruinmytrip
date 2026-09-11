@@ -45,6 +45,12 @@ if (!$dest) { fwrite(STDERR, "no such city locally: $city\n"); exit(2); }
 $pull = rmt_osm_places_for_destination($dest, $type, $limit, $km ?: null);
 if (!$pull['ok']) { fwrite(STDERR, 'provider: ' . (string) $pull['error'] . "\n"); exit(1); }
 printf("fetched %d %s rows for %s\n", count($pull['rows']), $type, (string) $dest['name']);
+if (!empty($pull['tags'])) {
+    $bits = [];
+    foreach (array_slice($pull['tags'], 0, 8, true) as $k => $n) $bits[] = $k . '=' . $n;
+    echo "  kinds: ", implode(", ", $bits), "
+";
+}
 if (!$pull['rows']) exit(0);
 
 $body = json_encode(['rows' => $pull['rows'], 'aliases' => $pull['aliases']],
