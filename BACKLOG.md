@@ -67,6 +67,15 @@ holidays, month ranges or open ended times it will not guess at.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **A seven point data audit, and all ten cities pass it.** `op=audit` checks for a point outside
+  the city it was imported for, a missing point, a link we would print that is not a link, an
+  alias that is not another name, hours that do not describe a day, a category that no longer
+  follows from the provider's own word, and how old the provider data is. It found one real alias
+  to drop and, on its first version, 66 rows it was wrong about.
+* **Accented names have accented slugs.** "Plaça de la Sagrada Família" was at
+  pla-a-de-la-sagrada-fam-lia; 129 places across nine cities were re-minted, every old URL 301s.
+* **Search answers a partial name and an accent nobody types.** "Rijks" and "Museu Geologico"
+  returned nothing at all on the results page while the suggestion box had found them all along.
 * **A city can be added without a deploy** (migration 089), and a half written one cannot reach a
   reader, because it does not exist in the destinations table until it is finished.
 * **Multi photo upload verified end to end** and the control now says how many it will take and
