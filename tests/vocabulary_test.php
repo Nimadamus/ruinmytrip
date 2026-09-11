@@ -76,5 +76,15 @@ ok(preg_match('/\bplans?\b/i', $all) === 1 || str_contains(strtolower($all), 'pl
    'the itinerary calls its lines plans');
 ok(str_contains(strtolower($all), 'meetup'), 'and a meetup is still called a meetup');
 
+/* One layout rule that is worth a gate rather than a memory.
+
+   A grid item defaults to min-width:auto, so it refuses to be narrower than its widest indivisible
+   content: one map, one long word, one wide row, and the whole column blows past the viewport. A
+   city page at 390px was laying its content out at 1174px and letting the screen clip it, which
+   looks like a map with no margin rather than like a bug, so nobody reports it. */
+$css = (string) file_get_contents($root . '/public/assets/css/app.css');
+ok(preg_match('/\.grid\s*>\s*\*\s*\{[^}]*min-width\s*:\s*0/', $css) === 1,
+   'grid children are allowed to shrink');
+
 echo "vocabulary_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

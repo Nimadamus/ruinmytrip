@@ -1174,3 +1174,14 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .sort-link{color:var(--muted);text-decoration:none;white-space:nowrap}
 .sort-link:hover{color:var(--ink)}
 .sort-link.is-on{color:var(--ink);font-weight:650;text-decoration:underline;text-underline-offset:3px}
+
+/* Grid children may shrink.
+ *
+ * A grid item defaults to min-width:auto, which means it refuses to be narrower than its widest
+ * indivisible content. One long word, one wide table, one map, and the whole column blows past the
+ * viewport: a city page at 390px was laying its content out at 1174px and letting the screen clip
+ * it, so the map and the chips ran under the edge while the text beside them looked fine.
+ *
+ * This is the standard remedy and it is safe: anything that genuinely needs to be wider than its
+ * column says so with its own overflow-x, which several things here already do. */
+.grid > *{min-width:0}
