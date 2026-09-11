@@ -113,6 +113,27 @@ $threads = $threads ?? [];
     </section>
   <?php endif; ?>
 
+  <?php /* Somebody with no trip yet.
+           Their first screen led with a box asking what they had just found out, which is a
+           question you can only answer if you are already travelling. The thing this product does
+           starts one step earlier: say where you are going, and the dates, and everything else on
+           the site keys off that. So they are asked that instead, once, and the card disappears
+           the moment there is a trip to show above it. */ ?>
+  <?php if (!$nt): ?>
+    <section class="next-trip feed-nudge">
+      <div class="next-trip-head">
+        <p class="eyebrow" style="margin:0">Start here</p>
+        <h2 style="margin:.2rem 0 .4rem">Where are you going?</h2>
+      </div>
+      <p class="muted" style="margin:0 0 12px">Post your dates and this site starts working: who
+        else is there the same week, what they are planning, and the places worth your time.</p>
+      <p style="margin:0;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn-accent" href="<?= e(url('trip/new')) ?>">Add your trip</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Not sure yet, browse cities</a>
+      </p>
+    </section>
+  <?php endif; ?>
+
   <?php /* The composer, above both columns. The difference between a feed and a network is whether
            the reader can answer it without going somewhere else, and on a phone that means it has
            to be reachable before the scrolling starts. It posts to the same endpoint /talk uses. */ ?>
@@ -123,7 +144,10 @@ $threads = $threads ?? [];
       <div class="composer-row">
         <img class="avatar" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
         <textarea name="body" rows="2" maxlength="1000"
-                  placeholder="Where are you going, or what did you just find out?"></textarea>
+                  <?php /* Not the same question twice. Somebody with no trip has the card above
+                           asking where they are going; asking it again ten pixels below reads as
+                           a template repeating itself rather than as an invitation. */ ?>
+                  placeholder="<?= $nt ? 'Where are you going, or what did you just find out?' : 'Ask the travelers here anything about a city' ?>"></textarea>
       </div>
       <div class="composer-actions">
         <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/new')) ?>">Post a trip</a>
