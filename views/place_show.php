@@ -240,7 +240,12 @@
       <?php /* Where the address, the coordinates and the phone number came from. Attribution is a
                condition of using this data, not a courtesy, and it also tells a reader why a field
                is missing: nobody has mapped it yet, rather than this site being careless. */ ?>
-      <?php $rmt_prov = rmt_place_providers()[(string) ($p['data_source'] ?? '')] ?? null; ?>
+      <?php /* One credit, not two. This block and rmt_place_data_credit() both name the source; the
+               older one predates the importer and says less, so where this one can speak, it does.
+               Two lines saying the same thing in different words reads as a page that lost track
+               of itself. */ ?>
+      <?php $rmt_prov = rmt_place_providers()[(string) ($p['data_source'] ?? '')] ?? null;
+            if ($rmt_prov) $GLOBALS['rmt_place_credit_shown'] = true; ?>
       <?php if ($rmt_prov): ?>
         <p class="hint" style="margin:10px 0 0">
           <?= e((string) $rmt_prov['attribution']) ?>
@@ -265,7 +270,7 @@
 
       <?php /* Provenance sits under the whole card, not just the hours: the address came from the
                same place. OpenStreetMap is ODbL and the attribution is a licence term. */ ?>
-      <?php $src = rmt_place_source_line($p); ?>
+      <?php $src = empty($GLOBALS['rmt_place_credit_shown']) ? rmt_place_source_line($p) : null; ?>
       <?php if ($src): ?>
         <p class="hint" style="margin:12px 0 0">
           <?php if ($src['url']): ?>
