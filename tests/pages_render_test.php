@@ -144,6 +144,15 @@ if ($acct) {
         return [$status, (string) $body, implode('; ', $jar)];
     };
 
+    /* The login limiter counts attempts per address and per IP in a fifteen minute window, and a
+       developer who has been signing in to the dev site by hand, or a browser test that logged in
+       a few times, leaves that window full. The suite would then report ten failures that mean
+       nothing except "somebody used the site recently". The buckets for this one account and for
+       localhost are cleared first: it is the same dev database this test already rewrites a
+       password in, and the limiter is not what is under test here. */
+    $pdo->prepare('DELETE FROM rate_limits WHERE bucket IN (?, ?)')
+        ->execute(['login_ip:127.0.0.1', 'login_email:' . (string) $acct['email']]);
+
     [, $loginPage, $cookie] = $req('/login', null, '');
     preg_match('/name="_csrf" value="([^"]+)"/', $loginPage, $m);
     [$code, , $cookie2] = $req('/login', ['_csrf' => $m[1] ?? '', 'email' => $acct['email'], 'password' => $pw], $cookie);
