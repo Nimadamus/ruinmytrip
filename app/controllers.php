@@ -49,9 +49,12 @@ function home(array $a): void {
 
     $trending = q_all('SELECT d.*, (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) AS trips
                        FROM destinations d ORDER BY trips DESC, d.name LIMIT 6');
+    /* Public trips only. The homepage is the one page where a leak reaches everybody, and this
+       query read every published trip regardless of what its author chose. */
     $stories = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t
                       LEFT JOIN destinations d ON d.id=t.destination_id
-                      WHERE t.status='published' ORDER BY t.created_at DESC, t.id DESC LIMIT 4");
+                      WHERE t.status='published' AND COALESCE(t.visibility,'public')='public'
+                      ORDER BY t.created_at DESC, t.id DESC LIMIT 4");
     // Upcoming only. A homepage that leads with a meetup which already happened is telling a
     // visitor the site is abandoned, in the one section meant to prove it is not.
     $meetups = q_all("SELECT m.*, d.name dest_name, d.slug dest_slug,
@@ -195,11 +198,18 @@ function country_show(array $a): void {
 function destination(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int)$d['id'];
-    $trips = q_all("SELECT t.* FROM trips t WHERE t.destination_id=? AND t.status='published' ORDER BY t.id DESC LIMIT 8", [$id]);
+    /* The city's trip stories, through the visibility clause like everything else that reads a
+       trip. Without it a private trip's title, body and cover were on the city page. */
+    [$dTripVis, $dTripVisArgs] = rmt_plan_visibility_sql('t', current_user());
+    $trips = q_all("SELECT t.* FROM trips t
+                     WHERE t.destination_id=? AND t.status='published' AND $dTripVis
+                     ORDER BY t.id DESC LIMIT 8", array_merge([$id], $dTripVisArgs));
     authors_fill($trips);
     // $trips is capped at 8 for the page grid -- the badge next to "Trip stories" must show the
     // true total, not silently cap at 8 the way the reviews count did before rmt_community_avg().
-    $tripCount = (int) q_one("SELECT COUNT(*) c FROM trips WHERE destination_id=? AND status='published'", [$id])['c'];
+    $tripCount = (int) q_one("SELECT COUNT(*) c FROM trips t
+                               WHERE t.destination_id=? AND t.status='published' AND $dTripVis",
+                             array_merge([$id], $dTripVisArgs))['c'];
     // Editorial always sorts first regardless of id, so it can never be pushed out by LIMIT once
     // a destination has 30+ community reviews -- there is exactly one editorial review per
     // destination, so this never crowds out real ones. Within the rest, verified still wins the
@@ -2081,10 +2091,13 @@ function going_index(array $a): void {
     }
     $where[] = $visSql;
 
+    /* Interpolated rather than concatenated so the clause is visible inside the SQL string: the
+       safety audit reads these queries as text and cannot see a WHERE that is glued on afterwards. */
+    $whereSql = implode(' AND ', $where);
     $rows = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug, u.username, p.avatar_url, p.display_name
                    FROM trips t JOIN destinations d ON d.id=t.destination_id JOIN users u ON u.id=t.user_id
                    LEFT JOIN profiles p ON p.user_id=u.id
-                   WHERE " . implode(' AND ', $where) . "
+                   WHERE $whereSql
                    ORDER BY t.date_from LIMIT 120", array_merge($args, $visArgs));
 
     /* The next six months, named, for the month filter. Generated rather than queried: a month
@@ -2151,13 +2164,20 @@ function going_delete(array $a): void {
 }
 
 function travelers_index(array $a): void {
+    $me = current_user();
+    /* Blocks apply to the directory too. Every other list of people on the site hides somebody you
+       blocked and somebody who blocked you; this one, the page literally called Travelers, did not.
+       The trip count is public trips only for the same reason: a directory is a public page. */
+    $dirBlock = '1=1'; $dirBlockArgs = [];
+    if ($me) { [$dirBlock] = rmt_match_block_sql('u.id'); $dirBlockArgs = [(int) $me['id'], (int) $me['id']]; }
     $people = q_all("SELECT u.id, u.username, u.role, p.display_name, p.bio, p.home_city, p.avatar_url,
                         (SELECT COUNT(*) FROM reviews r WHERE r.user_id=u.id AND r.status='published') AS reviews,
-                        (SELECT COUNT(*) FROM trips t WHERE t.user_id=u.id AND t.status='published') AS trips
+                        (SELECT COUNT(*) FROM trips t WHERE t.user_id=u.id AND t.status='published'
+                           AND COALESCE(t.visibility,'public')='public') AS trips
                      FROM users u LEFT JOIN profiles p ON p.user_id=u.id
-                     WHERE u.status='active' AND u.role <> ?
-                     ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80", [RMT_EDITORIAL_ROLE]);
-    $me = current_user();
+                     WHERE u.status='active' AND u.role <> ? AND $dirBlock
+                     ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80",
+                    array_merge([RMT_EDITORIAL_ROLE], $dirBlockArgs));
     /* Six ways to find somebody, not one. The page was a directory ordered by review count, which
        answers "who writes the most here" rather than "who will be where I am going". */
     $find = $me ? rmt_discover_all((int) $me['id']) : ['overlapping' => [], 'same_city' => [],

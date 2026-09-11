@@ -92,9 +92,14 @@ function rmt_top_tags(int $limit = 14): array {
 function rmt_tag_items(int $tagId, int $limitEach = 40): array {
     $in = '(SELECT target_id FROM taggings WHERE tag_id=? AND target_type=?)';
 
+    /* A tag page is public, and this read every published trip carrying the tag regardless of what
+       its author chose: tagging a private trip #lisbon put it on /tag/lisbon. Same clause as the
+       rest of the site. */
+    [$tagTripVis, $tagTripVisArgs] = rmt_plan_visibility_sql('t', current_user());
     $trips = q_all("SELECT t.*, d.name dest_name FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
-                    WHERE t.status='published' AND t.id IN $in
-                    ORDER BY t.created_at DESC, t.id DESC LIMIT $limitEach", [$tagId, 'trip']);
+                    WHERE t.status='published' AND $tagTripVis AND t.id IN $in
+                    ORDER BY t.created_at DESC, t.id DESC LIMIT $limitEach",
+                   array_merge($tagTripVisArgs, [$tagId, 'trip']));
     foreach ($trips as &$row) {
         $row['kind'] = 'trip';
         $row['feed_url'] = url('trip/'.$row['id'].'/'.$row['slug']);

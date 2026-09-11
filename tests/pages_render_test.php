@@ -196,7 +196,13 @@ if ($acct) {
                        VALUES (?,?,?,?,?,'published','private',?)")
             ->execute([$otherId, $destId ?: null, $marker, 'canary-' . strtolower($marker), $marker, date('Y-m-d H:i:s')]);
 
-        foreach (['/discover', '/feed', '/feed?scope=everyone'] as $path) {
+        /* Everywhere a trip can be listed. Four of these were wrong at different times and each
+           one was found by planting a canary rather than by reading the query, which is the whole
+           argument for a list this long. */
+        $destForCanary = $pdo->query('SELECT slug FROM destinations ORDER BY id LIMIT 1')->fetch(PDO::FETCH_NUM)[0] ?? null;
+        $paths = ['/discover', '/feed', '/feed?scope=everyone', '/', '/going', '/travelers'];
+        if ($destForCanary) $paths[] = '/d/' . $destForCanary;
+        foreach ($paths as $path) {
             [, $body] = $req($path, null, $cookie);
             ok("a private trip stays out of $path", !str_contains($body, $marker),
                'the canary was in the page');

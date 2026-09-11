@@ -124,6 +124,14 @@ function messages_thread(array $a): void {
 }
 
 /** POST /messages/{username}/send */
+/** How many people one member may write to for the first time in a day. */
+const RMT_NEW_THREADS_PER_DAY = 12;
+
+/** Have these two ever had a conversation? Used to tell first contact from a reply. */
+function rmt_conversation_exists(int $a, int $b): bool {
+    return rmt_find_conversation($a, $b) !== null;
+}
+
 function messages_send(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $them = q_one("SELECT id, username FROM users WHERE username=? AND status='active'", [$a['username']]);
@@ -152,6 +160,17 @@ function messages_send(array $a): void {
     // real ceiling — this is what stops it becoming a spam/harassment channel.
     if (!rmt_rate_ok('message', (string) $meId, 60, 3600)) {
         flash('You are sending messages very fast. Try again shortly.');
+        redirect($return);
+    }
+
+    /* Two ceilings, not one. The existing limit counts messages, which is the right shape for a
+       conversation getting heated and the wrong shape for spam: sixty messages to sixty different
+       strangers is the thing that ruins a small network, and it sits comfortably under a sixty
+       message limit. So opening a NEW conversation is capped separately and much lower. Replying
+       inside a thread that already exists is untouched. */
+    if (!rmt_conversation_exists($meId, $themId)
+        && !rmt_rate_ok('message_new', (string) $meId, RMT_NEW_THREADS_PER_DAY, 86400)) {
+        flash('You have started a lot of new conversations today. Try again tomorrow.');
         redirect($return);
     }
 

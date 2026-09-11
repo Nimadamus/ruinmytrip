@@ -179,7 +179,11 @@ function rmt_sitemap_entries(): array {
                     WHERE p.status='active' AND r.status='published'") as $p) {
         $add('/p/'.$p['slug']);
     }
-    foreach (q_all("SELECT id,slug,created_at FROM trips WHERE status='published'") as $t) {
+    /* Public trips only. This queue hands URLs to search engines, and a private trip's URL is not
+       ours to hand anybody: the page itself 404s for a stranger, so all this ever did was announce
+       that the URL exists and spend the quota saying it. */
+    foreach (q_all("SELECT id,slug,created_at FROM trips
+                     WHERE status='published' AND COALESCE(visibility,'public')='public'") as $t) {
         $add('trip/'.$t['id'].'/'.$t['slug'], $t['created_at'] ?? null);
     }
     foreach (q_all("SELECT slug, created_at FROM guides WHERE status='published'") as $g) {
