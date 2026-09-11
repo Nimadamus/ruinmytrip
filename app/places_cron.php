@@ -128,6 +128,30 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* Remove one imported place, addressed by the provider's own record id.
+     *
+     * Narrow on purpose. It takes a city and an exact source_ref, it only ever touches a row that
+     * came from a registered provider, and it names what it removed. A place somebody added by hand
+     * has no source_ref and cannot be reached by this at all, which is the point: this is for
+     * undoing an import, not for deleting content.
+     */
+    if ($op === 'forget') {
+        $ref = trim((string) input('ref'));
+        if ($ref === '') { echo "a source_ref is required
+"; return; }
+        $row = q_one("SELECT id, name, slug FROM places
+                       WHERE destination_id = ? AND source_ref = ? AND COALESCE(data_source,'') <> ''",
+                     [(int) $dest['id'], $ref]);
+        if (!$row) { echo "no imported place with that record id here
+"; return; }
+        q_run('DELETE FROM place_hours WHERE place_id = ?', [(int) $row['id']]);
+        q_run('DELETE FROM place_aliases WHERE place_id = ?', [(int) $row['id']]);
+        q_run('DELETE FROM places WHERE id = ?', [(int) $row['id']]);
+        echo 'forgot ', (string) $row['name'], ' (', (string) $row['slug'], ")
+";
+        return;
+    }
+
     if ($op === 'verify') {
         echo json_encode(rmt_places_verify((int) $dest['id']),
                          JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
