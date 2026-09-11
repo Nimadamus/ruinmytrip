@@ -4,6 +4,7 @@
   <p style="margin:.4rem 0 18px"><a class="btn btn-ghost" href="<?= e(url('admin/places')) ?>">Edit places</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/search')) ?>">Search report</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/destinations')) ?>">Destination data</a>
+    <a class="btn btn-ghost" href="<?= e(url('admin/destination/new')) ?>">Add a city</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/moderation')) ?>">Moderation queue</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/funnel')) ?>">Contribution funnel</a>
     <a class="btn btn-ghost" href="<?= e(url('admin/suggestions')) ?>">Suggested places</a></p>

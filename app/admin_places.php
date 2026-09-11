@@ -201,3 +201,63 @@ function rmt_stale_places(int $days = 180, int $limit = 200): array {
                      AND p.data_checked_at <> '' AND p.data_checked_at < ?
                    ORDER BY p.data_checked_at LIMIT " . max(1, $limit), [$cutoff]);
 }
+
+/* ---------------------------------------------------------------------------------------------
+ * Adding a city. The handlers are thin: everything that decides anything lives in
+ * app/destination_new.php, which is what the test exercises.
+ * ------------------------------------------------------------------------------------------ */
+
+/** GET /admin/destination/new and /admin/destination/draft/{id} */
+function admin_destination_new_form(array $a): void {
+    require_role('admin', 'mod');
+    $id = (int) ($a['id'] ?? 0);
+    $draft = $id > 0 ? q_one('SELECT * FROM destination_drafts WHERE id = ?', [$id]) : null;
+    if ($id > 0 && !$draft) not_found();
+    $draft = $draft ?: ['id' => 0];
+    $draft['id'] = (int) ($draft['id'] ?? 0);
+    view('admin_destination_new', ['draft' => $draft, 'errors' => [], 'drafts' => rmt_dest_drafts()],
+         ['title' => 'Add a city', 'noindex' => true]);
+}
+
+/** POST /admin/destination/new and /admin/destination/draft/{id} */
+function admin_destination_new_submit(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $me = current_user();
+    $id = (int) ($a['id'] ?? 0);
+    if ($id > 0 && !q_one('SELECT 1 x FROM destination_drafts WHERE id = ?', [$id])) not_found();
+
+    $v = rmt_dest_draft_validate($_POST, false, $id);
+    if (!$v['ok']) {
+        $draft = array_merge($v['data'], ['id' => $id]);
+        view('admin_destination_new', ['draft' => $draft, 'errors' => $v['errors'], 'drafts' => rmt_dest_drafts()],
+             ['title' => 'Add a city', 'noindex' => true]);
+        return;
+    }
+    $saved = rmt_dest_draft_save($v['data'], (int) $me['id'], $id);
+    flash('Draft saved.');
+    redirect('/admin/destination/draft/' . $saved);
+}
+
+/** POST /admin/destination/draft/{id}/publish */
+function admin_destination_publish(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $id = (int) ($a['id'] ?? 0);
+    $res = rmt_dest_draft_publish($id);
+    if (!$res['ok']) {
+        $draft = q_one('SELECT * FROM destination_drafts WHERE id = ?', [$id]);
+        if (!$draft) not_found();
+        $draft['id'] = (int) $draft['id'];
+        view('admin_destination_new', ['draft' => $draft, 'errors' => $res['errors'], 'drafts' => rmt_dest_drafts()],
+             ['title' => 'Add a city', 'noindex' => true]);
+        return;
+    }
+    flash('Published. It is a city now.');
+    redirect('/d/' . (string) $res['slug']);
+}
+
+/** GET /admin/destinations/drafts */
+function admin_destination_drafts(array $a): void {
+    require_role('admin', 'mod');
+    view('admin_destination_new', ['draft' => ['id' => 0], 'errors' => [], 'drafts' => rmt_dest_drafts()],
+         ['title' => 'Cities being written', 'noindex' => true]);
+}

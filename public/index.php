@@ -179,6 +179,14 @@ $routes = [
     ['POST', '#^/admin/places/import$#',        'admin_places_import'],
     ['GET',  '#^/admin/search$#',               'admin_search_report'],
     ['GET',  '#^/admin/destinations$#',         'admin_destinations_report'],
+    /* Adding a city. A draft lives in its own table until it is published, so nothing here can
+       put half a city in front of a reader. */
+    ['GET',  '#^/admin/destinations/drafts$#',  'admin_destination_drafts'],
+    ['GET',  '#^/admin/destination/new$#',      'admin_destination_new_form'],
+    ['POST', '#^/admin/destination/new$#',      'admin_destination_new_submit'],
+    ['GET',  '#^/admin/destination/draft/(?<id>\d+)$#',         'admin_destination_new_form'],
+    ['POST', '#^/admin/destination/draft/(?<id>\d+)$#',         'admin_destination_new_submit'],
+    ['POST', '#^/admin/destination/draft/(?<id>\d+)/publish$#', 'admin_destination_publish'],
     ['GET',  '#^/admin/suggestions$#',          'admin_suggestions'],
     ['GET',  '#^/admin/funnel$#',               'admin_funnel'],
     ['GET',  '#^/admin/seo$#',                 'admin_seo'],
