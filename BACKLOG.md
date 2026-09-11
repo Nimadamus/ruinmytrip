@@ -34,11 +34,8 @@ holidays, month ranges or open ended times it will not guess at.
 
 ## P1, core product
 
-1. **Miami itself.** The workflow exists now: `/admin/destination/new`, a draft table nothing else
-   reads, and a publish gate that refuses a half written city. What it needs is a decision and a
-   paragraph, both of which are Nima's: a category from city / culture / beach / nature / food /
-   adventure, and a summary of at least 120 characters in the site's voice. The coordinates are
-   25.7743, -80.1937 and the rest is typing. No content will be generated for it.
+Empty. Miami is published and carries 110 real places, and the three items that were here are
+done and verified in production.
 
 ## P2, growth
 
@@ -67,7 +64,9 @@ holidays, month ranges or open ended times it will not guess at.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
-* **A seven point data audit, and all ten cities pass it.** `op=audit` checks for a point outside
+* **Miami**, published through the draft and publish path rather than around it, with 110 places
+  imported on the first run with zero provider failures, and all seven audit checks clean.
+* **A seven point data audit, and all eleven cities pass it.** `op=audit` checks for a point outside
   the city it was imported for, a missing point, a link we would print that is not a link, an
   alias that is not another name, hours that do not describe a day, a category that no longer
   follows from the provider's own word, and how old the provider data is. It found one real alias
