@@ -10,7 +10,7 @@
       <?php else: ?>
         <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
       <?php endif; ?>
-      <a class="btn btn-ghost" href="<?= e(url('travelers')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">See who is here</a>
+      <a class="btn btn-ghost btn-on-dark" href="<?= e(url('travelers')) ?>">See who is here</a>
     </p>
   </div>
 </section>

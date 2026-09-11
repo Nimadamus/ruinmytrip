@@ -6,12 +6,14 @@
  * caches is the shell: stylesheet, script, icons, and an offline page to land on instead of the
  * browser's dinosaur.
  */
-const VERSION = 'rmt-v2';
+const VERSION = 'rmt-v3';
 const SHELL = [
   '/offline.html',
   '/assets/css/app.css',
   '/assets/js/app.js',
   '/assets/img/icon-192.png',
+  '/assets/fonts/inter-latin.woff2',
+  '/assets/fonts/fraunces-latin.woff2',
 ];
 
 self.addEventListener('install', (e) => {

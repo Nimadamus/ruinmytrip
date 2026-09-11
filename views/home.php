@@ -28,15 +28,15 @@
       <?php else: ?>
         <a class="btn btn-accent" href="<?= e(url('going')) ?>">Post your dates</a>
       <?php endif; ?>
-      <a class="btn btn-ghost" href="<?= e(url('travelers')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">See who is going</a>
+      <a class="btn btn-ghost btn-on-dark" href="<?= e(url('travelers')) ?>">See who is going</a>
       <?php /* The hero answered four of the five questions a first-time visitor has -- what this is,
                how it differs from a travel blog, what to read, how to search -- and not the fifth:
                that they can contribute. The button it replaces said "Founding Traveler", which is
                the name of our launch programme and means nothing to somebody who arrived a minute
                ago. The programme is still explained on /founding and linked from signup, so
                nothing is orphaned. */ ?>
-      <a class="btn btn-ghost" data-review-cta="home" href="<?= e(url('contribute')) ?>"
-         style="color:#fff;border-color:rgba(255,255,255,.45)">Been somewhere? Review it</a>
+      <a class="btn btn-ghost btn-on-dark" data-review-cta="home" href="<?= e(url('contribute')) ?>"
+        >Been somewhere? Review it</a>
     </p>
     <?php /* People first, and every number is a live COUNT(*) of something real.
 
@@ -279,5 +279,5 @@
   <p style="color:#dfe9f2;max-width:52ch;margin:0 auto 20px">Post where you are going and when. See whose dates
     overlap yours, meet in public, and write the review you wish you had read. Free, and 16+.</p>
   <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
-      <a class="btn btn-ghost" href="<?= e(url('travelers')) ?>" style="color:#fff;border-color:rgba(255,255,255,.45)">See who is going</a>
+      <a class="btn btn-ghost btn-on-dark" href="<?= e(url('travelers')) ?>">See who is going</a>
 </div></section>

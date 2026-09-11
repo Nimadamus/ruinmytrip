@@ -1,10 +1,44 @@
+/* ================================================================ type
+   Two faces, self hosted. Inter carries the interface and Fraunces carries the
+   headlines, which is the whole difference between a page that looks built and a page
+   that looks assembled. Self hosted rather than linked to Google because a third party
+   stylesheet is a second DNS lookup and a render block on a free instance that is
+   already asleep half the time, and because a font that is part of the brand should not
+   be able to disappear. Both are SIL Open Font License 1.1, see assets/fonts/OFL.txt.
+   font-display:swap so text is readable from the first paint. */
+@font-face{
+  font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/inter-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+    U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'Inter';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url('../fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,
+    U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,
+    U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face{
+  font-family:'Fraunces';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('../fonts/fraunces-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,
+    U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
 :root{
-  --ink:#0f1b2d; --ink-2:#1c2b40; --paper:#f7f9fb; --card:#ffffff;
-  --brand:#0f766e; --brand-2:#14b8a6; --accent:#f97316; --gold:#eab308;
-  --line:#e4e9ef; --muted:#5b6b7f; --text:#16202e;
-  --shadow:0 6px 24px rgba(15,27,45,.08); --shadow-lg:0 18px 50px rgba(15,27,45,.16);
-  --radius:16px; --wrap:1160px;
-  --sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  --ink:#0d1826; --ink-2:#1c2b40; --paper:#f6f7f4; --card:#ffffff;
+  --brand:#0f766e; --brand-2:#14b8a6; --brand-deep:#0b5d56; --accent:#e8590c; --gold:#eab308;
+  --line:#e7e6e0; --line-soft:#f0efe9; --muted:#5b6b7f; --text:#16202e;
+  /* Two shadows stacked, a tight contact edge and a wide soft one. A single blur reads as a
+     drop shadow from 2012; the pair is what makes a card look like it is resting on paper. */
+  --shadow:0 1px 2px rgba(13,24,38,.05),0 8px 24px -12px rgba(13,24,38,.18);
+  --shadow-lg:0 2px 4px rgba(13,24,38,.06),0 24px 48px -20px rgba(13,24,38,.28);
+  --shadow-xl:0 2px 6px rgba(13,24,38,.07),0 40px 80px -32px rgba(13,24,38,.38);
+  --radius:18px; --radius-sm:12px; --radius-lg:26px; --wrap:1160px;
+  --sans:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --ease:cubic-bezier(.2,.7,.3,1);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -344,4 +378,167 @@ a.chip:hover{border-color:var(--ink)}
   }
   /* Nothing at the end of a page should hide behind the bar. */
   body{padding-bottom:64px}
+}
+
+
+/* ================================================================ design system v2
+   Everything below refines what is already here rather than renaming it: the markup did not
+   change, so every page gets this at once. The goal is the difference between "a site" and
+   "a product": one type scale, one elevation language, one motion curve, and focus states a
+   keyboard user can actually see.  */
+
+body{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  font-feature-settings:"cv05" 1,"ss01" 1;letter-spacing:-.005em}
+
+/* Headlines are the brand. Fraunces at a low optical size is a workhorse serif; at display
+   sizes its contrast is what makes a hero look expensive. */
+h1,h2,.brand,.hero h1,.dest-hero h1{font-family:var(--display);font-optical-sizing:auto}
+h1{font-size:clamp(1.9rem,3.4vw,2.7rem);letter-spacing:-.022em;font-weight:600}
+h2{font-size:clamp(1.45rem,2.4vw,1.9rem);letter-spacing:-.018em;font-weight:600}
+h3,h4{letter-spacing:-.012em;font-weight:650}
+.hero h1{font-weight:600;letter-spacing:-.028em}
+.section-head h2{font-size:clamp(1.45rem,2.4vw,1.9rem)}
+.brand{font-size:1.3rem;font-weight:600;letter-spacing:-.03em}
+p{text-wrap:pretty}
+h1,h2,h3{text-wrap:balance}
+
+/* Motion: one curve, short durations, and nothing that moves for a user who asked it not to. */
+a,.btn,.card,.chip,input,select,textarea{transition:all .18s var(--ease)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;
+    scroll-behavior:auto !important}
+}
+
+/* A focus ring that is visible on every surface, including the dark ones. */
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:2px;border-radius:6px}
+.hero :focus-visible,.dest-hero :focus-visible,.site-footer :focus-visible{outline-color:#fff}
+
+/* Buttons: a real pill with weight behind it. The primary gets a two stop gradient so it has a
+   light source, and lifts on hover instead of just changing colour. */
+.btn{font-weight:600;letter-spacing:-.006em;padding:.62rem 1.15rem;line-height:1.35}
+.btn-primary{background:linear-gradient(180deg,var(--brand-2),var(--brand));color:#fff;
+  box-shadow:0 1px 2px rgba(13,24,38,.12),0 6px 16px -8px rgba(15,118,110,.7)}
+.btn-primary:hover{background:linear-gradient(180deg,#19c9b9,var(--brand-2));
+  box-shadow:0 2px 4px rgba(13,24,38,.14),0 12px 24px -10px rgba(15,118,110,.75)}
+.btn-accent{background:linear-gradient(180deg,#f97316,var(--accent));
+  box-shadow:0 1px 2px rgba(13,24,38,.12),0 6px 16px -8px rgba(232,89,12,.65)}
+.btn-accent:hover{box-shadow:0 2px 4px rgba(13,24,38,.14),0 12px 24px -10px rgba(232,89,12,.7)}
+.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink);box-shadow:0 1px 2px rgba(13,24,38,.04)}
+.btn-ghost:hover{border-color:#d6d4cc;background:#fcfcfa}
+/* The same ghost button, standing on a photograph or a dark band. It used to be transparent
+   everywhere, so "white text" was written inline at each call site; once the light version got a
+   white fill those inline rules turned the button into a blank white pill. One class, and the two
+   surfaces stop fighting. */
+.btn-ghost.btn-on-dark{background:rgba(255,255,255,.06);color:#fff;
+  border-color:rgba(255,255,255,.45);box-shadow:none;backdrop-filter:blur(4px)}
+.btn-ghost.btn-on-dark:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.75);color:#fff}
+.btn:active{transform:translateY(0) scale(.985)}
+
+/* Cards: a quieter border, a warmer ground, and a lift that feels like paper rather than a jump. */
+.card{border-color:var(--line);border-radius:var(--radius)}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:#ddd9cf}
+.card-media{background:linear-gradient(135deg,#eceae2,#e2e6e8)}
+.card-body{padding:18px 20px}
+.card-body h3{font-size:1.1rem;letter-spacing:-.015em}
+
+/* Chips read as metadata, not as buttons, until they are links. */
+.chip{background:#eef6f5;border:1px solid rgba(15,118,110,.14);font-weight:600;
+  letter-spacing:.005em;padding:.2rem .72rem}
+a.chip:hover{background:#e2f0ee;border-color:rgba(15,118,110,.3);text-decoration:none}
+
+/* The header is the one element on every page. Glass, a hairline, and a brand that is type. */
+.site-header{background:rgba(255,255,255,.82);backdrop-filter:saturate(1.6) blur(14px);
+  -webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid rgba(13,24,38,.07)}
+.site-nav a{font-weight:550;color:var(--ink-2);border-radius:8px;padding:.25rem .1rem}
+.site-nav a:hover{color:var(--brand);text-decoration:none}
+.nav-search input,.nav-search-mobile input{background:#f6f6f3;border-color:transparent;
+  box-shadow:inset 0 1px 2px rgba(13,24,38,.04)}
+.nav-search input:focus,.nav-search-mobile input:focus{background:#fff;border-color:var(--brand-2);
+  outline:none;box-shadow:0 0 0 3px rgba(20,184,166,.16)}
+
+/* Hero: a deeper scrim so white type always clears AA, and a headline with room to breathe. */
+.hero{border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+.hero-bg::after{background:linear-gradient(180deg,rgba(9,17,28,.32) 0%,rgba(9,17,28,.62) 55%,rgba(9,17,28,.9) 100%)}
+.hero-inner{padding:104px 20px 80px}
+.hero p{color:#e7eef6}
+.hero-search{box-shadow:var(--shadow-xl);padding:7px}
+.hero-stats b{font-family:var(--display);font-weight:600;letter-spacing:-.02em}
+
+.eyebrow{letter-spacing:.14em;font-size:.72rem;font-weight:700}
+
+/* Form fields that match the buttons instead of the browser. */
+input[type=text],input[type=email],input[type=password],input[type=search],input[type=url],
+input[type=date],input[type=number],select,textarea{
+  border-radius:var(--radius-sm);border:1px solid var(--line);background:#fff;
+  padding:.6rem .8rem;font:inherit;color:var(--text);width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2);
+  box-shadow:0 0 0 3px rgba(20,184,166,.16)}
+.form-card{border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border-color:var(--line)}
+
+/* Callouts and flashes carry the same rounding as everything else. */
+.callout{border-radius:var(--radius);border:1px solid var(--line);background:#fffdf7;
+  padding:14px 16px}
+.flash{border-radius:var(--radius-sm);box-shadow:var(--shadow)}
+
+/* Avatars get a ring so they never dissolve into a white card. */
+.avatar{box-shadow:0 0 0 1px rgba(13,24,38,.07)}
+
+/* Sections breathe more on desktop and less on a phone, where scrolling is the cost. */
+section.block{padding:64px 0}
+@media (max-width:700px){
+  section.block{padding:40px 0}
+  .hero-inner{padding:72px 16px 56px}
+  .card-body{padding:16px 16px}
+}
+
+/* A skeleton for anything that loads after the page. Used by the feed and the suggest box. */
+.skeleton{background:linear-gradient(90deg,#efeee9 25%,#f7f6f2 37%,#efeee9 63%);
+  background-size:400% 100%;animation:rmt-shimmer 1.4s ease infinite;border-radius:var(--radius-sm);
+  color:transparent !important}
+@keyframes rmt-shimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+/* ================================================================ nav v2
+   The header carries four links, a search box and an identity, and everything else lives in a
+   disclosure. <details> rather than a script because a menu that needs JavaScript is a menu that
+   is missing on the first paint, invisible to a crawler, and broken for anybody whose script
+   request failed. */
+.site-nav{gap:18px}
+.site-nav>a{font-size:.93rem;font-weight:550;position:relative}
+.site-nav>a:hover{color:var(--brand)}
+
+.nav-more{position:relative}
+.nav-more>summary{list-style:none;cursor:pointer;font-size:.93rem;font-weight:550;
+  color:var(--ink-2);padding:.25rem .1rem;user-select:none}
+.nav-more>summary::-webkit-details-marker{display:none}
+.nav-more>summary::after{content:" ⌄";font-size:.85em;opacity:.65}
+.nav-more[open]>summary{color:var(--brand)}
+.nav-more-panel{position:absolute;right:0;top:calc(100% + 12px);min-width:220px;z-index:70;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-lg);padding:8px;display:grid;gap:1px}
+.nav-more-panel a{display:block;padding:.5rem .7rem;border-radius:10px;font-size:.92rem;
+  font-weight:550;color:var(--ink-2)}
+.nav-more-panel a:hover{background:#f4f6f5;color:var(--brand);text-decoration:none}
+
+.nav-icon{font-size:1.05rem;position:relative;line-height:1}
+.nav-badge{position:absolute;top:-8px;right:-10px;background:var(--brand);color:#fff;
+  border-radius:999px;font-size:.62rem;font-weight:700;padding:1px 5px;line-height:1.5;
+  box-shadow:0 0 0 2px #fff}
+.nav-badge-alert{background:#b42318}
+.nav-me{display:inline-flex;align-items:center;gap:7px;font-size:.9rem;font-weight:600;
+  color:var(--ink-2)}
+.nav-me:hover{text-decoration:none;color:var(--brand)}
+.nav-me-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* The nav is the first thing to run out of room. Below 1100px the identity keeps its face and
+   drops its name, which buys back most of a nav item without losing who you are signed in as. */
+@media (max-width:1100px){ .nav-me-name{display:none} }
+
+@media (max-width:860px){
+  /* In the stacked mobile menu a floating panel makes no sense: it opens in place. */
+  .nav-more{width:100%}
+  .nav-more>summary{padding:8px 0}
+  .nav-more-panel{position:static;box-shadow:none;border:0;border-left:2px solid var(--line);
+    border-radius:0;padding:0 0 0 12px;margin:2px 0 6px}
+  .nav-me-name{display:inline}
+  .site-nav{gap:2px}
 }

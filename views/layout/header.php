@@ -28,6 +28,11 @@
 <meta name="csrf-token" content="<?= e(csrf_token()) ?>">
 <link rel="icon" href="<?= e(url('assets/img/favicon.svg')) ?>" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="RuinMyTrip" href="<?= e(url('feed.xml')) ?>">
+<?php /* The two faces the stylesheet asks for, fetched in parallel with it rather than after it.
+         Without this the browser only learns the fonts exist once the CSS has parsed, which is one
+         round trip too late and shows a frame of fallback type on every first visit. */ ?>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(rmt_asset('assets/fonts/inter-latin.woff2')) ?>">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(rmt_asset('assets/fonts/fraunces-latin.woff2')) ?>">
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
@@ -49,33 +54,59 @@
               data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
         <input type="search" name="q" placeholder="Search destinations, trips, guides…" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
       </form>
-      <?php /* People first. The nav opened with Explore, Guides and Blog, so every page on a
-               community site led with the three things we wrote ourselves, and Meetups -- the one
-               feature that puts two members in the same room -- was not in the nav at all. Nothing
-               is removed here; the research just stops going first. */ ?>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a>
-      <a href="<?= e(url('going')) ?>">Going</a>
-      <a href="<?= e(url('talk')) ?>">Talk</a>
-      <a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('ruined')) ?>">Ruined</a>
-      <a href="<?= e(url('explore')) ?>">Explore</a>
-      <a href="<?= e(url('guides')) ?>">Guides</a>
-      <a href="<?= e(url('blog')) ?>">Blog</a>
+      <?php /* People first, and only a handful of them. The nav used to carry thirteen links and
+               two buttons, which is what a product looks like when every feature is argued for one
+               at a time: nothing was wrong with any single link, and together they read as a
+               directory rather than a place. The four that lead now are the four a member opens
+               daily. Nothing is removed, because a page nobody can reach from the nav is a page
+               that quietly dies: the rest sit in a disclosure that needs no JavaScript, so they
+               are one click away, in the markup for a crawler, and keyboard reachable. */ ?>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
-        <a href="<?= e(url('matches')) ?>">Matches</a>
-        <a href="<?= e(url('saved')) ?>">Saved</a>
-        <a href="<?= e(url('invite')) ?>">Invite</a>
-        <a href="<?= e(url('messages')) ?>" title="Messages">✉️<?php $unread = rmt_unread_message_count((int)$me['id']); if ($unread): ?> <span class="chip" style="background:#0f766e;color:#fff"><?= $unread ?></span><?php endif; ?></a>
-        <a href="<?= e(url('notifications')) ?>" title="Notifications">🔔<?php $unseen = rmt_unread_notification_count((int)$me['id']); if ($unseen): ?> <span class="chip" style="background:#b42318;color:#fff"><?= $unseen ?></span><?php endif; ?></a>
-        <?php if (in_array($me['role'],['admin','mod'],true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
-        <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">@<?= e($me['username']) ?></a>
-        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
+      <?php endif; ?>
+      <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('talk')) ?>">Talk</a>
+      <a href="<?= e(url('explore')) ?>">Explore</a>
+      <details class="nav-more">
+        <summary aria-label="More of the site">More</summary>
+        <div class="nav-more-panel">
+          <a href="<?= e(url('going')) ?>">Who is going</a>
+          <a href="<?= e(url('communities')) ?>">Communities</a>
+          <a href="<?= e(url('ruined')) ?>">Ruined</a>
+          <a href="<?= e(url('reviews')) ?>">Reviews</a>
+          <a href="<?= e(url('guides')) ?>">Guides</a>
+          <a href="<?= e(url('collections')) ?>">Collections</a>
+          <a href="<?= e(url('leaderboard')) ?>">Top travelers</a>
+          <a href="<?= e(url('tags')) ?>">Topics</a>
+          <a href="<?= e(url('blog')) ?>">Blog</a>
+          <?php if ($me): ?>
+            <a href="<?= e(url('matches')) ?>">Matches</a>
+            <a href="<?= e(url('saved')) ?>">Saved</a>
+            <a href="<?= e(url('invite')) ?>">Invite a traveler</a>
+            <a href="<?= e(url('settings')) ?>">Settings</a>
+            <?php if (in_array($me['role'], ['admin', 'mod'], true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
+          <?php endif; ?>
+        </div>
+      </details>
+      <?php if ($me): ?>
+        <?php /* Messages and notifications are glyphs with a count, the way every social product
+                 does it, because they are checked rather than read. */ ?>
+        <a class="nav-icon" href="<?= e(url('messages')) ?>" title="Messages" aria-label="Messages">&#9993;<?php
+          $unread = rmt_unread_message_count((int) $me['id']);
+          if ($unread): ?><span class="nav-badge"><?= $unread ?></span><?php endif; ?></a>
+        <a class="nav-icon" href="<?= e(url('notifications')) ?>" title="Notifications" aria-label="Notifications">&#128276;<?php
+          $unseen = rmt_unread_notification_count((int) $me['id']);
+          if ($unseen): ?><span class="nav-badge nav-badge-alert"><?= $unseen ?></span><?php endif; ?></a>
+        <a class="nav-me" href="<?= e(url('u/'.$me['username'])) ?>" title="Your profile">
+          <img class="avatar" style="width:30px;height:30px"
+               src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
+          <span class="nav-me-name">@<?= e($me['username']) ?></span>
+        </a>
+        <a class="btn btn-primary btn-sm" href="<?= e(url('trip/new')) ?>">Post a trip</a>
       <?php else: ?>
-        <a class="btn btn-accent" href="<?= e(url('review/new')) ?>">Write a Review</a>
-        <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a>
-        <a class="btn btn-primary" href="<?= e(url('register')) ?>">Join free</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('login')) ?>">Sign in</a>
+        <a class="btn btn-primary btn-sm" href="<?= e(url('register')) ?>">Join free</a>
       <?php endif; ?>
     </nav>
   </div>

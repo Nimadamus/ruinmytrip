@@ -1,0 +1,10 @@
+Inter and Fraunces are used under the SIL Open Font License, Version 1.1.
+
+Inter    (c) The Inter Project Authors      https://github.com/rsms/inter
+Fraunces (c) The Fraunces Project Authors   https://github.com/undercasetype/Fraunces
+
+Both files here are the Google Fonts latin subsets of the variable builds, served from
+this origin. Full licence text: https://openfontlicense.org
+
+DejaVu (DejaVuSans.ttf, DejaVuSans-Bold.ttf, LICENSE) is separate. It is the face the
+share card renderer draws with in app/cards.php, and it is not used by the stylesheet.

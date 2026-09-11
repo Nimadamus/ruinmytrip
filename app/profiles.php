@@ -41,6 +41,21 @@ const RMT_COMPLIMENT_TYPES = [
  * Profile stats for a user id.
  * @return array{reviews:int, trips:int, places:int, followers:int, following:int, photos:int, votes:int, compliments:int}
  */
+/**
+ * One member's avatar, cached for the request.
+ *
+ * The header draws the signed-in member's face on every page, and without a cache that is one
+ * extra query per request on a free instance for a value that cannot change mid-page.
+ */
+function rmt_profile_avatar(int $uid): ?string {
+    static $seen = [];
+    if (!array_key_exists($uid, $seen)) {
+        $row = q_one('SELECT avatar_url FROM profiles WHERE user_id = ?', [$uid]);
+        $seen[$uid] = $row && trim((string) $row['avatar_url']) !== '' ? (string) $row['avatar_url'] : null;
+    }
+    return $seen[$uid];
+}
+
 function rmt_profile_stats(int $uid): array {
     $one = static fn(string $sql, array $a) => (int) (q_one($sql, $a)['c'] ?? 0);
     return [
