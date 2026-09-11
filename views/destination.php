@@ -54,8 +54,25 @@
            Drawn only when it is true. A strip reading "0 going, 0 meetups" is an advert for an
            empty room, and this site's rule is that a count appears when it is real. */ ?>
   <?php $rmt_meets = array_slice($meetups ?? [], 0, 3); ?>
-  <?php if (!empty($going) || $rmt_meets): ?>
+  <?php if (!empty($going) || !empty($hereNow) || $rmt_meets): ?>
     <div class="city-people">
+      <?php if (!empty($hereNow)): ?>
+        <?php /* Today beats next month. Somebody whose published dates cover today is somebody a
+                 reader can act on now, so they lead the strip and are labelled as such. Still a
+                 city and a date range: this is not a location feature. */ ?>
+        <div class="city-people-row" style="margin-bottom:10px">
+          <?php foreach ($hereNow as $hn): ?>
+            <a class="city-face" href="<?= e(url('u/'.$hn['username'])) ?>" title="@<?= e((string) $hn['username']) ?>, here until <?= e(date('j M', strtotime((string) $hn['date_to']))) ?>">
+              <img class="avatar" src="<?= e(avatar_url($hn['avatar_url'] ?? null)) ?>" alt="@<?= e((string) $hn['username']) ?>">
+            </a>
+          <?php endforeach; ?>
+          <span class="city-people-said">
+            <b><?= count($hereNow) ?> <?= count($hereNow) === 1 ? 'traveler is' : 'travelers are' ?>
+              in <?= e($d['name']) ?> right now</b>
+            <span class="hint">Their own published dates cover today.</span>
+          </span>
+        </div>
+      <?php endif; ?>
       <?php if (!empty($going)): ?>
         <div class="city-people-row">
           <?php foreach (array_slice($going, 0, 6) as $g): ?>
@@ -418,13 +435,11 @@
           <h2>Photos</h2>
           <span class="count"><?= $photoCount ?></span>
         </div>
-        <div class="grid g-4" style="gap:8px;margin-bottom:24px">
-          <?php foreach ($photos as $p): ?>
-            <a href="<?= e($p['kind']==='trip' ? url('trip/'.$p['parent_id'].'/'.$p['parent_slug']) : url('review/'.$p['parent_id'].($p['parent_slug'] ? '/'.$p['parent_slug'] : ''))) ?>">
-              <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover" src="<?= e(abs_url($p['url'])) ?>" alt="<?= e($p['caption'] ?: $d['name']) ?>">
-            </a>
-          <?php endforeach; ?>
-        </div>
+        <?php /* The same grid the photo wall and the profile use, so a photograph opens its own
+                 page wherever it is clicked rather than dumping the reader into a trip. */ ?>
+        <?php $gridPhotos = $photos; $gridLead = count($photos) > 3;
+              include __DIR__ . '/_photo_grid.php'; ?>
+        <div style="height:16px"></div>
         <?php if ($photoCount > count($photos)): ?>
           <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">See all <?= $photoCount ?> photos →</a></p>
         <?php endif; ?>

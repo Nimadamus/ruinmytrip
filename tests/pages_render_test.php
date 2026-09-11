@@ -209,6 +209,47 @@ if ($acct) {
         $pdo->prepare('DELETE FROM trips WHERE title = ?')->execute([$marker]);
     }
 
+    /* A private trip's photographs must not reach a public page either.
+
+       This is the same bug as the feed one, one layer down, and it was fixed in two of the three
+       places that read photographs: the photo wall and the profile got the visibility clause and
+       the city page kept calling the old query, so /d/{slug} was still showing them. Planting one
+       and asking for the page is the only check that would have caught that.
+
+       The canary is the caption, because that is what a grid renders into alt text. */
+    if ($otherId > 0) {
+        $capMarker = 'PRIVATEPHOTOCANARY' . bin2hex(random_bytes(4));
+        $destRow = $pdo->query('SELECT id, slug FROM destinations ORDER BY id LIMIT 1')->fetch(PDO::FETCH_ASSOC);
+        if ($destRow) {
+            $pdo->prepare("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, created_at)
+                           VALUES (?,?,?,?,'','published','private',?)")
+                ->execute([$otherId, (int) $destRow['id'], 'canary trip', 'canary-trip-' . strtolower($capMarker), date('Y-m-d H:i:s')]);
+            $tripId = (int) $pdo->lastInsertId();
+            $pdo->prepare("INSERT INTO trip_photos (trip_id, user_id, url, caption, sort, created_at)
+                           VALUES (?,?,?,?,0,?)")
+                ->execute([$tripId, $otherId, '/assets/img/og-default.svg', $capMarker, date('Y-m-d H:i:s')]);
+
+            foreach (['/d/' . $destRow['slug'], '/d/' . $destRow['slug'] . '/photos',
+                      '/d/' . $destRow['slug'] . '/travelers', '/u/' . $acct['email']] as $path) {
+                if (str_starts_with($path, '/u/')) continue;   // username, not email; covered below
+                [, $body] = $req($path, null, $cookie);
+                ok("a private trip's photo stays off $path", !str_contains($body, $capMarker));
+            }
+            $anonWall = @file_get_contents($base . '/d/' . $destRow['slug'] . '/photos', false,
+                stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+            ok("a private trip's photo stays off the public wall", !str_contains((string) $anonWall, $capMarker));
+
+            // And its own page is not there for anybody else.
+            $photoId = (int) $pdo->query('SELECT MAX(id) FROM trip_photos')->fetch(PDO::FETCH_NUM)[0];
+            [$st] = $req('/photo/trip/' . $photoId, null, $cookie);
+            ok('a private photo page 404s for somebody else', $st === 404, "status $st");
+
+            $pdo->prepare('DELETE FROM trip_photos WHERE trip_id = ?')->execute([$tripId]);
+            $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$tripId]);
+        }
+    }
+
+
     /* A notification that is new has to look new, exactly once.
 
        This is a bug I shipped an hour before writing this check. view() extracts the page's data

@@ -231,6 +231,9 @@ function destination(array $a): void {
     $avgByCategory = rmt_community_avg_by_category($id);
     $me = current_user();
     $going = rmt_going_list_for_destination($id, $me);
+    /* Who is in the city today. The strongest line a city page can carry, and the one that is true
+       only for a few hours: somebody there now is somebody you could meet this afternoon. */
+    $hereNow = rmt_discover_here_now($id, $me, 6);
     $myGoing = $me ? rmt_going_for_user_dest((int)$me['id'], $id) : null;
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [(int)$me['id'], $id]) : false;
     $wantCount = (int) (q_one("SELECT COUNT(*) c FROM saves WHERE target_type='destination' AND target_id=?", [$id])['c'] ?? 0);
@@ -247,11 +250,12 @@ function destination(array $a): void {
         if (($slug = rmt_category_slug((string) $t)) === null) continue;
         $categoryPages[] = ['slug' => $slug, 'label' => rmt_category_heading((string) $t, (string) $d['name']), 'n' => $n];
     }
-    $photos = rmt_destination_photos($id, 12);
-    $photoCount = (int) (q_one("SELECT
-            (SELECT COUNT(*) FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id WHERE t.destination_id=? AND t.status='published') +
-            (SELECT COUNT(*) FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=? AND r.status='published') c",
-        [$id, $id])['c'] ?? 0);
+    /* The same visibility-aware source the photo wall uses. The city page was still calling the
+       old query, so the leak that was fixed on /d/{slug}/photos was still open on /d/{slug}: a
+       trip marked "only you" had its photographs on the city's front page. One source now, and
+       the count is counted from what the viewer can actually see rather than from everything. */
+    $photos = rmt_city_photos($id, current_user(), 12);
+    $photoCount = count(rmt_city_photos($id, current_user(), 400));
     $relatedPosts = rmt_blog_posts_for_destination((string) $d['slug']);
     $been = $me ? (bool) rmt_visit_get((int)$me['id'], $id) : false;
     $beenCount = rmt_visit_count($id);
@@ -268,7 +272,7 @@ function destination(array $a): void {
     $discovery = rmt_destination_discovery($id);
     // What travelers are saying about the city right now, above the archive of finished writing.
     $talk = rmt_posts_for_destination($id, 3);
-    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
+    view('destination', compact('d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
