@@ -45,7 +45,7 @@ $threads = $threads ?? [];
     <?php /* The composer is the first thing in the column, because the difference between a feed
              and a network is whether the reader can answer it without going somewhere else. It
              posts to the same endpoint /talk uses. */ ?>
-    <form class="composer card" method="post" action="<?= e(url('post/new')) ?>"><?= csrf_field() ?>
+    <form class="composer card" method="post" enctype="multipart/form-data" action="<?= e(url('post/new')) ?>"><?= csrf_field() ?>
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
       <input type="hidden" name="return" value="/feed">
       <div class="composer-row">
@@ -57,9 +57,28 @@ $threads = $threads ?? [];
         <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/new')) ?>">Post a trip</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('review/new')) ?>">Write a review</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('meetup/new')) ?>">Host a meetup</a>
+        <?php /* A travel network that makes you go to another page to post a photograph is a
+                 message board. The endpoint already accepts one; the feed just never offered it. */ ?>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">Photo
+          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"
+                 style="display:none" id="feed-photo"></label>
+        <span class="hint" id="feed-photo-name" hidden></span>
         <button class="btn btn-primary btn-sm" style="margin-left:auto">Post</button>
       </div>
     </form>
+    <script>
+      /* Nothing clever: on a phone the file picker closes and there is otherwise no sign at all
+         that a photograph is attached, so people attach the same one twice. */
+      (function () {
+        var f = document.getElementById('feed-photo'), n = document.getElementById('feed-photo-name');
+        if (!f || !n) return;
+        f.addEventListener('change', function () {
+          var name = f.files && f.files[0] ? f.files[0].name : '';
+          n.textContent = name ? 'Attached: ' + name : '';
+          n.hidden = !name;
+        });
+      })();
+    </script>
 
     <div class="feed-scopes">
       <a class="feed-scope<?= ($scope ?? 'following') === 'following' ? ' on' : '' ?>"
