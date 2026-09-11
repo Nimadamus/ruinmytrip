@@ -1,6 +1,8 @@
 <?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups @var array $upcomingTrips @var array $pastTrips @var ?array $homeDest @var array $photoWall */ ?>
 <div class="wrap">
-  <div class="profile-cover<?= $u['cover_url'] ? ' has-image' : '' ?>" style="<?= $u['cover_url']?'background-image:url(\''.e($u['cover_url']).'\')':'' ?>"></div>
+  <?php $rmt_cover = $coverUrl ?? (string) ($u['cover_url'] ?? ''); ?>
+  <div class="profile-cover<?= $rmt_cover !== '' ? ' has-image' : '' ?>"
+       style="<?= $rmt_cover !== '' ? 'background-image:url(\''.e($rmt_cover).'\')' : '' ?>"></div>
   <div class="profile-head">
     <img class="avatar-lg" src="<?= e(avatar_url($u['avatar_url'])) ?>" alt="<?= e($u['username']) ?>">
     <div style="flex:1;min-width:220px">
@@ -118,12 +120,22 @@
             <button class="btn <?= $is_following?'btn-ghost':'btn-primary' ?>"><?= $is_following?'Following':'Follow' ?></button>
           </form>
           <a class="btn btn-ghost" href="<?= e(url('messages/'.$u['username'])) ?>">Message</a>
-          <a class="btn btn-ghost" href="<?= e(url('report?target_type=user&target_id='.(int)$u['id'])) ?>">⚑ Report</a>
-          <form class="inline-form" method="post" action="<?= e(url('block')) ?>" onsubmit="return confirm('Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.');">
-            <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
-            <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
-            <button class="btn btn-ghost" style="color:#b42318">Block</button>
-          </form>
+          <?php /* Report and Block were full buttons sitting beside Follow, so the loudest row on
+                   every traveler's profile offered two ways to act against them and one way to
+                   take part. They are still one click away, and still on the page for anybody who
+                   needs them, which is what safety requires: what changes is that the page no
+                   longer suggests them. */ ?>
+          <details class="more-menu">
+            <summary aria-label="More actions">&#8943;</summary>
+            <div class="more-menu-panel">
+              <a href="<?= e(url('report?target_type=user&target_id='.(int)$u['id'])) ?>">Report this profile</a>
+              <form method="post" action="<?= e(url('block')) ?>" onsubmit="return confirm('Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.');">
+                <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
+                <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
+                <button class="more-menu-danger">Block @<?= e($u['username']) ?></button>
+              </form>
+            </div>
+          </details>
         </div>
       <?php else: ?>
         <a class="btn btn-primary" href="<?= e(url('login')) ?>">Follow</a>
@@ -131,6 +143,11 @@
     </div>
   </div>
   <?php if ($u['bio']): ?><p style="max-width:70ch;margin:18px 0"><?= e($u['bio']) ?></p><?php endif; ?>
+  <?php /* A profile is the thing one traveler sends to another, and it has had a drawn share card
+           since cards existed without anywhere on the page to use it. */ ?>
+  <?php $shareUrl = abs_url('/u/' . $u['username']);
+        $shareText = ($u['display_name'] ?: '@' . $u['username']) . ' on RuinMyTrip';
+        include __DIR__ . '/_share.php'; ?>
 
   <?php if ($compliments || ($me && !$isMe)): ?>
     <div class="card" style="margin:18px 0"><div class="card-body">

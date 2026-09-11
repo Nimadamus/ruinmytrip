@@ -618,12 +618,26 @@ function profile(array $a): void {
     $homeDest = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
                         WHERE p.user_id = ?', [$uid]);
 
+    /* A profile with no cover was a flat teal rectangle, which is what every profile looked like,
+       because almost nobody uploads one. A traveler's own most recent trip photograph is both more
+       theirs than a gradient and already public: it comes out of the same $trips list, which has
+       already had the visibility clause applied, so a private trip can never leak its cover here. */
+    $coverUrl = trim((string) ($u['cover_url'] ?? ''));
+    if ($coverUrl === '') {
+        foreach ($trips as $t) {
+            if (trim((string) ($t['cover_url'] ?? '')) !== '' && ($t['visibility'] ?? 'public') === 'public') {
+                $coverUrl = (string) $t['cover_url'];
+                break;
+            }
+        }
+    }
+
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall'), [
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall','coverUrl'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
