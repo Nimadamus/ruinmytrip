@@ -125,81 +125,13 @@
   <?php endif; ?>
 </div></section>
 
-<?php /* The one question the site is named after, asked first. A visitor who came to read leaves
-         having said the thing that annoyed them, and that sentence becomes their first review. */ ?>
-<section class="block" style="background:linear-gradient(120deg,var(--ink),#163a4a);color:#fff"><div class="wrap">
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;align-items:start">
-    <div><?php $dests = $askDests ?? []; $askVariant = 'hero'; include __DIR__ . '/_ruined_ask.php'; ?></div>
-    <div>
-      <p class="eyebrow" style="color:#7dd3c8;margin:0 0 8px">What ruined it for others</p>
-      <?php if (!empty($ruinedLines)): ?>
-        <?php foreach ($ruinedLines as $rl): ?>
-          <p style="margin:0 0 10px;font-size:1.02rem;line-height:1.5">“<?= e(mb_strimwidth(trim((string) $rl['what_ruined']), 0, 140, '…')) ?>”
-            <span style="opacity:.75;font-size:.9rem"> · <?= e((string) ($rl['place_name'] ?: $rl['subject_name'] ?: $rl['dest_name'])) ?></span></p>
-        <?php endforeach; ?>
-        <p style="margin:12px 0 0"><a href="<?= e(url('ruined')) ?>" style="color:#7dd3c8">All <?= (int) ($ruinedTotal ?? 0) ?> warnings →</a></p>
-      <?php else: ?>
-        <p style="margin:0;opacity:.85">Nobody has said theirs yet. The first one is the one people remember.</p>
-      <?php endif; ?>
-    </div>
-  </div>
-</div></section>
 
-<section class="block" style="background:#fff;border-bottom:1px solid var(--line)"><div class="wrap">
-  <div class="section-head"><div><p class="eyebrow">Plan smarter</p><h2>2026 travel guides</h2></div>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('guides')) ?>">All guides</a></div>
-  <div class="grid g-3">
-    <?php foreach ($guides as $g): ?>
-      <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt="<?= e($g['title']) ?>">
-        <div class="card-body">
-          <?php if ($g['dest_name']): ?><span class="chip"><?= e($g['dest_name']) ?></span><?php endif; ?>
-          <?php if (rmt_is_editorial($g)): ?><?= rmt_editorial_badge('editorial', false) ?><?php endif; ?>
-          <?php if ($g['premium']): ?><span class="chip" style="background:#fef3c7;color:#92400e">Premium</span><?php endif; ?>
-          <h3><?= e($g['title']) ?></h3>
-          <p class="muted"><?= e(mb_strimwidth($g['summary'],0,110,'…')) ?></p>
-        </div></a></article>
-    <?php endforeach; ?>
-    <?php if (!$guides): ?>
-      <p class="muted">No guides published yet.</p>
-    <?php endif; ?>
-  </div>
-</div></section>
 
-<?php if (!empty($latestPosts)): ?>
-<section class="block"><div class="wrap">
-  <div class="section-head"><div><p class="eyebrow">2026 prices</p><h2>What it costs right now</h2></div>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('blog')) ?>">All notes</a></div>
-  <div class="grid g-3">
-    <?php foreach ($latestPosts as $bp): ?>
-      <article class="card"><a href="<?= e(url('blog/'.$bp['slug'])) ?>">
-        <?php if ($bp['cover_url']): ?><img class="card-media" loading="lazy" src="<?= e(abs_url($bp['cover_url'])) ?>" alt="<?= e($bp['title']) ?>"><?php endif; ?>
-        <div class="card-body">
-          <span class="chip"><?= e(ucfirst((string)$bp['category'])) ?></span>
-          <h3><?= e($bp['title']) ?></h3>
-          <p class="muted"><?= e(mb_strimwidth((string)$bp['summary'],0,120,'…')) ?></p>
-        </div></a></article>
-    <?php endforeach; ?>
-  </div>
-</div></section>
-<?php endif; ?>
 
-<section class="block"><div class="wrap">
-  <div class="section-head"><div><p class="eyebrow">Trending now</p><h2>Destinations we researched</h2></div>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Explore all</a></div>
-  <div class="grid g-3">
-    <?php foreach ($trending as $d): ?>
-      <article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>">
-        <img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
-        <div class="card-body">
-          <span class="chip"><?= e($d['category']) ?></span>
-          <h3><?= e($d['name']) ?></h3>
-          <p class="muted"><?= e($d['summary']) ?></p>
-          <div class="meta-row"><?= e($d['country']) ?><?php if ((int)$d['trips'] > 0): ?> · <?= (int)$d['trips'] ?> trip stories<?php endif; ?></div>
-        </div></a></article>
-    <?php endforeach; ?>
-  </div>
-</div></section>
+
+
+
+
 
 <section class="block" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="grid g-2" style="align-items:start">
@@ -272,6 +204,57 @@
       <p style="margin-top:16px"><a class="btn btn-ghost" href="<?= e(url('meetups')) ?>">Browse meetups</a></p>
     </div>
   </div>
+</div></section>
+
+<?php /* The one question the site is named after, asked first. A visitor who came to read leaves
+         having said the thing that annoyed them, and that sentence becomes their first review. */ ?>
+<section class="block" style="background:linear-gradient(120deg,var(--ink),#163a4a);color:#fff"><div class="wrap">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;align-items:start">
+    <div><?php $dests = $askDests ?? []; $askVariant = 'hero'; include __DIR__ . '/_ruined_ask.php'; ?></div>
+    <div>
+      <p class="eyebrow" style="color:#7dd3c8;margin:0 0 8px">What ruined it for others</p>
+      <?php if (!empty($ruinedLines)): ?>
+        <?php foreach ($ruinedLines as $rl): ?>
+          <p style="margin:0 0 10px;font-size:1.02rem;line-height:1.5">“<?= e(mb_strimwidth(trim((string) $rl['what_ruined']), 0, 140, '…')) ?>”
+            <span style="opacity:.75;font-size:.9rem"> · <?= e((string) ($rl['place_name'] ?: $rl['subject_name'] ?: $rl['dest_name'])) ?></span></p>
+        <?php endforeach; ?>
+        <p style="margin:12px 0 0"><a href="<?= e(url('ruined')) ?>" style="color:#7dd3c8">All <?= (int) ($ruinedTotal ?? 0) ?> warnings →</a></p>
+      <?php else: ?>
+        <p style="margin:0;opacity:.85">Nobody has said theirs yet. The first one is the one people remember.</p>
+      <?php endif; ?>
+    </div>
+  </div>
+</div></section>
+
+<?php /* The research is real and it is kept, and it is one strip rather than three sections with
+         a heading each in the middle of the page. A homepage that gives guides, prices and
+         "destinations we researched" that much room is a guidebook with a community bolted on, and
+         this site is the other way round. Every one of those pages is still one click from here,
+         still in the footer, and still in the sitemap. */ ?>
+<section class="block" style="background:#fff;border-top:1px solid var(--line)"><div class="wrap">
+  <div class="section-head">
+    <div><p class="eyebrow">We also do the homework</p><h2>The boring bits, checked</h2></div>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Explore all</a>
+  </div>
+  <div class="grid g-3">
+    <?php foreach (array_slice($guides, 0, 3) as $g): ?>
+      <article class="card"><div class="card-body">
+        <p class="eyebrow" style="margin:0 0 4px">Guide</p>
+        <h3 style="font-size:1.02rem"><a href="<?= e(url('g/'.$g['slug'])) ?>"><?= e($g['title']) ?></a></h3>
+        <?php if (!empty($g['dest_name'])): ?><p class="hint" style="margin:.2rem 0 0"><?= e($g['dest_name']) ?></p><?php endif; ?>
+      </div></article>
+    <?php endforeach; ?>
+    <?php foreach (array_slice($latestPosts, 0, 3) as $bp): ?>
+      <article class="card"><div class="card-body">
+        <p class="eyebrow" style="margin:0 0 4px"><?= e((string) ($bp['category'] ?: 'Note')) ?></p>
+        <h3 style="font-size:1.02rem"><a href="<?= e(url('blog/'.$bp['slug'])) ?>"><?= e($bp['title']) ?></a></h3>
+        <?php if (!empty($bp['summary'])): ?><p class="hint" style="margin:.2rem 0 0"><?= e(mb_strimwidth((string) $bp['summary'], 0, 90, '...')) ?></p><?php endif; ?>
+      </div></article>
+    <?php endforeach; ?>
+  </div>
+  <p style="margin:16px 0 0"><a href="<?= e(url('guides')) ?>">All guides</a> &middot;
+     <a href="<?= e(url('blog')) ?>">All notes</a> &middot;
+     <a href="<?= e(url('explore')) ?>">Every destination we have researched</a></p>
 </div></section>
 
 <section class="block"><div class="wrap" style="text-align:center;background:linear-gradient(120deg,var(--ink),var(--brand));color:#fff;border-radius:24px;padding:56px 24px">

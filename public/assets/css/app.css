@@ -775,3 +775,7 @@ section.block{padding:64px 0}
 .msg-composer textarea{flex:1;resize:none;min-height:44px;max-height:160px;border-radius:22px;
   padding:.7rem 1rem;background:#fff}
 @media (max-width:860px){ .msg-composer{bottom:64px} }
+/* Chips capitalise their first letters, which is right for a one word category out of the database
+   and wrong for anything with words in it: a date range came out as "Oct 10 To Oct 14". The hint
+   inside a chip is prose, so it opts out. */
+.chip .hint{text-transform:none}

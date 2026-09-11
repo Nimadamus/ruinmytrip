@@ -59,7 +59,16 @@ $home = (string) file_get_contents(BASE_PATH . '/views/home.php');
 ok('the hero leads with people', str_contains($home, 'Find the people going where you are going.'));
 ok('the old cost pitch is gone', !str_contains($home, 'What it actually costs. What nearly ruins it.'));
 ok('the hero asks for a member', str_contains($home, 'Join free'));
-ok('who is going is above the research', strpos($home, 'Travelers with dates coming up') < strpos($home, '2026 travel guides'));
+/* The research used to be three sections with a heading each in the middle of the page; it is one
+   strip below the people now, so the check is against that strip. The claim is unchanged and is
+   slightly stronger: people first, homework after. */
+$people = strpos($home, 'Travelers with dates coming up');
+$research = strpos($home, 'The boring bits, checked');
+ok('the people section exists', $people !== false);
+ok('the research strip exists', $research !== false);
+ok('who is going is above the research', $people !== false && $research !== false && $people < $research);
+ok('the research is one strip, not three sections',
+   !str_contains($home, '2026 travel guides') && !str_contains($home, 'Destinations we researched'));
 ok('the homepage sends people to city hubs', str_contains($home, "/travelers'"));
 $reg = (string) file_get_contents(BASE_PATH . '/views/auth/register.php');
 ok('the form says what the site is', str_contains($reg, 'travel community'));
