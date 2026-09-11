@@ -58,7 +58,11 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
                        almost everybody uses. */ ?>
               <?php
                 $rmt_meta = [];
-                if (($act['category'] ?? 'other') !== 'other') $rmt_meta[] = e($catLabels[$act['category']]);
+                /* A category we no longer have is a gap, not a warning. Data outlives the list
+                   of labels that describes it, and a page should not break because a row predates
+                   a rename. */
+                $rmt_cat = (string) ($act['category'] ?? 'other');
+                if ($rmt_cat !== 'other' && isset($catLabels[$rmt_cat])) $rmt_meta[] = e($catLabels[$rmt_cat]);
                 if (!empty($act['place_name'])) {
                     $rmt_meta[] = '<a href="' . e(url('p/'.$act['place_slug'])) . '">' . e((string) $act['place_name']) . '</a>';
                 } elseif (!empty($act['location_text'])) {

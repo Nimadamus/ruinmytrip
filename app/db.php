@@ -23,12 +23,48 @@ function db(): PDO {
     return $pdo;
 }
 
+/**
+ * Count every statement, when asked to.
+ *
+ * Off unless RMT_QUERY_LOG is set, and then it is a counter and a list of normalised statements,
+ * nothing more: no timings, no values, nothing that could hold a person's data. It exists so that
+ * "this page runs 240 queries" is a number somebody can see rather than a thing somebody suspects,
+ * and so a page that regresses into an N+1 can be caught by a test rather than by a slow morning.
+ */
+function rmt_q_note(string $sql): void {
+    if (!isset($GLOBALS['rmt_qlog'])) return;
+    $flat = trim((string) preg_replace('/\s+/', ' ', $sql));
+    $GLOBALS['rmt_qlog']['n']++;
+    $GLOBALS['rmt_qlog']['by'][$flat] = ($GLOBALS['rmt_qlog']['by'][$flat] ?? 0) + 1;
+}
+
+/** Start counting. Returns nothing; rmt_q_report() ends it. */
+function rmt_q_start(): void { $GLOBALS['rmt_qlog'] = ['n' => 0, 'by' => []]; }
+
+/**
+ * Stop counting and report.
+ *
+ * @return array{total:int,distinct:int,repeats:list<array{sql:string,n:int}>}
+ */
+function rmt_q_report(int $repeatThreshold = 3): array {
+    $log = $GLOBALS['rmt_qlog'] ?? ['n' => 0, 'by' => []];
+    unset($GLOBALS['rmt_qlog']);
+    arsort($log['by']);
+    $repeats = [];
+    foreach ($log['by'] as $sql => $n) {
+        if ($n >= $repeatThreshold) $repeats[] = ['sql' => $sql, 'n' => $n];
+    }
+    return ['total' => (int) $log['n'], 'distinct' => count($log['by']), 'repeats' => $repeats];
+}
+
 /** Convenience: fetch all rows. */
 function q_all(string $sql, array $args = []): array {
+    rmt_q_note($sql);
     $st = db()->prepare($sql); $st->execute($args); return $st->fetchAll();
 }
 /** Convenience: fetch one row or null. */
 function q_one(string $sql, array $args = []): ?array {
+    rmt_q_note($sql);
     $st = db()->prepare($sql); $st->execute($args); $r = $st->fetch(); return $r === false ? null : $r;
 }
 /**
@@ -51,6 +87,7 @@ function q_one(string $sql, array $args = []): ?array {
  * savepoint or a RETURNING clause rather than relaxing this.
  */
 function q_run(string $sql, array $args = []): string {
+    rmt_q_note($sql);
     $st = db()->prepare($sql); $st->execute($args);
     if (!preg_match('/^\s*INSERT\s/i', $sql)) return '';
     try { return (string) db()->lastInsertId(); }
