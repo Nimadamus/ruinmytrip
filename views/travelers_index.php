@@ -79,7 +79,14 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
           <?php $person = $pp;
                 $because = (string) $pp['dest_name'] . ' · '
                          . (int) $pp['overlap_days'] . ((int) $pp['overlap_days'] === 1 ? ' day' : ' days')
-                         . ' with you, ' . $rmt_days($pp['overlap_from'], $pp['overlap_to']);
+                         . ' with you, ' . $rmt_days($pp['overlap_from'], $pp['overlap_to'])
+                         /* Somebody with two trips that both land on mine is one person, not two
+                            rows. The soonest leads and the rest are counted, because "and another
+                            set of dates" is itself a reason to say hello. */
+                         . ((int) ($pp['other_overlaps'] ?? 0) > 0
+                            ? ' (and ' . (int) $pp['other_overlaps'] . ' more set'
+                              . ((int) $pp['other_overlaps'] === 1 ? '' : 's') . ' of dates)'
+                            : '');
                 include __DIR__ . '/_person_card.php'; ?>
         <?php endforeach; ?>
         <?php if ($matchCount > count($find['overlapping'])): ?>

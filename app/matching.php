@@ -106,7 +106,30 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
         $rows[$i]['overlap_to']   = $w['to'] ?? null;
         $rows[$i]['overlap_days'] = $w['days'] ?? 0;
     }
-    return $rows;
+
+    /* One row per person, not one per pair of overlapping trips.
+       Somebody with two trips to Lisbon that both land on mine produced two identical looking
+       cards with different dates, in a list headed "On your dates" that is meant to be short
+       enough to read. The soonest overlap leads, and the others are counted rather than dropped,
+       because "also 4 days in October" is a reason to say hello and losing it would be losing a
+       fact. Grouped after the window arithmetic so the count is of real overlaps. */
+    $byPerson = [];
+    foreach ($rows as $r) {
+        $uid = (int) $r['user_id'];
+        if (!isset($byPerson[$uid])) {
+            $r['other_overlaps'] = 0;
+            $byPerson[$uid] = $r;
+            continue;
+        }
+        $byPerson[$uid]['other_overlaps']++;
+        // The soonest one leads: it is the one a person can still act on.
+        if ((string) $r['overlap_from'] < (string) $byPerson[$uid]['overlap_from']) {
+            $keep = $byPerson[$uid]['other_overlaps'];
+            $r['other_overlaps'] = $keep;
+            $byPerson[$uid] = $r;
+        }
+    }
+    return array_values($byPerson);
 }
 
 /**

@@ -83,6 +83,23 @@ check('match is mutual', (string) (rmt_trip_matches(2)[0]['username'] ?? ''), 'a
 check('a different city is not a match', rmt_trip_matches(4), []);
 check('no plans means no matches', rmt_trip_matches(99), []);
 
+/* One row per person, not one per pair of overlapping trips.
+   Somebody with two trips to the same city that both land on mine produced two cards that look
+   identical apart from the dates, in a list short enough that two of anything is noticeable. The
+   soonest overlap leads because it is the one still worth acting on, and the others are counted
+   rather than dropped: another set of dates is itself a reason to say hello. */
+rmt_going_upsert(2, ['destination_id'=>10,'date_from'=>$d('06-08'),'date_to'=>$d('06-20'),'visibility'=>'public']);
+db()->exec("INSERT INTO trips (user_id, destination_id, title, slug, body, status, visibility, date_from, date_to, created_at)
+            VALUES (2, 10, 'Second visit', 'second-visit', '', 'published', 'public',
+                    '" . $d('06-02') . "', '" . $d('06-04') . "', '2026-01-01 00:00:00')");
+$m2 = rmt_trip_matches(1);
+check('two overlapping trips by one person are one row', count($m2), 1);
+check('and the soonest overlap is the one shown', (string) ($m2[0]['overlap_from'] ?? ''), $d('06-02'));
+check('with the other one counted rather than dropped', (int) ($m2[0]['other_overlaps'] ?? 0), 1);
+// Removed again: the visibility checks below are about ONE plan per person, and leaving a second
+// public one in the fixture would make "private plan matches nobody" pass for the wrong reason.
+db()->exec("DELETE FROM trips WHERE slug = 'second-visit'");
+
 echo "\n-- visibility --\n";
 rmt_going_upsert(2, ['destination_id'=>10,'date_from'=>$d('06-08'),'date_to'=>$d('06-20'),'visibility'=>'private']);
 check('private plan matches nobody', rmt_trip_matches(1), []);
