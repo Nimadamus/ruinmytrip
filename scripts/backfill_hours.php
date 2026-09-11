@@ -42,6 +42,22 @@ if ($site === '' || $key === '' || $city === '') {
     exit(2);
 }
 
+/* One at a time. Two of these running together would double what a free, volunteer run service is
+   asked for, and the second one would re-fetch exactly what the first is already fetching,
+   because both start from the same "which places have no hours" answer. The lock is released when
+   the process ends, however it ends, including being killed. */
+$lock = fopen(sys_get_temp_dir() . '/rmt_backfill_hours.lock', 'c');
+if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB)) {
+    fwrite(STDERR, "another backfill is already running\n");
+    exit(3);
+}
+
+/* Chunked, resumable and observable are the three properties that matter for a job nobody is
+   watching. Chunked and resumable come from the shape of it: the site is asked what is still
+   missing on every run, so an interrupted run leaves no state to clean up and a restart simply
+   asks a shorter question. Observable is this line and the peak figure printed per city. */
+fprintf(STDERR, "backfill: batch=%d pause=%ds php memory_limit=%s\n", $batch, $pause, ini_get('memory_limit'));
+
 /** One GET against the site's own cron door. */
 function rmt_bh_get(string $url): string {
     $ch = curl_init($url);
@@ -129,5 +145,6 @@ foreach ($cities as $slug) {
         /* Spread out. The provider is free, run by volunteers, and nothing here is urgent. */
         sleep($pause);
     }
-    printf("  %s: %d request(s), %d place(s) carried hours\n", $slug, $asked, $carried);
+    printf("  %s: %d request(s), %d place(s) carried hours, peak %.1f MB\n",
+           $slug, $asked, $carried, memory_get_peak_usage(true) / 1048576);
 }

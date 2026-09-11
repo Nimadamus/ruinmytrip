@@ -624,23 +624,29 @@ function rmt_search_low_results(int $days = 90, int $limit = 25, int $max = 2): 
 function rmt_search_backfill_norm(): array {
     $n = ['destinations' => 0, 'places' => 0, 'aliases' => 0];
 
-    foreach (q_all('SELECT id, name, name_norm FROM destinations') as $r) {
-        $want = rmt_search_norm((string) $r['name']);
-        if ((string) ($r['name_norm'] ?? '') === $want) continue;
-        q_run('UPDATE destinations SET name_norm = ? WHERE id = ?', [$want, (int) $r['id']]);
-        $n['destinations']++;
-    }
-    foreach (q_all('SELECT id, name, name_norm FROM places') as $r) {
-        $want = rmt_search_norm((string) $r['name']);
-        if ((string) ($r['name_norm'] ?? '') === $want) continue;
-        q_run('UPDATE places SET name_norm = ? WHERE id = ?', [$want, (int) $r['id']]);
-        $n['places']++;
-    }
-    foreach (q_all('SELECT id, alias, alias_norm FROM search_aliases') as $r) {
-        $want = rmt_search_norm((string) $r['alias']);
-        if ((string) ($r['alias_norm'] ?? '') === $want) continue;
-        q_run('UPDATE search_aliases SET alias_norm = ? WHERE id = ?', [$want, (int) $r['id']]);
-        $n['aliases']++;
+    /* Walked in pages, by id, rather than selected whole.
+       This runs inside a web request and the places table only grows: "SELECT id, name FROM
+       places" was fine at a hundred rows and is a different proposition at a hundred thousand,
+       and the failure mode is a maintenance job taking the live site down with it. A cursor keeps
+       the memory flat whatever the table does, and each page is a short transaction rather than
+       one long one. */
+    foreach ([['destinations', 'name', 'name_norm', 'destinations'],
+              ['places', 'name', 'name_norm', 'places'],
+              ['search_aliases', 'alias', 'alias_norm', 'aliases']] as [$table, $col, $normCol, $key]) {
+        $after = 0;
+        while (true) {
+            $page = q_all("SELECT id, $col, $normCol FROM $table WHERE id > ? ORDER BY id LIMIT 500",
+                          [$after]);
+            if (!$page) break;
+            foreach ($page as $r) {
+                $after = (int) $r['id'];
+                $want = rmt_search_norm((string) $r[$col]);
+                if ((string) ($r[$normCol] ?? '') === $want) continue;
+                q_run("UPDATE $table SET $normCol = ? WHERE id = ?", [$want, (int) $r['id']]);
+                $n[$key]++;
+            }
+            unset($page);
+        }
     }
     return $n;
 }
