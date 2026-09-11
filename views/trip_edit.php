@@ -40,15 +40,18 @@
     <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?" required><?= e($t['body'] ?? '') ?></textarea>
 
     <?php if (!empty($photos)): ?>
-      <label>Current photos</label>
-      <div class="grid g-3" style="gap:10px">
+      <label>Photos on this trip</label>
+      <div class="edit-photos">
         <?php foreach ($photos as $ph): ?>
-          <label style="display:block;cursor:pointer">
-            <img class="card-media" src="<?= e($ph['url']) ?>" alt="" style="border-radius:8px">
-            <span class="muted" style="display:flex;gap:6px;align-items:center;margin-top:4px;font-size:.9rem">
+          <div class="edit-photo">
+            <a href="<?= e(url('photo/trip/'.(int) $ph['id'])) ?>" title="Open this photo">
+              <img src="<?= e($ph['url']) ?>" alt=""></a>
+            <input type="text" name="caption[<?= (int) $ph['id'] ?>]" maxlength="300"
+                   value="<?= e((string) ($ph['caption'] ?? '')) ?>" placeholder="Say what this is">
+            <label class="edit-photo-rm">
               <input type="checkbox" name="remove_photo[]" value="<?= (int)$ph['id'] ?>"> Remove
-            </span>
-          </label>
+            </label>
+          </div>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

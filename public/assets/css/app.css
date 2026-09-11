@@ -856,3 +856,55 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* An alternating band on the homepage. It was three inline background:#fff declarations, which is
    exactly the thing that cannot follow a theme: in dark mode they stayed white. */
 .band{background:var(--card)}
+
+/* ================================================================ photos
+   A photograph gets a dark stage and as much of the screen as it can have. Everything about it
+   sits underneath, because a caption above a picture is a headline and a caption below it is a
+   caption. */
+.photo-stage{position:relative;background:#0b1116;display:flex;align-items:center;
+  justify-content:center;min-height:46vh}
+.photo-main{max-height:78vh;width:auto;max-width:100%;object-fit:contain;display:block}
+.photo-step{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem;line-height:1;
+  color:#fff;background:rgba(0,0,0,.35);border-radius:50%;backdrop-filter:blur(6px);
+  text-decoration:none}
+.photo-step:hover{background:rgba(0,0,0,.6);text-decoration:none;color:#fff}
+.photo-step.prev{left:14px}
+.photo-step.next{right:14px}
+.photo-meta{max-width:760px;padding-top:22px;padding-bottom:50px}
+.photo-caption{font-size:1.12rem;line-height:1.6;margin:0 0 16px}
+.photo-by{display:flex;align-items:center;gap:10px;margin:0 0 12px}
+.photo-by b{font-weight:650}
+.photo-by .hint{display:block;font-size:.84rem}
+.photo-from{color:var(--muted);font-size:.94rem;margin:0}
+
+/* A grid of photographs, used by a trip, a profile and a city. Square cells, because a wall of
+   mixed aspect ratios reads as a mistake, and the photo's own page shows it uncropped. */
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.photo-cell{position:relative;display:block;aspect-ratio:1;border-radius:var(--radius-sm);
+  overflow:hidden;background:linear-gradient(135deg,var(--surface-3),var(--surface-2))}
+.photo-cell img{width:100%;height:100%;object-fit:cover;transition:transform .35s var(--ease)}
+.photo-cell:hover img{transform:scale(1.04)}
+.photo-cell figcaption{position:absolute;left:0;right:0;bottom:0;padding:16px 10px 8px;
+  color:#fff;font-size:.78rem;line-height:1.35;
+  background:linear-gradient(180deg,transparent,rgba(9,17,28,.78));
+  opacity:0;transition:opacity .2s var(--ease)}
+.photo-cell:hover figcaption,.photo-cell:focus-visible figcaption{opacity:1}
+.photo-grid-lead .photo-cell:first-child{grid-column:span 2;grid-row:span 2;aspect-ratio:1}
+@media (max-width:520px){
+  .photo-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:6px}
+  .photo-grid-lead .photo-cell:first-child{grid-column:span 2;grid-row:span 2}
+  .photo-step{width:40px;height:40px;font-size:1.4rem}
+  .photo-stage{min-height:38vh}
+}
+
+/* Editing the photos already on a trip: the picture, a caption box under it, and a remove tick. */
+.edit-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;
+  margin:8px 0 4px}
+.edit-photo{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:8px}
+.edit-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block}
+.edit-photo input[type=text]{margin-top:8px;font-size:.88rem;padding:.4rem .6rem}
+.edit-photo-rm{display:flex;align-items:center;gap:6px;margin:8px 0 0;font-size:.85rem;
+  font-weight:500;color:var(--muted)}
+.edit-photo-rm input{width:auto}

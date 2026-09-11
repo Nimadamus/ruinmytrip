@@ -15,11 +15,7 @@
     </div>
   <?php endif; ?>
 
-  <div class="grid g-4" style="padding-bottom:50px">
-    <?php foreach ($photos as $p): $parentUrl = $p['kind']==='trip' ? url('trip/'.$p['parent_id'].'/'.$p['parent_slug']) : url('review/'.$p['parent_id'].($p['parent_slug'] ? '/'.$p['parent_slug'] : '')); ?>
-      <a href="<?= e($parentUrl) ?>" title="<?= e($p['caption'] ?? '') ?>">
-        <img class="card-media" loading="lazy" style="aspect-ratio:1;object-fit:cover" src="<?= e(abs_url($p['url'])) ?>" alt="<?= e($p['caption'] ?: ($d['name'].' photo by @'.($p['author']['username'] ?? ''))) ?>">
-      </a>
-    <?php endforeach; ?>
-  </div>
+  <?php $gridPhotos = $photos; $gridLead = count($photos) > 4;
+        include __DIR__ . '/_photo_grid.php'; ?>
+  <div style="height:50px"></div>
 </div>

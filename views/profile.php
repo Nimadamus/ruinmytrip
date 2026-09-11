@@ -295,14 +295,9 @@
              reader does not care which table it came out of, so it is one grid, and each one goes
              back to the thing it belongs to. */ ?>
     <h2 style="margin-top:24px">Photos</h2>
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:8px">
-      <?php foreach ($photoWall as $ph): ?>
-        <a href="<?= e($ph['href']) ?>" title="<?= e($ph['what']) ?>">
-          <img loading="lazy" src="<?= e(abs_url($ph['url'])) ?>" alt="<?= e($ph['what']) ?>"
-               style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block">
-        </a>
-      <?php endforeach; ?>
-    </div>
+    <?php $gridPhotos = $photoWall; $gridLead = count($photoWall) > 4;
+          include __DIR__ . '/_photo_grid.php'; ?>
+    <div style="height:8px"></div>
   <?php endif; ?>
 
   <?php if ($pastTrips): ?>

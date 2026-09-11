@@ -288,7 +288,9 @@ function destination(array $a): void {
 /** GET /d/{slug}/photos — the full gallery; the destination page itself only teases 12. */
 function destination_photos(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
-    $photos = rmt_destination_photos((int)$d['id'], 300);
+    /* rmt_city_photos applies the trip visibility clause. The previous source did not, so a trip
+       somebody had marked "only you" had its photographs on the city's public photo wall. */
+    $photos = rmt_city_photos((int) $d['id'], current_user(), 300);
     view('destination_photos', compact('d','photos'), [
         'title' => 'Photos of '.$d['name'].', '.$d['country'].' | RuinMyTrip',
         'description' => 'Real traveler photos from trips and reviews in '.$d['name'].'.',
@@ -612,7 +614,10 @@ function profile(array $a): void {
     $beenPlaces = rmt_visits_for_user($uid);
     // The profile counted photos and showed none of them, which is the least useful place a number
     // can sit. Public trips only, so a private trip's photos never surface here.
-    $photoWall = rmt_profile_photos($uid);
+    /* Their photographs, through the same visibility clause as everything else: a follower sees a
+       followers-only trip's photos and a stranger does not, where the old profile wall selected
+       public trips only and silently hid a follower's own view of them. */
+    $photoWall = rmt_member_photos($uid, $me, 18);
     // Where they live, when it is a city this site has a page for. Shown as a chip, because a
     // local is the person a traveler most wants to find and the profile never said so.
     $homeDest = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
@@ -2578,6 +2583,17 @@ function trip_edit_submit(array $a): void {
                    date('Y-m-d H:i:s'), (int)$t['id']]);
     rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
     rmt_notify_mentions('trip', (int)$t['id'], (int)current_user()['id'], [], $d['title'], $d['body']);
+    /* Captions on photos already attached. A caption is the difference between a photograph and
+       an image, and until now there was nowhere at all to type one. */
+    foreach ((array) ($_POST['caption'] ?? []) as $pid => $cap) {
+        $pid = (int) $pid;
+        if ($pid < 1) continue;
+        $own = q_one('SELECT id FROM trip_photos WHERE id = ? AND trip_id = ?', [$pid, (int) $t['id']]);
+        if (!$own) continue;
+        $cap = trim((string) $cap);
+        db()->prepare('UPDATE trip_photos SET caption = ? WHERE id = ?')
+            ->execute([$cap === '' ? null : mb_substr($cap, 0, 300), $pid]);
+    }
     $photoErrors = rmt_attach_trip_photos((int)$t['id'], (int)current_user()['id']);
 
     // Remove any photos the author unticked.
@@ -2643,10 +2659,15 @@ function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
         $res = rmt_upload_image($file, $ownerId);
         if (!$res['ok']) { $errors[] = $res['error']; continue; }
 
-        q_run('INSERT INTO trip_photos (trip_id, url, storage_key, caption, width, height, bytes, sort, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?)',
-              [$tripId, $res['url'], $res['key'], null, $res['w'], $res['h'], $res['bytes'],
-               $existing + $i, date('Y-m-d H:i:s')]);
+        /* A caption typed in the row beside the file, and the owner recorded on the photo itself
+           (migration 077), because a photograph is now a thing people like and reply to and every
+           other target of those knows who it belongs to. */
+        $cap = trim((string) ($_POST['photo_caption'][$i] ?? ''));
+        if ($cap !== '') $cap = mb_substr($cap, 0, 300);
+        q_run('INSERT INTO trip_photos (trip_id, user_id, url, storage_key, caption, width, height, bytes, sort, status, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+              [$tripId, $ownerId, $res['url'], $res['key'], $cap !== '' ? $cap : null,
+               $res['w'], $res['h'], $res['bytes'], $existing + $i, 'published', date('Y-m-d H:i:s')]);
         $slots--;
     }
     return $errors;
@@ -3156,6 +3177,12 @@ const RMT_INTERACT_TARGETS = [
     'collection'  => 'collections',
     'destination' => 'destinations',
     'post'        => 'posts',
+    /* A photograph is a thing people react to, so it is a target like any other. Migration 077
+       gave both photo tables the owner and status columns every target here needs. The visibility
+       of the trip a photo belongs to is checked separately, in rmt_photo_visible_to(): this map
+       only says what a row is, never who may see it. */
+    'trip_photo'   => 'trip_photos',
+    'review_photo' => 'review_photos',
 ];
 
 /**
@@ -3215,9 +3242,18 @@ function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
         return (bool) q_one('SELECT id FROM destinations WHERE id = ?', [$tid]);
     }
 
+    /* A photo carries its parent's privacy, so "can I act on this" is "can I see this". Without
+       this, a stranger who guessed the id of a photo on a private trip could like it, and the
+       owner would be told that somebody they have never heard of liked a photograph nobody was
+       supposed to be able to open. */
+    if ($tt === 'trip_photo' || $tt === 'review_photo') {
+        $photo = rmt_photo_get($tt === 'trip_photo' ? 'trip' : 'review', $tid);
+        return $photo !== null && rmt_photo_visible_to($photo, $user);
+    }
+
     $col = rmt_interact_owner_column($tt);
     $row = q_one("SELECT {$col} AS user_id, status FROM {$table} WHERE id = ?", [$tid]);
-    if (!$row) return false;                       // must exist — no ghost interactions
+    if (!$row) return false;                       // must exist, no ghost interactions
     if (($row['status'] ?? '') === 'published') return true;
     if (!$user) return false;
     if ((int) ($row['user_id'] ?? 0) === (int) $user['id']) return true;   // own draft
@@ -5186,6 +5222,66 @@ function cron_indexnow(array $a): void {
  * GET /card/{kind}/{key}.png — the link preview image for a post, review, community, profile,
  * meetup or topic. See app/cards.php. Public, cached a day, 404 for anything the page would 404.
  */
+/**
+ * GET /photo/{kind}/{id} — one photograph, with its own page.
+ *
+ * A photo that only exists inside a grid cannot be sent to anybody, cannot carry a preview into a
+ * chat window, and cannot be the thing a stranger arrives on. This page is deliberately plain: the
+ * picture as large as the screen allows, what it is of, who took it, where, and the way back into
+ * the album it belongs to.
+ */
+function photo_show(array $a): void {
+    $photo = rmt_photo_get((string) $a['kind'], (int) $a['id']);
+    if (!$photo) not_found();
+    $me = current_user();
+    /* 404 rather than 403 on purpose, the same as a private trip: "forbidden" confirms the photo
+       exists, which is itself the thing being kept private. */
+    if (!rmt_photo_visible_to($photo, $me)) not_found();
+
+    $sib = rmt_photo_siblings($photo);
+    $target = $photo['kind'] === 'review' ? 'review_photo' : 'trip_photo';
+    $canReact = $photo['kind'] !== 'post';   // a post photo is the post; react on the post itself
+    $likeCount = $canReact ? (int) (q_one("SELECT COUNT(*) n FROM likes WHERE target_type=? AND target_id=?",
+                                          [$target, (int) $photo['id']])['n'] ?? 0) : 0;
+    $liked = $canReact && $me && q_one('SELECT 1 FROM likes WHERE user_id=? AND target_type=? AND target_id=?',
+                                       [(int) $me['id'], $target, (int) $photo['id']]);
+    $comments = $canReact ? q_all("SELECT c.*, u.username, p.avatar_url
+                                     FROM comments c JOIN users u ON u.id = c.user_id
+                                LEFT JOIN profiles p ON p.user_id = u.id
+                                    WHERE c.target_type = ? AND c.target_id = ? AND c.status = 'published'
+                                 ORDER BY c.id", [$target, (int) $photo['id']]) : [];
+    $isPrivate = ($photo['visibility'] ?? 'public') !== 'public';
+    $title = $photo['caption'] !== ''
+        ? rmt_photo_trim($photo['caption'], 60)
+        : ($photo['dest_name'] ? 'Photo from ' . $photo['dest_name'] : 'Traveler photo');
+
+    view('photo_show', compact('photo', 'sib', 'me', 'isPrivate', 'target', 'canReact',
+                                'likeCount', 'liked', 'comments'), [
+        'title' => rmt_meta_title($title),
+        'description' => $photo['caption'] !== ''
+            ? rmt_meta_description($photo['caption'])
+            : trim(('A traveler photo' . ($photo['dest_name'] ? ' from ' . $photo['dest_name'] : ''))
+                   . ' on RuinMyTrip, posted by @' . ($photo['author']['username'] ?? '')),
+        'og_image' => abs_url((string) $photo['url']),
+        /* A photo on a trip that is not public is never offered to a crawler, and neither is one
+           with nothing said about it: an image with no caption on its own URL is a thin page. */
+        'robots' => $isPrivate ? 'noindex, nofollow' : 'index, follow',
+        'breadcrumbs' => array_values(array_filter([
+            ['name' => 'Home', 'url' => url()],
+            $photo['dest_slug'] ? ['name' => (string) $photo['dest_name'], 'url' => url('d/' . $photo['dest_slug'])] : null,
+            ['name' => (string) $photo['parent_title'], 'url' => (string) $photo['parent_url']],
+        ])),
+        'jsonld' => $isPrivate ? null : jsonld([
+            '@context' => 'https://schema.org', '@type' => 'ImageObject',
+            'contentUrl' => abs_url((string) $photo['url']),
+            'caption' => $photo['caption'] !== '' ? $photo['caption'] : null,
+            'uploadDate' => (string) $photo['created_at'],
+            'creator' => ['@type' => 'Person', 'name' => (string) ($photo['author']['display_name'] ?? $photo['author']['username'] ?? '')],
+            'contentLocation' => $photo['dest_name'] ? ['@type' => 'Place', 'name' => (string) $photo['dest_name']] : null,
+        ]),
+    ]);
+}
+
 function share_card(array $a): void {
     if (!rmt_card_available()) not_found();
     $spec = rmt_card_spec((string) $a['kind'], (string) $a['key']);

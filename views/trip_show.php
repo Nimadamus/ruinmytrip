@@ -14,7 +14,15 @@
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>
-  <?php foreach ($photos as $p): ?><img class="article-hero" loading="lazy" src="<?= e($p['url']) ?>" alt="<?= e($p['caption']) ?>"><?php endforeach; ?>
+  <?php /* The album. The first photograph leads at double size and every cell opens the photo's
+           own page, because the thing somebody clicked is the thing they want to see. */ ?>
+  <?php if ($photos): ?>
+    <?php $gridPhotos = array_map(static fn(array $ph) => [
+            'url' => (string) $ph['url'], 'caption' => (string) ($ph['caption'] ?? ''),
+            'kind' => 'trip', 'id' => (int) $ph['id']], $photos);
+          $gridLead = count($photos) > 2;
+          include __DIR__ . '/_photo_grid.php'; ?>
+  <?php endif; ?>
 
   <?php if ($me && (int)$t['user_id'] === (int)$me['id']): ?>
     <p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('trip/'.$t['id'].'/edit')) ?>">Edit</a></p>

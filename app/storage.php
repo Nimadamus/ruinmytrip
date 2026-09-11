@@ -126,10 +126,24 @@ function rmt_storage_put(string $key, string $bytes, string $mime, int $ownerId,
                          int $w, int $h, string $sha): bool {
     $driver = rmt_storage_driver();
     if ($driver === 'r2') {
-        // Intentionally not implemented: no R2 credentials exist yet. Fail loudly rather than
-        // silently dropping a user's photo.
-        error_log('[rmt_storage] STORAGE_DRIVER=r2 but the R2 driver is not implemented');
-        return false;
+        $ok = rmt_r2_put($key, $bytes, $mime);
+        if (!$ok) return false;
+        /* The row is still written, without the bytes: it is the record of what exists, who owns
+           it and how big it is, and the delete path and the admin views all read it. Only the
+           payload moves to the bucket. */
+        $st = db()->prepare('INSERT INTO media (storage_key, driver, owner_id, mime, bytes, width, height, sha256, data, created_at)
+                             VALUES (?,?,?,?,?,?,?,?,?,?)');
+        $st->bindValue(1, $key);
+        $st->bindValue(2, 'r2');
+        $st->bindValue(3, $ownerId ?: null, $ownerId ? PDO::PARAM_INT : PDO::PARAM_NULL);
+        $st->bindValue(4, $mime);
+        $st->bindValue(5, strlen($bytes), PDO::PARAM_INT);
+        $st->bindValue(6, $w, PDO::PARAM_INT);
+        $st->bindValue(7, $h, PDO::PARAM_INT);
+        $st->bindValue(8, $sha);
+        $st->bindValue(9, null, PDO::PARAM_NULL);
+        $st->bindValue(10, date('Y-m-d H:i:s'));
+        return $st->execute();
     }
     $st = db()->prepare('INSERT INTO media (storage_key, driver, owner_id, mime, bytes, width, height, sha256, data, created_at)
                          VALUES (?,?,?,?,?,?,?,?,?,?)');
@@ -151,6 +165,15 @@ function rmt_storage_put(string $key, string $bytes, string $mime, int $ownerId,
  * @return array{mime:string, bytes:string}|null
  */
 function rmt_storage_get(string $key): ?array {
+    /* An object in the bucket is served straight from R2's public hostname by rmt_media_url(), so
+       this path only runs for a key that predates the move, or if the bucket is private. Reading
+       it back through the API keeps /media/{key} working for both at once, which is what makes the
+       migration safe to run while the site is up. */
+    $r2row = q_one('SELECT mime FROM media WHERE storage_key = ? AND driver = ?', [$key, 'r2']);
+    if ($r2row) {
+        $bytes = rmt_r2_get($key);
+        return $bytes === null ? null : ['mime' => (string) $r2row['mime'], 'bytes' => $bytes];
+    }
     $row = q_one('SELECT mime, data FROM media WHERE storage_key = ? AND driver = ?', [$key, 'pg']);
     if (!$row) return null;
     $data = $row['data'];
@@ -159,7 +182,122 @@ function rmt_storage_get(string $key): ?array {
     return ['mime' => (string) $row['mime'], 'bytes' => (string) $data];
 }
 
-/** Remove a stored file. */
+/** Remove a stored file, from wherever it actually is. */
 function rmt_storage_delete(string $key): void {
+    $row = q_one('SELECT driver FROM media WHERE storage_key = ?', [$key]);
+    if ($row && (string) $row['driver'] === 'r2') rmt_r2_delete($key);
     db()->prepare('DELETE FROM media WHERE storage_key = ?')->execute([$key]);
+}
+
+/* ------------------------------------------------------------------ R2
+ *
+ * S3-compatible object storage, signed by hand.
+ *
+ * No SDK: aws/aws-sdk-php is forty megabytes and a composer install on a box that has neither, to
+ * make four HTTP requests. SigV4 is a documented hashing procedure and it is ninety lines.
+ *
+ * Configuration, all from the environment, none of it in the repository:
+ *   STORAGE_DRIVER=r2
+ *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET
+ *   R2_PUBLIC_BASE_URL   the hostname the browser fetches objects from
+ *
+ * Until Cloudflare's dashboard has R2 switched on for the account, creating a bucket answers
+ * `10042 Please enable R2 through the Cloudflare Dashboard`. That is the one step that cannot be
+ * done from here. Everything on this side is finished and tested against the signing vectors, so
+ * the activation is: set the five variables, run scripts/storage_migrate.php, done.
+ */
+
+/** True when every R2 setting is present. */
+function rmt_r2_configured(): bool {
+    foreach (['R2_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY', 'R2_BUCKET'] as $k) {
+        if ((string) getenv($k) === '') return false;
+    }
+    return true;
+}
+
+/** The endpoint host for this account. */
+function rmt_r2_host(): string {
+    return ((string) getenv('R2_ACCOUNT_ID')) . '.r2.cloudflarestorage.com';
+}
+
+/**
+ * One signed request against the bucket.
+ *
+ * @param string $method GET, PUT or DELETE
+ * @param string $key    object key
+ * @param string $body   payload for PUT, empty otherwise
+ * @return array{status:int, body:string}
+ */
+function rmt_r2_request(string $method, string $key, string $body = '', string $mime = ''): array {
+    if (!rmt_r2_configured()) return ['status' => 0, 'body' => 'r2 not configured'];
+
+    $host   = rmt_r2_host();
+    $bucket = (string) getenv('R2_BUCKET');
+    $access = (string) getenv('R2_ACCESS_KEY_ID');
+    $secret = (string) getenv('R2_SECRET_ACCESS_KEY');
+    $region = 'auto';
+    $service = 's3';
+
+    $now   = gmdate('Ymd\THis\Z');
+    $date  = substr($now, 0, 8);
+    $path  = '/' . rawurlencode($bucket) . '/' . str_replace('%2F', '/', rawurlencode($key));
+    $hash  = hash('sha256', $body);
+
+    $headers = ['host' => $host, 'x-amz-content-sha256' => $hash, 'x-amz-date' => $now];
+    if ($mime !== '') $headers['content-type'] = $mime;
+    ksort($headers);
+
+    $canonicalHeaders = '';
+    foreach ($headers as $h => $v) $canonicalHeaders .= $h . ':' . trim($v) . "\n";
+    $signedHeaders = implode(';', array_keys($headers));
+
+    $canonical = implode("\n", [$method, $path, '', $canonicalHeaders, $signedHeaders, $hash]);
+    $scope = "$date/$region/$service/aws4_request";
+    $toSign = implode("\n", ['AWS4-HMAC-SHA256', $now, $scope, hash('sha256', $canonical)]);
+
+    $k = hash_hmac('sha256', $date, 'AWS4' . $secret, true);
+    $k = hash_hmac('sha256', $region, $k, true);
+    $k = hash_hmac('sha256', $service, $k, true);
+    $k = hash_hmac('sha256', 'aws4_request', $k, true);
+    $signature = hash_hmac('sha256', $toSign, $k);
+
+    $auth = "AWS4-HMAC-SHA256 Credential=$access/$scope, SignedHeaders=$signedHeaders, Signature=$signature";
+
+    $send = ['Authorization: ' . $auth, 'x-amz-content-sha256: ' . $hash, 'x-amz-date: ' . $now];
+    if ($mime !== '') $send[] = 'Content-Type: ' . $mime;
+
+    $ch = curl_init('https://' . $host . $path);
+    curl_setopt_array($ch, [
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => $send,
+        CURLOPT_TIMEOUT => 20,
+    ]);
+    if ($method === 'PUT') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    $out = curl_exec($ch);
+    $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
+    curl_close($ch);
+    if ($out === false) return ['status' => 0, 'body' => $err];
+    return ['status' => $status, 'body' => (string) $out];
+}
+
+/** Put an object. */
+function rmt_r2_put(string $key, string $bytes, string $mime): bool {
+    $r = rmt_r2_request('PUT', $key, $bytes, $mime);
+    if ($r['status'] >= 200 && $r['status'] < 300) return true;
+    error_log('[rmt_storage] r2 put failed ' . $r['status'] . ' ' . substr($r['body'], 0, 300));
+    return false;
+}
+
+/** Read an object back, or null. */
+function rmt_r2_get(string $key): ?string {
+    $r = rmt_r2_request('GET', $key);
+    return ($r['status'] >= 200 && $r['status'] < 300) ? $r['body'] : null;
+}
+
+/** Delete an object. A 404 counts as deleted. */
+function rmt_r2_delete(string $key): bool {
+    $r = rmt_r2_request('DELETE', $key);
+    return ($r['status'] >= 200 && $r['status'] < 300) || $r['status'] === 404;
 }
