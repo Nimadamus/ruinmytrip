@@ -25,7 +25,10 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 
 ## P0, the product does not work properly without these
 
-1. **Amsterdam and Bangkok**, the last two of the ten. Everything else in the group is imported.
+1. **Opening hours for the cities imported before the parser landed.** Around 150 of 1,150 places
+   carry hours; the cities done first carry almost none, because two bugs meant nothing was written
+   until late in the run. One more pass per city fixes it and is the single biggest quality gain
+   left. Spread it out: the provider is free and run by volunteers.
 
 ## P1, core product
 
