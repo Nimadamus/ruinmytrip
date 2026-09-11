@@ -4509,6 +4509,26 @@ const RMT_REPORT_TARGETS = [
     'post'       => 'posts',
     /* A plan can now be the thing somebody needs to report: strangers turn up to these. */
     'activity'   => 'trip_activities',
+    /* Photographs, each in their own table, because a picture is the thing most likely to need
+       taking down quickly and the report route was the one way to reach a moderator. */
+    'trip_photo'     => 'trip_photos',
+    'review_photo'   => 'review_photos',
+    'activity_photo' => 'activity_photos',
+    /* A message. Reporting one is the only way a moderator ever learns about a private message,
+       and blocking alone leaves the sender free to do the same thing to somebody else. */
+    'message'    => 'messages',
+];
+
+/**
+ * Which column holds the author, where it is not `user_id`.
+ *
+ * A meetup calls its owner `host_id` and a message calls it `sender_id`. Reading the wrong one
+ * silently returns nothing, which here meant the "you cannot report your own content" check quietly
+ * passed on both types.
+ */
+const RMT_REPORT_OWNER_COLUMN = [
+    'meetup'  => 'host_id',
+    'message' => 'sender_id',
 ];
 const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_topic', 'other'];
 
@@ -4551,8 +4571,9 @@ function report_submit(array $a): void {
     // first report is still open.
     if (!$errors && $tt !== 'user') {
         $table = RMT_REPORT_TARGETS[$tt];
-        $owner = q_one("SELECT user_id FROM {$table} WHERE id = ?", [$tid]);
-        if ($owner && (int)($owner['user_id'] ?? 0) === (int)$me['id']) {
+        $col   = RMT_REPORT_OWNER_COLUMN[$tt] ?? 'user_id';
+        $owner = q_one("SELECT {$col} owner_id FROM {$table} WHERE id = ?", [$tid]);
+        if ($owner && (int)($owner['owner_id'] ?? 0) === (int)$me['id']) {
             $errors[] = 'You cannot report your own content. Edit or delete it instead.';
         }
     }

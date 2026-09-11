@@ -60,7 +60,11 @@ $shared = $shared ?? [];
         <div class="msg-bubble">
           <p><?= rmt_linkify_mentions(e($m['body'])) ?></p>
           <span class="msg-when"><?= e(ago($m['created_at'])) ?><?php
-            if ($mine && !empty($m['read_at'])): ?> &middot; read<?php endif; ?></span>
+            if ($mine && !empty($m['read_at'])): ?> &middot; read<?php endif; ?><?php
+            /* One message, not the person. Blocking stops them writing to you and leaves them
+               free to send the same thing to somebody else; a report is how a moderator ever
+               learns a private message existed. */
+            if (!$mine): ?> &middot; <a href="<?= e(url('report?target_type=message&target_id='.(int) $m['id'])) ?>">Report</a><?php endif; ?></span>
         </div>
       </div>
     <?php endforeach; ?>

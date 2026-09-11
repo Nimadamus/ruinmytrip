@@ -41,9 +41,14 @@ function rmt_moderate(int $actorId, string $targetType, int $targetId, string $a
     $table = RMT_REPORT_TARGETS[$targetType] ?? null;
     if (!$table) return ['ok' => false, 'error' => 'Not something that can be moderated.'];
 
-    // An account is not content: suspending one is a different decision with different
-    // consequences, and it is not made by pressing hide on a report.
-    $movesStatus = $targetType !== 'user' && isset(RMT_MOD_STATUS[$action]);
+    /* An account is not content: suspending one is a different decision with different
+       consequences, and it is not made by pressing hide on a report.
+
+       A private message is not content either. There is no public copy of it to hide, the person
+       it was sent to already has it, and the decision a reported message actually calls for is
+       about the account that sent it. Both types are logged, reviewed and acted on through the
+       sender rather than through a status column they do not have. */
+    $movesStatus = !in_array($targetType, ['user', 'message'], true) && isset(RMT_MOD_STATUS[$action]);
 
     $from = null;
     $to = null;
@@ -173,6 +178,20 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
             'where'   => $r['dest_name'] ? (string) $r['dest_name'] : null,
             'rating'  => null,
         ];
+    }
+
+    /* A reported message is the one target whose author is not in `user_id` and whose text is the
+       whole point. A moderator opening it should see who sent it and what it said, not "#41". */
+    if ($targetType === 'message') {
+        $row = q_one("SELECT m.id, m.body, m.created_at, u.username
+                        FROM messages m LEFT JOIN users u ON u.id = m.sender_id
+                       WHERE m.id = ?", [$targetId]);
+        if (!$row) return $out;
+        $out['title']   = 'A message from @' . (string) ($row['username'] ?? 'a deleted account');
+        $out['author']  = (string) ($row['username'] ?? '');
+        $out['excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 300, '…');
+        $out['status']  = null;
+        return $out;
     }
 
     $table = RMT_REPORT_TARGETS[$targetType] ?? null;

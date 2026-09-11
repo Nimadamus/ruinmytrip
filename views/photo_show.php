@@ -49,6 +49,14 @@
     <?php endif; ?>
   </p>
 
+  <?php /* A photograph is the thing most likely to need taking down quickly, and until now the
+           only way to reach a moderator about one was to report the person. */ ?>
+  <?php if ($me && (int) ($photo['user_id'] ?? 0) !== (int) $me['id']): ?>
+    <p class="hint" style="margin:6px 0 0">
+      <a href="<?= e(url('report?target_type='.$target.'&target_id='.(int) $photo['id'])) ?>">Report this photo</a>
+    </p>
+  <?php endif; ?>
+
   <?php if ($canReact): ?>
     <?php $rmt_back = rmt_photo_path($photo['kind'], (int) $photo['id']); ?>
     <div class="act-row" style="margin-top:16px">
