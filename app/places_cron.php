@@ -99,6 +99,32 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* Re-derive every category from the provider's own word, using the mapping as it stands today.
+       This is what source_kind is for: a mapping is a decision, decisions get revised, and the
+       alternative to storing the raw kind was asking the provider for four hundred rows again.
+       A kind the mapping no longer recognises has its category cleared rather than left stale. */
+    if ($op === 'recategorize') {
+        $slugs = [];
+        foreach (q_all("SELECT id, slug FROM place_categories WHERE status = 'active'") as $c) {
+            $slugs[(string) $c['slug']] = (int) $c['id'];
+        }
+        $changed = 0;
+        $cleared = 0;
+        foreach (q_all("SELECT id, source_kind, category_id FROM places
+                         WHERE destination_id = ? AND COALESCE(source_kind,'') <> ''",
+                       [(int) $dest['id']]) as $row) {
+            $want = rmt_osm_category_slug((string) $row['source_kind']);
+            $wantId = $want !== null ? ($slugs[$want] ?? null) : null;
+            if ((int) ($row['category_id'] ?? 0) === (int) ($wantId ?? 0)) continue;
+            q_run('UPDATE places SET category_id = ?, updated_at = ? WHERE id = ?',
+                  [$wantId, date('Y-m-d H:i:s'), (int) $row['id']]);
+            if ($wantId === null) $cleared++; else $changed++;
+        }
+        echo json_encode(['recategorized' => $changed, 'cleared' => $cleared]), "
+";
+        return;
+    }
+
     if ($op === 'verify') {
         echo json_encode(rmt_places_verify((int) $dest['id']),
                          JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";

@@ -310,27 +310,27 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
  * A tag with no good category returns null rather than a guess: an uncategorised place still has a
  * type, a name and a map pin, and a wrong category is worse than an absent one because it sends
  * somebody looking for a museum to a car park.
+ *
+ * Several obvious-looking mappings are deliberately absent for that reason. A plain restaurant is
+ * not a bistro, a hotel is not a luxury hotel, a cinema is not a theatre, and a piece of public art
+ * is not a landmark. Those pages say "Restaurant" and "Hotel", which is the coarse type and is
+ * true, rather than a precise word that is wrong.
  */
 function rmt_osm_category_slug(string $kind): ?string {
     static $map = [
         // eating and drinking
-        'restaurant'    => 'bistro',
         'cafe'          => 'cafe',
         'fast_food'     => 'street-food',
-        'ice_cream'     => 'cafe',
         'bar'           => 'bar',
         'pub'           => 'pub',
         'nightclub'     => 'nightclub',
         // staying
-        'hotel'         => 'luxury-hotel',
         'hostel'        => 'hostel',
         'guest_house'   => 'guesthouse',
         'apartment'     => 'vacation-rental',
         // seeing
         'museum'        => 'museum',
         'gallery'       => 'art-gallery',
-        'artwork'       => 'landmark',
-        'attraction'    => 'landmark',
         'viewpoint'     => 'viewpoint',
         'aquarium'      => 'zoo-aquarium',
         'zoo'           => 'zoo-aquarium',
@@ -347,7 +347,6 @@ function rmt_osm_category_slug(string $kind): ?string {
         'department_store' => 'shopping',
         'mall'          => 'shopping',
         'theatre'       => 'theater',
-        'cinema'        => 'theater',
         'casino'        => 'casino',
         'stadium'       => 'stadium',
     ];

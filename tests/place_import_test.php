@@ -161,6 +161,12 @@ $pdo->exec("INSERT INTO place_categories (bucket,slug,name,plural,sort,status) V
               ('experience','stadium','Stadium','Stadiums',3,'active')");
 
 ok(rmt_osm_category_slug('cafe') === 'cafe', 'a cafe is a cafe, not just a restaurant');
+/* The mappings that are deliberately absent, because a precise word that is wrong is worse than a
+   coarse one that is right. Every one of these was in the first version and made a page lie. */
+ok(rmt_osm_category_slug('restaurant') === null, 'a plain restaurant is not a bistro');
+ok(rmt_osm_category_slug('hotel') === null, 'and a hotel is not a luxury hotel');
+ok(rmt_osm_category_slug('cinema') === null, 'a cinema is not a theatre');
+ok(rmt_osm_category_slug('artwork') === null, 'and a piece of public art is not a landmark');
 ok(rmt_osm_category_slug('memorial') === 'landmark', 'a memorial is a landmark a person would look for');
 ok(rmt_osm_category_slug('stadium') === 'stadium', 'and a stadium has a word of its own now');
 ok(rmt_osm_category_slug('bench') === null, 'a tag with no good category gets none rather than a guess');
