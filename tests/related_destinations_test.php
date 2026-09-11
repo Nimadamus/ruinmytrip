@@ -42,6 +42,7 @@ $pdo = db();
 $pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, name TEXT, slug TEXT, country TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
               status TEXT DEFAULT 'published', visibility TEXT DEFAULT 'public')");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("INSERT INTO destinations VALUES (1,'Lisbon','lisbon','Portugal'),(2,'Porto','porto','Portugal'),
             (3,'Madrid','madrid','Spain'),(4,'Nowhere','nowhere','Nowhereland')");
 

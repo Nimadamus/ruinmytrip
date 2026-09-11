@@ -32,6 +32,7 @@ require BASE_PATH . '/app/lifecycle.php';
 $pdo = db();
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
               slug TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, type TEXT,
               actor_id INT, target_type TEXT, target_id INT, created_at TEXT, read_at TEXT)");
 $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, trip_id INT, user_id INT, day TEXT,

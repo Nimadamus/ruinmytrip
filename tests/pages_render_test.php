@@ -338,6 +338,39 @@ if ($acct) {
             stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
         ok('and off the meetups page for anybody signed out', !str_contains((string) $anonMeet, $openMarker));
 
+        /* Collaborative trips cut a deliberate hole in the visibility model: somebody invited onto
+           a private trip can see it, because otherwise the invitation means nothing. A hole is
+           exactly the thing to plant a canary in. The signed-in account is made a member of the
+           private trip above and must then see its page, and NOTHING ELSE about it must move:
+           it stays off every public list, and a second stranger still cannot open it. */
+        $pdo->prepare("INSERT INTO trip_members (trip_id, user_id, role, state, invited_by, created_at)
+                       VALUES (?,?,'editor','active',?,?)")
+            ->execute([$hiddenTrip, (int) $acct['id'], $otherId, date('Y-m-d H:i:s')]);
+
+        [$stM, $bodyM] = $req('/trip/' . $hiddenTrip, null, $cookie);
+        ok('somebody invited onto a private trip can open it', $stM === 200, "status $stM");
+        ok('and sees what is planned on it', str_contains($bodyM, $openMarker));
+
+        /* A member is entitled to that trip, so its plan may appear in the lists that are built for
+           them: those lists are viewer-scoped, and hiding it from the person invited would be the
+           bug, not the fix. The invariant that matters is the other one, and it is checked above
+           for a non-member and here for a stranger: membership widens the view of exactly one
+           person and nobody else. */
+        $anonLists = [];
+        foreach (['/discover', '/meetups', '/d/' . $destRow2['slug'], '/travelers'] as $path) {
+            $anonLists[] = (string) @file_get_contents($base . $path, false,
+                stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        }
+        ok('a private trip with a member on it is still on no public list',
+           !str_contains(implode('', $anonLists), $openMarker));
+        $anonMember = @file_get_contents($base . '/trip/' . $hiddenTrip, false,
+            stream_context_create(['http' => ['timeout' => 20, 'ignore_errors' => true]]));
+        ok('and a stranger still cannot open it', !str_contains((string) $anonMember, $openMarker));
+
+        $pdo->prepare('DELETE FROM trip_members WHERE trip_id = ?')->execute([$hiddenTrip]);
+        [$stG] = $req('/trip/' . $hiddenTrip, null, $cookie);
+        ok('and once they are off it, it is shut to them again', $stG === 404, "status $stG");
+
         $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$hiddenTrip]);
         $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$hiddenTrip]);
         $anonPlan = @file_get_contents($base . '/trip/' . $canaryTrip, false,

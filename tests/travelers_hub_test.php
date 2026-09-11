@@ -49,6 +49,7 @@ $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id IN
               title TEXT NOT NULL DEFAULT '', slug TEXT NOT NULL DEFAULT '', body TEXT, visited_on TEXT,
               status TEXT NOT NULL DEFAULT 'published', visibility TEXT NOT NULL DEFAULT 'public',
               date_from TEXT, date_to TEXT, created_at TEXT, updated_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec('CREATE TABLE meetups (id INTEGER PRIMARY KEY, host_id INT, destination_id INT, title TEXT,
               date_start TEXT, status TEXT)');
 $pdo->exec('CREATE TABLE meetup_rsvps (meetup_id INT, user_id INT, status TEXT)');

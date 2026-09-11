@@ -1060,3 +1060,15 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* On a phone there is room for a name, an unread chip and a time, and not also for a handle. The
    handle is the one of the four that tells the reader nothing they do not already know. */
 @media (max-width:560px){ .inbox-who:has(.inbox-new) .muted{display:none} }
+
+/* Who is planning a trip. Faces first, one line each, and the remove control never competes with
+   the person's name for the tap. */
+.trip-who{margin:0 0 20px}
+.trip-who-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.trip-who-list li{display:flex;align-items:center;gap:10px}
+.trip-who-list li > a{display:flex;align-items:center;gap:10px;flex:1;min-width:0;
+  color:inherit;text-decoration:none}
+.trip-who-list .avatar{width:30px;height:30px;flex:0 0 auto}
+.trip-who-list .hint{display:block;font-size:.8rem}
+.trip-invite{display:flex;gap:8px;margin-top:10px}
+.trip-invite input{flex:1;min-width:0}

@@ -76,6 +76,22 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b>Something of yours was saved, and is no longer there.</b>
           <?php endif; ?>
+        <?php elseif (in_array($n['type'], ['trip_invite','trip_joined','trip_member_removed'], true)):
+          /* Somebody planning a trip with you. The trip is named, because "you were invited" with
+             no subject is a riddle, and the link goes to the page where the answer is two buttons. */
+          $tr = q_one("SELECT t.id, t.slug, t.title FROM trips t
+                        WHERE t.id = ? AND t.status = 'published'", [(int) $n['target_id']]);
+          $who = $n['actor'] ? '@' . $n['actor'] : 'Somebody';
+          $what = $tr ? (string) $tr['title'] : 'a trip';
+          $href = $tr ? url('trip/' . (int) $tr['id'] . '/' . (string) $tr['slug'] . '#who') : null;
+          $line = [
+            'trip_invite'         => $who . ' asked you to help plan ' . $what . '.',
+            'trip_joined'         => $who . ' is planning ' . $what . ' with you.',
+            'trip_member_removed' => $who . ' took you off ' . $what . '.',
+          ][$n['type']];
+        ?>
+          <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($line) ?></b></a>
+          <?php else: ?><b><?= e($line) ?></b><?php endif; ?>
         <?php elseif ($n['type'] === 'trip_soon' || $n['type'] === 'trip_over'):
           /* The member's own trip, which is why there is no actor and no "@somebody did X". */
           $trip = q_one("SELECT t.id, t.slug, t.date_from, t.date_to, d.name dest_name, d.slug dest_slug

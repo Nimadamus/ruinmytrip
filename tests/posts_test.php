@@ -37,6 +37,7 @@ $pdo->exec("CREATE TABLE posts (
 /* An update on a trip is a post (migration 072), so this table carries the trip it belongs to. */
 $pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT,
     title TEXT, slug TEXT, status TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, destination_id INT, status TEXT)");
 $pdo->exec("INSERT INTO places (id,slug,name,destination_id,status) VALUES (60,'anne-frank-house-amsterdam','Anne Frank House',10,'active')");
 

@@ -43,6 +43,7 @@ $pdo->exec('CREATE TABLE blocks (blocker_id INT, blocked_id INT)');
 $pdo->exec('CREATE TABLE saves (user_id INT, target_type TEXT, target_id INT, created_at TEXT)');
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, status TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT, slug TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, host_id INT, destination_id INT, title TEXT, date_start TEXT, status TEXT)");
 $pdo->exec('CREATE TABLE meetup_rsvps (meetup_id INT, user_id INT, status TEXT)');
 $pdo->exec('CREATE TABLE collection_members (collection_id INT, user_id INT, status TEXT)');

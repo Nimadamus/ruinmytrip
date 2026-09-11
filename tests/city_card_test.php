@@ -30,6 +30,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY AUTOINCREME
               body TEXT, visited_on TEXT, status TEXT NOT NULL DEFAULT 'published',
               visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
               created_at TEXT, updated_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec('CREATE TABLE going (id INTEGER PRIMARY KEY, destination_id INT, visibility TEXT, date_to TEXT)');
 $pdo->exec('CREATE TABLE meetups (id INTEGER PRIMARY KEY, destination_id INT, status TEXT, date_start TEXT)');
 $pdo->exec("INSERT INTO destinations (id,slug,name,country) VALUES

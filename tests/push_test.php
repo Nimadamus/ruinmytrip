@@ -73,6 +73,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY AUTOINCREME
               body TEXT, visited_on TEXT, status TEXT NOT NULL DEFAULT 'published',
               visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
               created_at TEXT, updated_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, type TEXT, actor_id INT, target_type TEXT, target_id INT, read_at TEXT, created_at TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/069_push_subscriptions.sqlite.sql'));
 $pdo->exec("CREATE TABLE going (id INTEGER PRIMARY KEY, destination_id INT)");

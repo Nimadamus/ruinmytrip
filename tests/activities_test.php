@@ -40,6 +40,7 @@ $pdo->exec('CREATE TABLE blocks (blocker_id INT, blocked_id INT)');
 $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY, name TEXT, slug TEXT, status TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
               slug TEXT, body TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY AUTOINCREMENT, trip_id INT, user_id INT,
               destination_id INT, day TEXT, start_time TEXT, title TEXT, category TEXT, place_id INT,
               location_text TEXT, notes TEXT, link TEXT, photo_url TEXT, storage_key TEXT,

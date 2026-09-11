@@ -45,6 +45,7 @@ $pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TE
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
               slug TEXT, body TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT, url TEXT, caption TEXT,
               sort INT, width INT, height INT, storage_key TEXT, created_at TEXT, user_id INT,
               status TEXT DEFAULT 'published')");

@@ -1277,6 +1277,15 @@ function trip_show(array $a): void {
        are there, not a story written once. */
     $updates = rmt_posts_for_trip((int) $t['id']);
     $isOwner = $me && (int) $me['id'] === (int) $t['user_id'];
+    /* A trip can be planned by more than one person now. "Owner" decides who may publish or delete
+       it; "editor" decides who may add to it, which is what a person invited to help actually does. */
+    $tripRole = rmt_trip_role($t, $me);
+    $canEdit = rmt_trip_can_edit($t, $me);
+    $members = rmt_trip_members((int) $t['id'], 'active');
+    $invited = $isOwner ? rmt_trip_members((int) $t['id'], 'invited') : [];
+    $myInvite = $me && q_one("SELECT 1 x FROM trip_members
+                               WHERE trip_id = ? AND user_id = ? AND state = 'invited'",
+                             [(int) $t['id'], (int) $me['id']]) ? true : false;
     $phase = rmt_trip_phase($t);
     /* Who else will be in that city on those days. This is the fact the page exists to carry: a
        trip with four other people on it is a reason to go, and it is the whole difference between
@@ -1325,7 +1334,8 @@ function trip_show(array $a): void {
                            ORDER BY r.id DESC LIMIT 2",
                             [(int) $t['user_id'], (int) $t['destination_id']]);
     }
-    view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags',
+    view('trip_show', compact('tripRole','canEdit','members','invited','myInvite',
+                              't','photos','comments','likeCount','saveCount','liked','saved','tags',
                               'updates','isOwner','phase','alsoThere','isFollowingAuthor','destGoing',
                               'related','authorSaid','planDays'), [
         'title' => rmt_meta_title((string) $t['title']),
@@ -2929,17 +2939,59 @@ function rmt_trip_validate(array $in): array {
     ]];
 }
 
-/** Only the author may edit or delete a trip. */
-function rmt_trip_can_edit(array $t, ?array $user): bool {
-    return $user !== null && (int) $t['user_id'] === (int) $user['id'];
-}
-
 /**
  * POST /trip/{id}/going-too -- copy somebody's dates into a plan of your own.
  *
  * The site could already tell you that a stranger's trip overlapped yours and then left you to
  * type the same dates into a different form. This is that form, pressed once.
  */
+/**
+ * POST /trip/{id}/invite -- ask somebody to help plan this trip.
+ *
+ * Everything that could go wrong is decided in rmt_trip_invite(), in one place, because an
+ * invitation is a write to somebody else's notifications and a block has to hold here as it does
+ * everywhere else.
+ */
+function trip_invite(array $a): void {
+    require_verified_email(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    $res = rmt_trip_invite($t, $me, (string) input('username'));
+    flash($res['ok'] ? 'Invitation sent.' : (string) $res['error']);
+    redirect('/trip/' . (int) $t['id'] . '/' . (string) $t['slug'] . '#who');
+}
+
+/** POST /trip/{id}/invite/answer -- yes or no. A no is remembered rather than forgotten. */
+function trip_invite_answer(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    $yes = (string) input('answer') === 'yes';
+    if (!rmt_trip_invite_answer((int) $t['id'], (int) $me['id'], $yes)) {
+        flash('That invitation is no longer open.');
+        redirect('/feed');
+    }
+    flash($yes ? 'You are on the trip.' : 'Declined.');
+    // A no should not leave somebody sitting on a page they can no longer see.
+    redirect($yes ? '/trip/' . (int) $t['id'] . '/' . (string) $t['slug'] : '/feed');
+}
+
+/** POST /trip/{id}/member/remove -- the owner removes somebody, or somebody leaves. */
+function trip_member_remove(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
+    if (!$t) not_found();
+    $who = (int) input('user_id');
+    $res = rmt_trip_member_remove($t, $me, $who);
+    flash($res['ok'] ? ($who === (int) $me['id'] ? 'You left the trip.' : 'Removed.')
+                     : (string) $res['error']);
+    if ($res['ok'] && $who === (int) $me['id'] && !rmt_trip_visible_to($t, $me)) redirect('/feed');
+    redirect('/trip/' . (int) $t['id'] . '/' . (string) $t['slug'] . '#who');
+}
+
 function trip_going_too(array $a): void {
     require_verified_email(); csrf_check();
     $me = current_user();
@@ -2995,7 +3047,9 @@ function trip_edit_form(array $a): void {
     require_login();
     $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
     if (!$t) not_found();
-    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+    /* The trip form carries the dates, the story and, critically, who may see it. Somebody invited
+       to help plan a holiday adds plans, places and photographs; they do not get to publish it. */
+    if (!rmt_trip_can_admin($t, current_user())) { forbidden('That is not your trip.'); }
     $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort, id', [(int)$t['id']]);
     view('trip_edit', ['t'=>$t, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
          ['title'=>'Edit trip | RuinMyTrip']);
@@ -3005,7 +3059,9 @@ function trip_edit_submit(array $a): void {
     require_login(); csrf_check();
     $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
     if (!$t) not_found();
-    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+    /* The trip form carries the dates, the story and, critically, who may see it. Somebody invited
+       to help plan a holiday adds plans, places and photographs; they do not get to publish it. */
+    if (!rmt_trip_can_admin($t, current_user())) { forbidden('That is not your trip.'); }
 
     $v = rmt_trip_validate($_POST);
     if (!$v['ok']) {
@@ -3057,7 +3113,9 @@ function trip_delete(array $a): void {
     require_login(); csrf_check();
     $t = q_one('SELECT * FROM trips WHERE id=?', [(int)$a['id']]);
     if (!$t) not_found();
-    if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
+    /* The trip form carries the dates, the story and, critically, who may see it. Somebody invited
+       to help plan a holiday adds plans, places and photographs; they do not get to publish it. */
+    if (!rmt_trip_can_admin($t, current_user())) { forbidden('That is not your trip.'); }
     db()->prepare("UPDATE trips SET status='removed', updated_at=? WHERE id=?")
         ->execute([date('Y-m-d H:i:s'), (int)$t['id']]);
     // The trip row itself is soft-deleted (matches every other content type), but the uploaded
@@ -6046,7 +6104,10 @@ function trip_activity_add(array $a): void {
     $me = current_user();
     $t = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $a['id']]);
     if (!$t) not_found();
-    if ((int) $t['user_id'] !== (int) $me['id']) forbidden('Only the traveler can add to this trip.');
+    /* Anybody planning this trip, which since collaborative trips means the owner or somebody they
+       invited. The plan is stored against the person who added it, so a shared itinerary still
+       says who put each line on it. */
+    if (!rmt_trip_can_edit($t, $me)) forbidden('Only the travelers planning this trip can add to it.');
 
     $back = '/trip/' . (int) $t['id'] . '/' . (string) $t['slug'];
     if (!rmt_rate_ok('activity', (string) $me['id'], 120, 3600)) {
@@ -6058,7 +6119,7 @@ function trip_activity_add(array $a): void {
         flash(implode(' ', $v['errors']));
         redirect($back);
     }
-    rmt_activity_add($t, $v['data']);
+    rmt_activity_add($t, $v['data'], (int) $me['id']);
     flash('Added to your trip.');
     redirect($back . '#plan');
 }

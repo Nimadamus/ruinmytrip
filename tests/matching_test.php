@@ -39,6 +39,7 @@ $pdo->exec("CREATE TABLE trips (
               verified INT DEFAULT 0, status TEXT NOT NULL DEFAULT 'published',
               visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
               created_at TEXT NOT NULL, updated_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec('CREATE UNIQUE INDEX idx_going_user_dest ON going (user_id, destination_id)');
 
 $pdo->exec("INSERT INTO users (id,username,status) VALUES

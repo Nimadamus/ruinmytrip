@@ -37,6 +37,7 @@ $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
 $pdo->exec('CREATE TABLE blocks (blocker_id INT, blocked_id INT)');
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
               slug TEXT, body TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 
 $pdo->exec("INSERT INTO destinations VALUES (7,'lisbon-portugal','Lisbon'),(8,'porto-portugal','Porto')");
 $pdo->exec("INSERT INTO users (id,username) VALUES (1,'ana'),(2,'ben'),(3,'cleo'),(4,'dev'),(5,'eze'),(6,'fin')");

@@ -160,6 +160,7 @@ $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, place_id 
             slug TEXT, title TEXT, subject_name TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE review_photos (id INTEGER PRIMARY KEY, review_id INT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, slug TEXT, status TEXT, created_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)");
 $pdo->exec("CREATE TABLE guides (id INTEGER PRIMARY KEY, user_id INT, slug TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, user_id INT, slug TEXT, status TEXT, created_at TEXT)");

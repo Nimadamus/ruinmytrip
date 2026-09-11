@@ -29,6 +29,7 @@ require BASE_PATH . '/app/profiles.php';
 $pdo = db();
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, title TEXT, slug TEXT,
               status TEXT, visibility TEXT, created_at TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT, url TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, title TEXT, subject_name TEXT,
               slug TEXT, status TEXT, place_id INT, destination_id INT, created_at TEXT)");

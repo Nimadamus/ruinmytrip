@@ -50,12 +50,19 @@ function rmt_trip_phase(array $t, ?string $today = null): string {
 function rmt_plan_visibility_sql(string $alias, ?array $viewer): array {
     if (!$viewer) return ["$alias.visibility = 'public'", []];
     $uid = (int) $viewer['id'];
+    /* The member clause is here rather than in each caller on purpose. A trip can now be planned
+       by more than one person, and somebody invited onto a private trip has to be able to see it,
+       or the invitation means nothing. Putting it in the one clause every read already uses means
+       the trip page, the feed, the city page, search, the sitemap and the photo walls all learned
+       it at once, and none of them can forget it separately. */
     return [
         "($alias.visibility = 'public'
           OR $alias.user_id = ?
+          OR EXISTS (SELECT 1 FROM trip_members tm
+                      WHERE tm.trip_id = $alias.id AND tm.user_id = ? AND tm.state = 'active')
           OR ($alias.visibility = 'followers'
               AND EXISTS (SELECT 1 FROM follows f WHERE f.followee_id = $alias.user_id AND f.follower_id = ?)))",
-        [$uid, $uid],
+        [$uid, $uid, $uid],
     ];
 }
 
@@ -256,6 +263,11 @@ function rmt_trip_visible_to(array $t, ?array $viewer): bool {
     if (!$viewer) return false;
     $uid = (int) $viewer['id'];
     if ((int) $t['user_id'] === $uid) return true;
+    /* Somebody planning the trip with you sees it, whatever it is set to. The SQL twin of this is
+       in rmt_plan_visibility_sql(); the two have to agree, and the tests check that they do. */
+    if (!empty($t['id']) && q_one("SELECT 1 FROM trip_members
+                                    WHERE trip_id = ? AND user_id = ? AND state = 'active'",
+                                  [(int) $t['id'], $uid])) return true;
     if ($vis === 'followers') {
         return (bool) q_one('SELECT 1 FROM follows WHERE followee_id = ? AND follower_id = ?',
                             [(int) $t['user_id'], $uid]);

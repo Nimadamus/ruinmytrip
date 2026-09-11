@@ -5,6 +5,7 @@
  * @var array $t         the trip
  * @var array $planDays  from rmt_activities_by_day()
  * @var bool  $isOwner
+ * @var bool  $canEdit  the owner, or somebody they invited to help plan it
  * @var ?array $me
  *
  * Two rules held this apart from every itinerary tool that nobody fills in twice. Adding a plan is
@@ -26,12 +27,14 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
   <div class="plan-head">
     <h2>The plan</h2>
     <?php if ($planDays): ?>
-      <span class="hint"><?= array_sum(array_map(static fn(array $d) => count($d['items']), $planDays)) ?> things
+      <?php $rmt_planN = array_sum(array_map(static fn(array $d) => count($d['items']), $planDays)); ?>
+      <span class="hint"><?= $rmt_planN ?> <?= $rmt_planN === 1 ? 'thing' : 'things' ?>
         <?= $phaseNow === 'past' ? 'they did' : 'planned' ?></span>
     <?php endif; ?>
   </div>
 
-  <?php if (!$planDays && !$isOwner): ?>
+  <?php $canEdit = $canEdit ?? $isOwner; ?>
+  <?php if (!$planDays && !$canEdit): ?>
     <p class="muted" style="margin:0 0 8px">Nothing planned here yet.
       <?php if (!empty($t['dest_slug'])): ?>
         <a href="<?= e(url('d/'.$t['dest_slug'])) ?>">See what other travelers are doing in <?= e((string) $t['dest_name']) ?></a>.
@@ -62,6 +65,13 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
                     $rmt_meta[] = e((string) $act['location_text']);
                 }
                 if (($act['visibility'] ?? 'trip') === 'private') $rmt_meta[] = '<span class="chip">Only you</span>';
+                /* On a shared trip, who put this line on it. Said only when it is somebody other
+                   than the traveler whose trip it is, because "@maya added it" on every row of
+                   Maya's own itinerary is noise. */
+                if (!empty($act['author_username']) && (int) $act['user_id'] !== (int) $t['user_id']) {
+                    $rmt_meta[] = 'added by <a href="' . e(url('u/'.$act['author_username'])) . '">@'
+                        . e((string) $act['author_username']) . '</a>';
+                }
               ?>
               <?php if ($rmt_meta): ?>
                 <span class="hint"><?= implode(' &middot; ', $rmt_meta) ?></span>
@@ -91,7 +101,7 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
                   echo e(implode(' · ', $bits)); ?></p>
               <?php endif; ?>
 
-              <?php if (!$isOwner && $me && ($act['join_mode'] ?? 'no') !== 'no'): ?>
+              <?php if (!$canEdit && $me && ($act['join_mode'] ?? 'no') !== 'no'): ?>
                 <?php $state = rmt_activity_join_state((int) $act['id'], $me); ?>
                 <form class="plan-join" method="post" action="<?= e(url('activity/'.(int) $act['id'].'/join')) ?>">
                   <?= csrf_field() ?>
@@ -108,7 +118,11 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
               <?php endif; ?>
             </div>
 
-            <?php if ($isOwner): ?>
+            <?php /* Answering for a plan, and deleting it, belong to whoever put it on the trip.
+                     On a shared trip that is not always the person whose trip it is, and speaking
+                     for somebody else about whether a dinner was any good is putting words in
+                     their mouth. */ ?>
+            <?php if ($me && (int) ($act['user_id'] ?? 0) === (int) $me['id']): ?>
               <div class="plan-own">
                 <?php if ((int) $act['done'] === 0 && $phaseNow !== 'upcoming'): ?>
                   <details class="plan-didyou">
@@ -143,7 +157,7 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
     </div>
   <?php endforeach; ?>
 
-  <?php if ($isOwner): ?>
+  <?php if ($canEdit): ?>
     <?php /* One line and a day. Everything else is behind the disclosure, and most of it is never
              opened, which is exactly the intention: adding "dinner in Alfama" should cost one
              sentence of typing. */ ?>

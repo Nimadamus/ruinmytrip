@@ -1,7 +1,8 @@
 <?php /** @var array $t @var array $photos @var array $comments @var int $likeCount @var int $saveCount
         @var bool $liked @var bool $saved @var array $updates @var bool $isOwner @var string $phase
         @var array $alsoThere @var bool $isFollowingAuthor @var int $destGoing @var array $related
-        @var array $authorSaid */
+        @var array $authorSaid @var array $members @var array $invited @var bool $myInvite
+        @var ?string $tripRole @var bool $canEdit */
 $me = current_user();
 $isFollowingAuthor = $isFollowingAuthor ?? false;
 $destGoing = $destGoing ?? 0;
@@ -103,6 +104,8 @@ $authorSaid = $authorSaid ?? [];
   <?php /* The plan, high on the page. It is the thing a reader came for and the thing that makes
            this trip worth anybody else's attention, so it sits above the comments rather than
            under them. */ ?>
+  <?php include __DIR__ . '/_trip_members.php'; ?>
+
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
 
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before

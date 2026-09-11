@@ -86,11 +86,12 @@ function rmt_activities_for_trip(int $tripId, ?array $viewer): array {
     if ($tripId < 1) return [];
     [$actVis, $actArgs] = rmt_activity_visible_sql('a', $viewer);
     $rows = q_all(
-        "SELECT a.*, p.name place_name, p.slug place_slug,
+        "SELECT a.*, p.name place_name, p.slug place_slug, u.username author_username,
                 (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'going') going_count,
                 (SELECT COUNT(*) FROM activity_joins j WHERE j.activity_id = a.id AND j.state = 'interested') interested_count
            FROM trip_activities a
       LEFT JOIN places p ON p.id = a.place_id
+      LEFT JOIN users u ON u.id = a.user_id
           WHERE a.trip_id = ? AND a.status = 'published' AND $actVis
        ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END,
                 a.day, COALESCE(a.start_time,'99:99'), a.sort, a.id",
@@ -227,7 +228,7 @@ function rmt_activity_validate(array $in, array $trip): array {
 }
 
 /** Add one. Returns the new id, or 0. */
-function rmt_activity_add(array $trip, array $data): int {
+function rmt_activity_add(array $trip, array $data, ?int $authorId = null): int {
     $now = date('Y-m-d H:i:s');
     $sort = (int) (q_one('SELECT COALESCE(MAX(sort), 0) + 1 m FROM trip_activities WHERE trip_id = ?',
                          [(int) $trip['id']])['m'] ?? 1);
@@ -235,7 +236,7 @@ function rmt_activity_add(array $trip, array $data): int {
              (trip_id, user_id, destination_id, day, start_time, end_time, title, category, place_id,
               location_text, notes, link, visibility, join_mode, capacity, meeting_point, sort, status, created_at)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-          [(int) $trip['id'], (int) $trip['user_id'], $trip['destination_id'] ?: null,
+          [(int) $trip['id'], $authorId ?: (int) $trip['user_id'], $trip['destination_id'] ?: null,
            $data['day'], $data['start_time'], $data['end_time'], $data['title'], $data['category'],
            $data['place_id'], $data['location_text'], $data['notes'], $data['link'],
            $data['visibility'], $data['join_mode'], $data['capacity'], $data['meeting_point'],

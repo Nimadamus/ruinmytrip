@@ -22,10 +22,12 @@ require BASE_PATH . '/app/helpers.php';
 /* The trip validator asks plans.php what a visibility may be, since a trip and a plan are the
    same object since migration 071. */
 require BASE_PATH . '/app/plans.php';
+require BASE_PATH . '/app/trip_members.php';
 require BASE_PATH . '/app/controllers.php';
 
 $pdo = db();
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, hero_url TEXT)');
+$pdo->exec('CREATE TABLE trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))');
 $pdo->exec("INSERT INTO destinations (id, slug, name, hero_url) VALUES (1, 'oaxaca-mexico', 'Oaxaca', '/media/abc123.jpg')");
 
 $fail = 0;
@@ -62,11 +64,18 @@ $check('absolute https:// cover_url accepted', $v['ok'], true);
 $v = rmt_trip_validate(['title' => 'Valid Title', 'body' => str_repeat('a', 25), 'destination_id' => '999']);
 $check('nonexistent destination_id fails', $v['ok'], false);
 
-echo "\n-- rmt_trip_can_edit(): ownership boundary --\n";
-$trip = ['user_id' => 5];
-$check('owner can edit', rmt_trip_can_edit($trip, ['id' => 5]), true);
-$check('a different user cannot edit', rmt_trip_can_edit($trip, ['id' => 6]), false);
-$check('logged-out user cannot edit', rmt_trip_can_edit($trip, null), false);
+/* Ownership. Since collaborative trips this is two questions rather than one: who may add to a
+   trip, and who may publish or destroy it. tests/trip_members_test.php covers the split in
+   full; this keeps the boundary the edit form itself depends on. */
+echo "
+-- ownership boundary --
+";
+$trip = ['id' => 4242, 'user_id' => 5];
+$check('owner may administer', rmt_trip_can_admin($trip, ['id' => 5]), true);
+$check('a different user may not', rmt_trip_can_admin($trip, ['id' => 6]), false);
+$check('logged-out user may not', rmt_trip_can_admin($trip, null), false);
+$check('owner may edit', rmt_trip_can_edit($trip, ['id' => 5]), true);
+$check('a stranger may not edit', rmt_trip_can_edit($trip, ['id' => 6]), false);
 
 echo "\n";
 /* Dates and visibility, which the form did not ask for until trips and plans became one object.
