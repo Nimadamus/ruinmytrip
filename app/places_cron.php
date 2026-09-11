@@ -141,6 +141,17 @@ function cron_places(array $a): void {
         return;
     }
 
+    /* The places still sitting on a serial number, with the OSM object behind each one, so the
+       provider can be asked what other names it holds for them. Read only. */
+    if ($op === 'serials') {
+        $rows = q_all("SELECT id, slug, name, source_ref FROM places
+                        WHERE destination_id = ? AND slug LIKE 'item-%' ORDER BY id",
+                      [(int) $dest['id']]);
+        echo json_encode(['city' => $dest['slug'], 'n' => count($rows), 'rows' => $rows],
+                         JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        return;
+    }
+
     /* Give a serial number a real URL.
        A place whose name is written in a script the slugifier cannot carry ends up at
        /p/item-tokyo-31, which is stable and honest and is not a link anybody would send to a
