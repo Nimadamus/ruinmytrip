@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (seventh pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11 (eighth pass).
 
 ## What the product is
 
@@ -39,7 +39,8 @@ pages made of members.
 `077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key ·
 `080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
-the reads this product actually does · `086` provider kind on a place, and a stadium category.
+the reads this product actually does · `086` provider kind on a place, and a stadium category ·
+`087` who said these opening hours.
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -125,22 +126,32 @@ canaries. It currently guards a private trip, a private trip's photograph, a pri
 plan sitting on a private trip, and a meeting point (absent for somebody who only asked, present
 once they are accepted). Backend rules are not the thing that leaks; pages are.
 
-## Places are real now, and the provider is the weak link
+## Places are real now, and the provider is the thing to watch
 
-Four cities hold real, checkable places: Lisbon, Paris, Rome, Barcelona. Every row carries
-coordinates, a provider record id, the provider's own word for what it is, and an attribution line
-that links the record and the licence. No ratings, no popularity, no reviews come from a provider,
-and a whitelist test fails the build if anybody adds one.
+Eight cities hold real, checkable places. Every row carries coordinates, a provider record id, the
+provider's own word for what it is, a category a reader would use, and an attribution line linking
+the record and the licence. No ratings, popularity or reviews ever come from a provider; a
+whitelist test fails the build if anybody adds one.
 
-Importing is two commands. `scripts/push_places.php` fetches here and posts to the site;
-`scripts/city_kit.sh <slug>` does a whole city's mix. Both are safe to run twice: a second run
-updates and creates nothing. `/cron/places?op=verify` audits a city, `op=recategorize` re-derives
-categories from the stored provider kind, `op=backfill` fills folded names.
+Importing: `scripts/push_places.php` fetches here and posts to the site, `scripts/city_kit.sh
+<slug>` does a whole city's mix and is resumable, and `/cron/places` has `verify`, `recategorize`,
+`backfill` and `ingest`. Everything is safe to run twice.
 
-The weak link is the provider. The public Overpass endpoint queues per address and times out on
-roughly one kind in seven at four cities. Retries recover most of it. At fifty cities it is a job
-that never finishes cleanly, which is P0 in BACKLOG.md and is Nima's decision, because every
-alternative provider needs a key, a payment, or forbids storing what it returns.
+Provider resilience, all of it learned the hard way in one afternoon:
+
+* four mirrors, configurable without a deploy, ranked by a health file that records what has been
+  answering, with a cooldown that grows to a cap and clears on one success
+* an early attempt gets twelve seconds because there is another mirror to try; the last gets
+  forty five because there is nowhere else to go
+* a retry halves the search radius rather than repeating the question, because in a dense city it
+  is the bounding box scan that times out, not the network
+* **an empty answer is not believed on one mirror's word.** A regional instance answered a Tokyo
+  question with HTTP 200 and zero elements, which reads as "Tokyo has no bars". That is the most
+  dangerous failure mode there is because it does not look like one.
+
+`scripts/osm_extract.php` is the fallback if this stops being dependable: same ODbL data from a
+downloaded Geofabrik extract, same canonical rows, proved against a fixture and deliberately not
+wired into production.
 
 ## Waiting on Nima
 

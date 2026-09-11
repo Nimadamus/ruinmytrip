@@ -25,43 +25,46 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 
 ## P0, the product does not work properly without these
 
-1. **Overpass is the single point of failure, and it is somebody else's free service.** Roughly one
-   kind in seven times out on a first attempt, retries fix most of it, and this is at four cities.
-   At fifty it is a job that never finishes cleanly. Either a second provider (every candidate needs
-   a key or forbids storage, so this is Nima's call) or a downloaded extract processed offline. Flag
-   raised before expanding aggressively, as asked.
-2. **Opening hours and a price band.** A place page that cannot say whether somewhere is open is not
-   yet worth linking from an itinerary. OSM carries `opening_hours` for a good fraction of venues
-   and the column exists; the importer does not read it yet. This is the single biggest quality
-   gain available per unit of work.
+1. **Amsterdam and Bangkok**, the last two of the ten. Everything else in the group is imported.
 
 ## P1, core product
 
-3. **The remaining six cities**: London, Tokyo, New York, Las Vegas, Bangkok, Amsterdam. Miami has
-   no destination row at all, so it needs one before it can have places, and writing a city page is
-   editorial work rather than import work.
-4. **A day view on the trip map** beyond colour: tapping a day should filter the pins.
+2. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
+   editorial work rather than import work, and making the importer happy is the wrong reason to do
+   it. Left alone deliberately, as asked.
+3. **Opening hours coverage.** The parser is in and takes about three quarters of the values it
+   sees; the cities imported before it landed carry none, so they need one more pass.
+4. **A day filter on the trip map**, beyond colour: tapping a day should show only that day.
 5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
-6. **One ranked search result list.** City context and travelers-first landed; the page is still
-   nine lists rather than one ordered answer.
+6. **One ranked search result list.** City context, category matching and travelers-first all landed;
+   the page is still nine lists rather than one ordered answer.
 7. **Photo upload during a trip**, beyond one file at a time.
 
 ## P2, growth
 
-8. **Events as an object.** The architecture is small; the hard part is real event data, which needs
-   a source. Nothing invented.
-9. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-10. **Seasonal and practical answers on a city page.** Real sources only.
-11. **Neighbourhood pages.** Places carry a neighbourhood string from the provider and nothing reads
-    it; "Alfama" is how somebody actually chooses where to stay.
+8. **Events as an object.** The architecture is small; real event data needs a source. Nothing
+   invented.
+9. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
+   "Alfama" and "6th Arrondissement" are how people actually choose where to stay.
+10. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+11. **Seasonal and practical answers on a city page.** Real sources only.
 
 ## P3, worth doing, not worth doing first
 
-12. **`/explore` ships 100KB** and could ship a third of that.
-13. **Marker clustering** on a city map, if a city ever holds more than a few hundred pins.
-14. **A second place provider**, for cities where OSM is thin. Research before build.
+12. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
+    is the case where clustering earns its dependency.
+13. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
+    a fixture; reads nodes only, so a venue mapped as a building outline is missed.
+14. **`/explore` ships 100KB** and could ship a third of that.
 
 ## Done (2026-09-11, later)
+
+* **Eight cities of real places.** Mirror health with failover and cooldown, escalating timeouts,
+  shrinking retries, resumable runs, and the fix that mattered most: an empty answer from one mirror
+  is no longer believed without a second opinion.
+* **Opening hours**, parsed conservatively and refused whole when they carry anything the parser
+  does not model.
+* **A city page was laying out at 1174px on a 390px phone** and the screen was clipping it.
 
 * **Four cities of real places** (Lisbon, Paris, Rome, Barcelona), categories a reader would use,
   provider kind kept so a mapping decision can be revised without re-fetching, nine shapes of
