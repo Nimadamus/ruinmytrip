@@ -2781,12 +2781,23 @@ function search(array $a): void {
            address, so "museum tokyo" finds the one Tokyo museum with an English name and none of
            the eleven called something in Japanese. Appended rather than merged into the ranking:
            a place whose name you actually typed still comes first. */
+        /* Three ways to find a place, in the order of how sure each one is, and every row is
+           checked against what is already on the list so nothing appears twice.
+
+           The third exists because full text lexes whole words and matches the name as written,
+           so "Rijks" and "Museu Geologico" both answered with nothing at all while the suggestion
+           box had been finding them since the day it shipped. Same normalised match, same accent
+           folding, run once here rather than reinvented. */
         if (count($places) < 10) {
             $have = array_flip(array_map(static fn(array $r) => (int) $r['id'], $places));
-            foreach (rmt_places_by_kind_words($qs, $ctxId, 10) as $row) {
-                if (isset($have[(int) $row['id']])) continue;
-                $places[] = $row;
-                if (count($places) >= 10) break;
+            foreach ([rmt_places_by_kind_words($qs, $ctxId, 10),
+                      rmt_places_by_name_norm($qs, $ctxId, 10)] as $more) {
+                foreach ($more as $row) {
+                    if (isset($have[(int) $row['id']])) continue;
+                    $have[(int) $row['id']] = true;
+                    $places[] = $row;
+                    if (count($places) >= 10) break 2;
+                }
             }
         }
         // People: usernames/display names are short strings where substring matching is what

@@ -824,3 +824,43 @@ function rmt_search_section_order(string $q, array $names): array {
         $b['score'] <=> $a['score'] ?: $a['was'] <=> $b['was']);
     return array_column($scored, 'key');
 }
+
+/**
+ * Places found by a normalised name, for the search PAGE rather than the typeahead.
+ *
+ * Full text lexes whole words and matches on the name as written, which leaves three real queries
+ * answering with nothing at all:
+ *
+ *   "Rijks"            a partial name. plainto_tsquery has no prefix to match.
+ *   "Museu Geologico"  the name is "Museu Geológico" and nobody types the accent.
+ *   "Sagrada Família"  the same thing the other way round.
+ *
+ * All three already work in the suggestion box, because that matches a normalised copy of the name
+ * with accents folded, and it has done since it shipped. This runs the same match and returns whole
+ * place rows, so the results page can use it without a second way of drawing a place.
+ *
+ * Order is the same rule the rest of search follows: the city you are reading about first, then
+ * the name you typed appearing earlier in the name rather than later.
+ *
+ * @return list<array> place rows with dest_name and dest_country
+ */
+function rmt_places_by_name_norm(string $q, int $ctxId = 0, int $limit = 10): array {
+    $norm = rmt_search_norm($q);
+    if (mb_strlen($norm) < 3) return [];
+    $like = rmt_search_like($norm);
+    $limit = max(1, min(25, $limit));
+
+    return q_all(
+        "SELECT p.*, d.name dest_name, d.country dest_country
+           FROM places p JOIN destinations d ON d.id = p.destination_id
+          WHERE p.status = 'active'
+            AND (p.name_norm LIKE ? ESCAPE '!' OR p.name_norm LIKE ? ESCAPE '!'
+                 OR EXISTS (SELECT 1 FROM search_aliases a
+                             WHERE a.entity_type = 'place' AND a.entity_id = p.id
+                               AND a.alias_norm LIKE ? ESCAPE '!'))
+       ORDER BY CASE WHEN p.destination_id = ? THEN 0 ELSE 1 END,
+                CASE WHEN p.name_norm LIKE ? ESCAPE '!' THEN 0 ELSE 1 END,
+                LENGTH(p.name), p.id
+          LIMIT " . $limit,
+        [$like . '%', '% ' . $like . '%', $like . '%', $ctxId, $like . '%']);
+}

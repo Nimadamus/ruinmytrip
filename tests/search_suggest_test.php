@@ -313,5 +313,25 @@ check('and so does an empty query', $order(''), ['people','dests','places','talk
 check('a word boundary beats a match buried inside a word',
       rmt_search_section_order('museum', ['a' => ['Rijksmuseum'], 'b' => ['Museum of Art']])[0], 'b');
 
+echo "\n-- a partial name, and an accent nobody types --\n";
+/* Three queries that answered with nothing at all on the results page while the suggestion box
+   had been finding them since it shipped: a partial name, the accent left off, and the accent put
+   on. Full text lexes whole words and matches the name as written; this matches the normalised
+   copy the suggestion box has always used. */
+$pdo->exec("UPDATE places SET name = 'Museu Geológico', name_key = 'museu geologico', name_norm = 'museu geologico' WHERE id = 900");
+$pdo->exec("UPDATE places SET name_norm = 'stedelijk' WHERE id = 901");
+$pdo->exec("UPDATE places SET name_norm = 'brouwerij' WHERE id = 903");
+$byName = static fn(string $q): array =>
+    array_map(static fn(array $r) => (string) $r['name'], rmt_places_by_name_norm($q, 0, 5));
+
+check('a partial name finds the place', $byName('Stedel'), ['Stedelijk']);
+check('the accent left off still finds it', $byName('Museu Geologico'), ['Museu Geológico']);
+check('and the accent put on', $byName('Museu Geológico'), ['Museu Geológico']);
+check('a word inside the name counts too', $byName('geologico'), ['Museu Geológico']);
+check('two letters is a keystroke, not a query', rmt_places_by_name_norm('st', 0, 5), []);
+check('and a word nothing is called finds nothing', rmt_places_by_name_norm('zzzqqq', 0, 5), []);
+/* A LIKE wildcard somebody typed is a character they typed, not a wildcard. */
+check('a percent sign is not a wildcard', rmt_places_by_name_norm('%', 0, 5), []);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
