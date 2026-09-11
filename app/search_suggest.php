@@ -779,3 +779,42 @@ function rmt_places_by_kind_words(string $q, int $ctxId = 0, int $limit = 10): a
     $sql .= ' ORDER BY p.name LIMIT ' . max(1, min(50, $limit));
     return q_all($sql, $args);
 }
+
+/**
+ * The order to show search sections in, best answer first.
+ *
+ * A fixed order is wrong for most queries. Typing a person's name should lead with travelers and
+ * typing "Sagrada Familia" should lead with places, and the old page did the former for both,
+ * so the answer to a place search sat under two empty headings.
+ *
+ * The rule is deliberately simple and explainable, because a ranking nobody can predict is a
+ * ranking nobody trusts: a section scores by how well its best row's NAME answers what was typed,
+ * exact before starts-with before a word inside it before merely containing it. A section whose
+ * rows matched on their body rather than their name scores nothing and keeps its place, which is
+ * the right answer when nobody typed a name at all.
+ *
+ * @param array<string,list<string>> $names section key to the names it is showing
+ * @return list<string> the same keys, reordered
+ */
+function rmt_search_section_order(string $q, array $names): array {
+    $needle = function_exists('rmt_search_norm') ? rmt_search_norm($q) : mb_strtolower(trim($q));
+    $keys = array_keys($names);
+    if ($needle === '') return $keys;
+
+    $scored = [];
+    foreach ($keys as $i => $key) {
+        $best = 0;
+        foreach ($names[$key] as $name) {
+            $n = function_exists('rmt_search_norm') ? rmt_search_norm((string) $name) : mb_strtolower((string) $name);
+            if ($n === '') continue;
+            if ($n === $needle)                 { $best = 4; break; }
+            if (str_starts_with($n, $needle))   { $best = max($best, 3); continue; }
+            if (preg_match('/(^|\s)' . preg_quote($needle, '/') . '/u', $n)) { $best = max($best, 2); continue; }
+            if (str_contains($n, $needle))      { $best = max($best, 1); }
+        }
+        $scored[] = ['key' => $key, 'score' => $best, 'was' => $i];
+    }
+    usort($scored, static fn(array $a, array $b): int =>
+        $b['score'] <=> $a['score'] ?: $a['was'] <=> $b['was']);
+    return array_column($scored, 'key');
+}

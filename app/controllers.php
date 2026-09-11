@@ -2854,8 +2854,27 @@ function search(array $a): void {
         }
     }
 
+    /* Which list leads.
+       The order used to be fixed: travelers, then cities, then places, and so on down. Type
+       "Sagrada Familia" and the answer was the sixth heading, under two empty ones. The sections
+       are the same sections with the same contents; they are simply put in the order of how well
+       their best row answers what was actually typed, and a tie keeps the order they had, which is
+       the order that is right when nothing matches by name. */
+    $sectionOrder = rmt_search_section_order($qs, [
+        'people'      => array_map(static fn($r) => (string) ($r['display_name'] ?: $r['username']), $people),
+        'dests'       => array_column($dests, 'name'),
+        'places'      => array_column($places, 'name'),
+        'reviews'     => array_map(static fn($r) => (string) ($r['title'] ?: $r['subject_name']), $reviews),
+        'trips'       => array_column($trips, 'title'),
+        'guides'      => array_column($guides, 'title'),
+        'activities'  => array_column($activities, 'title'),
+        'talk'        => [],
+        'posts'       => array_column($posts, 'title'),
+        'collections' => array_column($collections, 'title'),
+    ]);
+
     // A search results page is a view of the index we already have, in somebody's words.
-    view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities'), [
+    view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities','sectionOrder'), [
         'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in

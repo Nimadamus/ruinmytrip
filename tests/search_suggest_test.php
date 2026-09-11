@@ -293,5 +293,25 @@ check('a coarse type is a kind too',
 check('a word that names no kind asks for nothing', rmt_places_by_kind_words('rooftop terrace'), []);
 check('and neither does an empty query', rmt_places_by_kind_words(''), []);
 
+echo "\n-- which list leads --\n";
+/* A fixed section order answers a place search with the sixth heading. The rule is by name, and
+   it is deliberately simple, because a ranking nobody can predict is a ranking nobody trusts. */
+$order = static fn(string $q): array => rmt_search_section_order($q, [
+    'people' => ['Jane Traveler'],
+    'dests'  => ['Amsterdam', 'Vienna'],
+    'places' => ['Sagrada Familia', 'Rijksmuseum'],
+    'talk'   => [],
+]);
+check('an exact city name leads with cities', $order('Amsterdam')[0], 'dests');
+check('a place typed in full leads with places', $order('Sagrada Familia')[0], 'places');
+check('a partial place name leads with places too', $order('Rijks')[0], 'places');
+check('a person leads with travelers', $order('Jane')[0], 'people');
+check('a word nobody is named keeps the order it had', $order('zzzz'), ['people','dests','places','talk']);
+check('and so does an empty query', $order(''), ['people','dests','places','talk']);
+/* A section matching only in the middle of a word ranks below one matching at a word boundary:
+   "museum" is a word in "Rijksmuseum" but it does not begin one. */
+check('a word boundary beats a match buried inside a word',
+      rmt_search_section_order('museum', ['a' => ['Rijksmuseum'], 'b' => ['Museum of Art']])[0], 'b');
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
