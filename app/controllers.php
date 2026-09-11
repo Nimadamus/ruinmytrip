@@ -2626,8 +2626,32 @@ function rmt_trip_validate(array $in): array {
     $cover = trim((string) ($in['cover_url'] ?? ''));
     $visited = (string) ($in['visited_on'] ?? '');
 
-    if (strlen($title) < 5) $errors[] = 'Give your trip a title (5+ characters).';
-    if (strlen($body) < 20) $errors[] = 'Add a bit more to your story (20+ characters).';
+    /* What a trip minimally is.
+
+       This used to demand a five character title and a twenty character story, which meant the
+       sentence the whole product is built around, "I am going to Lisbon on the 3rd", could not be
+       posted on the page called Share a trip. Somebody with dates and no story had to invent a
+       paragraph or give up, and most people give up.
+
+       A trip is now valid when it is EITHER a plan (a city and both dates) OR a story (a title and
+       something written). A plan with nothing written gets its title from the city and the dates,
+       the way rmt_plan_upsert has always titled one, so nothing downstream sees an untitled row. */
+    $from0 = trim((string) ($in['date_from'] ?? ''));
+    $to0   = trim((string) ($in['date_to'] ?? ''));
+    $isPlan = $dest > 0 && $from0 !== '' && $to0 !== '';
+
+    if (!$isPlan) {
+        if (strlen($title) < 5) {
+            $errors[] = 'Pick a city and both dates, or give your trip a title (5+ characters).';
+        }
+        if (strlen($body) < 20) {
+            $errors[] = 'Pick a city and both dates, or add a bit more to your story (20+ characters).';
+        }
+    } elseif ($title !== '' && strlen($title) < 5) {
+        $errors[] = 'That title is too short (5+ characters), or leave it blank and we will name it.';
+    } elseif ($body !== '' && strlen($body) < 20) {
+        $errors[] = 'That story is very short. Write a bit more, or leave it blank for now.';
+    }
     if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
     if (mb_strlen($body) > 20000) $errors[] = 'That story is too long.';
     // Same restriction as profile photos: an unvalidated URL rendered into <img src> is a
@@ -2657,6 +2681,12 @@ function rmt_trip_validate(array $in): array {
     } elseif ($fromTs && $toTs && ($toTs - $fromTs) > 400 * 86400) {
         $errors[] = 'That range is longer than a year.';
     }
+    /* Name it after the city and the dates when nobody named it, which is what a person would
+       say out loud: "Lisbon, 3 to 10 October". Same helper the plan form has always used. */
+    if (trim($title) === '' && $isPlan && function_exists('rmt_plan_title')) {
+        $title = rmt_plan_title($dest, date('Y-m-d', (int) strtotime($from0)), date('Y-m-d', (int) strtotime($to0)));
+    }
+
     // An older form that only knows visited_on still works: one day is a range of one day.
     if (!$fromTs && $visited !== '' && strtotime($visited)) {
         $fromTs = $toTs = strtotime($visited);

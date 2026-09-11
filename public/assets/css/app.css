@@ -378,7 +378,7 @@ a.chip:hover{border-color:var(--ink)}
     min-width:56px;min-height:44px;justify-content:center;position:relative;
   }
   .tabbar a.on{color:var(--brand)}
-  .tabbar-l{font-size:.66rem;font-weight:600;letter-spacing:.01em}
+  .tabbar-l{font-size:.7rem;font-weight:600;letter-spacing:.01em}
   .tabbar .tabbar-post{
     background:var(--brand);color:#fff;border-radius:50%;
     width:46px;height:46px;min-width:46px;font-size:1.5rem;line-height:1;

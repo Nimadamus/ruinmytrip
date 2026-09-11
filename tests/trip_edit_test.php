@@ -25,8 +25,8 @@ require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/controllers.php';
 
 $pdo = db();
-$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, hero_url TEXT)');
-$pdo->exec("INSERT INTO destinations (id, slug, hero_url) VALUES (1, 'oaxaca-mexico', '/media/abc123.jpg')");
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, hero_url TEXT)');
+$pdo->exec("INSERT INTO destinations (id, slug, name, hero_url) VALUES (1, 'oaxaca-mexico', 'Oaxaca', '/media/abc123.jpg')");
 
 $fail = 0;
 $check = function (string $name, $got, $expect) use (&$fail) {
@@ -94,6 +94,34 @@ $check('one day becomes a range of one day', ($v['data']['date_from'] ?? '') . '
 
 $v = rmt_trip_validate(['title' => 'Made up privacy', 'body' => str_repeat('a', 40), 'visibility' => 'secret']);
 $check('an unknown visibility falls back to public', $v['data']['visibility'] ?? '', 'public');
+
+/* The minimum a trip can be.
+   The form used to demand a five character title and a twenty character story, so the sentence
+   this product is built around, "I am going to Lisbon on the 3rd", could not be posted on the page
+   called Share a trip. A city and both dates is a whole trip now, and it names itself. */
+echo "
+-- a trip that is only a plan --
+";
+$v = rmt_trip_validate(['destination_id' => '1', 'date_from' => '2027-03-03', 'date_to' => '2027-03-10']);
+$check('a city and two dates is enough', $v['ok'], true);
+$check('and it is named after the city and the dates', $v['data']['title'] ?? '', 'Oaxaca, 3 to 10 March 2027');
+$check('the dates survive', $v['data']['date_from'] ?? '', '2027-03-03');
+
+$v = rmt_trip_validate(['destination_id' => '1', 'date_from' => '2027-03-03', 'date_to' => '2027-03-10',
+                        'title' => 'My own name for it']);
+$check('a title given is a title kept', $v['data']['title'] ?? '', 'My own name for it');
+
+$v = rmt_trip_validate(['destination_id' => '1', 'date_from' => '2027-03-03']);
+$check('half a date range is still refused', $v['ok'], false);
+
+$v = rmt_trip_validate(['date_from' => '2027-03-03', 'date_to' => '2027-03-10']);
+$check('dates with no city is not a plan, so it needs a story', $v['ok'], false);
+
+$v = rmt_trip_validate(['title' => 'A story with no dates', 'body' => str_repeat('a', 40)]);
+$check('a story with no dates is still a trip', $v['ok'], true);
+
+$v = rmt_trip_validate([]);
+$check('nothing at all is refused', $v['ok'], false);
 
 $new = (string) file_get_contents(BASE_PATH . '/views/trip_new.php');
 $edit = (string) file_get_contents(BASE_PATH . '/views/trip_edit.php');
