@@ -506,7 +506,34 @@ function rmt_place_editorial_sections(string $type = 'attraction'): array {
  * The schema.org type for a place. A restaurant marked up as a TouristAttraction is simply wrong,
  * and search engines read this markup literally.
  */
-function rmt_place_schema_type(string $type): string {
+function rmt_place_schema_type(string $type, ?string $categorySlug = null): string {
+    /* The category is the more precise answer where we have one, and schema.org has a real type for
+       most of them. "TouristAttraction" on a museum is true and says almost nothing; "Museum" says
+       what the page is about. Anything without a confident mapping falls back rather than guessing:
+       a wrong type in structured data is a wrong claim made to a machine that believes it. */
+    $byCategory = [
+        'museum'        => 'Museum',
+        'art-gallery'   => 'ArtGallery',
+        'park'          => 'Park',
+        'garden'        => 'Park',
+        'beach'         => 'Beach',
+        'zoo-aquarium'  => 'Zoo',
+        'theme-park'    => 'AmusementPark',
+        'stadium'       => 'StadiumOrArena',
+        'theater'       => 'PerformingArtsTheater',
+        'casino'        => 'Casino',
+        'shopping'      => 'ShoppingCenter',
+        'market'        => 'ShoppingCenter',
+        'cafe'          => 'CafeOrCoffeeShop',
+        'bar'           => 'BarOrPub',
+        'pub'           => 'BarOrPub',
+        'nightclub'     => 'NightClub',
+        'bakery'        => 'Bakery',
+        'hostel'        => 'Hostel',
+        'historic-site' => 'LandmarksOrHistoricalBuildings',
+        'landmark'      => 'LandmarksOrHistoricalBuildings',
+    ];
+    if ($categorySlug !== null && isset($byCategory[$categorySlug])) return $byCategory[$categorySlug];
     return ['hotel' => 'Hotel', 'restaurant' => 'Restaurant'][$type] ?? 'TouristAttraction';
 }
 

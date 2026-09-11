@@ -606,7 +606,7 @@ function place_show(array $a): void {
 
     // Address, geo, phone, price band and opening hours are all safe on any schema.org Place and
     // are emitted only for the values we actually hold -- see rmt_place_schema_attributes.
-    $ld = ['@context'=>'https://schema.org', '@type'=>rmt_place_schema_type((string) $p['type']), 'name'=>$p['name'],
+    $ld = ['@context'=>'https://schema.org', '@type'=>rmt_place_schema_type((string) $p['type'], $category['slug'] ?? null), 'name'=>$p['name'],
            'url'=>$canonical]
         + rmt_place_schema_attributes($p, $hours);
     if ($cover) $ld['image'] = abs_url($cover);
