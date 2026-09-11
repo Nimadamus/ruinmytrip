@@ -20,19 +20,8 @@ $backUrl = '/trip/' . (int) $t['id'] . '/' . (string) $t['slug'];
 $shared = count($members) > 1;
 ?>
 
-<?php if ($myInvite): ?>
-  <?php /* The reader was asked. This is the first thing they should see on the page, and the
-           answer is two buttons rather than a trip to a settings screen. */ ?>
-  <div class="callout" id="who" style="margin:0 0 18px">
-    <p style="margin:0 0 10px"><b>@<?= e((string) $t['author']['username']) ?> asked you to help plan this trip.</b>
-      You would be able to add plans, places and photographs. You could not delete it or change who can see it.</p>
-    <form method="post" action="<?= e(url('trip/'.(int) $t['id'].'/invite/answer')) ?>" style="display:flex;gap:8px">
-      <?= csrf_field() ?>
-      <button class="btn btn-primary btn-sm" name="answer" value="yes">Join the trip</button>
-      <button class="btn btn-ghost btn-sm" name="answer" value="no">No thanks</button>
-    </form>
-  </div>
-<?php endif; ?>
+<?php /* The question itself is drawn at the top of the trip page, where a question addressed to
+         the reader belongs. Repeating it here would ask the same thing twice on one screen. */ ?>
 
 <?php if ($shared || $isOwner): ?>
   <section id="who" class="trip-who">

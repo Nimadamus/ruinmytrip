@@ -85,6 +85,23 @@ $authorSaid = $authorSaid ?? [];
     </div>
   <?php endif; ?>
 
+  <?php /* Being asked to help plan somebody's trip is the one thing on this page that is
+           addressed to the reader personally, and the partial that draws it sits a hundred lines
+           down among the plan and the map. On a phone that is three screens below a question with
+           two buttons. The rest of that partial stays where it is; only the question moves. */ ?>
+  <?php if (!empty($myInvite)): ?>
+    <div class="callout" style="margin:0 0 18px">
+      <p style="margin:0 0 10px"><b>@<?= e((string) $t['author']['username']) ?> asked you to help plan this trip.</b>
+        You would be able to add plans, places and photographs. You could not delete it or change
+        who can see it.</p>
+      <form method="post" action="<?= e(url('trip/'.(int) $t['id'].'/invite/answer')) ?>" style="display:flex;gap:8px">
+        <?= csrf_field() ?>
+        <button class="btn btn-primary btn-sm" name="answer" value="yes">Join the trip</button>
+        <button class="btn btn-ghost btn-sm" name="answer" value="no">No thanks</button>
+      </form>
+    </div>
+  <?php endif; ?>
+
   <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
   <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
