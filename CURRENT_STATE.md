@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-10 (second pass).
+Replace stale lines here; do not append history. Last touched 2026-09-11.
 
 ## What the product is
 
@@ -32,38 +32,14 @@ pages made of members.
   Kinds: post, review, c, u, meetup, tag, city and now trip. A trip card refuses to draw anything
   for a trip that is not public, because the route is open to anybody holding the link.
 
-## Migrations added this week
+## Migrations
 
-`070` profiles.home_destination_id · `071` trips carry dates/visibility and `going` rows became trips
-· `072` posts.trip_id (trip updates) · `073` social indexes · `074` profiles.travel_style ·
-`075` a profile row for every member.
+`070` home_destination_id · `071` trips carry dates and visibility · `072` posts.trip_id ·
+`073` social indexes · `074` travel_style · `075` a profile row for everybody · `076` held reviews ·
+`077` photos carry an owner and a status · `078` profiles.open_to_meeting · `079` profiles.cover_key.
 
-## What the product looks like now (2026-09-10)
-
-A signed in member lands on the feed, not on the pitch: composer at the top, a scope switch, and a
-rail of people and dates beside it (who is in the same city on the same days, your own trips,
-travelers to follow, meetups in your cities). Every row can be liked, replied to in place and
-saved; the counts and the last two replies for a whole page cost three queries and one,
-respectively, not three per row (`app/feed_home.php`).
-
-A stranger lands on a marketing homepage that leads with people and collapses the research into one
-strip, a city page whose first module under the hero is the faces of who is going, and a city
-travelers hub that says "nobody yet" once rather than six times.
-
-Design is Inter plus Fraunces, self hosted, with one elevation and motion language, a nav of four
-links and a `<details>` disclosure, and dark mode from a single palette swap. Every surface in the
-stylesheet is a token: there are no literal whites left, which is the only reason the second theme
-is fifty lines.
-
-Trips are the shareable object: a drawn share card (`/card/trip/{id}.png`, public trips only),
-`TouristTrip` structured data, and an "Also there then" block that names the other travelers whose
-public trip overlaps, behind `tests/trip_overlappers_test.php`.
-
-## House style is a test now
-
-`tests/no_dashes_test.php` fails on an em or en dash in anything under `app/` or `views/` that
-reaches the browser. It tokenises, so a dash in a comment is fine; `app/seo.php` is allowed because
-its dashes are in the rtrim class that strips one off a truncated title. 208 were live before this.
+Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
+highest applied migration. A green deploy is not a migration.
 
 ## Traps that have already cost outages
 
