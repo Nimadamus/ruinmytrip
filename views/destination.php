@@ -508,7 +508,11 @@
         <?php endforeach; ?>
       </div>
 
-      <?php /* Where the travelers who came here also went. Nothing is inferred and nothing is
+      <?php /* The city as a shape rather than a list. Places we hold, with a link into each one. */ ?>
+  <?php $mapPoints = $cityMap ?? []; $mapId = 'city-map'; $mapTitle = 'On a map';
+        include __DIR__ . '/_map.php'; ?>
+
+  <?php /* Where the travelers who came here also went. Nothing is inferred and nothing is
                recommended: these are people who posted dates for both cities, counted. If nobody
                has, the section is not here, which is the honest version of "no suggestions". */ ?>
       <?php if (!empty($related)): ?>

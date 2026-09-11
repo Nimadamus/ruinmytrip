@@ -397,6 +397,14 @@ if ($acct) {
            "status $stT");
         ok('and a private line is not on it', !str_contains($bodyT, $todayMarker));
 
+        /* A map is a new way for a plan to reach a page: its title rides in a data attribute
+           rather than in the body text, which is exactly the sort of surface a canary that only
+           greps rendered prose would miss. The private line must not be in the JSON either. */
+        $pdo->prepare("UPDATE trip_activities SET place_id = (SELECT id FROM places LIMIT 1)
+                        WHERE trip_id = ?")->execute([$nowTrip]);
+        [, $bodyM2] = $req('/trip/' . $nowTrip, null, $cookie);
+        ok('a private plan is not a pin on the trip map', !str_contains($bodyM2, $todayMarker));
+
         $pdo->prepare('DELETE FROM trip_activities WHERE trip_id = ?')->execute([$nowTrip]);
         $pdo->prepare('DELETE FROM trips WHERE id = ?')->execute([$nowTrip]);
 

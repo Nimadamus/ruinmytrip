@@ -764,3 +764,48 @@ function rmt_place_network(int $placeId, ?array $viewer): array {
         'overlapping' => $overlapping,
     ];
 }
+
+/**
+ * Map points for one trip's itinerary.
+ *
+ * Only plans attached to a place we hold coordinates for, because a plan whose "where" is the word
+ * "Alfama" cannot be a pin without this site guessing a doorway. The list on the page is still the
+ * full itinerary; the map is the subset that can honestly be drawn.
+ *
+ * @param list<array<string,mixed>> $activities already filtered for the viewer
+ * @return list<array<string,mixed>>
+ */
+function rmt_activity_map_points(array $activities): array {
+    $ids = [];
+    foreach ($activities as $a) {
+        $pid = (int) ($a['place_id'] ?? 0);
+        if ($pid > 0) $ids[$pid] = true;
+    }
+    if (!$ids) return [];
+
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $places = [];
+    foreach (q_all("SELECT id, name, slug, lat, lng FROM places
+                     WHERE id IN ($in) AND lat IS NOT NULL AND lng IS NOT NULL", array_keys($ids)) as $p) {
+        $places[(int) $p['id']] = $p;
+    }
+
+    $out = [];
+    foreach ($activities as $a) {
+        $p = $places[(int) ($a['place_id'] ?? 0)] ?? null;
+        if (!$p) continue;
+        $meta = [];
+        if (!empty($a['day'])) $meta[] = date('D j M', strtotime((string) $a['day']));
+        if (!empty($a['start_time'])) $meta[] = (string) $a['start_time'];
+        $meta[] = (string) $p['name'];
+        $out[] = [
+            'lat'   => (float) $p['lat'],
+            'lng'   => (float) $p['lng'],
+            'label' => (string) $a['title'],
+            'href'  => url('activity/' . (int) $a['id']),
+            'meta'  => implode(' · ', $meta),
+            'group' => (string) ($a['day'] ?? ''),
+        ];
+    }
+    return $out;
+}

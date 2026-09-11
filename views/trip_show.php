@@ -124,6 +124,12 @@ $authorSaid = $authorSaid ?? [];
 
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
 
+  <?php /* The same itinerary, seen from above. It sits under the plan rather than over it, because
+           the answer to "what are we doing" is a list and the answer to "how far apart is it all"
+           is a map, and only one of those is the question somebody opens this page with. */ ?>
+  <?php $mapPoints = $tripMap ?? []; $mapId = 'trip-map'; $mapTitle = 'On a map';
+        include __DIR__ . '/_map.php'; ?>
+
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
            this the site would tell you a stranger's trip overlapped yours and then leave you to
            type the same dates into a different form. */ ?>

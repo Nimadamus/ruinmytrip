@@ -285,6 +285,15 @@ function destination(array $a): void {
     /* Where the people who come here also go. A real query over real trips, counted in travelers,
        which turns every city page from a leaf into a doorway. */
     $related = rmt_related_destinations($id, 6);
+    /* The city on a map: places this site holds, and plans the viewer is allowed to see, from the
+       same visibility-filtered list the page already built. Nothing on it is a person's position. */
+    $cityMap = [];
+    foreach (rmt_places_for_destination($id, '', 80) as $pl) {
+        if ($pl['lat'] === null || $pl['lng'] === null) continue;
+        $cityMap[] = ['lat' => (float) $pl['lat'], 'lng' => (float) $pl['lng'],
+                      'label' => (string) $pl['name'], 'href' => url('p/' . $pl['slug']),
+                      'meta' => rmt_place_type_label((string) $pl['type']), 'group' => 'place'];
+    }
     /* What people are doing here, on the city page a stranger actually lands on from a search.
        Upcoming only and no date window: somebody arriving from Google has not told us when they
        are going. It is a teaser for the real list, which lives on the travelers page and can be
@@ -294,7 +303,7 @@ function destination(array $a): void {
             rmt_activities_in_city($id, $me, date('Y-m-d'), date('Y-m-d', strtotime('+120 days')), 40),
             static fn(array $r) => empty($r['cancelled_at']))), 0, 5)
         : [];
-    view('destination', compact('related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
+    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
@@ -1297,7 +1306,11 @@ function trip_show(array $a): void {
     $alsoThere = rmt_trip_overlappers($t, $me);
     /* What they are actually doing there, which is the half of the question the site could not
        answer until now. Grouped by day in one place so the view stays a view. */
-    $planDays = rmt_activities_by_day(rmt_activities_for_trip((int) $t['id'], $me));
+    $planActs = rmt_activities_for_trip((int) $t['id'], $me);
+    $planDays = rmt_activities_by_day($planActs);
+    /* The itinerary on a map, for the plans attached to a place whose coordinates we hold. The
+       list below it is still the whole plan; this is the part that can honestly be drawn. */
+    $tripMap = rmt_activity_map_points($planActs);
 
     /* The rest of what a trip page is for. A public trip is the page a stranger arrives on from a
        search or from a link somebody sent them, and until now it ended at the comments: no way to
@@ -1337,7 +1350,7 @@ function trip_show(array $a): void {
                            ORDER BY r.id DESC LIMIT 2",
                             [(int) $t['user_id'], (int) $t['destination_id']]);
     }
-    view('trip_show', compact('tripRole','canEdit','members','invited','myInvite',
+    view('trip_show', compact('tripMap','tripRole','canEdit','members','invited','myInvite',
                               't','photos','comments','likeCount','saveCount','liked','saved','tags',
                               'updates','isOwner','phase','alsoThere','isFollowingAuthor','destGoing',
                               'related','authorSaid','planDays'), [
