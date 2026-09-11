@@ -28,6 +28,14 @@
            so a chip never opens an empty list, and scrolling sideways rather than wrapping into a
            block that pushes the places themselves off a phone screen. */ ?>
   <?php $catCounts = $catCounts ?? []; $cat = $cat ?? ''; ?>
+  <?php /* When a category is chosen the page is about that category, and it should say so in the
+           reader's words rather than leaving the heading to do all of it. */ ?>
+  <?php if (($cat ?? '') !== ''): ?>
+    <p class="hint" style="margin:0 0 12px"><?= (int) count($places) ?>
+      <?= e(mb_strtolower($label)) ?> in <?= e($d['name']) ?>, from OpenStreetMap and from travelers here.
+      <a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">All places</a>.</p>
+  <?php endif; ?>
+
   <?php if (count($catCounts) > 1): ?>
     <nav class="plan-filters" aria-label="Filter by category" style="margin:0 0 10px">
       <?php $rmt_base = 'd/'.$d['slug'].'/places'.($type !== '' ? '?type='.$type : ''); ?>
