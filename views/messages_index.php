@@ -2,11 +2,10 @@
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Messages</h1>
   <?php if (!$rows): ?>
-    <div class="empty-cta" style="margin-top:16px">
-      <h3>No conversations yet.</h3>
-      <p class="muted" style="margin:0">Visit a traveler's profile and send them a message to start one.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('explore')) ?>">Explore destinations</a></p>
-    </div>
+    <?php $emptyTitle = 'No conversations yet';
+          $emptyWhy = 'Messages start from somebody\'s profile, or from a match. The people below are real members, and the cities are ones somebody has actually posted dates for.';
+          $emptyCtaText = 'Find travelers'; $emptyCtaUrl = url('travelers');
+          include __DIR__ . '/_nothing_yet.php'; ?>
   <?php endif; ?>
   <ul class="list-plain">
     <?php foreach ($rows as $r): ?>

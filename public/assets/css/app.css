@@ -964,3 +964,9 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .trip-count.on{background:var(--accent)}
 .trip-extra{margin:28px 0 8px}
 .trip-extra h2{font-size:1.15rem;margin:0 0 12px}
+
+/* A page with nothing on it yet. Says what is missing, then offers what is real. */
+.nothing-yet{background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);
+  padding:24px;margin:18px 0;text-align:center}
+.nothing-yet h2{font-size:1.25rem;margin:0 0 6px}
+.nothing-yet .muted{margin:0 auto;max-width:52ch}

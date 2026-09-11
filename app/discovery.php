@@ -207,3 +207,62 @@ function rmt_discover_all(int $uid): array {
         'suggested'    => rmt_follow_suggestions($uid, 8),
     ];
 }
+
+/**
+ * What to put on a page that has nothing on it yet.
+ *
+ * A young network is mostly empty by definition, and an empty page that only apologises teaches
+ * the reader that the site is dead. The rule here is the same one the rest of the site follows:
+ * everything offered is real. Cities appear because somebody is actually going to them, people
+ * appear because they actually exist and have actually done something, and when neither is true
+ * the caller gets nothing back and the page says so plainly rather than inventing company.
+ *
+ * @return array{cities:list<array<string,mixed>>,people:list<array<string,mixed>>}
+ */
+function rmt_empty_state_suggestions(?array $viewer, int $cityLimit = 6, int $peopleLimit = 4): array {
+    $today = date('Y-m-d');
+
+    /* Cities with somebody going, soonest first. A city with nobody in it is not a suggestion, it
+       is a link, and this page already has plenty of those. */
+    $cities = q_all(
+        "SELECT d.id, d.slug, d.name, d.country,
+                (SELECT COUNT(*) FROM trips t
+                  WHERE t.destination_id = d.id AND t.status = 'published'
+                    AND t.visibility = 'public' AND t.date_to IS NOT NULL AND t.date_to >= ?) going,
+                (SELECT COUNT(*) FROM meetups m
+                  WHERE m.destination_id = d.id AND m.status = 'published' AND m.date_start >= ?) meets
+           FROM destinations d
+       ORDER BY going DESC, meets DESC, d.name
+          LIMIT 40", [$today, date('Y-m-d H:i:s')]);
+    $cities = array_values(array_filter($cities,
+        static fn(array $c) => (int) $c['going'] > 0 || (int) $c['meets'] > 0));
+    $cities = array_slice($cities, 0, $cityLimit);
+
+    /* People, with a reason. For a member this is the suggestion engine; for a stranger it is the
+       travelers who have actually written something, which is the only ordering that is not a
+       popularity claim we cannot back up. */
+    $people = [];
+    if ($viewer) {
+        $people = array_slice(rmt_follow_suggestions((int) $viewer['id'], $peopleLimit + 2), 0, $peopleLimit);
+    }
+    /* A member on their first day has no signals, so the suggestion engine has nothing to say and
+       the page would offer nobody at all. The fallback is the same list a stranger sees: members
+       who have actually written something, which is a fact rather than a recommendation. */
+    if (!$people) {
+        $exclude = $viewer ? ' AND u.id <> ?' : '';
+        $args = [RMT_EDITORIAL_ROLE];
+        if ($viewer) $args[] = (int) $viewer['id'];
+        $people = q_all(
+            "SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city,
+                    (SELECT COUNT(*) FROM reviews r WHERE r.user_id = u.id AND r.status = 'published') reviews
+               FROM users u LEFT JOIN profiles p ON p.user_id = u.id
+              WHERE u.status = 'active' AND u.role <> ?$exclude
+           ORDER BY reviews DESC, u.id DESC LIMIT " . (int) $peopleLimit, $args);
+        $people = array_values(array_filter($people, static fn(array $r) => (int) $r['reviews'] > 0));
+        foreach ($people as $i => $r) {
+            $people[$i]['reason'] = (int) $r['reviews'] . ' ' . ((int) $r['reviews'] === 1 ? 'review' : 'reviews') . ' written';
+        }
+    }
+
+    return ['cities' => $cities, 'people' => $people];
+}

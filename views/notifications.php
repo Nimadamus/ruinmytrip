@@ -11,11 +11,10 @@
     <p id="push-state" class="hint" hidden></p>
   <?php endif; ?>
   <?php if(!$items):?>
-    <div class="empty-cta" style="margin-top:16px">
-      <h3>Nothing yet.</h3>
-      <p class="muted" style="margin:0">Follow travelers and join meetups to see activity here.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('explore')) ?>">Explore destinations</a></p>
-    </div>
+    <?php $emptyTitle = 'Nothing yet';
+          $emptyWhy = 'This fills with replies to what you post, people following you, and travelers whose dates land on yours. Following somebody is the fastest way to start it.';
+          $emptyCtaText = 'Find travelers'; $emptyCtaUrl = url('travelers');
+          include __DIR__ . '/_nothing_yet.php'; ?>
   <?php endif;?>
   <ul class="list-plain">
     <?php foreach ($items as $n): ?>

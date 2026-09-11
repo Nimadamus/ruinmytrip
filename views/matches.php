@@ -53,18 +53,20 @@
       </div>
     <?php endforeach; ?>
   <?php else: ?>
-    <div class="empty-cta" style="margin:18px 0">
-      <h3>No overlapping dates yet.</h3>
-      <?php if (!$myPlans): ?>
-        <p class="muted" style="margin:0">Nobody can match you while we do not know where you are
-          headed. Share a destination and a date range, and this fills in as other travelers do the same.</p>
-        <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url('going')) ?>">Share your dates</a></p>
-      <?php else: ?>
-        <p class="muted" style="margin:0">Your plans are in. Nobody else is holding dates in those
-          cities that touch yours yet, so this page will change on its own when they do.</p>
-        <p style="margin:16px 0 0"><a class="btn btn-ghost" href="<?= e(url('going')) ?>">See everyone's plans</a></p>
-      <?php endif; ?>
-    </div>
+    <?php /* An empty match list is the normal state on a young network and the page has to stay
+             useful anyway: what is missing, what fills it, and then real cities and real people,
+             never an invented one. */ ?>
+    <?php if (!$myPlans): ?>
+      <?php $emptyTitle = 'Nobody can match you yet';
+            $emptyWhy = 'Matching needs one thing from you: a city and a date range. Post it and this page fills in as other travelers post theirs.';
+            $emptyCtaText = 'Post your dates'; $emptyCtaUrl = url('trip/new');
+            include __DIR__ . '/_nothing_yet.php'; ?>
+    <?php else: ?>
+      <?php $emptyTitle = 'No overlapping dates yet';
+            $emptyWhy = 'Your dates are in. Nobody else is holding dates in those cities that touch yours, so this page will change on its own when somebody does.';
+            $emptyCtaText = "See everyone's dates"; $emptyCtaUrl = url('going');
+            include __DIR__ . '/_nothing_yet.php'; ?>
+    <?php endif; ?>
   <?php endif; ?>
 
   <?php /* Where you live, pointed the other way round. Matching everywhere else means two people
