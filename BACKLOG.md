@@ -37,10 +37,11 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
 2. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
    editorial work rather than import work, and making the importer happy is the wrong reason to do
    it. Left alone deliberately, as asked.
-3. **A readable slug for a place with a non-Latin name.** Tokyo's museums are at
-   `/p/item-tokyo-31`, because the slugifier has nothing to work with in a Japanese name. It is
-   stable and honest and it is not a URL anybody would share. Changing it later costs redirects,
-   so decide before the next non-Latin city.
+3. **43 places still have a serial number for a URL** (32 in Tokyo, 11 in Bangkok). The rest were
+   moved onto the English name OpenStreetMap already records for them, with the old URL retired
+   into `place_slug_history` so it still resolves. These 43 carry no other name at all, and the
+   honest options are to leave them, or to add `name:en` upstream in OpenStreetMap, which is
+   editorial work on somebody else's database.
 4. **A day filter on the trip map**, beyond colour: tapping a day should show only that day.
 5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
 6. **One ranked search result list.** City context, category matching and travelers-first all landed;
@@ -72,6 +73,10 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
   an English name; the site knows which of its places are museums and now says so.
 * **A backfill that asks the provider for rows by id** rather than re-scanning a city, which is the
   cheapest question there is to put to Overpass.
+* **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
+  transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **Three opening hours forms the parser was wrongly refusing**, found by measuring London rather
+  than assuming: a day list with spaces, a span with no day, and midnight as an end time.
 
 * **Eight cities of real places.** Mirror health with failover and cooldown, escalating timeouts,
   shrinking retries, resumable runs, and the fix that mattered most: an empty answer from one mirror
