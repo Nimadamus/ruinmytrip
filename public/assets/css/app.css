@@ -1036,16 +1036,17 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   -webkit-overflow-scrolling:touch;scrollbar-width:none}
 .plan-filters::-webkit-scrollbar{display:none}
 /* A row of chips that scrolls sideways has to LOOK like it scrolls, or the chip past the right
-   edge is one nobody ever taps. These are the classic local/scroll background pair: the two paper
-   coloured covers scroll WITH the content, so each shadow is only visible while there is something
-   in that direction. No JavaScript, and a row short enough to fit shows no shadow at all. */
-.plan-filters{
-  background:
-    linear-gradient(to right, var(--paper) 40%, transparent) left center/28px 100% no-repeat local,
-    linear-gradient(to left,  var(--paper) 40%, transparent) right center/28px 100% no-repeat local,
-    radial-gradient(farthest-side at 0 50%, rgba(13,24,38,.16), transparent) left center/14px 100% no-repeat scroll,
-    radial-gradient(farthest-side at 100% 50%, rgba(13,24,38,.16), transparent) right center/14px 100% no-repeat scroll;
-}
+   edge is one nobody ever taps. A background shadow does not work here because the chips are
+   opaque and paint over it, so the content itself is faded at whichever edge has more behind it.
+   The classes are set by app.js after measuring: CSS cannot tell whether a row overflows, and a
+   fade painted unconditionally would clip the first chip of a row that fits. */
+.plan-filters.has-more{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 34px),transparent);
+  mask-image:linear-gradient(to right,#000 calc(100% - 34px),transparent)}
+.plan-filters.has-less{-webkit-mask-image:linear-gradient(to left,#000 calc(100% - 34px),transparent);
+  mask-image:linear-gradient(to left,#000 calc(100% - 34px),transparent)}
+.plan-filters.has-more.has-less{
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 34px,#000 calc(100% - 34px),transparent);
+  mask-image:linear-gradient(to right,transparent,#000 34px,#000 calc(100% - 34px),transparent)}
 .plan-filters .chip{flex:0 0 auto;white-space:nowrap;text-decoration:none}
 .plan-filters .chip.is-on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .plan-filters .chip.is-on .hint{color:var(--paper);opacity:.7}

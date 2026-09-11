@@ -268,3 +268,27 @@ if ('serviceWorker' in navigator) {
     }, 180);
   });
 })();
+
+/* A row of chips that scrolls sideways has to look like it scrolls, or the chip past the right
+   edge is one nobody ever taps. CSS alone cannot tell whether a row overflows, and a fade painted
+   unconditionally clips the first chip of a row that fits, so this measures and marks. Everything
+   below is decoration: without it the row still scrolls and every chip is still reachable. */
+(function () {
+  var rows = document.querySelectorAll('.plan-filters');
+  if (!rows.length) return;
+
+  function mark(row) {
+    var over = row.scrollWidth - row.clientWidth;
+    if (over < 8) { row.classList.remove('has-more', 'has-less'); return; }
+    row.classList.toggle('has-more', row.scrollLeft < over - 4);
+    row.classList.toggle('has-less', row.scrollLeft > 4);
+  }
+
+  Array.prototype.forEach.call(rows, function (row) {
+    mark(row);
+    row.addEventListener('scroll', function () { mark(row); }, { passive: true });
+  });
+  window.addEventListener('resize', function () {
+    Array.prototype.forEach.call(rows, mark);
+  }, { passive: true });
+})();
