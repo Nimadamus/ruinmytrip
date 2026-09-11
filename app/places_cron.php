@@ -89,6 +89,16 @@ function cron_places(array $a): void {
     if (!$dest) { echo "no such city\n"; return; }
 
     $op = (string) (input('op') ?: 'verify');
+    /* Fill in any normalised names that are missing, which is what makes a place
+       findable by typing without the accents. Idempotent: it only touches rows whose
+       folded name is absent or no longer matches what the normaliser produces. */
+    if ($op === 'backfill') {
+        $n = function_exists('rmt_search_backfill_norm') ? rmt_search_backfill_norm() : [];
+        echo json_encode($n), "
+";
+        return;
+    }
+
     if ($op === 'verify') {
         echo json_encode(rmt_places_verify((int) $dest['id']),
                          JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";

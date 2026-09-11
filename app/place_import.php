@@ -165,9 +165,13 @@ function rmt_place_import_one(int $destId, array $row, bool $dryRun = false): ar
         // file has to be loadable by a script and by a test without the whole application.
         $destName = (string) (q_one('SELECT name FROM destinations WHERE id = ?', [$destId])['name'] ?? '');
         $slug = rmt_place_unique_slug($name, $destName);
-        $cols = ['destination_id', 'slug', 'name', 'name_key', 'status', 'created_at', 'updated_at',
-                 'data_checked_at', 'source_updated_at'];
-        $vals = [$destId, $slug, $name, rmt_place_name_key($name), 'active', $now, $now, $now, $now];
+        /* name_norm is what the suggest box matches on, accents folded, so "geolog" finds
+           "Museu Geologico". A row created without it is a place nobody can find by typing. */
+        $cols = ['destination_id', 'slug', 'name', 'name_key', 'name_norm', 'status', 'created_at',
+                 'updated_at', 'data_checked_at', 'source_updated_at'];
+        $vals = [$destId, $slug, $name, rmt_place_name_key($name),
+                 function_exists('rmt_search_norm') ? rmt_search_norm($name) : mb_strtolower($name),
+                 'active', $now, $now, $now, $now];
         foreach ($data as $k => $v) {
             if ($k === 'name') continue;
             $cols[] = $k;

@@ -2589,17 +2589,22 @@ function suggest_places_json(array $a): void {
     }
     if (mb_strlen($q) < 2 || $dest < 1) { echo json_encode(['places' => []]); return; }
 
-    $like = '%' . mb_strtolower($q) . '%';
+    /* Matched on the folded name, so "geolog" finds "Museu Geologico" and "sao" finds "Sao Jorge".
+       Somebody typing on a phone keyboard in their own language should not have to produce the
+       right accent to find a restaurant. Aliases are folded the same way. */
+    $norm = function_exists('rmt_search_norm') ? rmt_search_norm($q) : mb_strtolower($q);
+    $like = '%' . $norm . '%';
     $rows = q_all(
         "SELECT p.id, p.name, p.slug, p.type
            FROM places p
           WHERE p.destination_id = ? AND p.status = 'active'
-            AND (LOWER(p.name) LIKE ?
+            AND (COALESCE(p.name_norm, LOWER(p.name)) LIKE ?
                  OR EXISTS (SELECT 1 FROM place_aliases pa
-                             WHERE pa.place_id = p.id AND LOWER(pa.alias) LIKE ?))
-       ORDER BY CASE WHEN LOWER(p.name) LIKE ? THEN 0 ELSE 1 END, LENGTH(p.name), p.name
+                             WHERE pa.place_id = p.id AND pa.alias_key LIKE ?))
+       ORDER BY CASE WHEN COALESCE(p.name_norm, LOWER(p.name)) LIKE ? THEN 0 ELSE 1 END,
+                LENGTH(p.name), p.name
           LIMIT 8",
-        [$dest, $like, $like, mb_strtolower($q) . '%']
+        [$dest, $like, $like, $norm . '%']
     );
     $out = [];
     foreach ($rows as $r) {
