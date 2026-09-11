@@ -31,21 +31,11 @@ $authorSaid = $authorSaid ?? [];
          href="<?= e(url('register?return=' . rawurlencode('/trip/'.(int) $t['id']))) ?>">Follow @<?= e($t['author']['username']) ?></a>
     <?php endif; ?>
   </div>
-  <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
-  <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
-  <?php if (!empty($tags)): ?>
-    <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
-  <?php endif; ?>
-  <?php /* The album. The first photograph leads at double size and every cell opens the photo's
-           own page, because the thing somebody clicked is the thing they want to see. */ ?>
-  <?php if ($photos): ?>
-    <?php $gridPhotos = array_map(static fn(array $ph) => [
-            'url' => (string) $ph['url'], 'caption' => (string) ($ph['caption'] ?? ''),
-            'kind' => 'trip', 'id' => (int) $ph['id']], $photos);
-          $gridLead = count($photos) > 2;
-          include __DIR__ . '/_photo_grid.php'; ?>
-  <?php endif; ?>
-
+  <?php /* Where, when, and whether it has happened yet: above the photograph and above the
+           writing, because they are the questions a reader arrives with. They used to sit below
+           the cover, the body and the whole album, so on a phone the single most important fact
+           about a trip was four screens down and the byline's small grey "visited Apr 2026" was
+           the only hint before it. */ ?>
   <?php /* When the trip is, in words. A page that says "2027-04-02" tells the reader a date; a page
            that says "coming up" tells them whether to bother saying hello. */ ?>
   <?php if (!empty($t['date_from'])): ?>
@@ -93,6 +83,21 @@ $authorSaid = $authorSaid ?? [];
         <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$t['dest_slug'])) ?>">About <?= e((string) $t['dest_name']) ?></a>
       </div>
     </div>
+  <?php endif; ?>
+
+  <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
+  <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
+  <?php if (!empty($tags)): ?>
+    <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
+  <?php endif; ?>
+  <?php /* The album. The first photograph leads at double size and every cell opens the photo's
+           own page, because the thing somebody clicked is the thing they want to see. */ ?>
+  <?php if ($photos): ?>
+    <?php $gridPhotos = array_map(static fn(array $ph) => [
+            'url' => (string) $ph['url'], 'caption' => (string) ($ph['caption'] ?? ''),
+            'kind' => 'trip', 'id' => (int) $ph['id']], $photos);
+          $gridLead = count($photos) > 2;
+          include __DIR__ . '/_photo_grid.php'; ?>
   <?php endif; ?>
 
   <?php /* The plan, high on the page. It is the thing a reader came for and the thing that makes
