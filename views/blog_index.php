@@ -36,7 +36,7 @@
       <article class="card"><a href="<?= e(url('blog/'.$p['slug'])) ?>">
         <img class="card-media" loading="lazy" src="<?= e(abs_url($p['cover_url'] ?: url('assets/img/og-default.svg'))) ?>" alt="<?= e($p['title']) ?>">
         <div class="card-body">
-          <span class="chip"><?= e(ucfirst($p['category'])) ?></span>
+          <span class="chip chip-cap"><?= e(ucfirst($p['category'])) ?></span>
           <h3><?= e($p['title']) ?></h3>
           <p class="muted"><?= e($p['summary']) ?></p>
           <div class="meta-row">by @<?= e($p['author']['username']??'') ?> · <?= e(ago($p['created_at'])) ?></div>

@@ -362,7 +362,15 @@ function destination_travelers(array $a): void {
     $me = current_user();
     $hub = rmt_city_traveler_hub((int) $d['id'], $me);
     $myGoing = $me ? rmt_going_for_user_dest((int) $me['id'], (int) $d['id']) : null;
-    view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing], [
+    /* The three things that turn a city page into a room: who is here today, what it looks like,
+       and which locals said they are happy to be found. All three are drawn only when they are
+       real, and all three read through the same visibility and opt-in rules as everywhere else. */
+    $hereNow = rmt_discover_here_now((int) $d['id'], $me, 8);
+    $cityPhotos = rmt_city_photos((int) $d['id'], $me, 8);
+    $locals = rmt_discover_locals((int) $d['id'], $me, 6);
+    view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing,
+                                   'hereNow' => $hereNow, 'cityPhotos' => $cityPhotos,
+                                   'openLocals' => $locals], [
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',

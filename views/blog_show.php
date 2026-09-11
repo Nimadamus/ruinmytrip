@@ -2,7 +2,7 @@
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('blog')) ?>">Blog</a> / <?= e($p['title']) ?></p></div>
 <div class="wrap prose">
   <?php $isEd = rmt_is_editorial($p); ?>
-  <span class="chip"><?= e(ucfirst($p['category'])) ?></span>
+  <span class="chip chip-cap"><?= e(ucfirst($p['category'])) ?></span>
   <?php if ($isEd): ?><?= rmt_editorial_badge() ?><?php endif; ?>
   <h1><?= e($p['title']) ?></h1>
   <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>

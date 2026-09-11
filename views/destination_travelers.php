@@ -9,6 +9,9 @@ $here = '/d/' . $d['slug'] . '/travelers';
    attached, and skips the headings whose modules are empty. Nothing is pretended: a city with
    nobody in it still says so. */
 $rmt_gaps = [];
+$hereNow = $hereNow ?? [];
+$cityPhotos = $cityPhotos ?? [];
+$openLocals = $openLocals ?? [];
 ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> /
   <a href="<?= e(url('d/'.$d['slug'])) ?>"><?= e($city) ?></a> / Travelers</p></div>
@@ -49,6 +52,24 @@ $rmt_gaps = [];
       traveler who searches this next month will find. Post your dates, or ask the question you
       came here with.
     </div>
+  <?php endif; ?>
+
+  <?php /* Who is in the city today, according to dates they published themselves. Above "who is
+           going", because somebody who is there now is somebody you can have a coffee with this
+           afternoon. Never a location: a range that covers today is a fact its owner wrote down. */ ?>
+  <?php if ($hereNow): ?>
+    <h2>Here right now</h2>
+    <div class="tag-list">
+      <?php foreach ($hereNow as $hn): ?>
+        <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
+           href="<?= e(url('u/'.$hn['username'])) ?>">
+          <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($hn['avatar_url'] ?? null)) ?>" alt="">
+          @<?= e((string) $hn['username']) ?> <span class="hint">until <?= e(date('j M', strtotime((string) $hn['date_to']))) ?></span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <p class="hint" style="margin:.6rem 0 0">Their own published dates cover today.
+      <a href="<?= e(url('travelers?city='.(int) $d['id'])) ?>">Find travelers in <?= e($city) ?></a>.</p>
   <?php endif; ?>
 
   <?php if ($hub['going']): ?><h2>Who is going</h2><?php endif; ?>
@@ -164,6 +185,30 @@ $rmt_gaps = [];
     </div>
     <p class="hint" style="margin:.6rem 0 0">Message any of them. They wrote about <?= e($city) ?> themselves.</p>
 <?php else: $rmt_gaps['people'] = true; endif; ?>
+
+  <?php /* What the city looks like, from the people who were there. Eight, linking into the
+           wall. A city page with no photograph on it is a directory entry. */ ?>
+  <?php if ($cityPhotos): ?>
+    <h2 style="margin-top:28px">Photos from travelers</h2>
+    <?php $gridPhotos = $cityPhotos; $gridLead = count($cityPhotos) > 3;
+          include __DIR__ . '/_photo_grid.php'; ?>
+    <p style="margin:10px 0 0"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">All photos of <?= e($city) ?></a></p>
+  <?php endif; ?>
+
+  <?php /* Locals who ticked the box. Opt in, always, and the sentence says exactly what it means
+           so nobody has to guess what they agreed to. */ ?>
+  <?php if ($openLocals): ?>
+    <h2 style="margin-top:28px">Locals open to meeting travelers</h2>
+    <p class="hint" style="margin:0 0 10px">People who live in <?= e($city) ?> and said they are
+      happy to answer a question or meet in a public place.</p>
+    <?php foreach ($openLocals as $lo): ?>
+      <?php $person = $lo;
+            $because = 'Lives in ' . $city
+                     . ((int) ($lo['reviews'] ?? 0) > 0 ? ' · ' . (int) $lo['reviews'] . ' reviews' : '');
+            $backTo = $here;
+            include __DIR__ . '/_person_card.php'; ?>
+    <?php endforeach; ?>
+  <?php endif; ?>
 
   <?php if ($rmt_gaps): ?>
     <?php /* One invitation, naming only what is actually missing, with the action beside each

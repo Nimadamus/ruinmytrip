@@ -45,7 +45,7 @@
       <article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>">
         <img class="card-media" loading="lazy" src="<?= e($d['hero_url']) ?>" alt="<?= e($d['name']) ?>">
         <div class="card-body">
-          <span class="chip"><?= e($d['category']) ?></span>
+          <span class="chip chip-cap"><?= e($d['category']) ?></span>
           <?php if ((int)$d['editorial'] > 0): ?><?= rmt_editorial_badge('review', false) ?><?php endif; ?>
           <?php if ($d['avg_rating'] !== null): ?><span class="stars" style="font-size:.85rem"><?= stars((int)round((float)$d['avg_rating'])) ?></span><?php endif; ?>
           <h3><?= e($d['name']) ?>, <?= e($d['country']) ?></h3>

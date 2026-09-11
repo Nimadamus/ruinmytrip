@@ -5,7 +5,7 @@
     <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
     <div class="overlay">
       <div>
-        <span class="chip"><?= e($d['category']) ?></span>
+        <span class="chip chip-cap"><?= e($d['category']) ?></span>
         <h1><?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
         <p style="color:#e8eef5;margin:.2rem 0 0;max-width:60ch"><?= e($d['summary']) ?></p>
       </div>

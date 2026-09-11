@@ -9,7 +9,7 @@
       <article class="card"><a href="<?= e(url('d/'.$d['slug'])) ?>">
         <img class="card-media" loading="lazy" src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name']) ?>">
         <div class="card-body">
-          <?php if ($d['category']): ?><span class="chip"><?= e($d['category']) ?></span><?php endif; ?>
+          <?php if ($d['category']): ?><span class="chip chip-cap"><?= e($d['category']) ?></span><?php endif; ?>
           <h3><?= e($d['name']) ?></h3>
           <p class="muted"><?= e(mb_strimwidth((string)$d['summary'],0,140,'…')) ?></p>
         </div></a></article>
