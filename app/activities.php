@@ -92,7 +92,7 @@ function rmt_activities_for_trip(int $tripId, ?array $viewer): array {
            FROM trip_activities a
       LEFT JOIN places p ON p.id = a.place_id
           WHERE a.trip_id = ? AND a.status = 'published' AND $actVis
-       ORDER BY CASE WHEN a.day IS NULL OR a.day = '' THEN 1 ELSE 0 END,
+       ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END,
                 a.day, COALESCE(a.start_time,'99:99'), a.sort, a.id",
         array_merge([$tripId], $actArgs)
     );
@@ -249,8 +249,8 @@ function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = nul
     if ($from !== null && $to !== null && $from !== '' && $to !== '') {
         /* An activity with no day belongs to the trip's window, so it counts when the trip itself
            overlaps. That is what somebody means by "what is happening while I am there". */
-        $window = " AND ((a.day IS NOT NULL AND a.day <> '' AND a.day >= ? AND a.day <= ?)
-                         OR ((a.day IS NULL OR a.day = '') AND t.date_from <= ? AND t.date_to >= ?))";
+        $window = " AND ((a.day IS NOT NULL AND a.day >= ? AND a.day <= ?)
+                         OR (a.day IS NULL AND t.date_from <= ? AND t.date_to >= ?))";
         $windowArgs = [$from, $to, $to, $from];
     }
 
@@ -265,7 +265,7 @@ function rmt_activities_in_city(int $destId, ?array $viewer, ?string $from = nul
       LEFT JOIN places p ON p.id = a.place_id
           WHERE a.destination_id = ? AND a.status = 'published' AND t.status = 'published'
             AND $tripVis AND $actVis AND $blockSql $window
-       ORDER BY CASE WHEN a.day IS NULL OR a.day = '' THEN 1 ELSE 0 END, a.day,
+       ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day,
                 COALESCE(a.start_time,'99:99'), a.id DESC
           LIMIT " . (int) $limit,
         array_merge([$destId], $tripArgs, $actArgs, $blockArgs, $windowArgs)

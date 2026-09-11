@@ -55,6 +55,29 @@ foreach ($sources as $file) {
 }
 ok('no COALESCE mixes a DATE column with a TEXT one uncast', $bad === [], implode("\n      ", $bad));
 
+/* Comparing a DATE column to an empty string.
+   SQLite compares anything to anything; Postgres answers "invalid input syntax for type date" and
+   the page 500s. This is what took the city travelers hub down minutes after activities shipped:
+   `a.day <> ''` and `a.day = ''` read as ordinary emptiness checks and are only ever correct on a
+   TEXT column. The emptiness of a DATE is IS NULL, and nothing else. */
+$DATE_ANY = ['date_from', 'date_to', 'day'];
+$emptyCmp = [];
+foreach ($sources as $file) {
+    $src = (string) file_get_contents($file);
+    foreach ($DATE_ANY as $col) {
+        /* Qualified with a table alias, which is what a column reference in SQL looks like.
+           Without that this also flags PHP such as `$day = ''`, a local variable rather than
+           a comparison against a column. */
+        if (preg_match_all('/\\b[a-z][a-z0-9_]*\\.' . $col . "\\s*(=|<>|!=)\\s*''/i", $src, $m, PREG_OFFSET_CAPTURE)) {
+            foreach ($m[0] as $hit) {
+                $emptyCmp[] = basename($file) . ': ' . trim($hit[0]);
+            }
+        }
+    }
+}
+ok('no DATE column is compared to an empty string', $emptyCmp === [], implode("
+      ", $emptyCmp));
+
 // A migration that fills a DATE column from a TEXT one has to say so, and has to filter first:
 // one row of free text aborts the whole migration and takes every other statement in it down.
 $assign = [];

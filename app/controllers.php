@@ -2609,7 +2609,7 @@ function search(array $a): void {
                               WHERE a.status = 'published' AND t.status = 'published'
                                 AND $tripVis AND $actVisSearch
                                 AND (LOWER(a.title) LIKE ? OR LOWER(COALESCE(a.location_text,'')) LIKE ?)
-                           ORDER BY CASE WHEN a.day IS NULL OR a.day = '' THEN 1 ELSE 0 END, a.day, a.id DESC
+                           ORDER BY CASE WHEN a.day IS NULL THEN 1 ELSE 0 END, a.day, a.id DESC
                               LIMIT 10",
                             array_merge($tripVisArgs, $actVisSearchArgs, [$like, $like]));
     } else {
