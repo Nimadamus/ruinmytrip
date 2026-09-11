@@ -5,7 +5,7 @@
   <p class="muted" style="margin:0 0 16px">
     <?= count($rows) ?> active <?= count($rows) === 1 ? 'place' : 'places' ?>.
     "Filled" counts the eight fields a place page can show: address, coordinates, phone, website,
-    price, category, hours and a photo. It is a checklist, not a score to chase — a beach has no
+    price, category, hours and a photo. It is a checklist, not a score to chase: a beach has no
     phone number and never will.
   </p>
 
@@ -46,7 +46,7 @@
         <?php foreach ($refusals as $r): ?>
           <li style="padding:5px 0;font-size:.92rem;border-bottom:1px solid #f1f1f5">
             <a href="<?= e(url('p/'.$r['slug'])) ?>"><?= e($r['name'] ?: $r['slug']) ?></a>
-            <span class="muted"> — <?= e(str_replace('_', ' ', $r['reason'])) ?></span>
+            <span class="muted"> · <?= e(str_replace('_', ' ', $r['reason'])) ?></span>
             <?php if ($r['detail']): ?><span class="hint"><?= e($r['detail']) ?></span><?php endif; ?>
           </li>
         <?php endforeach; ?>

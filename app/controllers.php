@@ -31,10 +31,10 @@ function authors_fill(array &$rows, string $idField = 'user_id'): void {
     unset($row);
 }
 function stars(int $n): string { return str_repeat('★', $n) . str_repeat('☆', 5 - $n); }
-function not_found(): void { http_response_code(404); view('404', [], ['title'=>'Not found — RuinMyTrip']); exit; }
+function not_found(): void { http_response_code(404); view('404', [], ['title'=>'Not found | RuinMyTrip']); exit; }
 function forbidden(string $msg = "You don't have permission to do that."): void {
     http_response_code(403);
-    view('403', compact('msg'), ['title'=>'Not authorized — RuinMyTrip']);
+    view('403', compact('msg'), ['title'=>'Not authorized | RuinMyTrip']);
     exit;
 }
 
@@ -103,7 +103,7 @@ function home(array $a): void {
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.
-        'title' => 'RuinMyTrip — meet travelers going where you are going',
+        'title' => 'RuinMyTrip: meet travelers going where you are going',
         'description' => 'A travel community, not a guidebook. Post your dates, see whose overlap, join public meetups, and read reviews written by travelers who actually went. Free to join.',
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
             'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']]),
@@ -161,7 +161,7 @@ function explore(array $a): void {
     $topTags = rmt_top_tags(14);
     view('explore', compact('dests','cats','qs','cat','sort','topTags','countries'), [
         'title' => 'Explore destinations: 2026 costs, taxes and tickets | RuinMyTrip',
-        'description' => 'Browse traveler-reviewed destinations. Filter by style — culture, adventure, nature, food, city.',
+        'description' => 'Browse traveler-reviewed destinations. Filter by style: culture, adventure, nature, food, city.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
     ]);
 }
@@ -283,7 +283,7 @@ function destination_photos(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $photos = rmt_destination_photos((int)$d['id'], 300);
     view('destination_photos', compact('d','photos'), [
-        'title' => 'Photos of '.$d['name'].', '.$d['country'].' — RuinMyTrip',
+        'title' => 'Photos of '.$d['name'].', '.$d['country'].' | RuinMyTrip',
         'description' => 'Real traveler photos from trips and reviews in '.$d['name'].'.',
         'og_image' => $photos ? abs_url($photos[0]['url']) : abs_url($d['hero_url']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
@@ -333,7 +333,7 @@ function neighborhood_show(array $a): void {
         'type' => $type === '' ? null : $type, 'places' => $places,
         'me' => $me, 'savedMap' => $savedMap, 'saveCounts' => $saveCounts,
     ], [
-        'title' => $nb['canonical_name'] . ' in ' . $d['name'] . ' — RuinMyTrip',
+        'title' => $nb['canonical_name'] . ' in ' . $d['name'] . ' | RuinMyTrip',
         'description' => 'Places in ' . $nb['canonical_name'] . ', ' . $d['name'] . ': hotels, restaurants and things to do, with what we actually know about each.',
         'robots' => rmt_robots_for($nbVerdict),
         'canonical' => url('d/' . $d['slug'] . '/n/' . $nb['slug']),
@@ -356,7 +356,7 @@ function destination_travelers(array $a): void {
     view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing], [
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
-        'title' => 'Travelers in ' . $d['name'] . ' — who is going, meetups and travel buddies',
+        'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',
         'description' => 'Meet travelers going to ' . $d['name'] . ', ' . $d['country']
             . '. See who is there and when, join a meetup, ask the people who have been, and post your own dates.',
         // Every link posted anywhere points here, so the picture that comes with it names the city
@@ -623,7 +623,7 @@ function profile(array $a): void {
             'trip_count'   => (int) ($stats['trips'] ?? 0),
             'list_count'   => count($collections),
         ])),
-        'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') — RuinMyTrip',
+        'title' => ($u['display_name'] ?: $u['username']).' (@'.$u['username'].') | RuinMyTrip',
         'description' => $u['bio'] ?: ('Traveler profile for @'.$u['username'].' on RuinMyTrip.'),
         'og_image' => rmt_card_url('u', (string) $u['username']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])]],
@@ -641,7 +641,7 @@ function profile_followers(array $a): void {
     if (!$u) not_found();
     $people = rmt_followers((int)$u['id']);
     view('people_list', ['u'=>$u, 'people'=>$people, 'mode'=>'followers', 'me'=>current_user()], [
-        'title' => 'Followers of @'.$u['username'].' — RuinMyTrip',
+        'title' => 'Followers of @'.$u['username'].' | RuinMyTrip',
         'description' => 'Travelers following @'.$u['username'].' on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])],
                           ['name'=>'Followers','url'=>url('u/'.$u['username'].'/followers')]],
@@ -654,7 +654,7 @@ function profile_following(array $a): void {
     if (!$u) not_found();
     $people = rmt_following((int)$u['id']);
     view('people_list', ['u'=>$u, 'people'=>$people, 'mode'=>'following', 'me'=>current_user()], [
-        'title' => 'Travelers @'.$u['username'].' follows — RuinMyTrip',
+        'title' => 'Travelers @'.$u['username'].' follows | RuinMyTrip',
         'description' => 'Travelers followed by @'.$u['username'].' on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'@'.$u['username'],'url'=>url('u/'.$u['username'])],
                           ['name'=>'Following','url'=>url('u/'.$u['username'].'/following')]],
@@ -666,7 +666,7 @@ function profile_edit_form(array $a): void {
     require_login();
     $me = current_user();
     if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
-    view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$me], ['title'=>'Edit your profile — RuinMyTrip']);
+    view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$me], ['title'=>'Edit your profile | RuinMyTrip']);
 }
 
 /** POST /u/{username}/edit */
@@ -678,7 +678,7 @@ function profile_edit_submit(array $a): void {
     $v = rmt_profile_validate($_POST);
     if (!$v['ok']) {
         view('profile_edit', ['me'=>$me, 'errors'=>$v['errors'], 'p'=>array_merge($me, $_POST)],
-             ['title'=>'Edit your profile — RuinMyTrip']); return;
+             ['title'=>'Edit your profile | RuinMyTrip']); return;
     }
     $d = $v['data'];
 
@@ -687,7 +687,7 @@ function profile_edit_submit(array $a): void {
         $res = rmt_upload_image($_FILES['avatar'], (int)$me['id']);
         if (!$res['ok']) {
             view('profile_edit', ['me'=>$me, 'errors'=>[$res['error']], 'p'=>array_merge($me, $_POST)],
-                 ['title'=>'Edit your profile — RuinMyTrip']); return;
+                 ['title'=>'Edit your profile | RuinMyTrip']); return;
         }
         $d['avatar_url'] = $res['url'];
         $old = q_one('SELECT avatar_key FROM profiles WHERE user_id=?', [(int)$me['id']]);
@@ -834,7 +834,7 @@ function rmt_activity_items(?int $scopeUid, int $limitEach = 40): array {
         $row['title'] = 'Heading to '.$row['dest_name'];
         $row['cover_url'] = null;
         $row['feed_url'] = url('d/'.$row['dest_slug']);
-        $row['feed_excerpt'] = date('M j', strtotime((string)$row['date_from'])).' – '.date('M j, Y', strtotime((string)$row['date_to'])).'. Destination and dates only.';
+        $row['feed_excerpt'] = date('M j', strtotime((string)$row['date_from'])).' to '.date('M j, Y', strtotime((string)$row['date_to'])).'. Destination and dates only.';
     }
     unset($row);
 
@@ -915,7 +915,7 @@ function feed(array $a): void {
     // cities reads as strangers appearing in a list you thought you had chosen.
     $cities = rmt_feed_followed_destinations($uid);
     view('feed', compact('items','me','isEveryone','scope','cities'), [
-        'title' => 'Your feed — RuinMyTrip',
+        'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
     ]);
 }
@@ -932,7 +932,7 @@ function discover(array $a): void {
     $communities = rmt_community_browse(4);
     view('discover', ['items'=>$items, 'me'=>current_user(), 'topTags'=>$topTags,
                       'topTalk'=>$topTalk, 'communities'=>$communities], [
-        'title' => 'Discover — RuinMyTrip',
+        'title' => 'Discover | RuinMyTrip',
         'description' => 'The latest trips, reviews, guides, collections and blog posts from every traveler on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Discover','url'=>url('discover')]],
     ]);
@@ -942,7 +942,7 @@ function discover(array $a): void {
 function tags_index(array $a): void {
     $tags = rmt_top_tags(100);
     view('tags_index', ['tags'=>$tags], [
-        'title' => 'Topics — RuinMyTrip',
+        'title' => 'Topics | RuinMyTrip',
         'description' => 'Browse every topic travelers are tagging: budget travel, solo trips, scams to avoid, and more.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Topics','url'=>url('tags')]],
     ]);
@@ -955,7 +955,7 @@ function tag_show(array $a): void {
     if (!$tag) not_found();
     $items = rmt_tag_items((int)$tag['id']);
     view('tag_show', ['tag'=>$tag, 'items'=>$items, 'me'=>current_user()], [
-        'title' => '#'.$tag['name'].' — RuinMyTrip',
+        'title' => '#'.$tag['name'].' | RuinMyTrip',
         'description' => 'Trips, reviews, guides and blog posts tagged #'.$tag['name'].' by real travelers.',
         'og_image' => rmt_card_url('tag', (string) $tag['name']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Topics','url'=>url('tags')],
@@ -1030,7 +1030,7 @@ function reviews_index(array $a): void {
     }
     authors_fill($reviews);
     view('reviews_index', compact('reviews','mine','cat','sort','me'), [
-        'title'=>$mine ? 'Your reviews — RuinMyTrip' : '2026 destination reviews: taxes, tickets, what nearly ruins it | RuinMyTrip',
+        'title'=>$mine ? 'Your reviews | RuinMyTrip' : '2026 destination reviews: taxes, tickets, what nearly ruins it | RuinMyTrip',
         'description'=>'Honest 2026 reviews of destinations, hotels, restaurants and attractions: current prices, tourist taxes, and the part that nearly ruins the trip.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Reviews','url'=>url('reviews')]],
     ]);
@@ -1114,7 +1114,7 @@ function rmt_guide_can_edit(array $g, ?array $user): bool {
 
 function guide_new_form(array $a): void {
     require_login();
-    view('guide_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Write a guide — RuinMyTrip','description'=>'Share a detailed, practical travel guide.']);
+    view('guide_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Write a guide | RuinMyTrip','description'=>'Share a detailed, practical travel guide.']);
 }
 
 function guide_create(array $a): void {
@@ -1124,11 +1124,11 @@ function guide_create(array $a): void {
     }
     if (!rmt_rate_ok('guide_create', (string)$me['id'], 10, 3600)) {
         view('guide_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
-             ['title'=>'Write a guide — RuinMyTrip']); return;
+             ['title'=>'Write a guide | RuinMyTrip']); return;
     }
     $v = rmt_guide_validate($_POST);
     if (!$v['ok']) {
-        view('guide_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Write a guide — RuinMyTrip']); return;
+        view('guide_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Write a guide | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
@@ -1161,7 +1161,7 @@ function guide_edit_form(array $a): void {
     $g = q_one('SELECT * FROM guides WHERE id=?', [(int)$a['id']]);
     if (!$g) not_found();
     if (!rmt_guide_can_edit($g, current_user())) { forbidden('That is not your guide.'); }
-    view('guide_edit', ['g'=>$g, 'dests'=>all_dests(), 'errors'=>[]], ['title'=>'Edit guide — RuinMyTrip']);
+    view('guide_edit', ['g'=>$g, 'dests'=>all_dests(), 'errors'=>[]], ['title'=>'Edit guide | RuinMyTrip']);
 }
 
 function guide_edit_submit(array $a): void {
@@ -1173,7 +1173,7 @@ function guide_edit_submit(array $a): void {
     $v = rmt_guide_validate($_POST);
     if (!$v['ok']) {
         view('guide_edit', ['g'=>array_merge($g, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors']],
-             ['title'=>'Edit guide — RuinMyTrip']); return;
+             ['title'=>'Edit guide | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
@@ -1304,7 +1304,7 @@ function rmt_blog_unique_slug(string $title, int $excludeId = 0): string {
 
 function blog_new_form(array $a): void {
     require_login();
-    view('blog_new', ['errors'=>[]], ['title'=>'Write a blog post — RuinMyTrip','description'=>'Share a travel story, tip, or safety note with the RuinMyTrip community.']);
+    view('blog_new', ['errors'=>[]], ['title'=>'Write a blog post | RuinMyTrip','description'=>'Share a travel story, tip, or safety note with the RuinMyTrip community.']);
 }
 
 function blog_create(array $a): void {
@@ -1314,11 +1314,11 @@ function blog_create(array $a): void {
     }
     if (!rmt_rate_ok('blog_create', (string)$me['id'], 10, 3600)) {
         view('blog_new', ['errors'=>['You are posting very fast. Try again later.']],
-             ['title'=>'Write a blog post — RuinMyTrip']); return;
+             ['title'=>'Write a blog post | RuinMyTrip']); return;
     }
     $v = rmt_blog_validate($_POST);
     if (!$v['ok']) {
-        view('blog_new', ['errors'=>$v['errors']], ['title'=>'Write a blog post — RuinMyTrip']); return;
+        view('blog_new', ['errors'=>$v['errors']], ['title'=>'Write a blog post | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $slug = rmt_blog_unique_slug($d['title']);
@@ -1337,7 +1337,7 @@ function blog_edit_form(array $a): void {
     $p = q_one('SELECT * FROM blog_posts WHERE id=?', [(int)$a['id']]);
     if (!$p) not_found();
     if (!rmt_blog_can_edit($p, current_user())) { forbidden('That is not your post.'); }
-    view('blog_edit', ['p'=>$p, 'errors'=>[]], ['title'=>'Edit post — RuinMyTrip']);
+    view('blog_edit', ['p'=>$p, 'errors'=>[]], ['title'=>'Edit post | RuinMyTrip']);
 }
 
 function blog_edit_submit(array $a): void {
@@ -1349,7 +1349,7 @@ function blog_edit_submit(array $a): void {
     $v = rmt_blog_validate($_POST);
     if (!$v['ok']) {
         view('blog_edit', ['p'=>array_merge($p, $_POST), 'errors'=>$v['errors']],
-             ['title'=>'Edit post — RuinMyTrip']); return;
+             ['title'=>'Edit post | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $slug = rmt_blog_unique_slug($d['title'], (int)$p['id']);
@@ -1392,7 +1392,7 @@ function collections_index(array $a): void {
                          ORDER BY c.updated_at DESC, c.id DESC LIMIT 24", [(int) $me['id']]) : [];
 
     view('collections_index', ['collections'=>$collections, 'mine'=>$mine], [
-        'title' => 'Collections — RuinMyTrip',
+        'title' => 'Collections | RuinMyTrip',
         'description' => 'Traveler-curated lists of destinations, with the honest reasoning behind each pick.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')]],
     ]);
@@ -1451,7 +1451,7 @@ function collection_show(array $a): void {
                                     'isCommunity','members','memberCount','myRole','canAdd','joinState','invite','inviteToken','talk'), [
         'robots' => rmt_robots_for(rmt_indexable('list', $c + ['item_count' => count($items),
                                                                'member_count' => $memberCount])),
-        'title' => $c['title'].' — RuinMyTrip Collections',
+        'title' => $c['title'].' | RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
         'og_image' => $isCommunity ? rmt_card_url('c', (string) $c['slug'])
                                    : ($items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg')),
@@ -1491,7 +1491,7 @@ function rmt_collection_unique_slug(string $title, int $excludeId = 0): string {
 
 function collection_new_form(array $a): void {
     require_login();
-    view('collection_new', ['errors'=>[]], ['title'=>'Start a collection — RuinMyTrip','description'=>'Curate a list of destinations for other travelers.']);
+    view('collection_new', ['errors'=>[]], ['title'=>'Start a collection | RuinMyTrip','description'=>'Curate a list of destinations for other travelers.']);
 }
 
 function collection_create(array $a): void {
@@ -1501,11 +1501,11 @@ function collection_create(array $a): void {
     }
     if (!rmt_rate_ok('collection_create', (string)$me['id'], 10, 3600)) {
         view('collection_new', ['errors'=>['You are creating collections very fast. Try again later.']],
-             ['title'=>'Start a collection — RuinMyTrip']); return;
+             ['title'=>'Start a collection | RuinMyTrip']); return;
     }
     $v = rmt_collection_validate($_POST);
     if (!$v['ok']) {
-        view('collection_new', ['errors'=>$v['errors']], ['title'=>'Start a collection — RuinMyTrip']); return;
+        view('collection_new', ['errors'=>$v['errors']], ['title'=>'Start a collection | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $slug = rmt_collection_unique_slug($d['title']);
@@ -1537,7 +1537,7 @@ function collection_edit_form(array $a): void {
     $available = $usedIds
         ? q_all('SELECT id,name,country FROM destinations WHERE id NOT IN ('.implode(',', array_fill(0, count($usedIds), '?')).') ORDER BY name', $usedIds)
         : all_dests();
-    view('collection_edit', ['c'=>$c, 'items'=>$items, 'available'=>$available, 'errors'=>[]], ['title'=>'Edit collection — RuinMyTrip']);
+    view('collection_edit', ['c'=>$c, 'items'=>$items, 'available'=>$available, 'errors'=>[]], ['title'=>'Edit collection | RuinMyTrip']);
 }
 
 function collection_edit_submit(array $a): void {
@@ -1551,7 +1551,7 @@ function collection_edit_submit(array $a): void {
         $items = q_all('SELECT ci.*, d.name dest_name, d.country dest_country FROM collection_items ci
                         JOIN destinations d ON d.id=ci.destination_id WHERE ci.collection_id=? ORDER BY ci.sort, ci.id', [(int)$c['id']]);
         view('collection_edit', ['c'=>array_merge($c, $_POST), 'items'=>$items, 'available'=>[], 'errors'=>$v['errors']],
-             ['title'=>'Edit collection — RuinMyTrip']); return;
+             ['title'=>'Edit collection | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $slug = rmt_collection_unique_slug($d['title'], (int)$c['id']);
@@ -1648,7 +1648,7 @@ function meetups_index(array $a): void {
     $me = current_user();
     $canHost = can_host_meetups($me);
     view('meetups_index', compact('meetups', 'me', 'canHost'), [
-        'title'=>'Travel meetups — meet other travelers in person',
+        'title'=>'Travel meetups: meet other travelers in person',
         'description'=>'Public travel meetups posted by members: coffee, a walk, dinner with other travelers in the city you are in. Never dating, never precise location, always 18+.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')]],
     ]);
@@ -1689,7 +1689,7 @@ function meetup_show(array $a): void {
     $saved = $me && q_one('SELECT 1 FROM saves WHERE user_id=? AND target_type=? AND target_id=?', [(int)$me['id'],'meetup',$mid]);
     view('meetup_show', compact('m','rsvps','me','mine','isHost','going','isFull','isPast','hostStats','hostBadges','hostSince',
                                 'comments','likeCount','saveCount','liked','saved'), [
-        'title'=>$m['title'].' — RuinMyTrip meetup',
+        'title'=>$m['title'].' | RuinMyTrip meetup',
         'description'=>mb_substr((string)$m['description'],0,150),
         'og_image'=>rmt_card_url('meetup', (string) (int) $m['id']),
         // A dated public event with a host, a city and an attendee count was being served as an
@@ -1720,7 +1720,7 @@ function meetup_new_form(array $a): void {
     $start = trim((string) input('start'));
     if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $start)) $pre['date_start'] = $start . ' 18:00:00';
     view('meetup_new', ['dests' => all_dests(), 'errors' => [], 'm' => $pre], [
-        'title' => 'Host a meetup — RuinMyTrip',
+        'title' => 'Host a meetup | RuinMyTrip',
         'description' => 'Host a public, optional, safety-first travel meetup in a destination.',
     ]);
 }
@@ -1729,7 +1729,7 @@ function meetup_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
     if (!can_host_meetups($me)) { flash('You must be 18+ to host a meetup.'); redirect('/meetups'); }
 
-    $opts = ['title' => 'Host a meetup — RuinMyTrip'];
+    $opts = ['title' => 'Host a meetup | RuinMyTrip'];
     if (!rmt_submit_ok('meetup_new', input('_submit'))) {
         flash('That meetup was already created.'); redirect('/meetups'); return;
     }
@@ -1773,7 +1773,7 @@ function meetup_edit_form(array $a): void {
     $m = q_one('SELECT * FROM meetups WHERE id=?', [(int)$a['id']]);
     if (!$m) not_found();
     if (!rmt_meetup_can_edit($m, current_user())) forbidden('That is not your meetup.');
-    view('meetup_edit', ['m' => $m, 'dests' => all_dests(), 'errors' => []], ['title' => 'Edit meetup — RuinMyTrip']);
+    view('meetup_edit', ['m' => $m, 'dests' => all_dests(), 'errors' => []], ['title' => 'Edit meetup | RuinMyTrip']);
 }
 
 function meetup_edit_submit(array $a): void {
@@ -1787,7 +1787,7 @@ function meetup_edit_submit(array $a): void {
     $v = rmt_meetup_validate($_POST, (string) $m['date_start']);
     if (!$v['ok']) {
         view('meetup_edit', ['m' => array_merge($m, $_POST), 'dests' => all_dests(), 'errors' => $v['errors']],
-             ['title' => 'Edit meetup — RuinMyTrip']);
+             ['title' => 'Edit meetup | RuinMyTrip']);
         return;
     }
     $d = $v['data'];
@@ -1797,7 +1797,7 @@ function meetup_edit_submit(array $a): void {
     if ($d['capacity'] > 0 && $d['capacity'] < $going) {
         view('meetup_edit', ['m' => array_merge($m, $_POST), 'dests' => all_dests(),
              'errors' => ["$going people have already RSVPed. Capacity cannot be lower than that."]],
-             ['title' => 'Edit meetup — RuinMyTrip']);
+             ['title' => 'Edit meetup | RuinMyTrip']);
         return;
     }
     db()->prepare('UPDATE meetups SET destination_id=?, title=?, description=?, date_start=?, date_end=?,
@@ -1863,7 +1863,7 @@ function going_index(array $a): void {
                        FROM destinations d
                    ORDER BY going_count DESC, meetup_count DESC, d.name", [date('Y-m-d'), date('Y-m-d H:i:s')]);
     view('going_index', compact('rows','me','dests','cities'), [
-        'title'=>'Who is going where, and when — find a travel buddy',
+        'title'=>'Who is going where, and when: find a travel buddy',
         'description'=>'Travelers post the city and the dates they will be there, so you can find the ones whose trip overlaps yours. Destination and date range only, never a precise location.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>"Who's going",'url'=>url('going')]],
     ]);
@@ -1890,7 +1890,7 @@ function going_save(array $a): void {
     // The people already holding dates in that city are the ones this plan is news to.
     rmt_match_notify((int)$me['id'], $gid, (int)$v['data']['destination_id'],
                      (string)$v['data']['date_from'], (string)$v['data']['date_to'], $v['data']['visibility']);
-    flash('Saved. Destination and dates only — never a precise location.');
+    flash('Saved. Destination and dates only, never a precise location.');
     $d = dest_by_id((int)$v['data']['destination_id']);
     redirect($d ? '/d/'.$d['slug'] : '/going');
 }
@@ -1928,7 +1928,7 @@ function travelers_index(array $a): void {
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name",
                     [date('Y-m-d'), date('Y-m-d H:i:s')]);
     view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities], [
-        'title' => 'Travelers — meet the people going where you are going',
+        'title' => 'Travelers: meet the people going where you are going',
         'description' => 'Real members of RuinMyTrip, and the city pages that show who is going where and when. Follow the travelers whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
     ]);
@@ -1949,7 +1949,7 @@ function welcome_form(array $a): void {
     $me = $me + (q_one('SELECT home_city, travel_style, display_name, bio, avatar_url FROM profiles
                          WHERE user_id = ?', [(int) $me['id']]) ?: []);
     view('welcome', compact('dests','saved','me','communities','suggested'), [
-        'title' => 'Start your traveler profile — RuinMyTrip',
+        'title' => 'Start your traveler profile | RuinMyTrip',
         'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
     ]);
 }
@@ -2083,7 +2083,7 @@ function leaderboard(array $a): void {
     $breadcrumbs[] = ['name'=>'Top Reviewers','url'=>url('leaderboard'.($dest?('?d='.$dest['slug']):''))];
 
     view('leaderboard', ['rows'=>$rows, 'dest'=>$dest, 'destinations'=>$destinations], [
-        'title' => ($dest ? 'Top Reviewers in '.$dest['name'] : 'Top Reviewers').' — RuinMyTrip',
+        'title' => ($dest ? 'Top Reviewers in '.$dest['name'] : 'Top Reviewers').' | RuinMyTrip',
         'description' => $dest
             ? 'The most trusted travel reviewers writing about '.$dest['name'].' on RuinMyTrip, ranked by published reviews and community votes.'
             : 'The most trusted travel reviewers on RuinMyTrip, ranked by published reviews, community votes, and compliments.',
@@ -2220,7 +2220,7 @@ function search(array $a): void {
     }
     // A search results page is a view of the index we already have, in somebody's words.
     view('search', compact('qs','dests','places','trips','guides','reviews','people','posts','collections','talk'), [
-        'title'=>($qs!==''?('Search: '.$qs.' — '):'Search — ').'RuinMyTrip',
+        'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in
         // somebody else's words, and one per query is an infinite set of near-duplicates.
@@ -2263,7 +2263,7 @@ function invite_page(array $a): void {
     view('invite', [
         'me' => $me, 'link' => rmt_invite_link($me), 'message' => rmt_invite_message($me),
         'count' => rmt_invite_count((int) $me['id']), 'recent' => rmt_invite_recent((int) $me['id']),
-    ], ['title' => 'Invite a traveler — RuinMyTrip', 'description' => 'Bring somebody who has a story about a trip that went sideways.',
+    ], ['title' => 'Invite a traveler | RuinMyTrip', 'description' => 'Bring somebody who has a story about a trip that went sideways.',
         'robots' => 'noindex, follow']);
 }
 
@@ -2272,7 +2272,7 @@ function notifications(array $a): void {
     $items = q_all("SELECT n.*, u.username actor FROM notifications n LEFT JOIN users u ON u.id=n.actor_id
                     WHERE n.user_id=? ORDER BY n.id DESC LIMIT 50", [(int)$me['id']]);
     db()->prepare("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL")->execute([date('Y-m-d H:i:s'),(int)$me['id']]);
-    view('notifications', compact('items','me'), ['title'=>'Notifications — RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
+    view('notifications', compact('items','me'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
 }
 
 /**
@@ -2288,7 +2288,7 @@ function unsubscribe_action(array $a): void {
         db()->prepare('UPDATE profiles SET digest_opt_out=1 WHERE user_id=?')->execute([$uid]);
     }
     view('unsubscribe', ['ok' => $ok], [
-        'title' => 'Unsubscribe — RuinMyTrip',
+        'title' => 'Unsubscribe | RuinMyTrip',
         'description' => 'Manage RuinMyTrip email preferences.',
     ]);
 }
@@ -2296,7 +2296,7 @@ function unsubscribe_action(array $a): void {
 /* ---------- forms & writes ---------- */
 function trip_new_form(array $a): void {
     require_login();
-    view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip — RuinMyTrip','description'=>'Post a trip story with photos.']);
+    view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip | RuinMyTrip','description'=>'Post a trip story with photos.']);
 }
 /**
  * Validate a submitted trip. Shared by trip_create and trip_edit_submit so the two rule sets
@@ -2395,11 +2395,11 @@ function trip_create(array $a): void {
     }
     if (!rmt_rate_ok('trip_create', (string)$me['id'], 20, 3600)) {
         view('trip_new', ['dests'=>all_dests(),'errors'=>['You are posting very fast. Try again later.']],
-             ['title'=>'Share a trip — RuinMyTrip']); return;
+             ['title'=>'Share a trip | RuinMyTrip']); return;
     }
     $v = rmt_trip_validate($_POST);
     if (!$v['ok']) {
-        view('trip_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Share a trip — RuinMyTrip']); return;
+        view('trip_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Share a trip | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
@@ -2428,7 +2428,7 @@ function trip_edit_form(array $a): void {
     if (!rmt_trip_can_edit($t, current_user())) { forbidden('That is not your trip.'); }
     $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort, id', [(int)$t['id']]);
     view('trip_edit', ['t'=>$t, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos],
-         ['title'=>'Edit trip — RuinMyTrip']);
+         ['title'=>'Edit trip | RuinMyTrip']);
 }
 
 function trip_edit_submit(array $a): void {
@@ -2441,7 +2441,7 @@ function trip_edit_submit(array $a): void {
     if (!$v['ok']) {
         $photos = q_all('SELECT * FROM trip_photos WHERE trip_id=? ORDER BY sort, id', [(int)$t['id']]);
         view('trip_edit', ['t'=>array_merge($t, $_POST), 'dests'=>all_dests(), 'errors'=>$v['errors'], 'photos'=>$photos],
-             ['title'=>'Edit trip — RuinMyTrip']); return;
+             ['title'=>'Edit trip | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
@@ -2580,7 +2580,7 @@ function contribute_page(array $a): void {
     $prefillName = mb_substr($prefillName, 0, 200);
 
     view('contribute', compact('me', 'recentDestinations', 'myReviews', 'prefillName'), [
-        'title' => 'Review a place you went to — RuinMyTrip',
+        'title' => 'Review a place you went to | RuinMyTrip',
         'description' => 'Write about a hotel, restaurant or attraction you actually visited. Real traveler reviews, not imported listings.',
     ]);
 }
@@ -2620,7 +2620,7 @@ function contribute_suggest_place(array $a): void {
                         WHERE p.status = 'active' AND p.name_key = ? AND LOWER(d.name) = LOWER(?)",
                       [$key, $city]);
     if ($existing) {
-        flash('We already have that one — here it is.');
+        flash('We already have that one. Here it is.');
         redirect('/review/new?place=' . (int) (q_one('SELECT id FROM places WHERE slug = ?', [$existing['slug']])['id'] ?? 0));
     }
 
@@ -2628,7 +2628,7 @@ function contribute_suggest_place(array $a): void {
            VALUES (?,?,?,?,?,'pending',?)",
           [$name, $city, $type, $website, (int) $me['id'], date('Y-m-d H:i:s')]);
     rmt_track('place_suggested', ['source' => 'contribute']);
-    flash('Thanks — we will check it and add it. Places are added by hand, so it is not instant.');
+    flash('Thanks. We will check it and add it. Places are added by hand, so it is not instant.');
     redirect('/contribute');
 }
 
@@ -2646,7 +2646,7 @@ function ruined_page(array $a): void {
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'What ruined it', 'url' => url('ruined')]];
     if ($dest) $crumbs[] = ['name' => (string) $dest['name'], 'url' => url('ruined?d=' . $dest['slug'])];
     view('ruined', compact('rows', 'dests', 'dest', 'total'), [
-        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] : 'What ruined the trip') . ' — RuinMyTrip',
+        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] : 'What ruined the trip') . ' | RuinMyTrip',
         'description' => $dest
             ? 'One sentence each from travelers about what nearly ruined ' . $dest['name'] . ', and a place to add yours.'
             : 'The thing travelers wish somebody had warned them about, one sentence each. Read them before you go, add yours when you get back.',
@@ -2683,7 +2683,7 @@ function review_new_form(array $a): void {
                                         'place_id' => (int) $bound['id'],
                                         'destination_id' => (int) $bound['destination_id']]);
         view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound, 'aspectValues'=>[]],
-             ['title'=>'Review '.$bound['name'].' — RuinMyTrip']);
+             ['title'=>'Review '.$bound['name'].' | RuinMyTrip']);
         return;
     }
     $preselect = (int) input('destination');
@@ -2694,7 +2694,7 @@ function review_new_form(array $a): void {
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
     view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[]],
-         ['title'=>'Write a review — RuinMyTrip']);
+         ['title'=>'Write a review | RuinMyTrip']);
 }
 
 function review_create(array $a): void {
@@ -2710,7 +2710,7 @@ function review_create(array $a): void {
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
         rmt_track('review_publish_failure', ['reason' => 'rate_limit']);
         view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>null]),
-             ['title'=>'Write a review — RuinMyTrip']); return;
+             ['title'=>'Write a review | RuinMyTrip']); return;
     }
     $isDraft = input('action') === 'draft';
     // Publishing requires a confirmed email. It used to redirect to the verification page here,
@@ -2732,7 +2732,7 @@ function review_create(array $a): void {
     if (!$v['ok'] || !$asp['ok']) {
         rmt_track('review_publish_failure', ['reason' => 'validation']);
         view('review_new', $opts(['errors'=>array_merge($v['errors'], $asp['errors']), 'r'=>$_POST]),
-             ['title'=>'Write a review — RuinMyTrip']); return;
+             ['title'=>'Write a review | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $travelerType = rmt_traveler_type_clean($_POST['traveler_type'] ?? null);
@@ -2782,7 +2782,7 @@ function review_create(array $a): void {
 
     $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Your review is live.';
     if ($holdForVerification) {
-        $msg = 'Saved as a draft — nothing was lost. Confirm your email address and it publishes itself.';
+        $msg = 'Saved as a draft, nothing was lost. Confirm your email address and it publishes itself.';
     }
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
@@ -2900,7 +2900,7 @@ function review_edit_form(array $a): void {
     $photos = q_all('SELECT * FROM review_photos WHERE review_id=? ORDER BY sort, id', [(int)$r['id']]);
     view('review_edit', ['r'=>$r, 'dests'=>all_dests(), 'errors'=>[], 'photos'=>$photos, 'placeOptions'=>rmt_place_suggestions(),
                          'aspectValues'=>rmt_review_aspect_values((int)$r['id'])],
-         ['title'=>'Edit review — RuinMyTrip']);
+         ['title'=>'Edit review | RuinMyTrip']);
 }
 
 function review_edit_submit(array $a): void {
@@ -2920,7 +2920,7 @@ function review_edit_submit(array $a): void {
         view('review_edit', ['r'=>array_merge($r, $_POST), 'dests'=>all_dests(), 'errors'=>array_merge($v['errors'], $asp['errors']),
                              'photos'=>$photos, 'placeOptions'=>rmt_place_suggestions(),
                              'aspectValues'=>rmt_posted_aspect_values($_POST)],
-             ['title'=>'Edit review — RuinMyTrip']); return;
+             ['title'=>'Edit review | RuinMyTrip']); return;
     }
     $d = $v['data'];
     $travelerType = rmt_traveler_type_clean($_POST['traveler_type'] ?? null);
@@ -2961,7 +2961,7 @@ function review_edit_submit(array $a): void {
 
     if ($status === 'published') rmt_award_badges((int)current_user()['id']);
     $msg = $holdForVerification
-        ? 'Saved as a draft — your changes are kept. Confirm your email address and you can publish it.'
+        ? 'Saved as a draft, your changes are kept. Confirm your email address and you can publish it.'
         : 'Review updated.';
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
@@ -3179,7 +3179,7 @@ function founding(array $a): void {
     $n = (int) (q_one("SELECT COUNT(*) c FROM users WHERE status='active' AND role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
     $left = max(0, 100 - $n);
     view('founding', compact('n','left'), [
-        'title' => 'Founding Traveler — first 100 reviewers on RuinMyTrip',
+        'title' => 'Founding Traveler: first 100 reviewers on RuinMyTrip',
         'description' => 'Join RuinMyTrip as one of the first 100 travelers to publish a review and earn the Founding Traveler badge. No fake members. No invented reviews.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Founding Traveler','url'=>url('founding')]],
     ]);
@@ -3318,7 +3318,7 @@ function saved_index(array $a): void {
     authors_fill($reading);
 
     view('saved', compact('me', 'places', 'dests', 'reading'), [
-        'title' => 'Saved — RuinMyTrip',
+        'title' => 'Saved | RuinMyTrip',
         'description' => 'The places, destinations and travel writing you have saved on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Saved','url'=>url('saved')]],
     ]);
@@ -3526,7 +3526,7 @@ function meetup_rsvp(array $a): void {
 /* ---------- auth ---------- */
 function login_form(array $a): void {
     if (is_logged_in()) redirect('/feed');
-    view('auth/login', ['errors'=>[], 'return'=>rmt_safe_return_path((string) input('return'))], ['title'=>'Sign in — RuinMyTrip']);
+    view('auth/login', ['errors'=>[], 'return'=>rmt_safe_return_path((string) input('return'))], ['title'=>'Sign in | RuinMyTrip']);
 }
 function login_submit(array $a): void {
     csrf_check();
@@ -3537,7 +3537,7 @@ function login_submit(array $a): void {
     if (!rmt_rate_ok('login_ip', rmt_client_ip(), 20, 900) || !rmt_rate_ok('login_email', $email, 10, 900)) {
         $mins = (int)ceil(rmt_rate_retry_after(900) / 60);
         view('auth/login', ['errors'=>["Too many sign-in attempts. Try again in about {$mins} minute(s)."], 'return'=>$return],
-             ['title'=>'Sign in — RuinMyTrip']); return;
+             ['title'=>'Sign in | RuinMyTrip']); return;
     }
     // A logged-out visit to a protected route redirects here with ?return= set (see
     // require_login()) so signing in lands back where the user was actually headed, not always
@@ -3551,7 +3551,7 @@ function login_submit(array $a): void {
         flash('Welcome back.');
         redirect($return);
     }
-    view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in — RuinMyTrip']);
+    view('auth/login', ['errors'=>['Incorrect email or password.'], 'return'=>$return], ['title'=>'Sign in | RuinMyTrip']);
 }
 /**
  * GET /register
@@ -3590,7 +3590,7 @@ function register_submit(array $a): void {
         // through, is how a first review stops being written.
         $heading = $mailed
             ? 'Welcome to RuinMyTrip. Check your email to confirm your address.'
-            : 'Welcome to RuinMyTrip. We could not send the confirmation email — request a new link from /verify-email.';
+            : 'Welcome to RuinMyTrip. We could not send the confirmation email. Request a new link from /verify-email.';
         if ($return !== '' && $return !== '/feed') {
             if (str_contains($return, '/review/new')) {
                 rmt_track('review_signup_completed');
@@ -3625,7 +3625,7 @@ function verify_email(array $a): void {
     if ($raw === '') {
         $me = current_user();
         view('auth/verify_notice', ['me'=>$me, 'verified'=>email_is_verified($me)],
-             ['title'=>'Confirm your email — RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip']);
         return;
     }
     $row = rmt_token_lookup($raw, 'verify');
@@ -3635,12 +3635,12 @@ function verify_email(array $a): void {
         view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
              'errors'=>['This confirmation link has already been used or has expired. '
                       . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
-             ['title'=>'Confirm your email — RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip']);
         return;
     }
     // Valid token — show a one-click confirm page. Nothing is consumed on GET.
     view('auth/verify_confirm', ['token'=>$raw, 'email'=>$row['email'] ?? null],
-         ['title'=>'Confirm your email — RuinMyTrip']);
+         ['title'=>'Confirm your email | RuinMyTrip']);
 }
 
 /** POST /verify-email/confirm — the actual, human-triggered verification. */
@@ -3652,7 +3652,7 @@ function verify_email_confirm(array $a): void {
         view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
              'errors'=>['This confirmation link has already been used or has expired. '
                       . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
-             ['title'=>'Confirm your email — RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip']);
         return;
     }
     db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
@@ -3704,7 +3704,7 @@ function verify_email_resend(array $a): void {
 /* ---------- password reset ---------- */
 
 function forgot_form(array $a): void {
-    view('auth/forgot', ['errors'=>[], 'sent'=>false], ['title'=>'Reset your password — RuinMyTrip']);
+    view('auth/forgot', ['errors'=>[], 'sent'=>false], ['title'=>'Reset your password | RuinMyTrip']);
 }
 
 /**
@@ -3722,14 +3722,14 @@ function forgot_submit(array $a): void {
         $u = q_one('SELECT * FROM users WHERE email = ?', [$email]);
         if ($u && $u['status'] !== 'suspended') send_password_reset_email($u);
     }
-    view('auth/forgot', ['errors'=>[], 'sent'=>true], ['title'=>'Reset your password — RuinMyTrip']);
+    view('auth/forgot', ['errors'=>[], 'sent'=>true], ['title'=>'Reset your password | RuinMyTrip']);
 }
 
 function reset_form(array $a): void {
     $raw = (string) input('token');
     $row = rmt_token_lookup($raw, 'reset');
     view('auth/reset', ['token'=>$raw, 'valid'=>(bool)$row, 'errors'=>[]],
-         ['title'=>'Choose a new password — RuinMyTrip']);
+         ['title'=>'Choose a new password | RuinMyTrip']);
 }
 
 function reset_submit(array $a): void {
@@ -3738,7 +3738,7 @@ function reset_submit(array $a): void {
     $row = rmt_token_lookup($raw, 'reset');
     if (!$row) {
         view('auth/reset', ['token'=>$raw, 'valid'=>false, 'errors'=>['That reset link is invalid or has expired.']],
-             ['title'=>'Choose a new password — RuinMyTrip']); return;
+             ['title'=>'Choose a new password | RuinMyTrip']); return;
     }
     $pw = (string) input('password');
     $pw2 = (string) input('password_confirm');
@@ -3747,7 +3747,7 @@ function reset_submit(array $a): void {
     if ($pw !== $pw2)    $errors[] = 'Those passwords do not match.';
     if ($errors) {
         view('auth/reset', ['token'=>$raw, 'valid'=>true, 'errors'=>$errors],
-             ['title'=>'Choose a new password — RuinMyTrip']); return;
+             ['title'=>'Choose a new password | RuinMyTrip']); return;
     }
     $uid = (int) $row['user_id'];
     db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
@@ -3776,7 +3776,7 @@ function settings_save(array $a): void {
     $v = rmt_profile_validate($_POST);
     if (!$v['ok']) {
         view('profile_edit', ['me'=>$me, 'errors'=>$v['errors'], 'p'=>array_merge($me, $_POST)],
-             ['title'=>'Edit your profile — RuinMyTrip']); return;
+             ['title'=>'Edit your profile | RuinMyTrip']); return;
     }
     $d = $v['data'];
     // A member whose profile row never existed would otherwise save into nothing and be told it
@@ -3810,7 +3810,7 @@ const RMT_REPORT_REASONS = ['abuse', 'spam', 'misinformation', 'unsafe', 'off_to
 function report_form(array $a): void {
     require_login();
     view('report', ['tt'=>input('target_type'),'tid'=>input('target_id'),'errors'=>[]],
-         ['title'=>'Report content — RuinMyTrip']);
+         ['title'=>'Report content | RuinMyTrip']);
 }
 
 /**
@@ -3867,13 +3867,13 @@ function report_submit(array $a): void {
 
     if ($errors) {
         view('report', ['tt'=>$tt, 'tid'=>$tid, 'errors'=>$errors],
-             ['title'=>'Report content — RuinMyTrip']); return;
+             ['title'=>'Report content | RuinMyTrip']); return;
     }
 
     q_run("INSERT INTO reports (reporter_id,target_type,target_id,reason,details,status,created_at)
            VALUES (?,?,?,?,?, 'open', ?)",
         [(int)$me['id'], $tt, $tid, $reason, $details ?: null, date('Y-m-d H:i:s')]);
-    flash('Thanks — our moderators will review this.');
+    flash('Thanks. Our moderators will review this.');
     redirect('/');
 }
 
@@ -3888,7 +3888,7 @@ function admin_dashboard(array $a): void {
         'meetups'=>(int)(q_one('SELECT COUNT(*) c FROM meetups')['c']??0),
         'open_reports'=>count($reports),
     ];
-    view('admin', compact('reports','stats'), ['title'=>'Moderation — RuinMyTrip']);
+    view('admin', compact('reports','stats'), ['title'=>'Moderation | RuinMyTrip']);
 }
 /* ===========================================================================
  * Admin place editor
@@ -3905,7 +3905,7 @@ function admin_places_index(array $a): void {
                           'coverage' => rmt_place_coverage(),
                           'refusals' => rmt_enrichment_refusals(),
                           'stale'    => rmt_stale_places(180, 50)],
-         ['title' => 'Places — RuinMyTrip admin']);
+         ['title' => 'Places | RuinMyTrip admin']);
 }
 
 /**
@@ -3932,7 +3932,7 @@ function admin_search_report(array $a): void {
                             [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))]),
         'total'    => (int) (q_one('SELECT COUNT(*) c FROM search_log WHERE created_at >= ?',
                             [date('Y-m-d H:i:s', strtotime('-' . $days . ' days'))])['c'] ?? 0),
-    ], ['title' => 'Search — RuinMyTrip admin']);
+    ], ['title' => 'Search | RuinMyTrip admin']);
 }
 
 /**
@@ -3964,7 +3964,7 @@ function admin_destinations_report(array $a): void {
     }
     unset($r);
     usort($rows, static fn($x, $y) => [$y['ready'], $y['places']] <=> [$x['ready'], $x['places']]);
-    view('admin_destinations', ['rows' => $rows], ['title' => 'Destinations — RuinMyTrip admin']);
+    view('admin_destinations', ['rows' => $rows], ['title' => 'Destinations | RuinMyTrip admin']);
 }
 
 /**
@@ -4177,7 +4177,7 @@ function admin_funnel(array $a): void {
         // The join funnel sits above the contribution one now, because a site with no members has
         // no contributions to measure and the order of the page should say which problem is first.
         'signup'    => rmt_signup_funnel($days),
-    ], ['title' => 'Signup and contribution funnels — RuinMyTrip admin']);
+    ], ['title' => 'Signup and contribution funnels | RuinMyTrip admin']);
 }
 
 /**
@@ -4191,7 +4191,7 @@ function admin_moderation(array $a): void {
     view('admin_moderation', [
         'queue'   => rmt_moderation_queue(100),
         'history' => rmt_moderation_history(40),
-    ], ['title' => 'Moderation queue — RuinMyTrip admin']);
+    ], ['title' => 'Moderation queue | RuinMyTrip admin']);
 }
 
 /**
@@ -4214,7 +4214,7 @@ function admin_suggestions(array $a): void {
     $rows = q_all("SELECT ps.*, u.username FROM place_suggestions ps
                     LEFT JOIN users u ON u.id = ps.suggested_by
                     ORDER BY (ps.status = 'pending') DESC, ps.created_at DESC LIMIT 200");
-    view('admin_suggestions', ['rows' => $rows], ['title' => 'Suggested places — RuinMyTrip admin']);
+    view('admin_suggestions', ['rows' => $rows], ['title' => 'Suggested places | RuinMyTrip admin']);
 }
 
 /**
@@ -4257,7 +4257,7 @@ function admin_place_render(array $p, array $errors, array $posted): void {
                                    FROM review_photos rp JOIN reviews r ON r.id = rp.review_id
                                   WHERE r.place_id = ? AND r.status = 'published'
                                   ORDER BY rp.id DESC LIMIT 24", [$id]),
-    ], ['title' => 'Edit ' . $p['name'] . ' — RuinMyTrip admin']);
+    ], ['title' => 'Edit ' . $p['name'] . ' | RuinMyTrip admin']);
 }
 
 /**
@@ -4477,14 +4477,14 @@ function admin_mail_check(array $a): void {
 }
 
 /* ---------- legal / safety ---------- */
-function page_terms(array $a): void { view('legal/terms', [], ['title'=>'Terms of Service — RuinMyTrip']); }
-function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Privacy Policy — RuinMyTrip']); }
-function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'=>'Community Guidelines — RuinMyTrip']); }
-function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure — RuinMyTrip']); }
-function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety — RuinMyTrip']); }
+function page_terms(array $a): void { view('legal/terms', [], ['title'=>'Terms of Service | RuinMyTrip']); }
+function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Privacy Policy | RuinMyTrip']); }
+function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'=>'Community Guidelines | RuinMyTrip']); }
+function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure | RuinMyTrip']); }
+function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety | RuinMyTrip']); }
 function page_editorial(array $a): void {
     view('legal/editorial', [], [
-        'title' => 'Editorial policy — how RuinMyTrip labels its own content',
+        'title' => 'Editorial policy: how RuinMyTrip labels its own content',
         'description' => 'RuinMyTrip publishes researched editorial reviews under one official account, always labelled, never counted in community ratings, and never presented as a traveler visit.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Editorial policy','url'=>url('editorial-policy')]],
     ]);
@@ -4681,7 +4681,7 @@ function community_members(array $a): void {
         : [];
     view('community_members', compact('c','me','members','removed','canEdit'), [
         'robots' => rmt_robots_for(rmt_indexable('private')),   // a member list is for the community, not for search
-        'title'  => 'Members of '.$c['title'].' — RuinMyTrip',
+        'title'  => 'Members of '.$c['title'].' | RuinMyTrip',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Communities','url'=>url('communities')],
                           ['name'=>$c['title'],'url'=>url('c/'.$c['slug'])],
                           ['name'=>'Members','url'=>url('c/'.$c['slug'].'/members')]],
@@ -4757,7 +4757,7 @@ function communities_index(array $a): void {
     $me = current_user();
     $mine = $me ? rmt_community_memberships((int) $me['id']) : [];
     view('communities_index', compact('communities','mine','me'), [
-        'title' => 'Communities — RuinMyTrip',
+        'title' => 'Communities | RuinMyTrip',
         'description' => 'Travel communities started by travelers. Join one, or start your own.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Communities','url'=>url('communities')]],
     ]);
@@ -4812,7 +4812,7 @@ function matches_index(array $a): void {
     }
 
     view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me', 'home', 'visitors', 'neighbours'), [
-        'title' => 'Your trip matches — RuinMyTrip',
+        'title' => 'Your trip matches | RuinMyTrip',
         'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Matches', 'url' => url('matches')]],
@@ -4854,12 +4854,12 @@ function posts_index(array $a): void {
     $title = 'Travel talk';
     if ($place) $title = 'Questions about ' . $place['name'];
     elseif ($dest) $title = 'Travelers talking about ' . $dest['name'];
-    if ($community) $title = $community['title'] . ' — discussion';
+    if ($community) $title = $community['title'] . ': discussion';
 
     $topTags = rmt_top_tags(12);
     $polls = rmt_polls_for_posts(array_column($posts, 'id'), $me ? (int) $me['id'] : null);
     view('posts_index', compact('posts', 'me', 'dests', 'myCommunities', 'dest', 'community', 'topTags', 'sort', 'place', 'polls'), [
-        'title' => $title . ' — RuinMyTrip',
+        'title' => $title . ' | RuinMyTrip',
         'description' => 'What travelers are saying right now: questions, warnings and what a place is actually like.',
         // A filtered view of a stream is a filter, and the unfiltered one is the page worth indexing.
         'robots' => rmt_robots_for(rmt_indexable($dest || $community || $place ? 'filter' : 'static')),
@@ -4950,7 +4950,7 @@ function post_edit_form(array $a): void {
     if (!$p || $p['status'] !== 'published') not_found();
     if (!rmt_post_can_edit($p, current_user())) forbidden('That is not your post.');
     view('post_edit', ['p' => $p, 'me' => current_user()], [
-        'title' => 'Edit post — RuinMyTrip',
+        'title' => 'Edit post | RuinMyTrip',
         'robots' => rmt_robots_for(rmt_indexable('private')),
     ]);
 }
@@ -4993,7 +4993,7 @@ function post_delete(array $a): void {
 function community_new_form(array $a): void {
     require_login();
     view('community_new', ['errors' => [], 'me' => current_user()], [
-        'title' => 'Start a community — RuinMyTrip',
+        'title' => 'Start a community | RuinMyTrip',
         'description' => 'Start a group other travelers can join, about how you travel rather than where.',
         'breadcrumbs' => [['name' => 'Home', 'url' => url()],
                           ['name' => 'Communities', 'url' => url('communities')],
@@ -5003,7 +5003,7 @@ function community_new_form(array $a): void {
 
 function community_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
-    $opts = ['title' => 'Start a community — RuinMyTrip'];
+    $opts = ['title' => 'Start a community | RuinMyTrip'];
     if (!rmt_submit_ok('community_new', input('_submit'))) {
         flash('That community was already created.'); redirect('/communities'); return;
     }

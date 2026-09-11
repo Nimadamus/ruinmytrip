@@ -34,7 +34,7 @@
   <?php if (!$collections): ?>
     <div class="empty-cta" style="margin-bottom:24px">
       <h3>No travel lists yet.</h3>
-      <p class="muted" style="margin:0">Curate a list — best beaches for solo travelers, cities that surprised you, whatever ties a few destinations together.</p>
+      <p class="muted" style="margin:0">Curate a list: best beaches for solo travelers, cities that surprised you, whatever ties a few destinations together.</p>
       <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url($me ? 'collection/new' : 'register')) ?>">Start a list</a></p>
     </div>
   <?php endif; ?>

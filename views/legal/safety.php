@@ -1,9 +1,9 @@
 <div class="wrap prose" style="padding:30px 20px 60px">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Meetup Safety</p>
   <h1>Meetup Safety</h1>
-  <div class="callout"><b>Meetups are optional, public, community connections — never dating or hookups.</b> RuinMyTrip is built to help travelers meet safely, in the open.</div>
+  <div class="callout"><b>Meetups are optional, public, community connections, never dating or hookups.</b> RuinMyTrip is built to help travelers meet safely, in the open.</div>
   <h2>How location works here</h2>
-  <p>Meetups are tied to a <b>destination only</b>. We never store or share precise coordinates, home addresses, or real-time location. Exact meeting spots are public places, shared with confirmed attendees inside the app — not posted publicly.</p>
+  <p>Meetups are tied to a <b>destination only</b>. We never store or share precise coordinates, home addresses, or real-time location. Exact meeting spots are public places, shared with confirmed attendees inside the app, not posted publicly.</p>
   <h2>Before you go</h2>
   <ul>
     <li>Meet in a busy, public place in daylight when you can.</li>

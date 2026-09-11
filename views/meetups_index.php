@@ -15,7 +15,7 @@
       <span class="hint">Hosting and attending are 18+.</span>
     <?php endif; ?>
   </div>
-  <div class="callout"><b>Optional, public, and safety-first.</b> Meetups are a way to meet fellow travelers in a destination — <b>not dating, not hookups</b>. We never share precise or real-time location. <a href="<?= e(url('safety')) ?>">Read the safety guidance →</a></div>
+  <div class="callout"><b>Optional, public, and safety-first.</b> Meetups are a way to meet fellow travelers in a destination, <b>not dating, not hookups</b>. We never share precise or real-time location. <a href="<?= e(url('safety')) ?>">Read the safety guidance →</a></div>
   <?php if (!$meetups): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
       <h3>No public meetups yet.</h3>

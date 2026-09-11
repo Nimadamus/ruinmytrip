@@ -5,7 +5,7 @@
   <span class="chip"><?= e($m['dest_name']) ?></span>
   <h1><?= e($m['title']) ?></h1>
   <p class="muted"><?= e(date('l, M j, Y · g:ia', strtotime((string)$m['date_start']))) ?>
-    <?php if($m['date_end']):?>– <?= e(date('g:ia', strtotime((string)$m['date_end']))) ?><?php endif;?>
+    <?php if($m['date_end']):?>to <?= e(date('g:ia', strtotime((string)$m['date_end']))) ?><?php endif;?>
     · Hosted by <a href="<?= e(url('u/'.$m['host']['username'])) ?>">@<?= e($m['host']['username']) ?></a></p>
 
   <?php if ($m['status'] === 'cancelled'): ?>
@@ -17,7 +17,7 @@
     <div class="callout" style="margin:14px 0"><b>This meetup has already happened.</b></div>
   <?php endif; ?>
 
-  <div class="callout"><b>How location works:</b> this meetup is tied to the destination only. If the host names a specific meeting spot, it's in the description below, visible to everyone — RuinMyTrip has no separate private-location feature. We never post anyone's precise or live location.</div>
+  <div class="callout"><b>How location works:</b> this meetup is tied to the destination only. If the host names a specific meeting spot, it's in the description below, visible to everyone. RuinMyTrip has no separate private-location feature. We never post anyone's precise or live location.</div>
 
   <p style="font-size:1.1rem"><?= nl2br(e($m['description'])) ?></p>
 
@@ -32,7 +32,7 @@
     <?php if ($me && ($mine || !$closed)): ?>
       <?php if ($mine || !$isFull): ?>
         <form method="post" action="<?= e(url('meetup/'.$m['id'].'/rsvp')) ?>" style="margin:0"><?= csrf_field() ?>
-          <button class="btn <?= $mine?'btn-ghost':'btn-primary' ?>"><?= $mine?'Cancel RSVP':'RSVP — I\'m going' ?></button></form>
+          <button class="btn <?= $mine?'btn-ghost':'btn-primary' ?>"><?= $mine?'Cancel RSVP':'RSVP, I\'m going' ?></button></form>
       <?php else: ?>
         <span class="chip">Full</span>
       <?php endif; ?>

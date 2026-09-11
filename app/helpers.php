@@ -144,7 +144,7 @@ function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);
     $__meta = array_merge([
         'title' => cfg('app_name'),
-        'description' => 'RuinMyTrip — a trustworthy travel community for real trips, honest reviews, and safe meetups.',
+        'description' => 'RuinMyTrip: a trustworthy travel community for real trips, honest reviews, and safe meetups.',
         'canonical' => rmt_current_url(),
         'og_image' => rmt_default_og_image(),
         'jsonld' => null,

@@ -79,7 +79,7 @@ function messages_index(array $a): void {
         [$uid, $uid, $uid, $uid]
     );
     view('messages_index', compact('rows'), [
-        'title' => 'Messages — RuinMyTrip',
+        'title' => 'Messages | RuinMyTrip',
         'description' => 'Your RuinMyTrip conversations.',
     ]);
 }
@@ -104,7 +104,7 @@ function messages_thread(array $a): void {
     }
 
     view('messages_thread', compact('them', 'items', 'blocked'), [
-        'title' => 'Messages with @' . $them['username'] . ' — RuinMyTrip',
+        'title' => 'Messages with @' . $them['username'] . ' | RuinMyTrip',
         'description' => 'Conversation with @' . $them['username'] . ' on RuinMyTrip.',
     ]);
 }

@@ -51,7 +51,7 @@ $here = '/d/' . $d['slug'] . '/travelers';
         <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.35rem .7rem"
            href="<?= e(url('u/'.$g['username'])) ?>">
           <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($g['avatar_url']??null)) ?>" alt="">
-          @<?= e($g['username']) ?> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?>–<?= e(date('M j', strtotime((string)$g['date_to']))) ?>
+          @<?= e($g['username']) ?> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?> to <?= e(date('M j', strtotime((string)$g['date_to']))) ?>
         </a>
       <?php endforeach; ?>
     </div>
@@ -102,7 +102,7 @@ $here = '/d/' . $d['slug'] . '/travelers';
     </ul>
   <?php else: ?>
     <p class="muted">No meetups planned in <?= e($city) ?> yet.
-      <?php if ($me): ?><a href="<?= e(url('meetup/new?destination='.(int)$d['id'])) ?>">Host the first one</a> — coffee counts.
+      <?php if ($me): ?><a href="<?= e(url('meetup/new?destination='.(int)$d['id'])) ?>">Host the first one</a>. Coffee counts.
       <?php else: ?><a href="<?= e($join($here)) ?>">Join</a> to host or attend one.<?php endif; ?></p>
   <?php endif; ?>
 

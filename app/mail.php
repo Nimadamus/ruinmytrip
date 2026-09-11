@@ -27,7 +27,7 @@ function rmt_mail_from(): string { return getenv('MAIL_FROM') ?: 'RuinMyTrip <on
  */
 function rmt_mail_send(string $to, string $subject, string $html, string $text = ''): array {
     $key = getenv('RESEND_API_KEY') ?: '';
-    if ($key === '') return [false, 'RESEND_API_KEY not set — mail disabled'];
+    if ($key === '') return [false, 'RESEND_API_KEY not set, mail disabled'];
 
     $payload = [
         'from'    => rmt_mail_from(),
@@ -142,7 +142,7 @@ function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = ''
 function rmt_mail_verification(string $to, string $username, string $link): array {
     $html = rmt_mail_layout(
         'Confirm your email',
-        '<p>Hi @' . e($username) . ' — confirm this address to finish setting up your RuinMyTrip '
+        '<p>Hi @' . e($username) . ', confirm this address to finish setting up your RuinMyTrip '
         . 'account. The link expires in 24 hours.</p>',
         'Confirm email', $link
     );
@@ -154,7 +154,7 @@ function rmt_mail_verification(string $to, string $username, string $link): arra
 function rmt_mail_password_reset(string $to, string $username, string $link): array {
     $html = rmt_mail_layout(
         'Reset your password',
-        '<p>Hi @' . e($username) . ' — use the button below to choose a new password. '
+        '<p>Hi @' . e($username) . ', use the button below to choose a new password. '
         . 'The link expires in 1 hour and can only be used once.</p>',
         'Reset password', $link
     );
@@ -199,14 +199,14 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
     }
     $reviewsHtml = '';
     if ($activity['reviews']) {
-        $items = array_map(fn($r) => '<li><a href="' . e($r['url']) . '">' . e($r['title']) . '</a> — ' . e($r['author']) . '</li>', $activity['reviews']);
+        $items = array_map(fn($r) => '<li><a href="' . e($r['url']) . '">' . e($r['title']) . '</a> · ' . e($r['author']) . '</li>', $activity['reviews']);
         $reviewsHtml = '<p style="margin:20px 0 8px;font-weight:600">New from travelers you follow</p><ul style="margin:0;padding-left:20px">' . implode('', $items) . '</ul>';
     }
 
     if ((int) ($activity['matches'] ?? 0) > 0) {
         $n = (int) $activity['matches'];
         $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'traveler' : 'travelers')
-                 . ' with dates that overlap yours — <a href="' . e(url('matches')) . '">see who</a></li>';
+                 . ' with dates that overlap yours. <a href="' . e(url('matches')) . '">see who</a></li>';
     }
     /* The city subscriptions. Somebody who saved four cities and had a quiet week of their own
        still has a reason to come back if one of those cities did not, and until now the weekly
@@ -226,23 +226,23 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
             $n = (int) $cities['reviews'];
             $bits[] = $n . ' ' . ($n === 1 ? 'review' : 'reviews');
         }
-        $lines[] = '<li>' . e(implode(', ', $bits)) . ' in cities you follow — '
+        $lines[] = '<li>' . e(implode(', ', $bits)) . ' in cities you follow · '
                  . '<a href="' . e(url('travelers')) . '">see them</a></li>';
     }
     if ((int) ($activity['going_too'] ?? 0) > 0) {
         $n = (int) $activity['going_too'];
         $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'traveler is' : 'travelers are')
-                 . ' going on your dates — <a href="' . e(url('matches')) . '">see who</a></li>';
+                 . ' going on your dates. <a href="' . e(url('matches')) . '">see who</a></li>';
     }
     if ((int) ($activity['trip_updates'] ?? 0) > 0) {
         $n = (int) $activity['trip_updates'];
         $lines[] = '<li>' . $n . ' ' . ($n === 1 ? 'update' : 'updates')
-                 . ' from a trip on your dates — <a href="' . e(url('feed')) . '">read them</a></li>';
+                 . ' from a trip on your dates. <a href="' . e(url('feed')) . '">read them</a></li>';
     }
     if ((int) ($activity['unread_messages'] ?? 0) > 0) {
         $n = (int) $activity['unread_messages'];
         $lines[] = '<li>' . $n . ' unread ' . ($n === 1 ? 'message' : 'messages')
-                 . ' — <a href="' . e(url('messages')) . '">open your inbox</a></li>';
+                 . '. <a href="' . e(url('messages')) . '">open your inbox</a></li>';
     }
 
     $section = static function (string $heading, array $items): string {
@@ -251,17 +251,17 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
              . '<ul style="margin:0;padding-left:20px">' . implode('', $items) . '</ul>';
     };
     $repliesHtml = $section('Replies to you', array_map(
-        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> — @' . e($r['author']) . '</li>',
+        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> · @' . e($r['author']) . '</li>',
         $activity['replies'] ?? []));
     $communityHtml = $section('In your communities', array_map(
-        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> — @'
+        static fn(array $r): string => '<li><a href="' . e($r['url']) . '">' . e($r['text']) . '</a> · @'
                                      . e($r['author']) . ' in ' . e($r['community']) . '</li>',
         $activity['community'] ?? []));
     $meetupsHtml = $section('Happening while you are there', array_map(
-        static fn(array $m): string => '<li><a href="' . e($m['url']) . '">' . e($m['title']) . '</a> — ' . e($m['when']) . '</li>',
+        static fn(array $m): string => '<li><a href="' . e($m['url']) . '">' . e($m['title']) . '</a> · ' . e($m['when']) . '</li>',
         $activity['meetups'] ?? []));
 
-    $bodyHtml = '<p>Hi @' . e($username) . ' — here is what happened on RuinMyTrip this week.</p>'
+    $bodyHtml = '<p>Hi @' . e($username) . ', here is what happened on RuinMyTrip this week.</p>'
               . '<ul style="margin:0;padding-left:20px">' . implode('', $lines) . '</ul>'
               . $repliesHtml
               . $communityHtml

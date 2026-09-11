@@ -57,7 +57,7 @@
           <div>
             <b><a href="<?= e(url('u/'.$r['username'])) ?>">@<?= e($r['username']) ?></a></b>
             <p class="muted" style="margin:.1rem 0 0">Heading to <a href="<?= e(url('d/'.$r['dest_slug'])) ?>"><?= e($r['dest_name']) ?></a></p>
-            <p class="hint" style="margin:.1rem 0 0"><?= e(date('M j', strtotime((string)$r['date_from']))) ?> – <?= e(date('M j, Y', strtotime((string)$r['date_to']))) ?></p>
+            <p class="hint" style="margin:.1rem 0 0"><?= e(date('M j', strtotime((string)$r['date_from']))) ?> to <?= e(date('M j, Y', strtotime((string)$r['date_to']))) ?></p>
           </div>
         </div></div>
       <?php endforeach; ?>

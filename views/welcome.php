@@ -2,7 +2,7 @@
 <section class="block"><div class="wrap" style="max-width:760px">
   <p class="eyebrow">You're in</p>
   <h1>Start your traveler profile</h1>
-  <p class="muted">Pick a few places you want to visit. Optionally share one upcoming trip — destination and dates only, never a precise location.</p>
+  <p class="muted">Pick a few places you want to visit. Optionally share one upcoming trip: destination and dates only, never a precise location.</p>
 
   <form method="post" action="<?= e(url('welcome')) ?>">
     <?= csrf_field() ?>

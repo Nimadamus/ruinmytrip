@@ -161,7 +161,7 @@ function send_password_reset_email(array $u): array {
 function register_user(string $username, string $email, string $password, string $birthdate): array {
     $errors = [];
     $username = trim($username); $email = strtolower(trim($email));
-    if (!preg_match('/^[a-zA-Z0-9_]{3,24}$/', $username)) $errors[] = 'Username must be 3–24 letters, numbers, or underscores.';
+    if (!preg_match('/^[a-zA-Z0-9_]{3,24}$/', $username)) $errors[] = 'Username must be 3 to 24 letters, numbers, or underscores.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Enter a valid email address.';
     if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
     if (age_from($birthdate) < 16) $errors[] = 'You must be at least 16 to join RuinMyTrip.';

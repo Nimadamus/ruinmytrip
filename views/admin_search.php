@@ -7,7 +7,7 @@
   </p>
   <p class="hint" style="margin:0 0 18px">
     The log holds a normalised query, how many suggestions it produced and when. No user, no
-    session, no address — an analytics table does not need to know who, and one that does not hold
+    session, no address: an analytics table does not need to know who, and one that does not hold
     it cannot leak it.
     <?php foreach ([7, 30, 90, 365] as $d): ?>
       <a href="<?= e(url('admin/search') . '?days=' . $d) ?>"<?= $d === $days ? ' style="font-weight:700"' : '' ?>><?= $d ?>d</a>
@@ -50,7 +50,7 @@
         <?php foreach ($low as $r): ?>
           <li style="padding:4px 0;font-size:.92rem">
             <?= e((string) $r['query_norm']) ?>
-            <span class="muted">— <?= (int) $r['searches'] ?> searches, best <?= (int) $r['best'] ?> result<?= (int) $r['best'] === 1 ? '' : 's' ?></span>
+            <span class="muted">· <?= (int) $r['searches'] ?> searches, best <?= (int) $r['best'] ?> result<?= (int) $r['best'] === 1 ? '' : 's' ?></span>
           </li>
         <?php endforeach; ?>
       </ul>
@@ -64,7 +64,7 @@
         <?php foreach ($top as $r): ?>
           <li style="padding:4px 0;font-size:.92rem">
             <?= e((string) $r['query_norm']) ?>
-            <span class="muted">— <?= (int) $r['searches'] ?> ·
+            <span class="muted">· <?= (int) $r['searches'] ?> ·
               best <?= (int) $r['best'] ?> result<?= (int) $r['best'] === 1 ? '' : 's' ?></span>
           </li>
         <?php endforeach; ?>
@@ -81,7 +81,7 @@
         <?php foreach ($clicks as $r): ?>
           <li style="padding:4px 0;font-size:.92rem">
             <?= e((string) $r['clicked_type']) ?>
-            <span class="muted">— <?= (int) $r['clicks'] ?> clicks, average position <?= e((string) $r['avg_position']) ?></span>
+            <span class="muted">· <?= (int) $r['clicks'] ?> clicks, average position <?= e((string) $r['avg_position']) ?></span>
           </li>
         <?php endforeach; ?>
       </ul>

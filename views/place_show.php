@@ -370,7 +370,7 @@
         <input type="hidden" name="return" value="<?= e(url('p/'.$p['slug'])) ?>">
         <label class="sr-only" for="place_question">Ask about <?= e($p['name']) ?></label>
         <textarea id="place_question" name="body" rows="2" required maxlength="<?= RMT_POST_MAX ?>"
-                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."><?= e(mb_substr($asked, 0, RMT_POST_MAX)) ?></textarea>
+                  placeholder="Ask about <?= e($p['name']) ?>: tickets, queues, whether it is worth it."><?= e(mb_substr($asked, 0, RMT_POST_MAX)) ?></textarea>
         <p style="margin:8px 0 0"><button class="btn btn-ghost btn-sm">Ask</button>
           <?php if ($talk): ?><a class="hint" style="margin-left:8px" href="<?= e(url('talk?p='.$p['slug'])) ?>">All questions</a><?php endif; ?>
         </p>
@@ -392,7 +392,7 @@
       <form method="get" action="<?= e(url('p/'.$p['slug'])) ?>">
         <label class="sr-only" for="place_question">Ask about <?= e($p['name']) ?></label>
         <textarea id="place_question" name="ask" rows="2" required maxlength="<?= RMT_POST_MAX ?>"
-                  placeholder="Ask about <?= e($p['name']) ?> — tickets, queues, whether it is worth it."></textarea>
+                  placeholder="Ask about <?= e($p['name']) ?>: tickets, queues, whether it is worth it."></textarea>
         <p style="margin:8px 0 0"><button class="btn btn-ghost btn-sm">Ask</button>
           <span class="hint" style="margin-left:8px">Free account, one minute.</span>
           <?php if ($talk): ?><a class="hint" style="margin-left:8px" href="<?= e(url('talk?p='.$p['slug'])) ?>">All questions</a><?php endif; ?>

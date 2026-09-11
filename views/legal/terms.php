@@ -9,7 +9,7 @@
   <h2>3. Acceptable use</h2>
   <p>Follow our <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>. No harassment, hate, scams, sexual or adult content, or unsafe activity. We may remove content and suspend accounts that break the rules.</p>
   <h2>4. Meetups</h2>
-  <p>Meetups are optional, public, community connections — not dating or hookups. You attend at your own risk and agree to follow our <a href="<?= e(url('safety')) ?>">Meetup Safety</a> guidance.</p>
+  <p>Meetups are optional, public, community connections, not dating or hookups. You attend at your own risk and agree to follow our <a href="<?= e(url('safety')) ?>">Meetup Safety</a> guidance.</p>
   <h2>5. Reviews and accuracy</h2>
   <p>Reviews must reflect genuine experiences. Fake, paid, or retaliatory reviews are prohibited.</p>
   <h2>6. Liability</h2>

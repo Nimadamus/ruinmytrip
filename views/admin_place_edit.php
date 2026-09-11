@@ -24,7 +24,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
   </p>
   <p class="hint" style="margin:0 0 18px">
     Place #<?= (int) $orig['id'] ?>. The id is the identity and never changes; renaming moves the
-    slug and leaves a 301 behind. Leave a field blank when we do not know it — a blank renders as
+    slug and leaves a 301 behind. Leave a field blank when we do not know it. A blank renders as
     nothing, and a guess renders as a fact.
   </p>
 
@@ -59,7 +59,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
 
     <label for="category_id">Subcategory</label>
     <select id="category_id" name="category_id">
-      <option value="0">— None —</option>
+      <option value="0">None</option>
       <?php foreach ($categories as $c): ?>
         <option value="<?= (int) $c['id'] ?>"<?= (int) ($p['category_id'] ?? 0) === (int) $c['id'] ? ' selected' : '' ?>>
           <?= e($c['name']) ?>
@@ -87,7 +87,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
     <input type="text" id="region" name="region" value="<?= $v('region') ?>" maxlength="120"
            placeholder="<?= e((string) ($orig['dest_region'] ?? '')) ?>">
     <p class="hint" style="margin:.2rem 0 12px">
-      City and country come from the destination and are not editable here — one truth, not two.
+      City and country come from the destination and are not editable here: one truth, not two.
       Fill this in only when the place sits in a different region from its destination hub.
     </p>
 
@@ -102,7 +102,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
       </div>
     </div>
     <p class="hint" style="margin:.2rem 0 12px">
-      Both or neither. (0, 0) is rejected — it is the Atlantic, and it is what a failed geocode
+      Both or neither. (0, 0) is rejected: it is the Atlantic, and it is what a failed geocode
       writes.
     </p>
 
@@ -122,10 +122,10 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
       <div>
         <label for="price_level">Price level</label>
         <select id="price_level" name="price_level">
-          <option value="">— Unknown —</option>
+          <option value="">Unknown</option>
           <?php for ($i = 1; $i <= 4; $i++): ?>
             <option value="<?= $i ?>"<?= (int) ($p['price_level'] ?? 0) === $i ? ' selected' : '' ?>>
-              <?= str_repeat('$', $i) ?> — <?= e((string) rmt_place_price_title($i)) ?>
+              <?= str_repeat('$', $i) ?> · <?= e((string) rmt_place_price_title($i)) ?>
             </option>
           <?php endfor; ?>
         </select>
@@ -148,7 +148,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
     <p class="hint" style="margin:0 0 10px">
       A day left entirely blank means "we do not know" and is simply absent from the page. Tick
       Closed to say a day is actually shut. A closing time earlier than the opening time is an
-      overnight interval, which is how 21:00–02:00 is stored.
+      overnight interval, which is how 21:00 to 02:00 is stored.
     </p>
     <div style="overflow-x:auto">
       <table style="width:100%;border-collapse:collapse;font-size:.93rem">
@@ -166,7 +166,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
                 <span style="display:inline-flex;align-items:center;gap:4px;margin:0 10px 4px 0">
                   <input type="time" name="hours[opens][<?= $dow ?>][<?= $i ?>]" value="<?= e($slot['opens']) ?>"
                          style="width:8.5rem" aria-label="<?= e($dayName) ?> opens">
-                  <span class="muted">–</span>
+                  <span class="muted">none</span>
                   <input type="time" name="hours[closes][<?= $dow ?>][<?= $i ?>]" value="<?= e($slot['closes']) ?>"
                          style="width:8.5rem" aria-label="<?= e($dayName) ?> closes">
                 </span>
@@ -178,7 +178,7 @@ $v = static fn(string $k) => e((string) ($p[$k] ?? ''));
     </div>
     <p class="hint" style="margin:8px 0 12px">
       Three slots a day covers a lunch service, a dinner service and a late bar. Filling all three
-      and saving frees nothing up — if a venue genuinely needs a fourth, say so and the grid grows.
+      and saving frees nothing up. If a venue genuinely needs a fourth, say so and the grid grows.
     </p>
 
     <h2 style="font-size:1.05rem;margin:24px 0 8px">Where this came from</h2>

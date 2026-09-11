@@ -28,7 +28,7 @@ $bp  = $boundPlace ?? null;
 <?php else: ?>
 <label for="destination_id">Destination</label>
 <?php /* datalist gives type-ahead search over destinations with no JS and no extra request. */ ?>
-<input list="dest-options" id="dest-search" placeholder="Start typing — Kyoto, Lisbon, Banff…"
+<input list="dest-options" id="dest-search" placeholder="Start typing: Kyoto, Lisbon, Banff…"
        autocomplete="off" value="<?php
          $cur = null;
          foreach ($dests as $d) if ((int)$d['id'] === (int)($r['destination_id'] ?? 0)) $cur = $d;
@@ -40,7 +40,7 @@ $bp  = $boundPlace ?? null;
   <?php endforeach; ?>
 </datalist>
 <select id="destination_id" name="destination_id" aria-label="Destination">
-  <option value="">— Select a destination —</option>
+  <option value="">Select a destination</option>
   <?php foreach ($dests as $d): ?>
     <option value="<?= (int)$d['id'] ?>"<?= $sel('destination_id', $d['id']) ?>><?= e($d['name'].', '.$d['country']) ?></option>
   <?php endforeach; ?>
@@ -73,7 +73,7 @@ $bp  = $boundPlace ?? null;
 
 <label for="rating">Overall rating</label>
 <select id="rating" name="rating">
-  <option value="">— Rate it —</option>
+  <option value="">Rate it</option>
   <?php for ($i = 5; $i >= 1; $i--): ?>
     <option value="<?= $i ?>"<?= $sel('rating', $i) ?>><?= str_repeat('★', $i) . str_repeat('☆', 5 - $i) ?> (<?= $i ?>)</option>
   <?php endfor; ?>
@@ -85,7 +85,7 @@ $bp  = $boundPlace ?? null;
 
 <label for="body">Your review</label>
 <textarea id="body" name="body" rows="8"
-          placeholder="What was it actually like? Be specific — what you did, what it cost, what you would tell a friend."><?= $val('body') ?></textarea>
+          placeholder="What was it actually like? Be specific: what you did, what it cost, what you would tell a friend."><?= $val('body') ?></textarea>
 
 <label for="what_great">What was great?</label>
 <textarea id="what_great" name="what_great" rows="3" maxlength="2000"
@@ -120,7 +120,7 @@ $anyDetail = $aspectValues || !empty($r['traveler_type']);
 
     <label for="traveler_type">Who were you travelling with? <span class="muted">(optional)</span></label>
     <select id="traveler_type" name="traveler_type">
-      <option value="">— Rather not say —</option>
+      <option value="">Rather not say</option>
       <?php foreach (RMT_TRAVELER_TYPES as $tt): ?>
         <option value="<?= e($tt) ?>"<?= ((string)($r['traveler_type'] ?? '') === $tt ? ' selected' : '') ?>>
           <?= e((string) rmt_traveler_type_label($tt)) ?>
@@ -138,10 +138,10 @@ $anyDetail = $aspectValues || !empty($r['traveler_type']);
             <div>
               <label for="<?= e($fid) ?>"><?= e($meta['label']) ?></label>
               <select id="<?= e($fid) ?>" name="aspect[<?= e($aspect) ?>]">
-                <option value="">— Not rated —</option>
+                <option value="">Not rated</option>
                 <?php for ($i = 5; $i >= 1; $i--): ?>
                   <option value="<?= $i ?>"<?= (($aspectValues[$aspect] ?? null) === $i ? ' selected' : '') ?>>
-                    <?= $i ?> — <?= e($meta['scale'][$i]) ?>
+                    <?= $i ?> · <?= e($meta['scale'][$i]) ?>
                   </option>
                 <?php endfor; ?>
               </select>
@@ -229,7 +229,7 @@ $anyDetail = $aspectValues || !empty($r['traveler_type']);
     if (!dest || !v) { hint.textContent = ''; return; }
     var hit = all.some(function (o) { return o.dataset.dest === dest && norm(o.value) === v; });
     hint.textContent = hit
-      ? 'This place already has a page — your review will be added to it.'
+      ? 'This place already has a page, so your review will be added to it.'
       : 'New place. Your review will start its page.';
   }
 

@@ -135,7 +135,7 @@
       <?php if (!empty($ruinedLines)): ?>
         <?php foreach ($ruinedLines as $rl): ?>
           <p style="margin:0 0 10px;font-size:1.02rem;line-height:1.5">“<?= e(mb_strimwidth(trim((string) $rl['what_ruined']), 0, 140, '…')) ?>”
-            <span style="opacity:.75;font-size:.9rem"> — <?= e((string) ($rl['place_name'] ?: $rl['subject_name'] ?: $rl['dest_name'])) ?></span></p>
+            <span style="opacity:.75;font-size:.9rem"> · <?= e((string) ($rl['place_name'] ?: $rl['subject_name'] ?: $rl['dest_name'])) ?></span></p>
         <?php endforeach; ?>
         <p style="margin:12px 0 0"><a href="<?= e(url('ruined')) ?>" style="color:#7dd3c8">All <?= (int) ($ruinedTotal ?? 0) ?> warnings →</a></p>
       <?php else: ?>

@@ -469,7 +469,7 @@
           <?php foreach ($going as $g): ?>
             <li class="meta-row" style="justify-content:flex-start">
               <img class="avatar" src="<?= e(avatar_url($g['avatar_url']??null)) ?>" alt="">
-              <span><a href="<?= e(url('u/'.$g['username'])) ?>">@<?= e($g['username']) ?></a> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?>–<?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
+              <span><a href="<?= e(url('u/'.$g['username'])) ?>">@<?= e($g['username']) ?></a> · <?= e(date('M j', strtotime((string)$g['date_from']))) ?> to <?= e(date('M j', strtotime((string)$g['date_to']))) ?></span>
             </li>
           <?php endforeach; ?>
         </ul>

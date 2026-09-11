@@ -38,7 +38,7 @@ $ackChecked = $_SERVER['REQUEST_METHOD'] === 'POST' ? !empty(input('safety_ack')
 
   <label for="destination_id">Destination</label>
   <select id="destination_id" name="destination_id" required>
-    <option value="">— Select a destination —</option>
+    <option value="">Select a destination</option>
     <?php foreach ($dests as $d): ?>
       <option value="<?= (int)$d['id'] ?>"<?= $val('destination_id') === (string)$d['id'] ? ' selected' : '' ?>>
         <?= e($d['name'].', '.$d['country']) ?></option>

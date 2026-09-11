@@ -23,7 +23,7 @@ ini_set('log_errors', '1');
 function rmt_render_fatal_page(): void {
     if (PHP_SAPI === 'cli') return; // maintenance scripts (migrate.php, publish_editorial.php): log only, no HTML
     if (!headers_sent()) http_response_code(500);
-    echo '<!doctype html><html><head><meta charset="utf-8"><title>Something went wrong — RuinMyTrip</title></head>'
+    echo '<!doctype html><html><head><meta charset="utf-8"><title>Something went wrong | RuinMyTrip</title></head>'
        . '<body style="font-family:system-ui,sans-serif;max-width:520px;margin:96px auto;text-align:center;color:#1c2b40">'
        . '<h1 style="margin-bottom:.3em">Something went wrong</h1>'
        . '<p style="color:#5b6b7f">We hit an unexpected error on our end. Try again, or head back to the '

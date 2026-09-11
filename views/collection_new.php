@@ -1,7 +1,7 @@
 <?php /** @var array $errors */ ?>
 <div class="wrap"><div class="form-card form-wide">
   <h1>Start a list</h1>
-  <p class="muted">A curated list of destinations with your own reasoning — "Best beaches for solo travelers", "3 cities that ruined me for the right reasons". Add the destinations after you create it.</p>
+  <p class="muted">A curated list of destinations with your own reasoning: "Best beaches for solo travelers", "3 cities that ruined me for the right reasons". Add the destinations after you create it.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('collection/new')) ?>">
     <?= csrf_field() ?>

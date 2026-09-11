@@ -8,7 +8,7 @@
   <h1><?= $dest ? 'Top Reviewers in '.e($dest['name']) : 'Top Reviewers' ?></h1>
   <p class="muted">
     Ranked by published reviews, and the useful/funny/cool votes and compliments other travelers
-    gave them back. No self-reported scores — every number here is a live count.
+    gave them back. No self-reported scores, every number here is a live count.
   </p>
 
   <form action="<?= e(url('leaderboard')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">

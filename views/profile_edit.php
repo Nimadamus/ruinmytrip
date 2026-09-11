@@ -9,7 +9,7 @@
     <label>Username</label>
     <input type="text" value="<?= e($me['username']) ?>" disabled>
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
-      Your username is permanent — it is your public profile address and other travelers' links to you depend on it.
+      Your username is permanent: it is your public profile address and other travelers' links to you depend on it.
     </p>
 
     <label for="display_name">Display name</label>

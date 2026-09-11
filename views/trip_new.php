@@ -10,10 +10,10 @@
     <input type="text" id="title" name="title" value="<?= e(input('title')) ?>" placeholder="Three quiet mornings in Kyoto" required>
     <label for="destination_id">Destination</label>
     <select id="destination_id" name="destination_id">
-      <option value="">— Select a destination —</option>
+      <option value="">Select a destination</option>
       <?php foreach ($dests as $d): ?><option value="<?= (int)$d['id'] ?>"<?= (string)input('destination_id') === (string)$d['id'] ? ' selected' : '' ?>><?= e($d['name'].', '.$d['country']) ?></option><?php endforeach; ?>
     </select>
-    <label for="cover_url">Cover image URL <span class="hint">(optional — defaults to the destination photo)</span></label>
+    <label for="cover_url">Cover image URL <span class="hint">(optional, defaults to the destination photo)</span></label>
     <input type="url" id="cover_url" name="cover_url" value="<?= e(input('cover_url')) ?>" placeholder="https://…">
     <?php /* A trip is one object now, so the form asks the two questions that make it one: when it
              is, and who may see it. A range rather than a single day, because "when did you visit"

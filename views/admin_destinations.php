@@ -31,11 +31,11 @@
             <td style="padding:6px 10px 6px 0"><a href="<?= e(url('d/'.$r['slug'])) ?>"><?= e($r['name']) ?></a>
               <span class="muted"><?= e((string) $r['country']) ?></span></td>
             <td style="padding:6px 8px"><?= $r['places'] ?></td>
-            <td style="padding:6px 8px"><?= $r['hotels'] ?: '<span class="hint">–</span>' ?></td>
-            <td style="padding:6px 8px"><?= $r['restaurants'] ?: '<span class="hint">–</span>' ?></td>
-            <td style="padding:6px 8px"><?= $r['attractions'] ?: '<span class="hint">–</span>' ?></td>
+            <td style="padding:6px 8px"><?= $r['hotels'] ?: '<span class="hint">none</span>' ?></td>
+            <td style="padding:6px 8px"><?= $r['restaurants'] ?: '<span class="hint">none</span>' ?></td>
+            <td style="padding:6px 8px"><?= $r['attractions'] ?: '<span class="hint">none</span>' ?></td>
             <td style="padding:6px 8px"><?= $r['located'] ?></td>
-            <td style="padding:6px 8px"><?= $r['neighborhoods'] ?: '<span class="hint">–</span>' ?></td>
+            <td style="padding:6px 8px"><?= $r['neighborhoods'] ?: '<span class="hint">none</span>' ?></td>
             <td style="padding:6px 8px"><?= $r['reviews'] ?></td>
             <td style="padding:6px 8px"><?= $r['reviewers'] ?: '<span class="hint">0</span>' ?></td>
             <td style="padding:6px 8px"><?= $r['places_reviewed'] ?: '<span class="hint">0</span>' ?></td>

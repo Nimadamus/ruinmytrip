@@ -81,7 +81,7 @@
   </div>
 
   <?php if (rmt_review_is_stale($r)): ?>
-    <p class="hint" style="margin:8px 0 0">⏳ Last updated <?= e(ago((string) ($r['updated_at'] ?: $r['created_at']))) ?> — prices and rules may have changed since.</p>
+    <p class="hint" style="margin:8px 0 0">⏳ Last updated <?= e(ago((string) ($r['updated_at'] ?: $r['created_at']))) ?>. Prices and rules may have changed since.</p>
   <?php endif; ?>
 
   <?php if ($isEd): ?>

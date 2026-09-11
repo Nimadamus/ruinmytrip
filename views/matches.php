@@ -12,7 +12,7 @@
     <?php foreach ($byDest as $slug => $g): $d = $g['dest']; ?>
       <h2 style="margin:26px 0 4px"><a href="<?= e(url('d/'.$slug)) ?>"><?= e((string) $d['name']) ?></a></h2>
       <p class="hint" style="margin:0 0 12px">You are there
-        <?= e(date('M j', strtotime((string) $d['my_from']))) ?> –
+        <?= e(date('M j', strtotime((string) $d['my_from']))) ?> to
         <?= e(date('M j, Y', strtotime((string) $d['my_to']))) ?></p>
       <?php /* An event that already exists on a day they are already there is a much smaller first
                step than messaging somebody they have never met. */ ?>
@@ -39,12 +39,12 @@
               <p class="muted" style="margin:.15rem 0 0">
                 <?= (int) $r['overlap_days'] ?> <?= (int) $r['overlap_days'] === 1 ? 'day' : 'days' ?> together
                 <?php if (!empty($r['overlap_from'])): ?>
-                  · <?= e(date('M j', strtotime((string) $r['overlap_from']))) ?> –
+                  · <?= e(date('M j', strtotime((string) $r['overlap_from']))) ?> to
                     <?= e(date('M j', strtotime((string) $r['overlap_to']))) ?>
                 <?php endif; ?>
               </p>
               <p class="hint" style="margin:.15rem 0 0">Their trip:
-                <?= e(date('M j', strtotime((string) $r['their_from']))) ?> –
+                <?= e(date('M j', strtotime((string) $r['their_from']))) ?> to
                 <?= e(date('M j, Y', strtotime((string) $r['their_to']))) ?></p>
             </div>
             <a class="btn btn-ghost btn-sm" href="<?= e(url('messages/'.$r['username'])) ?>">Message</a>
