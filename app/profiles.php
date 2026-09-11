@@ -445,3 +445,73 @@ function rmt_profile_ensure(int $uid): bool {
     }
     return true;
 }
+
+/**
+ * The things a traveler says they are into.
+ *
+ * A fixed vocabulary, never free text. Two reasons: a free-text field cannot be matched on, so it
+ * would be decoration rather than a signal, and a free-text field about a person is exactly where
+ * things this site should not be storing end up. These eight are the ones that change what two
+ * people would do on the same evening, which is the question the feature exists to answer.
+ */
+const RMT_INTERESTS = [
+    'food'        => 'Food and markets',
+    'nightlife'   => 'Nightlife',
+    'culture'     => 'Museums and culture',
+    'history'     => 'History and old towns',
+    'outdoors'    => 'Hiking and outdoors',
+    'beaches'     => 'Beaches and water',
+    'sport'       => 'Sport and watching games',
+    'photography' => 'Photography',
+];
+
+/** One member's interests, as keys. @return list<string> */
+function rmt_interests_for(int $uid): array {
+    if ($uid < 1) return [];
+    $rows = q_all('SELECT interest FROM profile_interests WHERE user_id = ?', [$uid]);
+    $out = [];
+    foreach ($rows as $r) {
+        $k = (string) $r['interest'];
+        if (isset(RMT_INTERESTS[$k])) $out[] = $k;
+    }
+    return $out;
+}
+
+/**
+ * Replace a member's interests with the submitted set.
+ *
+ * Anything not in the vocabulary is dropped rather than stored: the form is the only way in, and a
+ * hand-made POST must not be able to write a label the site will later render.
+ *
+ * @param list<string> $keys
+ */
+function rmt_interests_save(int $uid, array $keys): void {
+    if ($uid < 1) return;
+    $clean = [];
+    foreach ($keys as $k) {
+        $k = (string) $k;
+        if (isset(RMT_INTERESTS[$k])) $clean[$k] = true;
+    }
+    db()->prepare('DELETE FROM profile_interests WHERE user_id = ?')->execute([$uid]);
+    if (!$clean) return;
+    $st = db()->prepare('INSERT INTO profile_interests (user_id, interest) VALUES (?,?)');
+    foreach (array_keys($clean) as $k) $st->execute([$uid, $k]);
+}
+
+/** The human labels for a set of keys, in vocabulary order. @return list<string> */
+function rmt_interest_labels(array $keys): array {
+    $out = [];
+    foreach (RMT_INTERESTS as $k => $label) {
+        if (in_array($k, $keys, true)) $out[] = $label;
+    }
+    return $out;
+}
+
+/**
+ * What two travelers have in common, as keys, for the line that explains a suggestion.
+ * @return list<string>
+ */
+function rmt_interests_shared(int $a, int $b): array {
+    if ($a < 1 || $b < 1) return [];
+    return array_values(array_intersect(rmt_interests_for($a), rmt_interests_for($b)));
+}

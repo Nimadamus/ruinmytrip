@@ -122,6 +122,12 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
           <?php $person = $pp;
                 $bits = [];
                 if ((int) $pp['shared_cities'] > 0) $bits[] = (int) $pp['shared_cities'] . ' cities you both want';
+                if ((int) ($pp['shared_interests'] ?? 0) > 0) {
+                    /* Name the interests rather than counting them: "both into food and nightlife"
+                       is a reason to say hello and "2 shared interests" is a number. */
+                    $shared = $me ? rmt_interests_shared((int) $me['id'], (int) $pp['user_id']) : [];
+                    if ($shared) $bits[] = 'both into ' . strtolower(implode(' and ', array_slice(rmt_interest_labels($shared), 0, 2)));
+                }
                 if (!empty($pp['same_style'])) $bits[] = 'travels the same way';
                 $because = implode(' · ', $bits);
                 include __DIR__ . '/_person_card.php'; ?>

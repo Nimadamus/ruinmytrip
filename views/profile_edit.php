@@ -55,6 +55,22 @@
     <?php /* Optional, and a short list rather than a text box, because this is something other
              travelers filter by: "solo travelers in Lisbon" is a question the site can only answer
              if the answers are comparable. */ ?>
+    <?php /* What you are into, from a fixed list. Free text cannot be matched on, so it would be
+             decoration; a fixed list is a signal, and it is the one that answers the question two
+             strangers actually have, which is whether they want to do the same thing on Tuesday. */ ?>
+    <label>What are you into?</label>
+    <div class="pick-chips" style="max-height:none">
+      <?php $mine = (array) ($p['interests'] ?? []); ?>
+      <?php foreach (RMT_INTERESTS as $k => $label): ?>
+        <label class="chip pick-chip">
+          <input type="checkbox" name="interests[]" value="<?= e($k) ?>"<?= in_array($k, $mine, true) ? ' checked' : '' ?>>
+          <?= e($label) ?>
+        </label>
+      <?php endforeach; ?>
+    </div>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">Shown on your profile, and used to
+      say what you and another traveler have in common. Nothing else.</p>
+
     <?php /* Opt in, off by default, and described exactly as what it is. Living somewhere is
              never taken as consent to be listed as available to strangers, so this is a box
              somebody has to find and tick, and the sentence under it is the whole promise. */ ?>

@@ -659,12 +659,17 @@ function profile(array $a): void {
         }
     }
 
+    /* What they are into, and what the two of you have in common: the second is the only part a
+       visitor cares about, and it is only ever computed between the viewer and the profile. */
+    $interests = rmt_interests_for($uid);
+    $sharedInterests = ($me && !$isMe) ? rmt_interests_shared((int) $me['id'], $uid) : [];
+
     $is_following = $me ? (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$uid]) : false;
     $i_blocked_them = ($me && !$isMe) ? (bool) q_one('SELECT 1 FROM blocks WHERE blocker_id=? AND blocked_id=?', [(int)$me['id'],$uid]) : false;
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall','coverUrl'), [
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall','coverUrl','interests','sharedInterests'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
@@ -721,6 +726,7 @@ function profile_edit_form(array $a): void {
     $p = array_merge($me, q_one('SELECT display_name, bio, home_city, avatar_url, cover_url,
                                         travel_style, open_to_meeting, home_destination_id
                                    FROM profiles WHERE user_id = ?', [(int) $me['id']]) ?: []);
+    $p['interests'] = rmt_interests_for((int) $me['id']);
     view('profile_edit', ['me'=>$me, 'errors'=>[], 'p'=>$p], ['title'=>'Edit your profile | RuinMyTrip']);
 }
 
@@ -787,6 +793,9 @@ function profile_edit_submit(array $a): void {
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
                    $d['home_destination_id'] ?? null, $d['travel_style'] ?? null,
                    (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
+    /* Interests, from the fixed vocabulary. Saved after the profile row is certain to exist. */
+    rmt_interests_save((int) $me['id'], (array) ($_POST['interests'] ?? []));
+
     flash('Profile updated.');
     redirect('/u/'.$me['username']);
 }

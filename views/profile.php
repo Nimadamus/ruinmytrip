@@ -143,6 +143,21 @@
     </div>
   </div>
   <?php if ($u['bio']): ?><p style="max-width:70ch;margin:18px 0"><?= e($u['bio']) ?></p><?php endif; ?>
+
+  <?php /* What they are into, and what the two of you have in common. The second line is the only
+           part a visitor cares about, and it exists only between the viewer and this profile. */ ?>
+  <?php $interests = $interests ?? []; $sharedInterests = $sharedInterests ?? []; ?>
+  <?php if ($interests): ?>
+    <div class="tag-list" style="margin:0 0 10px">
+      <?php foreach (rmt_interest_labels($interests) as $lab): ?>
+        <span class="chip"><?= e($lab) ?></span>
+      <?php endforeach; ?>
+    </div>
+    <?php if ($sharedInterests): ?>
+      <p class="person-why" style="margin:0 0 12px">You are both into
+        <?= e(strtolower(implode(', ', rmt_interest_labels($sharedInterests)))) ?>.</p>
+    <?php endif; ?>
+  <?php endif; ?>
   <?php /* A profile is the thing one traveler sends to another, and it has had a drawn share card
            since cards existed without anywhere on the page to use it. */ ?>
   <?php $shareUrl = abs_url('/u/' . $u['username']);

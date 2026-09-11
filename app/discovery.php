@@ -114,21 +114,27 @@ function rmt_discover_kindred(int $uid, int $limit = 8): array {
         "SELECT u.id user_id, u.username, p.avatar_url, p.display_name, p.home_city, p.travel_style,
                 (SELECT COUNT(*) FROM saves s1
                    JOIN saves s2 ON s2.target_id = s1.target_id AND s2.target_type = 'destination'
-                  WHERE s1.user_id = u.id AND s1.target_type = 'destination' AND s2.user_id = ?) shared_cities
+                  WHERE s1.user_id = u.id AND s1.target_type = 'destination' AND s2.user_id = ?) shared_cities,
+                (SELECT COUNT(*) FROM profile_interests i1
+                   JOIN profile_interests i2 ON i2.interest = i1.interest
+                  WHERE i1.user_id = u.id AND i2.user_id = ?) shared_interests
            FROM users u
       LEFT JOIN profiles p ON p.user_id = u.id
           WHERE u.id <> ? AND u.status = 'active' AND u.role <> ?
             AND NOT EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = ? AND f.followee_id = u.id)
             AND $blockSql
        ORDER BY shared_cities DESC, u.id DESC LIMIT 60",
-        array_merge([$uid, $uid, RMT_EDITORIAL_ROLE, $uid], $blockArgs)
+        array_merge([$uid, $uid, $uid, RMT_EDITORIAL_ROLE, $uid], $blockArgs)
     );
 
     /* Rank in PHP rather than in a CASE expression: the weighting is a product decision and it
        belongs somewhere a person can read it. A shared city is worth more than a shared style,
        because one is about a place and the other is about a word. */
     foreach ($rows as $i => $r) {
-        $score = 2 * (int) $r['shared_cities'];
+        /* A shared city is worth most, because it is about a place. A shared interest is worth
+           more than a shared style word, because "we are both here for the food" is a plan and
+           "we both travel slowly" is a temperament. */
+        $score = 3 * (int) $r['shared_cities'] + 2 * (int) ($r['shared_interests'] ?? 0);
         if ($style !== '' && (string) ($r['travel_style'] ?? '') === $style) $score += 1;
         $rows[$i]['match_score'] = $score;
         $rows[$i]['same_style'] = $style !== '' && (string) ($r['travel_style'] ?? '') === $style;

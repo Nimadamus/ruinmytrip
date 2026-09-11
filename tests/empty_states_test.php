@@ -50,6 +50,7 @@ $pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, user_id INT, title
 $pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY, user_id INT, target_type TEXT, target_id INT, status TEXT, created_at TEXT)");
 $pdo->exec('CREATE TABLE likes (user_id INT, target_type TEXT, target_id INT)');
+$pdo->exec('CREATE TABLE profile_interests (user_id INT, interest TEXT, PRIMARY KEY (user_id, interest))');
 
 $pass = 0; $fail = 0;
 function ok(bool $c, string $m): void { global $pass, $fail; if ($c) { $pass++; } else { $fail++; echo "FAIL: $m\n"; } }

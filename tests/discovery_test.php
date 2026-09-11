@@ -54,6 +54,7 @@ $pdo->exec("CREATE TABLE collections (id INTEGER PRIMARY KEY, user_id INT, title
 $pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, body TEXT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE comments (id INTEGER PRIMARY KEY, user_id INT, target_type TEXT, target_id INT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE likes (user_id INT, target_type TEXT, target_id INT)");
+$pdo->exec('CREATE TABLE profile_interests (user_id INT, interest TEXT, PRIMARY KEY (user_id, interest))');
 
 $pdo->exec("INSERT INTO destinations VALUES (7,'lisbon-portugal','Lisbon'),(8,'porto-portugal','Porto')");
 $pdo->exec("INSERT INTO users (id,username,role) VALUES
