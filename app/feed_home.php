@@ -256,11 +256,19 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
     foreach (q_all("SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination'", [$uid]) as $r) {
         $saved[(int) $r['target_id']] = true;
     }
+    /* The cities the member is going to, and when. The dates matter as much as the city: "somebody
+       posted a plan in Lisbon" is mildly interesting, and "somebody posted a plan in Lisbon on a
+       day you are there" is the whole product. */
     $myCities = [];
-    foreach (q_all("SELECT DISTINCT destination_id FROM trips
+    $myWindows = [];
+    foreach (q_all("SELECT destination_id, date_from, date_to FROM trips
                      WHERE user_id = ? AND status = 'published' AND destination_id IS NOT NULL
                        AND (date_to IS NULL OR date_to >= ?)", [$uid, date('Y-m-d')]) as $r) {
-        $myCities[(int) $r['destination_id']] = true;
+        $d = (int) $r['destination_id'];
+        $myCities[$d] = true;
+        if (!empty($r['date_from']) && !empty($r['date_to'])) {
+            $myWindows[$d][] = [(string) $r['date_from'], (string) $r['date_to']];
+        }
     }
     $overlap = [];
     foreach (rmt_trip_matches($uid, 40) as $m) $overlap[(int) $m['user_id']] = (string) $m['dest_name'];
@@ -298,6 +306,26 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
         }
         $score += $kindWeight[(string) ($it['kind'] ?? '')] ?? 0.0;
 
+        /* A plan is the one kind where the reader can do something about it, and two facts decide
+           whether they can: is it on while they are there, and are they allowed to come. Both are
+           worth more than anything popularity can say. */
+        if (($it['kind'] ?? '') === 'activity' && $author !== $uid) {
+            $day = (string) ($it['day'] ?? '');
+            if ($day !== '' && $dest > 0 && !empty($myWindows[$dest])) {
+                foreach ($myWindows[$dest] as [$wFrom, $wTo]) {
+                    if ($day >= $wFrom && $day <= $wTo) {
+                        $score += 0.8;
+                        $why = 'On while you are in ' . (string) ($it['dest_name'] ?? 'this city');
+                        break;
+                    }
+                }
+            }
+            if (in_array((string) ($it['join_mode'] ?? 'no'), ['open', 'ask'], true)) {
+                $score += 0.3;
+                if ($why === '') $why = 'Open to other travelers';
+            }
+        }
+
         /* What other people did with it, capped: popularity is a tiebreak, never the ranking. */
         $type = ($it['kind'] ?? '') === 'going' ? 'trip' : (string) ($it['kind'] ?? '');
         $key = $type . ':' . (int) ($it['id'] ?? 0);
@@ -311,8 +339,9 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
             if ($days >= 0 && $days <= 14) $score += 0.35;
         }
 
-        // Your own activity, which you already know about.
-        if ($author === $uid) $score -= 0.5;
+        /* Your own activity, which you already know about. It also carries no reason: "because you
+           are going to Lisbon" under your own Lisbon plan is the site explaining you to yourself. */
+        if ($author === $uid) { $score -= 0.5; $why = ''; }
 
         $items[$i]['feed_score'] = round($score, 4);
         $items[$i]['feed_reason'] = $why;
