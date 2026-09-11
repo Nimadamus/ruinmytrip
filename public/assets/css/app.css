@@ -39,6 +39,14 @@
   --sans:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --display:'Fraunces',Georgia,'Times New Roman',serif;
   --ease:cubic-bezier(.2,.7,.3,1);
+  /* Surfaces, named rather than repeated, because a second theme is only possible if every
+     "white" in the file means one of a handful of things. */
+  --surface-2:#f6f6f3;   /* an input or a button at rest */
+  --surface-3:#f2f1ec;   /* a pressed or hovered surface */
+  --tint:#f2faf8;        /* something the brand is saying */
+  --tint-2:#e2f0ee;
+  --tint-warm:#fffdf7;   /* a callout */
+  --tint-warn:#fff7ed;   /* a callout that is a warning */
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -50,7 +58,7 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
 .muted{color:var(--muted)}
 .skip{position:absolute;left:-999px}
-.skip:focus{left:12px;top:12px;background:#fff;padding:8px 14px;z-index:100;border-radius:8px}
+.skip:focus{left:12px;top:12px;background:var(--card);padding:8px 14px;z-index:100;border-radius:8px}
 
 /* buttons */
 .btn{display:inline-block;padding:.6rem 1.1rem;border-radius:999px;font-weight:600;border:1px solid transparent;cursor:pointer;font-size:.95rem;transition:.15s;white-space:nowrap}
@@ -70,7 +78,7 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .brand span{color:var(--brand)}
 .brand-mark{color:var(--accent)}
 .nav-search{flex:1;min-width:160px;max-width:420px}
-.nav-search input,.nav-search-mobile input{width:100%;padding:.55rem 1rem;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.95rem}
+.nav-search input,.nav-search-mobile input{width:100%;padding:.55rem 1rem;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:.95rem}
 .nav-search-mobile{display:none}
 .site-nav{display:flex;align-items:center;gap:14px;margin-left:auto;flex-shrink:0}
 .site-nav a{color:var(--ink-2);font-weight:600;font-size:.95rem}
@@ -85,7 +93,7 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .hero-inner{position:relative;padding:96px 20px 72px;max-width:var(--wrap);margin:0 auto}
 .hero h1{color:#fff;font-size:clamp(2.1rem,5vw,3.6rem);max-width:16ch;letter-spacing:-.02em}
 .hero p{font-size:clamp(1.05rem,2vw,1.3rem);max-width:52ch;color:#e8eef5}
-.hero-search{display:flex;gap:8px;margin-top:24px;max-width:560px;background:#fff;padding:8px;border-radius:999px;box-shadow:var(--shadow-lg)}
+.hero-search{display:flex;gap:8px;margin-top:24px;max-width:560px;background:var(--card);padding:8px;border-radius:999px;box-shadow:var(--shadow-lg)}
 .hero-search input{flex:1;border:0;padding:.7rem 1.1rem;font-size:1rem;border-radius:999px;color:var(--text)}
 .hero-search input:focus{outline:none}
 .hero-stats{display:flex;gap:28px;margin-top:26px;flex-wrap:wrap}
@@ -109,7 +117,7 @@ section.block{padding:56px 0}
 .card-media{aspect-ratio:16/10;object-fit:cover;width:100%;background:#dfe6ee}
 .card-body{padding:16px 18px}
 .card-body h3{font-size:1.15rem;margin-bottom:.25rem}
-.chip{display:inline-block;background:#eef6f5;color:var(--brand);border-radius:999px;padding:.15rem .7rem;font-size:.75rem;font-weight:700;text-transform:capitalize}
+.chip{display:inline-block;background:var(--tint);color:var(--brand);border-radius:999px;padding:.15rem .7rem;font-size:.75rem;font-weight:700;text-transform:capitalize}
 .meta-row{display:flex;align-items:center;gap:6px 10px;margin-top:12px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
 .avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;background:#dfe6ee}
 .avatar-lg{width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid #fff;box-shadow:var(--shadow)}
@@ -146,7 +154,7 @@ section.block{padding:56px 0}
 .crumbs a{color:var(--muted)}
 
 /* forms */
-.form-card{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow)}
+.form-card{max-width:520px;margin:40px auto;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:32px;box-shadow:var(--shadow)}
 .form-wide{max-width:760px}
 label{display:block;font-weight:600;margin:14px 0 6px;color:var(--ink)}
 /* A search box is a text field. type=search was missing from this list, which left every search
@@ -156,7 +164,7 @@ label{display:block;font-weight:600;margin:14px 0 6px;color:var(--ink)}
    rules are restated below so they still win, since they would otherwise lose on source order at
    equal specificity. */
 input[type=text],input[type=email],input[type=password],input[type=date],input[type=number],input[type=url],input[type=search],select,textarea{
-  width:100%;padding:.65rem .85rem;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;background:#fff}
+  width:100%;padding:.65rem .85rem;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit;background:var(--card)}
 .nav-search input,.nav-search-mobile input{padding:.55rem 1rem;border-radius:999px;font-size:.95rem}
 .hero-search input{border:0;padding:.7rem 1.1rem;font-size:1rem;border-radius:999px}
 textarea{min-height:140px;resize:vertical}
@@ -191,7 +199,7 @@ textarea{min-height:140px;resize:vertical}
 
 /* pills / safety callout */
 .callout{background:#f0f9ff;border:1px solid #bae6fd;border-left:4px solid #0284c7;padding:16px 18px;border-radius:12px;margin:18px 0}
-.callout.warn{background:#fff7ed;border-color:#fed7aa;border-left-color:var(--accent)}
+.callout.warn{background:var(--tint-warn);border-color:#fed7aa;border-left-color:var(--accent)}
 .tag-list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 
 /* footer */
@@ -220,7 +228,7 @@ textarea{min-height:140px;resize:vertical}
      one also resizes card grids, which have no connection to how many nav items are showing. */
   .nav-search{display:none}
   .nav-toggle{display:block}
-  .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;flex-direction:column;align-items:stretch;padding:12px 20px;border-bottom:1px solid var(--line);gap:6px}
+  .site-nav{display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);flex-direction:column;align-items:stretch;padding:12px 20px;border-bottom:1px solid var(--line);gap:6px}
   body.nav-open .site-nav{display:flex}
   .site-nav a{padding:8px 0}
   /* The header search box is hidden above (no room), so give the dropdown its own -- otherwise
@@ -292,7 +300,7 @@ a.ed-badge:hover{background:var(--brand)}
      panel take the width it needs, capped so it can never run off the side of the window --
      truncating "Things to do in Vienna" to "Things to do in ..." makes the list unreadable. */
   min-width:min(24rem,calc(100vw - 32px));max-width:calc(100vw - 32px);
-  background:#fff;border:1px solid var(--line);border-radius:14px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
   box-shadow:0 12px 32px rgba(15,27,45,.14);overflow-y:auto;overflow-x:hidden;
   max-height:min(60vh,26rem);padding:6px}
 .suggest-group{padding:8px 12px 4px;font-size:.72rem;font-weight:700;letter-spacing:.08em;
@@ -325,7 +333,7 @@ a.ed-badge:hover{background:var(--brand)}
 .section-more{font-size:.9rem;white-space:nowrap;margin-left:auto}
 .chip-row{display:flex;flex-wrap:wrap;gap:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;min-height:36px;
-  border:1px solid var(--line);border-radius:999px;background:#fff;font-size:.9rem;
+  border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:.9rem;
   text-decoration:none;color:inherit}
 a.chip:hover{border-color:var(--ink)}
 /* The active filter or sort. A colour change alone is not enough on its own, so the weight
@@ -423,8 +431,8 @@ a,.btn,.card,.chip,input,select,textarea{transition:all .18s var(--ease)}
 .btn-accent{background:linear-gradient(180deg,#f97316,var(--accent));
   box-shadow:0 1px 2px rgba(13,24,38,.12),0 6px 16px -8px rgba(232,89,12,.65)}
 .btn-accent:hover{box-shadow:0 2px 4px rgba(13,24,38,.14),0 12px 24px -10px rgba(232,89,12,.7)}
-.btn-ghost{background:#fff;border-color:var(--line);color:var(--ink);box-shadow:0 1px 2px rgba(13,24,38,.04)}
-.btn-ghost:hover{border-color:#d6d4cc;background:#fcfcfa}
+.btn-ghost{background:var(--card);border-color:var(--line);color:var(--ink);box-shadow:0 1px 2px rgba(13,24,38,.04)}
+.btn-ghost:hover{border-color:#d6d4cc;background:var(--surface-2)}
 /* The same ghost button, standing on a photograph or a dark band. It used to be transparent
    everywhere, so "white text" was written inline at each call site; once the light version got a
    white fill those inline rules turned the button into a blank white pill. One class, and the two
@@ -442,18 +450,18 @@ a,.btn,.card,.chip,input,select,textarea{transition:all .18s var(--ease)}
 .card-body h3{font-size:1.1rem;letter-spacing:-.015em}
 
 /* Chips read as metadata, not as buttons, until they are links. */
-.chip{background:#eef6f5;border:1px solid rgba(15,118,110,.14);font-weight:600;
+.chip{background:var(--tint);border:1px solid rgba(15,118,110,.14);font-weight:600;
   letter-spacing:.005em;padding:.2rem .72rem}
-a.chip:hover{background:#e2f0ee;border-color:rgba(15,118,110,.3);text-decoration:none}
+a.chip:hover{background:var(--tint-2);border-color:rgba(15,118,110,.3);text-decoration:none}
 
 /* The header is the one element on every page. Glass, a hairline, and a brand that is type. */
 .site-header{background:rgba(255,255,255,.82);backdrop-filter:saturate(1.6) blur(14px);
   -webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid rgba(13,24,38,.07)}
 .site-nav a{font-weight:550;color:var(--ink-2);border-radius:8px;padding:.25rem .1rem}
 .site-nav a:hover{color:var(--brand);text-decoration:none}
-.nav-search input,.nav-search-mobile input{background:#f6f6f3;border-color:transparent;
+.nav-search input,.nav-search-mobile input{background:var(--surface-2);border-color:transparent;
   box-shadow:inset 0 1px 2px rgba(13,24,38,.04)}
-.nav-search input:focus,.nav-search-mobile input:focus{background:#fff;border-color:var(--brand-2);
+.nav-search input:focus,.nav-search-mobile input:focus{background:var(--card);border-color:var(--brand-2);
   outline:none;box-shadow:0 0 0 3px rgba(20,184,166,.16)}
 
 /* Hero: a deeper scrim so white type always clears AA, and a headline with room to breathe. */
@@ -469,14 +477,14 @@ a.chip:hover{background:#e2f0ee;border-color:rgba(15,118,110,.3);text-decoration
 /* Form fields that match the buttons instead of the browser. */
 input[type=text],input[type=email],input[type=password],input[type=search],input[type=url],
 input[type=date],input[type=number],select,textarea{
-  border-radius:var(--radius-sm);border:1px solid var(--line);background:#fff;
+  border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--card);
   padding:.6rem .8rem;font:inherit;color:var(--text);width:100%}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand-2);
   box-shadow:0 0 0 3px rgba(20,184,166,.16)}
 .form-card{border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border-color:var(--line)}
 
 /* Callouts and flashes carry the same rounding as everything else. */
-.callout{border-radius:var(--radius);border:1px solid var(--line);background:#fffdf7;
+.callout{border-radius:var(--radius);border:1px solid var(--line);background:var(--tint-warm);
   padding:14px 16px}
 .flash{border-radius:var(--radius-sm);box-shadow:var(--shadow)}
 
@@ -513,11 +521,11 @@ section.block{padding:64px 0}
 .nav-more>summary::after{content:" ⌄";font-size:.85em;opacity:.65}
 .nav-more[open]>summary{color:var(--brand)}
 .nav-more-panel{position:absolute;right:0;top:calc(100% + 12px);min-width:220px;z-index:70;
-  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow-lg);padding:8px;display:grid;gap:1px}
 .nav-more-panel a{display:block;padding:.5rem .7rem;border-radius:10px;font-size:.92rem;
   font-weight:550;color:var(--ink-2)}
-.nav-more-panel a:hover{background:#f4f6f5;color:var(--brand);text-decoration:none}
+.nav-more-panel a:hover{background:var(--surface-3);color:var(--brand);text-decoration:none}
 
 .nav-icon{font-size:1.05rem;position:relative;line-height:1}
 .nav-badge{position:absolute;top:-8px;right:-10px;background:var(--brand);color:#fff;
@@ -560,12 +568,12 @@ section.block{padding:64px 0}
   padding-top:12px;border-top:1px solid var(--line-soft)}
 
 /* Scope switch reads as a tab strip, not as two competing buttons. */
-.feed-scopes{display:inline-flex;gap:2px;background:#eeeee9;border-radius:999px;padding:3px;
+.feed-scopes{display:inline-flex;gap:2px;background:var(--surface-3);border-radius:999px;padding:3px;
   margin:0 0 18px}
 .feed-scope{padding:.35rem .95rem;border-radius:999px;font-size:.88rem;font-weight:600;
   color:var(--muted)}
 .feed-scope:hover{text-decoration:none;color:var(--ink)}
-.feed-scope.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(13,24,38,.1)}
+.feed-scope.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(13,24,38,.1)}
 
 .feed-rail{display:grid;gap:16px;position:sticky;top:86px}
 .rail-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
@@ -605,7 +613,7 @@ section.block{padding:64px 0}
 .act{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;
   font:inherit;font-size:.88rem;font-weight:600;color:var(--muted);padding:.32rem .6rem;
   border-radius:999px;line-height:1}
-.act:hover{background:#f2f1ec;color:var(--ink);text-decoration:none}
+.act:hover{background:var(--surface-3);color:var(--ink);text-decoration:none}
 .act.on{color:#d0342c}
 .act.on:hover{background:#fdeceb}
 
@@ -624,18 +632,18 @@ section.block{padding:64px 0}
 
 /* An overflow menu for the actions a page has to offer and should not advertise. */
 .more-menu{position:relative;display:inline-block}
-.more-menu>summary{list-style:none;cursor:pointer;border:1px solid var(--line);background:#fff;
+.more-menu>summary{list-style:none;cursor:pointer;border:1px solid var(--line);background:var(--card);
   border-radius:999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;
   font-size:1.1rem;color:var(--muted)}
 .more-menu>summary::-webkit-details-marker{display:none}
 .more-menu>summary:hover{border-color:#d6d4cc;color:var(--ink)}
 .more-menu-panel{position:absolute;right:0;top:calc(100% + 8px);min-width:220px;z-index:70;
-  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow-lg);padding:8px;text-align:left}
 .more-menu-panel a,.more-menu-danger{display:block;width:100%;text-align:left;padding:.5rem .7rem;
   border-radius:10px;font-size:.92rem;font-weight:550;color:var(--ink-2);background:none;border:0;
   cursor:pointer;font-family:inherit}
-.more-menu-panel a:hover{background:#f4f6f5;text-decoration:none}
+.more-menu-panel a:hover{background:var(--surface-3);text-decoration:none}
 .more-menu-danger{color:#b42318}
 .more-menu-danger:hover{background:#fdeceb}
 
@@ -658,9 +666,9 @@ section.block{padding:64px 0}
 .thread-line b{font-weight:650}
 .thread-more{font-size:.85rem;font-weight:600}
 .thread-reply{display:flex;gap:8px;align-items:center;margin-top:10px}
-.thread-reply input[type=text]{flex:1;border-radius:999px;background:#f6f6f3;border-color:transparent;
+.thread-reply input[type=text]{flex:1;border-radius:999px;background:var(--surface-2);border-color:transparent;
   padding:.45rem .9rem;font-size:.9rem}
-.thread-reply input[type=text]:focus{background:#fff;border-color:var(--brand-2)}
+.thread-reply input[type=text]:focus{background:var(--card);border-color:var(--brand-2)}
 
 /* ================================================================ onboarding
    Numbered steps on a card each, so the first screen after signing up reads as a short sequence
@@ -678,7 +686,7 @@ section.block{padding:64px 0}
 /* A city is picked by pressing a tile, not by hitting a checkbox the size of a full stop. */
 .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .pick{position:relative;display:block;border:1px solid var(--line);border-radius:var(--radius-sm);
-  padding:12px 14px;cursor:pointer;background:#fff}
+  padding:12px 14px;cursor:pointer;background:var(--card)}
 .pick:hover{border-color:var(--brand-2)}
 .pick input{position:absolute;opacity:0;width:0;height:0}
 .pick-name{display:block;font-weight:650;letter-spacing:-.01em}
@@ -695,7 +703,7 @@ section.block{padding:64px 0}
 
 .pick-people{display:grid;gap:8px}
 .pick-person{display:flex;align-items:center;gap:10px;border:1px solid var(--line);
-  border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;background:#fff}
+  border-radius:var(--radius-sm);padding:10px 14px;cursor:pointer;background:var(--card)}
 .pick-person:hover{border-color:var(--brand-2)}
 .pick-person b{display:block;font-weight:650}
 .pick-person .hint{display:block;font-size:.84rem}
@@ -725,9 +733,9 @@ section.block{padding:64px 0}
 .board-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 16px;
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 12px;
   box-shadow:var(--shadow)}
-.board-filters select{width:auto;min-width:150px;border-radius:999px;background:#f6f6f3;
+.board-filters select{width:auto;min-width:150px;border-radius:999px;background:var(--surface-2);
   border-color:transparent;padding:.45rem .9rem}
-.board-filters select:focus{background:#fff}
+.board-filters select:focus{background:var(--card)}
 @media (max-width:560px){
   .board-filters{border-radius:var(--radius);padding:12px}
   .board-filters select{flex:1;min-width:0}
@@ -738,7 +746,7 @@ section.block{padding:64px 0}
    is not allowed to destroy the answer to the question the page was opened to ask. */
 .note{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-sm);
   background:var(--card);border:1px solid var(--line);margin-bottom:8px;position:relative}
-.note-new{background:#f2faf8;border-color:#bfe5de}
+.note-new{background:var(--tint);border-color:#bfe5de}
 .note-body{flex:1;min-width:0;font-size:.95rem;line-height:1.5}
 .note-when{display:block;font-size:.8rem;color:var(--muted);margin-top:2px}
 .note-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex:none;margin-top:8px}
@@ -750,18 +758,18 @@ section.block{padding:64px 0}
 .thread-head{display:flex;align-items:center;gap:12px;padding:18px 0 12px;
   border-bottom:1px solid var(--line)}
 .thread-back{font-size:1.2rem;color:var(--muted);padding:4px 8px;border-radius:8px}
-.thread-back:hover{background:#f2f1ec;text-decoration:none;color:var(--ink)}
+.thread-back:hover{background:var(--surface-3);text-decoration:none;color:var(--ink)}
 .thread-who{display:flex;align-items:center;gap:10px;color:var(--text)}
 .thread-who:hover{text-decoration:none}
 .thread-who b{display:block;font-weight:650;line-height:1.25}
 .thread-who .hint{display:block;font-size:.82rem}
-.thread-context{background:#f2faf8;border:1px solid #cbe7e2;border-radius:var(--radius-sm);
+.thread-context{background:var(--tint);border:1px solid #cbe7e2;border-radius:var(--radius-sm);
   padding:10px 14px;margin:14px 0;font-size:.92rem}
 
 .msg-list{display:grid;gap:8px;margin:16px 0 18px}
 .msg-row{display:flex}
 .msg-row.mine{justify-content:flex-end}
-.msg-bubble{max-width:78%;background:#fff;border:1px solid var(--line);border-radius:16px 16px 16px 4px;
+.msg-bubble{max-width:78%;background:var(--card);border:1px solid var(--line);border-radius:16px 16px 16px 4px;
   padding:9px 14px;box-shadow:0 1px 2px rgba(13,24,38,.04)}
 .msg-row.mine .msg-bubble{background:linear-gradient(180deg,var(--brand-2),var(--brand));color:#fff;
   border-color:transparent;border-radius:16px 16px 4px 16px}
@@ -773,9 +781,63 @@ section.block{padding:64px 0}
 .msg-composer{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:0;
   background:var(--paper);padding:10px 0 14px}
 .msg-composer textarea{flex:1;resize:none;min-height:44px;max-height:160px;border-radius:22px;
-  padding:.7rem 1rem;background:#fff}
+  padding:.7rem 1rem;background:var(--card)}
 @media (max-width:860px){ .msg-composer{bottom:64px} }
 /* Chips capitalise their first letters, which is right for a one word category out of the database
    and wrong for anything with words in it: a date range came out as "Oct 10 To Oct 14". The hint
    inside a chip is prose, so it opts out. */
 .chip .hint{text-transform:none}
+
+/* An input with no type attribute is a text input, and the attribute selectors above do not match
+   it. The destination box on the review form is exactly that, an <input list="dest-options"> with
+   no type, so the most important field on the page that makes the site's content rendered at the
+   browser default: 180px wide, 13px type, an inset bevel. Style by exclusion instead, which cannot
+   miss a type nobody thought of. */
+input:not([type]),
+input[type=tel],input[type=time],input[type=month],input[type=week],input[type=datetime-local]{
+  border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--card);
+  padding:.6rem .8rem;font:inherit;color:var(--text);width:100%}
+input:not([type]):focus{outline:none;border-color:var(--brand-2);
+  box-shadow:0 0 0 3px rgba(20,184,166,.16)}
+
+
+/* ================================================================ dark
+   One palette swap, no component rules. It is opt-out rather than opt-in because a travel site is
+   read in bed and on a night bus more than at a desk, and a page that ignores the setting the
+   reader already made is the one that hurts.
+
+   Photographs and the dark bands are unchanged: they were already dark surfaces with white type on
+   them, which is why the design was built with them in the first place. */
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#f1f6f8; --ink-2:#c6d4dd; --paper:#0e1418; --card:#161f26;
+    --brand:#19b8a6; --brand-2:#3ad6c2; --brand-deep:#0e7d72; --accent:#ff7a33; --gold:#f5cf4a;
+    --line:#26323b; --line-soft:#1d262d; --muted:#93a6b2; --text:#e4ebef;
+    --surface-2:#1c262d; --surface-3:#232f38;
+    --tint:#10312f; --tint-2:#154340; --tint-warm:#20241d;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+    --shadow-lg:0 2px 4px rgba(0,0,0,.45),0 24px 48px -20px rgba(0,0,0,.7);
+    --shadow-xl:0 2px 6px rgba(0,0,0,.5),0 40px 80px -32px rgba(0,0,0,.8);
+  }
+  /* The few places that named a light colour directly rather than through a token. */
+  .site-header{background:rgba(14,20,24,.82);border-bottom-color:rgba(255,255,255,.08)}
+  .card-media{background:linear-gradient(135deg,#1d262d,#223038)}
+  .btn-ghost{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{background:var(--surface-3);border-color:#37454f}
+  .avatar{box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+  .nav-badge{box-shadow:0 0 0 2px var(--paper)}
+  .flash{background:#10312f;border-color:#1d5f57;color:#b9eee6}
+  .callout.warn{--tint-warn:#2a1f14;border-color:#7a4a1d}
+  .skeleton{background:linear-gradient(90deg,#1c262d 25%,#232f38 37%,#1c262d 63%)}
+  .thread-context{background:var(--tint);border-color:#1d5f57}
+  .note-new{background:var(--tint);border-color:#1d5f57}
+  .act:hover{background:var(--surface-3)}
+  .act.on{color:#ff8a80}
+  .act.on:hover{background:#2c1b1a}
+  .more-menu-danger{color:#ff8a80}
+  .more-menu-danger:hover{background:#2c1b1a}
+  .more-menu-panel a:hover,.nav-more-panel a:hover{background:var(--surface-3)}
+  .feed-scope.on{background:var(--card)}
+  .pick:has(input:checked) .pick-sub{color:#bfe7e1}
+  img{opacity:.94}
+}
