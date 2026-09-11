@@ -1496,7 +1496,7 @@ function rmt_guide_validate(array $in): array {
     if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
     if (mb_strlen($summary) < 10) $errors[] = 'Add a one-line summary (10+ characters).';
     if (mb_strlen($summary) > 300) $errors[] = 'That summary is too long (300 characters max).';
-    if (strlen($body) < 100) $errors[] = 'A guide needs real detail -- write at least 100 characters.';
+    if (strlen($body) < 100) $errors[] = 'A guide needs real detail. Write at least 100 characters.';
     if (mb_strlen($body) > 20000) $errors[] = 'That guide is too long.';
     if ($cover !== '' && (!filter_var($cover, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $cover))) {
         $errors[] = 'Cover photo URL must be a full https:// web address.';
@@ -1675,7 +1675,7 @@ function rmt_blog_validate(array $in): array {
     if (mb_strlen($title) > 140) $errors[] = 'That title is too long.';
     if (mb_strlen($summary) < 10) $errors[] = 'Add a one-line summary (10+ characters).';
     if (mb_strlen($summary) > 300) $errors[] = 'That summary is too long (300 characters max).';
-    if (strlen($body) < 200) $errors[] = 'A blog post needs real substance -- write at least 200 characters.';
+    if (strlen($body) < 200) $errors[] = 'A blog post needs real substance. Write at least 200 characters.';
     if (mb_strlen($body) > 20000) $errors[] = 'That post is too long.';
     if (!in_array($category, RMT_BLOG_CATEGORIES, true)) $errors[] = 'Choose a category.';
     if ($cover !== '' && (!filter_var($cover, FILTER_VALIDATE_URL) || !preg_match('#^https://#i', $cover))) {
@@ -4630,7 +4630,7 @@ function verify_email_confirm(array $a): void {
        and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
        the trip you wrote ten minutes ago sits somewhere unmentioned, is how the moment is lost. */
     if (!empty($applied['trip']) && !empty($applied['trip_id'])) {
-        flash('Email confirmed. Your trip is live -- here it is.');
+        flash('Email confirmed. Your trip is live. Here it is.');
         redirect('/trip/' . (int) $applied['trip_id'] . '/' . (string) ($applied['trip_slug'] ?? ''));
     }
     if ($applied['going'] && $applied['hello']) {
@@ -4638,7 +4638,7 @@ function verify_email_confirm(array $a): void {
         redirect('/matches');
     }
     if ($applied['going']) {
-        flash('Email confirmed. Your dates are live -- here is who else will be there.');
+        flash('Email confirmed. Your dates are live. Here is who else will be there.');
         redirect('/matches');
     }
     if ($applied['hello']) {
@@ -5126,7 +5126,7 @@ function admin_feedback_resolve(array $a): void {
     $me = current_user();
     $ok = rmt_feedback_resolve((int) input('id'), (int) $me['id'],
                                (string) input('status'), (string) input('note'));
-    flash($ok ? 'Marked. The place itself is unchanged -- edit it if the correction was right.'
+    flash($ok ? 'Marked. The place itself is unchanged, so edit it if the correction was right.'
               : 'Could not update that item.');
     redirect('/admin/feedback');
 }

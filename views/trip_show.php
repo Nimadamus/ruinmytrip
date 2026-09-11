@@ -102,7 +102,12 @@ $authorSaid = $authorSaid ?? [];
     </div>
   <?php endif; ?>
 
-  <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>" alt="<?= e($t['title']) ?>"><?php endif; ?>
+  <?php /* A cover that will not load takes itself off the page. A trip inherits its cover from
+           the city when the member did not choose one, and a first trip page opening with a
+           broken image icon and the title as alt text is the worst possible first impression of
+           somebody's own work. Nothing replaces it: no photograph is better than a broken one. */ ?>
+  <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>"
+       alt="<?= e($t['title']) ?>" onerror="this.remove()"><?php endif; ?>
   <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>

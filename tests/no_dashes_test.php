@@ -49,6 +49,38 @@ foreach ($files as $rel) {
         [$id, $text, $line] = $tok;
         // A comment is not copy. Everything else that carries text can reach the page.
         if ($id === T_COMMENT || $id === T_DOC_COMMENT) continue;
+        /* Two hyphens typed where an em dash was meant. Not the character, so the sweep above
+           never saw it, and it reaches the reader looking like exactly the thing the house style
+           bans: "Your trip is live -- here it is" shipped in a flash message this way. Only
+           checked outside comments, like everything else here, because the asides in this
+           codebase use it freely and are written for whoever edits the file. */
+        /* Two hyphens with a space on each side: an em dash typed by somebody who could not
+           type one. "Your trip is live -- here it is" shipped in a flash message this way,
+           invisible to the sweep above because it is not the character.
+
+           Narrowed to the two token kinds a reader can actually receive, with three exclusions
+           that are not prose: CSS custom properties (var(--line)) carry no spaces and never
+           match; a SQL comment inside a query string is written for whoever reads the query; and
+           a JavaScript comment inside an inline <script> is written for whoever edits the view. */
+        $proseish = $id === T_CONSTANT_ENCAPSED_STRING || $id === T_INLINE_HTML || $id === T_ENCAPSED_AND_WHITESPACE;
+        if ($proseish) {
+            $look = $text;
+            if ($id === T_INLINE_HTML) {
+                $look = preg_replace('#<script.*?</script>#is', ' ', $look) ?? $look;
+            }
+            /* Two known fragments where the exclusions above cannot see enough context.
+               token_get_all() splits a heredoc and an interrupted <script> into pieces, so the
+               chunk holding the comment no longer carries the SELECT or the opening tag that
+               would identify it. Named rather than guessed at, with the reason, because an
+               allowlist anybody can append to without one grows until it means nothing. */
+            $notProse = ($rel === 'app/destination_modules.php')      // SQL comments inside one query
+                     || ($rel === 'views/_review_form.php');          // JS comments in an inline script
+            if (!$notProse && !preg_match('/(SELECT|INSERT|UPDATE|DELETE)\s/i', $look)
+                && preg_match('/\s--\s/', $look)) {
+                $findings[] = $rel . ':' . $line . ' ' . mb_substr(trim(preg_replace('/\s+/', ' ', $look) ?? ''), 0, 120);
+                continue;
+            }
+        }
         foreach (array_merge($dashes, $entities) as $d) {
             if (str_contains($text, $d)) {
                 $findings[] = $rel . ':' . $line . ' ' . trim(preg_replace('/\s+/', ' ', $text) ?? '');
