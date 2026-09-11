@@ -142,6 +142,29 @@ function rmt_place_name_key(string $name): string {
  * reads as a real place rather than a bare name that could be in any of eighty cities, and so two
  * "Old Town Walking Tour"s in different countries do not fight over one slug.
  */
+/**
+ * A slug for a name in any script, or "item" when there is genuinely nothing to work with.
+ *
+ * Letters, digits and the marks that belong to them survive; everything else becomes a hyphen.
+ * Deliberately NOT a general slugify(): destination, review, guide and forum slugs stay ASCII,
+ * and this is a place-URL problem. The length cap is in BYTES, because that is what a URL and
+ * a database index actually hold, and it never splits a character in half.
+ */
+function rmt_place_slug_unicode(string $name): string {
+    $s = mb_strtolower(trim($name));
+    // Anything invisible is dropped rather than turned into a hyphen: a zero width joiner in a
+    // name must not become a word boundary in its URL.
+    $s = (string) preg_replace('/\p{Cf}|\p{Cc}/u', '', $s);
+    $s = (string) preg_replace('/[^\p{L}\p{N}\p{M}]+/u', '-', $s);
+    $s = trim($s, '-');
+    if ($s === '') return 'item';
+    if (strlen($s) > 60) {
+        $s = (string) mb_strcut($s, 0, 60);
+        $s = trim($s, '-');
+    }
+    return $s === '' ? 'item' : $s;
+}
+
 function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 0,
                               array $fallbacks = []): string {
     // Travelers routinely type the city into the name themselves ("Skyline Gondola, Queenstown").
@@ -167,6 +190,14 @@ function rmt_place_unique_slug(string $name, string $destName, int $excludeId = 
             if ($try !== 'item') { $nameSlug = $try; break; }
         }
     }
+    /* Still nothing, which means the only name this place has is written in a script the ASCII
+       slugifier cannot carry: 43 places on this site, all of them in Tokyo and Bangkok, and
+       OpenStreetMap records no Latin name for a single one of them. The URL then carries the real
+       name, percent encoded on the wire and shown decoded in the address bar, which is what
+       Wikipedia has done for twenty years. The rejected alternatives, for the record: a serial
+       number is not a link anybody sends to a friend, and transliterating is worse than both,
+       because the readings ICU gives a Japanese name are Chinese ones. */
+    if ($nameSlug === 'item') $nameSlug = rmt_place_slug_unicode($name);
     $destSlug = slugify($destName);
     $base = str_contains($nameSlug, $destSlug) ? $nameSlug : $nameSlug . '-' . $destSlug;
     $base = mb_substr($base, 0, 80);

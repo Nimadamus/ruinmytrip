@@ -6,8 +6,33 @@ function e(?string $s): string { return htmlspecialchars((string)$s, ENT_QUOTES,
 function cfg(string $k, $default = null) { return $GLOBALS['config'][$k] ?? $default; }
 
 function url(string $path = ''): string {
-    return rtrim((string)cfg('app_url'), '/') . '/' . ltrim($path, '/');
+    return rtrim((string)cfg('app_url'), '/') . '/' . rmt_url_escape(ltrim($path, '/'));
 }
+
+/**
+ * Make a path safe to put in a URL, without disturbing anything already there.
+ *
+ * Only bytes above ASCII are escaped. That is the whole rule, and it is deliberately that narrow:
+ * every existing caller passes a path that may already contain a query string, a slash or an
+ * ampersand, and rawurlencode() would eat all three. A place whose only name is written in
+ * Japanese has a slug written in Japanese, and this is what makes that slug legal in an href, in
+ * a Location header, and in the sitemap, all of which are ASCII-only by specification.
+ *
+ * A browser shows the decoded form in the address bar, so the reader sees the name and the wire
+ * sees percent-encoded UTF-8.
+ */
+function rmt_url_escape(string $path): string {
+    $out = "";
+    $n = strlen($path);
+    for ($i = 0; $i < $n; $i++) {
+        $c = $path[$i];
+        // Byte by byte on purpose: anything above ASCII is escaped and everything else,
+        // including a query string a caller passed in, is left exactly as it was.
+        $out .= ord($c) < 0x80 ? $c : "%" . strtoupper(bin2hex($c));
+    }
+    return $out;
+}
+
 
 /** Public asset URL with mtime cache-bust. */
 function rmt_asset(string $rel): string {

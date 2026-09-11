@@ -19,9 +19,14 @@ $routes = [
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/travelers$#', 'destination_travelers'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/n/(?<nb>[a-z0-9\-]+)$#', 'neighborhood_show'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)/(?<cat>hotels|restaurants|things-to-do|experiences)$#', 'destination_category'],
-    ['GET',  '#^/p/(?<slug>[a-z0-9\-]+)$#',    'place_show'],
-    ['GET',  '#^/p/(?<slug>[a-z0-9\-]+)/correct$#', 'place_correct_form'],
-    ['POST', '#^/p/(?<slug>[a-z0-9\-]+)/correct$#', 'place_correct_submit'],
+    /* A place whose only name is written in Japanese or Thai has a slug written in it too,
+       so these three accept letters, digits and marks from any script. The path is already
+       rawurldecoded above, so a percent encoded request arrives here as UTF-8. What the
+       character classes still refuse is everything that makes a path dangerous: a slash, a
+       dot, a null, a control character, a space. */
+    ['GET',  '#^/p/(?<slug>[\p{L}\p{N}\p{M}\-]+)$#u',    'place_show'],
+    ['GET',  '#^/p/(?<slug>[\p{L}\p{N}\p{M}\-]+)/correct$#u', 'place_correct_form'],
+    ['POST', '#^/p/(?<slug>[\p{L}\p{N}\p{M}\-]+)/correct$#u', 'place_correct_submit'],
     ['POST', '#^/destination/save$#',          'destination_save_action'],
     ['POST', '#^/destination/been$#',          'destination_been_action'],
     ['GET',  '#^/founding$#',                  'founding'],
