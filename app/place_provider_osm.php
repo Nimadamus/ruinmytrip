@@ -61,9 +61,21 @@ function rmt_osm_type_map(): array {
 }
 
 /** Build the Overpass query for one type inside a bounding box. */
-function rmt_osm_query(string $type, array $bbox, int $limit): string {
+function rmt_osm_query(string $type, array $bbox, int $limit, array $only = []): string {
     $map = rmt_osm_type_map()[$type] ?? [];
     if (!$map) return '';
+    /* Narrowed to particular kinds when asked. Without this an "attraction" run in Lisbon comes
+       back fourteen memorials and six museums, because it takes whatever the bounding box offers
+       first. A city deserves a deliberate mix rather than whatever is densest. */
+    if ($only) {
+        $filtered = [];
+        foreach ($map as $key => $values) {
+            $keep = array_values(array_intersect($values, $only));
+            if ($keep) $filtered[$key] = $keep;
+        }
+        $map = $filtered;
+        if (!$map) return '';
+    }
     [$south, $west, $north, $east] = $bbox;
     $box = sprintf('(%.5f,%.5f,%.5f,%.5f)', $south, $west, $north, $east);
 
@@ -136,12 +148,28 @@ function rmt_osm_fetch(string $query, int $timeout = 25): array {
 
 /** Which of our types an OSM element is, or null when it is something we do not carry. */
 function rmt_osm_element_type(array $tags): ?string {
+    $m = rmt_osm_element_match($tags);
+    return $m['type'] ?? null;
+}
+
+/**
+ * The same question, plus WHICH tag decided it.
+ *
+ * The deciding tag is the only honest label for a run report. A memorial is frequently also tagged
+ * tourism=artwork, and a histogram that reads the first tag it finds rather than the one that
+ * matched will report four artworks this site does not carry and hide ten memorials it does.
+ *
+ * @return array{type:?string,tag:?string}
+ */
+function rmt_osm_element_match(array $tags): array {
     foreach (rmt_osm_type_map() as $type => $keys) {
         foreach ($keys as $key => $values) {
-            if (isset($tags[$key]) && in_array((string) $tags[$key], $values, true)) return $type;
+            if (isset($tags[$key]) && in_array((string) $tags[$key], $values, true)) {
+                return ['type' => $type, 'tag' => (string) $tags[$key]];
+            }
         }
     }
-    return null;
+    return ['type' => null, 'tag' => null];
 }
 
 /**
@@ -213,7 +241,8 @@ function rmt_osm_default_km(string $type): float {
     return in_array($type, ['restaurant', 'hotel'], true) ? 6.0 : 12.0;
 }
 
-function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 60, ?float $km = null): array {
+function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 60, ?float $km = null,
+                                        array $only = []): array {
     $km = $km !== null && $km > 0 ? $km : rmt_osm_default_km($type);
     $lat = $dest['lat'] ?? null;
     $lng = $dest['lng'] ?? null;
@@ -221,7 +250,11 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
         return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
                 'error' => 'That city has no coordinates, so there is nowhere to look.'];
     }
-    $q = rmt_osm_query($type, rmt_osm_bbox((float) $lat, (float) $lng, $km), max(1, $limit * 3));
+    $q = rmt_osm_query($type, rmt_osm_bbox((float) $lat, (float) $lng, $km), max(1, $limit * 3), $only);
+    if ($q === '') {
+        return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
+                'error' => 'Nothing in that kind belongs to that type.'];
+    }
     $res = rmt_osm_fetch($q);
     if (!$res['ok']) return ['ok' => false, 'rows' => [], 'aliases' => [], 'tags' => [], 'seen' => 0,
                              'error' => $res['error']];
@@ -239,10 +272,8 @@ function rmt_osm_places_for_destination(array $dest, string $type, int $limit = 
         /* What KIND of thing each row actually is, in the provider's own words. Our four types are
            a coarse bucket and "25 attractions" does not tell anybody whether that is museums or
            parks; this does, without storing a second taxonomy we would then have to maintain. */
-        $t = (array) ($el['tags'] ?? []);
-        foreach (['amenity', 'tourism', 'historic', 'leisure', 'shop'] as $k) {
-            if (!empty($t[$k])) { $tags[(string) $t[$k]] = ($tags[(string) $t[$k]] ?? 0) + 1; break; }
-        }
+        $decided = rmt_osm_element_match((array) ($el['tags'] ?? []))['tag'];
+        if ($decided !== null) $tags[$decided] = ($tags[$decided] ?? 0) + 1;
         if (count($rows) >= $limit) break;
     }
     arsort($tags);

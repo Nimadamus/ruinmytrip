@@ -33,6 +33,9 @@ $city = (string) ($opts['city'] ?? '');
 $type = (string) ($opts['type'] ?? '');
 $limit = max(1, (int) ($opts['limit'] ?? 40));
 $km    = (float) ($opts['km'] ?? 0);
+/* Optional: restrict to particular provider kinds, comma separated, so a city gets a deliberate
+   mix rather than whatever the bounding box happens to be densest in. */
+$only  = array_values(array_filter(array_map('trim', explode(',', (string) ($opts['osm'] ?? '')))));
 $dry   = isset($opts['dry']);
 if ($site === '' || $key === '' || $city === '' || $type === '') {
     fwrite(STDERR, "--site --key --city --type are all required\n");
@@ -42,7 +45,7 @@ if ($site === '' || $key === '' || $city === '' || $type === '') {
 $dest = q_one('SELECT * FROM destinations WHERE slug = ?', [$city]);
 if (!$dest) { fwrite(STDERR, "no such city locally: $city\n"); exit(2); }
 
-$pull = rmt_osm_places_for_destination($dest, $type, $limit, $km ?: null);
+$pull = rmt_osm_places_for_destination($dest, $type, $limit, $km ?: null, $only);
 if (!$pull['ok']) { fwrite(STDERR, 'provider: ' . (string) $pull['error'] . "\n"); exit(1); }
 printf("fetched %d %s rows for %s\n", count($pull['rows']), $type, (string) $dest['name']);
 if (!empty($pull['tags'])) {
