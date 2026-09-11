@@ -56,7 +56,7 @@
       var html = '<b>' + escapeHtml(p.label || '') + '</b>';
       if (p.meta) html += '<br><span>' + escapeHtml(p.meta) + '</span>';
       if (p.href) html = '<a href="' + escapeAttr(p.href) + '">' + html + '</a>';
-      marker.bindPopup(html);
+      marker.bindPopup(html, { closeButton: true, autoPan: true, maxWidth: 260 });
       markers.push({ layer: marker, cat: p.cat || null, p: p });
       bounds.push([p.lat, p.lng]);
     });
