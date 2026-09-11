@@ -37,29 +37,24 @@ holidays, month ranges or open ended times it will not guess at.
 1. **A destination record for Miami.** It has none, so it cannot have places. Writing a city page is
    editorial work rather than import work, and making the importer happy is the wrong reason to do
    it. Left alone deliberately, as asked.
-2. **43 places still have a serial number for a URL** (32 in Tokyo, 11 in Bangkok). The rest were
-   moved onto the English name OpenStreetMap already records for them, with the old URL retired
-   into `place_slug_history` so it still resolves. These 43 carry no other name at all, and the
-   honest options are to leave them, or to add `name:en` upstream in OpenStreetMap, which is
-   editorial work on somebody else's database.
-3. **Photo upload during a trip**, beyond one file at a time.
+2. **Photo upload during a trip**, beyond one file at a time.
 
 ## P2, growth
 
-7. **Events as an object.** The architecture is small; real event data needs a source. Nothing
+3. **Events as an object.** The architecture is small; real event data needs a source. Nothing
    invented.
-8. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
+4. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
    "Alfama" and "6th Arrondissement" are how people actually choose where to stay.
-9. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-10. **Seasonal and practical answers on a city page.** Real sources only.
+5. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+6. **Seasonal and practical answers on a city page.** Real sources only.
 
 ## P3, worth doing, not worth doing first
 
-11. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
+7. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
     is the case where clustering earns its dependency.
-12. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
+8. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
     a fixture; reads nodes only, so a venue mapped as a building outline is missed.
-13. **`/explore` ships 100KB** and could ship a third of that.
+9. **`/explore` ships 100KB** and could ship a third of that.
 
 ## Done (2026-09-11, later)
 
@@ -71,6 +66,10 @@ holidays, month ranges or open ended times it will not guess at.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **Every place has a human readable URL.** The 43 with only a Japanese or Thai name carry that
+  name in the path, percent encoded on the wire, with the old URL 301ing and the canonical, the
+  sitemap and every internal link following. `tests/place_url_test.php` tries a traversal, a dot,
+  a space and a newline against the real route pattern.
 * **Somebody who turned up to a stranger's plan is asked how it was** (migration 088), and their
   answer is counted on the city page beside the host's. The trust box says it from both sides.
 * **The search page leads with whatever answers the query** rather than a fixed order of sections.
