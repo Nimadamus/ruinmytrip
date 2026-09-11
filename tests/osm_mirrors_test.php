@@ -77,5 +77,15 @@ $GLOBALS['config']['osm_mirrors'] = '';
 ok(count(rmt_osm_endpoints()) >= 3, 'an empty setting falls back to the built in list');
 
 @unlink($tmp);
+/* The time budget is spent unevenly on purpose: an early attempt gets a short one because there
+   is another mirror to try, and the last gets the rest because there is nowhere else to go. A flat
+   budget meant the mirror that answers in twenty six seconds always failed by a hair and never
+   recorded a single success, which then buried it further down the ranking. */
+$src = (string) file_get_contents(BASE_PATH . '/app/place_provider_osm.php');
+ok(str_contains($src, '$i === $last ? max($timeout, 45) : min($timeout, 12)'),
+   'the last mirror gets a longer timeout than the first');
+ok(!str_contains($src, 'overpass.osm.jp'),
+   'a mirror that never completed a TLS handshake from here is not in the list');
+
 echo "osm_mirrors_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

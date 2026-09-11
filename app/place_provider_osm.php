@@ -29,10 +29,10 @@ declare(strict_types=1);
  * rmt_place_ingest() exists so the fetching need not happen on the server.
  */
 const RMT_OSM_DEFAULT_ENDPOINTS = [
-    'https://overpass.kumi.systems/api/interpreter',
     'https://overpass-api.de/api/interpreter',
+    'https://overpass.osm.ch/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',
-    'https://overpass.osm.jp/api/interpreter',
+    'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
 ];
 
 /** The mirrors to use, from config when set. */
@@ -185,16 +185,27 @@ function rmt_osm_bbox(float $lat, float $lng, float $km = 12.0): array {
  * @return array{ok:bool,elements:list<array>,error:?string}
  */
 function rmt_osm_fetch(string $query, int $timeout = 25): array {
+    /* The budget is spent unevenly on purpose. An early attempt gets a short one, because if this
+       mirror is slow there is another to try and waiting is the expensive mistake. The LAST attempt
+       gets the whole rest of the budget, because there is nowhere else to go and a mirror that
+       takes twenty six seconds is still an answer.
+
+       That asymmetry is not theoretical: measured from here, one mirror answers in under a second
+       and another in twenty six, and a flat twenty five second timeout meant the second one always
+       failed by a hair's breadth and never recorded a success. */
+    $ranked = rmt_osm_endpoints_ranked();
+    $last = count($ranked) - 1;
     if ($query === '') return ['ok' => false, 'elements' => [], 'error' => 'Empty query.', 'tries' => []];
     $lastError = 'No endpoint answered.';
     $tries = [];
-    foreach (rmt_osm_endpoints_ranked() as $url) {
+    foreach ($ranked as $i => $url) {
+        $budget = $i === $last ? max($timeout, 45) : min($timeout, 12);
         $ch = curl_init($url);
         curl_setopt_array($ch, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => http_build_query(['data' => $query]),
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_TIMEOUT => $budget,
             CURLOPT_CONNECTTIMEOUT => 15,
             // Overpass asks for a real user agent so it can tell a runaway script from a person.
             CURLOPT_USERAGENT => 'RuinMyTrip place importer (+https://ruinmytrip.com)',
