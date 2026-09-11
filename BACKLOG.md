@@ -42,28 +42,27 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
    into `place_slug_history` so it still resolves. These 43 carry no other name at all, and the
    honest options are to leave them, or to add `name:en` upstream in OpenStreetMap, which is
    editorial work on somebody else's database.
-4. **A day filter on the trip map**, beyond colour: tapping a day should show only that day.
-5. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
-6. **One ranked search result list.** City context, category matching and travelers-first all landed;
+4. **Repeat attendance.** Turning up once is the strongest signal on the site and nothing follows it.
+5. **One ranked search result list.** City context, category matching and travelers-first all landed;
    the page is still nine lists rather than one ordered answer.
-7. **Photo upload during a trip**, beyond one file at a time.
+6. **Photo upload during a trip**, beyond one file at a time.
 
 ## P2, growth
 
-8. **Events as an object.** The architecture is small; real event data needs a source. Nothing
+7. **Events as an object.** The architecture is small; real event data needs a source. Nothing
    invented.
-9. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
+8. **Neighbourhood pages.** Places carry a neighbourhood from the provider and nothing reads it;
    "Alfama" and "6th Arrondissement" are how people actually choose where to stay.
-10. **A weekly email about the cities somebody saved.** The digest exists and is generic.
-11. **Seasonal and practical answers on a city page.** Real sources only.
+9. **A weekly email about the cities somebody saved.** The digest exists and is generic.
+10. **Seasonal and practical answers on a city page.** Real sources only.
 
 ## P3, worth doing, not worth doing first
 
-12. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
+11. **Marker clustering** on a city map. Overlapping dots in a dense centre are hard to tap, which
     is the case where clustering earns its dependency.
-13. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
+12. **The offline extract path**, if Overpass reliability gets worse. Prototyped and tested against
     a fixture; reads nodes only, so a venue mapped as a building outline is missed.
-14. **`/explore` ships 100KB** and could ship a third of that.
+13. **`/explore` ships 100KB** and could ship a third of that.
 
 ## Done (2026-09-11, later)
 
@@ -75,6 +74,8 @@ Nothing else is blocked. The place importer needs no key, no account and no paym
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **The trip map's day key is the day filter.** Tapping Tuesday shows Tuesday. This was still
+  listed as outstanding and had already shipped in a33bea1.
 * **Three opening hours forms the parser was wrongly refusing**, found by measuring London rather
   than assuming: a day list with spaces, a span with no day, and midnight as an end time.
 
