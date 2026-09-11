@@ -1013,8 +1013,13 @@ function trip_show(array $a): void {
     $updates = rmt_posts_for_trip((int) $t['id']);
     $isOwner = $me && (int) $me['id'] === (int) $t['user_id'];
     $phase = rmt_trip_phase($t);
+    /* Who else will be in that city on those days. This is the fact the page exists to carry: a
+       trip with four other people on it is a reason to go, and it is the whole difference between
+       a travel diary and a network. Same visibility clause as everywhere else, so a followers only
+       trip shows only to a follower and a private one to nobody. */
+    $alsoThere = rmt_trip_overlappers($t, $me);
     view('trip_show', compact('t','photos','comments','likeCount','saveCount','liked','saved','tags',
-                              'updates','isOwner','phase'), [
+                              'updates','isOwner','phase','alsoThere'), [
         'title' => rmt_meta_title((string) $t['title']),
         'description' => rmt_meta_description((string) $t['body']),
         /* A trip with no cover used to share as an empty og:image, which is the same as no

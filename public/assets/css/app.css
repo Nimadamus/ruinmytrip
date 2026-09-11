@@ -700,3 +700,13 @@ section.block{padding:64px 0}
 .pick-person b{display:block;font-weight:650}
 .pick-person .hint{display:block;font-size:.84rem}
 .pick-person:has(input:checked){border-color:var(--brand);box-shadow:0 0 0 1px var(--brand) inset}
+
+/* Everybody else who will be in that city on those days. */
+.also-there{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;margin:8px 0 22px;box-shadow:var(--shadow)}
+.also-row{display:flex;gap:8px;flex-wrap:wrap}
+.also-person{display:flex;align-items:center;gap:9px;border:1px solid var(--line);
+  border-radius:999px;padding:5px 14px 5px 5px;font-size:.9rem;color:var(--text)}
+.also-person:hover{text-decoration:none;border-color:var(--brand-2);background:#f4faf9}
+.also-person b{display:block;font-weight:650;line-height:1.2}
+.also-person .hint{display:block;font-size:.78rem}

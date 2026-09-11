@@ -56,6 +56,30 @@
     <?php endif; ?>
   <?php endif; ?>
 
+  <?php /* Everybody else who will be there then. Faces, not a number: a count is a statistic and
+           a row of people is a reason to say something. */ ?>
+  <?php if (!empty($alsoThere)): ?>
+    <section class="also-there">
+      <h2 style="font-size:1.05rem;margin:0 0 10px">Also there then</h2>
+      <div class="also-row">
+        <?php foreach ($alsoThere as $o): ?>
+          <a class="also-person" href="<?= e(url('u/'.$o['username'])) ?>">
+            <img class="avatar" src="<?= e(avatar_url($o['avatar_url'] ?? null)) ?>" alt="">
+            <span>
+              <b>@<?= e($o['username']) ?></b>
+              <span class="hint"><?= e(rmt_card_date_range((string) $o['date_from'], (string) $o['date_to'])) ?></span>
+            </span>
+          </a>
+        <?php endforeach; ?>
+      </div>
+      <?php if (!empty($t['dest_slug'])): ?>
+        <p class="hint" style="margin:10px 0 0">
+          <a href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">Everybody going to <?= e((string) $t['dest_name']) ?></a>
+        </p>
+      <?php endif; ?>
+    </section>
+  <?php endif; ?>
+
   <?php /* The updates. Oldest first, because a trip reads forwards: everywhere else on this site is
            a feed and puts the newest on top, but a trip is a sequence of days. */ ?>
   <?php if ($isOwner): ?>

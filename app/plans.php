@@ -356,3 +356,47 @@ function rmt_trip_update_notify(array $trip, int $postId, int $actorId, int $lim
     }
     return $sent;
 }
+
+/**
+ * The other travelers whose public trip lands on top of this one, same city, overlapping days.
+ *
+ * The trip page could already tell you when somebody was going and offer to copy their dates, and
+ * it could not tell you who else would be there. That is the fact the page exists to carry: a trip
+ * with four other people on it is a reason to go, and it is the difference between a travel diary
+ * and a network.
+ *
+ * Visibility is the same clause the rest of the site uses, so a followers only trip appears only to
+ * a follower and a private one to nobody. Blocks are applied where the viewer has any.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_trip_overlappers(array $trip, ?array $viewer, int $limit = 8): array {
+    $destId = (int) ($trip['destination_id'] ?? 0);
+    $from   = trim((string) ($trip['date_from'] ?? ''));
+    $to     = trim((string) ($trip['date_to'] ?? ''));
+    if ($destId < 1 || $from === '' || $to === '') return [];
+
+    [$visSql, $visArgs] = rmt_plan_visibility_sql('t', $viewer);
+    $blockSql = '1=1';
+    $blockArgs = [];
+    if ($viewer && function_exists('rmt_match_block_sql')) {
+        [$blockSql] = rmt_match_block_sql('t.user_id');
+        $blockArgs = [(int) $viewer['id'], (int) $viewer['id']];
+    }
+
+    return q_all(
+        "SELECT t.id, t.user_id, t.date_from, t.date_to, t.visibility, t.slug,
+                u.username, p.avatar_url
+           FROM trips t
+           JOIN users u ON u.id = t.user_id AND u.status = 'active'
+      LEFT JOIN profiles p ON p.user_id = t.user_id
+          WHERE t.destination_id = ? AND t.id <> ? AND t.user_id <> ?
+            AND t.status = 'published'
+            AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL
+            AND t.date_from <= ? AND t.date_to >= ?
+            AND $visSql AND $blockSql
+       ORDER BY t.date_from LIMIT " . (int) $limit,
+        array_merge([$destId, (int) ($trip['id'] ?? 0), (int) ($trip['user_id'] ?? 0), $to, $from],
+                    $visArgs, $blockArgs)
+    );
+}
