@@ -103,7 +103,21 @@ function messages_thread(array $a): void {
             ->execute([date('Y-m-d H:i:s'), $convId, $meId]);
     }
 
-    view('messages_thread', compact('them', 'items', 'blocked'), [
+    /* Why these two are talking. A message thread with no context is a blank box between two
+       usernames; a thread that says "both of you are in Lisbon, 11 to 16 October" is a
+       conversation with a subject, and that overlap is the reason this product exists. Visibility
+       is the same clause as everywhere else, so nothing appears here that would not appear on the
+       other person's own trip page. */
+    $shared = [];
+    if (!$blocked && function_exists('rmt_trip_matches')) {
+        foreach (rmt_trip_matches($meId, 40) as $m) {
+            if ((int) $m['user_id'] === $themId) $shared[] = $m;
+        }
+    }
+    $theirHome = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
+                         WHERE p.user_id = ?', [$themId]);
+
+    view('messages_thread', compact('them', 'items', 'blocked', 'shared', 'theirHome'), [
         'title' => 'Messages with @' . $them['username'] . ' | RuinMyTrip',
         'description' => 'Conversation with @' . $them['username'] . ' on RuinMyTrip.',
     ]);
