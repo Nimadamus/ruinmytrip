@@ -5746,7 +5746,10 @@ function activity_show(array $a): void {
         'description' => trim((string) $act['title'] . ($when !== '' ? ' on ' . $when : '')
             . ($act['dest_name'] ? ' in ' . $act['dest_name'] : '')
             . '. A plan on RuinMyTrip, posted by @' . (string) $act['username'] . '.'),
-        'og_image' => $photos ? abs_url((string) $photos[0]['url']) : rmt_default_og_image(),
+        /* A photograph of the thing beats a drawn card every time. Failing that, the card says
+           what it is, when, and whether the reader can come, which the site default does not. */
+        'og_image' => $photos ? abs_url((string) $photos[0]['url'])
+            : (!$isPrivate ? rmt_card_url('activity', (string) (int) $act['id']) : rmt_default_og_image()),
         /* A plan on a trip that is not public, or marked private, is never offered to a crawler. */
         'robots' => $isPrivate ? 'noindex, nofollow' : 'index, follow',
         'breadcrumbs' => array_values(array_filter([

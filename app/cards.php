@@ -323,6 +323,42 @@ function rmt_card_spec(string $kind, string $key): ?array {
             if ($photos > 0) $pills[] = $photos . ($photos === 1 ? ' photo' : ' photos');
             return ['kicker' => $kicker, 'title' => (string) $t['title'], 'meta' => $meta, 'pills' => $pills];
 
+        case 'activity':
+            /* A plan is the thing people paste into a group chat: "this is the one, Friday at
+               eight, come". The card has to carry the three facts that make somebody tap, which
+               are what it is, when, and whether they are allowed to come.
+
+               Same rule as the trip card and for the same reason: this route is open to anybody
+               holding the link, so a plan on a trip that is not public, or marked private, draws
+               nothing at all rather than leaking its title through a picture. */
+            $ac = q_one("SELECT a.*, t.visibility tvis, t.status tstatus, u.username, u.status ustatus,
+                                d.name dest_name
+                           FROM trip_activities a
+                           JOIN trips t ON t.id = a.trip_id
+                           JOIN users u ON u.id = a.user_id
+                      LEFT JOIN destinations d ON d.id = a.destination_id
+                          WHERE a.id = ?", [(int) $key]);
+            if (!$ac || $ac['status'] !== 'published' || $ac['tstatus'] !== 'published') return null;
+            if ($ac['ustatus'] !== 'active') return null;
+            if (($ac['tvis'] ?? 'public') !== 'public') return null;
+            if (($ac['visibility'] ?? 'trip') !== 'trip') return null;
+
+            $kicker = !empty($ac['cancelled_at']) ? 'Cancelled'
+                : (in_array((string) $ac['join_mode'], ['open', 'ask'], true) ? 'You can join this' : 'A plan');
+            $meta = '@' . $ac['username'];
+            if ($ac['dest_name']) $meta .= ' · ' . $ac['dest_name'];
+            if (!empty($ac['day'])) {
+                $meta .= ' · ' . date('D j M', strtotime((string) $ac['day']));
+                if (!empty($ac['start_time'])) $meta .= ' · ' . (string) $ac['start_time'];
+            }
+            $pills = [];
+            $goingN = (int) (q_one("SELECT COUNT(*) c FROM activity_joins
+                                     WHERE activity_id = ? AND state = 'going'", [(int) $ac['id']])['c'] ?? 0);
+            // Counted, never rounded. One person coming is one person coming.
+            if ($goingN > 0) $pills[] = $goingN . ($goingN === 1 ? ' person going' : ' people going');
+            if ((int) ($ac['capacity'] ?? 0) > 0) $pills[] = 'room for ' . (int) $ac['capacity'];
+            return ['kicker' => $kicker, 'title' => (string) $ac['title'], 'meta' => $meta, 'pills' => $pills];
+
         case 'tag':
             $t = q_one('SELECT * FROM tags WHERE name=?', [$key]);
             if (!$t) return null;

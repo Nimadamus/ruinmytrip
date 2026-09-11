@@ -32,6 +32,11 @@ $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, host_id INT, destinati
 $pdo->exec("CREATE TABLE meetup_rsvps (meetup_id INT, user_id INT, status TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT, slug TEXT, body TEXT, cover_url TEXT, date_from TEXT, date_to TEXT, visibility TEXT DEFAULT 'public', status TEXT DEFAULT 'published', created_at TEXT)");
 $pdo->exec("CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT, url TEXT, sort INT)");
+$pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, trip_id INT, user_id INT,
+              destination_id INT, day TEXT, start_time TEXT, title TEXT, category TEXT,
+              visibility TEXT DEFAULT 'trip', join_mode TEXT DEFAULT 'no', capacity INT,
+              cancelled_at TEXT, status TEXT DEFAULT 'published', created_at TEXT)");
+$pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE tags (id INTEGER PRIMARY KEY, name TEXT)");
 $pdo->exec("CREATE TABLE taggings (id INTEGER PRIMARY KEY, tag_id INT, target_type TEXT, target_id INT)");
 $pdo->exec("INSERT INTO users VALUES (1,'ana','active','user'),(2,'gone','suspended','user')");
@@ -55,6 +60,13 @@ $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,date_from,da
   (5,1,1,'No dates','no-dates',NULL,NULL,'public','published'),
   (6,1,1,'Followers only','followers-only','$soon','$soon2','followers','published')");
 $pdo->exec("INSERT INTO trip_photos VALUES (1,1,'/media/a.jpg',0)");
+/* Plans: one on a public trip and open to anybody, one on a private trip, one marked private
+   itself. A card is drawn for a stranger holding a link, so the last two must draw nothing. */
+$pdo->exec("INSERT INTO trip_activities (id,trip_id,user_id,destination_id,day,start_time,title,category,visibility,join_mode)
+            VALUES (1,1,1,1,'2026-10-13','20:00','Benfica vs Porto','sport','trip','open'),
+                   (2,3,1,1,'2026-10-13',NULL,'On a private trip','other','trip','open'),
+                   (3,1,1,1,'2026-10-13',NULL,'A private plan','other','private','open')");
+$pdo->exec("INSERT INTO activity_joins VALUES (1,2,'going','2026-09-01')");
 $pdo->exec("INSERT INTO tags VALUES (1,'scams')");
 $pdo->exec("INSERT INTO taggings VALUES (1,1,'post',1)");
 
@@ -135,6 +147,18 @@ ok($info !== false && $info[0] === 1200 && $info[1] === 630, 'card is 1200x630')
 ok(strlen($png) < 200000, 'card is small enough for scrapers (' . strlen($png) . ' bytes)');
 $png2 = rmt_card_render(['title' => 'Ünïcödé — “quotes” and #hashtags ★', 'meta' => '@x']);
 ok(getimagesizefromstring($png2) !== false, 'unicode title renders');
+
+/* Plans. The thing somebody actually pastes into a group chat is not the trip, it is the Friday
+   night, so it carries its own card, and the same refusal. */
+$s = rmt_card_spec('activity', '1');
+ok($s !== null && $s['title'] === 'Benfica vs Porto', 'a plan has a card');
+ok($s !== null && $s['kicker'] === 'You can join this', 'and it says whether the reader can come');
+ok($s !== null && in_array('1 person going', $s['pills'], true), 'one person going is counted as one');
+ok($s !== null && str_contains($s['meta'], '@ana'), 'the card names the traveler whose plan it is');
+ok(rmt_card_spec('activity', '2') === null, 'a plan on a private trip has no card');
+ok(rmt_card_spec('activity', '3') === null, 'a plan marked private has no card');
+ok(rmt_card_spec('activity', '999') === null, 'an unknown plan has no card');
+ok(getimagesizefromstring(rmt_card_render(rmt_card_spec('activity', '1'))) !== false, 'plan card renders');
 
 echo "share_card_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
