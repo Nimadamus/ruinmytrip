@@ -152,3 +152,29 @@ function rmt_growth_inventory(): array {
                                          HAVING COUNT(DISTINCT t.user_id) > 1) x", [$today]),
     ];
 }
+
+/**
+ * GET /cron/funnel?key=...&days=30
+ *
+ * The funnel as JSON, for reading production without an admin session.
+ *
+ * It exists because the numbers had to be checked against a real signup on the live site, and the
+ * only alternative was signing in as an administrator from a script. Aggregates only, which is the
+ * same thing /admin/funnel shows: this endpoint cannot name a member because the functions behind
+ * it never learn a name.
+ */
+function cron_funnel(array $a): void {
+    $key = (string) (getenv('CRON_KEY') ?: '');
+    $given = (string) input('key');
+    if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
+
+    header('Content-Type: application/json; charset=utf-8');
+    header('X-Robots-Tag: noindex');
+
+    $days = (int) (input('days') !== '' ? input('days') : 30);
+    echo json_encode([
+        'growth'    => rmt_growth_funnel($days),
+        'signup'    => rmt_signup_funnel($days),
+        'inventory' => rmt_growth_inventory(),
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+}

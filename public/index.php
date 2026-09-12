@@ -213,6 +213,7 @@ $routes = [
     ['GET',  '#^/sitemap-(?<group>[a-z]+)(?:-(?<part>\d+))?\.xml$#', 'sitemap_child'],
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
+    ['GET',  '#^/cron/funnel$#',               'cron_funnel'],
     ['GET',  '#^/cron/places$#',               'cron_places'],
     ['GET',  '#^/cron/destinations$#',         'cron_destinations'],
     ['POST', '#^/cron/destinations$#',         'cron_destinations'],
