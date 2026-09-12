@@ -62,7 +62,14 @@ check('an unknown entity type is refused, not waved through',
 echo "\nPlaces -- community reviews are deliberately NOT required:\n";
 $base = ['status' => 'active', 'destination_id' => 1];
 check('a real venue with an address',    why('place', $base + ['street_address' => '1 Rue X']), 'indexable');
-check('...or coordinates',               why('place', $base + ['lat' => 48.85]), 'indexable');
+/* A coordinate is NOT content, and this is the assertion that says so. It used to be, and
+   because every imported place has one the rule said yes to everything: 565 of 1,388 live
+   place pages were a name, a type, a map dot and nothing else. The dot still draws the map;
+   it no longer earns a search result on its own. */
+check('a coordinate alone is not enough',
+      why('place', $base + ['lat' => 48.85]), 'noindex_thin');
+check('...but a coordinate plus one real signal is',
+      why('place', $base + ['lat' => 48.85, 'website_url' => 'https://x.example']), 'indexable');
 check('...or opening hours',             why('place', $base + ['hours_count' => 7]), 'indexable');
 check('...or a website',                 why('place', $base + ['website_url' => 'https://x.test']), 'indexable');
 check('...or something we wrote',        why('place', $base + ['editorial' => 'What it is']), 'indexable');
@@ -70,7 +77,7 @@ check('...or a photo',                   why('place', $base + ['photo_count' => 
 check('a place with ZERO reviews is still indexable',
       why('place', $base + ['street_address' => '1 Rue X', 'review_count' => 0]), 'indexable');
 check('a name and a type and nothing else is not',
-      why('place', $base), 'noindex_no_content');
+      why('place', $base), 'noindex_thin');
 // A closed place is a real answer to a real search: somebody typing the name of a restaurant that
 // shut should be told it shut, by us. It earns the page only if something was written about it --
 // a closed listing carrying nothing but a name is a dead end wearing a page's clothes.
@@ -213,7 +220,7 @@ $places = rmt_index_places();
 $byslug = [];
 foreach ($places as $p) $byslug[$p['slug']] = $p['verdict'];
 check('an enriched place is indexable', $byslug['h1']['reason'], 'indexable');
-check('a bare place is not',            $byslug['bare']['reason'], 'noindex_no_content');
+check('a bare place is not',            $byslug['bare']['reason'], 'noindex_thin');
 // It IS considered now -- the rule decides, not a WHERE clause -- and with nothing written about
 // it the rule says no.
 check('a closed place is judged rather than filtered out', isset($byslug['shut']), true);

@@ -127,14 +127,28 @@ function rmt_indexable(string $type, array $e = []): array {
                 if (!$hasHistory) return $no('noindex_thin', 'closed, and nothing was ever written about it');
             }
             if (empty($e['destination_id'])) return $no('noindex_thin', 'not attached to a destination');
-            // Useful content is anything that answers a question somebody would arrive with: where
-            // it is, when it is open, what it costs, what we wrote about it, or what a traveler
-            // said. Community reviews are one of these, deliberately not required.
-            $useful = !empty($e['street_address']) || !empty($e['lat']) || !empty($e['website_url'])
-                   || !empty($e['phone']) || (int) ($e['hours_count'] ?? 0) > 0
+            /* A coordinate is not content. It used to count as one, and since every imported
+               place has one, the rule said yes to everything: 1,388 place pages in the sitemap,
+               565 of which had a name, a type, a dot on a map and nothing else. Measured on
+               production, not assumed -- op=index_quality on the places cron prints the
+               distribution. Those 565 pages were 37 of 55 lines identical boilerplate, and the
+               only thing distinguishing one from the next was its name and a list of what is
+               nearby. That is the exact shape search engines judge a site by its thinnest page
+               for, and it was being published at scale.
+
+               So the bar is now one real signal: something the page can say that the next page
+               cannot. Where it is on a street, when it opens, how to reach it, what it looks
+               like, or what somebody thought of it. A coordinate places the dot and is kept for
+               the map; it no longer earns the page a result on its own.
+
+               Community reviews are still deliberately NOT required. A real venue with real hours
+               is useful before anybody has reviewed it, and requiring reviews would keep the site
+               out of the index while waiting for the traffic that brings the reviews. */
+            $useful = !empty($e['street_address']) || !empty($e['website_url']) || !empty($e['phone'])
+                   || (int) ($e['hours_count'] ?? 0) > 0
                    || (int) ($e['review_count'] ?? 0) > 0 || (int) ($e['photo_count'] ?? 0) > 0
                    || trim((string) ($e['editorial'] ?? '')) !== '';
-            if (!$useful) return $no('noindex_no_content', 'a name and a type, and nothing else');
+            if (!$useful) return $no('noindex_thin', 'a name and a point on a map, and nothing else');
             return $yes();
 
         case 'neighborhood':
