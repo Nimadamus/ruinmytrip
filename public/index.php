@@ -235,5 +235,9 @@ foreach ($routes as [$m, $rx, $fn]) {
         return;
     }
 }
+/* The router's own miss, which is a different code path from not_found() in the controllers and
+   was quietly the more common one: anything matching no route at all lands here. It was serving
+   "index, follow" with a self-canonical, which invites a crawler to keep and canonicalise a page
+   that does not exist. Same meta as not_found(), because they are the same page. */
 http_response_code(404);
-view('404', [], ['title' => 'Not found — RuinMyTrip']);
+view('404', [], ['title' => 'Not found | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,follow']);

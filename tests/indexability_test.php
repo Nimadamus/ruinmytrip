@@ -340,5 +340,25 @@ $groups = array_column(rmt_sitemap_parts(), 'group_key');
 check('and their files exist', in_array('destinations', $groups, true), true);
 check('the failed group has no file rather than an empty one', in_array('editorial', $groups, true), false);
 
+echo "\nBoth 404 paths agree:\n";
+/* There are two, and only one was ever checked. not_found() is what a controller calls when the
+   thing it looked up is gone. The router has its own miss for a URL matching no route at all,
+   which is the more common one, and on production it was serving "index, follow" with a
+   self-canonical: an invitation to keep and canonicalise a page that does not exist. */
+$router404 = (string) file_get_contents(dirname(__DIR__) . '/public/index.php');
+$ctrl404   = (string) file_get_contents(dirname(__DIR__) . '/app/controllers.php');
+$meta404   = "'canonical' => '', 'robots' => 'noindex,follow'";
+check('the router miss is noindex with no canonical', str_contains($router404, $meta404), true);
+check('and not_found() says the same thing',          str_contains($ctrl404,   $meta404), true);
+/* Every call site that renders the 404 view carries it, so a third path cannot appear without this
+   failing. Counted per call rather than by comparing totals, because forbidden() uses the same meta
+   for the 403 and would make a count of the string agree by accident. */
+preg_match_all("/view\('404'.*/", $router404 . $ctrl404, $renders404);
+$bare404 = array_values(array_filter($renders404[0],
+    static fn(string $line): bool => !str_contains($line, "'robots' => 'noindex,follow'")
+                                  || !str_contains($line, "'canonical' => ''")));
+check('every 404 render is noindex with no canonical', $bare404, []);
+check('and there is more than one of them to check', count($renders404[0]) >= 2, true);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);
