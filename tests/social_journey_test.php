@@ -161,5 +161,28 @@ ok(str_contains($src, "if (!empty(\$act['cancelled_at'])) {"), 'a cancelled plan
 ok(str_contains($src, "if ((\$act['join_mode'] ?? 'no') === 'ask') \$want = 'requested';"),
    'pressing the button on an ask-to-join plan is asking, never arriving');
 
+echo "\n-- messaging --\n";
+/* Driven with two signed-in browsers first: a stranger's first message becomes a request rather
+   than landing in the inbox, the unread badge appears and clears on reading, a reply reaches both
+   sides, and a block removes the compose box, says why, and makes the direct POST 404. These are
+   the rules underneath that, which is where a refactor would break it silently. */
+$pdo->exec('CREATE TABLE conversations (id INTEGER PRIMARY KEY AUTOINCREMENT, user_lo_id INT, user_hi_id INT, last_message_at TEXT)');
+$pdo->exec('CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id INT, sender_id INT, body TEXT, read_at TEXT, created_at TEXT)');
+require_once BASE_PATH . '/app/messages.php';
+
+ok(rmt_is_blocked(1, 2) === false, 'two people who have not blocked anybody are not blocked');
+$pdo->exec('INSERT INTO blocks (blocker_id, blocked_id) VALUES (1,2)');
+/* Symmetric on purpose, and this is the one people get wrong: whoever pressed the button, NEITHER
+   of them can start again. A one way block lets the blocker keep writing to somebody who has no
+   way to answer. */
+ok(rmt_is_blocked(1, 2) === true, 'a block stops the person who was blocked');
+ok(rmt_is_blocked(2, 1) === true, 'and the person who blocked them, in the same breath');
+$pdo->exec('DELETE FROM blocks');
+ok(rmt_is_blocked(1, 2) === false, 'and lifting it lifts it for both');
+
+$src2 = (string) file_get_contents(BASE_PATH . '/app/messages.php');
+ok(substr_count($src2, 'rmt_is_blocked(') >= 2,
+   'the block is checked when reading a thread and again when writing to it');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
