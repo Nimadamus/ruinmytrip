@@ -84,13 +84,24 @@ function rmt_growth_funnel(int $days = 0): array {
        table, counted per journey rather than per request because a reload is not a visitor. It also
        counts crawlers, which is why it is labelled as arrivals and not quietly trusted as people. */
     $visits = 0;
+    $countingSince = null;
     try {
-        $visits = (int) (q_one("SELECT COUNT(DISTINCT COALESCE(journey, CAST(id AS TEXT))) c
-                                  FROM contribution_events
-                                 WHERE event = 'landing_view' AND created_at >= ?", [$since])['c'] ?? 0);
+        $row = q_one("SELECT COUNT(DISTINCT COALESCE(journey, CAST(id AS TEXT))) c, MIN(created_at) first
+                        FROM contribution_events
+                       WHERE event = 'landing_view' AND created_at >= ?", [$since]);
+        $visits = (int) ($row['c'] ?? 0);
+        $countingSince = $row['first'] ?? null;
     } catch (Throwable $e) {
         $visits = 0;      // before the migration, or on a database that has never seen a visit
     }
+
+    /* Whether the arrival counter actually covers the window being reported.
+       It usually will not on the first day it exists, and a rate computed across two different
+       spans of time is worse than no rate: nine arrivals against four members who joined over a
+       month reads as 44% conversion and means nothing at all. So the rate is withheld until the
+       counter has been running for the whole window, and the page says when counting began. */
+    $covers = $countingSince !== null
+           && ($days === 0 ? false : (string) $countingSince <= $since);
 
     $pct = static fn(int $a, int $b): ?float => $b > 0 ? round($a * 100 / $b, 1) : null;
 
@@ -98,11 +109,15 @@ function rmt_growth_funnel(int $days = 0): array {
         'days'    => $days,
         'visits'  => $visits,
         'members' => $members,
+        /* When the arrival counter started, and whether it covers the window. A rate the
+           report cannot honestly compute is left out rather than estimated. */
+        'arrivals_since'   => $countingSince,
+        'arrivals_cover'   => $covers,
         /* The spine. Each step as a share of the step above it, because a funnel read as a share of
            the top hides which single step is the broken one. */
         'spine'   => [
             ['label' => 'Arrived on the front page',  'n' => $visits,    'of' => null],
-            ['label' => 'Signed up',                  'n' => $members,   'of' => $pct($members, $visits)],
+            ['label' => 'Signed up',                  'n' => $members,   'of' => $covers ? $pct($members, $visits) : null],
             ['label' => 'Confirmed their email',      'n' => $confirmed, 'of' => $pct($confirmed, $members)],
             ['label' => 'Wrote a trip',               'n' => $trip,      'of' => $pct($trip, $members)],
             ['label' => 'Planned or saved something', 'n' => $useful,    'of' => $pct($useful, $members)],

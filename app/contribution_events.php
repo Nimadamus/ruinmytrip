@@ -68,6 +68,31 @@ const RMT_CONTRIB_SOURCES = [
 const RMT_CONTRIB_REASONS = ['validation', 'auth', 'verification', 'rate_limit', 'permission', 'duplicate', 'server', 'other'];
 
 /**
+ * Is this request a crawler?
+ *
+ * Measured, not guessed at: the join form showed 996 views against 2 submissions in thirty days,
+ * which is not a conversion problem, it is a page that search engines like to visit. A funnel whose
+ * denominator is mostly robots reports a catastrophe every week and teaches you to ignore it.
+ *
+ * The user agent is READ here and never stored. That distinction is the whole point: deciding not
+ * to write a row needs the string for the length of one comparison, and keeping it would turn an
+ * aggregate counter into a record of who visited. Nothing below reaches the database.
+ *
+ * Deliberately a substring match on the words crawlers put in their own agents rather than a list of
+ * known bots. A list goes stale; "bot", "spider" and "crawl" do not, and anything that lies about
+ * being a crawler was going to be counted by any method.
+ */
+function rmt_is_crawler(): bool {
+    $ua = strtolower((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
+    if ($ua === '') return true;        // no agent at all is a script, not a traveler
+    foreach (['bot', 'spider', 'crawl', 'slurp', 'headless', 'preview', 'fetcher',
+              'monitor', 'curl/', 'wget', 'python-requests', 'okhttp', 'java/'] as $mark) {
+        if (str_contains($ua, $mark)) return true;
+    }
+    return false;
+}
+
+/**
  * The token tying one attempt's steps together.
  *
  * Session-scoped and random. It is not derived from anything about the person, it is never shown,
@@ -98,6 +123,7 @@ function rmt_journey_rotate(): void {
  */
 function rmt_track(string $event, array $ctx = []): void {
     if (!in_array($event, RMT_CONTRIB_EVENTS, true)) return;
+    if (rmt_is_crawler()) return;
 
     $source = (string) ($ctx['source'] ?? '');
     if (!in_array($source, RMT_CONTRIB_SOURCES, true)) $source = null;

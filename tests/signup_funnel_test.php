@@ -22,6 +22,11 @@ require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/contribution_events.php';
 
+/* A request with no user agent is a script, and rmt_track() declines to record one: a funnel
+   counting robots is a funnel nobody believes. The CLI has no agent, so the harness supplies
+   the one a traveler would arrive with. */
+$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari/605.1';
+
 function is_logged_in(): bool { return false; }
 
 db()->exec('CREATE TABLE contribution_events (id INTEGER PRIMARY KEY AUTOINCREMENT, event TEXT,

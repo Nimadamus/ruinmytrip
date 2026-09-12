@@ -48,8 +48,10 @@ echo "\n-- the derived funnel returns counts, never people --\n";
 $f = rmt_growth_funnel(0);
 $flat = [];
 array_walk_recursive($f, static function ($v, $k) use (&$flat) { $flat[] = [$k, $v]; });
+/* 'label' is prose we wrote, and 'arrivals_since' is a timestamp saying when the arrival counter
+   started. Anything else coming back as text would be a name that got loose. */
 $leaky = array_filter($flat, static fn(array $kv) => is_string($kv[1])
-    && !in_array($kv[0], ['label'], true));
+    && !in_array($kv[0], ['label', 'arrivals_since'], true));
 ok($leaky === [], 'nothing but labels comes back as text, so no name can ride along');
 foreach (['user', 'username', 'email', 'id', 'ids'] as $key) {
     ok(!array_key_exists($key, $f), "the result has no $key key");
@@ -106,6 +108,35 @@ ok(!str_contains($controllers, "rmt_track('landing_view'"),
 $home = substr($controllers, (int) strpos($controllers, 'function home(array $a)'), 1200);
 ok(strpos($home, 'if (current_user()) { feed($a); return; }') < strpos($home, 'landing_view'),
    'and only for somebody who is signed out');
+
+echo "\n-- robots are not counted, and the agent is never kept --\n";
+/* The join form had 996 views against 2 submissions in thirty days. That is not a conversion
+   problem, it is a page search engines like. A denominator made of robots reports a catastrophe
+   every week and teaches whoever reads it to stop looking. */
+ok(function_exists('rmt_is_crawler'), 'there is one place that decides what a robot is');
+$realUA = $_SERVER['HTTP_USER_AGENT'] ?? '';
+foreach (['Googlebot/2.1 (+http://www.google.com/bot.html)', 'python-requests/2.31', 'curl/8.4.0', ''] as $ua) {
+    $_SERVER['HTTP_USER_AGENT'] = $ua;
+    ok(rmt_is_crawler(), 'not a traveler: ' . ($ua === '' ? 'no agent at all' : substr($ua, 0, 24)));
+}
+$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Safari/605.1';
+ok(!rmt_is_crawler(), 'a phone is a traveler');
+$_SERVER['HTTP_USER_AGENT'] = $realUA;
+$events = (string) file_get_contents($root . '/app/contribution_events.php');
+ok(str_contains($events, 'if (rmt_is_crawler()) return;'),
+   'and nothing a robot does reaches the table at all');
+ok(!preg_match('/INSERT INTO contribution_events.{0,400}HTTP_USER_AGENT/s', $events),
+   'the agent is read to make that decision and never written down');
+
+echo "\n-- a rate the report cannot honestly compute is left out --\n";
+/* Nine arrivals against four members who joined over a month reads as 44 percent and means
+   nothing: the two numbers cover different spans of time. */
+ok(array_key_exists('arrivals_cover', $f), 'the report knows whether its own window is covered');
+if (!$f['arrivals_cover']) {
+    ok($f['spine'][1]['of'] === null, 'and withholds the signup rate until it is');
+}
+ok(str_contains($growthSrc, '$covers ? $pct($members, $visits) : null'),
+   'the rate is gated on coverage rather than estimated');
 
 echo "\n-- the inventory says what is actually here --\n";
 $inv = rmt_growth_inventory();

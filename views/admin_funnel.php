@@ -28,7 +28,14 @@
   <h2 style="margin:6px 0 4px">Members</h2>
   <p class="hint" style="margin:0 0 10px">Counted from trips, saves, plans and confirmations
     themselves, not from anything recorded about anybody. Each percentage is a share of the line
-    above it. Arrivals include crawlers, so read that row as requests rather than as people.</p>
+    above it.
+    <?php if (!empty($growth['arrivals_since']) && empty($growth['arrivals_cover'])): ?>
+      Arrivals have only been counted since <?= e(substr((string) $growth['arrivals_since'], 0, 10)) ?>,
+      so the signup rate is left blank rather than computed against a longer window.
+    <?php elseif (empty($growth['arrivals_since'])): ?>
+      No arrivals have been counted yet.
+    <?php endif; ?>
+  </p>
   <table class="table" style="margin:0 0 18px">
     <tbody>
     <?php foreach ($growth['spine'] as $row): ?>
@@ -89,11 +96,15 @@
       ['Pressed create account', (int) $sv['join_submit']],
       ['Account created', (int) $sv['join_created']],
       ['Email confirmed', (int) $sv['join_confirmed']],
-      ['Did something in the first session', (int) $sv['join_first_action']],
+      ['Answered a question in the welcome flow', (int) $sv['join_first_action']],
   ];
   $joinTop = max(1, $joinRows[0][1]);
   ?>
-  <h2 style="margin:6px 0 10px">Joining</h2>
+  <h2 style="margin:6px 0 4px">Joining</h2>
+  <p class="hint" style="margin:0 0 10px">Attempts at the form itself. The last row counts only
+    the welcome flow's own questions, so it is not an activation rate: what people actually did
+    is the Members table above, which reads the rows rather than the events. Crawler requests
+    stopped being recorded on 2026 09 11, so counts from before then are inflated by robots.</p>
   <?php if (!array_sum(array_column($joinRows, 1))): ?>
     <p class="muted" style="margin:0 0 20px">Nobody has reached the join form in this window.</p>
   <?php else: ?>
