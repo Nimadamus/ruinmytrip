@@ -106,8 +106,14 @@
     <?php /* Reviewing somewhere that has shut for good is not something to invite, and somebody
              who genuinely went while it was open can still reach the form from their own profile.
              A temporarily closed place keeps the button: people are still remembering visits. */ ?>
+    <?php /* Saving is the loud one, and writing a review is not.
+             Somebody on a place page is nearly always planning: they are deciding whether this
+             belongs on a trip they have not taken yet. Writing a review is for the much smaller
+             number who have already been, and it was the only filled button on the page while
+             saving was a ghost beside it, which is the wrong way round for almost everybody who
+             lands here. */ ?>
     <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed'): ?>
-      <a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+      <a class="btn btn-ghost" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
          href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Write a review</a>
     <?php endif; ?>
     <?php if ($me): ?>
@@ -116,13 +122,13 @@
         <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
         <input type="hidden" name="return" value="<?= e(rmt_place_path($p)) ?>">
         <input type="hidden" name="want" value="<?= $saved ? 'off' : 'on' ?>">
-        <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?>"
+        <button class="btn <?= $saved ? 'btn-ghost' : 'btn-accent' ?>"
                 aria-pressed="<?= $saved ? 'true' : 'false' ?>">
           <?= $saved ? '★ Saved' : '☆ Save' ?>
         </button>
       </form>
     <?php else: ?>
-      <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode(rmt_place_path($p)))) ?>">☆ Save</a>
+      <a class="btn btn-accent" href="<?= e(url('login?return=' . rawurlencode(rmt_place_path($p)))) ?>">☆ Save</a>
     <?php endif; ?>
     <?php /* Adding a venue to a travel list, from the page you are already on. Only the reader's
              own lists, and a list this place is already on says so rather than offering to add it
