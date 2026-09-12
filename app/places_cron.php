@@ -481,6 +481,11 @@ function cron_places(array $a): void {
     $limit = max(1, min(120, (int) input('limit') ?: 40));
     $km    = (float) (input('km') ?: 0);   // 0 means: use the density default for this kind
     $dry   = (string) input('dry') === '1';
+    /* enrich=1 fills in the places we already publish and creates nothing. Overpass will always
+       offer more rows than we hold, and taking all of them is how a city goes from a hundred
+       places worth reading to four hundred pages carrying a name and a dot. Making the existing
+       hundred useful is a different decision from tripling the count, so it is a different flag. */
+    $enrich = (string) input('enrich') === '1';
     $types = $type === 'all' ? RMT_PLACE_TYPES : [$type];
     foreach ($types as $t) {
         if (!in_array($t, RMT_PLACE_TYPES, true)) { echo "unknown type: $t\n"; return; }
@@ -492,7 +497,7 @@ function cron_places(array $a): void {
     foreach ($types as $t) {
         $pull = rmt_osm_places_for_destination($dest, $t, $limit, $km);
         if (!$pull['ok']) { printf("%-12s FAILED: %s\n", $t, (string) $pull['error']); continue; }
-        $res = rmt_place_import_batch((int) $dest['id'], $pull['rows'], $dry);
+        $res = rmt_place_import_batch((int) $dest['id'], $pull['rows'], $dry, $enrich);
 
         $aliases = 0;
         if (!$dry) {
@@ -508,9 +513,17 @@ function cron_places(array $a): void {
         foreach ($res['details'] as $d) {
             if ($d['action'] === 'update' && $d['how']) $matched[$d['how']] = ($matched[$d['how']] ?? 0) + 1;
         }
+        /* What an enrich run actually bought, field by field. "updated=47" says something
+           happened; "street_address 31, phone 18, hours 12" says whether it was worth doing. */
+        $filled = [];
+        foreach ($res['details'] as $d) {
+            foreach ((array) ($d['filled'] ?? []) as $f) $filled[$f] = ($filled[$f] ?? 0) + 1;
+        }
+        arsort($filled);
         printf("%-12s offered=%d created=%d updated=%d skipped=%d aliases=%d%s\n",
                $t, count($pull['rows']), $res['created'], $res['updated'], $res['skipped'], $aliases,
                $matched ? ' matched_by=' . json_encode($matched) : '');
+        if ($filled) printf("             filled=%s\n", json_encode($filled));
         foreach (array_slice(array_unique($res['errors']), 0, 5) as $e) printf("  ! %s\n", $e);
     }
     echo $dry ? "dry run, nothing written\n" : "done\n";

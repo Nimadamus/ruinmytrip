@@ -296,14 +296,39 @@ function rmt_place_alias_add(int $placeId, string $alias, ?string $source = null
 }
 
 /**
+ * Would this provider row land on a place we already publish?
+ *
+ * Used by enrich-only runs to decide whether to touch a row at all. It asks the same matcher the
+ * import itself uses, on the same normalised fields, so the answer cannot disagree with what the
+ * import would then do. Read only: it looks, it does not write.
+ */
+function rmt_place_import_would_match(int $destId, array $row): bool {
+    $data = $row;
+    unset($data['category_slug'], $data['opening_hours']);
+    return rmt_place_import_match($destId, $data) !== null;
+}
+
+/**
  * Import a batch and report what happened to each record.
  *
  * @param list<array<string,mixed>> $rows
  * @return array{created:int,updated:int,skipped:int,errors:list<string>,details:list<array>}
  */
-function rmt_place_import_batch(int $destId, array $rows, bool $dryRun = false): array {
+function rmt_place_import_batch(int $destId, array $rows, bool $dryRun = false,
+                                bool $enrichOnly = false): array {
     $sum = ['created' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => [], 'details' => []];
     foreach ($rows as $row) {
+        /* Enrich only: fill in what we already publish, and decline to create anything new.
+           A provider will always offer more rows than we hold, and taking all of them is how a
+           city goes from a hundred places worth reading to four hundred pages that say a name and
+           a dot. The run that makes the existing hundred useful and the run that triples the count
+           are different decisions, so they are different switches. */
+        if ($enrichOnly && !rmt_place_import_would_match($destId, $row)) {
+            $sum['skipped']++;
+            $sum['details'][] = ['action' => 'ignored', 'place_id' => null, 'how' => null,
+                                 'filled' => [], 'kept' => [], 'error' => null];
+            continue;
+        }
         $r = rmt_place_import_one($destId, $row, $dryRun);
         $sum['details'][] = $r;
         if ($r['error'] !== null) { $sum['skipped']++; $sum['errors'][] = $r['error']; continue; }
