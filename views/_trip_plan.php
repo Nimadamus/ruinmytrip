@@ -25,7 +25,7 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
 ?>
 <section class="plan" id="plan">
   <div class="plan-head">
-    <h2>The plan</h2>
+    <h2><?= $phaseNow === 'past' ? 'What you did' : 'The plan' ?></h2>
     <?php if ($planDays): ?>
       <?php $rmt_planN = array_sum(array_map(static fn(array $d) => count($d['items']), $planDays)); ?>
       <span class="hint"><?= $rmt_planN ?> <?= $rmt_planN === 1 ? 'thing' : 'things' ?>
@@ -164,7 +164,16 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
   <?php if ($canEdit): ?>
     <?php /* One line and a day. Everything else is behind the disclosure, and most of it is never
              opened, which is exactly the intention: adding "dinner in Alfama" should cost one
-             sentence of typing. */ ?>
+             sentence of typing.
+
+             On a trip that has already happened the same form is still useful, because people
+             write down what they actually did afterwards, but it stops being the loud thing on
+             the page: a finished trip asking "What is the plan?" reads as a product that has not
+             noticed the trip is over. */ ?>
+    <?php if ($phaseNow === 'past'): ?>
+      <details class="plan-add-later">
+        <summary>Add something you did</summary>
+    <?php endif; ?>
     <form class="plan-add" method="post" action="<?= e(url('trip/'.(int) $t['id'].'/activity')) ?>">
       <?= csrf_field() ?>
       <div class="plan-add-row">
@@ -239,5 +248,6 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
                   placeholder="Booked for four, ask for the table by the window."></textarea>
       </details>
     </form>
+    <?php if ($phaseNow === 'past'): ?></details><?php endif; ?>
   <?php endif; ?>
 </section>

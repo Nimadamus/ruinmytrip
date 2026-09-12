@@ -184,5 +184,21 @@ $src2 = (string) file_get_contents(BASE_PATH . '/app/messages.php');
 ok(substr_count($src2, 'rmt_is_blocked(') >= 2,
    'the block is checked when reading a thread and again when writing to it');
 
+echo "\n-- a trip changes shape as it moves through its life --\n";
+/* The same page serves a trip that has not happened, one happening today, and one that is over.
+   It used to serve all three identically: a finished trip still led with "The plan" and a form
+   asking "What is the plan?", which reads as a product that has not noticed the trip is over.
+   These are the rules for that, kept because a generic trip page is the thing to regress to. */
+$plan = (string) file_get_contents(BASE_PATH . '/views/_trip_plan.php');
+$feedSrc = (string) file_get_contents(BASE_PATH . '/views/feed.php');
+ok(str_contains($plan, "\$phaseNow === 'past' ? 'What you did' : 'The plan'"),
+   'a finished trip lists what was done, not what is planned');
+ok(str_contains($plan, "<?php if (\$phaseNow === 'past'): ?>"),
+   'and the form to add more is quieter once the trip is over, rather than gone');
+ok(str_contains($feedSrc, "How was "), 'the home page asks how a finished trip was');
+ok(str_contains($feedSrc, 'Nothing planned yet.'), 'and offers places when a trip has nothing on it');
+ok(str_contains($feedSrc, "\$rmt_next && !\$ntToday"),
+   'but says nothing when there is something on today, because today wins the space');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

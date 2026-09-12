@@ -1233,3 +1233,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 
 .next-trip-next{margin:.2rem 0 .6rem;font-size:.93rem;color:var(--muted)}
 .next-trip-next a{font-weight:600}
+
+.plan-add-later{margin-top:14px}
+.plan-add-later summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:.92rem}
