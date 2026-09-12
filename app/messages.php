@@ -132,6 +132,7 @@ function messages_index(array $a): void {
     view('messages_index', compact('rows', 'threads', 'requests', 'couldWrite'), [
         'title' => 'Messages | RuinMyTrip',
         'description' => 'Your RuinMyTrip conversations.',
+        'app_shell' => true,
     ]);
 }
 
@@ -171,6 +172,7 @@ function messages_thread(array $a): void {
     view('messages_thread', compact('them', 'items', 'blocked', 'shared', 'theirHome'), [
         'title' => 'Messages with @' . $them['username'] . ' | RuinMyTrip',
         'description' => 'Conversation with @' . $them['username'] . ' on RuinMyTrip.',
+        'app_shell' => true,
     ]);
 }
 

@@ -183,6 +183,11 @@ function view(string $name, array $data = [], array $meta = []): void {
         // index says 'noindex,follow': invisible to the index, still crawled for its links.
         'robots' => 'index, follow',
         'breadcrumbs' => [],
+        /* A conversation is not an article. The site footer is a thirty link sitemap nearly a
+           thousand pixels tall on a phone, which is right at the bottom of a city page and wrong
+           directly under a two message chat, where it is most of the screen. A page can say it is
+           an app surface rather than a content one and get the slim footer instead. */
+        'app_shell' => false,
     ], $meta);
     $__view = BASE_PATH . '/views/' . $name . '.php';
     require BASE_PATH . '/views/layout/header.php';

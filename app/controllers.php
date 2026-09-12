@@ -3043,7 +3043,11 @@ function notifications(array $a): void {
         }
     }
     db()->prepare("UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL")->execute([date('Y-m-d H:i:s'),(int)$me['id']]);
-    view('notifications', compact('items','me','unreadIds','actMap'), ['title'=>'Notifications | RuinMyTrip','description'=>'Your RuinMyTrip activity.']);
+    view('notifications', compact('items','me','unreadIds','actMap'), [
+        'title' => 'Notifications | RuinMyTrip',
+        'description' => 'Your RuinMyTrip activity.',
+        'app_shell' => true,
+    ]);
 }
 
 /**

@@ -1248,3 +1248,6 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* Buttons on a card are thumbs, not cursors. Thirty pixels is a miss on a phone. */
 .place-card .btn,.card .btn-ghost[style*="font-size:.85rem"]{min-height:38px}
 .btn-sm{min-height:36px}
+
+.site-footer-slim{padding:20px 0 18px;margin-top:34px}
+.site-footer-slim a{display:inline;padding:0}

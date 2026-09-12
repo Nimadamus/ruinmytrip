@@ -1,4 +1,17 @@
 </main>
+<?php /* An app surface ends where its content ends. Everything the big footer links to is one tap
+         away in the bar at the bottom of the screen, so repeating it under a chat is noise the
+         reader has to scroll past to reach nothing. */ ?>
+<?php if (!empty($meta['app_shell'])): ?>
+  <footer class="site-footer site-footer-slim">
+    <div class="wrap"><p class="muted" style="margin:0">
+      <a href="<?= e(url('safety')) ?>">Safety</a> &middot;
+      <a href="<?= e(url('about')) ?>">About</a> &middot;
+      <a href="<?= e(url('privacy')) ?>">Privacy</a> &middot;
+      <a href="<?= e(url('terms')) ?>">Terms</a>
+    </p></div>
+  </footer>
+<?php else: ?>
 <footer class="site-footer">
   <div class="wrap footer-grid">
     <div>
@@ -53,6 +66,7 @@
     © <?= date('Y') ?> RuinMyTrip · Travel boldly, travel safe · <a href="<?= e(url('safety')) ?>">Safety first</a>
   </div>
 </footer>
+<?php endif; ?>
 <?php /* The app bar. Most of this site's readers arrive on a phone, where the whole navigation was
          behind a hamburger: five taps to reach the thing they came for. These are the five places
          worth a permanent thumb-reach target, and the middle one is the only thing we actually want
