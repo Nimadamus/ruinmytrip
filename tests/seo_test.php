@@ -100,5 +100,25 @@ echo "\n-- sitemap day --\n";
 check('null stays null', rmt_sitemap_day(null), null);
 check('datetime to date', rmt_sitemap_day('2026-08-26T12:00:00Z'), '2026-08-26');
 
+echo "\n-- pages that are not there --\n";
+/* A 404 was emitting a canonical pointing at the address that had just failed, which tells a
+   crawler the missing URL is the preferred version of itself, and an og:url with it, so a shared
+   dead link previewed as though it were a page. Both are conditional now. */
+$header = (string) file_get_contents(BASE_PATH . '/views/layout/header.php');
+$ctrl   = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+check('the canonical tag is conditional',
+      str_contains($header, "if ((\$__meta['canonical'] ?? '') !== ''): ?><link rel="), true);
+check('and so is og:url', str_contains($header, "?><meta property=\"og:url\""), true);
+check('a missing page claims no canonical',
+      str_contains($ctrl, "'canonical' => '', 'robots' => 'noindex,follow'"), true);
+
+/* Every scraper that matters refuses an SVG og:image and shows a link with no picture, which is
+   what a city with no hero photograph was sharing as. */
+$helpers = (string) file_get_contents(BASE_PATH . '/app/helpers.php');
+check('the default share image is not an SVG', str_contains($helpers, "og-default.svg'); 
+"), false);
+check('abs_url falls back to the real default', str_contains($helpers, "if (\$u === '') return rmt_default_og_image();"), true);
+check('and nothing still points og:image at the SVG', str_contains($ctrl, 'og-default.svg'), false);
+
 echo $fail ? "\n$fail FAIL(S)\n" : "\nALL PASS\n";
 exit($fail ? 1 : 0);

@@ -31,10 +31,19 @@ function authors_fill(array &$rows, string $idField = 'user_id'): void {
     unset($row);
 }
 function stars(int $n): string { return str_repeat('★', $n) . str_repeat('☆', 5 - $n); }
-function not_found(): void { http_response_code(404); view('404', [], ['title'=>'Not found | RuinMyTrip']); exit; }
+/* A page that is not there has no canonical URL and does not belong in an index.
+   It was emitting <link rel="canonical"> pointing at the missing address, which tells a crawler
+   that the URL it just failed to find is the preferred version of itself, and og:url with it, so
+   a shared dead link previewed as though it were a real page. */
+function not_found(): void {
+    http_response_code(404);
+    view('404', [], ['title' => 'Not found | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,follow']);
+    exit;
+}
 function forbidden(string $msg = "You don't have permission to do that."): void {
     http_response_code(403);
-    view('403', compact('msg'), ['title'=>'Not authorized | RuinMyTrip']);
+    view('403', compact('msg'), ['title' => 'Not available | RuinMyTrip',
+                                 'canonical' => '', 'robots' => 'noindex,follow']);
     exit;
 }
 
@@ -1677,7 +1686,7 @@ function blog_show(array $a): void {
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest'), [
         'title' => $p['title'].' | RuinMyTrip',
         'description' => $p['summary'],
-        'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : url('assets/img/og-default.svg'),
+        'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : rmt_default_og_image(),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')],['name'=>$p['title'],'url'=>url('blog/'.$p['slug'])]],
         'jsonld' => jsonld($ld),
     ]);
@@ -1877,7 +1886,7 @@ function collection_show(array $a): void {
         'title' => $c['title'].' | RuinMyTrip Collections',
         'description' => $c['summary'] ?: ('A curated destination list on RuinMyTrip: '.$c['title']),
         'og_image' => $isCommunity ? rmt_card_url('c', (string) $c['slug'])
-                                   : ($items ? abs_url($items[0]['dest_hero']) : url('assets/img/og-default.svg')),
+                                   : ($items ? abs_url($items[0]['dest_hero']) : rmt_default_og_image()),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Collections','url'=>url('collections')],['name'=>$c['title'],'url'=>url('c/'.$c['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'ItemList','name'=>$c['title'],
             'description'=>$c['summary'],

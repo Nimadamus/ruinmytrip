@@ -129,7 +129,12 @@ function ago(string $ts): string {
  */
 function abs_url(?string $u): string {
     $u = (string) $u;
-    if ($u === '') return url('assets/img/og-default.svg');
+    /* Not the SVG. Every scraper that matters refuses one: Facebook, LinkedIn, X and iMessage all
+       skip an SVG og:image and show a link with no picture at all, which is exactly what a city
+       with no hero photograph was sharing as. The default is the same photograph the home page
+       shares, so there is one default share image on this site rather than two, and it is a
+       format every one of them renders. */
+    if ($u === '') return rmt_default_og_image();
     if (preg_match('#^https?://#i', $u)) return $u;
     return url(ltrim($u, '/'));
 }

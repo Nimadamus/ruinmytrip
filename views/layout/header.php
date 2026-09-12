@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($__meta['title']) ?></title>
 <meta name="description" content="<?= e($__meta['description']) ?>">
-<link rel="canonical" href="<?= e($__meta['canonical']) ?>">
+<?php if (($__meta['canonical'] ?? '') !== ''): ?><link rel="canonical" href="<?= e($__meta['canonical']) ?>"><?php endif; ?>
 <?php /* One robots tag, and one place that decides what it says. It was hardcoded to
          "index, follow" on every page including the ones that should never be indexed; a page
          type that has not earned a place in the index now says so from its controller. */ ?>
@@ -13,7 +13,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="<?= e($__meta['title']) ?>">
 <meta property="og:description" content="<?= e($__meta['description']) ?>">
-<meta property="og:url" content="<?= e($__meta['canonical']) ?>">
+<?php if (($__meta['canonical'] ?? '') !== ''): ?><meta property="og:url" content="<?= e($__meta['canonical']) ?>"><?php endif; ?>
 <meta property="og:image" content="<?= e($__meta['og_image']) ?>">
 <meta property="og:site_name" content="RuinMyTrip">
 <meta name="twitter:card" content="summary_large_image">
