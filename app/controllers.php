@@ -6262,13 +6262,17 @@ function trip_activity_decide(array $a): void {
     if (!$row) redirect($back);
 
     if ($decision === 'accept') {
-        if (!rmt_activity_has_room($act)) {
+        /* The seat is taken inside a lock rather than checked and then taken. Two people accepted
+           onto the last place at the same moment both used to read "one left" and both got it. */
+        $took = rmt_activity_take_seat($act, static function () use ($act, $me, $who): void {
+            db()->prepare("UPDATE activity_joins SET state = 'going', decided_at = ?, decided_by = ?
+                            WHERE activity_id = ? AND user_id = ?")
+                ->execute([date('Y-m-d H:i:s'), (int) $me['id'], (int) $act['id'], $who]);
+        });
+        if (!$took) {
             flash('That plan is full. Remove somebody first, or raise the limit.');
             redirect($back);
         }
-        db()->prepare("UPDATE activity_joins SET state = 'going', decided_at = ?, decided_by = ?
-                        WHERE activity_id = ? AND user_id = ?")
-            ->execute([date('Y-m-d H:i:s'), (int) $me['id'], (int) $act['id'], $who]);
         $type = 'activity_accepted';
         flash('Accepted.');
     } elseif ($decision === 'decline') {
@@ -6536,16 +6540,30 @@ function trip_activity_join(array $a): void {
             ->execute([(int) $act['id'], (int) $me['id']]);
         redirect($back);
     }
-    if ($current === null) {
-        try {
-            q_run('INSERT INTO activity_joins (activity_id, user_id, state, created_at) VALUES (?,?,?,?)',
-                  [(int) $act['id'], (int) $me['id'], $want, date('Y-m-d H:i:s')]);
-        } catch (\PDOException $e) {
-            if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+    /* Saying "I am going" to an open plan takes a seat, and takes it under the same lock the owner
+       accepting somebody uses. Checking for room and then writing are two statements, and two
+       people pressing the button on the last place at the same moment both read "one left". An
+       interest or an ask takes no seat and is written directly. */
+    $write = static function () use ($act, $me, $want, $current): void {
+        if ($current === null) {
+            try {
+                q_run('INSERT INTO activity_joins (activity_id, user_id, state, created_at) VALUES (?,?,?,?)',
+                      [(int) $act['id'], (int) $me['id'], $want, date('Y-m-d H:i:s')]);
+            } catch (\PDOException $e) {
+                if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+            }
+        } else {
+            db()->prepare('UPDATE activity_joins SET state = ? WHERE activity_id = ? AND user_id = ?')
+                ->execute([$want, (int) $act['id'], (int) $me['id']]);
+        }
+    };
+    if ($want === 'going') {
+        if (!rmt_activity_take_seat($act, $write)) {
+            flash('That plan filled up while you were looking at it.');
+            redirect($back);
         }
     } else {
-        db()->prepare('UPDATE activity_joins SET state = ? WHERE activity_id = ? AND user_id = ?')
-            ->execute([$want, (int) $act['id'], (int) $me['id']]);
+        $write();
     }
 
     /* Tell the traveler whose plan it is, once per person per plan: somebody saying they will come

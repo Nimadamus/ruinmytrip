@@ -433,6 +433,44 @@ function rmt_activity_has_room(array $activity): bool {
 }
 
 /**
+ * Take one of the remaining places, or refuse. The only way a seat is ever filled.
+ *
+ * rmt_activity_has_room() answers a question; this one settles it. The difference matters because
+ * asking and then acting is two statements with a gap between them, and two people pressing accept
+ * on the last seat at the same moment both read "one place left" in that gap and both take it.
+ *
+ * The activity row is locked first, by writing to it inside the transaction. That is deliberately
+ * a no-op update: on Postgres it takes a row lock and on SQLite it takes the write lock, so every
+ * attempt to fill a seat on the same plan queues behind the one in front of it, and the count read
+ * afterwards is the true one. Portable, no schema change, and it covers both the owner accepting
+ * somebody and somebody joining an open plan directly.
+ *
+ * @param callable():void $fill writes the row, and is only called when there is genuinely room
+ * @return bool false when the plan filled up, in which case nothing was written
+ */
+function rmt_activity_take_seat(array $activity, callable $fill): bool {
+    $cap = (int) ($activity['capacity'] ?? 0);
+    if ($cap < 1) { $fill(); return true; }
+
+    $pdo = db();
+    $own = !$pdo->inTransaction();
+    if ($own) $pdo->beginTransaction();
+    try {
+        q_run('UPDATE trip_activities SET updated_at = updated_at WHERE id = ?', [(int) $activity['id']]);
+        if (rmt_activity_going_count((int) $activity['id']) >= $cap) {
+            if ($own) $pdo->rollBack();
+            return false;
+        }
+        $fill();
+        if ($own) $pdo->commit();
+        return true;
+    } catch (Throwable $e) {
+        if ($own && $pdo->inTransaction()) $pdo->rollBack();
+        throw $e;
+    }
+}
+
+/**
  * The meeting point, which is the one piece of an activity that is not for everybody.
  *
  * "By the fountain at the top of the steps, 8pm" is exactly the information a stranger should not

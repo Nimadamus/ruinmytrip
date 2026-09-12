@@ -237,5 +237,41 @@ ok(str_contains($e403, '<?= e($msg) ?>'), 'the reason the caller gave is what th
 ok(str_contains($e403, 'something changed'),
    'and it says the likely cause, because a stale page is the usual one');
 
+echo "\n-- capacity --\n";
+/* A plan with a limit on it. The interesting case is not the fifth person, it is the fourth and
+   fifth arriving together: checking for room and then writing are two statements, and both of them
+   read "one place left" in the gap between. */
+$pdo->exec("UPDATE trip_activities SET capacity = 2 WHERE id = 2");
+$cap2 = q_one('SELECT * FROM trip_activities WHERE id = 2');
+ok(rmt_activity_has_room($cap2) === true, 'an empty plan with room has room');
+
+ok(rmt_activity_take_seat($cap2, static function () use ($pdo, $now): void {
+    $pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (2,2,'going',?)")->execute([$now]);
+}) === true, 'the first seat is taken');
+ok(rmt_activity_take_seat($cap2, static function () use ($pdo, $now): void {
+    $pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (2,3,'going',?)")->execute([$now]);
+}) === true, 'and the second');
+$third = rmt_activity_take_seat($cap2, static function () use ($pdo, $now): void {
+    $pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (2,1,'going',?)")->execute([$now]);
+});
+ok($third === false, 'the third is refused');
+ok(rmt_activity_going_count(2) === 2, 'and nothing was written when it was refused');
+
+/* Freeing a place makes it available again, which is the half people forget. */
+$pdo->exec('DELETE FROM activity_joins WHERE activity_id = 2 AND user_id = 3');
+ok(rmt_activity_take_seat($cap2, static function () use ($pdo, $now): void {
+    $pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (2,1,'going',?)")->execute([$now]);
+}) === true, 'removing somebody frees their place');
+ok(rmt_activity_going_count(2) === 2, 'and the plan is full again, not over full');
+
+/* A plan with no limit is the normal case and must not be made to queue for nothing. */
+$noCap = q_one('SELECT * FROM trip_activities WHERE id = 1');
+ok((int) ($noCap['capacity'] ?? 0) === 0 && rmt_activity_has_room($noCap) === true,
+   'a plan with no limit always has room');
+
+$ctrl2 = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+ok(substr_count($ctrl2, 'rmt_activity_take_seat(') === 2,
+   'both ways of filling a seat go through the lock: the owner accepting, and joining an open plan');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
