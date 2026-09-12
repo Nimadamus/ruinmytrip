@@ -46,7 +46,12 @@
           "assert_text": "Vizcaya Museum and Gardens",
           "confidence": "standard reference"
         }
-      ]
+      ],
+      "lat": 25.744699,
+      "lng": -80.211577,
+      "street_address": "3251 South Miami Avenue",
+      "postal_code": "33129",
+      "website_url": "https://vizcaya.org/"
     },
     {
       "destination_slug": "miami-usa",
@@ -87,7 +92,12 @@
           "assert_text": "Thursday",
           "confidence": "read off the museum's own visit page in September 2026"
         }
-      ]
+      ],
+      "lat": 25.786033,
+      "lng": -80.186339,
+      "street_address": "1103 Biscayne Boulevard",
+      "postal_code": "33132",
+      "website_url": "https://www.pamm.org/"
     },
     {
       "destination_slug": "miami-usa",
@@ -128,7 +138,12 @@
           "assert_text": "Wynwood Walls",
           "confidence": "standard reference, and confirmed by the venue selling tickets while the surrounding streets are public"
         }
-      ]
+      ],
+      "lat": 25.801139,
+      "lng": -80.199658,
+      "street_address": "2520 Northwest 2nd Avenue",
+      "postal_code": "33127",
+      "website_url": "https://thewynwoodwalls.com/"
     },
     {
       "destination_slug": "miami-usa",
@@ -251,7 +266,13 @@
           "assert_text": "Bill Baggs",
           "confidence": "the park's own page in the Florida State Parks system, which charges vehicle entry across the system"
         }
-      ]
+      ],
+      "lat": 25.674253,
+      "lng": -80.157962,
+      "street_address": "1200 Crandon Boulevard",
+      "postal_code": "33149",
+      "website_url": "https://www.floridastateparks.org/parks-and-trails/bill-baggs-cape-florida-state-park"
     }
-  ]
+  ],
+  "_location_note": "lat, lng, street_address and postal_code on these four were geocoded from OpenStreetMap's own Nominatim gazetteer in September 2026, because the Overpass import never offers a named landmark inside the top 400 results for its city. They are written only into fields that are still empty, so a provider run can still correct them."
 }

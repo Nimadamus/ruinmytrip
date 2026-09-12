@@ -350,6 +350,33 @@ try {
         if ($pid === null) { out("  SKIP {$label}: place did not resolve"); continue; }
         out("  {$label} (destination {$did}, place {$pid})");
 
+        /* Where the place physically is, when the entry says so.
+           The provider is the normal source for this and it fails on exactly the places that
+           matter most: a named landmark does not sit in the top 400 results for its city by any
+           ordering, so Vizcaya and PAMM had full reviews published about them and no coordinates
+           to draw a map with. These values are public facts about a landmark, geocoded from
+           OpenStreetMap's own gazetteer, and they are written under the same timid rule the
+           importer uses: only into a field that is still empty, never over something already
+           held. A later provider run can still correct them. */
+        $geo = [];
+        foreach (['lat', 'lng', 'street_address', 'postal_code', 'website_url', 'phone'] as $k) {
+            if (isset($p[$k]) && $p[$k] !== '') $geo[$k] = $p[$k];
+        }
+        if ($geo) {
+            $cur = q_one('SELECT * FROM places WHERE id = ?', [$pid]);
+            $set = $args = [];
+            foreach ($geo as $k => $v) {
+                $have = $cur[$k] ?? null;
+                if ($have === null || $have === '') { $set[] = "$k = ?"; $args[] = $v; }
+            }
+            if ($set) {
+                $args[] = $pid;
+                $run('UPDATE places SET ' . implode(', ', $set) . ' WHERE id = ?', $args);
+                out('    located: ' . implode(', ', array_map(
+                    static fn(string $c): string => trim(explode('=', $c)[0]), $set)));
+            }
+        }
+
         $slug = mb_substr(slugify((string) $p['headline']), 0, 70);
         // Matched on author + place, so re-running corrects the same row instead of stacking.
         $have = q_one('SELECT id FROM reviews WHERE user_id = ? AND place_id = ?', [$uid, $pid]);
