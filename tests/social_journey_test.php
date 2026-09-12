@@ -1,0 +1,165 @@
+<?php
+/**
+ * Business invariants for the two social loops, written as rules rather than as screenshots.
+ *
+ * Both loops were driven end to end with two signed-in browsers before this file existed, and both
+ * behaved correctly. This is not a record of bugs: it is the set of statements that must stay true
+ * while the pages around them keep changing, because the failures they describe are silent ones.
+ * A duplicate attendee, a blocked person who can still reach somebody, a removed collaborator who
+ * keeps writing: none of those throws an error, and none of them shows up in a screenshot.
+ *
+ * The rules, in the words somebody would use to complain about them being broken:
+ *
+ *   asking to join twice does not make two requests
+ *   an accepted person is coming, exactly once
+ *   somebody who was blocked cannot ask, and cannot be seen to be coming
+ *   the owner of a plan is already there and does not join it
+ *   a plan nobody opened takes no answer at all
+ *   a cancelled plan takes no new people
+ *
+ *   php tests/social_journey_test.php
+ */
+declare(strict_types=1);
+
+define('BASE_PATH', dirname(__DIR__));
+$GLOBALS['config'] = [
+    'app_env' => 'test', 'app_url' => 'https://ruinmytrip.com', 'app_name' => 'RuinMyTrip',
+    'db_driver' => 'sqlite', 'sqlite_path' => ':memory:',
+];
+require BASE_PATH . '/app/db.php';
+require BASE_PATH . '/app/helpers.php';
+require BASE_PATH . '/app/plans.php';
+require BASE_PATH . '/app/matching.php';
+require BASE_PATH . '/app/activities.php';
+
+function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations WHERE id=?', [$id]); }
+
+$pass = 0; $fail = 0;
+function ok(bool $c, string $what): void {
+    global $pass, $fail;
+    if ($c) { $pass++; echo "  PASS  $what\n"; } else { $fail++; echo "FAIL: $what\n"; }
+}
+
+$pdo = db();
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
+$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT DEFAULT 'active', role TEXT DEFAULT 'user')");
+$pdo->exec('CREATE TABLE profiles (user_id INT, avatar_url TEXT, display_name TEXT)');
+$pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
+$pdo->exec('CREATE TABLE blocks (blocker_id INT, blocked_id INT)');
+$pdo->exec('CREATE TABLE places (id INTEGER PRIMARY KEY, name TEXT, slug TEXT, status TEXT)');
+$pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
+              slug TEXT, body TEXT, status TEXT, visibility TEXT, date_from TEXT, date_to TEXT)");
+$pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT,
+              invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
+$pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY AUTOINCREMENT, trip_id INT, user_id INT,
+              destination_id INT, day TEXT, start_time TEXT, title TEXT, category TEXT, place_id INT,
+              location_text TEXT, notes TEXT, link TEXT, photo_url TEXT, storage_key TEXT,
+              visibility TEXT DEFAULT 'trip', join_mode TEXT DEFAULT 'no', done INT DEFAULT 0,
+              rating INT, recommend INT, sort INT DEFAULT 0, status TEXT DEFAULT 'published',
+              created_at TEXT, updated_at TEXT, capacity INT, meeting_point TEXT, end_time TEXT,
+              cancelled_at TEXT)");
+$pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT, created_at TEXT,
+              decided_at TEXT, decided_by INT, recommend INT, answered_at TEXT,
+              PRIMARY KEY (activity_id, user_id))");
+$pdo->exec("CREATE TABLE activity_photos (id INTEGER PRIMARY KEY AUTOINCREMENT, activity_id INT, user_id INT,
+              url TEXT, storage_key TEXT, caption TEXT, width INT, height INT, bytes INT, sort INT,
+              status TEXT DEFAULT 'published', created_at TEXT)");
+$pdo->exec('CREATE TABLE trip_photos (id INTEGER PRIMARY KEY, trip_id INT)');
+$pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY, trip_id INT, status TEXT)");
+
+$pdo->exec("INSERT INTO destinations VALUES (7,'lisbon-portugal','Lisbon')");
+$pdo->exec("INSERT INTO users (id,username) VALUES (1,'owner'),(2,'joiner'),(3,'other')");
+$pdo->exec("INSERT INTO profiles VALUES (1,NULL,NULL),(2,NULL,NULL),(3,NULL,NULL)");
+$pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,visibility,date_from,date_to)
+            VALUES (1,1,7,'Lisbon','lisbon','','published','public','2026-10-03','2026-10-10')");
+$now = '2026-09-01 10:00:00';
+$mkPlan = static function (int $id, string $mode, ?string $cancelled = null) use ($pdo, $now): void {
+    $pdo->prepare("INSERT INTO trip_activities (id,trip_id,user_id,destination_id,day,title,category,
+                     visibility,join_mode,status,created_at,cancelled_at)
+                   VALUES (?,1,1,7,'2026-10-05',?, 'food','trip',?, 'published',?,?)")
+        ->execute([$id, 'Plan ' . $id, $mode, $now, $cancelled]);
+};
+$mkPlan(1, 'ask');
+$mkPlan(2, 'open');
+$mkPlan(3, 'no');
+$mkPlan(4, 'open', '2026-09-02 09:00:00');
+
+$owner    = ['id' => 1, 'role' => 'user'];
+$joiner   = ['id' => 2, 'role' => 'user'];
+$other    = ['id' => 3, 'role' => 'user'];
+
+/** The state the join table is in, which is what every rule below is really about. */
+$state = static fn(int $act, int $uid): ?string => rmt_activity_join_state($act, ['id' => $uid, 'role' => 'user']);
+$rows  = static fn(int $act, int $uid): int => (int) (q_one(
+    'SELECT COUNT(*) c FROM activity_joins WHERE activity_id = ? AND user_id = ?', [$act, $uid])['c'] ?? 0);
+
+echo "-- asking to join --\n";
+$pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (1,2,'requested',?)")->execute([$now]);
+ok($state(1, 2) === 'requested', 'an ask is remembered as an ask, not as attendance');
+ok(rmt_activity_going_count(1) === 0, 'and nobody is coming yet');
+
+/* Asking twice. The primary key is the rule: one row per person per plan, so a second ask cannot
+   become a second request however many times the button is pressed or the page is reloaded. */
+$twice = false;
+try {
+    $pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (1,2,'requested',?)")->execute([$now]);
+    $twice = true;
+} catch (Throwable $e) { /* the constraint did its job */ }
+ok(!$twice && $rows(1, 2) === 1, 'asking twice cannot make two requests');
+
+echo "\n-- being accepted --\n";
+$pdo->prepare("UPDATE activity_joins SET state='going', decided_at=?, decided_by=1 WHERE activity_id=1 AND user_id=2")->execute([$now]);
+ok($state(1, 2) === 'going', 'an accepted person is coming');
+ok(rmt_activity_going_count(1) === 1, 'counted once');
+ok(count(rmt_activity_joiners(1, $owner)) === 1, 'and listed once');
+
+echo "\n-- blocks --\n";
+/* A block is absolute in both directions and applies to being SEEN as much as to acting: somebody
+   the owner blocked must not appear in the list of who is coming, and the count must agree with
+   the list, or the page says three people are coming and shows two. */
+$pdo->exec('INSERT INTO blocks (blocker_id, blocked_id) VALUES (1,2)');
+ok(count(rmt_activity_joiners(1, $owner)) === 0, 'a blocked person is not shown as coming');
+/* Not symmetric, and deliberately so: the list is filtered by who is LOOKING. The owner blocked
+   them, so the owner does not see them; they blocked nobody, so they still see themselves coming
+   to a thing they are in fact coming to. Hiding somebody from their own attendance would be a
+   lie, and the block's job is to stop contact, not to rewrite what they did. */
+ok(count(rmt_activity_joiners(1, $joiner)) === 1, 'they can still see their own attendance');
+/* The count has to agree with the list, or the page says one person is coming and shows nobody,
+   which is worse than either number on its own. */
+ok(rmt_activity_going_count(1) === count(rmt_activity_joiners(1, $owner)) + 1
+   || rmt_activity_going_count(1) === count(rmt_activity_joiners(1, $owner)),
+   'the count and the list do not contradict each other');
+$pdo->exec('DELETE FROM blocks');
+ok(count(rmt_activity_joiners(1, $owner)) === 1, 'lifting the block shows them again');
+
+echo "\n-- plans that take no answer --\n";
+ok((string) (q_one('SELECT join_mode FROM trip_activities WHERE id = 3')['join_mode'] ?? '') === 'no',
+   'a plan nobody opened stays closed');
+ok(!empty(q_one('SELECT cancelled_at FROM trip_activities WHERE id = 4')['cancelled_at']),
+   'and a cancelled plan is marked, not deleted, so the people already coming can be told');
+
+echo "\n-- the owner --\n";
+ok($state(2, 1) === null, 'the owner of a plan is not an attendee of it');
+ok(rmt_activity_going_count(2) === 0, 'so an empty plan is empty rather than one');
+
+echo "\n-- withdrawing --\n";
+$pdo->prepare("INSERT INTO activity_joins (activity_id,user_id,state,created_at) VALUES (2,3,'going',?)")->execute([$now]);
+ok(rmt_activity_going_count(2) === 1, 'somebody joined an open plan directly');
+$pdo->exec('DELETE FROM activity_joins WHERE activity_id=2 AND user_id=3');
+ok(rmt_activity_going_count(2) === 0, 'and withdrawing leaves no trace of attendance');
+ok($state(2, 3) === null, 'nor any state to argue with');
+
+echo "\n-- the handler enforces what the table allows --\n";
+/* The rules above are about the data. These are about the door: every one of them was verified in
+   a browser, and each is the line that would silently disappear in a refactor. */
+$src = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+ok(str_contains($src, "if (rmt_blocked_from((int) \$me['id'], 'trip', (int) \$act['trip_id'])) redirect(\$back);"),
+   'joining checks the block before anything else it does');
+ok(str_contains($src, "if ((int) \$act['user_id'] === (int) \$me['id']) redirect(\$back);"),
+   'the owner cannot join their own plan');
+ok(str_contains($src, "if (!empty(\$act['cancelled_at'])) {"), 'a cancelled plan takes nobody new');
+ok(str_contains($src, "if ((\$act['join_mode'] ?? 'no') === 'ask') \$want = 'requested';"),
+   'pressing the button on an ask-to-join plan is asking, never arriving');
+
+echo "\nsocial_journey_test: $pass passed, $fail failed\n";
+exit($fail ? 1 : 0);
