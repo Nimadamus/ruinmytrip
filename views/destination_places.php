@@ -6,7 +6,13 @@
   </p>
   <h1 style="margin-top:6px"><?= e($label) ?> in <?= e($d['name']) ?>, <?= e($d['country']) ?></h1>
   <p class="muted" style="margin:0 0 4px">
-    <?= (int) count($places) ?> <?= count($places) === 1 ? 'place' : 'places' ?><?= $type !== '' ? '' : ' we cover here' ?>.
+    <?php /* The claim is about what this city holds, so it counts the city, not the page. It said
+             "24 places we cover here" on a city with 115 of them, four lines above a button
+             offering to show all 115: the page contradicted itself in one screen. placesTotal
+             rather than total, because total is the whole city and this line has to respect the
+             kind filter the visitor is looking at. */ ?>
+    <?= (int) $placesTotal ?> <?= (int) $placesTotal === 1 ? 'place' : 'places' ?><?= $type !== '' ? '' : ' we cover here' ?>.<?php
+      if (count($places) < (int) $placesTotal): ?> Showing the first <?= (int) count($places) ?>.<?php endif; ?>
     <?php /* The sentence about how ratings are worked out only earns its place once a rating is
              actually on the page. A city where nobody has rated anything yet was explaining the
              arithmetic of a number that appears nowhere on it. */ ?>
