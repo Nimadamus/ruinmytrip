@@ -217,7 +217,7 @@ overlapped with whom.
 
 ### Before
 
-- [ ] DMARC TXT record published and verified (`_dmarc.ruinmytrip.com`)
+- [~] DMARC: **non blocking follow up, not a launch condition.** See section 12.
 - [x] Miami place data enriched to the provider ceiling: 39 substantive pages of 110 became
       47 of 115, via a deep enrich pass that filled 28 addresses, 28 websites, 27 phones,
       35 coordinate sets and 10 opening hours sets while creating nothing
@@ -251,3 +251,47 @@ No fake travelers, trips, overlaps, reviews, activity or follower counts. If the
 network is empty the funnel says so. `nimatest2001` stays untouched and gets no
 activity built around it. No outreach without Nima. No external accounts, no
 paid services, no purchases.
+
+---
+
+## 12. DMARC: why it is not blocking this cohort
+
+**Status: no DMARC record published. Launching anyway is the correct call at this size.**
+
+### Why it cannot be added from here
+
+Authoritative DNS for `ruinmytrip.com` is Namecheap BasicDNS (`dns1/dns2.registrar-servers.com`),
+not Cloudflare, so no Cloudflare token can write it. The one Namecheap API key in the record,
+recovered from this repo's own git history, now returns `1011102 API Key is invalid or API access
+has not been enabled`, and the calling IP already matches the historically allowlisted
+`73.71.160.60`, so the allowlist is not the failure: the key itself is dead. It was leaked in a
+public repo in July and has since been rotated or disabled, which is the right outcome. The
+Domain Control Center that held the encrypted credentials lives on the previous machine.
+
+Re enabling it needs a Namecheap dashboard step that only the account owner can take, which is the
+thing this is explicitly not asking for.
+
+### Why the launch is safe without it
+
+DMARC does not authenticate anything. It publishes what a receiver should do when SPF and DKIM
+*both* fail alignment, and it requests reports. Both mechanisms already pass and align, measured on
+a real delivered message rather than asserted:
+
+- `spf=pass`, Return Path `send.send.ruinmytrip.com`, which relaxed aligns to the org domain
+- `dkim=pass`, `d=send.ruinmytrip.com`, aligned with the From header
+- Gmail delivered to the Primary inbox and marked it IMPORTANT, not spam
+
+The bulk sender rules that make DMARC mandatory apply to senders of 5,000 or more messages a day
+to Gmail. Cohort 1 is ten people and perhaps thirty messages, several orders of magnitude below
+that threshold.
+
+What is actually given up by launching without it: a marginal trust signal at some receivers, and
+visibility into anybody spoofing the domain. Neither is a reason to hold ten invitations.
+
+### What it costs later, and when it starts to matter
+
+One TXT record, `_dmarc` = `v=DMARC1; p=none`, once Namecheap API access is re enabled or somebody
+opens the dashboard. It should be in place before any cohort large enough to be described as a
+list, and certainly before any volume approaching the bulk sender thresholds. It is not on the
+critical path to proving whether ten travelers can form one network cluster.
+
