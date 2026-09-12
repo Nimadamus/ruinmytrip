@@ -109,6 +109,17 @@ $home = substr($controllers, (int) strpos($controllers, 'function home(array $a)
 ok(strpos($home, 'if (current_user()) { feed($a); return; }') < strpos($home, 'landing_view'),
    'and only for somebody who is signed out');
 
+/* An arrival is the first public page a signed out visitor sees, not the home page. The one
+   acquisition channel available is organic search, which lands people on a blog post or a city
+   page, and those arrivals were invisible while only the homepage counted. */
+$helpers = (string) file_get_contents($root . '/app/helpers.php');
+ok(str_contains($helpers, "rmt_track_once('landing_view')"),
+   'any public page counts as an arrival, not just the front door');
+ok(str_contains($helpers, "!str_contains((string) \$__meta['robots'], 'noindex')"),
+   'but only an indexable one, so 404s, admin and the verification pages are not doors');
+ok(str_contains($helpers, 'is_logged_in()'),
+   'and only for somebody signed out, because a member opening their feed has not arrived');
+
 echo "\n-- robots are not counted, and the agent is never kept --\n";
 /* The join form had 996 views against 2 submissions in thirty days. That is not a conversion
    problem, it is a page search engines like. A denominator made of robots reports a catastrophe

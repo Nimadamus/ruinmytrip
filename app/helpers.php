@@ -194,6 +194,23 @@ function view(string $name, array $data = [], array $meta = []): void {
            an app surface rather than a content one and get the slim footer instead. */
         'app_shell' => false,
     ], $meta);
+    /* An arrival is the first public page a signed out visitor sees, not the home page.
+       It used to fire only on the marketing homepage, which was fine while that was the only door.
+       It is wrong now: somebody who finds the Miami Art Week page in a search and signs up from it
+       never arrived at all as far as the funnel was concerned, so the one channel we can actually
+       use was the one channel we could not measure.
+
+       Guarded three ways and it has to stay that way. Signed out, because a member opening their
+       own feed is not an arrival. Indexable, because a noindex page is not a door, and it keeps
+       404s, admin and the verification pages out of the count. Once per session, in rmt_track_once,
+       so a visitor who reads three pages is one arrival rather than three. Crawlers are refused
+       inside rmt_track itself. */
+    if (function_exists('rmt_track_once')
+        && !str_contains((string) $__meta['robots'], 'noindex')
+        && !(function_exists('is_logged_in') && is_logged_in())) {
+        rmt_track_once('landing_view');
+    }
+
     $__view = BASE_PATH . '/views/' . $name . '.php';
     require BASE_PATH . '/views/layout/header.php';
     require $__view;
