@@ -218,7 +218,11 @@ overlapped with whom.
 ### Before
 
 - [ ] DMARC TXT record published and verified (`_dmarc.ruinmytrip.com`)
-- [x] Miami place data at provider ceiling, six editorial place reviews published
+- [x] Miami place data enriched to the provider ceiling: 39 substantive pages of 110 became
+      47 of 115, via a deep enrich pass that filled 28 addresses, 28 websites, 27 phones,
+      35 coordinate sets and 10 opening hours sets while creating nothing
+- [x] Six Miami editorial place reviews published, each 800 words or more with a map and a
+      source list: Vizcaya, PAMM, Wynwood Walls, Joe's Stone Crab, Versailles, Bill Baggs
 - [x] Miami destination editorial published
 - [x] Funnel green and reporting honestly, crawler traffic excluded
 - [x] Production email proven end to end into a real inbox
