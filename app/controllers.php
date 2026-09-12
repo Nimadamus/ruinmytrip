@@ -56,6 +56,12 @@ function home(array $a): void {
        also the only audience that can see it in search. */
     if (current_user()) { feed($a); return; }
 
+    /* The one step of the funnel with no row behind it. Counted here, once per session, so
+       that "how many arrive" and "how many join" can be read off the same page instead of
+       being guessed at. Nothing about who arrived is recorded, and it is deliberately on the
+       signed-out branch only: a member reaching their own feed is not an arrival. */
+    rmt_track_once('landing_view', ['source' => 'home']);
+
     $trending = q_all('SELECT d.*, (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) AS trips
                        FROM destinations d ORDER BY trips DESC, d.name LIMIT 6');
     /* Public trips only. The homepage is the one page where a leak reaches everybody, and this
@@ -4641,6 +4647,10 @@ function logout_action(array $a): void { logout(); flash('Signed out.'); redirec
  * a GoogleImageProxy GET consumed the token before the user clicked.
  */
 function verify_email(array $a): void {
+    /* noindex, nofollow, no canonical on every branch below. One of these URLs carries a
+       single-use token in the query string, and the others are a per-account interstitial that
+       says nothing to a stranger. None of the four is a page a search engine should hold, and a
+       canonical would invite it to. */
     $raw = (string) input('token');
     if ($raw === '') {
         $me = current_user();
@@ -4649,7 +4659,7 @@ function verify_email(array $a): void {
         $mailSent = !isset($_SESSION['rmt_mail_ok']) || $_SESSION['rmt_mail_ok'] === '1';
         unset($_SESSION['rmt_mail_ok']);
         view('auth/verify_notice', ['me'=>$me, 'verified'=>email_is_verified($me), 'mailSent'=>$mailSent],
-             ['title'=>'Confirm your email | RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip', 'robots'=>'noindex,nofollow', 'canonical'=>'']);
         return;
     }
     $row = rmt_token_lookup($raw, 'verify');
@@ -4659,12 +4669,12 @@ function verify_email(array $a): void {
         view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
              'errors'=>['This confirmation link has already been used or has expired. '
                       . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
-             ['title'=>'Confirm your email | RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip', 'robots'=>'noindex,nofollow', 'canonical'=>'']);
         return;
     }
     // Valid token — show a one-click confirm page. Nothing is consumed on GET.
     view('auth/verify_confirm', ['token'=>$raw, 'email'=>$row['email'] ?? null],
-         ['title'=>'Confirm your email | RuinMyTrip']);
+         ['title'=>'Confirm your email | RuinMyTrip', 'robots'=>'noindex,nofollow', 'canonical'=>'']);
 }
 
 /** POST /verify-email/confirm — the actual, human-triggered verification. */
@@ -4676,7 +4686,7 @@ function verify_email_confirm(array $a): void {
         view('auth/verify_notice', ['me'=>current_user(), 'verified'=>false,
              'errors'=>['This confirmation link has already been used or has expired. '
                       . 'If you already confirmed, just sign in. Otherwise request a new link below.']],
-             ['title'=>'Confirm your email | RuinMyTrip']);
+             ['title'=>'Confirm your email | RuinMyTrip', 'robots'=>'noindex,nofollow', 'canonical'=>'']);
         return;
     }
     db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
@@ -5277,6 +5287,11 @@ function admin_funnel(array $a): void {
         // The join funnel sits above the contribution one now, because a site with no members has
         // no contributions to measure and the order of the page should say which problem is first.
         'signup'    => rmt_signup_funnel($days),
+        /* Counted from the product's own rows rather than from this table, which is why it
+           sits in the same view but comes from a different module: the event log answers
+           "how many arrived", and the rows answer everything after that. */
+        'growth'    => rmt_growth_funnel($days),
+        'inventory' => rmt_growth_inventory(),
     ], ['title' => 'Signup and contribution funnels | RuinMyTrip admin']);
 }
 

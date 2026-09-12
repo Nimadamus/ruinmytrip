@@ -48,6 +48,10 @@ const RMT_CONTRIB_EVENTS = [
     'join_created',                // an account now exists
     'join_confirmed',              // the email address was confirmed
     'join_first_action',           // dates, a room, a follow or a first post, in the first session
+    /* The top of the funnel, and the only step with no row of its own behind it: a visit
+       leaves nothing in the product to count. Recorded once per session, never per request,
+       and it carries no address, agent or referrer -- it is an arrival, not a visitor. */
+    'landing_view',                // the public front page was rendered for somebody signed out
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
@@ -113,6 +117,22 @@ function rmt_track(string $event, array $ctx = []): void {
     } catch (Throwable $e) {
         // Measuring the funnel must never break the funnel.
     }
+}
+
+/**
+ * Record an event at most once per session.
+ *
+ * For the steps where a repeat is noise rather than signal. A visitor who reloads the front page
+ * four times is one arrival, and the honest way to say so is to write one row, rather than to write
+ * four and hope every reader of the table remembers to count distinct journeys.
+ */
+function rmt_track_once(string $event, array $ctx = []): void {
+    if (session_status() !== PHP_SESSION_ACTIVE) { rmt_track($event, $ctx); return; }
+    $seen = $_SESSION['_tracked'] ?? [];
+    if (isset($seen[$event])) return;
+    $seen[$event] = 1;
+    $_SESSION['_tracked'] = $seen;
+    rmt_track($event, $ctx);
 }
 
 /**

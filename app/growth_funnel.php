@@ -1,0 +1,154 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * How far members actually get, counted from rows that already exist.
+ *
+ * This is deliberately NOT a tracker. Every number below is derived from the thing itself: a signup
+ * is a user row, a confirmation is a timestamp on it, a first trip is a trip that member wrote.
+ * Nothing new is recorded about anybody to produce any of it, which has two consequences worth
+ * stating: it cannot drift out of agreement with the product the way an event log can, and there is
+ * no behavioural history here to leak, because none was ever kept.
+ *
+ * The top of the funnel is the one thing rows cannot answer, since a visit leaves no row, so that
+ * single number comes from the aggregate landing_view event in contribution_events. Everything from
+ * "signed up" onward is counted from the product's own data.
+ *
+ * It answers one question, which is the only one worth asking before inviting anybody:
+ *
+ *   arrived, signed up, confirmed, made a trip, did something useful, came back
+ *
+ * Counts and rates only. No names, no per-person journeys, no timelines. That eleven of nineteen
+ * members confirmed their address is a fact about the product. Which eleven is a fact about eleven
+ * people, and this report has no reason to hold it.
+ */
+
+/**
+ * Members who reached each step, and the rate at which they got there.
+ *
+ * @param int $days how far back the cohort goes. 0 means every member ever.
+ * @return array<string,mixed>
+ */
+function rmt_growth_funnel(int $days = 0): array {
+    $since = $days > 0 ? date('Y-m-d H:i:s', time() - $days * 86400) : '0000-01-01 00:00:00';
+    $ed    = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+
+    /* The cohort, fixed once: real members who joined inside the window. Editorial accounts are
+       excluded everywhere, because counting ourselves as a converted visitor is how a funnel starts
+       lying to the person reading it. */
+    $cohort = "u.role <> ? AND u.status = 'active' AND u.created_at >= ?";
+
+    /** One member count over that cohort. Extra args come after the two the cohort needs. */
+    $n = static function (string $extra, array $args = []) use ($cohort, $ed, $since): int {
+        $sql = "SELECT COUNT(*) c FROM users u WHERE $cohort" . ($extra !== '' ? " AND ($extra)" : '');
+        return (int) (q_one($sql, array_merge([$ed, $since], $args))['c'] ?? 0);
+    };
+
+    /* "A later day than they joined" rather than "a later timestamp". Saving a place ninety seconds
+       after signing up is the same visit; doing it the next morning is somebody who decided this was
+       worth coming back to, which is the only version of retention worth reporting at this size.
+       SUBSTR over a cast is the comparison SQLite and Postgres both agree on. */
+    $laterDay = static fn(string $t): string =>
+        "SUBSTR(CAST($t.created_at AS TEXT),1,10) > SUBSTR(CAST(u.created_at AS TEXT),1,10)";
+
+    $members    = $n('');
+    $confirmed  = $n('u.email_verified_at IS NOT NULL');
+
+    $trip       = $n("EXISTS (SELECT 1 FROM trips t WHERE t.user_id = u.id AND t.status = 'published')");
+    $savedPlace = $n("EXISTS (SELECT 1 FROM saves s WHERE s.user_id = u.id AND s.target_type = 'place')");
+    $plan       = $n("EXISTS (SELECT 1 FROM trip_activities a WHERE a.user_id = u.id AND a.status = 'published')");
+    $followed   = $n("EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = u.id)");
+    $messaged   = $n("EXISTS (SELECT 1 FROM messages m WHERE m.sender_id = u.id)");
+    $joined     = $n("EXISTS (SELECT 1 FROM activity_joins j WHERE j.user_id = u.id)");
+    $photo      = $n("EXISTS (SELECT 1 FROM trip_photos p WHERE p.user_id = u.id)
+                   OR EXISTS (SELECT 1 FROM activity_photos p WHERE p.user_id = u.id)
+                   OR EXISTS (SELECT 1 FROM review_photos p WHERE p.user_id = u.id)");
+
+    /* Anything that counts as having got value out of the site, deliberately a list rather than one
+       action, because planning does not have a single shape. Somebody who saved four places got
+       something out of this even if they never wrote a plan, and so did somebody who scheduled a
+       dinner without saving anything. */
+    $useful = $n("EXISTS (SELECT 1 FROM trip_activities a WHERE a.user_id = u.id AND a.status = 'published')
+               OR EXISTS (SELECT 1 FROM saves s WHERE s.user_id = u.id)");
+
+    $social = $n("EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = u.id)
+               OR EXISTS (SELECT 1 FROM messages m WHERE m.sender_id = u.id)
+               OR EXISTS (SELECT 1 FROM activity_joins j WHERE j.user_id = u.id)");
+
+    $returned = $n("EXISTS (SELECT 1 FROM trips t WHERE t.user_id = u.id AND " . $laterDay('t') . ")
+                 OR EXISTS (SELECT 1 FROM trip_activities a WHERE a.user_id = u.id AND " . $laterDay('a') . ")
+                 OR EXISTS (SELECT 1 FROM saves s WHERE s.user_id = u.id AND " . $laterDay('s') . ")
+                 OR EXISTS (SELECT 1 FROM messages m WHERE m.sender_id = u.id AND " . $laterDay('m') . ")");
+
+    /* Visits: the one number with no row behind it, so the one number that comes from the event
+       table, counted per journey rather than per request because a reload is not a visitor. It also
+       counts crawlers, which is why it is labelled as arrivals and not quietly trusted as people. */
+    $visits = 0;
+    try {
+        $visits = (int) (q_one("SELECT COUNT(DISTINCT COALESCE(journey, CAST(id AS TEXT))) c
+                                  FROM contribution_events
+                                 WHERE event = 'landing_view' AND created_at >= ?", [$since])['c'] ?? 0);
+    } catch (Throwable $e) {
+        $visits = 0;      // before the migration, or on a database that has never seen a visit
+    }
+
+    $pct = static fn(int $a, int $b): ?float => $b > 0 ? round($a * 100 / $b, 1) : null;
+
+    return [
+        'days'    => $days,
+        'visits'  => $visits,
+        'members' => $members,
+        /* The spine. Each step as a share of the step above it, because a funnel read as a share of
+           the top hides which single step is the broken one. */
+        'spine'   => [
+            ['label' => 'Arrived on the front page',  'n' => $visits,    'of' => null],
+            ['label' => 'Signed up',                  'n' => $members,   'of' => $pct($members, $visits)],
+            ['label' => 'Confirmed their email',      'n' => $confirmed, 'of' => $pct($confirmed, $members)],
+            ['label' => 'Wrote a trip',               'n' => $trip,      'of' => $pct($trip, $members)],
+            ['label' => 'Planned or saved something', 'n' => $useful,    'of' => $pct($useful, $members)],
+            ['label' => 'Came back another day',      'n' => $returned,  'of' => $pct($returned, $members)],
+        ],
+        /* The first of each specific thing, as a share of members. Not a sequence: nobody does these
+           in this order, and drawing them as a ladder would invent a drop-off that is not there. */
+        'firsts'  => [
+            ['label' => 'Wrote a trip',            'n' => $trip,       'of' => $pct($trip, $members)],
+            ['label' => 'Saved a place',           'n' => $savedPlace, 'of' => $pct($savedPlace, $members)],
+            ['label' => 'Added something to a plan', 'n' => $plan,     'of' => $pct($plan, $members)],
+            ['label' => 'Followed a traveler',     'n' => $followed,   'of' => $pct($followed, $members)],
+            ['label' => 'Sent a message',          'n' => $messaged,   'of' => $pct($messaged, $members)],
+            ['label' => 'Asked to join something', 'n' => $joined,     'of' => $pct($joined, $members)],
+            ['label' => 'Uploaded a photo',        'n' => $photo,      'of' => $pct($photo, $members)],
+            ['label' => 'Did anything social',     'n' => $social,     'of' => $pct($social, $members)],
+        ],
+    ];
+}
+
+/**
+ * What there is to arrive for.
+ *
+ * Separate from the funnel on purpose. The funnel says how people move through the product; this
+ * says whether the product currently holds anything worth moving through, which at this size is the
+ * more honest of the two. cities_with_overlap is the number that decides whether the social half of
+ * this site does anything at all: a city with one traveler in it is a directory.
+ *
+ * @return array<string,int>
+ */
+function rmt_growth_inventory(): array {
+    $today = date('Y-m-d');
+    $one = static fn(string $sql, array $a = []): int => (int) (q_one($sql, $a)['c'] ?? 0);
+    return [
+        'cities'         => $one('SELECT COUNT(*) c FROM destinations'),
+        'places'         => $one("SELECT COUNT(*) c FROM places WHERE status = 'active'"),
+        'public_trips'   => $one("SELECT COUNT(*) c FROM trips WHERE status = 'published'
+                                    AND COALESCE(visibility,'public') = 'public'"),
+        'upcoming_trips' => $one("SELECT COUNT(*) c FROM trips WHERE status = 'published'
+                                    AND date_to >= ?", [$today]),
+        'open_plans'     => $one("SELECT COUNT(*) c FROM trip_activities
+                                   WHERE status = 'published' AND cancelled_at IS NULL"),
+        'cities_with_overlap' => $one("SELECT COUNT(*) c FROM (
+                                         SELECT t.destination_id FROM trips t
+                                          WHERE t.status = 'published' AND t.date_to >= ?
+                                          GROUP BY t.destination_id
+                                         HAVING COUNT(DISTINCT t.user_id) > 1) x", [$today]),
+    ];
+}

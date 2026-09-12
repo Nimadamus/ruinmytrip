@@ -1,4 +1,4 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
@@ -11,6 +11,73 @@
     <?php foreach ([1 => 'Today', 7 => '7 days', 30 => '30 days', 0 => 'All time'] as $d => $lbl): ?>
       <a href="<?= e(url('admin/funnel') . '?days=' . $d) ?>"<?= $d === $days ? ' style="font-weight:700"' : '' ?>><?= e($lbl) ?></a>
     <?php endforeach; ?>
+  </p>
+
+  <?php
+  /* Members, counted from the product's own rows. This block is first because it is the only one
+     on the page that cannot be wrong about itself: every number is a COUNT over the thing it
+     claims, so there is no event that can be missing, double fired or left behind by a refactor.
+     The event table below answers the one question rows cannot, which is how many people arrived. */
+  $bar = static function (int $n, int $top): string {
+      $w = $top > 0 ? max(0, min(100, (int) round($n * 100 / $top))) : 0;
+      return '<div style="background:#eef2f6;height:12px;border-radius:6px;overflow:hidden">'
+           . '<div style="width:' . $w . '%;height:100%;background:#2f6fed"></div></div>';
+  };
+  $spineTop = max(1, (int) $growth['spine'][0]['n'], (int) $growth['spine'][1]['n']);
+  ?>
+  <h2 style="margin:6px 0 4px">Members</h2>
+  <p class="hint" style="margin:0 0 10px">Counted from trips, saves, plans and confirmations
+    themselves, not from anything recorded about anybody. Each percentage is a share of the line
+    above it. Arrivals include crawlers, so read that row as requests rather than as people.</p>
+  <table class="table" style="margin:0 0 18px">
+    <tbody>
+    <?php foreach ($growth['spine'] as $row): ?>
+      <tr>
+        <td style="width:18rem"><?= e((string) $row['label']) ?></td>
+        <td style="width:5rem;text-align:right"><b><?= (int) $row['n'] ?></b></td>
+        <td style="width:5rem;text-align:right" class="muted"><?= $row['of'] === null ? '' : e((string) $row['of']) . '%' ?></td>
+        <td><?= $bar((int) $row['n'], $spineTop) ?></td>
+      </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <h2 style="margin:6px 0 4px">First actions</h2>
+  <p class="hint" style="margin:0 0 10px">Share of members who have done each thing at least once.
+    Not a sequence: nobody does these in this order, so a fall down the list is not a drop-off.</p>
+  <table class="table" style="margin:0 0 18px">
+    <tbody>
+    <?php foreach ($growth['firsts'] as $row): ?>
+      <tr>
+        <td style="width:18rem"><?= e((string) $row['label']) ?></td>
+        <td style="width:5rem;text-align:right"><b><?= (int) $row['n'] ?></b></td>
+        <td style="width:5rem;text-align:right" class="muted"><?= $row['of'] === null ? '' : e((string) $row['of']) . '%' ?></td>
+        <td><?= $bar((int) $row['n'], max(1, (int) $growth['members'])) ?></td>
+      </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <?php
+  /* What there is to arrive for. Cities with two or more travelers is the number that says whether
+     the social half of this product does anything at all, so it is stated rather than buried. */
+  $inv = $inventory;
+  ?>
+  <h2 style="margin:6px 0 4px">What is here</h2>
+  <p style="margin:0 0 6px">
+    <?= (int) $inv['cities'] ?> cities, <?= (int) $inv['places'] ?> places,
+    <?= (int) $inv['public_trips'] ?> public trips
+    (<?= (int) $inv['upcoming_trips'] ?> still upcoming), <?= (int) $inv['open_plans'] ?> plans.
+  </p>
+  <p class="hint" style="margin:0 0 22px">
+    <?php if ((int) $inv['cities_with_overlap'] > 0): ?>
+      <?= (int) $inv['cities_with_overlap'] ?> cities have more than one traveler with upcoming
+      dates. Those are the only cities where meeting somebody is currently possible.
+    <?php else: ?>
+      No city yet has two travelers with overlapping upcoming dates, so nobody can currently be
+      matched with anybody. Until that changes, the social half of the site has nothing to show and
+      density in one city matters more than any number above.
+    <?php endif; ?>
   </p>
 
   <?php
