@@ -1,4 +1,4 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
@@ -70,6 +70,50 @@
      the social half of this product does anything at all, so it is stated rather than buried. */
   $inv = $inventory;
   ?>
+  <?php
+  /* The two numbers that say whether the social half of this product does anything at all, and
+     the only place on this page where a zero is the most important thing on the screen.
+
+     Network activation is a member with a trip that overlaps another member's trip in the same
+     city on the same days: somebody they could actually see. Social activation is one of those
+     members who then followed, messaged or asked to join something.
+
+     Counts of members, never pairs. Who overlaps with whom is exactly the fact a traveler would
+     not want kept, and a count cannot hold it. Neither is tracked: both are recomputed from trip
+     rows every time this page is opened. */
+  $ov = $overlap;
+  $dated = max(1, (int) $ov['dated_upcoming_trips']);
+  ?>
+  <h2 style="margin:6px 0 4px">Is the network working</h2>
+  <?php if ((int) $ov['cities_with_overlap'] === 0): ?>
+    <p style="margin:0 0 6px"><b>No.</b> Nobody currently has a trip that overlaps anybody else's.</p>
+    <p class="hint" style="margin:0 0 22px">
+      <?= (int) $ov['dated_upcoming_trips'] ?> upcoming trips carry real dates, and no two of them
+      are in the same city at the same time. Until that changes, every social surface on the site
+      is honestly empty, and concentrating the next members into one city and one window matters
+      more than any number above. The first result worth having is this line reading one city.
+    </p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 6px">
+      <tbody>
+        <tr><td style="width:22rem">Cities where somebody could meet somebody</td>
+            <td style="width:5rem;text-align:right"><b><?= (int) $ov['cities_with_overlap'] ?></b></td><td></td></tr>
+        <tr><td>Upcoming dated trips that overlap another traveler</td>
+            <td style="text-align:right"><b><?= (int) $ov['trips_with_overlap'] ?></b></td>
+            <td class="muted"><?= (int) round((int) $ov['trips_with_overlap'] * 100 / $dated) ?>% of dated upcoming trips</td></tr>
+        <tr><td>Network activation: members who could see a real traveler</td>
+            <td style="text-align:right"><b><?= (int) $ov['network_activated'] ?></b></td><td></td></tr>
+        <tr><td>Social activation: of those, members who then followed, messaged or asked to join</td>
+            <td style="text-align:right"><b><?= (int) $ov['social_activated'] ?></b></td>
+            <td class="muted"><?= (int) $ov['network_activated'] > 0
+                ? (int) round((int) $ov['social_activated'] * 100 / (int) $ov['network_activated']) . '% of activated'
+                : '' ?></td></tr>
+      </tbody>
+    </table>
+    <p class="hint" style="margin:0 0 22px">Only upcoming trips count. Two people who were in the
+      same city last March did not meet and cannot now.</p>
+  <?php endif; ?>
+
   <h2 style="margin:6px 0 4px">What is here</h2>
   <p style="margin:0 0 6px">
     <?= (int) $inv['cities'] ?> cities, <?= (int) $inv['places'] ?> places,

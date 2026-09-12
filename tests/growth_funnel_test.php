@@ -138,6 +138,42 @@ if (!$f['arrivals_cover']) {
 ok(str_contains($growthSrc, '$covers ? $pct($members, $visits) : null'),
    'the rate is gated on coverage rather than estimated');
 
+echo "\n-- activation is counted in members, never in pairs --\n";
+/* The two numbers that decide whether the social half of this product does anything. Network
+   activation is a member with a trip overlapping another member in the same city on the same
+   days. Social activation is one of those who then followed, messaged or asked to join.
+
+   Who overlaps with whom is the single most sensitive fact this site holds, so the assertion that
+   matters here is not that the arithmetic is right, it is that the shape cannot hold a pair. */
+$ov = rmt_growth_overlap();
+foreach (['trips_with_overlap','network_activated','social_activated','cities_with_overlap','dated_upcoming_trips'] as $k) {
+    ok(isset($ov[$k]) && is_int($ov[$k]), "$k is a count");
+}
+ok(count($ov) === 5, 'and there is nothing else in there, so no pair can ride along');
+ok(!preg_match('/SELECT[^;]*\b(o\.user_id|t\.user_id)\s*,/i', $growthSrc),
+   'no query selects a pair of travelers, only counts over them');
+
+/* Social activation is a SUBSET of network activation by construction: you cannot act on an
+   overlap you never had. If this ever inverts, the two queries have drifted apart. */
+ok($ov['social_activated'] <= $ov['network_activated'],
+   'nobody acts on an overlap they do not have');
+ok($ov['network_activated'] <= $ov['trips_with_overlap'],
+   'a member cannot be activated more often than they have overlapping trips');
+ok($ov['trips_with_overlap'] <= $ov['dated_upcoming_trips'],
+   'an overlapping trip is first an upcoming trip with dates on it');
+ok($ov['cities_with_overlap'] === 0 || $ov['trips_with_overlap'] >= 2,
+   'a city with an overlap needs at least two trips in it');
+
+/* Past trips are excluded. Two people who were in Lisbon last March did not meet and cannot now,
+   and counting them would make the one number that must stay honest read as a success. */
+ok(substr_count($growthSrc, 'o.date_to >= ?') >= 1 && str_contains($growthSrc, 't.date_to >= ?'),
+   'both sides of an overlap must still be in the future');
+/* A trip with no dates cannot overlap anything, and must not be treated as matching everybody. */
+ok(str_contains($growthSrc, 'o.date_from IS NOT NULL AND o.date_to IS NOT NULL'),
+   'a trip with no dates overlaps nothing');
+ok(str_contains($growthSrc, 'o.user_id <> t.user_id'),
+   'and nobody overlaps themselves');
+
 echo "\n-- the inventory says what is actually here --\n";
 $inv = rmt_growth_inventory();
 foreach (['cities', 'places', 'public_trips', 'upcoming_trips', 'open_plans', 'cities_with_overlap'] as $k) {

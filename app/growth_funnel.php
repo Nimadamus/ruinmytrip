@@ -139,6 +139,92 @@ function rmt_growth_funnel(int $days = 0): array {
 }
 
 /**
+ * Whether the network has started working, counted from trips rather than from tracking.
+ *
+ * Two aggregate events, and the order matters because the second is only meaningful after the
+ * first:
+ *
+ *   NETWORK ACTIVATION  a member has a trip whose dates overlap another member's trip in the same
+ *                       city. That member could see a real traveler. It is the moment this site
+ *                       stops being a notebook.
+ *   SOCIAL ACTIVATION   a member who reached the first one then followed, messaged or asked to
+ *                       join something. It is the moment the site stops being a directory.
+ *
+ * Both are COUNTS of members, never pairs. Who overlaps with whom is exactly the fact a traveler
+ * would not want sitting in an analytics table, and a count cannot hold it. There is no event
+ * recorded for either: overlap is a property of two trip rows and is recomputed every time this is
+ * read, so it cannot drift and there is nothing to leak.
+ *
+ * Only upcoming trips count. Two people who were in Lisbon in the same week last March did not
+ * meet and cannot now.
+ *
+ * @return array<string,int>
+ */
+function rmt_growth_overlap(): array {
+    $today = date('Y-m-d');
+    $ed = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+
+    /* The overlap condition itself, written once: same city, different traveler, and date ranges
+       that touch. Standard interval intersection, which is A starting before B ends and B starting
+       before A ends. A trip with no dates cannot overlap anything and is excluded rather than
+       treated as matching everybody. */
+    $overlaps = "EXISTS (
+        SELECT 1 FROM trips o
+          JOIN users ou ON ou.id = o.user_id
+         WHERE o.destination_id = t.destination_id
+           AND o.user_id <> t.user_id
+           AND o.status = 'published' AND ou.status = 'active' AND ou.role <> ?
+           AND o.date_from IS NOT NULL AND o.date_to IS NOT NULL
+           AND o.date_from <= t.date_to AND t.date_from <= o.date_to
+           AND o.date_to >= ?)";
+
+    $liveTrip = "t.status = 'published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL
+                 AND t.date_to >= ?";
+
+    $one = static fn(string $sql, array $a): int => (int) (q_one($sql, $a)['c'] ?? 0);
+
+    return [
+        /* Upcoming trips that have somebody else in the same city on the same days. */
+        'trips_with_overlap' => $one(
+            "SELECT COUNT(*) c FROM trips t
+               JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+              WHERE $liveTrip AND $overlaps", [$ed, $today, $ed, $today]),
+
+        /* Members who could see a real traveler. The number that decides whether any of the social
+           half of this product does anything at all. */
+        'network_activated' => $one(
+            "SELECT COUNT(DISTINCT t.user_id) c FROM trips t
+               JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+              WHERE $liveTrip AND $overlaps", [$ed, $today, $ed, $today]),
+
+        /* ...and then did something about it. */
+        'social_activated' => $one(
+            "SELECT COUNT(DISTINCT t.user_id) c FROM trips t
+               JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+              WHERE $liveTrip AND $overlaps
+                AND (EXISTS (SELECT 1 FROM follows f WHERE f.follower_id = t.user_id)
+                  OR EXISTS (SELECT 1 FROM messages m WHERE m.sender_id = t.user_id)
+                  OR EXISTS (SELECT 1 FROM activity_joins j WHERE j.user_id = t.user_id))",
+            [$ed, $today, $ed, $today]),
+
+        /* Cities where meeting somebody is currently possible at all. Going from 0 to 1 is the
+           first result that matters more than any signup count. */
+        'cities_with_overlap' => $one(
+            "SELECT COUNT(DISTINCT t.destination_id) c FROM trips t
+               JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+              WHERE $liveTrip AND $overlaps", [$ed, $today, $ed, $today]),
+
+        /* Upcoming trips with dates at all, as the denominator for the three above: overlap that
+           is low because nobody entered dates is a different problem from overlap that is low
+           because nobody else is going. */
+        'dated_upcoming_trips' => $one(
+            "SELECT COUNT(*) c FROM trips t
+               JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+              WHERE $liveTrip", [$ed, $today]),
+    ];
+}
+
+/**
  * What there is to arrive for.
  *
  * Separate from the funnel on purpose. The funnel says how people move through the product; this
@@ -191,5 +277,6 @@ function cron_funnel(array $a): void {
         'growth'    => rmt_growth_funnel($days),
         'signup'    => rmt_signup_funnel($days),
         'inventory' => rmt_growth_inventory(),
+        'overlap'   => rmt_growth_overlap(),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }

@@ -5292,6 +5292,7 @@ function admin_funnel(array $a): void {
            "how many arrived", and the rows answer everything after that. */
         'growth'    => rmt_growth_funnel($days),
         'inventory' => rmt_growth_inventory(),
+        'overlap'   => rmt_growth_overlap(),
     ], ['title' => 'Signup and contribution funnels | RuinMyTrip admin']);
 }
 
