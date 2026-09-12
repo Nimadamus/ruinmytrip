@@ -23,6 +23,7 @@ $authorSaid = $authorSaid ?? [];
     <?php if ($me && !$isOwner): ?>
       <form method="post" action="<?= e(url('follow')) ?>" style="margin-left:auto"><?= csrf_field() ?>
         <input type="hidden" name="user_id" value="<?= (int) $t['user_id'] ?>">
+        <input type="hidden" name="want" value="<?= $isFollowingAuthor ? 'off' : 'on' ?>">
         <input type="hidden" name="return" value="<?= e('/trip/'.(int) $t['id'].'/'.(string) $t['slug']) ?>">
         <button class="btn btn-ghost btn-sm"><?= $isFollowingAuthor ? 'Following' : 'Follow' ?></button>
       </form>

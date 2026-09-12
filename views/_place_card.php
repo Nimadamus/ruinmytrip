@@ -65,6 +65,7 @@ $meta   = array_filter([
             <?= csrf_field() ?>
             <input type="hidden" name="place_id" value="<?= (int) $card['id'] ?>">
             <input type="hidden" name="return" value="<?= e($_SERVER['REQUEST_URI'] ?? '/') ?>">
+            <input type="hidden" name="want" value="<?= !empty($card['saved']) ? 'off' : 'on' ?>">
             <button class="btn btn-ghost" style="padding:5px 12px;font-size:.85rem"
                     aria-pressed="<?= !empty($card['saved']) ? 'true' : 'false' ?>">
               <?= !empty($card['saved']) ? '&#9733; Saved' : '&#9734; Save' ?>

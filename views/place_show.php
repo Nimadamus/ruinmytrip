@@ -115,6 +115,7 @@
         <?= csrf_field() ?>
         <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
         <input type="hidden" name="return" value="<?= e(rmt_place_path($p)) ?>">
+        <input type="hidden" name="want" value="<?= $saved ? 'off' : 'on' ?>">
         <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?>"
                 aria-pressed="<?= $saved ? 'true' : 'false' ?>">
           <?= $saved ? '★ Saved' : '☆ Save' ?>

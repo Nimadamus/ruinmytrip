@@ -3894,6 +3894,28 @@ function review_delete(array $a): void {
     redirect('/u/'.current_user()['username']);
 }
 
+/**
+ * What state a toggle button is asking for, rather than what it is toggling away from.
+ *
+ * A POST that means "flip it" reverses the member's intent whenever it arrives twice, and it
+ * arrives twice all the time: a double tap on a phone, a browser retrying on a flaky connection,
+ * somebody pressing back and forward. Joining a plan was written that way and four rapid presses
+ * left people off a plan they had asked to be on.
+ *
+ * So every one of these buttons now says which state it wants. A repeat asks for the same state
+ * again and is a no-op, which is what the member meant both times. A form that has not been
+ * updated sends nothing and falls back to flipping, so nothing breaks while they are converted.
+ *
+ * @param bool $isOn the state right now
+ * @return bool the state wanted
+ */
+function rmt_want_on(bool $isOn): bool {
+    $want = (string) (input('want') ?? '');
+    if ($want === 'on')  return true;
+    if ($want === 'off') return false;
+    return !$isOn;
+}
+
 function follow_action(array $a): void {
     require_login(); csrf_check(); $me=current_user();
     $target=(int)input('user_id');
@@ -3909,8 +3931,10 @@ function follow_action(array $a): void {
     if (!rmt_rate_ok('follow', (string)$me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.'); redirect(rmt_return_to());
     }
-    $exists = q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$target]);
-    if ($exists) db()->prepare('DELETE FROM follows WHERE follower_id=? AND followee_id=?')->execute([(int)$me['id'],$target]);
+    $exists = (bool) q_one('SELECT 1 FROM follows WHERE follower_id=? AND followee_id=?', [(int)$me['id'],$target]);
+    $want = rmt_want_on($exists);
+    if ($exists === $want) redirect(rmt_return_to());   // already where they asked to be
+    if (!$want) db()->prepare('DELETE FROM follows WHERE follower_id=? AND followee_id=?')->execute([(int)$me['id'],$target]);
     else {
         // Same double-click race as react_action: the (follower_id,followee_id) primary key
         // stops a duplicate follow row, but without this catch the loser of the race got an
@@ -4156,8 +4180,10 @@ function destination_save_action(array $a): void {
         redirect(rmt_return_to());
     }
     $uid = (int) $me['id'];
-    $has = q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $did]);
-    if ($has) {
+    $has = (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $did]);
+    $wantSaved = rmt_want_on($has);
+    if ($has === $wantSaved) redirect(rmt_return_to());   // a retry asks for the state it is in
+    if (!$wantSaved) {
         db()->prepare("DELETE FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?")->execute([$uid, $did]);
     } else {
         try {
@@ -4194,7 +4220,10 @@ function place_save_action(array $a): void {
     }
 
     $uid = (int) $me['id'];
-    if (rmt_place_is_saved($pid, $uid)) {
+    $isSaved = rmt_place_is_saved($pid, $uid);
+    $wantSaved = rmt_want_on($isSaved);
+    if ($isSaved === $wantSaved) redirect($return);     // a second tap asks for the same thing
+    if (!$wantSaved) {
         db()->prepare('DELETE FROM saves WHERE user_id=? AND target_type=? AND target_id=?')
             ->execute([$uid, RMT_SAVE_PLACE, $pid]);
         flash('Removed from your saved places.');

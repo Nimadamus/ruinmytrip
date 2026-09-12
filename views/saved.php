@@ -44,6 +44,8 @@ $total = count($places) + count($dests) + count($reading);
               <?= csrf_field() ?>
               <input type="hidden" name="place_id" value="<?= (int)$p['id'] ?>">
               <input type="hidden" name="return" value="/saved">
+              <?php /* This list only ever holds saved things, so the button means one thing. */ ?>
+              <input type="hidden" name="want" value="off">
               <button class="btn btn-ghost btn-sm">Remove</button>
             </form>
           </div>
@@ -68,6 +70,8 @@ $total = count($places) + count($dests) + count($reading);
               <?= csrf_field() ?>
               <input type="hidden" name="destination_id" value="<?= (int)($d['id'] ?? 0) ?>">
               <input type="hidden" name="return" value="/saved">
+              <?php /* This list only ever holds saved things, so the button means one thing. */ ?>
+              <input type="hidden" name="want" value="off">
               <button class="btn btn-ghost btn-sm">Remove</button>
             </form>
           </div>

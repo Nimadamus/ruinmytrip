@@ -20,6 +20,7 @@
           <form method="post" action="<?= e(url('destination/save')) ?>">
             <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
             <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
+            <input type="hidden" name="want" value="<?= $saved ? 'off' : 'on' ?>">
             <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
           </form>
           </div>

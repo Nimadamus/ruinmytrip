@@ -287,6 +287,60 @@ if ($only === 'all' || $only === 'unrelated') {
     verdict('both plans filled', going($a1) > 0 && going($a2) > 0,
             sprintf('%d and %d in %.0fms', going($a1), going($a2), $ms));
 }
+if ($only === 'all' || $only === 'toggles') {
+    echo "\n-- a repeated press means the same thing both times --\n";
+    /* Follow and save were written as flips: the POST said "the other one" rather than "this one".
+       A double tap, a retry on a bad connection, a back then forward, all reversed what the member
+       had just asked for and said nothing. Each button now sends the state it wants. */
+    $u = array_key_first($sessions);
+    $target = q_one("SELECT id, username FROM users WHERE username <> ? AND status = 'active' ORDER BY id LIMIT 1", [$u]);
+    $tid = (int) $target['id'];
+    $me  = (int) q_one('SELECT id FROM users WHERE username = ?', [$u])['id'];
+    q_run('DELETE FROM follows WHERE follower_id = ? AND followee_id = ?', [$me, $tid]);
+    $follows = static fn(): int => (int) (q_one('SELECT COUNT(*) c FROM follows WHERE follower_id = ? AND followee_id = ?', [$me, $tid])['c'] ?? 0);
+
+    $hs = [];
+    for ($i = 0; $i < 4; $i++) {
+        $h = primed_post($sessions[$u], $BASE, '/u/' . $target['username'], '/follow',
+                         ['user_id' => $tid, 'want' => 'on', 'return' => '/u/' . $target['username']]);
+        if ($h !== null) $hs['f' . $i] = $h;
+    }
+    fire($hs);
+    verdict('four follows leave one follow', $follows() === 1, $follows() . ' rows');
+
+    $hs = [];
+    for ($i = 0; $i < 3; $i++) {
+        $h = primed_post($sessions[$u], $BASE, '/u/' . $target['username'], '/follow',
+                         ['user_id' => $tid, 'want' => 'off', 'return' => '/u/' . $target['username']]);
+        if ($h !== null) $hs['g' . $i] = $h;
+    }
+    fire($hs);
+    verdict('three unfollows leave none', $follows() === 0, $follows() . ' rows');
+
+    $place = q_one("SELECT id, slug FROM places WHERE status = 'active' ORDER BY id LIMIT 1");
+    $pid = (int) $place['id'];
+    q_run("DELETE FROM saves WHERE user_id = ? AND target_type = 'place' AND target_id = ?", [$me, $pid]);
+    $saves = static fn(): int => (int) (q_one("SELECT COUNT(*) c FROM saves WHERE user_id = ? AND target_type = 'place' AND target_id = ?", [$me, $pid])['c'] ?? 0);
+
+    $hs = [];
+    for ($i = 0; $i < 4; $i++) {
+        $h = primed_post($sessions[$u], $BASE, '/p/' . $place['slug'], '/place/save',
+                         ['place_id' => $pid, 'want' => 'on', 'return' => '/p/' . $place['slug']]);
+        if ($h !== null) $hs['s' . $i] = $h;
+    }
+    fire($hs);
+    verdict('four saves leave one save', $saves() === 1, $saves() . ' rows');
+
+    $hs = [];
+    for ($i = 0; $i < 3; $i++) {
+        $h = primed_post($sessions[$u], $BASE, '/p/' . $place['slug'], '/place/save',
+                         ['place_id' => $pid, 'want' => 'off', 'return' => '/p/' . $place['slug']]);
+        if ($h !== null) $hs['r' . $i] = $h;
+    }
+    fire($hs);
+    verdict('three unsaves leave none', $saves() === 0, $saves() . ' rows');
+}
+
 
 echo "\n";
 $bad = array_filter($results, static fn(array $r): bool => !$r[1]);

@@ -124,6 +124,7 @@
           <form class="inline-form" method="post" action="<?= e(url('follow')) ?>">
             <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
             <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
+            <input type="hidden" name="want" value="<?= $is_following ? 'off' : 'on' ?>">
             <button class="btn <?= $is_following?'btn-ghost':'btn-primary' ?>"><?= $is_following?'Following':'Follow' ?></button>
           </form>
           <a class="btn btn-ghost" href="<?= e(url('messages/'.$u['username'])) ?>">Message</a>
