@@ -114,6 +114,11 @@ function cron_places(array $a): void {
        city. Read only: it reports what a threshold WOULD do, and changes nothing. */
     if ((string) input('op') === 'index_quality') { rmt_places_index_quality(); return; }
 
+    /* What area text the provider actually supplied, per city. Read only, and the reason it exists
+       is that neighborhood aliases have to be written against the strings the data really contains
+       rather than against the names a person would think of. */
+    if ((string) input('op') === 'areas') { rmt_places_area_text(); return; }
+
     $citySlug = trim((string) input('city'));
     $dest = $citySlug !== '' ? q_one('SELECT * FROM destinations WHERE slug = ?', [$citySlug]) : null;
     if (!$dest) { echo "no such city\n"; return; }
@@ -604,4 +609,34 @@ function rmt_places_index_quality(): void {
         'thin_by_city'      => $byCity,    // thin means fewer than two signals
         'thin_by_type'      => $byType,
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "' + BS + 'n";
+}
+
+/**
+ * The raw area text on our places, grouped by city.
+ *
+ * seed_neighborhoods.php attaches a place to a neighborhood by matching this text against a known
+ * alias exactly, so the aliases have to be written against what the provider actually says. Guessing
+ * that OpenStreetMap calls it "South Beach" when it says "Miami Beach" produces a seed file that
+ * looks complete and attaches nothing.
+ *
+ * Read only.
+ */
+function rmt_places_area_text(): void {
+    $city = trim((string) input('city'));
+    $rows = q_all(
+        "SELECT d.slug dest, COALESCE(p.neighborhood, '') area, COUNT(*) n,
+                SUM(CASE WHEN p.neighborhood_id IS NULL THEN 1 ELSE 0 END) unattached
+           FROM places p JOIN destinations d ON d.id = p.destination_id
+          WHERE p.status = 'active'" . ($city !== '' ? " AND d.slug = " . db()->quote($city) : '') . "
+          GROUP BY d.slug, COALESCE(p.neighborhood, '')
+          ORDER BY d.slug, n DESC");
+    $out = [];
+    foreach ($rows as $r) {
+        $out[(string) $r['dest']][] = [
+            'area' => (string) $r['area'] !== '' ? (string) $r['area'] : '(none supplied)',
+            'places' => (int) $r['n'], 'unattached' => (int) $r['unattached'],
+        ];
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }
