@@ -35,6 +35,19 @@ if [ -f "$NBSEED" ]; then
   php /var/www/html/scripts/seed_neighborhoods.php --apply   || echo "entrypoint: neighborhood seed reported errors, continuing"
 fi
 
+# Publish the editorial layer from database/editorial/*.json. This is how researched, clearly
+# labelled editorial reaches production: by commit, rather than by somebody running a script with
+# production credentials on their laptop and hoping the two stay in step. It is NOT the demo
+# seeder, which fabricates members and is hard blocked in production.
+#
+# Safe on every boot because it is idempotent by construction: rows are matched on destination plus
+# the editorial author and updated in place rather than stacked, unchanged rows are left alone so
+# lastmod does not bounce, and the JSON is the source of truth. It refuses to write at all unless
+# its own validation passes, so a malformed entry stops itself rather than publishing half of one.
+# 0.6 seconds for 81 destinations, 105 places and 143 posts. Non fatal like the steps above: a
+# content problem belongs in the log, not in a crash loop.
+php /var/www/html/scripts/publish_editorial.php --apply   || echo "entrypoint: editorial publish reported errors, continuing"
+
 # Keep the autocomplete index in step: fill any missing normalised names and seed destination
 # aliases. Idempotent and fast, and it has to run AFTER enrichment, because enrichment is what
 # may have just changed a place's name.
