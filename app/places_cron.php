@@ -110,6 +110,10 @@ function cron_places(array $a): void {
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Robots-Tag: noindex');
 
+    /* Whole-site questions come before the city requirement, because they are not about a
+       city. Read only: it reports what a threshold WOULD do, and changes nothing. */
+    if ((string) input('op') === 'index_quality') { rmt_places_index_quality(); return; }
+
     $citySlug = trim((string) input('city'));
     $dest = $citySlug !== '' ? q_one('SELECT * FROM destinations WHERE slug = ?', [$citySlug]) : null;
     if (!$dest) { echo "no such city\n"; return; }
@@ -510,4 +514,81 @@ function cron_places(array $a): void {
         foreach (array_slice(array_unique($res['errors']), 0, 5) as $e) printf("  ! %s\n", $e);
     }
     echo $dry ? "dry run, nothing written\n" : "done\n";
+}
+
+/**
+ * How much is actually on a place page, across every place we publish.
+ *
+ * The question this answers is not "are the pages indexable". The rule in app/indexability.php
+ * already says yes to nearly all of them, because a coordinate counts as useful content and every
+ * imported place has one. The question is whether that bar is defensible at this many URLs, and the
+ * only honest way to answer it is to count what a crawler would find on each page rather than to
+ * reason about the template.
+ *
+ * A signal here is something a page can say that another page cannot: an address, opening hours, a
+ * website, a phone number, a photo, a review. A name and a dot on a map are not signals, they are
+ * what every row has. So the report is a histogram of signals per place, plus what each candidate
+ * threshold would take out of the index, because a rule means nothing until you know its cost.
+ *
+ * Read only. Nothing here writes, and nothing here changes what is indexed today.
+ */
+function rmt_places_index_quality(): void {
+    $rows = q_all(
+        "SELECT p.id, p.name, p.slug, p.type, d.slug dest,
+                CASE WHEN COALESCE(p.street_address,'') <> '' THEN 1 ELSE 0 END has_address,
+                CASE WHEN COALESCE(p.website_url,'')    <> '' THEN 1 ELSE 0 END has_website,
+                CASE WHEN COALESCE(p.phone,'')          <> '' THEN 1 ELSE 0 END has_phone,
+                (SELECT COUNT(*) FROM place_hours h   WHERE h.place_id = p.id) hours,
+                (SELECT COUNT(*) FROM place_photos ph WHERE ph.place_id = p.id) photos,
+                (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') reviews
+           FROM places p JOIN destinations d ON d.id = p.destination_id
+          WHERE p.status = 'active'");
+
+    $hist   = array_fill(0, 7, 0);
+    $with   = ['address' => 0, 'hours' => 0, 'website' => 0, 'phone' => 0, 'photo' => 0, 'review' => 0];
+    $byCity = $byType = [];
+    foreach ($rows as $r) {
+        $n = (int) $r['has_address'] + (int) $r['has_website'] + (int) $r['has_phone']
+           + ((int) $r['hours']   > 0 ? 1 : 0)
+           + ((int) $r['photos']  > 0 ? 1 : 0)
+           + ((int) $r['reviews'] > 0 ? 1 : 0);
+        $hist[$n]++;
+        if ((int) $r['has_address']) $with['address']++;
+        if ((int) $r['has_website']) $with['website']++;
+        if ((int) $r['has_phone'])   $with['phone']++;
+        if ((int) $r['hours']   > 0) $with['hours']++;
+        if ((int) $r['photos']  > 0) $with['photo']++;
+        if ((int) $r['reviews'] > 0) $with['review']++;
+
+        $city = (string) $r['dest'];
+        $kind = (string) ($r['type'] ?: 'uncategorised');
+        $byCity[$city] ??= ['places' => 0, 'thin' => 0];
+        $byType[$kind] ??= ['places' => 0, 'thin' => 0];
+        $byCity[$city]['places']++;
+        $byType[$kind]['places']++;
+        if ($n < 2) { $byCity[$city]['thin']++; $byType[$kind]['thin']++; }
+    }
+    $total = count($rows);
+
+    /* What each candidate bar would cost, in URLs. Stated as a consequence rather than as a rule,
+       because "hours or a website" means nothing until you know it takes a thousand pages out. */
+    $would = [];
+    foreach ([1 => 'one signal beyond a coordinate', 2 => 'two signals', 3 => 'three signals'] as $bar => $label) {
+        $out = 0;
+        foreach ($hist as $k => $c) if ($k < $bar) $out += $c;
+        $would[$label] = ['noindexed' => $out, 'kept' => $total - $out,
+                          'kept_pct' => $total ? round(($total - $out) * 100 / $total, 1) : 0];
+    }
+
+    uasort($byCity, static fn($a, $b) => $b['thin'] <=> $a['thin']);
+    uasort($byType, static fn($a, $b) => $b['thin'] <=> $a['thin']);
+
+    echo json_encode([
+        'active_places'     => $total,
+        'signals_per_place' => $hist,      // key = how many signals, value = how many places
+        'places_with'       => $with,
+        'thresholds'        => $would,
+        'thin_by_city'      => $byCity,    // thin means fewer than two signals
+        'thin_by_type'      => $byType,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "' + BS + 'n";
 }
