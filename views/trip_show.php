@@ -202,6 +202,19 @@ $authorSaid = $authorSaid ?? [];
     <?php endif; ?>
   <?php endif; ?>
 
+  <?php /* A trip that has already happened is most of what gets shared and most of what a
+           stranger arrives on from a search, and it offered them nothing to do but follow the
+           person who wrote it. One line, one step: the city is right there, so the offer is to
+           post their own dates for it rather than a generic invitation to sign up. */ ?>
+  <?php if (!$me && $phase === 'past' && !empty($t['dest_slug'])): ?>
+    <p class="callout" style="margin:0 0 18px">
+      Going to <?= e((string) $t['dest_name']) ?> yourself? Post your dates and see who else will
+      be there that week.
+      <a class="btn btn-accent btn-sm" style="margin-left:6px"
+         href="<?= e(url('register?return=' . rawurlencode('/d/'.$t['dest_slug'].'/travelers'))) ?>">Post your dates</a>
+    </p>
+  <?php endif; ?>
+
   <?php /* Everybody else who will be there then. Faces, not a number: a count is a statistic and
            a row of people is a reason to say something. */ ?>
   <?php if (!empty($alsoThere)): ?>
