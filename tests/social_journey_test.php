@@ -273,5 +273,15 @@ $ctrl2 = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
 ok(substr_count($ctrl2, 'rmt_activity_take_seat(') === 2,
    'both ways of filling a seat go through the lock: the owner accepting, and joining an open plan');
 
+echo "\n-- what a full plan says --\n";
+/* The lock is only half of it. Somebody who arrives at a plan with no places left must be told
+   that, or a missing button reads as the site being broken. Verified in a browser: eight of them
+   raced for one seat and exactly one got it, and the seven who did not saw this sentence. */
+$show2 = (string) file_get_contents(BASE_PATH . '/views/activity_show.php');
+ok(str_contains($show2, 'This one is full'), 'a full plan says so where the button would have been');
+ok(str_contains($show2, "\$cap === 1 ? 'person' : 'people'"), 'and counts one person as a person');
+ok(str_contains($show2, "\$full = (\$act['join_mode'] === 'open') && !rmt_activity_has_room(\$act);"),
+   'the button is not drawn when there is no room for it to do anything');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

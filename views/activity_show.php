@@ -91,7 +91,7 @@ $backTo = '/activity/' . (int) $act['id'];
           <?php if ($myState === null): ?>
             <?php $full = ($act['join_mode'] === 'open') && !rmt_activity_has_room($act); ?>
             <?php if ($full): ?>
-              <p class="muted" style="margin:0">This one is full<?= $cap > 0 ? ' (' . $cap . ' people)' : '' ?>.</p>
+              <p class="muted" style="margin:0">This one is full<?= $cap > 0 ? ' (' . $cap . ' ' . ($cap === 1 ? 'person' : 'people') . ')' : '' ?>.</p>
             <?php else: ?>
               <form method="post" action="<?= e(url('activity/'.(int) $act['id'].'/join')) ?>">
                 <?= csrf_field() ?>
