@@ -136,9 +136,15 @@ $authorSaid = $authorSaid ?? [];
            planning is the wrong page to open on the third morning in Lisbon. */ ?>
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_today.php'; ?>
 
-  <?php include __DIR__ . '/_trip_members.php'; ?>
-
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
+
+  <?php /* Who is planning it, and the box for inviting somebody, under the plan rather than over
+           it. On a phone the invite field sat a hundred and fifty pixels above the itinerary, so
+           the loudest thing on an owner's own trip was a request for somebody else's username.
+           People add plans first and invite somebody afterwards, if at all. The invitation a
+           reader has been SENT is separate and still leads the page, because that one is a
+           question addressed to them. */ ?>
+  <?php include __DIR__ . '/_trip_members.php'; ?>
 
   <?php /* The same itinerary, seen from above. It sits under the plan rather than over it, because
            the answer to "what are we doing" is a list and the answer to "how far apart is it all"
