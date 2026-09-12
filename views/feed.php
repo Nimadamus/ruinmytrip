@@ -142,13 +142,42 @@ $threads = $threads ?? [];
     </section>
   <?php endif; ?>
 
+  <?php /* A trip that just ended, which is not the same as having no trip.
+           This card exists because the home page used to ask "Where are you going?" of somebody
+           who got back from Lisbon on Tuesday. What they have to offer right now is the one thing
+           nobody else can write, and it stops being asked for after six weeks rather than
+           following them around forever. */ ?>
+  <?php $je = $rails['just_ended'] ?? null; ?>
+  <?php if (!$nt && $je): ?>
+    <section class="next-trip feed-nudge">
+      <div class="next-trip-head">
+        <p class="eyebrow" style="margin:0">You are back</p>
+        <h2 style="margin:.2rem 0 .4rem">How was <?= e((string) ($je['dest_name'] ?: $je['title'])) ?>?</h2>
+      </div>
+      <p class="muted" style="margin:0 0 12px">
+        <?php if ((int) ($je['photo_count'] ?? 0) === 0): ?>
+          Photographs and a line about what was actually worth it are the part the next traveler
+          cannot get anywhere else.
+        <?php else: ?>
+          You added <?= (int) $je['photo_count'] ?> <?= (int) $je['photo_count'] === 1 ? 'photograph' : 'photographs' ?>.
+          A review is the part the next traveler cannot get anywhere else.
+        <?php endif; ?>
+      </p>
+      <p style="margin:0;display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn btn-accent" href="<?= e(url('trip/'.(int) $je['id'].'/'.(string) $je['slug'].'#photos')) ?>">Add photos</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('review/new?destination='.(string) ($je['dest_slug'] ?? ''))) ?>">Write a review</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/new')) ?>">Plan the next one</a>
+      </p>
+    </section>
+  <?php endif; ?>
+
   <?php /* Somebody with no trip yet.
            Their first screen led with a box asking what they had just found out, which is a
            question you can only answer if you are already travelling. The thing this product does
            starts one step earlier: say where you are going, and the dates, and everything else on
            the site keys off that. So they are asked that instead, once, and the card disappears
            the moment there is a trip to show above it. */ ?>
-  <?php if (!$nt): ?>
+  <?php if (!$nt && !$je): ?>
     <section class="next-trip feed-nudge">
       <div class="next-trip-head">
         <p class="eyebrow" style="margin:0">Start here</p>

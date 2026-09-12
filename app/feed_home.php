@@ -120,6 +120,24 @@ function rmt_feed_rails(int $uid): array {
           LIMIT 1",
         [$uid, date('Y-m-d'), date('Y-m-d')]
     );
+    /* The trip that just ended.
+       Somebody whose only trip finished last week has no upcoming one, and the home page was
+       treating them as though they had never travelled: "Where are you going?", as if the week
+       they just spent somewhere did not happen. It is the one moment they can write something
+       nobody else can, and the window is short, so it is asked for while it is still fresh and
+       then stops rather than nagging. Only when there is no upcoming trip to talk about instead. */
+    $justEnded = null;
+    if (!$nextTrip) {
+        $justEnded = q_one(
+            "SELECT t.*, d.name dest_name, d.slug dest_slug,
+                    (SELECT COUNT(*) FROM trip_photos tp WHERE tp.trip_id = t.id) photo_count
+               FROM trips t LEFT JOIN destinations d ON d.id = t.destination_id
+              WHERE t.user_id = ? AND t.status = 'published'
+                AND t.date_to IS NOT NULL AND t.date_to < ? AND t.date_to >= ?
+           ORDER BY t.date_to DESC LIMIT 1",
+            [$uid, date('Y-m-d'), date('Y-m-d', strtotime('-45 days'))]
+        );
+    }
     $nextTripToday = [];
     $nextTripOverlap = 0;
     if ($nextTrip) {
@@ -149,6 +167,7 @@ function rmt_feed_rails(int $uid): array {
 
     return [
         'next_trip'        => $nextTrip,
+        'just_ended'       => $justEnded,
         'next_trip_today'  => $nextTripToday,
         'next_trip_overlap' => $nextTripOverlap,
         'next_trip_plans'   => $nextTripPlans ?? 0,

@@ -55,7 +55,12 @@ ok(!str_contains($controllers, 'Request a new link from /verify-email'),
 
 echo "\n-- a member with no trip is asked the first question --\n";
 ok(str_contains($feed, 'Where are you going?'), 'the home page asks it');
-ok(str_contains($feed, '<?php if (!$nt): ?>'), 'only when there is no trip to show instead');
+/* Guarded on both: no upcoming trip AND no trip that just ended, because somebody who got back
+   from Lisbon on Tuesday is asked how it went rather than where they are going. */
+ok(str_contains($feed, '<?php if (!$nt && !$je): ?>'),
+   'only when there is neither a trip to show nor one that just ended');
+ok(str_contains($feed, 'How was <?= e((string) ($je[' . chr(39) . 'dest_name' . chr(39) . ']'),
+   'and a trip that just ended is asked about instead');
 ok(str_contains($feed, "\$nt ? 'Where are you going, or what did you just find out?'"),
    'and the composer below does not ask the same thing twice');
 
