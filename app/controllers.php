@@ -505,6 +505,15 @@ function destination_places(array $a): void {
     if (!isset($catKnown[$cat])) $cat = '';
 
     $places = rmt_destination_browse($id, $type, $sort, $cat);
+    /* A city with a hundred and fifty places is twenty two phone screens of scrolling, and
+       nobody reaches the bottom of it. The first two dozen are shown and the rest are one tap
+       away, as a plain link rather than as an endless scroll: it works without JavaScript, a
+       crawler can follow it, and nothing is hidden from anybody who wants the whole list. */
+    $placesTotal = count($places);
+    $showAll = (string) input('all') === '1';
+    if (!$showAll && $placesTotal > RMT_PLACES_PER_PAGE) {
+        $places = array_slice($places, 0, RMT_PLACES_PER_PAGE);
+    }
     $counts = rmt_place_type_counts($id);
     $total = array_sum($counts);
     $label = $cat !== '' ? (string) ($catKnown[$cat]['plural'] ?: $catKnown[$cat]['name'])
@@ -534,7 +543,7 @@ function destination_places(array $a): void {
         // itself stays indexable; every permutation of it does not.
         $robots = ($type === '' && $sort === 'best') ? 'index, follow' : 'noindex,follow';
     }
-    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort','cat','catCounts'), [
+    view('destination_places', compact('d','places','counts','total','type','label','me','savedMap','saveCounts','sort','placesTotal','showAll','cat','catCounts'), [
         'canonical' => $canonical,
         'robots' => $robots,
         'title' => $label.' in '.$d['name'].' 2026: tickets, prices and reviews | RuinMyTrip',

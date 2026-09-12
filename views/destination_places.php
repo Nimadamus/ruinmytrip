@@ -97,6 +97,16 @@
           include __DIR__ . '/_place_card.php';
         ?>
       <?php endforeach; ?>
+
+  <?php /* The rest of the list, one tap away rather than twenty two screens of scrolling. A plain
+           link so it works with no JavaScript and a crawler can follow it. */ ?>
+  <?php if (!($showAll ?? false) && ($placesTotal ?? 0) > count($places)): ?>
+    <p style="margin:18px 0 0">
+      <a class="btn btn-ghost" href="<?= e(url('d/'.$d['slug'].'/places?'
+          . http_build_query(array_filter(['type' => $type, 'cat' => $cat, 'sort' => $sort, 'all' => '1'])))) ?>">
+        Show all <?= (int) $placesTotal ?> <?= e(mb_strtolower($label)) ?></a>
+    </p>
+  <?php endif; ?>
     </div>
 
     <?php /* The contribution prompt belongs at the end of a list somebody has just read: they have

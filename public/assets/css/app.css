@@ -756,6 +756,14 @@ section.block{padding:64px 0}
 /* Notifications read as people, so each row leads with a face, and the ones that were new when the
    page was opened stay marked while it is on screen. Marking them read is what the page does; it
    is not allowed to destroy the answer to the question the page was opened to ask. */
+/* The whole notification is the tap target, not the line of text inside it.
+   Measured at 390px: the link in a notification row is nineteen pixels tall, so reaching the trip
+   it points at means hitting one line of text exactly, on the page whose entire purpose is to be
+   tapped. The first link is stretched over the row; any other link in the same row sits above it
+   and still works on its own. */
+.note{position:relative}
+.note > .note-body > a:first-of-type::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.note .note-body a:not(:first-of-type){position:relative;z-index:1}
 .note{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-sm);
   background:var(--card);border:1px solid var(--line);margin-bottom:8px;position:relative}
 .note-new{background:var(--tint);border-color:#bfe5de}
@@ -1236,3 +1244,7 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 
 .plan-add-later{margin-top:14px}
 .plan-add-later summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:.92rem}
+
+/* Buttons on a card are thumbs, not cursors. Thirty pixels is a miss on a phone. */
+.place-card .btn,.card .btn-ghost[style*="font-size:.85rem"]{min-height:38px}
+.btn-sm{min-height:36px}

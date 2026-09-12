@@ -25,6 +25,10 @@ declare(strict_types=1);
 /** What can be a place. `destination` is excluded on purpose — the destination IS the container. */
 const RMT_PLACE_TYPES = ['hotel', 'restaurant', 'attraction', 'experience'];
 
+/** How many places a city page shows before offering the rest. Two dozen is about three phone
+    screens of cards, which is as far as anybody scrolls before deciding. */
+const RMT_PLACES_PER_PAGE = 24;
+
 /**
  * The URL segment for a category landing page, and the way back.
  *
