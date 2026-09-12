@@ -295,3 +295,37 @@ opens the dashboard. It should be in place before any cohort large enough to be 
 list, and certainly before any volume approaching the bulk sender thresholds. It is not on the
 critical path to proving whether ten travelers can form one network cluster.
 
+---
+
+## 13. The true acquisition constraint
+
+The cohort has not failed. It is in a specific state and the distinction matters:
+
+**PRODUCT READY. INBOUND ACQUISITION ACTIVE. OUTBOUND ACQUISITION UNAVAILABLE.**
+
+Outbound is unavailable because every account that exists is a sports betting
+account. Using one to promote a travel site would be off topic unsolicited
+promotion to an audience that did not ask for it, which is spam, and posting as
+a brand account is speaking as its owner. Neither is a thing to do for ten
+signups. Creating new accounts is prohibited. This is not a tooling gap that can
+be engineered around; it is the correct answer.
+
+Inbound is what remains, and it is now built rather than absent:
+
+- `/blog/miami-art-week-2026` is the acquisition page, published through the
+  existing editorial pipeline, linked from the Miami city page and the blog index,
+  in the sitemap, submitted to IndexNow.
+- Its CTA lands a cold visitor on a Miami trip form with 1 to 7 December already
+  filled in, through the signup path proven end to end into a real inbox.
+- Arrivals on it are counted, which they were not before: `landing_view` fired
+  only on the homepage, so the only channel available was the only one that could
+  not be measured.
+
+What inbound cannot do is produce ten dated travelers on a schedule. Search takes
+months and this domain has no authority behind it. The honest expectation is that
+inbound seeds a trickle, not a cohort.
+
+**The unlock remains one post from an account with normal human history.** Copy is
+in section 8. Everything downstream of a real person arriving is built, tested and
+monitored.
+
