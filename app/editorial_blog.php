@@ -69,6 +69,15 @@ function rmt_upsert_editorial_blog(): int {
                            VALUES (?,?,?,?,?,?,?,?,?,?)')
                ->execute([$uid, $slug, $title, $summary, $body, $cover, $cat, 'published', $created, $now]);
         }
+        /* Tell the search engines this page exists.
+           Member written pages have announced themselves since the queue was built: a guide, a
+           trip, a review, a post and a community all call rmt_seo_announce as they publish.
+           Editorial never did, because it is written by a deploy script rather than by a request,
+           so every editorial page ever published reached IndexNow only if a crawler happened to
+           re-read the sitemap. Announced here rather than for the whole file, because the upsert
+           above has already skipped everything unchanged: only a genuinely new or edited page
+           gets announced, which is the only thing IndexNow is for. */
+        if (function_exists('rmt_seo_announce')) rmt_seo_announce('/blog/' . $slug);
         $written++;
     }
     return $written;

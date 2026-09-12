@@ -321,11 +321,13 @@ try {
                     premium=0, status='published', updated_at=? WHERE id=?",
                  [$uid, $did, $g['title'], $g['summary'], $body, $hero, $now, (int)$have['id']]);
             out("    guide updated (/g/{$gslug})");
+            if ($apply && function_exists('rmt_seo_announce')) rmt_seo_announce('/g/' . $gslug);
         } else {
             $run("INSERT INTO guides (user_id, destination_id, slug, title, summary, body, cover_url, premium, status, created_at, updated_at)
                   VALUES (?,?,?,?,?,?,?,0,'published',?,?)",
                  [$uid, $did, $gslug, $g['title'], $g['summary'], $body, $hero, $now, $now]);
             out("    guide created (/g/{$gslug})");
+            if ($apply && function_exists('rmt_seo_announce')) rmt_seo_announce('/g/' . $gslug);
         }
     }
 
@@ -397,6 +399,12 @@ try {
                          $p['what_great'], $p['what_ruined'], (int)$p['safety_rating'], (int)$p['value_rating'],
                          $slug, $now, $now]);
             out("    review created (id {$rid}, /p/" . q_one('SELECT slug FROM places WHERE id=?', [$pid])['slug'] . ')');
+        }
+        /* Announce the PLACE page rather than the review: a place page is what a search result
+           lands on and what the review is rendered inside. */
+        if ($apply && function_exists('rmt_seo_announce')) {
+            $pslug = (string) (q_one('SELECT slug FROM places WHERE id = ?', [$pid])['slug'] ?? '');
+            if ($pslug !== '') rmt_seo_announce('/p/' . $pslug);
         }
 
         /* structured editorial: the sections the place page renders. Absent sections are written as
