@@ -270,8 +270,14 @@ ok((int) ($noCap['capacity'] ?? 0) === 0 && rmt_activity_has_room($noCap) === tr
    'a plan with no limit always has room');
 
 $ctrl2 = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
-ok(substr_count($ctrl2, 'rmt_activity_take_seat(') === 2,
-   'both ways of filling a seat go through the lock: the owner accepting, and joining an open plan');
+/* Three callers now. Two fill a seat, the owner accepting and somebody joining an open plan, and
+   the third is the owner changing the limit: reading the attendance and writing a new limit has
+   to be inside the same lock, or a join that commits while they are typing slips underneath the
+   check and leaves a plan over its own limit. */
+ok(substr_count($ctrl2, 'rmt_activity_take_seat(') === 3,
+   'filling a seat and changing the limit all go through the same lock');
+ok(str_contains($ctrl2, 'people are already coming, so the limit cannot go below'),
+   'and an impossible reduction says how many are coming rather than leaving them to count');
 
 echo "\n-- what a full plan says --\n";
 /* The lock is only half of it. Somebody who arrives at a plan with no places left must be told

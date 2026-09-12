@@ -6375,20 +6375,33 @@ function trip_activity_settings(array $a): void {
     if (!$v['ok']) { flash(implode(' ', $v['errors'])); redirect($back); }
     $d = $v['data'];
 
-    /* Lowering the capacity below the number already accepted would silently un-invite somebody.
-       It is refused instead, and the owner is told to remove people if that is what they mean. */
+    /* Lowering the capacity below the number already coming would silently un-invite somebody.
+       It is refused instead, and the owner is told exactly how many are already coming, because
+       "more people are already coming than that" leaves them to work out the number themselves.
+
+       Read and written inside the same lock the seats use, so a join that commits while the owner
+       is typing cannot slip underneath the check. Without it, a plan of six could be set to six by
+       an owner looking at five, and a seventh arriving in that gap would leave the plan over its
+       own limit. */
     $cap = (int) ($d['capacity'] ?? 0);
-    if ($cap > 0 && $cap < rmt_activity_going_count((int) $act['id'])) {
-        flash('More people are already coming than that. Remove somebody first.');
+    $tooMany = 0;
+    $saved = rmt_activity_take_seat(['id' => (int) $act['id'], 'capacity' => 1],
+        static function () use ($act, $cap, $d, &$tooMany): void {
+            $going = rmt_activity_going_count((int) $act['id']);
+            if ($cap > 0 && $cap < $going) { $tooMany = $going; return; }
+            db()->prepare('UPDATE trip_activities SET join_mode = ?, capacity = ?, meeting_point = ?,
+                                                      start_time = ?, end_time = ?, updated_at = ?
+                            WHERE id = ?')
+                ->execute([$d['join_mode'], $cap ?: null, $d['meeting_point'],
+                           $d['start_time'] ?: $act['start_time'], $d['end_time'],
+                           date('Y-m-d H:i:s'), (int) $act['id']]);
+        });
+    if ($tooMany > 0) {
+        flash($tooMany . ' people are already coming, so the limit cannot go below ' . $tooMany
+            . '. Remove somebody first if that is what you meant.');
         redirect($back);
     }
-
-    db()->prepare('UPDATE trip_activities SET join_mode = ?, capacity = ?, meeting_point = ?,
-                                              start_time = ?, end_time = ?, updated_at = ?
-                    WHERE id = ?')
-        ->execute([$d['join_mode'], $cap ?: null, $d['meeting_point'],
-                   $d['start_time'] ?: $act['start_time'], $d['end_time'],
-                   date('Y-m-d H:i:s'), (int) $act['id']]);
+    if (!$saved) { flash('Somebody was joining just then. Try that again.'); redirect($back); }
 
     /* People who said they would be somewhere at a time are the one group who has to be told when
        that time or that place moves. Nobody else is told anything: a capacity change, a join-mode
@@ -6534,12 +6547,14 @@ function trip_activity_join(array $a): void {
         redirect($back);
     }
 
+    /* Pressing the same button twice leaves you where the first press put you.
+       This used to toggle: a second "I am going too" deleted the row, so a double click, or a
+       browser retrying a POST on a slow connection, silently took somebody OFF a plan they had
+       just joined and told them nothing. Leaving has its own button and its own route, which is
+       where a decision to leave belongs. Verified by firing four simultaneous joins from one
+       person: with the toggle they cancelled each other out to nothing. */
     $current = rmt_activity_join_state((int) $act['id'], $me);
-    if ($current === $want) {
-        db()->prepare('DELETE FROM activity_joins WHERE activity_id = ? AND user_id = ?')
-            ->execute([(int) $act['id'], (int) $me['id']]);
-        redirect($back);
-    }
+    if ($current === $want) redirect($back);
     /* Saying "I am going" to an open plan takes a seat, and takes it under the same lock the owner
        accepting somebody uses. Checking for room and then writing are two statements, and two
        people pressing the button on the last place at the same moment both read "one left". An
