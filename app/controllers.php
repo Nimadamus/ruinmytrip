@@ -1330,9 +1330,20 @@ function trip_show(array $a): void {
     $canEdit = rmt_trip_can_edit($t, $me);
     $members = rmt_trip_members((int) $t['id'], 'active');
     $invited = $isOwner ? rmt_trip_members((int) $t['id'], 'invited') : [];
+    /* An invitation somebody can no longer accept is not offered.
+       The POST already refuses it: a blocked person who presses the button gets a 403 and stays
+       invited, which is the right outcome and the wrong experience. A button that looks live and
+       silently does nothing is worse than no button, so the question disappears when a block
+       stands between them and the trip's owner, and the page says why instead. */
     $myInvite = $me && q_one("SELECT 1 x FROM trip_members
                                WHERE trip_id = ? AND user_id = ? AND state = 'invited'",
                              [(int) $t['id'], (int) $me['id']]) ? true : false;
+    $inviteBlocked = false;
+    if ($myInvite && function_exists('rmt_is_blocked')
+        && rmt_is_blocked((int) $me['id'], (int) $t['user_id'])) {
+        $myInvite = false;
+        $inviteBlocked = true;
+    }
     $phase = rmt_trip_phase($t);
     /* Who else will be in that city on those days. This is the fact the page exists to carry: a
        trip with four other people on it is a reason to go, and it is the whole difference between
@@ -1385,7 +1396,7 @@ function trip_show(array $a): void {
                            ORDER BY r.id DESC LIMIT 2",
                             [(int) $t['user_id'], (int) $t['destination_id']]);
     }
-    view('trip_show', compact('tripMap','tripRole','canEdit','members','invited','myInvite',
+    view('trip_show', compact('tripMap','tripRole','canEdit','members','invited','myInvite','inviteBlocked',
                               't','photos','comments','likeCount','saveCount','liked','saved','tags',
                               'updates','isOwner','phase','alsoThere','isFollowingAuthor','destGoing',
                               'related','authorSaid','planDays'), [

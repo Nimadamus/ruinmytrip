@@ -200,5 +200,24 @@ ok(str_contains($feedSrc, 'Nothing planned yet.'), 'and offers places when a tri
 ok(str_contains($feedSrc, "\$rmt_next && !\$ntToday"),
    'but says nothing when there is something on today, because today wins the space');
 
+echo "\n-- notifications and invitations never outlive their permission --\n";
+/* Driven in two browsers: every notification row is a link and every link lands on the exact
+   object, an invitation on the trip anchored at who is planning it, a join on the activity, a
+   message on the thread. What needed fixing was what happens when the permission behind one of
+   them goes away.
+
+   A blocked invitee kept being offered "Join the trip". The POST refused it with a 403 and their
+   membership stayed "invited", which is the right outcome and the wrong experience: a button that
+   looks live and silently does nothing is worse than no button. */
+$ctrl = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+$show = (string) file_get_contents(BASE_PATH . '/views/trip_show.php');
+ok(str_contains($ctrl, 'rmt_is_blocked((int) $me[' . chr(39) . 'id' . chr(39) . '], (int) $t[' . chr(39) . 'user_id' . chr(39) . '])'),
+   'an invitation is not offered across a block');
+ok(str_contains($show, 'there is a block between you'),
+   'and the page says why rather than hiding it silently');
+/* The server side is the part that actually protects anything, and it stays whatever the page
+   decides to draw. */
+ok(str_contains($ctrl, "\$inviteBlocked = false;"), 'the page and the POST agree about who may accept');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

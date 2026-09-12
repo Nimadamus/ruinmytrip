@@ -89,6 +89,12 @@ $authorSaid = $authorSaid ?? [];
            addressed to the reader personally, and the partial that draws it sits a hundred lines
            down among the plan and the map. On a phone that is three screens below a question with
            two buttons. The rest of that partial stays where it is; only the question moves. */ ?>
+  <?php if (!empty($inviteBlocked)): ?>
+    <div class="callout" style="margin:0 0 18px">
+      <p style="margin:0">You were asked to help plan this trip, and there is a block between you
+        and the traveler who asked. The invitation stays open if that ever changes.</p>
+    </div>
+  <?php endif; ?>
   <?php if (!empty($myInvite)): ?>
     <div class="callout" style="margin:0 0 18px">
       <p style="margin:0 0 10px"><b>@<?= e((string) $t['author']['username']) ?> asked you to help plan this trip.</b>
