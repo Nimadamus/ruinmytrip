@@ -24,7 +24,7 @@ $total = count($places) + count($dests) + count($reading);
   <?php endif; ?>
 
   <?php if ($places): ?>
-    <h2 style="font-size:1.15rem;margin:0 0 10px">Places <span class="muted" style="font-weight:400">(<?= count($places) ?>)</span></h2>
+    <h2 class="h-card" style="margin:0 0 10px">Places <span class="muted" style="font-weight:400">(<?= count($places) ?>)</span></h2>
     <div class="grid g-3" style="margin-bottom:34px">
       <?php foreach ($places as $p): ?>
         <article class="card"><div class="card-body">
@@ -55,7 +55,7 @@ $total = count($places) + count($dests) + count($reading);
   <?php endif; ?>
 
   <?php if ($dests): ?>
-    <h2 style="font-size:1.15rem;margin:0 0 4px">Want to visit <span class="muted" style="font-weight:400">(<?= count($dests) ?>)</span></h2>
+    <h2 class="h-card" style="margin:0 0 4px">Want to visit <span class="muted" style="font-weight:400">(<?= count($dests) ?>)</span></h2>
     <p class="hint" style="margin:0 0 10px">Destinations you marked as somewhere you want to go.</p>
     <div class="grid g-3" style="margin-bottom:34px">
       <?php foreach ($dests as $d): ?>
@@ -81,7 +81,7 @@ $total = count($places) + count($dests) + count($reading);
   <?php endif; ?>
 
   <?php if ($reading): ?>
-    <h2 style="font-size:1.15rem;margin:0 0 4px">Reading list <span class="muted" style="font-weight:400">(<?= count($reading) ?>)</span></h2>
+    <h2 class="h-card" style="margin:0 0 4px">Reading list <span class="muted" style="font-weight:400">(<?= count($reading) ?>)</span></h2>
     <p class="hint" style="margin:0 0 10px">Guides, posts, trips, reviews and collections you saved.</p>
     <div class="grid" style="gap:10px;margin-bottom:34px">
       <?php foreach ($reading as $r): ?>

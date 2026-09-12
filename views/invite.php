@@ -15,7 +15,7 @@
     <p class="hint" style="margin:0">Or paste this: <em><?= e($message) ?></em></p>
   </div></div>
 
-  <h2 style="font-size:1.15rem;margin:26px 0 8px">
+  <h2 class="h-card" style="margin:26px 0 8px">
     <?= $count === 0 ? 'Nobody yet' : $count . ($count === 1 ? ' traveler' : ' travelers') . ' joined from your link' ?>
   </h2>
   <?php if (!$recent): ?>

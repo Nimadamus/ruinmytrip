@@ -11,7 +11,7 @@
   <?php /* Your own lists first, drafts included. This is where somebody comes back to a list they
            started, and until now the page showed them everybody else's published ones instead. */ ?>
   <?php if (!empty($mine)): ?>
-    <h2 style="margin:0 0 12px;font-size:1.1rem">Your lists</h2>
+    <h2 class="h-card" style="margin:0 0 12px">Your lists</h2>
     <div class="grid g-3" style="margin-bottom:34px">
       <?php foreach ($mine as $c): ?>
         <article class="card"><div class="card-body">
@@ -28,7 +28,7 @@
         </div></article>
       <?php endforeach; ?>
     </div>
-    <h2 style="margin:0 0 12px;font-size:1.1rem">From other travelers</h2>
+    <h2 class="h-card" style="margin:0 0 12px">From other travelers</h2>
   <?php endif; ?>
 
   <?php if (!$collections): ?>

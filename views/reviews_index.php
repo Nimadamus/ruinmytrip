@@ -60,7 +60,7 @@
             <?php elseif (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
           </span>
         </div>
-        <h2 style="margin:.35rem 0 .2rem;font-size:1.1rem">
+        <h2 class="h-card" style="margin:.35rem 0 .2rem">
           <a href="<?= e($href) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
         </h2>
         <p class="muted" style="margin:0">

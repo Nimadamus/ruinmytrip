@@ -25,7 +25,7 @@
            is keyword spam that happens to be internal. */ ?>
   <?php if (!empty($mentions['places']) || !empty($mentions['areas'])): ?>
     <section style="margin:34px 0 0">
-      <h2 style="font-size:1.1rem;margin:0 0 10px">Places this guide mentions</h2>
+      <h2 class="h-card" style="margin:0 0 10px">Places this guide mentions</h2>
       <div class="chip-row">
         <?php foreach ($mentions['places'] as $mp): ?>
           <a class="chip" href="<?= e(url('p/' . $mp['slug'])) ?>"><?= e((string) $mp['name']) ?>
@@ -41,7 +41,7 @@
 
   <?php if($isEd):?>
     <div class="empty-cta" style="margin-top:30px">
-      <h2 style="margin:0 0 6px;font-size:1.2rem">Been there? Correct us.</h2>
+      <h2 class="h-section" style="margin:0 0 6px">Been there? Correct us.</h2>
       <p class="muted" style="margin:0 0 14px">Prices move, routes close, places go downhill. A first-hand review is worth more than this guide and will be shown alongside it.</p>
       <a class="btn btn-accent" href="<?= e(url('review/new'.($g['destination_id'] ? '?destination='.(int)$g['destination_id'] : ''))) ?>">Share your experience</a>
     </div>

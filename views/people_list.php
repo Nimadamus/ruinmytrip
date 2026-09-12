@@ -25,7 +25,7 @@
           <img class="avatar" style="width:48px;height:48px" src="<?= e(avatar_url($pp['avatar_url']??null)) ?>" alt="">
         <?php endif; ?>
         <div style="flex:1;min-width:0">
-          <h2 style="font-size:1.05rem;margin:0">
+          <h2 class="h-card" style="margin:0">
             <a href="<?= e(url('u/'.$pp['username'])) ?>"><?= e($pp['display_name'] ?: $pp['username']) ?></a>
           </h2>
           <?php /* What they have written, where we know it. Following exists here so that people

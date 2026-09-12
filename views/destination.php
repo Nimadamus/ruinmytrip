@@ -224,7 +224,7 @@
             <?= rmt_editorial_badge('review') ?>
             <span class="stars"><?= stars((int)$ed['rating']) ?></span>
           </div>
-          <h2 style="margin:.5rem 0 .2rem;font-size:1.25rem">
+          <h2 class="h-section" style="margin:.5rem 0 .2rem">
             <a href="<?= e(url('review/'.(int)$ed['id'].'/'.($ed['slug'] ?: rmt_review_slug($ed)))) ?>"><?= e($ed['title'] ?: $ed['subject_name']) ?></a>
           </h2>
           <p class="muted" style="margin:0">By <?= e(rmt_editorial_name()) ?></p>
@@ -240,7 +240,7 @@
       <?php if ($tips): ?>
         <div class="card" style="margin-bottom:18px"><div class="card-body">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-            <h2 style="margin:0;font-size:1.15rem">Practical tips</h2>
+            <h2 class="h-card" style="margin:0">Practical tips</h2>
             <?= rmt_editorial_badge() ?>
           </div>
           <ul class="tips-list" style="margin-top:12px">

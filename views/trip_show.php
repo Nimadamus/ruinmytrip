@@ -206,7 +206,7 @@ $authorSaid = $authorSaid ?? [];
            a row of people is a reason to say something. */ ?>
   <?php if (!empty($alsoThere)): ?>
     <section class="also-there">
-      <h2 style="font-size:1.05rem;margin:0 0 10px">Also there then</h2>
+      <h2 class="h-card" style="margin:0 0 10px">Also there then</h2>
       <div class="also-row">
         <?php foreach ($alsoThere as $o): ?>
           <a class="also-person" href="<?= e(url('u/'.$o['username'])) ?>">
@@ -240,7 +240,7 @@ $authorSaid = $authorSaid ?? [];
   <?php endif; ?>
 
   <?php if (!empty($updates)): ?>
-    <h2 style="font-size:1.15rem;margin:0 0 10px">Updates</h2>
+    <h2 class="h-card" style="margin:0 0 10px">Updates</h2>
     <ol class="list-plain" style="margin:0 0 22px">
       <?php foreach ($updates as $up): ?>
         <li class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">

@@ -1225,6 +1225,7 @@ function feed(array $a): void {
     view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
+            'app_shell' => true,
     ]);
 }
 
@@ -4325,6 +4326,7 @@ function saved_index(array $a): void {
         'title' => 'Saved | RuinMyTrip',
         'description' => 'The places, destinations and travel writing you have saved on RuinMyTrip.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Saved','url'=>url('saved')]],
+            'app_shell' => true,
     ]);
 }
 
@@ -5915,6 +5917,7 @@ function matches_index(array $a): void {
         'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Matches', 'url' => url('matches')]],
+            'app_shell' => true,
     ]);
 }
 

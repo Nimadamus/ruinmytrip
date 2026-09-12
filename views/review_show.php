@@ -86,7 +86,7 @@
 
   <?php if ($isEd): ?>
     <div class="empty-cta" style="margin-top:22px">
-      <h2 style="margin:0 0 6px;font-size:1.15rem">Been to <?= e($r['dest_name'] ?: $r['subject_name']) ?>? This page needs you more than it needs us.</h2>
+      <h2 class="h-card" style="margin:0 0 6px">Been to <?= e($r['dest_name'] ?: $r['subject_name']) ?>? This page needs you more than it needs us.</h2>
       <p class="muted" style="margin:0 0 14px">A first-hand review outranks desk research every time, and yours will sit above this one.</p>
       <a class="btn btn-accent" href="<?= e(url('review/new'.(!empty($r['place_id']) ? '?place='.(int)$r['place_id']
                                      : ($r['destination_id'] ? '?destination='.(int)$r['destination_id'] : '')))) ?>">Share your experience</a>
@@ -174,7 +174,7 @@
   </div>
 
   <?php if (!empty($placeTalk)): ?>
-    <h2 style="font-size:1.1rem;margin:26px 0 8px">Questions about <?= e((string) ($r['place_name'] ?? $r['subject_name'])) ?></h2>
+    <h2 class="h-card" style="margin:26px 0 8px">Questions about <?= e((string) ($r['place_name'] ?? $r['subject_name'])) ?></h2>
     <?php foreach ($placeTalk as $tp): ?>
       <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
         <a href="<?= e(url('post/'.(int) $tp['id'])) ?>"><?= e(mb_strimwidth((string) $tp['body'], 0, 140, '…')) ?></a>
@@ -189,7 +189,7 @@
             include __DIR__ . '/_meet_travelers.php'; ?>
     <?php endif; ?>
 
-    <h2 style="font-size:1.1rem;margin:26px 0 8px">More from <?= e((string) ($r['dest_name'] ?: 'other travelers')) ?></h2>
+    <h2 class="h-card" style="margin:26px 0 8px">More from <?= e((string) ($r['dest_name'] ?: 'other travelers')) ?></h2>
     <?php foreach ($moreReviews as $mr): ?>
       <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
         <a href="<?= e(url('review/'.(int) $mr['id'].'/'.($mr['slug'] ?: ''))) ?>">

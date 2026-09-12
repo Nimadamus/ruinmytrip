@@ -267,7 +267,8 @@ a.ed-badge:hover{background:var(--brand)}
 .ed-panel{border-left:4px solid var(--ink);background:#fbfcfe}
 .ed-note{font-size:.85rem;color:var(--muted);margin:.5rem 0 0;line-height:1.5}
 .section-rule{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
-.section-rule h2{margin:0;font-size:1.35rem}
+/* Size deliberately omitted: a section heading is one size on this site, whatever rule it sits under. */
+.section-rule h2{margin:0}
 .section-rule .count{color:var(--muted);font-weight:600;font-size:.95rem}
 
 /* Empty states are a designed part of the page, not an accident. */
@@ -687,7 +688,7 @@ section.block{padding:64px 0}
    with a beginning rather than as one long form. */
 .onboard-step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
   padding:20px 22px;margin:18px 0;box-shadow:var(--shadow)}
-.onboard-step h2{font-size:1.18rem;display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.onboard-step h2{font-size:1.06rem;display:flex;align-items:center;gap:10px;margin:0 0 6px}
 .onboard-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
   border-radius:50%;background:var(--brand);color:#fff;font-family:var(--sans);font-size:.82rem;
   font-weight:700;flex:none}
@@ -979,7 +980,7 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   padding:.12rem .7rem;font-size:.74rem;font-weight:700;letter-spacing:.02em;margin-bottom:4px}
 .trip-count.on{background:var(--accent)}
 .trip-extra{margin:28px 0 8px}
-.trip-extra h2{font-size:1.15rem;margin:0 0 12px}
+.trip-extra h2{font-size:1.06rem;margin:0 0 12px}
 
 /* A page with nothing on it yet. Says what is missing, then offers what is real. */
 .nothing-yet{background:var(--card);border:1px dashed var(--line);border-radius:var(--radius);
@@ -1251,3 +1252,18 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 
 .site-footer-slim{padding:20px 0 18px;margin-top:34px}
 .site-footer-slim a{display:inline;padding:0}
+
+/* Two heading roles, because the pages were using seven sizes to mean two things.
+ *
+ * Measured across eleven member-facing pages: h2 came out at 13.1, 16.8, 17.6, 18.4, 21.6 and
+ * 23.2 pixels, almost all of it from inline font-size on individual tags. Every one of those was
+ * either the title of a card or the heading of a section, so those are the two roles, and the
+ * inline overrides became class names rather than a new scale invented on top of the old one.
+ *
+ * The eyebrow label (.rail-h, .eyebrow) is a third thing and keeps its own smaller, wider style:
+ * it is a label above a heading rather than a heading.
+ */
+/* Deliberately sets no size: a section heading is what an h2 already is, and inventing a second
+   section size next to the existing one is how a scale grows from three roles to seven. */
+.h-section{line-height:1.3}
+.h-card{font-size:1.06rem;font-weight:600;line-height:1.35}

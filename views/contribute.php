@@ -40,7 +40,7 @@
   <?php if ($recentDestinations): ?>
     <?php /* Somewhere to start for a person who does not have a name in mind. Real destinations
              with places in them, not a curated "popular" list we cannot substantiate. */ ?>
-    <h2 style="font-size:1.05rem;margin:0 0 10px">Or browse somewhere you have been</h2>
+    <h2 class="h-card" style="margin:0 0 10px">Or browse somewhere you have been</h2>
     <div class="chip-row" style="margin:0 0 30px">
       <?php foreach ($recentDestinations as $rd): ?>
         <a class="chip" href="<?= e(url('d/'.$rd['slug'].'/places')) ?>">
@@ -52,7 +52,7 @@
   <?php endif; ?>
 
   <section class="card" id="suggest" style="margin:0 0 30px"><div class="card-body">
-    <h2 style="margin:0 0 8px;font-size:1.02rem">Can't find the place?</h2>
+    <h2 class="h-card" style="margin:0 0 8px">Can't find the place?</h2>
     <?php if ($prefillName !== ''): ?>
       <p class="hint" style="margin:0 0 8px">
         You searched for &ldquo;<?= e($prefillName) ?>&rdquo; and we did not have it.

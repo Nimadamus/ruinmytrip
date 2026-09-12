@@ -97,7 +97,7 @@
 
   <?php /* A page that ends in nothing sends the reader back to the search result they came from. */ ?>
   <?php if ($related): ?>
-    <h2 style="margin:30px 0 10px;font-size:1.15rem">More talk</h2>
+    <h2 class="h-card" style="margin:30px 0 10px">More talk</h2>
     <?php foreach ($related as $rl): ?>
       <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
         <a href="<?= e(url('post/'.(int) $rl['id'])) ?>"><?= e(mb_strimwidth((string) $rl['body'], 0, 140, '…')) ?></a>

@@ -233,7 +233,7 @@ $backTo = '/activity/' . (int) $act['id'];
   <?php /* Coordination, in the open, between the people it concerns. Not a second inbox: a private
            conversation is a message, and this is "where are we meeting" where everybody coming can
            read the answer once. */ ?>
-  <h2 style="margin-top:26px;font-size:1.15rem">Sorting it out</h2>
+  <h2 class="h-card" style="margin-top:26px">Sorting it out</h2>
   <div class="thread" style="border-top:0">
     <?php foreach ($comments as $c): ?>
       <div class="thread-line">

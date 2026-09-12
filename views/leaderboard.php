@@ -41,7 +41,7 @@
           <img class="avatar" style="width:48px;height:48px;flex-shrink:0" src="<?= e(avatar_url($r['avatar_url'])) ?>" alt="">
         <?php endif; ?>
         <div style="flex:1;min-width:0">
-          <h2 style="font-size:1.05rem;margin:0">
+          <h2 class="h-card" style="margin:0">
             <a href="<?= e(url('u/'.$r['username'])) ?>"><?= e($r['display_name'] ?: $r['username']) ?></a>
           </h2>
           <p class="muted" style="margin:.1rem 0 0">

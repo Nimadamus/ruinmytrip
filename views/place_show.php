@@ -218,7 +218,7 @@
   <?php $hasFacts = rmt_place_has_address($p) || !empty($p['phone']) || !empty($p['website_url']) || $coords || $hoursByDay; ?>
   <?php if ($hasFacts): ?>
     <section class="card" style="margin:0 0 26px"><div class="card-body">
-      <h2 style="margin:0 0 10px;font-size:1.05rem">The basics</h2>
+      <h2 class="h-card" style="margin:0 0 10px">The basics</h2>
       <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:.95rem">
         <?php if (rmt_place_has_address($p)): ?>
           <dt class="muted">Address</dt>
@@ -336,7 +336,7 @@
   <?php if ($ed): ?>
     <div class="card" style="margin:0 0 26px"><div class="card-body">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <h2 style="margin:0;font-size:1.15rem">RuinMyTrip guide to <?= e($p['name']) ?></h2>
+        <h2 class="h-card" style="margin:0">RuinMyTrip guide to <?= e($p['name']) ?></h2>
         <?= rmt_editorial_badge('review') ?>
       </div>
       <p class="hint" style="margin:.5rem 0 0"><?= rmt_editorial_disclosure() ?></p>
@@ -345,7 +345,7 @@
     <?php foreach (rmt_place_editorial_sections((string) $p['type']) as $col => $heading): ?>
       <?php $val = trim((string) ($ed[$col] ?? '')); if ($val === '') continue; ?>
       <section style="margin:0 0 22px">
-        <h2 style="font-size:1.05rem;margin:0 0 6px"><?= e($heading) ?></h2>
+        <h2 class="h-card" style="margin:0 0 6px"><?= e($heading) ?></h2>
         <?php foreach (preg_split('/\n\s*\n/', $val) ?: [] as $para): ?>
           <?php $para = trim($para); if ($para === '') continue; ?>
           <p style="margin:0 0 .6rem"><?= e($para) ?></p>
@@ -355,7 +355,7 @@
 
     <?php if (!empty($ed['sources'])): ?>
       <section style="margin:0 0 26px">
-        <h2 style="font-size:1.05rem;margin:0 0 6px">Sources</h2>
+        <h2 class="h-card" style="margin:0 0 6px">Sources</h2>
         <p class="hint" style="margin:0 0 .5rem">Every figure above was checked against these before publication. If one has since changed, tell us and we will correct it.</p>
         <ul class="list-plain" style="margin:0">
           <?php foreach ($ed['sources'] as $s): ?>
@@ -375,7 +375,7 @@
            review photo links to the review it belongs to; a place photo has nowhere to go and is
            rendered as a plain image rather than a link to nothing. */ ?>
   <?php if ($photos): ?>
-    <h2 style="font-size:1.1rem;margin:0 0 10px"><?= count($photos) === 1 ? 'Photo' : 'Photos' ?></h2>
+    <h2 class="h-card" style="margin:0 0 10px"><?= count($photos) === 1 ? 'Photo' : 'Photos' ?></h2>
     <div class="grid g-4" style="margin-bottom:<?= $photoCount > count($photos) ? '10px' : '28px' ?>">
       <?php foreach ($photos as $ph): ?>
         <?php
@@ -400,7 +400,7 @@
   <?php endif; ?>
 
   <?php if ($editorial): ?>
-    <h2 style="font-size:1.1rem;margin:0 0 10px">From the RuinMyTrip team</h2>
+    <h2 class="h-card" style="margin:0 0 10px">From the RuinMyTrip team</h2>
     <p class="hint" style="margin:-4px 0 12px"><?= rmt_editorial_disclosure() ?></p>
     <div class="grid" style="gap:14px;margin-bottom:28px">
       <?php foreach ($editorial as $r): ?>
@@ -428,7 +428,7 @@
           include __DIR__ . '/_meet_travelers.php'; ?>
   <?php endif; ?>
 
-  <h2 style="font-size:1.1rem;margin:0 0 10px">Questions about <?= e($p['name']) ?></h2>
+  <h2 class="h-card" style="margin:0 0 10px">Questions about <?= e($p['name']) ?></h2>
   <?php foreach ($talk as $tp): ?>
     <div class="card" style="margin-bottom:8px"><div class="card-body" style="padding:12px 16px">
       <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
@@ -491,7 +491,7 @@
     </div></div>
   <?php endif; ?>
 
-  <h2 style="font-size:1.1rem;margin:0 0 10px">
+  <h2 class="h-card" style="margin:0 0 10px">
     <?= $stats['c'] > 0 ? 'What travelers said' : 'Traveler reviews' ?>
   </h2>
 
@@ -549,7 +549,7 @@
            The controller drops this module entirely when it would repeat the nearby list. */ ?>
   <?php if ($similar): ?>
     <section style="margin:0 0 40px">
-      <h2 style="font-size:1.1rem;margin:0 0 10px"><?= e(rmt_similar_heading((string) $p['type'])) ?></h2>
+      <h2 class="h-card" style="margin:0 0 10px"><?= e(rmt_similar_heading((string) $p['type'])) ?></h2>
       <div class="grid g-3" style="gap:12px">
         <?php foreach ($similar as $sp): ?>
           <article class="card"><div class="card-body">
@@ -581,7 +581,7 @@
       <?php /* Headed by what it is: a distance list when we know where things are, and the older
                "also in this city" list when we do not. Saying "Nearby" about places we only know
                share a city would be a claim we cannot support. */ ?>
-      <h2 style="font-size:1.1rem;margin:0 0 10px">
+      <h2 class="h-card" style="margin:0 0 10px">
         <?= $nearbyGeo ? 'Nearby' : 'Also in ' . e($p['dest_name']) ?>
       </h2>
       <div class="grid" style="gap:12px">
