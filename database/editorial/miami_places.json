@@ -1,0 +1,257 @@
+{
+  "_note": "Editorial place reviews for the first cohort wedge. Miami had 110 imported places and zero written about, while London, New York and Paris had seven each. Separate file for the same reason miami.json is separate: content.json is rebuilt by build_editorial_content.py and would clobber hand written entries. Every price here was read off the venue's own page in September 2026, not off an aggregator, because the aggregators were already wrong: one of them still listed PAMM at 16 dollars when the museum itself says 18.",
+  "places": [
+    {
+      "destination_slug": "miami-usa",
+      "name": "Vizcaya Museum and Gardens",
+      "type": "attraction",
+      "headline": "The Best Hour in Miami, and the Restoration Discount Is the Reason to Go Now",
+      "body": "Vizcaya is a 1916 Italianate villa on Biscayne Bay in Coconut Grove, built as a winter house for an industrialist who wanted somewhere in Florida that looked four hundred years old. It is the most photographed interior in Miami Dade County and, unusually for a house museum, the gardens are the better half: formal terraces stepping down to the water, a stone barge sitting offshore, and sightlines that were designed to be walked rather than looked at.\n\nAdult admission for visitors aged 13 and over is listed at 25 dollars and is currently reduced to 20 while on site restoration work continues. That discount is the honest reason to come this year rather than next: you are trading some scaffolding for a fifth off, and the parts under work are announced rather than discovered on arrival.\n\nIt opens daily except Tuesdays, 9:30am to 4:30pm, which is a short day by museum standards and the single thing most visitors get wrong. A 3pm arrival is not enough. The house alone absorbs an hour, the gardens another, and the light on the bay is worth staying for.\n\nThe practical trap is location. Vizcaya is on the mainland in Coconut Grove, not on Miami Beach, and getting there from a South Beach hotel is a causeway crossing plus traffic. It sits on the Metrorail at Vizcaya station, which almost nobody uses and which makes it one of the easiest major sights in the city to reach without a car if you are already based downtown or in Brickell.\n\nIt is not a collection you come for. The furnishings are the point only insofar as they hold the illusion together. Come for the rooms, the loggia and the bay.",
+      "what_great": "The gardens are genuinely world class and most visitors underrate them. The bay frontage and the stone barge are unlike anything else in Florida. Admission is currently reduced to 20 dollars from 25 during restoration. It is on the Metrorail, so it is reachable without a car, which is rare for a Miami sight.",
+      "what_ruined": "Restoration work is live, so some of what you came for may be behind scaffolding. Closing at 4:30pm and shutting entirely on Tuesdays catches people out constantly. It is a real journey from Miami Beach, and a lot of visitors underestimate the causeway. Shade is limited on the terraces and in August that matters.",
+      "rating": 5,
+      "safety_rating": 5,
+      "value_rating": 4,
+      "rating_rationale": "Five because it is the one sight in Miami that would be a destination in any city, and the gardens carry it even when the house is partly under work. Value four rather than five only because the full price is 25 dollars and the current 20 is temporary.",
+      "meta_description": "Vizcaya: 25 dollars adult admission, currently 20 during restoration. Open daily except Tuesdays, 9:30am to 4:30pm.",
+      "what_it_is": "A 1916 Italianate villa and formal gardens on Biscayne Bay in Coconut Grove, built as a winter residence and now a public museum.",
+      "why_go": "For the gardens and the bay frontage, which are better than the house and are the closest thing Miami has to a European estate. It is the one sight here that would still be a destination in a city with more competition.",
+      "the_good": "Formal terraces stepping down to the water, the stone barge offshore, and interiors that hold their illusion. Reachable on the Metrorail without a car. Currently discounted while restoration continues.",
+      "the_downsides": "Live restoration work, a short opening day that ends at 4:30pm, closed Tuesdays, a real journey from the beach, and limited shade in summer.",
+      "best_for": "Anybody who wants one hour in Miami that is not about the beach, garden and architecture people, and photographers who can arrive early.",
+      "skip_if": "You are on a two day beach trip and staying on the island, in which case the round trip eats most of an afternoon. Skip it also if scaffolding would ruin it for you, because the work is ongoing.",
+      "practical": "Allow two hours minimum and arrive before 2pm. Check what is currently closed for restoration before you go, because the discount exists for a reason. Tuesdays are closed.",
+      "tickets": "Adult admission, ages 13 and over, is listed at 25 dollars and currently reduced to 20 dollars during on site restoration. Visitors identifying as disabled receive complimentary admission along with an accompanying caregiver.",
+      "getting_there": "Vizcaya station on the Metrorail is a short walk away, which makes it one of the few Miami sights that is straightforward without a car. From Miami Beach it is a causeway crossing and traffic dependent.",
+      "location_context": "Coconut Grove, on the mainland side of Biscayne Bay, in a leafy low rise part of the city well away from the beach. The Grove village centre is a short distance away and is a good place to eat afterwards.",
+      "time_needed": "Two hours, and more if the light is good. One hour is enough only for the house.",
+      "accessibility": "The estate publishes accessibility information, and complimentary admission is offered to visitors identifying as disabled and to an accompanying caregiver.",
+      "verdict": "The best single sight in Miami, and better value than usual while the restoration discount stands. Go early in the day and give the gardens more time than you think they need.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission for ages 13 and over is listed at 25 dollars and currently reduced to 20 dollars during on site restoration work.",
+          "url": "https://vizcaya.org/welcome/",
+          "assert_text": "Vizcaya",
+          "confidence": "read off the museum's own welcome and ticketing page in September 2026"
+        },
+        {
+          "fact": "Vizcaya is open daily except Tuesdays, 9:30am to 4:30pm.",
+          "url": "https://vizcaya.org/visit-2/planning-your-visit/",
+          "assert_text": "Tuesdays",
+          "confidence": "read off the museum's own planning your visit page in September 2026"
+        },
+        {
+          "fact": "Vizcaya was built as a winter residence and completed in 1916, in the Italianate style, on Biscayne Bay in Coconut Grove.",
+          "url": "https://en.wikipedia.org/wiki/Vizcaya_Museum_and_Gardens",
+          "assert_text": "Vizcaya Museum and Gardens",
+          "confidence": "standard reference"
+        }
+      ]
+    },
+    {
+      "destination_slug": "miami-usa",
+      "name": "Perez Art Museum Miami",
+      "type": "attraction",
+      "headline": "Eighteen Dollars, Free After Five on Thursdays, and the Building Is the Best Exhibit",
+      "body": "PAMM sits on the downtown bayfront in a Herzog and de Meuron building whose hanging gardens and deep shaded veranda are the most successful piece of architecture in the city. The collection is modern and contemporary with a real emphasis on art of the Americas and the Caribbean, which is the correct emphasis for Miami and makes it a genuinely different museum rather than a smaller version of a New York one.\n\nAdult admission is 18 dollars. It is closed Tuesdays and Wednesdays, open 11am to 6pm most days, and open until 9pm on Thursdays with free entry after 5pm. That Thursday evening is the single best free thing in Miami and almost nobody outside the city knows about it: the veranda at dusk over Biscayne Bay, with the museum open around you, costs nothing.\n\nThe thing to understand before you go is that the building is not a container for the visit, it is half of it. The plant columns hanging from the canopy, the way the shade is engineered rather than decorative, and the terrace looking across the water are the parts people remember. If you arrive expecting a large encyclopaedic collection you will be disappointed; if you arrive expecting a superb building holding a focused collection you will not be.\n\nIt is downtown, next to the science museum in Museum Park, and it is on the free Metromover, which makes it one of the cheapest and easiest cultural afternoons available to anybody staying on the mainland.\n\nTwo closed days a week is the trap. Tuesday and Wednesday catch a lot of short trips.",
+      "what_great": "One of the best museum buildings in the United States, with hanging gardens and a bayfront veranda that are free to enjoy on Thursday evenings after 5pm. A focused collection of art of the Americas and the Caribbean that you will not see assembled this way elsewhere. On the free Metromover.",
+      "what_ruined": "Closed both Tuesday and Wednesday, which removes two days from a short trip. Eighteen dollars is fair but the collection is smaller than the building leads you to expect. Parking is paid and the surrounding downtown blocks are functional rather than pleasant.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Four because the building is exceptional and the collection, while focused and well chosen, is modest. Value five because 18 dollars is fair and Thursday after 5pm is free, which is the best no cost cultural hour in the city.",
+      "meta_description": "Perez Art Museum Miami: 18 dollars adult admission, free Thursdays after 5pm, closed Tuesday and Wednesday. Why the building matters as much as the collection.",
+      "what_it_is": "Miami's museum of modern and contemporary art, on the downtown bayfront in Museum Park, in a Herzog and de Meuron building known for its hanging gardens.",
+      "why_go": "For the building and the bayfront veranda as much as the art, and for a collection that takes the Americas and the Caribbean seriously rather than treating them as a side gallery.",
+      "the_good": "Architecture that justifies the trip on its own, a genuinely distinctive collection focus, a free Thursday evening, and a location on the free Metromover.",
+      "the_downsides": "Two closed days a week, a collection smaller than the building implies, and a downtown setting that is convenient rather than charming.",
+      "best_for": "Anybody staying downtown or in Brickell, architecture people, and travelers who want one cultural afternoon that is not on the beach.",
+      "skip_if": "You want a large survey collection, or your trip only covers Tuesday and Wednesday.",
+      "practical": "Go Thursday evening if the dates allow: open until 9pm and free after 5pm. Otherwise arrive by 4pm on a 6pm close. Use the Metromover rather than paying to park.",
+      "tickets": "Adult admission 18 dollars. Free to everyone on Thursdays after 5pm.",
+      "getting_there": "Museum Park in downtown Miami, served by the free Metromover. Walkable from most downtown and Brickell hotels.",
+      "location_context": "Downtown bayfront next to the Frost Science Museum, on the mainland rather than Miami Beach. The immediate blocks are commercial; the waterfront itself is the pleasant part.",
+      "time_needed": "Ninety minutes to two hours including the terrace.",
+      "accessibility": "The museum publishes visitor accessibility information and the building is step free from the park level.",
+      "verdict": "Go on a Thursday evening. Free after five, open until nine, and the veranda over Biscayne Bay at dusk is the best thing in Miami that costs nothing.",
+      "facts_checked": [
+        {
+          "fact": "Adult admission to Perez Art Museum Miami is 18 dollars.",
+          "url": "https://www.pamm.org/en/visit/",
+          "assert_text": "Adults",
+          "confidence": "read off the museum's own visit page in September 2026, which contradicted several ticket aggregators still listing 16 dollars"
+        },
+        {
+          "fact": "The museum is closed Tuesday and Wednesday, open 11am to 6pm Monday and Friday to Sunday, and open until 9pm on Thursdays with free admission after 5pm.",
+          "url": "https://www.pamm.org/en/visit/",
+          "assert_text": "Thursday",
+          "confidence": "read off the museum's own visit page in September 2026"
+        }
+      ]
+    },
+    {
+      "destination_slug": "miami-usa",
+      "name": "Wynwood Walls",
+      "type": "attraction",
+      "headline": "The Ticketed Courtyard Is Good. The Free Twenty Blocks Around It Are the Reason to Come",
+      "body": "Wynwood Walls is a ticketed outdoor courtyard of commissioned murals in the middle of Wynwood, open daily from 10:30am to 6:30pm. It is well curated, the work rotates, and it is a pleasant shaded hour.\n\nIt is also the clearest example in Miami of a city charging admission to something that is also free fifty metres away. The twenty blocks surrounding it are covered in commissioned murals that cost nothing, and several of them are larger and better than what is inside the fence. NW 2nd Avenue is the spine. Walk it first, for an hour, then decide whether you still want the ticket. A lot of people will, because the courtyard is dense, sheltered and easy to photograph, and because it is the only part with a guarantee that the work is current. That is a legitimate thing to pay for. Paying for it without knowing the alternative exists is not.\n\nWynwood itself is the answer to a question most first time visitors do not know to ask, which is where Miami nightlife is enjoyable rather than exclusive. The bars and breweries here have no door policy worth the name and no bottle minimums, which is the opposite of South Beach. Going in the late afternoon for the murals and staying into the evening is the way to do it.\n\nGo on a weekday if you can. Weekend afternoons are shoulder to shoulder, and the murals do not improve with a crowd in front of them. Shade is scarce, water is not sold everywhere, and this is a walking neighbourhood in a city with a summer.",
+      "what_great": "Dense, rotating, well curated work in a sheltered courtyard. The surrounding neighbourhood is free and in places better. Wynwood's bars and breweries are the most approachable nightlife in the city, and the murals and the evening join up naturally.",
+      "what_ruined": "You are paying for something that continues free on the other side of the fence, and nothing tells you that. Weekend afternoons are crowded enough to spoil the photographs. Very little shade, and Wynwood in August is a hard walk.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 3,
+      "rating_rationale": "Four for the work itself, which is genuinely good and genuinely curated. Value three because the immediate alternative is free and most visitors buy the ticket without knowing that.",
+      "meta_description": "Wynwood Walls is open daily 10:30am to 6:30pm and ticketed, while the surrounding twenty blocks of murals are free. How to decide whether to pay.",
+      "what_it_is": "A ticketed outdoor courtyard of commissioned street art in Wynwood, at the centre of a much larger free mural district.",
+      "why_go": "For a concentrated, current, well curated set of large scale murals in one shaded space, and for the neighbourhood around it, which is the most approachable nightlife in Miami.",
+      "the_good": "Curation and density, rotating work, shelter and shade inside the complex, and a neighbourhood that rewards staying into the evening.",
+      "the_downsides": "The same art form continues free immediately outside. Crowded on weekend afternoons. Hot and exposed in summer.",
+      "best_for": "Photographers, first time visitors who want one dense stop, and anybody planning to stay in Wynwood for the evening.",
+      "skip_if": "You are happy walking and looking for yourself, in which case NW 2nd Avenue and the surrounding blocks give you most of it for nothing.",
+      "practical": "Walk the free blocks first, then decide on the ticket. Weekday afternoons over weekends. Bring water. Late afternoon into evening is the best use of the trip, because the neighbourhood is the other half of it.",
+      "tickets": "The courtyard is ticketed. The surrounding mural district is free and requires nothing.",
+      "getting_there": "On the mainland, north of downtown. The free Wynwood trolley loops the district, and the neighbourhood is walkable once you are in it.",
+      "location_context": "Wynwood, a former warehouse district now given over to murals, galleries, breweries and bars. Low rise, walkable, and a completely different city from Miami Beach.",
+      "time_needed": "An hour inside, two to three hours for the district, and an evening if you stay.",
+      "accessibility": "The courtyard is at ground level and step free. The surrounding streets are flat, though pavement quality varies block to block.",
+      "verdict": "Worth it if you want the curated version and the shade. Walk the free blocks first so the decision is yours rather than the fence's.",
+      "facts_checked": [
+        {
+          "fact": "Wynwood Walls is open daily from 10:30am with a closing time of 6:30pm.",
+          "url": "https://thewynwoodwalls.com/",
+          "assert_text": "Wynwood Walls",
+          "confidence": "read off the venue's own site in September 2026"
+        },
+        {
+          "fact": "Wynwood Walls is an admission charging outdoor museum of commissioned street art, sitting inside a wider Wynwood mural district that is free to walk.",
+          "url": "https://en.wikipedia.org/wiki/Wynwood_Walls",
+          "assert_text": "Wynwood Walls",
+          "confidence": "standard reference, and confirmed by the venue selling tickets while the surrounding streets are public"
+        }
+      ]
+    },
+    {
+      "destination_slug": "miami-usa",
+      "name": "Joe's Stone Crab",
+      "type": "restaurant",
+      "headline": "A 1913 Institution Built Around a Season That Runs 15 October to 1 May",
+      "body": "Joe's has been on the southern tip of Miami Beach since 1913, which in this city is close to prehistory, and it is built entirely around one ingredient with a legally defined season. Florida stone crab season runs from 15 October to 1 May. Outside it the restaurant is a different and lesser proposition, and inside it the wait can be long enough to reorganise your evening around.\n\nThe thing worth understanding is that stone crab claws are harvested without killing the animal, which is returned to the water to regrow the claw. That is the reason the season exists and the reason the price is what it is. You are paying for a genuinely finite thing.\n\nThere are three ways to eat here and most visitors only know about one. The dining room is the full experience and the one with the wait. The bar takes walk ins and is faster. Joe's Take Away, next door, sells the same claws to carry out and skips the entire queue, which for a lot of travelers is the correct answer: claws, mustard sauce, and a table you found yourself.\n\nIt is expensive and it does not apologise for it. The side dishes are old fashioned American in a way that is either charming or dated depending on your mood, and the key lime pie has a reputation it mostly earns.\n\nIt sits in South of Fifth, the quietest and most residential end of South Beach, which is a genuinely pleasant part of the island and a long way in spirit from Ocean Drive twenty blocks north.",
+      "what_great": "One of the oldest restaurants in Florida, doing one thing with total conviction since 1913. The takeaway counter next door serves the same claws without the wait. South of Fifth is the most pleasant corner of Miami Beach. The claws themselves are a genuinely seasonal, genuinely finite product.",
+      "what_ruined": "Expensive, and the price moves with the catch. The wait in season can be very long. Outside 15 October to 1 May you are visiting an institution rather than eating the thing it is famous for. The side dishes are dated.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 3,
+      "rating_rationale": "Four because it is a genuine institution doing one thing extremely well, and because the takeaway counter solves its biggest problem. Value three because it is expensive even by South Beach standards and the wait has a cost of its own.",
+      "meta_description": "Joe's Stone Crab has been on South Beach since 1913. Stone crab season runs 15 October to 1 May. How to eat here without the wait.",
+      "what_it_is": "A seafood restaurant in South of Fifth, Miami Beach, open since 1913 and known almost entirely for Florida stone crab claws.",
+      "why_go": "To eat the dish this city is most associated with, in the room that made it famous, during the months it is actually in season.",
+      "the_good": "Genuine history, a single ingredient done properly, a takeaway counter that bypasses the queue, and a quiet residential corner of the island.",
+      "the_downsides": "Cost, waits, dated sides, and a season that makes half the year the wrong time to come.",
+      "best_for": "Anybody in Miami between mid October and the start of May who wants one memorable meal, and travelers happy to use the takeaway counter.",
+      "skip_if": "You are visiting between May and mid October, or you are not prepared to spend meaningfully more than a normal dinner costs.",
+      "practical": "Come inside the 15 October to 1 May season. Use Joe's Take Away next door if the wait is long, or eat at the bar, which moves faster than the dining room. South of Fifth is walkable from most of South Beach.",
+      "tickets": "Not applicable. Prices for claws move with the season and the catch.",
+      "getting_there": "South of Fifth, at the southern tip of Miami Beach. Walkable from South Beach, and the free South Beach trolley loop comes close.",
+      "location_context": "South of Fifth is the quietest, most residential part of Miami Beach, well away from the Ocean Drive strip. South Pointe Park and the pier are a few minutes away.",
+      "time_needed": "Two hours with a wait, well under one at the takeaway counter.",
+      "accessibility": "Ground floor dining room with step free access from the street.",
+      "verdict": "Go in season or do not go. If the wait looks bad, the takeaway counter next door serves the same claws and is the move most visitors do not know about.",
+      "facts_checked": [
+        {
+          "fact": "Florida stone crab season runs from 15 October to 1 May.",
+          "url": "https://myfwc.com/fishing/saltwater/recreational/stone-crab/",
+          "assert_text": "stone crab",
+          "confidence": "Florida Fish and Wildlife Conservation Commission, the authority that sets the season"
+        },
+        {
+          "fact": "Joe's Stone Crab has operated in Miami Beach since 1913 and is one of the oldest restaurants in Florida.",
+          "url": "https://en.wikipedia.org/wiki/Joe%27s_Stone_Crab",
+          "assert_text": "Joe's Stone Crab",
+          "confidence": "standard reference, consistent with the restaurant's own account"
+        }
+      ]
+    },
+    {
+      "destination_slug": "miami-usa",
+      "name": "Versailles Restaurant",
+      "type": "restaurant",
+      "headline": "The Window Is the Point, and It Costs About Two Dollars",
+      "body": "Versailles on Calle Ocho is the best known Cuban restaurant in the United States and the unofficial civic centre of Miami's Cuban community, which is a heavier sentence than a restaurant usually deserves and in this case is accurate. Elections get contested on the pavement outside. News crews set up here by reflex when something happens in Havana.\n\nThe dining room is large, mirrored, busy and decent. Ropa vieja, lechon asado, palomilla, plantains, black beans. It is not the best Cuban food in Miami and anybody who lives here will tell you so, usually while naming somewhere smaller. It is, though, reliably good, open late, and it seats large groups without fuss, which matters more on a trip than a food ranking does.\n\nThe part worth crossing the city for is not the dining room. It is the ventanita, the takeaway window on the side of the building, where a cortadito or a colada costs about the price of nothing and the queue is the actual attraction. A colada is a small polystyrene cup of very strong sweet coffee with a stack of thimble cups, and it is designed to be shared standing up with whoever is next to you. That transaction is the most Miami thing available to a visitor, and it takes four minutes.\n\nGo mid morning on a weekday for the window and the neighbourhood. Go late in the evening for the dining room, when it fills with people who are not tourists. Avoid the middle of a weekend afternoon in cruise season, when the coaches arrive.",
+      "what_great": "The ventanita, which serves the best two dollars you will spend in Miami and is a genuine local ritual rather than a performance. Open late, seats groups, and sits in the middle of Little Havana so the neighbourhood is the rest of the visit. Reliably good, generous, old fashioned Cuban food.",
+      "what_ruined": "It is not the best Cuban food in the city and locals will name three better places. The dining room is large and can feel like a coach stop in the middle of the day. Calle Ocho at peak cruise hours is a queue with a street attached.",
+      "rating": 4,
+      "safety_rating": 4,
+      "value_rating": 5,
+      "rating_rationale": "Four because as a restaurant it is good rather than exceptional, and because its real value is civic rather than culinary. Value five because the window costs almost nothing and the dining room portions are large for the price.",
+      "meta_description": "Versailles on Calle Ocho: the best known Cuban restaurant in the United States. Skip the debate about the food and go to the takeaway window.",
+      "what_it_is": "A large Cuban restaurant and bakery on Calle Ocho in Little Havana, with a street side takeaway coffee window, open since 1971.",
+      "why_go": "For the ventanita and the ritual around it, and for a dining room that functions as the community's front room. Go for the place, not for a ranking.",
+      "the_good": "The coffee window, the late hours, the group friendliness, the location in the middle of Little Havana, and the sheer civic weight of the room.",
+      "the_downsides": "Better Cuban food exists nearby. The middle of the day brings coaches. The interior is dated in a way that is charming on a good night and tired on a bad one.",
+      "best_for": "First time visitors to Little Havana, groups, late eaters, and anybody who wants one authentic four minute experience rather than a two hour one.",
+      "skip_if": "You are chasing the best Cuban meal in Miami, in which case ask somebody local and go where they say.",
+      "practical": "Weekday mid morning for the window and the neighbourhood, late evening for the dining room. Order a cortadito at the ventanita even if you are not eating. Calle Ocho between 12th and 17th Avenue is the walk to pair it with.",
+      "tickets": "Not applicable. Coffee at the window costs a couple of dollars.",
+      "getting_there": "Calle Ocho, Little Havana, on the mainland west of downtown. Not walkable from Miami Beach. Rideshare or bus.",
+      "location_context": "Little Havana's main commercial street, with Domino Park, cigar shops and galleries within walking distance. A working neighbourhood on a weekday, a street party on the last Friday of the month.",
+      "time_needed": "Four minutes at the window, ninety minutes in the dining room, half a day with the neighbourhood.",
+      "accessibility": "Step free from the pavement to both the window and the dining room.",
+      "verdict": "Go for the window, stay for the neighbourhood, and let somebody else argue about whether the ropa vieja is the city's best.",
+      "facts_checked": [
+        {
+          "fact": "Versailles is on Calle Ocho in Little Havana, opened in 1971, and is widely described as the best known Cuban restaurant in the United States and a centre of Cuban American civic life in Miami.",
+          "url": "https://en.wikipedia.org/wiki/Versailles_(restaurant)",
+          "assert_text": "Versailles",
+          "confidence": "standard reference"
+        },
+        {
+          "fact": "A ventanita is a street side takeaway window serving Cuban coffee, and the colada is a shared serving intended to be split between several small cups.",
+          "url": "https://en.wikipedia.org/wiki/Cuban_espresso",
+          "assert_text": "Cuban",
+          "confidence": "standard reference for the coffee format described"
+        }
+      ]
+    },
+    {
+      "destination_slug": "miami-usa",
+      "name": "Bill Baggs Cape Florida State Park",
+      "type": "attraction",
+      "headline": "The Calmest Beach Day in Miami, and the Oldest Standing Structure in the County",
+      "body": "Bill Baggs occupies the southern tip of Key Biscayne, and it is the answer to a question a lot of visitors ask on day three, which is whether there is a beach in Miami that is not a scene. There is, and this is it: about a mile of Atlantic sand backed by Australian pine and sea grape, calm water, picnic tables, and an absence of anybody trying to sell you a lounger.\n\nThe Cape Florida Lighthouse at the point dates from 1825 and is the oldest standing structure in Miami Dade County. It was burned during the Second Seminole War and rebuilt, and it sits at the end of a short walk through coastal hammock that feels nothing like the rest of the city. Climbing it is possible on a limited schedule rather than on demand, so check before you build a day around it.\n\nThis is a Florida State Park and charges a per vehicle entrance fee at the gate, which is the cheap part. The expensive part is the causeway toll to get onto Key Biscayne in the first place, which catches people out.\n\nThe reason to come is what the rest of the Miami coast is not. There are no hotels behind it, no music, no bottle service on the sand, and enough tree cover that a summer afternoon is survivable. Bring your own food and water, because the concessions are limited and you are a long way from anything.\n\nIt is a genuine trip from South Beach. Give it a day, or at least an unhurried afternoon, and pair it with Crandon Park further north if you want more beach.",
+      "what_great": "A quiet, shaded, undeveloped Atlantic beach with no commercial strip behind it. An 1825 lighthouse that is the oldest standing structure in the county. Real tree cover, which almost no other Miami beach has. Cheap entry.",
+      "what_ruined": "You have to cross a tolled causeway to get here, and without a car it is an awkward journey. Concessions are limited, so arriving without food and water is a mistake. Lighthouse climbs run on a restricted schedule rather than whenever you turn up.",
+      "rating": 4,
+      "safety_rating": 5,
+      "value_rating": 5,
+      "rating_rationale": "Four because it is excellent at what it does and genuinely inconvenient to reach. Value five because a state park entrance fee for a mile of quiet Atlantic beach and a historic lighthouse is the best value on the Miami coast.",
+      "meta_description": "Bill Baggs Cape Florida State Park: a quiet Atlantic beach with real shade, and the 1825 lighthouse at the tip of Key Biscayne.",
+      "what_it_is": "A Florida State Park on the southern tip of Key Biscayne, with about a mile of Atlantic beach, coastal hammock, and the 1825 Cape Florida Lighthouse.",
+      "why_go": "For the only Miami beach day with no commercial strip behind it, and for genuine shade, which matters more here than anywhere else in the city.",
+      "the_good": "Quiet water, tree cover, picnic facilities, a historic lighthouse, and an entrance fee that is trivial next to a day of South Beach loungers.",
+      "the_downsides": "A tolled causeway, an awkward trip without a car, thin concessions, and lighthouse access on a limited schedule.",
+      "best_for": "Families, anybody who has had enough of South Beach, and travelers in summer who need shade to make a beach day work.",
+      "skip_if": "You have one beach day and want the Miami you have seen in photographs, which is South Beach rather than this.",
+      "practical": "Bring food and water. Allow for the causeway toll on top of the park entrance fee. Check lighthouse climb times before you plan around them. Pair with Crandon Park if you want more beach on the same key.",
+      "tickets": "A Florida State Park per vehicle entrance fee is charged at the gate. The lighthouse itself runs guided climbs on a limited schedule.",
+      "getting_there": "Southern tip of Key Biscayne, reached over the Rickenbacker Causeway, which is tolled. Straightforward by car or rideshare, awkward by bus.",
+      "location_context": "A barrier island south east of the mainland, residential and low key, with Crandon Park at the northern end and the Miami Seaquarium on the causeway.",
+      "time_needed": "Half a day minimum. A full day if you are swimming and picnicking.",
+      "accessibility": "The park publishes accessibility information and has paved paths near the main facilities. The lighthouse climb is stairs only.",
+      "verdict": "The best beach day in Miami for anybody who wants a beach rather than a scene, and the only one with real shade. Worth the causeway.",
+      "facts_checked": [
+        {
+          "fact": "The Cape Florida Lighthouse at Bill Baggs Cape Florida State Park dates from 1825 and is the oldest standing structure in Miami Dade County.",
+          "url": "https://en.wikipedia.org/wiki/Cape_Florida_Light",
+          "assert_text": "Cape Florida",
+          "confidence": "standard reference"
+        },
+        {
+          "fact": "Bill Baggs Cape Florida State Park is a Florida State Park on the southern end of Key Biscayne and charges a per vehicle entrance fee at the gate.",
+          "url": "https://www.floridastateparks.org/parks-and-trails/bill-baggs-cape-florida-state-park",
+          "assert_text": "Bill Baggs",
+          "confidence": "the park's own page in the Florida State Parks system, which charges vehicle entry across the system"
+        }
+      ]
+    }
+  ]
+}
