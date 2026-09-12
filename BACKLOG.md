@@ -64,6 +64,10 @@ done and verified in production.
   cheapest question there is to put to Overpass.
 * **Readable URLs for places with non-Latin names**, taken from a name they really go by, never
   transliterated: the readings ICU gives a Japanese name are Chinese ones.
+* **The journeys are driven in browsers now, not read.** Signup from zero, the first trip through
+  the publish gate, the returning home, collaboration with two accounts, join a plan, messaging,
+  notifications and deletion. Every defect found this way is in `tests/onboarding_funnel_test.php`
+  or `tests/social_journey_test.php` as a rule rather than a screenshot.
 * **Miami**, published through the draft and publish path rather than around it, with 110 places
   imported on the first run with zero provider failures, and all seven audit checks clean.
 * **A seven point data audit, and all eleven cities pass it.** `op=audit` checks for a point outside
