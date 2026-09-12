@@ -219,5 +219,23 @@ ok(str_contains($show, 'there is a block between you'),
    decides to draw. */
 ok(str_contains($ctrl, "\$inviteBlocked = false;"), 'the page and the POST agree about who may accept');
 
+echo "\n-- a page that went stale while it was open --\n";
+/* Driven by changing the world underneath a live tab: cancelling a plan while somebody has it
+   open, removing a collaborator while they are typing, making a trip private. In every case the
+   stale POST is refused and nothing is written, which is the part that matters, and refreshing
+   converges on the truth.
+
+   What was wrong was the refusal itself. It answered with the number 403 above the words "Not
+   authorized", which reads as the site being broken rather than as something having changed, and
+   is exactly the language a product should not use about itself. */
+$e403 = (string) file_get_contents(BASE_PATH . '/views/403.php');
+$e404 = (string) file_get_contents(BASE_PATH . '/views/404.php');
+ok(!str_contains($e403, '403') || !preg_match('/>403</', $e403), 'the refusal page does not print its status code');
+ok(!preg_match('/>404</', $e404), 'and neither does the missing page');
+ok(!str_contains($e403, '<h1>Not authorized'), 'nor leads with "not authorized"');
+ok(str_contains($e403, '<?= e($msg) ?>'), 'the reason the caller gave is what the reader sees');
+ok(str_contains($e403, 'something changed'),
+   'and it says the likely cause, because a stale page is the usual one');
+
 echo "\nsocial_journey_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
