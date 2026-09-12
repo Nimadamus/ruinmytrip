@@ -6178,6 +6178,28 @@ function cron_indexnow(array $a): void {
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Robots-Tag: noindex');
+    /* One time catch up for pages that existed before anything announced them.
+       Editorial is written by the deploy script and only announces what it just changed, which is
+       right for every run after the first and wrong for the pages published before the announcing
+       existed at all. This enqueues every published editorial URL once. It cannot double announce:
+       the queue is unique on url, so anything already sent is refused by the index and skipped. */
+    if ((string) input('announce') === 'editorial') {
+        $queued = 0;
+        foreach (q_all("SELECT slug FROM blog_posts WHERE status = 'published'") as $r) {
+            rmt_seo_announce('/blog/' . $r['slug']); $queued++;
+        }
+        foreach (q_all("SELECT slug FROM guides WHERE status = 'published'") as $r) {
+            rmt_seo_announce('/g/' . $r['slug']); $queued++;
+        }
+        foreach (q_all("SELECT DISTINCT p.slug FROM places p
+                          JOIN reviews r ON r.place_id = p.id AND r.status = 'published'
+                          JOIN users u ON u.id = r.user_id AND u.role = ?
+                         WHERE p.status = 'active'", [RMT_EDITORIAL_ROLE]) as $r) {
+            rmt_seo_announce('/p/' . $r['slug']); $queued++;
+        }
+        echo "offered={$queued}\n";
+    }
+
     $pending = count(rmt_seo_pending(500));
     $sent = rmt_seo_flush(500);
     echo "pending={$pending} submitted={$sent}\n";
