@@ -483,14 +483,21 @@ function cron_places(array $a): void {
     if ($op !== 'import') { echo "unknown op\n"; return; }
 
     $type  = (string) (input('type') ?: 'all');
-    $limit = max(1, min(120, (int) input('limit') ?: 40));
+    /* 120 is the cap for a normal import, because a greedy Overpass query is how this site loses
+       the only place data it may legally keep, and because every row a normal run accepts becomes
+       a page. An enrich run accepts no rows and creates nothing: a wider pull only means more
+       chances to match something we already publish. Named landmarks like Vizcaya and PAMM sit
+       outside the top 120 by any ordering, so at 120 they were never offered and stayed without
+       coordinates while the review about them was live. */
+    $enrichWanted = (string) input('enrich') === '1';
+    $limit = max(1, min($enrichWanted ? 400 : 120, (int) input('limit') ?: 40));
     $km    = (float) (input('km') ?: 0);   // 0 means: use the density default for this kind
     $dry   = (string) input('dry') === '1';
     /* enrich=1 fills in the places we already publish and creates nothing. Overpass will always
        offer more rows than we hold, and taking all of them is how a city goes from a hundred
        places worth reading to four hundred pages carrying a name and a dot. Making the existing
        hundred useful is a different decision from tripling the count, so it is a different flag. */
-    $enrich = (string) input('enrich') === '1';
+    $enrich = $enrichWanted;
     $types = $type === 'all' ? RMT_PLACE_TYPES : [$type];
     foreach ($types as $t) {
         if (!in_array($t, RMT_PLACE_TYPES, true)) { echo "unknown type: $t\n"; return; }
