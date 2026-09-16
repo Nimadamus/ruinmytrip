@@ -38,6 +38,18 @@ week is whether it did anything.
 5. **Stop after three failures on one channel** rather than tuning the copy a fourth time. The
    channel is the hypothesis, not the wording.
 
+## A warning about the numbers before 2026-09-16
+
+**The `utm_content=selfcheck` marker only started on 2026-09-16 at roughly 00:30 Pacific.** Every
+check run before that carried a real campaign name and no marker, so it cannot be excluded now and
+will not be: rewriting rows to make a number look better is worse than a number that needs a
+sentence.
+
+Concretely: the **37 human sessions on 16 September were almost entirely this project's own
+verification runs**, spread across the real campaign names, and only 2 of them are marked. Anything
+dated 15 or 16 September in the acquisition table should be read as our own traffic unless a post
+was actually published. From 16 September onward the marker does the job automatically.
+
 ## Experiments
 
 ### E1
