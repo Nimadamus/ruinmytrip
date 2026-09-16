@@ -221,6 +221,8 @@ $routes = [
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
     ['GET',  '#^/cron/funnel$#',               'cron_funnel'],
+    // TEMPORARY, removed with app/traffic_audit.php once the traffic report has been taken.
+    ['GET',  '#^/cron/traffic-audit$#',        'cron_traffic_audit'],
     ['GET',  '#^/cron/places$#',               'cron_places'],
     ['GET',  '#^/cron/destinations$#',         'cron_destinations'],
     ['POST', '#^/cron/destinations$#',         'cron_destinations'],
