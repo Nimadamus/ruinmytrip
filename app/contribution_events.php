@@ -609,8 +609,35 @@ function rmt_social_counts(int $days = 30): array {
              'ask_question_click','question_posted','post_created','comment_created','reaction_created',
              'join_view','join_submit','join_created','login_completed','trip_create_started','trip_created',
              'profile_viewed','traveler_profile_clicked','profile_edit_started','profile_completed',
-             'overlapping_traveler_viewed','message_started','destination_return_visit'];
+             'overlapping_traveler_viewed','message_started','destination_return_visit',
+             /* The overlap and messaging events. These were added in later tasks and this list was
+                not updated with them, so the dashboard's counter block silently omitted every
+                number about connecting and messaging. Found by reading the JSON rather than the
+                page: a missing key is invisible on a dashboard and loud in a parser. */
+             'overlap_notification_created','overlap_notification_viewed','overlap_profile_opened',
+             'trip_connect_requested','trip_connect_accepted','message_sent','message_thread_viewed'];
     $out = [];
     foreach ($keys as $k) $out[$k] = (int) ($c[$k] ?? 0);
+    return $out;
+}
+
+/**
+ * Which surface each session was on, as the closed vocabulary this table stores.
+ *
+ * This is NOT a referrer report and cannot become one: `source` is a word out of a fixed list,
+ * derived from an internal path, and no external referrer, campaign tag or address has ever been
+ * collected. So it answers "which of our own pages were people on", and cannot answer "did they
+ * come from Google", which only Search Console can.
+ *
+ * @return array<string,int> source => sessions
+ */
+function rmt_funnel_sources(int $days = 30): array {
+    $out = [];
+    foreach (q_all("SELECT COALESCE(source, 'not recorded') s, COUNT(DISTINCT journey) c
+                      FROM contribution_events WHERE created_at >= ?
+                  GROUP BY COALESCE(source, 'not recorded')", [rmt_funnel_since($days)]) as $r) {
+        $out[(string) $r['s']] = (int) $r['c'];
+    }
+    arsort($out);
     return $out;
 }

@@ -66,6 +66,7 @@ require BASE_PATH . '/app/tags.php';
 require BASE_PATH . '/app/mentions.php';
 require BASE_PATH . '/app/messages.php';
 require BASE_PATH . '/app/connects.php';
+require BASE_PATH . '/app/traffic_shape.php';
 require BASE_PATH . '/app/push.php';
 require BASE_PATH . '/app/storage.php';
 require BASE_PATH . '/app/search_suggest.php';

@@ -273,10 +273,21 @@ function cron_funnel(array $a): void {
     header('X-Robots-Tag: noindex');
 
     $days = (int) (input('days') !== '' ? input('days') : 30);
+    /* The same blocks /admin/funnel draws, plus the traffic shape, so the numbers can be read
+       without an account rather than only by an administrator. Nothing here is a person: every
+       value is a count, a rate or a city name, and the one identifier involved is a random token
+       that recognises a browser and is never printed. */
     echo json_encode([
-        'growth'    => rmt_growth_funnel($days),
-        'signup'    => rmt_signup_funnel($days),
-        'inventory' => rmt_growth_inventory(),
-        'overlap'   => rmt_growth_overlap(),
+        'window_days'        => $days > 0 ? $days : 'all time',
+        'growth'             => rmt_growth_funnel($days),
+        'signup'             => rmt_signup_funnel($days),
+        'inventory'          => rmt_growth_inventory(),
+        'overlap'            => rmt_growth_overlap(),
+        'social'             => rmt_social_funnel($days),
+        'stages'             => rmt_funnel_stages($days),
+        'top_communities'    => rmt_top_communities($days),
+        'signup_attribution' => rmt_signup_attribution($days),
+        'sources'            => rmt_funnel_sources($days),
+        'traffic'            => rmt_traffic_shape($days),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }
