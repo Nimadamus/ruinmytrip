@@ -111,6 +111,27 @@ was actually published. From 16 September onward the marker does the job automat
 * **Status:** running. Read against `destination_follow_click` and `trip_create_started` per human
   session once real traffic exists.
 
+### E5
+
+* **Hypothesis:** every page type that earns a search impression had no link to the social product,
+  and place pages plus guides carry roughly four times the impressions of destination pages. Adding
+  one shared component should change the share of search arrivals that reach a community page.
+* **Date:** shipped 2026-09-16.
+* **Baseline:** 0 clicks from 1,469 impressions in the 90 days to 2026-09-16, average position 45.
+* **Status:** running. **Read it honestly:** with zero clicks in ninety days the sample may never
+  arrive, and the right conclusion then is "no data", not "no effect".
+
+### E6
+
+* **Hypothesis:** the milestone counter was reading 41 of 100 while nothing had been published
+  anywhere, which cannot be true. Counting only channels we can name should make it read close to
+  zero and stay there until a real link goes out.
+* **Date:** 2026-09-16.
+* **What was found:** 11 of the 41 were this session's own campaign validation, made minutes before
+  the self check marker existed. The other 30 arrived direct, out of 778 direct sessions in a day.
+* **Outcome:** direct is shown beside the milestone and not counted toward it. **This is the check
+  that matters when a link finally goes out:** the named channels will move and direct will not.
+
 ### Template for the next one
 
 * **Hypothesis:**
