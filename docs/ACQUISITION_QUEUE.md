@@ -166,11 +166,19 @@ rest of the work.**
 
 ## The milestones, in order
 
-1. **100 likely human visits.** Currently **28 over 30 days** (4,252 raw requests, 1,121 classified
-   automated, 7,260 uncertain). Read live from `/cron/funnel` on 2026-09-15.
-2. **25 signups.** Currently **2 created and 2 confirmed in the 30 day window**, 5 accounts all time.
-   1,303 people or bots saw the join form in that window and 2 submitted it.
-3. **10 trips with dates.** Currently **1** upcoming dated public trip.
-4. **Two overlapping trips in one city.** Currently 0, and it has never happened.
+**Counted only from 2026-09-16 08:20 UTC**, which is after the last verification run that predated
+the self check marker. Before that boundary the traffic is ours and is labelled rather than rewritten.
+
+1. **100 genuine external human visits.** Currently **0**. Human sessions arriving with no channel we
+   can name are shown separately and not counted: with nothing published anywhere there is no
+   external link for somebody to have followed, so a direct session cannot be told from the automated
+   floor. When a real link goes out this becomes obvious, because the named channels will move and
+   that number will not.
+2. **25 real signups.** Currently **0**.
+3. **10 real trips with dates.** Currently **0** inside the clean window, 1 all time.
+4. **Two travelers who actually connected.** Currently **0**, and it has never happened.
+
+For context rather than credit: in the last 7 days the site saw roughly 1,200 sessions classified
+automated and 4,700 classified uncertain. That is the floor this product is trying to be heard over.
 
 Nothing on this list moves without somebody posting a link where travelers are.
