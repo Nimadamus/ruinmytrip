@@ -356,6 +356,17 @@ $adm2 = (string) file_get_contents(BASE_PATH . '/views/admin_funnel.php');
 ok('the dashboard opens with it', strpos($adm2, 'Today') < strpos($adm2, 'Acquisition, now'), true);
 
 
+/* The platforms we post on send their own link preview fetchers, and none of them says "bot". */
+foreach (['facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)',
+          'meta-externalagent/1.1 (+https://developers.facebook.com/docs/sharing/webmasters/crawler)',
+          'WhatsApp/2.23.20.0 A'] as $fetcher) {
+    $_SERVER['HTTP_USER_AGENT'] = $fetcher;
+    ok('a link preview fetcher is not a visitor: ' . substr($fetcher, 0, 24), rmt_is_crawler(), true);
+}
+$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 [FBAN/FBIOS;FBAV/450.0]';
+ok('but somebody reading inside the Facebook app still is', rmt_is_crawler(), false);
+
+
 echo "\n-- what attribution is not allowed to store --\n";
 $src = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 $events = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');

@@ -123,8 +123,15 @@ const RMT_CONTRIB_REASONS = ['validation', 'auth', 'verification', 'rate_limit',
 function rmt_is_crawler(): bool {
     $ua = strtolower((string) ($_SERVER['HTTP_USER_AGENT'] ?? ''));
     if ($ua === '') return true;        // no agent at all is a script, not a traveler
+    /* The link preview fetchers of the platforms we post on. None of them says "bot": Facebook
+       identifies as facebookexternalhit and meta-externalagent, and WhatsApp as WhatsApp/. They were
+       first noticed on 2026-09-16, when composing a Page post made Facebook fetch the link once per
+       character typed, writing campaign names like "oktoberf" and "new-yea" into the channel table.
+       They never counted as human, so no conversion number was wrong, but a campaign table full of
+       fragments is its own kind of lie. */
     foreach (['bot', 'spider', 'crawl', 'slurp', 'headless', 'preview', 'fetcher',
-              'monitor', 'curl/', 'wget', 'python-requests', 'okhttp', 'java/'] as $mark) {
+              'monitor', 'curl/', 'wget', 'python-requests', 'okhttp', 'java/',
+              'externalhit', 'externalagent', 'facebookcatalog', 'whatsapp/'] as $mark) {
         if (str_contains($ua, $mark)) return true;
     }
     return false;
