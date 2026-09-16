@@ -40,7 +40,8 @@ pages made of members.
 `080` profile interests · `081` trip_activities · `082` activity_requests (join lifecycle, capacity,
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
 the reads this product actually does · `086` provider kind on a place, and a stadium category ·
-`087` who said these opening hours.
+`087` who said these opening hours · `095` visitor answers · `096` profiles.languages ·
+`097` hidden_content (per member hide).
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -325,6 +326,15 @@ what could not be read said plainly). Twenty posts are written in `docs/ACQUISIT
 `docs/ACQUISITION_COHORTS.md`, and the state of the effort is `docs/ACQUISITION_QUEUE.md`. Reddit is
 blocked at the network layer from this machine, for reading as well as posting.
 
+
+## Social layer, 2026-09-16
+
+* Feed scope: people followed, cities saved, **and cities of upcoming published trips** (`app/feed_scope.php`).
+  Rails add "Asked in your cities" (unanswered first signal) and "Big weeks coming up" (campaign windows).
+* `/travelers?city=&from=&to=&interest=&open=1`: date window, one interest, trip-level open to meeting (explicit yes only).
+* Safety: blocks filter feed, city hubs, post lists, search talk, notifications list and badge, like notifications.
+  `POST /hide` hides one item for one member (feed, post lists, search). Report and `/admin/moderation` unchanged.
+* 390px audit (headless, local): feed, travelers filters, events, search, notifications, profile edit/show, matches clean.
 
 ## Waiting on Nima
 

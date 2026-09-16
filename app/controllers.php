@@ -2989,11 +2989,16 @@ function search(array $a): void {
         /* Talk is searched with LIKE rather than the full-text index the long-form types use. A
            post is a few sentences somebody typed in a hurry: stemming buys little on that length,
            and a missing FTS row would silently hide a whole content type from search. */
-        $talk = q_all("SELECT p.id, p.body, p.created_at, u.username, d.name dest_name
+        $talk = q_all("SELECT p.id, p.user_id, p.body, p.created_at, u.username, d.name dest_name
                          FROM posts p JOIN users u ON u.id=p.user_id
                     LEFT JOIN destinations d ON d.id=p.destination_id
                         WHERE p.status='published' AND u.status='active' AND LOWER(p.body) LIKE ?
                      ORDER BY p.created_at DESC LIMIT 10", [$like]);
+        /* Search is one more list of what people wrote, so blocks and hides apply to it too. */
+        $searcher = current_user();
+        if ($searcher) {
+            $talk = rmt_without_hidden(rmt_without_blocked($talk, (int) $searcher['id']), (int) $searcher['id'], 'post');
+        }
     }
     /* Plans are searchable too, which is what makes "benfica" or "sintra" a useful thing to type
        into this site: it finds the people who are going, not only the pages about the place. LIKE
