@@ -168,6 +168,16 @@ was actually published. From 16 September onward the marker does the job automat
   * Messenger on that account required choosing between a chat history PIN and not restoring old
     chats. With the owner's go ahead, "Don't restore messages" was chosen; no PIN was entered.
 
+### E8, Page cadence through Meta Business Suite, 2026-09-16 (Pacific)
+
+* Posting from the Page profile in the automated browser kept dropping back to the personal profile,
+  so scheduling moved to Meta Business Suite
+  (`business.facebook.com/latest/composer/?asset_id=1374505149069040`), which holds the Page context.
+* **Scheduled:** Thursday 17 September, 10:00 AM, Public. Day of the Dead event travel question,
+  `day-of-the-dead / fb_post_oaxaca`. Confirmed in the Scheduled list.
+* **Not yet scheduled:** Sunday 20 September, the no link solo travel question. The text was entered but
+  the tab stopped responding before the date could be set, and nothing was published.
+
 ### Template for the next one
 
 * **Hypothesis:**
