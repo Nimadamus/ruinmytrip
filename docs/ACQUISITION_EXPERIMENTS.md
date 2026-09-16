@@ -156,8 +156,17 @@ was actually published. From 16 September onward the marker does the job automat
   * **Let's Go Solo (4.2K):** rule 6, "Discuss, don't promote (without approval)", and it invites
     contacting the admins, who set aside dates for approved promotional posts. **The only compliant
     route found**, and it needs a message to the admins first.
-* **Decision needed:** whether to message the Let's Go Solo admins asking to post, which is the one
-  route the rules explicitly permit.
+* **Admin request sent.**
+  * **Time sent:** 2026-09-16 03:57 PDT.
+  * **Admin contacted:** Rachael Taplin, main profile `facebook.com/rach.taplin` (Founder at Media
+    Matchmaker). One message only. The second admin profile was not messaged.
+  * **Group:** Let's Go Solo, `facebook.com/groups/letsgosolo.community`, 4.2K members.
+  * **Campaign:** `oktoberfest_2026`, group post content tag `group_test_1`.
+  * **Sent from:** the personal profile that administers the Ruin My Trip Page, because a Page cannot
+    start a conversation. The text was the approved wording, with the dash removed.
+  * **Status: awaiting approval.** No group post until she says yes. No follow up unless she replies.
+  * Messenger on that account required choosing between a chat history PIN and not restoring old
+    chats. With the owner's go ahead, "Don't restore messages" was chosen; no PIN was entered.
 
 ### Template for the next one
 
