@@ -47,10 +47,18 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
   <?php /* The one thing a stranger who landed from search is asked to do. It is the product, not a
            mailing list: three real actions, each of which is why they searched. */ ?>
   <div class="card" style="margin:18px 0"><div class="card-body">
+    <?php /* Where "Post your dates" goes from a city's own travelers page. It went to the old /going
+             form with no city in it, so somebody reading "Travelers in Munich" had to find Munich
+             again in a list of 85. It now opens the trip form with this city chosen, and with the
+             event's dates too when one is running here. Updating an existing trip still goes to
+             that trip, because a second trip to the same city is not what "update" means. */ ?>
+    <?php $dtWin = function_exists('rmt_acq_window_near') ? rmt_acq_window_near((string) $d['slug']) : null;
+          $dtPost = $dtWin ? rmt_acq_trip_link($dtWin) : url('trip/new?destination_id=' . (int) $d['id']);
+          $dtEdit = ($myGoing && !empty($myGoing['id'])) ? url('trip/' . (int) $myGoing['id'] . '/edit') : null; ?>
     <?php if ($me): ?>
       <p class="eyebrow" style="margin:0 0 10px">Your move</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <a class="btn btn-primary btn-sm" href="<?= e(url('going')) ?>"><?= $myGoing ? 'Update your dates' : 'Post your dates' ?></a>
+        <a class="btn btn-primary btn-sm" href="<?= e($dtEdit ?? $dtPost) ?>"><?= $dtEdit ? 'Update your dates' : 'Post your dates' ?></a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('meetup/new?destination='.(int)$d['id'])) ?>">Host a meetup</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('talk')) ?>">Ask the group</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('matches')) ?>">Find matching dates</a>
@@ -338,7 +346,9 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
         first is the traveler everybody searching <?= e($city) ?> next month finds.</p>
       <div class="first-in-grid">
         <?php if (!empty($rmt_gaps['going'])): ?>
-          <a class="first-in-act" href="<?= e($me ? url('trip/new?destination='.(int)$d['id']) : $join($here)) ?>">
+          <?php /* destination_id, not destination: that is the review form's parameter, and the
+                   trip form ignored it, so this button opened an empty city picker. */ ?>
+          <a class="first-in-act" href="<?= e($me ? $dtPost : $join($here)) ?>">
             <b>Post your dates</b><span class="hint">See whose trip overlaps yours</span></a>
         <?php endif; ?>
         <?php if (!empty($rmt_gaps['meetups'])): ?>

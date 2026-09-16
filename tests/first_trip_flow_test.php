@@ -161,6 +161,27 @@ ok('somebody with none has none', isset($ints[3]), false);
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed, {$pass} passed\n"; exit(1); }
 
+echo "\n-- a city's own travelers page opens the form with that city chosen --\n";
+/* It linked to the old /going form with no city, and its second button used ?destination=, which is
+   the review form's parameter. The trip form reads destination_id, so both opened an empty picker of
+   85 cities to somebody who was reading "Travelers in Munich". */
+$dt = (string) file_get_contents(BASE_PATH . '/views/destination_travelers.php');
+$tf = (string) file_get_contents(BASE_PATH . '/views/trip_new.php');
+ok('the trip form reads destination_id',  str_contains($tf, "input('destination_id')"), true);
+ok('the hub builds its link with that name', str_contains($dt, "trip/new?destination_id="), true);
+ok('...and never with the review form parameter', str_contains($dt, "trip/new?destination='"), false);
+/* The same wrong name was on the city page and the travelers index too. No template may use it. */
+$wrong = [];
+foreach (glob(BASE_PATH . '/views/*.php') as $vf) {
+    if (preg_match("/trip\/new\?destination=/", (string) file_get_contents($vf))) $wrong[] = basename($vf);
+}
+ok('no template opens the trip form with the review parameter', $wrong, []);
+ok('it carries an event window when one is running here', str_contains($dt, 'rmt_acq_window_near'), true);
+ok('an existing trip is updated, not duplicated', str_contains($dt, "/edit'"), true);
+ok('the primary button no longer sends to the old form',
+   (bool) preg_match('/btn-primary btn-sm" href="<\?= e\(url\(\'going\'\)\)/', $dt), false);
+
+
 echo "\n-- a form that arrives filled asks for one thing --\n";
 /* Somebody arriving from a campaign link already has the city and both dates. On a phone the only
    submit button was 1,774 pixels down, past four optional fields. It is now offered directly under
