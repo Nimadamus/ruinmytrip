@@ -46,6 +46,13 @@ foreach (RMT_ACQ_WINDOWS as $campaign => $w) {
     ok($w['from'] <= $w['to'], "$campaign runs forwards");
 }
 
+echo "\n-- search finds an event by what somebody types --\n";
+ok(str_contains($ctrl, 'rmt_acq_events_for_query($qs)'), 'search asks for events');
+$sv = (string) file_get_contents(BASE_PATH . '/views/search.php');
+ok(str_contains($sv, "\$ev['trip_link']"), 'and draws them first, with the trip form');
+ok(str_contains($sv, '&& empty($events)'), 'an event match alone is not "no results"');
+ok(str_contains($acq, "\$ev['label'] . ' ' . \$ev['city']"), 'the matcher reads name, city and campaign');
+
 echo "\n-- it is reachable --\n";
 foreach (['views/layout/header.php' => 'the header', 'views/layout/footer.php' => 'the footer',
           'views/explore.php' => 'explore'] as $file => $where) {

@@ -661,3 +661,30 @@ function rmt_acq_upcoming_events(): array {
     usort($out, static fn(array $a, array $b) => strcmp($a['from'], $b['from']));
     return $out;
 }
+
+/**
+ * The upcoming events a search query is about. "oktoberfest", "munich", "carnival", "web summit".
+ *
+ * Search already finds cities, people, questions and places; it could not find the one thing the
+ * events page exists for, so somebody typing "oktoberfest" got the Munich city and never the dates.
+ * Matched on the event's name, its city and its campaign key, in either direction, so "summit" and
+ * "lisbon web summit 2026" both find Web Summit. Nothing is invented: these are the verified windows.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_acq_events_for_query(string $q): array {
+    $q = strtolower(trim($q));
+    if (mb_strlen($q) < 3 || !function_exists('rmt_acq_upcoming_events')) return [];
+    $out = [];
+    foreach (rmt_acq_upcoming_events() as $ev) {
+        $hay = strtolower($ev['label'] . ' ' . $ev['city'] . ' ' . str_replace('-', ' ', $ev['campaign']));
+        $hit = str_contains($hay, $q);
+        if (!$hit) {
+            foreach (preg_split('/\s+/', $q) ?: [] as $word) {
+                if (mb_strlen($word) >= 4 && !ctype_digit($word) && str_contains($hay, $word)) { $hit = true; break; }
+            }
+        }
+        if ($hit) $out[] = $ev;
+    }
+    return $out;
+}

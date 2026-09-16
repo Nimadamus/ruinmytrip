@@ -3038,7 +3038,8 @@ function search(array $a): void {
     ]);
 
     // A search results page is a view of the index we already have, in somebody's words.
-    view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities','sectionOrder'), [
+    $events = ($qs !== '' && function_exists('rmt_acq_events_for_query')) ? rmt_acq_events_for_query($qs) : [];
+    view('search', compact('ctx','qs','dests','places','trips','guides','reviews','people','posts','collections','talk','activities','sectionOrder','events'), [
         'title'=>($qs!==''?('Search: '.$qs.' | '):'Search | ').'RuinMyTrip',
         'description'=>'Search destinations, places, trips, reviews, guides, collections, blog posts, and travelers across RuinMyTrip.',
         // Never a page in the index. A results page is a view of content we already publish, in

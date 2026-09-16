@@ -2,11 +2,24 @@
 <div class="wrap" style="min-height:50vh">
   <h1 style="margin-top:24px">Search</h1>
   <form action="<?= e(url('search')) ?>" method="get" style="display:flex;gap:10px;margin:14px 0 26px">
-    <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Destinations, places, trips, reviews, guides, blog, travelers…" style="flex:1">
+    <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Destinations, events, travelers, questions, places, trips…" style="flex:1">
     <button class="btn btn-primary">Search</button>
   </form>
   <?php if ($qs===''): ?><p class="muted">Type a place, a trip, a review, or a traveler to begin.</p><?php else: ?>
-    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people && !$talk && !$activities): ?><p class="muted">No results for “<?= e($qs) ?>”.</p>
+    <?php /* An event somebody typed goes first: "oktoberfest" is a question about dates and people,
+             and the dates are the one thing no other result on this page carries. */ ?>
+    <?php foreach (($events ?? []) as $ev): ?>
+      <div class="card" style="margin:0 0 14px"><div class="card-body">
+        <p class="eyebrow" style="margin:0 0 2px">Upcoming event &middot; <?= e((string) $ev['dates']) ?></p>
+        <p style="margin:0 0 8px"><b><?= e((string) $ev['label']) ?></b> in
+          <a href="<?= e(url('d/' . $ev['slug'])) ?>"><?= e((string) $ev['city']) ?></a></p>
+        <p style="margin:0;display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn btn-primary btn-sm" href="<?= e($ev['trip_link']) ?>">Post your <?= e((string) $ev['city']) ?> dates</a>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $ev['slug'] . '/travelers')) ?>">See who is going</a>
+        </p>
+      </div></div>
+    <?php endforeach; ?>
+    <?php if (!$dests && !$places && !$trips && !$reviews && !$guides && !$posts && !$collections && !$people && !$talk && !$activities && empty($events)): ?><p class="muted">No results for “<?= e($qs) ?>”.</p>
       <?php /* A search that found nothing is the one moment somebody has told us exactly what we
                are missing, so this is where the missing-place flow belongs. Shown only when the
                query looks like the name of something: a queue full of typos is a queue nobody
