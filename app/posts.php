@@ -199,6 +199,19 @@ function rmt_posts_for_destination(int $destId, int $limit = 3): array {
     return rmt_posts_recent($limit, $destId);
 }
 
+/**
+ * How many posts a city's community actually holds, for the count beside its heading.
+ *
+ * Counted rather than derived from the teaser list: the city page shows six and the heading has
+ * to say six of how many, and a number that silently caps at the page size is a quiet lie the
+ * reviews count on this page already made once.
+ */
+function rmt_posts_count_for_destination(int $destId): int {
+    return (int) q_one("SELECT COUNT(*) n FROM posts p JOIN users u ON u.id = p.user_id
+                         WHERE p.status = 'published' AND u.status = 'active' AND p.destination_id = ?",
+                       [$destId])['n'];
+}
+
 /** What travelers are asking about one specific place, for its own page. */
 function rmt_posts_for_place(int $placeId, int $limit = 3): array {
     return rmt_posts_recent($limit, null, null, $placeId);

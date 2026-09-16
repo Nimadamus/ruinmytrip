@@ -299,8 +299,12 @@ function destination(array $a): void {
     // share a stats query, a cover lookup and a category lookup -- building them separately would
     // run each of those several times over for one page.
     $discovery = rmt_destination_discovery($id);
-    // What travelers are saying about the city right now, above the archive of finished writing.
-    $talk = rmt_posts_for_destination($id, 3);
+    /* What travelers are saying about the city right now. This is the community, so it is read
+       six at a time rather than three and it carries its true total: the section sits directly
+       under the hero now, where somebody arriving from a search sees people before they see
+       anything this site wrote. */
+    $talk = rmt_posts_for_destination($id, 6);
+    $talkCount = rmt_posts_count_for_destination($id);
     /* Where the people who come here also go. A real query over real trips, counted in travelers,
        which turns every city page from a leaf into a doorway. */
     $related = rmt_related_destinations($id, 6);
@@ -329,7 +333,7 @@ function destination(array $a): void {
             rmt_activities_in_city($id, $me, date('Y-m-d'), date('Y-m-d', strtotime('+120 days')), 40),
             static fn(array $r) => empty($r['cancelled_at']))), 0, 5)
         : [];
-    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk'), [
+    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => $d['summary'],
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
@@ -6068,7 +6072,11 @@ function post_create(array $a): void {
     }
     rmt_notify_mentions('post', $id, (int) $me['id'], [], (string) $v['data']['body']);
     rmt_seo_announce('/post/' . $id);
-    redirect('/post/' . $id);
+    /* Back where it was written, when the composer says so. A question asked on a city page is
+       part of that city's conversation, and throwing the reader onto a bare post page takes them
+       out of the room they were standing in. The composers that name no return still land on the
+       post itself, which is the old behaviour and the right one from a bare compose box. */
+    redirect(rmt_return_to('/post/' . $id));
 }
 
 function post_edit_form(array $a): void {

@@ -17,31 +17,15 @@
             <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
             <button class="btn <?= !empty($been) ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= !empty($been) ? "Been ✓" : "I've been" ?></button>
           </form>
-          <form method="post" action="<?= e(url('destination/save')) ?>">
-            <?= csrf_field() ?><input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
-            <input type="hidden" name="return" value="<?= e(url('d/'.$d['slug'])) ?>">
-            <input type="hidden" name="want" value="<?= $saved ? 'off' : 'on' ?>">
-            <button class="btn <?= $saved ? 'btn-primary' : 'btn-ghost' ?> btn-sm"><?= $saved ? '★ Saved' : '☆ Want to visit' ?></button>
-          </form>
           </div>
         <?php else: ?>
-          <a class="btn btn-ghost btn-sm" href="<?= e(url('register')) ?>">Join to mark been / want</a>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('register?return=' . rawurlencode('/d/' . $d['slug']))) ?>">Join to mark been</a>
         <?php endif; ?>
-        <?php /* Saving a city fed nothing for a long time: the button counted you into a number
-                 and that was all. It is a follow now, so the page says so, once, where the button is. */ ?>
-        <?php if ($me): ?>
-          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0">
-            <?= $saved ? 'This city is in your feed: its reviews, questions and meetups come to you.'
-                       : 'Want to visit puts this city in your feed: its reviews, questions and meetups.' ?>
-          </p>
-        <?php endif; ?>
-        <?php if ($wantCount > 0 || !empty($beenCount)): ?>
-          <p class="hint" style="color:#e8eef5;margin:.4rem 0 0">
-            <?php if (!empty($beenCount)): ?><?= (int)$beenCount ?> been here<?php endif; ?>
-            <?php if (!empty($beenCount) && $wantCount > 0): ?> · <?php endif; ?>
-            <?php if ($wantCount > 0): ?><?= $wantCount ?> <?= $wantCount === 1 ? 'wants' : 'want' ?> to visit<?php endif; ?>
-          </p>
-        <?php endif; ?>
+        <?php /* Following the city used to be a small ghost button up here, next to "I've been",
+                 reading "want to visit" and competing with a photograph for attention. It is the
+                 main action on the page, so it is in the community strip immediately below this
+                 hero where it is full sized and thumb sized, and it is not also here: two buttons
+                 for one idea, in two different words, is how a reader ends up trusting neither. */ ?>
       </div>
     </div>
   </div>
@@ -132,6 +116,9 @@
       </div>
     </div>
   <?php endif; ?>
+
+  <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>
+  <?php include __DIR__ . '/_city_community.php'; ?>
 
   <?php if (!empty($relatedPosts)): ?>
     <div class="callout" style="margin-top:16px">
@@ -427,7 +414,7 @@
         <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all <?= (int) $placeCount ?> places in <?= e($d['name']) ?> &rarr;</a></p>
       <?php endif; ?>
 
-      <div class="section-rule">
+      <div class="section-rule" id="reviews">
         <h2>Traveler reviews</h2>
         <span class="count"><?= (int)$avg['c'] ?></span>
       </div>
@@ -478,27 +465,8 @@
         <?php endif; ?>
       <?php endif; ?>
 
-      <?php /* Live conversation before the archive. Somebody who landed here from a search is far
-               more likely to join over an unanswered question from yesterday than over a trip
-               report from last year. */ ?>
-      <div class="section-rule">
-        <h2>Travelers talking</h2>
-        <a class="hint" href="<?= e(url('talk?d='.$d['slug'])) ?>">all talk</a>
-      </div>
-      <?php if (!$talk): ?>
-        <p class="muted">Nobody has said anything about <?= e($d['name']) ?> yet.
-          <a href="<?= e(url('talk?d='.$d['slug'])) ?>">Start it.</a></p>
-      <?php endif; ?>
-      <?php foreach ($talk as $tp): ?>
-        <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
-          <b><a href="<?= e(url('u/'.$tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
-          <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
-          <p style="margin:.4rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 300, '…'))) ?></p>
-          <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
-            <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
-            <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Reply' ?></a></p>
-        </div></div>
-      <?php endforeach; ?>
+      <?php /* The conversation used to sit here, under everything this site wrote about the city.
+               It is the first thing on the page now, in views/_city_community.php. */ ?>
 
       <div class="section-rule">
         <h2>Trip stories</h2>
