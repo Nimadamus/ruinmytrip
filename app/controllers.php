@@ -1316,6 +1316,9 @@ function feed(array $a): void {
         $items = rmt_activity_items(null);
         $isEveryone = (bool) $items;
     }
+    /* Blocked in either direction means absent from your feed, including the Everyone scope, where
+       nothing about following would otherwise have kept them out. */
+    if (function_exists('rmt_without_blocked')) $items = rmt_without_blocked($items, $uid);
     // Named on the page, because a feed that mixes in a city's activity without saying which
     // cities reads as strangers appearing in a list you thought you had chosen.
     $cities = rmt_feed_followed_destinations($uid);

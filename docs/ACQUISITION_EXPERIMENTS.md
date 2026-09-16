@@ -175,8 +175,10 @@ was actually published. From 16 September onward the marker does the job automat
   (`business.facebook.com/latest/composer/?asset_id=1374505149069040`), which holds the Page context.
 * **Scheduled:** Thursday 17 September, 10:00 AM, Public. Day of the Dead event travel question,
   `day-of-the-dead / fb_post_oaxaca`. Confirmed in the Scheduled list.
-* **Not yet scheduled:** Sunday 20 September, the no link solo travel question. The text was entered but
-  the tab stopped responding before the date could be set, and nothing was published.
+* **Pending, not scheduled:** Sunday 20 September, the no link solo travel question ("the best city
+  you have ever arrived in on your own"). The text was entered but the tab stopped responding before
+  the date could be set, and nothing was published. Schedule it through Business Suite when the
+  browser is responsive; skip it if Sunday passes.
 
 ### Template for the next one
 

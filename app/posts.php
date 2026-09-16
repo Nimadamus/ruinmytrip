@@ -175,6 +175,12 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
           LIMIT " . (int) $limit,
         $args
     );
+    /* A post by somebody the signed in reader blocked, or who blocked them, is left out of every
+       list built from this function: city pages, communities, the talk index and matches. */
+    if (function_exists('rmt_without_blocked') && function_exists('current_user')) {
+        $viewer = current_user();
+        if ($viewer) $rows = rmt_without_blocked($rows, (int) $viewer['id']);
+    }
     return rmt_posts_attach_originals($rows);
 }
 

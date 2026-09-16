@@ -26,6 +26,46 @@ function rmt_is_blocked(int $a, int $b): bool {
     );
 }
 
+/**
+ * Everybody this member has blocked or been blocked by, as a set of user ids.
+ *
+ * Blocking was enforced where a query was written with it in mind (messaging, matching, the
+ * discover page) and nowhere else, so somebody you had blocked still appeared in a city's list of
+ * people going, among the travelers who had been, and in its questions. One read per request, used
+ * by every list that shows people, so the rule lives in one place instead of in each query.
+ *
+ * @return array<int,true>
+ */
+function rmt_blocked_ids(?int $viewerId): array {
+    if (!$viewerId) return [];
+    $key = '_rmt_blocked_ids_' . $viewerId;
+    if (isset($GLOBALS[$key])) return $GLOBALS[$key];
+    $out = [];
+    try {
+        foreach (q_all('SELECT blocker_id, blocked_id FROM blocks WHERE blocker_id = ? OR blocked_id = ?',
+                       [$viewerId, $viewerId]) as $r) {
+            $other = (int) $r['blocker_id'] === $viewerId ? (int) $r['blocked_id'] : (int) $r['blocker_id'];
+            if ($other > 0) $out[$other] = true;
+        }
+    } catch (Throwable) {
+        return [];
+    }
+    return $GLOBALS[$key] = $out;
+}
+
+/**
+ * Drop every row authored by somebody blocked in either direction. $col names the user id column,
+ * because the lists this is applied to do not agree on what they call it.
+ *
+ * @param list<array<string,mixed>> $rows
+ * @return list<array<string,mixed>>
+ */
+function rmt_without_blocked(array $rows, ?int $viewerId, string $col = 'user_id'): array {
+    $blocked = rmt_blocked_ids($viewerId);
+    if (!$blocked) return $rows;
+    return array_values(array_filter($rows, static fn(array $r) => !isset($blocked[(int) ($r[$col] ?? 0)])));
+}
+
 /** Canonical [lo, hi] ordering for a conversation between two user ids. */
 function rmt_conversation_pair(int $a, int $b): array {
     return $a < $b ? [$a, $b] : [$b, $a];

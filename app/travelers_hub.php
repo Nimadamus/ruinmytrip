@@ -104,6 +104,16 @@ function rmt_city_traveler_hub(int $destId, ?array $viewer): array {
     foreach ($going as $g) {
         if (($g['travel_style'] ?? null) === 'solo') $solo++;
     }
+    /* Somebody the viewer blocked, or who blocked them, does not appear anywhere on a page whose
+       whole subject is people to meet. */
+    $vid = $viewer ? (int) $viewer['id'] : null;
+    if ($vid && function_exists('rmt_without_blocked')) {
+        $going   = rmt_without_blocked($going, $vid);
+        $talk    = rmt_without_blocked($talk, $vid);
+        $people  = rmt_without_blocked($people, $vid);
+        $locals  = rmt_without_blocked($locals, $vid);
+        $reviews = rmt_without_blocked($reviews, $vid);
+    }
     return [
         'meetups' => $meetups, 'going' => $going, 'talk' => $talk, 'people' => $people,
         'locals' => $locals, 'reviews' => $reviews, 'solo' => $solo,
