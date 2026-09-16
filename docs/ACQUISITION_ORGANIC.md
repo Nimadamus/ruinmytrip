@@ -116,6 +116,31 @@ navigational intent, and the page answering it is a login form.
 **Rows 1, 3, 4, 7, 8 and 9 were the same problem and now have the same fix**, shipped today: a page
 that earns impressions and offers nothing. Together they are 325 of the site's 1,469 impressions.
 
+## Before and after, measured
+
+Phone width, 390px, signed out, on production. The number is how far down the page the social offer
+sits, which on a page four to eight screens long is the difference between an offer and a decoration.
+
+| Page | Before | After | What changed |
+|---|---|---|---|
+| `/p/book-of-kells-...-dublin` | nothing on the page | **329px of 7,388** | Component added, directly under the venue name |
+| `/p/benaki-museum-...-athens` | nothing | **329px of 4,203** | Same |
+| `/p/anne-frank-house-amsterdam` | nothing | **348px of 8,342** | Same |
+| `/blog/san-francisco-hotel-tax-2026` | old text strip, low | **406px of 3,815** | Now the full component with the trip form |
+| `/g/chiang-mai-thailand-travel-guide` | 2,531px of 4,468, **57% down** | **1,024px**, under the summary | Moved above the guide body |
+| `/g/zanzibar-...` and `/g/cancun-...` | 56 to 59% down | same fix | Moved above the guide body |
+| `/d/amsterdam-netherlands` | travelers link ~6,400px | **434px** | First moves moved into the actions row |
+| `/d/lisbon-portugal` | same | **434px** | Same. **Title untouched**, it is in the experiment |
+| `/login` | ranks 19th for "ruins trip" | unchanged | **Deliberately not touched.** Changing a login page for search is how sign in breaks |
+
+**Two mistakes of mine, found by measuring rather than by reading the code.** There were two
+components doing this job, and for a few hours both rendered on the same page. And my own report
+called the blog post a dead end when it had the older strip all along; the check was looking for the
+new class name. Both are fixed, and there is now one component with a test that keeps it at one.
+
+**What did not change:** no title, no canonical, no robots directive, no sitemap entry, no new page,
+and nothing at all on the nine cities in the title experiment beyond where their own controls sit.
+
 ## What I recommend, in order
 
 1. **Done today: the shared social component on place pages, guides and posts.** Highest value, no
