@@ -417,3 +417,72 @@ function rmt_acq_command_center(int $days = 90): array {
     }
     return ['windows' => $windows, 'rows' => $rows, 'totals' => $totals];
 }
+
+/**
+ * The daily line. Nine numbers, so it is obvious in one screen whether this is working.
+ *
+ * Deliberately not a second analytics product: it reads the same report everything else reads and
+ * picks out the things somebody running a campaign checks in the morning. Our own verification
+ * traffic is excluded from every figure, because a number that counts our own checks as travelers
+ * is worse than no number.
+ *
+ * @return array<string,mixed>
+ */
+function rmt_acq_daily(): array {
+    $cc = rmt_acq_command_center(90);
+    $real = array_values(array_filter($cc['rows'], static fn(array $r) => !$r['internal']));
+
+    $pick = static function (array $rows, string $window, string $metric): ?array {
+        $best = null;
+        foreach ($rows as $r) {
+            if ((int) $r[$window][$metric] <= 0) continue;
+            if ($best === null || (int) $r[$window][$metric] > (int) $best[$window][$metric]) $best = $r;
+        }
+        return $best;
+    };
+
+    $topSource   = $pick($real, 'd1', 'human') ?? $pick($real, 'd7', 'human');
+    $topCampaign = null;
+    foreach ($real as $r) {
+        if ($r['campaign'] === '') continue;
+        if ((int) $r['d7']['human'] <= 0) continue;
+        if ($topCampaign === null || (int) $r['d7']['human'] > (int) $topCampaign['d7']['human']) $topCampaign = $r;
+    }
+    /* Best conversion, not best volume, and only where there is a denominator worth dividing by.
+       A single visit that signed up is 100% and means nothing. */
+    $bestConv = null;
+    foreach ($real as $r) {
+        if ((int) $r['d7']['human'] < 5) continue;
+        $rate = $r['d7']['visit_to_signup_pct'];
+        if ($rate === null) continue;
+        if ($bestConv === null || $rate > $bestConv['rate']) {
+            $bestConv = ['source' => $r['source'], 'campaign' => $r['campaign'], 'rate' => $rate];
+        }
+    }
+
+    $shape = function_exists('rmt_traffic_shape') ? rmt_traffic_shape(1) : [];
+    $landing = $shape['landing_destinations']['human'] ?? [];
+    $topLanding = null;
+    foreach ($landing as $slug => $n) { $topLanding = ['slug' => $slug, 'n' => (int) $n]; break; }
+
+    $d1 = $cc['totals']['d1']; $d7 = $cc['totals']['d7'];
+    /* The one line worth reading first: is today different from the week it sits in. A day is a
+       seventh of a week, so the week divided by seven is the only fair comparison. */
+    $expected = $d7['human'] / 7;
+    $change = $expected > 0 ? round(($d1['human'] - $expected) / $expected * 100) : null;
+
+    return [
+        'as_of'           => gmdate('Y-m-d H:i') . ' UTC',
+        'human_visits'    => ['today' => (int) $d1['human'], 'week' => (int) $d7['human']],
+        'signups'         => ['today' => (int) $d1['signups'], 'week' => (int) $d7['signups']],
+        'confirmed'       => ['today' => (int) $d1['confirmed'], 'week' => (int) $d7['confirmed']],
+        'trips'           => ['today' => (int) $d1['trips'], 'week' => (int) $d7['trips']],
+        'top_source'      => $topSource ? $topSource['source'] : null,
+        'top_campaign'    => $topCampaign ? $topCampaign['campaign'] : null,
+        'top_landing'     => $topLanding,
+        'best_conversion' => $bestConv,
+        'notable_change'  => $change === null ? null : $change . '% against the weekly daily average',
+        'our_own_checks_excluded' => (int) ($d7['internal_human'] ?? 0),
+        'note' => 'Every figure excludes automated traffic and our own verification campaigns. A rate with fewer than five human sessions behind it is not reported at all.',
+    ];
+}

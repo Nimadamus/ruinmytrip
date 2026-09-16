@@ -283,6 +283,23 @@ ok('...and keeps automated out',   str_contains($adm, 'Automated traffic is excl
 $gf = (string) file_get_contents(BASE_PATH . '/app/growth_funnel.php');
 ok('the key gated json carries it', str_contains($gf, "'command_center'"), true);
 
+echo "\n-- the morning line --\n";
+$dy = rmt_acq_daily();
+foreach (['as_of','human_visits','signups','confirmed','trips','top_source','top_campaign',
+          'top_landing','best_conversion','notable_change'] as $field) {
+    ok("the daily report carries $field", array_key_exists($field, $dy), true);
+}
+ok('today is never more than the week', $dy['human_visits']['today'] <= $dy['human_visits']['week'], true);
+/* A rate off one or two sessions is noise dressed as a result, so it is not reported at all. */
+ok('a conversion needs five sessions behind it',
+   $dy['best_conversion'] === null || $dy['best_conversion']['rate'] !== null, true);
+ok('the report says what it leaves out', str_contains((string) $dy['note'], 'our own verification'), true);
+$gf2 = (string) file_get_contents(BASE_PATH . '/app/growth_funnel.php');
+ok('and the key gated json carries the daily line', str_contains($gf2, "'daily'"), true);
+$adm2 = (string) file_get_contents(BASE_PATH . '/views/admin_funnel.php');
+ok('the dashboard opens with it', strpos($adm2, 'Today') < strpos($adm2, 'Acquisition, now'), true);
+
+
 echo "\n-- what attribution is not allowed to store --\n";
 $src = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 $events = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');

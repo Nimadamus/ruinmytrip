@@ -40,6 +40,36 @@
       return $of > 0 ? (string) round($n * 100 / $of) . '%' : '';
   };
   ?>
+  <?php /* The morning line. Nine numbers, above everything else, because the question somebody has
+           when they open this page is whether yesterday did anything. */ ?>
+  <?php $dy = function_exists('rmt_acq_daily') ? rmt_acq_daily() : null; ?>
+  <?php if ($dy): ?>
+    <section class="card" style="margin:0 0 18px"><div class="card-body">
+      <h2 style="margin:0 0 8px;font-size:1.05rem">Today</h2>
+      <p style="margin:0 0 6px;font-size:1.02rem">
+        <b><?= (int) $dy['human_visits']['today'] ?></b> human visits,
+        <b><?= (int) $dy['signups']['today'] ?></b> signups,
+        <b><?= (int) $dy['confirmed']['today'] ?></b> confirmed,
+        <b><?= (int) $dy['trips']['today'] ?></b> trips.
+        <span class="hint">Last 7 days: <?= (int) $dy['human_visits']['week'] ?> /
+          <?= (int) $dy['signups']['week'] ?> / <?= (int) $dy['confirmed']['week'] ?> /
+          <?= (int) $dy['trips']['week'] ?>.</span>
+      </p>
+      <p class="hint" style="margin:0">
+        Top source: <b><?= e((string) ($dy['top_source'] ?? 'none yet')) ?></b>.
+        Top campaign: <b><?= e((string) ($dy['top_campaign'] ?? 'none yet')) ?></b>.
+        Top landing: <b><?= e((string) ($dy['top_landing']['slug'] ?? 'not recorded yet')) ?></b>.
+        Best conversion: <?= $dy['best_conversion']
+            ? e((string) $dy['best_conversion']['source']) . ' ' . e((string) $dy['best_conversion']['rate']) . '%'
+            : 'no channel has five human sessions yet' ?>.
+        <?php if ($dy['notable_change'] !== null): ?>Change: <?= e((string) $dy['notable_change']) ?>.<?php endif; ?>
+        <?php if ((int) $dy['our_own_checks_excluded'] > 0): ?>
+          <br><?= (int) $dy['our_own_checks_excluded'] ?> of this week's human sessions were our own checks and are excluded.
+        <?php endif; ?>
+      </p>
+    </div></section>
+  <?php endif; ?>
+
   <?php /* The operating view. A thirty day table answers "did that campaign ever work"; the
            question somebody running one actually has is "is it working now", so the same channels
            are shown over a day, a week and the whole period side by side. Same counting rules, same
