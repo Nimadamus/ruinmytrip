@@ -40,6 +40,12 @@ const RMT_ACQ_REFERRAL_CAMPAIGN = 'member-share';
    Anything driving traffic for a test uses one of these campaign labels. */
 const RMT_ACQ_INTERNAL_CAMPAIGNS = ['qa', 'coldqa', 'attrib-qa', 'attrib-qa-crawler', 'live-check', 'zz1'];
 
+/* Some checks have to use the REAL campaign name, because what they are checking is what a real
+   campaign visitor sees. Those carry this in utm_content instead, so the session can be excluded
+   without inventing a fake campaign. Any script driving traffic at production adds
+   `utm_content=selfcheck` unless it is deliberately measuring the unmarked path. */
+const RMT_ACQ_INTERNAL_CONTENT = 'selfcheck';
+
 function rmt_acq_is_internal(?string $campaign): bool {
     return $campaign !== null && in_array($campaign, RMT_ACQ_INTERNAL_CAMPAIGNS, true);
 }
@@ -194,19 +200,21 @@ function rmt_acq_report(int $days = 30): array {
                 MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signed_up,
                 MAX(CASE WHEN event = 'join_confirmed' THEN 1 ELSE 0 END) confirmed,
                 MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped,
+                MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck,
                 MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
                                         'comment_created','question_posted','post_created','trip_create_started',
                                         'join_submit','login_completed','trip_connect_requested') THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
-       GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), journey", [$since]);
+       GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), journey",
+        [RMT_ACQ_INTERNAL_CONTENT, $since]);
 
     $agg = [];
     foreach ($rows as $r) {
         $k = $r['src'] . '|' . $r['campaign'];
         $agg[$k] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'],
                       'sessions' => 0, 'human' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
-                      'confirmed' => 0, 'trips' => 0];
+                      'confirmed' => 0, 'trips' => 0, 'selfcheck_human' => 0];
         $agg[$k]['sessions']++;
 
         /* Human, by the same rules the traffic report uses, because a channel's conversion rate
@@ -217,7 +225,12 @@ function rmt_acq_report(int $days = 30): array {
         $human = ((int) $r['acted'] === 1)
               || ((int) $r['gave_cookie_back'] === 1)
               || ((int) $r['kinds'] >= 2 && $span >= 20);
-        if ($human) $agg[$k]['human']++;
+        if ($human) {
+            $agg[$k]['human']++;
+            /* Ours, driven at production to check what a campaign visitor sees. Counted here so the
+               number can be taken back out rather than quietly left in. */
+            if ((int) ($r['selfcheck'] ?? 0) === 1) $agg[$k]['selfcheck_human']++;
+        }
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
                   'confirmed' => 'confirmed', 'tripped' => 'trips'] as $col => $key) {
@@ -391,6 +404,9 @@ function rmt_acq_command_center(int $days = 90): array {
                 /* Kept beside the human number rather than folded into it, so the gap between what
                    arrived and what was a person stays visible instead of being quietly corrected. */
                 'sessions'  => (int) ($r['sessions'] ?? 0),
+                /* Of those human sessions, how many were ours checking what a campaign visitor
+                   sees. Kept on the row so the table stays the whole truth. */
+                'selfcheck_human' => (int) ($r['selfcheck_human'] ?? 0),
             ];
         }
         $rows[] = $row;
@@ -412,7 +428,12 @@ function rmt_acq_command_center(int $days = 90): array {
                 if ($r['internal'] && $m !== 'sessions') continue;   // ours is not acquisition
                 $totals[$w][$m] += (int) $r[$w][$m];
             }
-            if ($r['internal']) $totals[$w]['internal_human'] += (int) $r[$w]['human'];
+            /* A check that had to use the real campaign name is taken out of the human count of an
+               otherwise real row, rather than taking the whole row out. */
+            if (!$r['internal']) $totals[$w]['human'] -= (int) $r[$w]['selfcheck_human'];
+            $totals[$w]['internal_human'] += $r['internal']
+                ? (int) $r[$w]['human']
+                : (int) $r[$w]['selfcheck_human'];
         }
     }
     return ['windows' => $windows, 'rows' => $rows, 'totals' => $totals];

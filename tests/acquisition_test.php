@@ -268,6 +268,16 @@ ok('totals exist for each window', array_keys($cc['totals']), ['d1', 'd7', 'all'
 ok('every row says whether it is ours', (bool) array_reduce($cc['rows'], static fn($ok, $r) =>
     $ok && array_key_exists('internal', $r), true), true);
 ok('the totals carry our own count separately', array_key_exists('internal_human', $cc['totals']['d7']), true);
+/* Some checks have to use the real campaign name, because what they are checking is what a real
+   campaign visitor sees. Those are marked in utm_content instead and come out of that row's human
+   count rather than taking the whole row out. */
+ok('there is a marker for a check on a real campaign', RMT_ACQ_INTERNAL_CONTENT, 'selfcheck');
+ok('every row carries its own check count', (bool) array_reduce($cc['rows'], static fn($ok, $r) =>
+    $ok && array_key_exists('selfcheck_human', $r['d7']), true), true);
+ok('the report asks the database for it',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                'MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck'), true);
+
 $mineHuman = 0; $allHuman = 0;
 foreach ($cc['rows'] as $r) { $allHuman += (int) $r['all']['human']; if ($r['internal']) $mineHuman += (int) $r['all']['human']; }
 ok('the total excludes what we generated', $cc['totals']['all']['human'], $allHuman - $mineHuman);
