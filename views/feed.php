@@ -283,7 +283,7 @@ $threads = $threads ?? [];
                people you chose to follow is a small lie that gets found out the moment somebody
                checks. */ ?>
       <p class="hint" style="margin:0 0 14px">You are not following anybody yet and nothing has happened
-        in the cities you saved, so this is everyone on RuinMyTrip.
+        in the cities you saved or are going to, so this is everyone on RuinMyTrip.
         <a href="<?= e(url('travelers')) ?>">Find people to follow</a>.</p>
     <?php endif; ?>
 
@@ -484,6 +484,32 @@ $threads = $threads ?? [];
           </div>
         <?php endforeach; ?>
         <a class="rail-more" href="<?= e(url('travelers')) ?>">Browse travelers</a>
+      </section>
+    <?php endif; ?>
+
+    <?php if (!empty($rails['questions'])): ?>
+      <section class="rail-card">
+        <h2 class="rail-h"><?= empty($rails['questions'][0]['elsewhere']) ? 'Asked in your cities' : 'Recently asked' ?></h2>
+        <?php foreach ($rails['questions'] as $q): ?>
+          <a class="rail-row" href="<?= e(url('post/'.(int) $q['id'])) ?>">
+            <b><?= e(rmt_post_title($q, 60)) ?></b>
+            <span class="hint"><?= e((string) ($q['dest_name'] ?? '')) ?> · <?= (int) $q['reply_count'] === 0 ? 'No answers yet' : e((int) $q['reply_count'] . ((int) $q['reply_count'] === 1 ? ' answer' : ' answers')) ?></span>
+          </a>
+        <?php endforeach; ?>
+        <a class="rail-more" href="<?= e(url('talk')) ?>">All discussions</a>
+      </section>
+    <?php endif; ?>
+
+    <?php if (!empty($rails['events'])): ?>
+      <section class="rail-card">
+        <h2 class="rail-h">Big weeks coming up</h2>
+        <?php foreach ($rails['events'] as $ev): ?>
+          <a class="rail-row" href="<?= e((string) $ev['trip_link']) ?>">
+            <b><?= e((string) $ev['label']) ?></b>
+            <span class="hint"><?= e((string) $ev['city']) ?> · <?= e((string) $ev['dates']) ?></span>
+          </a>
+        <?php endforeach; ?>
+        <a class="rail-more" href="<?= e(url('events')) ?>">All events</a>
       </section>
     <?php endif; ?>
 

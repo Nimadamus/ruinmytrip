@@ -33,13 +33,21 @@ function rmt_feed_scope_sql(string $userCol, ?string $destCol = null): string {
     $sql = "($userCol = ? OR $userCol IN (SELECT followee_id FROM follows WHERE follower_id = ?)";
     if ($destCol !== null) {
         $sql .= " OR $destCol IN (SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination')";
+        /* And the cities you are actually going to. Posting dates for Munich is a louder statement
+           of interest than saving it, and a member with a trip there in a fortnight was not being
+           shown a single post about Munich unless they had also pressed Follow. Upcoming only: a
+           trip that is over is a place you have been, not a conversation you are waiting for. */
+        $sql .= " OR $destCol IN (SELECT tr.destination_id FROM trips tr
+                                   WHERE tr.user_id = ? AND tr.status = 'published'
+                                     AND tr.destination_id IS NOT NULL
+                                     AND tr.date_to IS NOT NULL AND tr.date_to >= ?)";
     }
     return $sql . ')';
 }
 
 /** The bind values for rmt_feed_scope_sql(), in the order it emits its placeholders. */
 function rmt_feed_scope_args(int $userId, bool $withDestination = true): array {
-    return $withDestination ? [$userId, $userId, $userId] : [$userId, $userId];
+    return $withDestination ? [$userId, $userId, $userId, $userId, date('Y-m-d')] : [$userId, $userId];
 }
 
 /**
@@ -49,10 +57,14 @@ function rmt_feed_scope_args(int $userId, bool $withDestination = true): array {
  * @return array<int, array{id:int, name:string, slug:string}>
  */
 function rmt_feed_followed_destinations(int $userId, int $limit = 12): array {
-    $rows = q_all("SELECT d.id, d.name, d.slug
-                     FROM saves s JOIN destinations d ON d.id = s.target_id
-                    WHERE s.user_id = ? AND s.target_type = 'destination'
-                    ORDER BY d.name LIMIT " . max(1, $limit), [$userId]);
+    /* Named on the feed with the same scope the feed uses, so a city that appears because of an
+       upcoming trip is said out loud rather than mixed in silently. */
+    $rows = q_all("SELECT d.id, d.name, d.slug FROM destinations d
+                    WHERE d.id IN (SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination')
+                       OR d.id IN (SELECT destination_id FROM trips
+                                    WHERE user_id = ? AND status = 'published' AND destination_id IS NOT NULL
+                                      AND date_to IS NOT NULL AND date_to >= ?)
+                    ORDER BY d.name LIMIT " . max(1, $limit), [$userId, $userId, date('Y-m-d')]);
     return array_map(static fn(array $r) => ['id' => (int) $r['id'], 'name' => (string) $r['name'],
                                              'slug' => (string) $r['slug']], $rows);
 }

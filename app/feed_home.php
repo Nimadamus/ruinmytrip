@@ -25,7 +25,7 @@ declare(strict_types=1);
 function rmt_feed_rails(int $uid): array {
     if ($uid < 1) {
         return ['joinable' => [], 'matches' => [], 'trips' => [], 'suggested' => [], 'meetups' => [],
-                'match_count' => 0];
+                'questions' => [], 'events' => [], 'match_count' => 0];
     }
 
     /* Overlaps, nearest first. rmt_trip_matches() already applies visibility and blocks, so this
@@ -180,8 +180,66 @@ function rmt_feed_rails(int $uid): array {
         'trips'       => $trips,
         'suggested'   => $suggested,
         'meetups'     => $meetups,
+        'questions'   => rmt_feed_rail_questions($uid),
+        'events'      => rmt_feed_rail_events($uid),
         'match_count' => rmt_match_count($uid),
     ];
+}
+
+/**
+ * Recent discussion in the cities this member saved or is going to, somebody else's, newest first.
+ * An unanswered question is the cheapest useful thing a member can do on the site, so each row
+ * carries its reply count and the view says when nobody has answered. If their cities are quiet,
+ * the newest anywhere, flagged so the heading does not claim they are theirs. Two queries at most.
+ */
+function rmt_feed_rail_questions(int $uid, int $limit = 3): array {
+    $cols = "SELECT p.id, p.body, p.created_at, p.user_id, u.role author_role, d.name dest_name,
+                    (SELECT COUNT(*) FROM comments cm
+                      WHERE cm.target_type='post' AND cm.target_id=p.id AND cm.status='published') reply_count
+               FROM posts p
+               JOIN users u ON u.id = p.user_id AND u.status = 'active'
+          LEFT JOIN destinations d ON d.id = p.destination_id
+              WHERE p.status = 'published' AND p.user_id <> ?";
+    $rows = q_all("$cols
+                AND (p.destination_id IN (SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination')
+                  OR p.destination_id IN (SELECT destination_id FROM trips
+                                           WHERE user_id = ? AND status = 'published' AND destination_id IS NOT NULL
+                                             AND date_to IS NOT NULL AND date_to >= ?))
+           ORDER BY p.created_at DESC, p.id DESC LIMIT " . ($limit * 2),
+        [$uid, $uid, $uid, date('Y-m-d')]);
+    $elsewhere = false;
+    if (!$rows) {
+        $rows = q_all("$cols AND p.destination_id IS NOT NULL
+                       ORDER BY p.created_at DESC, p.id DESC LIMIT " . ($limit * 2), [$uid]);
+        $elsewhere = true;
+    }
+    if (function_exists('rmt_without_blocked')) $rows = rmt_without_blocked($rows, $uid);
+    $rows = array_slice(array_values($rows), 0, $limit);
+    foreach ($rows as &$r) { $r['elsewhere'] = $elsewhere; }
+    unset($r);
+    return $rows;
+}
+
+/**
+ * The verified event windows still ahead, the member's own cities first. These are the dates when
+ * lots of people land in one city the same week, which is exactly when posting dates pays off.
+ */
+function rmt_feed_rail_events(int $uid, int $limit = 2): array {
+    if (!function_exists('rmt_acq_upcoming_events')) return [];
+    $events = rmt_acq_upcoming_events();
+    if (!$events) return [];
+    $mine = [];
+    foreach (q_all("SELECT d.slug FROM destinations d
+                     WHERE d.id IN (SELECT target_id FROM saves WHERE user_id = ? AND target_type = 'destination')
+                        OR d.id IN (SELECT destination_id FROM trips WHERE user_id = ? AND status = 'published'
+                                     AND destination_id IS NOT NULL)", [$uid, $uid]) as $r) {
+        $mine[(string) $r['slug']] = true;
+    }
+    usort($events, static function (array $a, array $b) use ($mine): int {
+        $am = isset($mine[$a['slug']]) ? 0 : 1; $bm = isset($mine[$b['slug']]) ? 0 : 1;
+        return $am <=> $bm ?: strcmp((string) $a['from'], (string) $b['from']);
+    });
+    return array_slice($events, 0, $limit);
 }
 
 /**

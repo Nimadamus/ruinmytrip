@@ -37,6 +37,7 @@ $pdo->exec('CREATE TABLE saves (user_id INT NOT NULL, target_type TEXT NOT NULL,
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
 $pdo->exec('CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, status TEXT)');
 $pdo->exec('CREATE TABLE blog_posts (id INTEGER PRIMARY KEY, user_id INT, status TEXT)');
+$pdo->exec('CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, status TEXT, date_from TEXT, date_to TEXT)');
 
 // Me = 1. I follow 2. I saved Lisbon (10) and not Porto (11).
 $pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (10,'lisbon-portugal','Lisbon'),(11,'porto-portugal','Porto')");
@@ -72,7 +73,7 @@ $rows = q_all("SELECT id FROM blog_posts WHERE status='published' AND $plain ORD
 $ids = array_map(static fn(array $r) => (int) $r['id'], $rows);
 ok('no-destination content is follows-only', $ids === [1], 'got ' . json_encode($ids));
 ok('plain scope binds two args', count(rmt_feed_scope_args(1, false)) === 2);
-ok('destination scope binds three args', count(rmt_feed_scope_args(1)) === 3);
+ok('destination scope binds five args', count(rmt_feed_scope_args(1)) === 5);
 
 // Placeholder count and bind count must agree or every feed load is a PDO error.
 ok('placeholders match args (with destination)', substr_count($sql, '?') === count(rmt_feed_scope_args(1)));
@@ -89,6 +90,20 @@ $cities = rmt_feed_followed_destinations(1);
 ok('followed cities are the saved destinations', count($cities) === 1 && $cities[0]['slug'] === 'lisbon-portugal',
    json_encode($cities));
 ok('a member who saved no city has none', rmt_feed_followed_destinations(2) === []);
+
+// A city you are going to reaches your feed without a save. Member 5 has an upcoming published trip
+// to Porto (11), an ended trip to Lisbon (10) and a draft to Lisbon: only Porto may widen the feed.
+$today = date('Y-m-d');
+$past  = date('Y-m-d', strtotime('-10 days'));
+$soon  = date('Y-m-d', strtotime('+14 days'));
+$pdo->exec("INSERT INTO trips (user_id,destination_id,status,date_from,date_to) VALUES
+              (5,11,'published','$today','$soon'), (5,10,'published','$past','$past'), (5,10,'draft','$today','$soon')");
+$rows = q_all("SELECT r.id FROM reviews r WHERE r.status='published' AND $sql ORDER BY r.id", rmt_feed_scope_args(5));
+$ids = array_map(static fn(array $r) => (int) $r['id'], $rows);
+ok('an upcoming trip city reaches the feed', $ids === [1, 2, 4], 'got ' . json_encode($ids));
+ok('an ended trip or a draft does not widen the feed', !in_array(3, $ids, true));
+$cities = rmt_feed_followed_destinations(5);
+ok('the upcoming trip city is named on the feed', count($cities) === 1 && $cities[0]['slug'] === 'porto-portugal', json_encode($cities));
 
 // The talk query used to be built by str_replace('user_id', 'p.user_id') on the plain condition.
 // The scope subquery says "WHERE user_id = ?" inside it, so that patch would now corrupt it.
