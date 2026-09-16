@@ -331,6 +331,14 @@ ok('the counter reads named channels only',
 $acqSrc2 = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 ok('nothing rewrites a historical row',
    (bool) preg_match('/UPDATE contribution_events|DELETE FROM contribution_events/i', $acqSrc2), false);
+/* The top source and campaign come from the clean window, not the last seven days, or our own
+   pre marker checks win the headline, which is exactly what happened with "oktoberfest". */
+ok('top real source and campaign read the clean window',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                'foreach (rmt_acq_report($cleanDays, RMT_ACQ_CLEAN_FROM) as $r)'), true);
+ok('...and leave direct out, like the milestone does',
+   substr_count((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                "\$r['source'] === 'direct'"), 2);
 ok('top campaign discounts our own checks',
    str_contains($acqSrc2, "selfcheck_human"), true);
 /* A rate off one or two sessions is noise dressed as a result, so it is not reported at all. */

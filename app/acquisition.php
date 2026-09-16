@@ -484,20 +484,20 @@ function rmt_acq_daily(int $days = 90): array {
     $cc = rmt_acq_command_center($days);
     $real = array_values(array_filter($cc['rows'], static fn(array $r) => !$r['internal']));
 
-    /* Top anything is top REAL anything. A verification campaign winning "top campaign" is how a
-       dashboard starts lying to the person reading it. */
-    $topSource = null;
-    foreach ($real as $r) {
-        $h = (int) $r['d7']['human'] - (int) $r['d7']['selfcheck_human'];
+    /* Top anything is top REAL anything, taken from the CLEAN window rather than the last seven days.
+       Seven days reaches back before the self check marker existed, when our own verification ran
+       under real campaign names, and for a week that made "oktoberfest" the top real campaign on a
+       site where nobody had published anything. Direct is left out for the same reason it is left
+       out of the milestone: with nothing published it cannot be told from the automated floor. */
+    $topSource = null; $topCampaign = null;
+    $cleanDays = max(1, (int) ceil((time() - strtotime(RMT_ACQ_CLEAN_FROM)) / 86400));
+    foreach (rmt_acq_report($cleanDays, RMT_ACQ_CLEAN_FROM) as $r) {
+        if (rmt_acq_is_internal($r['campaign'] === '' ? null : $r['campaign'])) continue;
+        if ($r['source'] === 'direct' || $r['source'] === '') continue;
+        $h = (int) $r['human'] - (int) ($r['selfcheck_human'] ?? 0);
         if ($h <= 0) continue;
         if ($topSource === null || $h > $topSource[1]) $topSource = [$r['source'], $h];
-    }
-    $topCampaign = null;
-    foreach ($real as $r) {
-        if ($r['campaign'] === '') continue;
-        $h = (int) $r['d7']['human'] - (int) $r['d7']['selfcheck_human'];
-        if ($h <= 0) continue;
-        if ($topCampaign === null || $h > $topCampaign[1]) $topCampaign = [$r['campaign'], $h];
+        if ($r['campaign'] !== '' && ($topCampaign === null || $h > $topCampaign[1])) $topCampaign = [$r['campaign'], $h];
     }
     /* Best conversion, not best volume, and only where there is a denominator worth dividing by.
        A single visit that signed up is 100% and means nothing. */

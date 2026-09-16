@@ -164,6 +164,18 @@ rest of the work.**
   everything else ignored, with handles, bio, the first ten posts in order, cadence and the metric
   that decides whether to continue.
 
+* **Batch, 2026-09-16 (Pacific).** Editorial badge on every question byline: city page, question page
+  and /talk. The prefilled trip form offers its submit button under the dates on a phone, 700px
+  instead of 1,774, with the optional fields behind a disclosure. **Four "Post your dates" buttons
+  opened an empty city picker** because three passed `destination` instead of `destination_id` and
+  one went to the old /going form: city page, city travelers page and travelers index, all fixed and
+  guarded by a test. A filtered /talk list now offers its city. Top real source and campaign on the
+  dashboard read the clean window, after "oktoberfest" had been winning on our own pre marker checks.
+* **Activation emails on production, verified without sending anything:** mail is configured
+  (`RESEND_API_KEY` and `MAIL_FROM` present, names only read), the deploy carrying all three is live,
+  zero mail failures in the retained logs, and every refusal proven by a functional test. Delivery
+  itself cannot be verified until a real match or connection happens, which is the correct order.
+
 ## IN PROGRESS
 
 * Nothing. Everything that can be done without an external account is done.
