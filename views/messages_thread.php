@@ -1,4 +1,4 @@
-<?php /** @var array $them @var array $items @var bool $blocked @var array $shared @var ?array $theirHome */
+<?php /** @var array $gate @var ?array $incoming @var array $them @var array $items @var bool $blocked @var array $shared @var ?array $theirHome */
 $me = current_user();
 $shared = $shared ?? [];
 ?>
@@ -68,7 +68,9 @@ $shared = $shared ?? [];
         </div>
       </div>
     <?php endforeach; ?>
-    <?php if (!$items): ?>
+    <?php /* Only when they could actually write one. Inviting somebody to say hello directly above
+             a panel explaining that they cannot is two halves of the page disagreeing. */ ?>
+    <?php if (!$items && $gate['ok']): ?>
       <p class="muted" style="text-align:center;margin:28px 0">
         No messages yet. <?php if ($shared): ?>You are in the same city at the same time, which is a
         better opening line than most.<?php else: ?>Say hello.<?php endif; ?>
@@ -76,7 +78,45 @@ $shared = $shared ?? [];
     <?php endif; ?>
   </div>
 
-  <?php if (!$blocked): ?>
+  <?php /* The composer appears when both of them have said they would like to meet, and not
+           before. When it does not, the page says which kind of not yet it is and offers the one
+           thing that would change it, because "you cannot message this person" with no reason and
+           no next step is how a product feels broken rather than careful. */ ?>
+  <?php if (!$gate['ok'] && $gate['reason'] !== 'blocked'): ?>
+    <div class="msg-gate">
+      <?php if ($gate['reason'] === 'requested'): ?>
+        <p style="margin:0 0 4px"><b>Waiting on @<?= e($them['username']) ?>.</b></p>
+        <p class="hint" style="margin:0">You said you would like to meet. If they say yes, you can
+          message each other here.</p>
+      <?php elseif ($gate['reason'] === 'incoming' && $incoming): ?>
+        <p style="margin:0 0 4px"><b>@<?= e($them['username']) ?> would like to meet
+          <?php if (!empty($incoming['dest_name'])): ?>on your <?= e((string) $incoming['dest_name']) ?> trip<?php endif; ?>.</b></p>
+        <p class="hint" style="margin:0 0 10px">Say yes and you can message each other. Say no and
+          they are not told.</p>
+        <div class="msg-gate-acts">
+          <form method="post" action="<?= e(url('connect/' . (int) $incoming['id'] . '/decide')) ?>"><?= csrf_field() ?>
+            <input type="hidden" name="answer" value="accept">
+            <input type="hidden" name="return" value="<?= e('/messages/' . $them['username']) ?>">
+            <button class="btn btn-primary btn-sm">Yes</button>
+          </form>
+          <form method="post" action="<?= e(url('connect/' . (int) $incoming['id'] . '/decide')) ?>"><?= csrf_field() ?>
+            <input type="hidden" name="answer" value="decline">
+            <input type="hidden" name="return" value="<?= e('/messages/' . $them['username']) ?>">
+            <button class="btn btn-ghost btn-sm">No thanks</button>
+          </form>
+        </div>
+      <?php elseif ($gate['reason'] === 'declined'): ?>
+        <p style="margin:0"><b>@<?= e($them['username']) ?> answered.</b>
+          <span class="hint">There is nothing more to do here.</span></p>
+      <?php else: ?>
+        <p style="margin:0 0 4px"><b>You can message each other once you have both said so.</b></p>
+        <p class="hint" style="margin:0">Find them on a trip whose dates cross yours and say you are
+          interested in meeting. <a href="<?= e(url('matches')) ?>">Your overlaps</a>.</p>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if (!$blocked && $gate['ok']): ?>
     <form class="msg-composer" method="post" action="<?= e(url('messages/'.$them['username'].'/send')) ?>">
       <?= csrf_field() ?>
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('message_'.(int)$them['id'])) ?>">

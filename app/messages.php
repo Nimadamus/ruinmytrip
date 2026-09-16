@@ -86,6 +86,56 @@ function rmt_message_request_count(int $uid): int {
     return (int) ($row['c'] ?? 0);
 }
 
+/**
+ * May these two write to each other?
+ *
+ * This is the whole of the messaging policy and it lives in ONE function, because a gate that is
+ * enforced in the view and not in the endpoint is a gate with a door next to it. messages_send()
+ * asks this before it writes anything, so a hand made POST gets the same answer the page does.
+ *
+ * The rule, in order:
+ *
+ *   1. A block stops everything, in either direction, as it always has.
+ *   2. A conversation that already has messages in it stays open. This feature is a tightening of
+ *      something that used to be open to anybody, and cutting live threads in half would punish
+ *      the people who were already talking for a policy change they had no part in. They can still
+ *      block, and either of them can stop replying.
+ *   3. Otherwise both sides must have agreed: an accepted connect, in either direction. That is
+ *      the mutual opt in, and it is the only way a NEW conversation can begin.
+ *
+ * The reason comes back with the answer so the page can say something true rather than "no": you
+ * asked and are waiting, they asked and you have not answered, they said no, or you have not asked.
+ *
+ * @return array{ok:bool, reason:string}
+ */
+function rmt_message_allowed(int $meId, int $themId): array {
+    if ($meId < 1 || $themId < 1 || $meId === $themId) return ['ok' => false, 'reason' => 'self'];
+    if (rmt_is_blocked($meId, $themId)) return ['ok' => false, 'reason' => 'blocked'];
+
+    $convId = rmt_find_conversation($meId, $themId);
+    if ($convId && q_one('SELECT 1 FROM messages WHERE conversation_id = ? LIMIT 1', [$convId])) {
+        return ['ok' => true, 'reason' => 'existing'];
+    }
+    if (function_exists('rmt_connect_mutual') && rmt_connect_mutual($meId, $themId)) {
+        return ['ok' => true, 'reason' => 'accepted'];
+    }
+
+    /* Not allowed, and the page deserves to know which kind of not allowed. Read from the connect
+       rows rather than guessed: "waiting on them" and "they said no" are different sentences and
+       only one of them invites another try. */
+    $mine = q_one("SELECT state FROM trip_connects WHERE from_user_id = ? AND to_user_id = ?
+                   ORDER BY CASE state WHEN 'interested' THEN 0 WHEN 'declined' THEN 1 ELSE 2 END LIMIT 1",
+                  [$meId, $themId]);
+    if ($mine && (string) $mine['state'] === 'interested') return ['ok' => false, 'reason' => 'requested'];
+    if ($mine && (string) $mine['state'] === 'declined')   return ['ok' => false, 'reason' => 'declined'];
+
+    $theirs = q_one("SELECT state FROM trip_connects WHERE from_user_id = ? AND to_user_id = ?
+                      AND state = 'interested' LIMIT 1", [$themId, $meId]);
+    if ($theirs) return ['ok' => false, 'reason' => 'incoming'];
+
+    return ['ok' => false, 'reason' => 'none'];
+}
+
 /** GET /messages — inbox: one row per conversation, newest activity first. */
 function messages_index(array $a): void {
     require_login(); $me = current_user();
@@ -118,16 +168,30 @@ function messages_index(array $a): void {
        this site exists. Real rows only: the same overlap query the travellers page uses, with
        everybody already in a conversation removed, so this disappears the moment it would be
        repeating what is above it. */
+    /* This used to be overlapping travelers with a "say hello" button, which is now a button that
+       cannot work: a stranger's first message is refused. So it is the people who HAVE both said
+       yes and have not started talking yet, which is the only list on this page where the button
+       does what it says. The trip that brought them together comes with it, because "why am I
+       talking to this person" is the question an inbox has to answer. */
     $couldWrite = [];
-    if (function_exists('rmt_trip_matches') && count($threads) + count($requests) < 5) {
-        $known = [];
-        foreach (array_merge($threads, $requests) as $r) $known[(string) $r['username']] = true;
-        foreach (rmt_trip_matches((int) $me['id'], 12) as $m) {
-            if (isset($known[(string) $m['username']])) continue;
-            $couldWrite[] = $m;
-            if (count($couldWrite) >= 3) break;
-        }
+    $known = [];
+    foreach (array_merge($threads, $requests) as $r) $known[(int) $r['other_id']] = true;
+    foreach (q_all(
+        "SELECT c.*, u.id other_id, u.username, p.display_name, p.avatar_url,
+                d.name dest_name, d.slug dest_slug, t.date_from, t.date_to
+           FROM trip_connects c
+           JOIN users u ON u.id = (CASE WHEN c.from_user_id = ? THEN c.to_user_id ELSE c.from_user_id END)
+      LEFT JOIN profiles p ON p.user_id = u.id
+      LEFT JOIN trips t ON t.id = c.trip_id
+      LEFT JOIN destinations d ON d.id = t.destination_id
+          WHERE c.state = 'accepted' AND (c.from_user_id = ? OR c.to_user_id = ?)
+            AND u.status = 'active'
+       ORDER BY c.decided_at DESC, c.id DESC LIMIT 12", [$uid, $uid, $uid]) as $c) {
+        if (isset($known[(int) $c['other_id']])) continue;
+        if (rmt_is_blocked($uid, (int) $c['other_id'])) continue;
+        $couldWrite[(int) $c['other_id']] = $c;      // one row per person, not one per trip
     }
+    $couldWrite = array_slice(array_values($couldWrite), 0, 6);
 
     view('messages_index', compact('rows', 'threads', 'requests', 'couldWrite'), [
         'title' => 'Messages | RuinMyTrip',
@@ -147,6 +211,16 @@ function messages_thread(array $a): void {
     if ($themId === $meId) not_found();
 
     $blocked = rmt_is_blocked($meId, $themId);
+    $gate = rmt_message_allowed($meId, $themId);
+    /* The connect this reader could answer, if the other person is the one waiting. Read here so
+       the thread can offer the answer rather than sending them somewhere else to find it. */
+    $incoming = $gate['reason'] === 'incoming'
+        ? q_one("SELECT c.*, t.id trip_id, d.name dest_name FROM trip_connects c
+                   LEFT JOIN trips t ON t.id = c.trip_id
+                   LEFT JOIN destinations d ON d.id = t.destination_id
+                  WHERE c.from_user_id = ? AND c.to_user_id = ? AND c.state = 'interested'
+                  ORDER BY c.id DESC LIMIT 1", [$themId, $meId])
+        : null;
     $convId = rmt_find_conversation($meId, $themId);
     $items = $convId ? q_all('SELECT * FROM messages WHERE conversation_id=? ORDER BY id', [$convId]) : [];
 
@@ -169,7 +243,8 @@ function messages_thread(array $a): void {
     $theirHome = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
                          WHERE p.user_id = ?', [$themId]);
 
-    view('messages_thread', compact('them', 'items', 'blocked', 'shared', 'theirHome'), [
+    if ($items) rmt_track('message_thread_viewed');
+    view('messages_thread', compact('them', 'items', 'blocked', 'shared', 'theirHome', 'gate', 'incoming'), [
         'title' => 'Messages with @' . $them['username'] . ' | RuinMyTrip',
         'description' => 'Conversation with @' . $them['username'] . ' on RuinMyTrip.',
         'app_shell' => true,
@@ -194,8 +269,14 @@ function messages_send(array $a): void {
     $return = url('messages/' . $them['username']);
     if ($themId === $meId) redirect($return);
 
-    if (rmt_is_blocked($meId, $themId)) {
-        flash('You cannot message this traveler.');
+    /* The gate, server side, before anything is read from the request body. A forged POST from
+       somebody who was never accepted gets exactly what the page shows them: nothing written, no
+       thread created, no message delivered. */
+    $gate = rmt_message_allowed($meId, $themId);
+    if (!$gate['ok']) {
+        flash($gate['reason'] === 'blocked'
+            ? 'You cannot message this traveler.'
+            : 'You can message a traveler once you have both said you would like to meet.');
         redirect($return);
     }
 
@@ -233,7 +314,10 @@ function messages_send(array $a): void {
        answer is always yes. Nothing about who, and never a word of what was typed. */
     $isFirst = !rmt_conversation_exists($meId, $themId);
     $convId = rmt_get_or_create_conversation($meId, $themId);
+    /* Counted, never quoted. These two calls take no arguments at all, which is the simplest
+       possible guarantee that no private message can end up in an analytics table. */
     if ($isFirst && function_exists('rmt_track')) rmt_track('message_started');
+    if (function_exists('rmt_track')) rmt_track('message_sent');
     $now = date('Y-m-d H:i:s');
     q_run('INSERT INTO messages (conversation_id, sender_id, body, created_at) VALUES (?,?,?,?)',
         [$convId, $meId, $body, $now]);

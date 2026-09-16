@@ -1362,3 +1362,10 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0 0 14px}
 .feed-overlap .fo-text{flex:1;min-width:180px;overflow-wrap:anywhere}
 .feed-overlap .btn{min-height:44px;display:inline-flex;align-items:center}
+
+/* The thread footer when the two are not (yet) both in. Same shape as the composer it replaces,
+   so the page does not jump when an answer changes which one is drawn. */
+.msg-gate{border-top:1px solid var(--line);padding:14px 0 4px}
+.msg-gate-acts{display:flex;flex-wrap:wrap;gap:8px}
+.msg-gate-acts .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:560px){ .msg-gate-acts form,.msg-gate-acts .btn{flex:1 1 auto} .msg-gate-acts button{width:100%} }

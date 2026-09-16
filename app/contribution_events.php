@@ -83,6 +83,11 @@ const RMT_CONTRIB_EVENTS = [
     'overlap_profile_opened',
     'trip_connect_requested',
     'trip_connect_accepted',
+    /* Messaging, 2026-09-15. Both of these take no arguments, on purpose: the simplest possible
+       guarantee that no word of a private message can reach an analytics table is that there is
+       nowhere to put one. 'message_started' already counts a conversation beginning. */
+    'message_sent',
+    'message_thread_viewed',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */

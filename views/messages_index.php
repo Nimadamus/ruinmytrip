@@ -54,8 +54,8 @@ $rmtRow = static function (array $r): void { ?>
            nobody has said hello. Real overlaps, and anybody already in the lists above is
            excluded, so this disappears rather than repeating them. */ ?>
   <?php if (!empty($couldWrite)): ?>
-    <h2 style="margin:28px 0 4px">On your dates</h2>
-    <p class="hint" style="margin:0 0 10px">Same city, same days, and no conversation yet.</p>
+    <h2 style="margin:28px 0 4px">You both said yes</h2>
+    <p class="hint" style="margin:0 0 10px">Agreed to meet, and nobody has said anything yet.</p>
     <ul class="list-plain">
       <?php foreach ($couldWrite as $c): ?>
         <li class="card" style="margin-bottom:8px"><div class="card-body"
@@ -66,10 +66,14 @@ $rmtRow = static function (array $r): void { ?>
               <b><a href="<?= e(url('u/'.$c['username'])) ?>"><?= e($c['display_name'] ?: $c['username']) ?></a></b>
               <span class="muted">@<?= e($c['username']) ?></span>
             </div>
-            <p class="muted" style="margin:.2rem 0 0"><?= e((string) $c['dest_name']) ?> ·
-              <?= (int) $c['overlap_days'] ?> <?= (int) $c['overlap_days'] === 1 ? 'day' : 'days' ?> with you</p>
+            <?php if (!empty($c['dest_name'])): ?>
+              <p class="muted" style="margin:.2rem 0 0"><?= e((string) $c['dest_name']) ?><?php
+                if (!empty($c['date_from'])): ?> &middot;
+                <?= e(date('M j', strtotime((string) $c['date_from']))) ?>
+                to <?= e(date('M j', strtotime((string) $c['date_to']))) ?><?php endif; ?></p>
+            <?php endif; ?>
           </div>
-          <a class="btn btn-ghost btn-sm" href="<?= e(url('messages/'.$c['username'])) ?>">Say hello</a>
+          <a class="btn btn-primary btn-sm" href="<?= e(url('messages/'.$c['username'])) ?>">Start conversation</a>
         </div></li>
       <?php endforeach; ?>
     </ul>

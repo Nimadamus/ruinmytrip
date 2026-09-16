@@ -84,6 +84,22 @@ it; the rating, editorial review, places, reviews, trips, map and related cities
 one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
 `tests/city_community_test.php`.
 
+## Messaging is mutual opt in, 2026-09-15
+
+`rmt_message_allowed()` in `app/messages.php` is the whole policy and the only place it lives.
+messages_send() asks it before it reads the request body, so a hand made POST gets the same answer
+the page does. A block beats everything. A conversation that already holds messages stays open,
+because this tightened something that used to be open to anybody and cutting live threads would
+punish people for a policy they had no part in. Otherwise both sides must have an accepted connect.
+
+The reasons are named rather than boolean: none, requested, incoming, declined, accepted, existing,
+blocked, self. The thread footer draws one of them: waiting on them, an answer they can give right
+there, a no that is final, or the composer. The inbox lists accepted connects with no thread yet
+under "You both said yes" with a Start conversation button and the trip that brought them together.
+
+Messaging telemetry is `message_sent` and `message_thread_viewed`, both called with no arguments at
+all, which is the simplest guarantee that no private message can reach an analytics table.
+
 ## Somebody learns their dates were landed on, 2026-09-15
 
 `rmt_match_notify()` existed and was wired only to the old `/going` form, so every trip posted
