@@ -160,4 +160,22 @@ ok('somebody with none has none', isset($ints[3]), false);
 
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed, {$pass} passed\n"; exit(1); }
+
+echo "\n-- a form that arrives filled asks for one thing --\n";
+/* Somebody arriving from a campaign link already has the city and both dates. On a phone the only
+   submit button was 1,774 pixels down, past four optional fields. It is now offered directly under
+   the dates when the form arrives prefilled, and the optional fields are behind a disclosure.
+   Nothing was removed: the empty form is exactly as it was. */
+$tn = (string) file_get_contents(BASE_PATH . '/views/trip_new.php');
+ok('the form knows when it arrived filled',
+   str_contains($tn, "\$tnPrefilled = input('destination_id') !== '' && input('date_from') !== '' && input('date_to') !== ''"), true);
+ok('...and offers the button there',  substr_count($tn, 'type="submit">Post this trip'), 2);
+ok('the optional fields are collapsed rather than removed', str_contains($tn, '<details'), true);
+ok('every field still exists on the page',
+   str_contains($tn, "name=\"title\"") && str_contains($tn, "name=\"body\"")
+   && str_contains($tn, "name=\"visibility\"") && str_contains($tn, "name=\"travel_style\""), true);
+ok('and the disclosure is only drawn for a prefilled arrival',
+   substr_count($tn, 'if ($tnPrefilled)'), 2);
+ok('nothing is decided for them', str_contains($tn, 'you can change any of that'), true);
+
 echo "ALL FIRST TRIP FLOW TESTS PASS ({$pass})\n";

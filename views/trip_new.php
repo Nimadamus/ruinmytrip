@@ -33,6 +33,24 @@
       City and a date range, never anything finer. RuinMyTrip does not show precise or live location.
     </p>
 
+    <?php /* Somebody who arrived from a campaign link already has the city and both dates in the
+             form, and the only thing left to do is agree. On a phone the submit button was 1,774
+             pixels away, past a visibility selector, a travel style, a title and a description, all
+             of which are optional. So when the form arrives filled, the same button is offered here
+             and everything below becomes what it always was: optional, and available.
+             Nothing is removed and nothing is decided for them. */ ?>
+    <?php $tnPrefilled = input('destination_id') !== '' && input('date_from') !== '' && input('date_to') !== ''; ?>
+    <?php if ($tnPrefilled): ?>
+      <div style="margin:0 0 18px">
+        <button class="btn btn-primary" type="submit">Post this trip</button>
+        <p class="hint" style="margin:6px 0 0">Public by default, and you can change any of that
+          below or afterwards. Nobody sees your dates until you post them.</p>
+      </div>
+      <details style="margin:0 0 6px"><summary class="btn btn-ghost btn-sm">Add a title, a
+        description, or change who can see it</summary>
+      <div style="padding-top:12px">
+    <?php endif; ?>
+
     <label for="visibility">Who can see this trip</label>
     <select id="visibility" name="visibility">
       <option value="public"<?= input('visibility') === 'public' || input('visibility') === '' ? ' selected' : '' ?>>Everyone</option>
@@ -82,6 +100,9 @@
       <input type="url" id="cover_url" name="cover_url" value="<?= e(input('cover_url')) ?>" placeholder="https://…">
     </div>
 
+    <?php if ($tnPrefilled): ?>
+      </div></details>
+    <?php endif; ?>
     <div style="margin-top:20px"><button class="btn btn-primary" type="submit">Post this trip</button></div>
   </form>
 </div></div>
