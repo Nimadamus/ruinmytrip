@@ -49,8 +49,95 @@ function breadcrumb_jsonld(array $crumbs): string {
  * Destination hub title. Generic "travel guide, reviews & meetups" cannot rank a new domain
  * against TripAdvisor. The unique asset is 2026 costs, taxes, tickets, and friction.
  */
+
+/**
+ * THE CONTROLLED TITLE TEST, started 2026-09-15 (Pacific).
+ *
+ * The question it answers. Every city page is titled like a guidebook, and every city page is a
+ * community underneath. Over twenty eight days those pages drew 85 impressions and zero clicks on
+ * queries about tourist taxes and ticket prices, which is intent this site does not serve and
+ * never wanted to. The homepage has said "meet travelers going where you are going" all along, so
+ * the site says one thing at the front door and another on every page a search engine shows.
+ *
+ * Rather than rewrite eighty five pages on a hunch, nine of them carry a different title and
+ * description and the other seventy six are the control. The nine were chosen from Search Console
+ * evidence rather than taste: every one of them already gets impressions, every one converts at
+ * zero, and no page with clicks worth protecting is in the group, because no page has any clicks
+ * at all.
+ *
+ * The titles deliberately KEEP the destination topic. "Going to Bangkok? See who else is
+ * traveling there" was the first draft and it is the wrong trade: it throws away the words
+ * somebody actually searched for to make room for a slogan. A travel guide that also has the
+ * travelers in it is both things, and both are true of the page.
+ *
+ * What is NOT part of this test, and must not become part of it: no URL changes, no sitemap
+ * entries, no canonical changes, no robots rules, no new pages, nothing submitted anywhere. Only
+ * the words in the head of nine pages that already exist and already rank.
+ *
+ * Baseline at the start, 28 days to 2026-09-15, all nine at 0 clicks and 0.0% CTR:
+ *   amsterdam-netherlands 28 impressions, position 44.2
+ *   lisbon-portugal       10, 50.7 · berlin-germany 7, 58.7 · marrakech-morocco 5, 55.4
+ *   zanzibar-tanzania      5,  4.4 · hoi-an-vietnam 3, 53.0 · oaxaca-mexico     3, 73.7
+ *   banff-canada           2,  5.5 · milan-italy    2,  5.0
+ *
+ * @var array<string,array{0:string,1:string}> slug => [title, description]
+ */
+const RMT_DEST_SOCIAL_TITLE_TEST = [
+    'amsterdam-netherlands' => [
+        'Amsterdam Travel Guide + Travelers Going There | RuinMyTrip',
+        'Amsterdam travel guide: the tourist tax, real places and honest reviews, plus the travelers going there. Ask them anything and see who is on your dates.',
+    ],
+    'lisbon-portugal' => [
+        'Lisbon Travel Guide + Travelers Going There | RuinMyTrip',
+        'Lisbon travel guide: what it costs, real places and honest reviews, plus the travelers going there. Ask them anything and see who is around on your dates.',
+    ],
+    'berlin-germany' => [
+        'Berlin Travel Guide + Travelers Going Soon | RuinMyTrip',
+        'Berlin travel guide: what it costs, real places and honest reviews, plus the travelers going soon. Ask them anything and see who is there on your dates.',
+    ],
+    'marrakech-morocco' => [
+        'Marrakech Travel Guide + Travelers Going Soon | RuinMyTrip',
+        'Marrakech travel guide: what it costs, real places and honest reviews, plus the travelers going soon. Ask them anything and see who is there on your dates.',
+    ],
+    'zanzibar-tanzania' => [
+        'Zanzibar Travel Guide + Travelers Going Soon | RuinMyTrip',
+        'Zanzibar travel guide: the visa and the new taxes, real places and honest reviews, plus the travelers going soon. Ask them anything and follow the island.',
+    ],
+    'hoi-an-vietnam' => [
+        'Hoi An Travel Guide + Travelers Going There | RuinMyTrip',
+        'Hoi An travel guide: what it costs, real places and honest reviews, plus the travelers going there. Ask them anything and see who is around on your dates.',
+    ],
+    'oaxaca-mexico' => [
+        'Oaxaca Travel Guide + Travelers Going Soon | RuinMyTrip',
+        'Oaxaca travel guide: what it costs, real places and honest reviews, plus the travelers going soon. Ask them anything and see who is there on your dates.',
+    ],
+    'banff-canada' => [
+        'Banff Travel Guide + Travelers Going There | RuinMyTrip',
+        'Banff travel guide: park passes, real places and honest reviews, plus the travelers going there. Ask them anything and see who is around on your dates.',
+    ],
+    'milan-italy' => [
+        'Milan Travel Guide + Travelers Going Soon | RuinMyTrip',
+        'Milan travel guide: what to book ahead, real places and honest reviews, plus the travelers going soon. Ask them anything and see who is on your dates.',
+    ],
+];
+
 function rmt_destination_page_title(array $d): string {
+    $slug = (string) ($d['slug'] ?? '');
+    if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][0];
     return $d['name'].' 2026: costs, tickets, taxes and what nearly ruins it | RuinMyTrip';
+}
+
+/**
+ * The line under the title in a search result.
+ *
+ * Everywhere outside the test this is the city's own summary, exactly as it has always been. In
+ * the test group it says what the page holds AND that there are people on it, because a summary
+ * that describes only the city is a description of a guidebook.
+ */
+function rmt_destination_page_description(array $d): string {
+    $slug = (string) ($d['slug'] ?? '');
+    if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][1];
+    return (string) ($d['summary'] ?? '');
 }
 
 /** Place page title: price/ticket intent, not a fake "reviewed by travelers" claim. */

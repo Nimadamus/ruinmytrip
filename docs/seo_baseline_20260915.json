@@ -1,0 +1,76 @@
+{
+ "baseline_pulled": "2026-09-15 (Pacific)",
+ "window": "28 days to 2026-09-15",
+ "test_group": {
+  "amsterdam-netherlands": {
+   "impressions": 28,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 44.2
+  },
+  "lisbon-portugal": {
+   "impressions": 10,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 50.7
+  },
+  "berlin-germany": {
+   "impressions": 7,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 58.7
+  },
+  "marrakech-morocco": {
+   "impressions": 5,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 55.4
+  },
+  "zanzibar-tanzania": {
+   "impressions": 5,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 4.4
+  },
+  "hoi-an-vietnam": {
+   "impressions": 3,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 53
+  },
+  "oaxaca-mexico": {
+   "impressions": 3,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 73.7
+  },
+  "banff-canada": {
+   "impressions": 2,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 5.5
+  },
+  "milan-italy": {
+   "impressions": 2,
+   "clicks": 0,
+   "ctr": 0,
+   "position": 5
+  }
+ },
+ "test_totals": {
+  "pages": 9,
+  "impressions": 65,
+  "clicks": 0
+ },
+ "control_destination_pages_with_impressions": {
+  "pages": 18,
+  "impressions": 20,
+  "clicks": 0
+ },
+ "site_total": {
+  "clicks": 0,
+  "impressions": 1372,
+  "ctr": 0,
+  "position": 46.45991253644315
+ }
+}
