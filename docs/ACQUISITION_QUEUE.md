@@ -81,6 +81,30 @@ rest of the work.**
   Lisbon, Berlin and Bangkok carry nothing. **The nine title experiment cities are excluded by name**,
   so the SEO test running until 2026-09-29 is untouched.
 
+* **Attribution proved again, 2026-09-15, seven arrival shapes.** On production, in seven browsers
+  that had never seen the site: reddit post, facebook group, x post, a member share link, direct,
+  search by referrer, and an unnamed referring site. All landed 200, all held the first touch cookie
+  except direct which correctly has no source, and **Googlebot was given no attribution cookie and
+  wrote no row at all.** On the dev server the same shapes were driven through two parameterless
+  pages and into signup: every event in each journey still named the channel from the first request,
+  and three pageviews stayed inside ONE journey rather than inflating into three.
+* **A crawler filter finding worth keeping:** `curl/` is in the crawler list, correctly, so the
+  first version of that check measured the filter rather than the funnel. Every scripted check now
+  sends a browser user agent.
+* **Acquisition command centre live.** Human visits, signups, confirmations and trips per channel
+  over 24 hours, 7 days and the window, on `/admin/funnel` and as `command_center` in the key gated
+  JSON. Automated traffic excluded from every number, raw sessions shown in brackets beside it.
+* **Referral loop.** Every outbound share link carries its channel, `utm_medium=share` and a
+  member-share campaign, so a link a member sent is never counted as something we published.
+  Facebook added. On your own trip the control reads Invite a traveler.
+* **Cold visitor QA, five destinations, phone and desktop, signed out and signed in.** Found and
+  fixed the same shared problem on all five: the link to who is going sat around 6,400 pixels down a
+  phone page and the only trip control was inside the collapsed menu. Both are now in the actions row
+  at the top of the community block, between 999 and 1,482 pixels on a 390px screen.
+* **Activation audit.** No required fields on the trip form beyond a city and dates; the destination
+  and both dates survive signup; a trip typed before the address is confirmed is **held and written
+  the instant it is confirmed** rather than discarded; and confirmation lands on the filled form.
+
 ## IN PROGRESS
 
 * Nothing. Everything that can be done without an external account is done.
