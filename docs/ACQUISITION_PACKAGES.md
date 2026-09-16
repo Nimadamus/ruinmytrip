@@ -472,6 +472,91 @@ who clicks it goes to signup and lands back on the filled form. Verified cold to
 
 ---
 
+# The later cohorts, written early so nothing is rushed
+
+Five more, for the two windows that follow Oktoberfest. **Both campaign links already work on
+production:** a visitor arriving on `utm_campaign=new-year-2027` sees the window on the Bangkok page,
+and one arriving on `utm_campaign=rio-carnival` sees it on the Rio page, each with a button that
+opens the trip form with the dates already in it. Verified live on 2026-09-15.
+
+**Do not post these yet.** New Year posts from late October, Carnival from early December. Posting a
+December question in September reads as a link drop, which is the one thing that gets an account
+banned.
+
+## 16. r/brazil or r/rio, Carnival. Post from early December. **Risk: medium**, check whether self
+promotion is allowed at all before posting anything with a link.
+
+**Title**
+
+    Carnival 5 to 9 February: how do you pick blocos when you do not know anybody there?
+
+**Body**
+
+    First Carnival, arriving for the week and staying through the Champions Parade on the 13th. The
+    parades at the Sambadrome are the easy part because you buy a seat. The blocos are what I cannot
+    work out: hundreds of them, no ticket, no door, and apparently the good ones are decided by who
+    you are standing with.
+
+    For people who go every year: do you plan which blocos in advance or follow whoever you meet?
+    And is turning up to one alone normal or obviously a mistake?
+
+    Being upfront that this is partly self interested: I built a site where you put your dates for a
+    city and see other travelers whose dates overlap. My Rio dates are on it.
+
+    https://ruinmytrip.com/d/rio-de-janeiro-brazil?utm_source=reddit&utm_medium=post&utm_campaign=rio-carnival
+
+## 17. Facebook, a Carnival or Rio travel group. Post from early December. **Risk: low** if you have
+been in the group a while.
+
+    Carnival week, 5 to 13 February. For anyone who has done it without a group: how did you handle
+    the blocos?
+
+    I am going on my own days and asking here because the street parties are the part that clearly
+    works better with at least one other person. I also built a page per city where you put your
+    dates in and see which travelers overlap them, so I will say that rather than hide it.
+
+    https://ruinmytrip.com/d/rio-de-janeiro-brazil?utm_source=facebook&utm_medium=group&utm_campaign=rio-carnival
+
+## 18. X post, Carnival. From early December.
+
+    Carnival runs 5 to 13 February.
+
+    The Sambadrome you can buy a seat for. The blocos you cannot, and that is the part that goes
+    badly alone.
+
+    Put your Rio dates in and see who else is there those days.
+
+    https://ruinmytrip.com/d/rio-de-janeiro-brazil?utm_source=x&utm_medium=post&utm_campaign=rio-carnival
+
+## 19. r/ThailandTourism or r/backpacking, New Year. Post from late October. **Risk: low**, it is a
+genuine planning question at the right time of year.
+
+**Title**
+
+    New Year in Bangkok, arriving a few days before: is it worth staying or heading north?
+
+**Body**
+
+    Landing around 27 December and free until the 2nd. Everyone I have asked splits between staying
+    in Bangkok for New Year and getting up to Chiang Mai, and I cannot tell whether that is taste or
+    whether one of them is obviously better.
+
+    For anyone who has done both: which would you repeat?
+
+    Disclosure since it is relevant, I built a site for finding travelers whose dates overlap in a
+    city, and my dates are on it. That week is the reason I built it.
+
+    https://ruinmytrip.com/d/bangkok-thailand?utm_source=reddit&utm_medium=post&utm_campaign=new-year-2027
+
+## 20. Instagram, TikTok or X, New Year. From late October.
+
+    27 December to 2 January is the busiest week of the year in Southeast Asia and the easiest one to
+    spend alone.
+
+    Put your dates in. See who else is in Bangkok the same days. Decide before you land.
+
+    https://ruinmytrip.com/d/bangkok-thailand?utm_source=tiktok&utm_medium=bio&utm_campaign=new-year-2027
+
 # The exact human action needed
 
 1. Check the subreddit rules in the sidebar, as above.

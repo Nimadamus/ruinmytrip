@@ -11,8 +11,8 @@ Each of these is finished except for one action only a person can take. **None o
 rest of the work.**
 
 1. **Post one Reddit thread, starting with r/Munich.** Oktoberfest runs 19 September to 4 October,
-   which is four days away and the only cohort that does not involve waiting. Ten finished posts are
-   in `docs/ACQUISITION_PACKAGES.md`, links tracked, landing pages verified. **Why it cannot be done here:** Reddit answers 403 to every
+   which is four days away and the only cohort that does not involve waiting. Twenty finished posts
+   are in `docs/ACQUISITION_PACKAGES.md`, links tracked, landing pages verified. **Why it cannot be done here:** Reddit answers 403 to every
    unauthenticated request from this machine and blocks the signed in browser with "You've been
    blocked by network security" — tested three ways on 2026-09-15 (curl, the CDP browser, a fresh
    Playwright browser). Subreddit rules therefore cannot be read immediately before posting, which
@@ -42,7 +42,7 @@ rest of the work.**
 * **Cold landing path.** A first line explaining the site to somebody arriving from a link, and the
   homepage cut to one sentence with the review CTA moved off the hero for signed out visitors.
 * **Campaign packages**: ten finished posts across Reddit, Facebook, X and TikTok, thirty days of
-  content ideas, five cohorts with dates verified against primary sources.
+  content ideas, six cohorts with dates verified against primary sources.
 * **Destination QA**, eight priority cities at 390px and 1280px, fourteen checks each: status, page
   title, social title, card image, canonical, robots, community block, the line for a cold visitor,
   Follow, Ask, composer, share control, travelers link, a reachable trip form, overflow, tap targets
@@ -58,9 +58,24 @@ rest of the work.**
   `/trip/new?destination_id=42&date_from=2026-09-19&date_to=2026-10-04`. A signed out visitor is sent
   to signup and returns to that same filled form. The line appears only on the campaign's own city.
 
+* **Two more campaign windows live and verified on production, 2026-09-15.** New Year in Bangkok
+  (27 December to 2 January, destination 15) and Carnival in Rio (5 to 13 February 2027,
+  destination 47). Both show the window and the prefilled trip link only to a visitor who arrived on
+  that campaign. Rio's dates were checked against a Carnival source and against the Easter calendar,
+  which puts Ash Wednesday on 10 February either way.
+* **Attribution re-verified against live production rows, 2026-09-15.** `/cron/funnel` returns
+  per campaign rows for `oktoberfest`, `miami-art-week`, `rio-carnival` and `qa`, each with its own
+  source. The 29 sessions on `rio-carnival` are this session's own verification requests and are
+  counted as **0 human**, which is the check that matters: automated traffic cannot inflate a
+  channel's conversion rate. Live totals: 28 likely human visits in 30 days against 4,252 raw.
+* **Six cohorts fully specified**, each with dates, audience, landing URL, tracked URL, channel,
+  campaign message, traveler use case and launch date, in `docs/ACQUISITION_COHORTS.md`.
+* **Twenty posts written**, the last five covering New Year and Carnival, in
+  `docs/ACQUISITION_PACKAGES.md`. None posted.
+
 ## IN PROGRESS
 
-* Cohort preparation for the four windows after Oktoberfest, in `docs/ACQUISITION_COHORTS.md`.
+* Nothing. Everything that can be done without an external account is done.
 
 ## NEXT
 
@@ -79,9 +94,11 @@ rest of the work.**
 
 ## The milestones, in order
 
-1. **100 likely human visits.** Currently 11 over 17 days.
-2. **25 signups.** Currently 5 all time.
-3. **10 trips with dates.** Currently 1.
+1. **100 likely human visits.** Currently **28 over 30 days** (4,252 raw requests, 1,121 classified
+   automated, 7,260 uncertain). Read live from `/cron/funnel` on 2026-09-15.
+2. **25 signups.** Currently **2 created and 2 confirmed in the 30 day window**, 5 accounts all time.
+   1,303 people or bots saw the join form in that window and 2 submitted it.
+3. **10 trips with dates.** Currently **1** upcoming dated public trip.
 4. **Two overlapping trips in one city.** Currently 0, and it has never happened.
 
 Nothing on this list moves without somebody posting a link where travelers are.
