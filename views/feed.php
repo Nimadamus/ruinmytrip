@@ -177,16 +177,27 @@ $threads = $threads ?? [];
            starts one step earlier: say where you are going, and the dates, and everything else on
            the site keys off that. So they are asked that instead, once, and the card disappears
            the moment there is a trip to show above it. */ ?>
+  <?php /* Somebody who arrived on a campaign about a real window came here to do one thing. Asking
+           them "where are you going" when we already know is friction, so the same card names the
+           window and the button opens the form with it filled. Nothing is created for them. */
+        $fw = (!$nt && !$je && function_exists('rmt_acq_window')) ? rmt_acq_window() : null; ?>
   <?php if (!$nt && !$je): ?>
     <section class="next-trip feed-nudge">
       <div class="next-trip-head">
         <p class="eyebrow" style="margin:0">Start here</p>
-        <h2 style="margin:.2rem 0 .4rem">Where are you going?</h2>
+        <h2 style="margin:.2rem 0 .4rem"><?= $fw ? e('Your ' . $fw['label'] . ' dates') : 'Where are you going?' ?></h2>
       </div>
-      <p class="muted" style="margin:0 0 12px">Post your dates and this site starts working: who
-        else is there the same week, what they are planning, and the places worth your time.</p>
+      <?php if ($fw): ?>
+        <p class="muted" style="margin:0 0 12px"><?= e($fw['label']) ?> runs
+          <?= e(date('j F', strtotime($fw['from']))) ?> to <?= e(date('j F', strtotime($fw['to']))) ?>.
+          Post the days you are there and you will see who else is, and nobody sees anything until
+          you post them.</p>
+      <?php else: ?>
+        <p class="muted" style="margin:0 0 12px">Post your dates and this site starts working: who
+          else is there the same week, what they are planning, and the places worth your time.</p>
+      <?php endif; ?>
       <p style="margin:0;display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn btn-accent" href="<?= e(url('trip/new')) ?>">Add your trip</a>
+        <a class="btn btn-accent" href="<?= e($fw ? rmt_acq_trip_link($fw) : url('trip/new')) ?>"><?= $fw ? 'Post these dates' : 'Add your trip' ?></a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Not sure yet, browse cities</a>
       </p>
     </section>

@@ -174,6 +174,15 @@ ok('...and both dates',            str_contains($link, 'date_from=2026-09-19') &
 $acqSrc = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 ok('nothing here writes a trip', (bool) preg_match('/INSERT INTO trips/i', $acqSrc), false);
 
+/* The campaign has to survive as far as the empty feed, because that is where somebody lands after
+   confirming their email and it is the last place the friction can be removed. */
+$feed = (string) file_get_contents(BASE_PATH . '/views/feed.php');
+ok('the empty feed asks the campaign',   str_contains($feed, 'rmt_acq_window()'), true);
+ok('...and offers the filled form',      str_contains($feed, 'rmt_acq_trip_link($fw)'), true);
+ok('...only when there is no trip yet',  str_contains($feed, '(!$nt && !$je && function_exists'), true);
+ok('...and still asks everybody else',   str_contains($feed, 'Where are you going?'), true);
+ok('...without creating anything',       (bool) preg_match('/INSERT INTO trips/i', $feed), false);
+
 echo "\n-- what attribution is not allowed to store --\n";
 $src = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 $events = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');
