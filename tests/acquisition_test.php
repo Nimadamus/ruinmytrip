@@ -295,11 +295,25 @@ ok('the key gated json carries it', str_contains($gf, "'command_center'"), true)
 
 echo "\n-- the morning line --\n";
 $dy = rmt_acq_daily();
-foreach (['as_of','human_visits','signups','confirmed','trips','top_source','top_campaign',
-          'top_landing','best_conversion','notable_change'] as $field) {
+foreach (['as_of','traffic','human_visits','signups','confirmed','trips','top_real_source',
+          'top_real_campaign','top_landing','best_conversion','notable_change',
+          'matches_viewed','connection_requests','connections_made','messages_sent',
+          'contaminated_window'] as $field) {
     ok("the daily report carries $field", array_key_exists($field, $dy), true);
 }
+/* Four classes, and none of them folded into another. */
+ok('the four traffic classes are separate', array_keys($dy['traffic']),
+   ['real_human', 'self_check', 'automated', 'uncertain']);
 ok('today is never more than the week', $dy['human_visits']['today'] <= $dy['human_visits']['week'], true);
+/* The period before the marker existed is labelled rather than rewritten. */
+ok('there is a date the numbers get clean from', (bool) strtotime(RMT_ACQ_CLEAN_FROM), true);
+ok('a window reaching before it is flagged', rmt_acq_window_is_contaminated(3650), true);
+ok('all time is always flagged',             rmt_acq_window_is_contaminated(0), true);
+$acqSrc2 = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
+ok('nothing rewrites a historical row',
+   (bool) preg_match('/UPDATE contribution_events|DELETE FROM contribution_events/i', $acqSrc2), false);
+ok('top campaign discounts our own checks',
+   str_contains($acqSrc2, "selfcheck_human"), true);
 /* A rate off one or two sessions is noise dressed as a result, so it is not reported at all. */
 ok('a conversion needs five sessions behind it',
    $dy['best_conversion'] === null || $dy['best_conversion']['rate'] !== null, true);

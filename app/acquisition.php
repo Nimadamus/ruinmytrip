@@ -46,6 +46,18 @@ const RMT_ACQ_INTERNAL_CAMPAIGNS = ['qa', 'coldqa', 'attrib-qa', 'attrib-qa-craw
    `utm_content=selfcheck` unless it is deliberately measuring the unmarked path. */
 const RMT_ACQ_INTERNAL_CONTENT = 'selfcheck';
 
+/* Before this moment the marker did not exist, so verification traffic was recorded under real
+   campaign names and cannot be told apart now. It is not rewritten: a row is what happened. It is
+   labelled, everywhere a number from that period is shown, and the honest reading of anything dated
+   inside it is "this was us unless a post was actually published".
+   The marker went in at 2026-09-16 00:30 Pacific, which is 07:30 UTC. */
+const RMT_ACQ_CLEAN_FROM = '2026-09-16 07:30:00';
+
+function rmt_acq_window_is_contaminated(int $days): bool {
+    if ($days <= 0) return true;                                  // all time always includes it
+    return rmt_funnel_since($days) < RMT_ACQ_CLEAN_FROM;
+}
+
 function rmt_acq_is_internal(?string $campaign): bool {
     return $campaign !== null && in_array($campaign, RMT_ACQ_INTERNAL_CAMPAIGNS, true);
 }
@@ -449,31 +461,30 @@ function rmt_acq_command_center(int $days = 90): array {
  *
  * @return array<string,mixed>
  */
-function rmt_acq_daily(): array {
-    $cc = rmt_acq_command_center(90);
+function rmt_acq_daily(int $days = 90): array {
+    $cc = rmt_acq_command_center($days);
     $real = array_values(array_filter($cc['rows'], static fn(array $r) => !$r['internal']));
 
-    $pick = static function (array $rows, string $window, string $metric): ?array {
-        $best = null;
-        foreach ($rows as $r) {
-            if ((int) $r[$window][$metric] <= 0) continue;
-            if ($best === null || (int) $r[$window][$metric] > (int) $best[$window][$metric]) $best = $r;
-        }
-        return $best;
-    };
-
-    $topSource   = $pick($real, 'd1', 'human') ?? $pick($real, 'd7', 'human');
+    /* Top anything is top REAL anything. A verification campaign winning "top campaign" is how a
+       dashboard starts lying to the person reading it. */
+    $topSource = null;
+    foreach ($real as $r) {
+        $h = (int) $r['d7']['human'] - (int) $r['d7']['selfcheck_human'];
+        if ($h <= 0) continue;
+        if ($topSource === null || $h > $topSource[1]) $topSource = [$r['source'], $h];
+    }
     $topCampaign = null;
     foreach ($real as $r) {
         if ($r['campaign'] === '') continue;
-        if ((int) $r['d7']['human'] <= 0) continue;
-        if ($topCampaign === null || (int) $r['d7']['human'] > (int) $topCampaign['d7']['human']) $topCampaign = $r;
+        $h = (int) $r['d7']['human'] - (int) $r['d7']['selfcheck_human'];
+        if ($h <= 0) continue;
+        if ($topCampaign === null || $h > $topCampaign[1]) $topCampaign = [$r['campaign'], $h];
     }
     /* Best conversion, not best volume, and only where there is a denominator worth dividing by.
        A single visit that signed up is 100% and means nothing. */
     $bestConv = null;
     foreach ($real as $r) {
-        if ((int) $r['d7']['human'] < 5) continue;
+        if ((int) $r['d7']['human'] - (int) $r['d7']['selfcheck_human'] < 5) continue;
         $rate = $r['d7']['visit_to_signup_pct'];
         if ($rate === null) continue;
         if ($bestConv === null || $rate > $bestConv['rate']) {
@@ -481,10 +492,13 @@ function rmt_acq_daily(): array {
         }
     }
 
-    $shape = function_exists('rmt_traffic_shape') ? rmt_traffic_shape(1) : [];
+    $shape   = function_exists('rmt_traffic_shape') ? rmt_traffic_shape(1) : [];
+    $shape7  = function_exists('rmt_traffic_shape') ? rmt_traffic_shape(7) : [];
     $landing = $shape['landing_destinations']['human'] ?? [];
     $topLanding = null;
     foreach ($landing as $slug => $n) { $topLanding = ['slug' => $slug, 'n' => (int) $n]; break; }
+
+    $social = function_exists('rmt_social_counts') ? rmt_social_counts(7) : [];
 
     $d1 = $cc['totals']['d1']; $d7 = $cc['totals']['d7'];
     /* The one line worth reading first: is today different from the week it sits in. A day is a
@@ -493,17 +507,85 @@ function rmt_acq_daily(): array {
     $change = $expected > 0 ? round(($d1['human'] - $expected) / $expected * 100) : null;
 
     return [
-        'as_of'           => gmdate('Y-m-d H:i') . ' UTC',
+        'as_of' => gmdate('Y-m-d H:i') . ' UTC',
+        /* Four classes, never folded into one another. Real is what is left after our own checks
+           and the crawlers are taken out; uncertain stays visible rather than being split by
+           guesswork. */
+        'traffic' => [
+            'real_human'  => ['today' => (int) $d1['human'], 'week' => (int) $d7['human']],
+            'self_check'  => ['today' => (int) ($d1['internal_human'] ?? 0), 'week' => (int) ($d7['internal_human'] ?? 0)],
+            'automated'   => ['week' => (int) ($shape7['sessions']['likely_automated'] ?? 0)],
+            'uncertain'   => ['week' => (int) ($shape7['sessions']['uncertain'] ?? 0)],
+        ],
         'human_visits'    => ['today' => (int) $d1['human'], 'week' => (int) $d7['human']],
         'signups'         => ['today' => (int) $d1['signups'], 'week' => (int) $d7['signups']],
         'confirmed'       => ['today' => (int) $d1['confirmed'], 'week' => (int) $d7['confirmed']],
         'trips'           => ['today' => (int) $d1['trips'], 'week' => (int) $d7['trips']],
-        'top_source'      => $topSource ? $topSource['source'] : null,
-        'top_campaign'    => $topCampaign ? $topCampaign['campaign'] : null,
-        'top_landing'     => $topLanding,
-        'best_conversion' => $bestConv,
-        'notable_change'  => $change === null ? null : $change . '% against the weekly daily average',
+        /* The steps past acquisition, because a visit that never becomes a connection has not done
+           what this site exists for. Counted over the week, from the event table. */
+        'matches_viewed'      => (int) ($social['overlapping_traveler_viewed'] ?? 0),
+        'connection_requests' => (int) ($social['trip_connect_requested'] ?? 0),
+        'connections_made'    => (int) ($social['trip_connect_accepted'] ?? 0),
+        'messages_sent'       => (int) ($social['message_sent'] ?? 0),
+        'top_real_source'   => $topSource ? $topSource[0] : null,
+        'top_real_campaign' => $topCampaign ? $topCampaign[0] : null,
+        'top_landing'       => $topLanding,
+        'best_conversion'   => $bestConv,
+        'notable_change'    => $change === null ? null : $change . '% against the weekly daily average',
         'our_own_checks_excluded' => (int) ($d7['internal_human'] ?? 0),
-        'note' => 'Every figure excludes automated traffic and our own verification campaigns. A rate with fewer than five human sessions behind it is not reported at all.',
+        'contaminated_window' => rmt_acq_window_is_contaminated(7),
+        /* The milestone counter, and the only numbers allowed anywhere near it: everything since
+           the marker existed, with our own checks and the crawlers already out. If that is zero it
+           prints zero, which is the entire point of having it. */
+        'clean' => rmt_acq_clean_totals(),
+        'note' => 'Real human excludes automated traffic and our own verification. A rate with fewer '
+                . 'than five human sessions behind it is not reported. Sessions before '
+                . RMT_ACQ_CLEAN_FROM . ' UTC predate the self check marker and are our own traffic '
+                . 'unless a post was published.',
     ];
+}
+
+/**
+ * Everything since the self check marker existed, which is the only traffic we can honestly call
+ * acquisition. Before that date our own verification ran under real campaign names and cannot be
+ * separated, so it is not counted rather than guessed at.
+ *
+ * @return array<string,mixed>
+ */
+function rmt_acq_clean_totals(): array {
+    $days = max(1, (int) ceil((time() - strtotime(RMT_ACQ_CLEAN_FROM)) / 86400));
+    $human = 0; $signups = 0; $confirmed = 0; $trips = 0;
+    foreach (rmt_acq_report($days) as $r) {
+        if (rmt_acq_is_internal($r['campaign'] === '' ? null : $r['campaign'])) continue;
+        $human     += (int) $r['human'] - (int) ($r['selfcheck_human'] ?? 0);
+        $signups   += (int) $r['signed_up'];
+        $confirmed += (int) $r['confirmed'];
+        $trips     += (int) $r['trips'];
+    }
+    return [
+        'since'       => RMT_ACQ_CLEAN_FROM . ' UTC',
+        'days'        => $days,
+        'human_visits'=> max(0, $human),
+        'signups'     => $signups,
+        'confirmed'   => $confirmed,
+        'trips'       => $trips,
+        'milestones'  => [
+            ['target' => 100, 'now' => max(0, $human), 'what' => 'genuine external human visits'],
+            ['target' => 25,  'now' => $signups,       'what' => 'real signups'],
+            ['target' => 10,  'now' => $trips,         'what' => 'real trips with dates'],
+            /* Reading a table that may not exist yet must never take the dashboard down, which is
+               the same rule the tracker itself follows. */
+            ['target' => 1,   'now' => rmt_acq_accepted_connects(),
+             'what' => 'two travelers who actually connected'],
+        ],
+    ];
+}
+
+/** Accepted connections, or zero if that table is not there yet. Never throws. */
+function rmt_acq_accepted_connects(): int {
+    try {
+        return (int) (q_one('SELECT COUNT(*) c FROM trip_connects WHERE state = ?', ['accepted'])['c'] ?? 0);
+    } catch (Throwable) {
+        return 0;
+    }
 }

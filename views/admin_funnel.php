@@ -40,33 +40,60 @@
       return $of > 0 ? (string) round($n * 100 / $of) . '%' : '';
   };
   ?>
-  <?php /* The morning line. Nine numbers, above everything else, because the question somebody has
-           when they open this page is whether yesterday did anything. */ ?>
+  <?php /* The morning line. Four classes of traffic, never folded together, then the steps past a
+           visit. The question somebody has when they open this page is whether yesterday did
+           anything, and a number that counts our own checks as travelers does not answer it. */ ?>
   <?php $dy = function_exists('rmt_acq_daily') ? rmt_acq_daily() : null; ?>
   <?php if ($dy): ?>
     <section class="card" style="margin:0 0 18px"><div class="card-body">
       <h2 style="margin:0 0 8px;font-size:1.05rem">Today</h2>
+      <?php if (!empty($dy['contaminated_window'])): ?>
+        <p class="hint" style="margin:0 0 8px;padding:8px 10px;background:#fff5e6;border-radius:6px">
+          <b>This window reaches back before <?= e(RMT_ACQ_CLEAN_FROM) ?> UTC</b>, when the self check
+          marker did not exist. Sessions from before then were our own verification under real
+          campaign names and cannot be separated now. Read them as ours unless a post was published.
+        </p>
+      <?php endif; ?>
       <p style="margin:0 0 6px;font-size:1.02rem">
-        <b><?= (int) $dy['human_visits']['today'] ?></b> human visits,
-        <b><?= (int) $dy['signups']['today'] ?></b> signups,
-        <b><?= (int) $dy['confirmed']['today'] ?></b> confirmed,
-        <b><?= (int) $dy['trips']['today'] ?></b> trips.
-        <span class="hint">Last 7 days: <?= (int) $dy['human_visits']['week'] ?> /
-          <?= (int) $dy['signups']['week'] ?> / <?= (int) $dy['confirmed']['week'] ?> /
-          <?= (int) $dy['trips']['week'] ?>.</span>
+        <b><?= (int) $dy['traffic']['real_human']['today'] ?></b> real human visits today,
+        <b><?= (int) $dy['traffic']['real_human']['week'] ?></b> this week.
+      </p>
+      <p class="hint" style="margin:0 0 8px">
+        Self check: <?= (int) $dy['traffic']['self_check']['week'] ?> this week.
+        Automated: <?= (int) $dy['traffic']['automated']['week'] ?>.
+        Uncertain: <?= (int) $dy['traffic']['uncertain']['week'] ?>.
+        None of those three is counted above.
+      </p>
+      <p style="margin:0 0 6px">
+        <b><?= (int) $dy['signups']['week'] ?></b> signups,
+        <b><?= (int) $dy['confirmed']['week'] ?></b> confirmed,
+        <b><?= (int) $dy['trips']['week'] ?></b> trips this week.
+        <span class="hint">Then: <?= (int) $dy['matches_viewed'] ?> matches seen,
+          <?= (int) $dy['connection_requests'] ?> connection requests,
+          <?= (int) $dy['connections_made'] ?> accepted,
+          <?= (int) $dy['messages_sent'] ?> messages.</span>
       </p>
       <p class="hint" style="margin:0">
-        Top source: <b><?= e((string) ($dy['top_source'] ?? 'none yet')) ?></b>.
-        Top campaign: <b><?= e((string) ($dy['top_campaign'] ?? 'none yet')) ?></b>.
+        Top real source: <b><?= e((string) ($dy['top_real_source'] ?? 'none yet')) ?></b>.
+        Top real campaign: <b><?= e((string) ($dy['top_real_campaign'] ?? 'none yet')) ?></b>.
         Top landing: <b><?= e((string) ($dy['top_landing']['slug'] ?? 'not recorded yet')) ?></b>.
         Best conversion: <?= $dy['best_conversion']
             ? e((string) $dy['best_conversion']['source']) . ' ' . e((string) $dy['best_conversion']['rate']) . '%'
             : 'no channel has five human sessions yet' ?>.
         <?php if ($dy['notable_change'] !== null): ?>Change: <?= e((string) $dy['notable_change']) ?>.<?php endif; ?>
-        <?php if ((int) $dy['our_own_checks_excluded'] > 0): ?>
-          <br><?= (int) $dy['our_own_checks_excluded'] ?> of this week's human sessions were our own checks and are excluded.
-        <?php endif; ?>
       </p>
+      <?php /* The milestones, counted only from traffic we can honestly call acquisition. If that is
+               zero it says zero, which is the whole reason it exists. */ ?>
+      <?php $cl = $dy['clean'] ?? null; if ($cl): ?>
+        <hr style="margin:12px 0">
+        <p class="hint" style="margin:0 0 6px">Counted from <?= e((string) $cl['since']) ?>,
+          <?= (int) $cl['days'] ?> day<?= (int) $cl['days'] === 1 ? '' : 's' ?> ago, with our own
+          checks and automated traffic already out. Nothing before that date is counted here.</p>
+        <?php foreach ($cl['milestones'] as $m): ?>
+          <p style="margin:2px 0;font-size:.94rem"><span class="muted"><?= e((string) $m['what']) ?></span>
+            <strong style="float:right"><?= (int) $m['now'] ?> of <?= (int) $m['target'] ?></strong></p>
+        <?php endforeach; ?>
+      <?php endif; ?>
     </div></section>
   <?php endif; ?>
 
