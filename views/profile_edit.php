@@ -71,6 +71,20 @@
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">Shown on your profile, and used to
       say what you and another traveler have in common. Nothing else.</p>
 
+    <?php /* Optional. The first practical question about meeting somebody is whether you can talk. */ ?>
+    <label>Languages you speak</label>
+    <div class="pick-chips" style="max-height:none">
+      <?php $myLangs = function_exists('rmt_languages_for_user') ? rmt_languages_for_user((int) ($me['id'] ?? 0)) : []; ?>
+      <?php foreach (RMT_LANGUAGES as $code => $label): ?>
+        <label class="chip pick-chip">
+          <input type="checkbox" name="languages[]" value="<?= e($code) ?>"<?= in_array($code, $myLangs, true) ? ' checked' : '' ?>>
+          <?= e($label) ?>
+        </label>
+      <?php endforeach; ?>
+    </div>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">Optional. Shown on your profile so
+      other travelers know whether you can talk.</p>
+
     <?php /* Opt in, off by default, and described exactly as what it is. Living somewhere is
              never taken as consent to be listed as available to strangers, so this is a box
              somebody has to find and tick, and the sentence under it is the whole promise. */ ?>

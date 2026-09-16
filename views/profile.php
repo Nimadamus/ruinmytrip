@@ -155,6 +155,10 @@
   <?php /* What they are into, and what the two of you have in common. The second line is the only
            part a visitor cares about, and it exists only between the viewer and this profile. */ ?>
   <?php $interests = $interests ?? []; $sharedInterests = $sharedInterests ?? []; ?>
+  <?php $rmtLangs = function_exists('rmt_languages_for_user') ? rmt_language_labels(rmt_languages_for_user((int) $u['id'])) : []; ?>
+  <?php if ($rmtLangs): ?>
+    <p class="hint" style="margin:6px 0 0">Speaks <?= e(implode(', ', $rmtLangs)) ?></p>
+  <?php endif; ?>
   <?php if ($interests): ?>
     <div class="tag-list" style="margin:0 0 10px">
       <?php foreach (rmt_interest_labels($interests) as $lab): ?>

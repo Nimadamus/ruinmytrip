@@ -1016,6 +1016,7 @@ function profile_edit_submit(array $a): void {
                    (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
     /* Interests, from the fixed vocabulary. Saved after the profile row is certain to exist. */
     rmt_interests_save((int) $me['id'], (array) ($_POST['interests'] ?? []));
+    rmt_languages_save((int) $me['id'], (array) ($_POST['languages'] ?? []));
 
     /* "Completed" is a threshold, not a save: a name somebody can recognise, a few words about
        themselves and a home city. That is the point at which a profile is worth another traveler

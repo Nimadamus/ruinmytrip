@@ -515,3 +515,61 @@ function rmt_interests_shared(int $a, int $b): array {
     if ($a < 1 || $b < 1) return [];
     return array_values(array_intersect(rmt_interests_for($a), rmt_interests_for($b)));
 }
+
+/**
+ * The languages a traveler says they speak. A closed list, because "can we actually talk" is a
+ * question two strangers have and free text could not answer it: "Spanish", "espanol", "ES" and
+ * "some Spanish" are four answers to one question.
+ */
+const RMT_LANGUAGES = [
+    'en' => 'English', 'es' => 'Spanish', 'fr' => 'French', 'de' => 'German', 'it' => 'Italian',
+    'pt' => 'Portuguese', 'nl' => 'Dutch', 'sv' => 'Swedish', 'pl' => 'Polish', 'el' => 'Greek',
+    'tr' => 'Turkish', 'ru' => 'Russian', 'uk' => 'Ukrainian', 'ar' => 'Arabic', 'he' => 'Hebrew',
+    'fa' => 'Persian', 'hi' => 'Hindi', 'th' => 'Thai', 'vi' => 'Vietnamese', 'id' => 'Indonesian',
+    'zh' => 'Chinese', 'ja' => 'Japanese', 'ko' => 'Korean',
+];
+
+/** Only codes from the list, deduplicated, capped at eight, in list order. */
+function rmt_languages_clean(array $codes): array {
+    $picked = array_flip(array_map('strval', $codes));
+    $out = [];
+    foreach (array_keys(RMT_LANGUAGES) as $code) {
+        if (isset($picked[$code])) $out[] = $code;
+        if (count($out) >= 8) break;
+    }
+    return $out;
+}
+
+/** @return list<string> the stored codes, cleaned on the way out as well as the way in */
+function rmt_languages_for(?string $stored): array {
+    if ($stored === null || trim($stored) === '') return [];
+    return rmt_languages_clean(explode(',', $stored));
+}
+
+/** @return list<string> human names */
+function rmt_language_labels(array $codes): array {
+    return array_values(array_map(static fn(string $c) => RMT_LANGUAGES[$c], rmt_languages_clean($codes)));
+}
+
+/**
+ * A member's languages, read on its own rather than added to the profile query. If migration 096
+ * ever failed on deploy (the entrypoint logs a failed migrate and keeps serving), a column added to
+ * that query would take every profile page down; this returns nothing instead.
+ */
+function rmt_languages_for_user(int $uid): array {
+    if ($uid < 1) return [];
+    try {
+        return rmt_languages_for((string) (q_one('SELECT languages FROM profiles WHERE user_id = ?', [$uid])['languages'] ?? ''));
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function rmt_languages_save(int $uid, array $codes): void {
+    $clean = rmt_languages_clean($codes);
+    try {
+        q_run('UPDATE profiles SET languages = ? WHERE user_id = ?', [$clean ? implode(',', $clean) : null, $uid]);
+    } catch (Throwable) {
+        // A database that has not run migration 096 yet saves the rest of the profile regardless.
+    }
+}
