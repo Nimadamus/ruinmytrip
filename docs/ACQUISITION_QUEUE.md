@@ -145,6 +145,18 @@ rest of the work.**
   (`docs/ACQUISITION_VIDEO.md`), the weekly operating plan (`docs/ACQUISITION_WEEKLY.md`) and the
   ranked channel research (`docs/ACQUISITION_CHANNELS.md`).
 
+* **The three activation emails are live**, 2026-09-16: a match appearing, a connection request and
+  an acceptance. Each goes through the existing capped helper, names a city and nothing else, and
+  carries an unsubscribe link. A decline still tells nobody.
+* **Ten editorial questions live on production**, one per city, each beginning "RuinMyTrip asks:"
+  under the editorial account with its badge. No answers exist and the publisher cannot write one.
+* **Two visitor questions**, on an empty match list and on your own trip page, once each.
+* **The top ten organic opportunities** are in `docs/ACQUISITION_ORGANIC.md` with impressions, clicks
+  and position on every row. Six of the ten were the same problem and are fixed.
+* **The social account plan** is in `docs/SOCIAL_LAUNCH_PLAN.md`: TikTok first, Instagram second,
+  everything else ignored, with handles, bio, the first ten posts in order, cadence and the metric
+  that decides whether to continue.
+
 ## IN PROGRESS
 
 * Nothing. Everything that can be done without an external account is done.

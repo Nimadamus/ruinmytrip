@@ -91,6 +91,31 @@ any of them. Building more pages would not change that; the pages are not the co
 absence of any link from anywhere is. That is a distribution problem, which is what the rest of
 `docs/ACQUISITION_*` is about.
 
+## The top ten opportunities, ranked
+
+Every row is an existing URL. **Clicks are 0 on every one of them**, because clicks are 0 sitewide,
+and that is the most important column on the page.
+
+| # | URL | Query or theme | Imp | Clicks | Pos | Intent | What was weak | Safest fix | Expected action |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | `/p/book-of-kells-experience-at-trinity-college-dublin` | Book of Kells, Dublin | 188 | 0 | 68 | Planning one attraction | **Offered nothing about the product at all** | Shared social component, shipped | Open the Dublin community |
+| 2 | `/blog/san-francisco-hotel-tax-2026` | san francisco hotel tax rate | 58 | 0 | **7.8** | A number | Best ranking page on the site and least relevant to matching. No city context to link to | Leave the content. Nothing to add honestly | None. Accept it as a fact page |
+| 3 | `/g/chiang-mai-thailand-travel-guide` | Chiang Mai guide | 38 | 0 | 89.9 | Trip planning, **and a cohort city** | Ended on a review CTA, not the community | Shared component, shipped, carries the Yi Peng window | Post dates for late November |
+| 4 | `/p/benaki-museum-of-greek-culture-athens` | Benaki museum | 36 | 0 | 40.7 | One attraction | Same as row 1 | Shared component, shipped | Open the Athens community |
+| 5 | `/d/amsterdam-netherlands` | amsterdam city tax | 28 | 0 | 44.2 | A number, on our best destination page | Community block was there; the travelers link was around 6,400px down on a phone | First moves moved to the top, shipped | See who is going |
+| 6 | `/d/lisbon-portugal` | Lisbon | 26 | 0 | 49.5 | Destination, **Web Summit cohort** | Same, plus **it is in the title test** | Nothing until 2026-09-29 | Wait |
+| 7 | `/g/zanzibar-tanzania-travel-guide` | Zanzibar guide | 23 | 0 | 89.7 | Trip planning | Same as row 3 | Shared component, shipped | Open the community |
+| 8 | `/p/anne-frank-house-amsterdam` | Anne Frank House | 21 | 0 | 76.5 | One attraction, in a top city | Same as row 1 | Shared component, shipped | Amsterdam community |
+| 9 | `/g/cancun-mexico-travel-guide` | Cancún guide | 19 | 0 | 76.6 | Trip planning, group and nightlife travel | Same as row 3 | Shared component, shipped | Open the community |
+| 10 | `/login` | "ruins trip" | 17 | 0 | 19.1 | Somebody looking for **this site by a half remembered name** | A sign in form is the worst possible landing page for that | **Do not touch it.** Changing a login page for search is how you break sign in | Note it and watch |
+
+**Row 10 is the most interesting line in this document.** Seventeen impressions at position 19 for a
+query that is somebody trying to remember our name. That is the only query on the entire site with
+navigational intent, and the page answering it is a login form.
+
+**Rows 1, 3, 4, 7, 8 and 9 were the same problem and now have the same fix**, shipped today: a page
+that earns impressions and offers nothing. Together they are 325 of the site's 1,469 impressions.
+
 ## What I recommend, in order
 
 1. **Done today: the shared social component on place pages, guides and posts.** Highest value, no
