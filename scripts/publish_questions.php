@@ -72,9 +72,10 @@ foreach ($data['questions'] as $q) {
     }
 
     if ($apply) {
-        q_run("INSERT INTO posts (user_id, destination_id, body, status, created_at, updated_at)
-               VALUES (?,?,?,'published',?,?)",
-              [(int) $author['id'], (int) $d['id'], $body, date('Y-m-d H:i:s'), date('Y-m-d H:i:s')]);
+        /* updated_at left empty: a question that has not been edited must not say it was. */
+        q_run("INSERT INTO posts (user_id, destination_id, body, status, created_at)
+               VALUES (?,?,?,'published',?)",
+              [(int) $author['id'], (int) $d['id'], $body, date('Y-m-d H:i:s')]);
     }
     $made++;
     printf("  %-24s ask     %s\n", $slug, substr($firstLine, 0, 60));

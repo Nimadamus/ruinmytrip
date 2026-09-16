@@ -93,4 +93,13 @@ endforeach;
     <textarea name="body" placeholder="Add a comment" maxlength="2000" style="min-height:80px"></textarea>
     <button class="btn btn-primary" style="margin-top:8px">Post comment</button>
   </form>
-<?php else: ?><p style="margin-bottom:60px"><a href="<?= e(url('register')) ?>">Join free</a> or <a href="<?= e(url('login')) ?>">sign in</a> to comment.</p><?php endif; ?>
+<?php else: ?>
+  <?php /* Somebody who wants to answer and has no account used to be sent to a plain signup, and
+           landed on the feed afterwards with the question they meant to answer gone. The page they
+           were on travels with them now, the same way a trip link does. */ ?>
+  <?php $rmt_eng_back = (string) (parse_url((string) $returnUrl, PHP_URL_PATH) ?: '');
+        $rmt_eng_q = $rmt_eng_back !== '' ? '?return=' . rawurlencode($rmt_eng_back) : ''; ?>
+  <p style="margin-bottom:60px"><a href="<?= e(url('register' . $rmt_eng_q)) ?>">Join free</a> or
+    <a href="<?= e(url('login' . $rmt_eng_q)) ?>">sign in</a>
+    <?= $targetType === 'post' ? 'to answer.' : 'to comment.' ?></p>
+<?php endif; ?>

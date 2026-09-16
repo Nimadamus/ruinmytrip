@@ -11,7 +11,9 @@
       <?php /* The badge the editorial reviews carry. The site asks questions in its own communities
                and the body says so, but a byline that reads like a member's is what somebody skims. */ ?>
       <?php if (function_exists('rmt_is_editorial') && rmt_is_editorial($p)): ?><?= rmt_editorial_badge() ?><?php endif; ?>
-      <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?><?php if (!empty($p['updated_at'])): ?> · edited<?php endif; ?></span>
+      <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?><?php /* "edited" only when it was: an insert that stamps updated_at in the same moment
+                   as created_at is not an edit, and every editorial question read "edited". */ ?><?php
+                   if (!empty($p['updated_at']) && strtotime((string) $p['updated_at']) - strtotime((string) $p['created_at']) > 60): ?> · edited<?php endif; ?></span>
       <?php if (!empty($p['place_slug'])): ?>
         <div class="hint">about <a href="<?= e(url('p/'.$p['place_slug'])) ?>"><?= e((string) $p['place_name']) ?></a></div>
       <?php endif; ?>

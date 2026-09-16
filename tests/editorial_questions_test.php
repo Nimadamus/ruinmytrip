@@ -58,6 +58,19 @@ ok('the query carries that role',                   str_contains($posts, 'u.role
 ok('the question page badges it too',               str_contains($ps, 'rmt_is_editorial($p)'), true);
 
 
+echo "\n-- somebody who wants to answer gets back to the question --\n";
+$eng = (string) file_get_contents(BASE_PATH . '/views/_engagement.php');
+ok('signup from a question carries the page back', str_contains($eng, "url('register' . \$rmt_eng_q)"), true);
+ok('...and so does sign in',                      str_contains($eng, "url('login' . \$rmt_eng_q)"), true);
+ok('a question asks to be answered, not commented on', str_contains($eng, "'to answer.'"), true);
+/* A question nobody edited must not say "edited". */
+ok('the page only says edited after a real edit',
+   str_contains((string) file_get_contents(BASE_PATH . '/views/post_show.php'),
+                "strtotime((string) \$p['updated_at']) - strtotime((string) \$p['created_at']) > 60"), true);
+ok('and the publisher no longer stamps an edit time on a new question',
+   (bool) preg_match('/INSERT INTO posts \(user_id, destination_id, body, status, created_at\)\s/', $src), true);
+
+
 echo "\n-- running it twice does not double it --\n";
 ok('it matches an existing row first', str_contains($src, 'SELECT id, body FROM posts'), true);
 ok('...on destination and first line', str_contains($src, "\$firstLine . '%'"), true);
