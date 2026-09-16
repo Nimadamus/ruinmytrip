@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-11 (ninth pass).
+Replace stale lines here; do not append history. Last touched 2026-09-15 (tenth pass).
 
 ## What the product is
 
@@ -72,6 +72,17 @@ highest applied migration. A green deploy is not a migration.
 
 * `python scripts/gsc_report.py --days 28` for search, `/admin/funnel` for joining and contributing.
 * The measure that matters is members who post: signups per week and reviews by distinct travelers.
+
+## The city page is a community page (2026-09-15)
+
+A city opens with its people now, not with our opinion of it. `views/_city_community.php` sits
+directly under the hero: Follow the city, a strip of counts that are all queries and all drawn
+only above zero, a composer that posts into the city and lands the reader back in the thread, six
+recent questions with author and timestamp, the photographs, and an honest empty state for a city
+nobody has spoken about. The old buried "Travelers talking" section and the photo wall moved into
+it; the rating, editorial review, places, reviews, trips, map and related cities are untouched and
+one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
+`tests/city_community_test.php`.
 
 ## What the product does now
 
