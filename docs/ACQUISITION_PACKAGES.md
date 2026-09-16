@@ -216,10 +216,195 @@ actually want answered.
 
 ---
 
+
+---
+
+# Ten posts, written and ready to publish
+
+Added 2026-09-15. **None of these has been posted.** Each is complete: paste the title, paste the
+body, done. Every link is tracked and verified live today.
+
+**The rule for all ten:** post one, wait, see what happens. Never the same text in two places. If a
+moderator removes one, record why and do not repost there.
+
+**The two link shapes, both verified on production today:**
+
+* **City page:** `https://ruinmytrip.com/d/{slug}?utm_source={channel}&utm_medium={medium}&utm_campaign={label}`
+* **Pre filled trip form:** `https://ruinmytrip.com/trip/new?destination_id={id}&date_from=YYYY-MM-DD&date_to=YYYY-MM-DD`
+  A signed out visitor clicking this lands on signup with the whole thing preserved, and comes back
+  to the form with the city and both dates already filled in. Destination ids on production:
+  **Munich 42, Lisbon 2, Chiang Mai 39, Miami 85, Bangkok 15.**
+
+---
+
+## 1. r/Munich — Oktoberfest, the nearest cohort by far. **Risk: low.** Local subreddit, real question.
+
+**Title**
+
+    Oktoberfest starts Saturday: how are people finding a table if they are not already in a group?
+
+**Body**
+
+    Wiesn runs 19 September to 4 October this year and I am going without a group, which I gather is
+    the hard version. For anyone who has done it that way: is it realistically turning up at 9am on a
+    weekday and sharing a table, or is it worth trying to find other people beforehand?
+
+    Being upfront that I have a stake in the second answer: I built a site where you put your dates
+    for a city and see other travelers whose dates overlap. It is new and quiet so I am not
+    pretending it will solve anyone's Saturday, but my dates are on it if anyone is around the same
+    days.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=reddit&utm_medium=post&utm_campaign=oktoberfest
+
+## 2. r/Oktoberfest — **Risk: medium.** Check whether project posts are allowed at all.
+
+**Title**
+
+    Going alone this year. Which days are actually easiest to share a table on?
+
+**Body**
+
+    First Wiesn, going without a group, 19 September to 4 October window. Everything I read says
+    weekday mornings, but I would rather hear it from people who have done it than from a listicle.
+
+    Two questions. Which days did you find easiest to get seated as a pair or alone, and did you end
+    up meeting people beforehand or just at the table?
+
+    Disclosure since it is relevant to the second one: I built a small site for finding travelers
+    whose dates overlap yours in a city. My Munich dates are on it.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=reddit&utm_medium=post&utm_campaign=oktoberfest
+
+## 3. r/solotravel — **Risk: high. Do not post unless the rules explicitly permit project posts.**
+
+**Title**
+
+    How do you find out whether anyone you would want to meet is in the same city the same week?
+
+**Body**
+
+    Going to Munich for Oktoberfest and the question came up again: you book a city and a week, and
+    you have no idea who else will be there. Hostel common rooms work if you are staying in one,
+    apps are mostly dating, and Facebook groups are mostly people selling tours.
+
+    How do people actually solve this?
+
+    Asking partly because I built something for it, and I would rather know it is a solved problem
+    than keep building. It is a page per city where you put your dates and see whose overlap.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=reddit&utm_medium=post&utm_campaign=solo-overlap
+
+## 4. Facebook, an Oktoberfest or Munich travel group — **Risk: low** if you have been in the group a while.
+
+    Wiesn 19 September to 4 October. For anyone going without a group: how did you handle tables?
+
+    I am going on my own days and asking partly because I built a thing for exactly this, a page
+    per city where you put your dates in and see which other travelers overlap them. It is new, so
+    there is not a crowd on it, which is why I am asking here rather than announcing anything.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=group&utm_campaign=oktoberfest
+
+## 5. r/Miami — Art Week. **Risk: low.** Post from late October.
+
+**Title**
+
+    Art Week 1 to 7 December: which days are worth being in Wynwood and which are better spent elsewhere?
+
+**Body**
+
+    Coming for Art Week and trying to plan around the crowds rather than into them. Art Basel itself
+    is at the convention center in the first week of December with the satellites spread either side.
+
+    If you live there: which days are worth it, and which are the ones locals avoid entirely?
+
+    Disclosure, I built a site where you post your dates for a city and see who else is around that
+    week. Mine are 1 to 7 December.
+
+    https://ruinmytrip.com/d/miami-usa?utm_source=reddit&utm_medium=post&utm_campaign=miami-art-week
+
+## 6. r/lisbon — Web Summit. **Risk: low.** Post from mid October.
+
+**Title**
+
+    Web Summit is 9 to 12 November. What is worth doing in Lisbon on the days either side of it?
+
+**Body**
+
+    In Lisbon for Web Summit and staying a few extra days. The conference fills the middle; it is the
+    weekend either side I have not planned.
+
+    Looking for what somebody who lives there would actually do rather than the top ten lists.
+
+    I will say that I built a site for finding travelers whose dates overlap yours in a city, and my
+    Lisbon dates are on it, in case anyone else is stretching the trip the same way.
+
+    https://ruinmytrip.com/d/lisbon-portugal?utm_source=reddit&utm_medium=post&utm_campaign=web-summit
+
+## 7. r/digitalnomad — **Risk: medium.** Many nomad subs ban project posts outright.
+
+**Title**
+
+    Web Summit week in Lisbon: is anyone building a way to find people who are in the same city the same days?
+
+**Body**
+
+    Seventy thousand people in Lisbon between 9 and 12 November and the official app matches you with
+    attendees, which is useful for the conference and useless for the Sunday before it starts.
+
+    How do people who move around a lot solve the general version of this? I ask because I built the
+    obvious thing, a page per city where you enter your dates and see whose overlap, and I would
+    rather find out it already exists than keep going.
+
+    https://ruinmytrip.com/d/lisbon-portugal?utm_source=reddit&utm_medium=post&utm_campaign=nomad-overlap
+
+## 8. r/ThailandTourism — Yi Peng. **Risk: low.** Post from late October.
+
+**Title**
+
+    Yi Peng in Chiang Mai, late November: is the ticketed release worth it over the free ones?
+
+**Body**
+
+    Planning to be in Chiang Mai for Yi Peng and Loy Krathong, which the guides put around 23 to 25
+    November this year, though the sources disagree on the exact night so I would take a local's word
+    over mine.
+
+    The ticketed mass releases out of town are expensive and the free ones in the old city are
+    apparently packed. Which did you do, and would you do it again?
+
+    Disclosure: I built a site for finding travelers whose dates overlap in a city, mostly because
+    sharing a ride to the out of town one is the sort of thing you need one other person for.
+
+    https://ruinmytrip.com/d/chiang-mai-thailand?utm_source=reddit&utm_medium=post&utm_campaign=yi-peng
+
+## 9. X post
+
+    Oktoberfest runs 19 September to 4 October.
+
+    The hard part going alone is not the beer, it is the table.
+
+    Put your dates in and see which other travelers are in Munich the same days.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=x&utm_medium=post&utm_campaign=oktoberfest
+
+## 10. Instagram or TikTok caption, over footage of a Wiesn tent
+
+    Oktoberfest, 19 September to 4 October. Going on your own is fine. Sitting on your own is not.
+
+    Post your dates, see who else is in Munich the same days, and sort the table before you land.
+
+    Link in bio.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=tiktok&utm_medium=bio&utm_campaign=oktoberfest
+
+---
+
 # The exact human action needed
 
 1. Check the subreddit rules in the sidebar, as above.
-2. Post **one** of the two Reddit drafts, from your own account.
+2. Post **one** of the drafts from your own account. **Start with number 1, r/Munich**: Oktoberfest
+   begins on 19 September, which is the only cohort on the list that does not involve waiting, and
+   a local subreddit is the lowest risk place to find out whether any of this works.
 3. Tell me you posted it.
 
 Everything downstream is built, instrumented and verified: the link is tracked, the landing page

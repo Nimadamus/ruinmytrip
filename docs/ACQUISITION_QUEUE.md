@@ -10,8 +10,9 @@ and any two of those trips overlapping in one city.
 Each of these is finished except for one action only a person can take. **None of them blocks the
 rest of the work.**
 
-1. **Post one Reddit thread.** Copy is ready in `docs/ACQUISITION_PACKAGES.md`, links are tracked,
-   landing pages are verified. **Why it cannot be done here:** Reddit answers 403 to every
+1. **Post one Reddit thread, starting with r/Munich.** Oktoberfest runs 19 September to 4 October,
+   which is four days away and the only cohort that does not involve waiting. Ten finished posts are
+   in `docs/ACQUISITION_PACKAGES.md`, links tracked, landing pages verified. **Why it cannot be done here:** Reddit answers 403 to every
    unauthenticated request from this machine and blocks the signed in browser with "You've been
    blocked by network security" — tested three ways on 2026-09-15 (curl, the CDP browser, a fresh
    Playwright browser). Subreddit rules therefore cannot be read immediately before posting, which
@@ -40,11 +41,20 @@ rest of the work.**
 * **Sharing** on the city community block and on the empty overlap state, with people first wording.
 * **Cold landing path.** A first line explaining the site to somebody arriving from a link, and the
   homepage cut to one sentence with the review CTA moved off the hero for signed out visitors.
-* **Campaign packages**: Reddit, Facebook, thirty days of content, five verified cohorts.
+* **Campaign packages**: ten finished posts across Reddit, Facebook, X and TikTok, thirty days of
+  content ideas, five cohorts with dates verified against primary sources.
+* **Destination QA**, eight priority cities at 390px and 1280px, fourteen checks each: status, page
+  title, social title, card image, canonical, robots, community block, the line for a cold visitor,
+  Follow, Ask, composer, share control, travelers link, a reachable trip form, overflow, tap targets
+  and JavaScript errors. **112 checks, zero failures.**
+* **The pre filled trip link works from cold.** `/trip/new?destination_id=42&date_from=…&date_to=…`
+  sends a signed out visitor to signup with the whole link preserved and returns them to a form with
+  the city and both dates already in it. Destination ids: Munich 42, Lisbon 2, Chiang Mai 39,
+  Miami 85, Bangkok 15.
 
 ## IN PROGRESS
 
-* QA of the priority destination share flows, city by city.
+* Nothing. Everything that can be done without an external account is done.
 
 ## NEXT
 
