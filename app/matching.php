@@ -296,6 +296,8 @@ function rmt_match_notify(int $actorId, int $goingId, int $destId, string $from,
     $trip = q_one('SELECT open_to_meeting FROM trips WHERE id = ?', [$goingId]);
     if ($trip && $trip['open_to_meeting'] !== null && (int) $trip['open_to_meeting'] === 0) return 0;
     $now = date('Y-m-d H:i:s');
+    /* Read once rather than per recipient: the city is the only thing the email says. */
+    $destName = (string) (q_one('SELECT name FROM destinations WHERE id = ?', [$destId])['name'] ?? '');
     $sent = 0;
     foreach (rmt_trip_match_user_ids($actorId, $destId, $from, $to) as $uid) {
         if ($uid < 1 || $uid === $actorId) continue;
@@ -314,6 +316,24 @@ function rmt_match_notify(int $actorId, int $goingId, int $destId, string $from,
         if ($pending) continue;
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
               [$uid, RMT_MATCH_NOTIFY_TYPE, $actorId, 'going', $goingId, $now]);
+        /* The in app notification stays canonical; this is the courtesy that makes it reachable.
+           Somebody who joined, posted dates and left has no reason to come back on their own, and
+           this is the one event that is genuinely worth a return: the product just did the thing
+           they joined for.
+           What it says: the city, and that dates overlap. Not who, not which dates, not anything
+           they would have had to open the site to see anyway. The helper refuses unverified
+           addresses, opt outs, and more than one email an hour or six a day per person, and the
+           duplicate guards above mean one new trip cannot tap the same shoulder twice. */
+        if (function_exists('rmt_notify_email_direct')) {
+            $city = $destName !== '' ? $destName : 'a city you are going to';
+            rmt_notify_email_direct(
+                $uid,
+                'Somebody overlaps your dates in ' . $city,
+                'A traveler posted dates in ' . $city . ' that overlap yours.',
+                '/matches',
+                "your dates overlap somebody else's"
+            );
+        }
         $sent++;
     }
     return $sent;

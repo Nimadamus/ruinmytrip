@@ -4161,6 +4161,19 @@ function connect_request(array $a): void {
         if ($trip) {
             q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
                   [(int) $trip['user_id'], RMT_CONNECT_NOTIFY_TYPE, (int) $me['id'], 'trip', $tripId, date('Y-m-d H:i:s')]);
+            /* A request is a person waiting on an answer, and messaging is gated behind that
+               answer, so an unseen request stops the conversation before it starts. The in app
+               notification is still the record; this makes it reachable.
+               It names nobody and no dates: a trip somebody posted, and a page to answer on. The
+               helper refuses unverified addresses, opt outs, and more than one an hour per person,
+               and the created flag above means a repeat press sends nothing. */
+            rmt_notify_email_direct(
+                (int) $trip['user_id'],
+                'Somebody wants to connect on your trip',
+                'A traveler asked to connect on a trip you posted.',
+                '/matches',
+                'somebody asked to connect on your trip'
+            );
         }
         rmt_track('trip_connect_requested', ['destination_id' => $trip['destination_id'] ?? null]);
         flash('Said. They will see it and decide.');
@@ -4183,6 +4196,16 @@ function connect_decide(array $a): void {
         if ($c) {
             q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
                   [(int) $c['from_user_id'], RMT_CONNECT_NOTIFY_TYPE, (int) $me['id'], 'connect', (int) $c['id'], date('Y-m-d H:i:s')]);
+            /* Acceptance is the moment messaging opens. Both sides said yes and until now neither
+               was told, so the mutual opt in we built carefully ended in silence. Only the asker is
+               mailed: the person accepting just did it and knows. */
+            rmt_notify_email_direct(
+                (int) $c['from_user_id'],
+                'You can message each other now',
+                'A traveler accepted your connection request. You can message each other.',
+                '/messages',
+                'a traveler accepted your connection request'
+            );
         }
         rmt_track('trip_connect_accepted');
         flash('You both said yes. You can message each other now.');

@@ -30,7 +30,8 @@ const RMT_DIRECT_MAIL_PER_DAY  = 6;
  * @param string $path    where to go, absolute or site-relative
  * @return bool whether an email was actually sent
  */
-function rmt_notify_email_direct(int $userId, string $subject, string $line, string $path): bool {
+function rmt_notify_email_direct(int $userId, string $subject, string $line, string $path,
+                                 string $why = 'somebody wrote to you directly'): bool {
     if ($userId < 1 || !rmt_mail_enabled()) return false;
 
     $u = q_one("SELECT u.id, u.username, u.email, u.status, u.email_verified_at,
@@ -53,7 +54,7 @@ function rmt_notify_email_direct(int $userId, string $subject, string $line, str
         '<p>' . e($line) . '</p>'
         . '<p style="margin:20px 0"><a href="' . e($url) . '">Open it on RuinMyTrip</a></p>'
         . '<p style="color:#8895a3;font-size:12px;margin:24px 0 0">'
-        . 'You are getting this because somebody wrote to you directly. '
+        . 'You are getting this because ' . e($why) . '. '
         . '<a href="' . e($unsub) . '" style="color:#8895a3">Turn these off</a>.</p>'
     );
     $text = $line . "\n\n" . $url . "\n\nTurn these off: " . $unsub;
