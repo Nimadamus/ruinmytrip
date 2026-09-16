@@ -60,6 +60,20 @@ $stats = array_values(array_filter([
     </div>
   </div>
 
+  <?php /* Sharing, on the page that is worth sharing.
+           A young site is not found by a search engine first, it is found by one person sending a
+           link to another, and this page had no way to do that at all: the control existed and was
+           on trips, reviews, guides, photos and profiles, and not on the city page that every
+           search result points at. The words that travel are about people rather than about the
+           city, because "Bangkok travel guide" is a link nobody sends and "see who else is going to
+           Bangkok" is one somebody does. */ ?>
+  <div class="cc-share">
+    <span class="hint">Know somebody going to <?= e($cityName) ?>?</span>
+    <?php $shareUrl = abs_url('/d/' . $d['slug']);
+          $shareText = 'Going to ' . $cityName . '? See who else is traveling there.';
+          include __DIR__ . '/_share.php'; ?>
+  </div>
+
   <?php if ($stats): ?>
     <ul class="cc-stats">
       <?php foreach ($stats as $st): ?>
