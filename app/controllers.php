@@ -343,8 +343,15 @@ function destination(array $a): void {
     view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
+        /* The shared card leads with the people, whatever the title says. Same URL, same canonical,
+           same robots rule: only the words on the card change. */
+        'og_title' => rmt_destination_og_title($d),
+        'og_description' => rmt_destination_og_description($d),
         'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
-        'og_image' => abs_url($d['hero_url']),
+        /* The purpose built card rather than the hero photograph. The card names the city and says
+           what the page is for; the photograph is a nice picture of somewhere, which is what every
+           other travel link on the page already looks like. */
+        'og_image' => abs_url('/card/city/' . $d['slug'] . '.png'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$d['country'],'url'=>url('in/'.rmt_country_slug((string)$d['country']))],
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
@@ -5515,6 +5522,7 @@ function admin_funnel(array $a): void {
            something finished; this measures the loop the product is built around, which is the one
            that has to work first. */
         'social'    => rmt_social_funnel($days),
+        'acq'       => rmt_acq_report($days),
         'socialC'   => rmt_social_counts($days),
         'visitors'  => rmt_visitor_counts($days),
         'topCities' => rmt_top_communities($days),

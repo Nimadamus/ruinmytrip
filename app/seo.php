@@ -134,6 +134,26 @@ function rmt_destination_page_title(array $d): string {
  * the test group it says what the page holds AND that there are people on it, because a summary
  * that describes only the city is a description of a guidebook.
  */
+/**
+ * What a shared link says about a city, which is a different job from what a search result says.
+ *
+ * A title is read by somebody who already typed the city into a search box. A social card is read
+ * by somebody scrolling past a link a friend posted, who was not looking for anything: "costs,
+ * tickets, taxes" is not a reason to stop, and "meet the travelers heading there" is.
+ *
+ * Separate from the title on purpose. The title experiment running on nine pages is not disturbed
+ * by this, and cannot be: these are different fields with different callers.
+ */
+function rmt_destination_og_title(array $d): string {
+    return 'Going to ' . (string) $d['name'] . '? Meet travelers heading there | RuinMyTrip';
+}
+
+function rmt_destination_og_description(array $d): string {
+    $n = (string) $d['name'];
+    return 'Find people traveling to ' . $n . ', ask the ones who have been, share your dates and '
+         . 'see who is around when you are. Free to join.';
+}
+
 function rmt_destination_page_description(array $d): string {
     $slug = (string) ($d['slug'] ?? '');
     if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][1];

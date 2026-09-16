@@ -11,8 +11,8 @@
          type that has not earned a place in the index now says so from its controller. */ ?>
 <meta name="robots" content="<?= e((string) ($__meta['robots'] ?? 'index, follow')) ?>">
 <meta property="og:type" content="website">
-<meta property="og:title" content="<?= e($__meta['title']) ?>">
-<meta property="og:description" content="<?= e($__meta['description']) ?>">
+<meta property="og:title" content="<?= e((string) ($__meta['og_title'] ?? '') !== '' ? (string) $__meta['og_title'] : $__meta['title']) ?>">
+<meta property="og:description" content="<?= e((string) ($__meta['og_description'] ?? '') !== '' ? (string) $__meta['og_description'] : $__meta['description']) ?>">
 <?php if (($__meta['canonical'] ?? '') !== ''): ?><meta property="og:url" content="<?= e($__meta['canonical']) ?>"><?php endif; ?>
 <meta property="og:image" content="<?= e($__meta['og_image']) ?>">
 <meta property="og:site_name" content="RuinMyTrip">

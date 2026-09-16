@@ -182,6 +182,14 @@ function view(string $name, array $data = [], array $meta = []): void {
         'title' => cfg('app_name'),
         'description' => 'RuinMyTrip: a trustworthy travel community for real trips, honest reviews, and safe meetups.',
         'canonical' => rmt_current_url(),
+        /* The social preview can say something different from the page title, and on a community
+           page it has to. A title is read by somebody who already searched for the city; a shared
+           card is read by somebody scrolling past a friend's link, and "costs, tickets, taxes" is
+           not why they would stop. Defaults to the title and the description, so every page that
+           does not care is unaffected, and the SEO title experiment is untouched by design: these
+           are separate fields rather than a second opinion about the same one. */
+        'og_title' => null,
+        'og_description' => null,
         'og_image' => rmt_default_og_image(),
         'jsonld' => null,
         // Indexable unless a page says otherwise. A page type that has not earned a place in the

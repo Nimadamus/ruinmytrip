@@ -305,5 +305,6 @@ function cron_funnel(array $a): void {
         'signup_attribution' => rmt_signup_attribution($days),
         'sources'            => rmt_funnel_sources($days),
         'traffic'            => rmt_traffic_shape($days),
+        'acquisition'        => rmt_acq_report($days),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }

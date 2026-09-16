@@ -98,8 +98,18 @@
                  count that is not a count. */ ?>
         <div class="cc-empty" style="margin-bottom:14px">
           <p style="margin:0 0 4px"><b>You may be early. Nobody's dates overlap yours in <?= e((string) $c['name']) ?> yet.</b></p>
-          <p class="hint" style="margin:0">This page fills in on its own as other travelers post
-            their dates. In the meantime the city itself is not empty.</p>
+          <p class="hint" style="margin:0 0 10px">This page fills in on its own as other travelers
+            post their dates. In the meantime the city itself is not empty.</p>
+          <?php /* The one moment an invite is genuinely useful rather than a nag: the reader has
+                   just been told nobody is there, and the person most likely to be going the same
+                   week is somebody they already know. No reward, no credit, nothing sent for them:
+                   a link they hand over themselves. */ ?>
+          <div class="cc-share" style="margin-top:0">
+            <span class="hint">Know somebody going to <?= e((string) $c['name']) ?>?</span>
+            <?php $shareUrl = abs_url('/d/' . $slug);
+                  $shareText = 'Going to ' . (string) $c['name'] . '? See who else is traveling there.';
+                  include __DIR__ . '/_share.php'; ?>
+          </div>
         </div>
       <?php endif; ?>
 

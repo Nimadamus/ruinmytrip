@@ -1,4 +1,4 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap @var array $social @var array $socialC @var array $visitors @var array $topCities @var array $attrib */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap @var array $social @var array $socialC @var array $visitors @var array $topCities @var array $attrib @var array $acq */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
@@ -40,6 +40,38 @@
       return $of > 0 ? (string) round($n * 100 / $of) . '%' : '';
   };
   ?>
+  <?php /* Acquisition, first, because it is the question the whole site currently turns on: did
+           anything we did outside this site bring a person in. A channel is one word, decided on
+           first touch and held, so the post that did the work keeps the credit. Crawlers never
+           reach this table, so an arrival here is a session rather than a request. */ ?>
+  <h2 style="margin:6px 0 4px">Where people came from</h2>
+  <?php if (empty($acq)): ?>
+    <p class="hint" style="margin:0 0 18px">Nothing has arrived with a channel on it yet. A link
+      carrying <code>?utm_source=reddit&amp;utm_campaign=…</code> is counted from its first click,
+      and so is any visit that arrives from a site we can name.</p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 18px">
+      <thead><tr><th>Source</th><th>Campaign</th><th style="text-align:right">Sessions</th>
+        <th style="text-align:right">Signup started</th><th style="text-align:right">Signed up</th>
+        <th style="text-align:right">Confirmed</th><th style="text-align:right">Trips</th>
+        <th style="text-align:right">Signup rate</th></tr></thead>
+      <tbody>
+        <?php foreach ($acq as $a): ?>
+          <tr>
+            <td><b><?= e((string) $a['source']) ?></b></td>
+            <td class="hint"><?= e((string) $a['campaign']) ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['sessions'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['signup_started'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['signed_up'] ?></b></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['confirmed'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['trips'] ?></b></td>
+            <td style="text-align:right"><?= $a['signup_rate_pct'] === null ? '' : e((string) $a['signup_rate_pct']) . '%' ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
   <h2 style="margin:6px 0 4px">The social funnel</h2>
   <p class="hint" style="margin:0 0 10px">
     Landing on a destination through to coming back. Each row is sessions that reached that step,

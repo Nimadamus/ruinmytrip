@@ -1372,3 +1372,5 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 /* The share line in the city community block: one row on a phone, the control sized like the rest. */
 .cc-share{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
 .cc-share .btn,.cc-share summary{min-height:44px;display:inline-flex;align-items:center}
+/* One line telling a stranger what site they are on, above the city community block. */
+.cc-what{margin:0 0 12px;color:var(--muted);font-size:.95rem;overflow-wrap:anywhere}

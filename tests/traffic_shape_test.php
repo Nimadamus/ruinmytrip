@@ -49,6 +49,7 @@ $pdo = db();
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/052_contribution_events.sqlite.sql'));
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/090_event_visitor.sqlite.sql'));
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/093_event_cookied.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/094_acquisition_source.sqlite.sql'));
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, name TEXT, slug TEXT)');
 $pdo->exec("INSERT INTO destinations (id,name,slug) VALUES (7,'Bangkok','bangkok-thailand')");
 

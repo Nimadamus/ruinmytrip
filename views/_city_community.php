@@ -39,6 +39,16 @@ $stats = array_values(array_filter([
 ]));
 ?>
 <section class="city-community" id="city-community" aria-labelledby="city-community-h">
+  <?php /* What this is, for somebody who has never been here.
+           Somebody arriving from a Reddit comment or a shared link has no idea what site they are
+           on, and the block below assumes they do: it opens with "The Bangkok community" as though
+           they already knew there was one. One line, signed out only, so a member never reads an
+           explanation of a site they use. */ ?>
+  <?php if (!$me): ?>
+    <p class="cc-what">RuinMyTrip is where you find the people traveling where you are going.
+      Post your dates, see whose overlap, and ask the travelers who have been.</p>
+  <?php endif; ?>
+
   <div class="cc-head">
     <div class="cc-head-text">
       <h2 id="city-community-h">The <?= e($cityName) ?> community</h2>

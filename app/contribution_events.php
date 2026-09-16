@@ -245,15 +245,23 @@ function rmt_track(string $event, array $ctx = []): bool {
     if (!in_array($reason, RMT_CONTRIB_REASONS, true)) $reason = null;
 
     try {
+        /* The channel that brought this visit, decided on first touch and held. One word from a
+           list this code owns; no referrer, no address, no agent. See app/acquisition.php. */
+        $acq = function_exists('rmt_acq_current')
+            ? rmt_acq_current()
+            : ['source' => null, 'medium' => null, 'campaign' => null, 'content' => null];
         q_run('INSERT INTO contribution_events
-               (event, source, journey, visitor, cookied, place_id, destination_id, is_authed, reason, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?)',
+               (event, source, journey, visitor, cookied, place_id, destination_id, is_authed, reason,
+                acq_source, acq_medium, acq_campaign, acq_content, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
               [$event, $source, rmt_journey_id(), rmt_visitor_id(),
                rmt_visitor_presented_cookie() ? 1 : 0,
                !empty($ctx['place_id']) ? (int) $ctx['place_id'] : null,
                !empty($ctx['destination_id']) ? (int) $ctx['destination_id'] : null,
                function_exists('is_logged_in') && is_logged_in() ? 1 : 0,
-               $reason, date('Y-m-d H:i:s')]);
+               $reason,
+               $acq['source'], $acq['medium'], $acq['campaign'], $acq['content'],
+               date('Y-m-d H:i:s')]);
         return true;
     } catch (Throwable $e) {
         // Measuring the funnel must never break the funnel.
