@@ -213,6 +213,8 @@ textarea{min-height:140px;resize:vertical}
    was the least readable thing on it. Only the avatar is pulled up now. */
 .profile-head{display:flex;gap:20px;align-items:flex-end;margin-top:8px;padding:0 20px;flex-wrap:wrap}
 .profile-head .avatar-lg{margin-top:-56px}
+.profile-head > div{min-width:0;max-width:100%}
+.profile-head h1{overflow-wrap:anywhere}
 .stat-inline{display:flex;gap:10px 22px;margin:10px 0;flex-wrap:wrap}
 .stat-inline b{color:var(--ink)}
 
