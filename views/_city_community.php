@@ -75,7 +75,15 @@ $stats = array_values(array_filter([
            redo work we have already done, so the obvious next action is offered with the dates in
            it. It creates nothing: the form is still theirs to change and to submit.
            Only for the city the campaign is about, and only while the window is still ahead. */ ?>
-  <?php $ccWindow = function_exists('rmt_acq_window') ? rmt_acq_window() : null; ?>
+  <?php $ccWindow = function_exists('rmt_acq_window') ? rmt_acq_window() : null;
+        if (!$ccWindow || $ccWindow['slug'] !== (string) $d['slug']) {
+            /* Somebody who searched their way here four days before the thing starts wants the same
+               offer the campaign visitor gets, so it is shown once the window is close. Not before:
+               a December date on a page read all year is clutter. Cities in the title experiment are
+               left alone, because changing a page mid experiment is how a clean result stops being
+               readable. */
+            $ccWindow = function_exists('rmt_acq_window_near') ? rmt_acq_window_near((string) $d['slug']) : null;
+        } ?>
   <?php if ($ccWindow && $ccWindow['slug'] === (string) $d['slug']): ?>
     <p class="cc-window">
       <b><?= e((string) $ccWindow['label']) ?> runs

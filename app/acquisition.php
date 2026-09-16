@@ -275,3 +275,30 @@ function rmt_acq_trip_link(array $w): string {
     return url('trip/new?destination_id=' . (int) $w['id']
              . '&date_from=' . rawurlencode($w['from']) . '&date_to=' . rawurlencode($w['to']));
 }
+
+/**
+ * The window a city is about to live through, for somebody who arrived without a campaign.
+ *
+ * A person who searches their way onto the Munich page four days before Oktoberfest wants the same
+ * thing the campaign visitor wants, and until now only the campaign visitor was offered it. So the
+ * window is shown to everybody once it is close, and not before: a December question in September
+ * is clutter on a page that is read all year.
+ *
+ * Two deliberate refusals. A city in the destination title experiment is excluded, because changing
+ * what that page says during the experiment is how a clean result turns into an unreadable one. And
+ * a window that has closed shows nothing, which `rmt_acq_window()` already decides.
+ *
+ * @return array{slug:string, from:string, to:string, label:string, id:int}|null
+ */
+function rmt_acq_window_near(string $slug, int $withinDays = 30): ?array {
+    if ($slug === '') return null;
+    if (defined('RMT_DEST_SOCIAL_TITLE_TEST') && isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return null;
+    $limit = gmdate('Y-m-d', strtotime('+' . max(0, $withinDays) . ' days'));
+    foreach (RMT_ACQ_WINDOWS as $campaign => $w) {
+        if ($w['slug'] !== $slug) continue;
+        if ($w['from'] > $limit) continue;            // still too far off to be the reason they are here
+        $resolved = rmt_acq_window($campaign);        // this is what checks the city exists and the window is open
+        if ($resolved !== null) return $resolved;
+    }
+    return null;
+}

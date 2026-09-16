@@ -174,6 +174,26 @@ ok('...and both dates',            str_contains($link, 'date_from=2026-09-19') &
 $acqSrc = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 ok('nothing here writes a trip', (bool) preg_match('/INSERT INTO trips/i', $acqSrc), false);
 
+/* A window that is close is offered to everybody on that city, campaign or not. */
+$pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (2,'lisbon-portugal','Lisbon'),(15,'bangkok-thailand','Bangkok')");
+$near = rmt_acq_window_near('munich-germany', 3650);
+ok('a near window is offered without a campaign', $near['slug'] ?? null, 'munich-germany');
+ok('...with its destination id',                  $near['id'] ?? null, 42);
+ok('a window still far off is not offered',       rmt_acq_window_near('bangkok-thailand', 1), null);
+ok('...and is offered once it is close',          rmt_acq_window_near('bangkok-thailand', 3650)['slug'] ?? null, 'bangkok-thailand');
+ok('a city with no window is offered nothing',    rmt_acq_window_near('somewhere', 3650), null);
+ok('an empty slug is offered nothing',            rmt_acq_window_near('', 3650), null);
+/* The nine cities in the destination title experiment are left exactly as they are. */
+require_once BASE_PATH . '/app/seo.php';
+ok('the title experiment is still there', count(RMT_DEST_SOCIAL_TITLE_TEST) > 0, true);
+foreach (array_keys(RMT_DEST_SOCIAL_TITLE_TEST) as $tested) {
+    ok("the title test city $tested is untouched", rmt_acq_window_near((string) $tested, 3650), null);
+}
+$cc = (string) file_get_contents(BASE_PATH . '/views/_city_community.php');
+ok('the city page asks for a near window',  str_contains($cc, 'rmt_acq_window_near((string) $d'), true);
+ok('...and the campaign still wins',        strpos($cc, 'rmt_acq_window()') < strpos($cc, 'rmt_acq_window_near'), true);
+
+
 /* The campaign has to survive as far as the empty feed, because that is where somebody lands after
    confirming their email and it is the last place the friction can be removed. */
 $feed = (string) file_get_contents(BASE_PATH . '/views/feed.php');
