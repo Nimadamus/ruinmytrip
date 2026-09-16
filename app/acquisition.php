@@ -167,11 +167,20 @@ function rmt_acq_report(int $days = 30): array {
         "SELECT COALESCE(acq_source, 'direct') src,
                 COALESCE(acq_campaign, '') campaign,
                 journey,
+                COUNT(*) events,
+                COUNT(DISTINCT event) kinds,
+                MIN(created_at) first_at,
+                MAX(created_at) last_at,
+                MAX(COALESCE(cookied, 0)) gave_cookie_back,
+                COUNT(cookied) rows_with_the_bit,
                 MAX(CASE WHEN event IN ('landing_view','destination_page_view') THEN 1 ELSE 0 END) landed,
                 MAX(CASE WHEN event = 'join_submit'  THEN 1 ELSE 0 END) signup_started,
                 MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signed_up,
                 MAX(CASE WHEN event = 'join_confirmed' THEN 1 ELSE 0 END) confirmed,
-                MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped
+                MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped,
+                MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
+                                        'comment_created','question_posted','post_created','trip_create_started',
+                                        'join_submit','login_completed','trip_connect_requested') THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
        GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), journey", [$since]);
@@ -180,20 +189,40 @@ function rmt_acq_report(int $days = 30): array {
     foreach ($rows as $r) {
         $k = $r['src'] . '|' . $r['campaign'];
         $agg[$k] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'],
-                      'sessions' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
+                      'sessions' => 0, 'human' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
                       'confirmed' => 0, 'trips' => 0];
         $agg[$k]['sessions']++;
+
+        /* Human, by the same rules the traffic report uses, because a channel's conversion rate
+           divided by crawlers is the mistake this whole measurement exists to stop making. Did
+           something only a person does, or returned a cookie we set, or read more than one thing
+           over human time. */
+        $span = max(0, strtotime((string) $r['last_at']) - strtotime((string) $r['first_at']));
+        $human = ((int) $r['acted'] === 1)
+              || ((int) $r['gave_cookie_back'] === 1)
+              || ((int) $r['kinds'] >= 2 && $span >= 20);
+        if ($human) $agg[$k]['human']++;
+
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
                   'confirmed' => 'confirmed', 'tripped' => 'trips'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
         }
     }
     $out = array_values($agg);
+    $pct = static fn(int $a, int $b): ?float => $b > 0 ? round($a * 100 / $b, 1) : null;
     foreach ($out as &$row) {
-        $row['signup_rate_pct'] = $row['sessions'] > 0 ? round($row['signed_up'] * 100 / $row['sessions'], 1) : null;
-        $row['trip_rate_pct']   = $row['signed_up'] > 0 ? round($row['trips'] * 100 / $row['signed_up'], 1) : null;
+        /* Every rate is a share of the HUMAN sessions for that channel, and a rate with a zero
+           denominator is left out rather than printed as a zero, which reads as a failure that
+           did not happen. */
+        $row['visit_to_signup_pct'] = $pct($row['signed_up'], $row['human']);
+        $row['signup_to_trip_pct']  = $pct($row['trips'], $row['signed_up']);
+        $row['visit_to_trip_pct']   = $pct($row['trips'], $row['human']);
+        // Kept under their old names so nothing that already reads this breaks.
+        $row['signup_rate_pct'] = $row['visit_to_signup_pct'];
+        $row['trip_rate_pct']   = $row['signup_to_trip_pct'];
     }
     unset($row);
-    usort($out, static fn(array $a, array $b) => [$b['signed_up'], $b['sessions']] <=> [$a['signed_up'], $a['sessions']]);
+    usort($out, static fn(array $a, array $b) => [$b['signed_up'], $b['human'], $b['sessions']]
+                                             <=> [$a['signed_up'], $a['human'], $a['sessions']]);
     return $out;
 }

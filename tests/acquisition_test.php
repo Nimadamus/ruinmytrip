@@ -116,7 +116,14 @@ ok('two reddit sessions',             $by['reddit']['sessions'], 2);
 ok('one of them signed up',           $by['reddit']['signed_up'], 1);
 ok('one confirmed',                   $by['reddit']['confirmed'], 1);
 ok('one made a trip',                 $by['reddit']['trips'], 1);
-ok('and the rate is a share of its own sessions', $by['reddit']['signup_rate_pct'], 50.0);
+ok('and the rate is a share of its own HUMAN sessions', $by['reddit']['visit_to_signup_pct'], 100.0);
+/* One of the two reddit sessions did something only a person does (it signed up); the other is a
+   single instant row with no cookie, which is a shape a crawler makes and a bored person also
+   makes, so it is not counted as a visitor to divide by. A channel's conversion rate divided by
+   crawlers is the mistake the whole measurement exists to stop making. */
+ok('human sessions are counted separately from all sessions', $by['reddit']['human'], 1);
+ok('signup to trip is a share of signups', $by['reddit']['signup_to_trip_pct'], 100.0);
+ok('visit to trip is a share of human visits', $by['reddit']['visit_to_trip_pct'], 100.0);
 ok('search is reported separately',   $by['search']['sessions'], 1);
 ok('...with nothing after the arrival', $by['search']['signed_up'], 0);
 ok('a rate with a zero denominator is left blank rather than zero', $by['search']['trip_rate_pct'], null);

@@ -51,21 +51,25 @@
       and so is any visit that arrives from a site we can name.</p>
   <?php else: ?>
     <table class="table" style="margin:0 0 18px">
-      <thead><tr><th>Source</th><th>Campaign</th><th style="text-align:right">Sessions</th>
-        <th style="text-align:right">Signup started</th><th style="text-align:right">Signed up</th>
-        <th style="text-align:right">Confirmed</th><th style="text-align:right">Trips</th>
-        <th style="text-align:right">Signup rate</th></tr></thead>
+      <thead><tr><th>Source</th><th>Campaign</th><th style="text-align:right">Human visits</th>
+        <th style="text-align:right">Signed up</th><th style="text-align:right">Confirmed</th>
+        <th style="text-align:right">Trips</th><th style="text-align:right">Visit to signup</th>
+        <th style="text-align:right">Signup to trip</th><th style="text-align:right">Visit to trip</th></tr></thead>
       <tbody>
         <?php foreach ($acq as $a): ?>
           <tr>
             <td><b><?= e((string) $a['source']) ?></b></td>
             <td class="hint"><?= e((string) $a['campaign']) ?></td>
-            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['sessions'] ?></td>
-            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['signup_started'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['human'] ?></b>
+              <?php if ((int) $a['sessions'] !== (int) $a['human']): ?>
+                <span class="hint">of <?= (int) $a['sessions'] ?></span>
+              <?php endif; ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['signed_up'] ?></b></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['confirmed'] ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['trips'] ?></b></td>
-            <td style="text-align:right"><?= $a['signup_rate_pct'] === null ? '' : e((string) $a['signup_rate_pct']) . '%' ?></td>
+            <td style="text-align:right"><?= $a['visit_to_signup_pct'] === null ? '' : e((string) $a['visit_to_signup_pct']) . '%' ?></td>
+            <td style="text-align:right"><?= $a['signup_to_trip_pct'] === null ? '' : e((string) $a['signup_to_trip_pct']) . '%' ?></td>
+            <td style="text-align:right"><?= $a['visit_to_trip_pct'] === null ? '' : e((string) $a['visit_to_trip_pct']) . '%' ?></td>
           </tr>
         <?php endforeach; ?>
       </tbody>
