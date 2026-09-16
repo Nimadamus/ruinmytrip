@@ -29,6 +29,18 @@ const RMT_VQ_QUESTIONS = [
             'just_looking'         => 'Just looking around',
         ],
     ],
+    /* Asked on your own trip page, once, after you have posted one. The person has done the thing
+       the site asks for and is the only one who can say what the next screen should have been. */
+    'after_first_trip' => [
+        'question' => 'Your dates are up. What would make this more useful?',
+        'answers'  => [
+            'more_travelers'   => 'More travelers in this city',
+            'tell_me_sooner'   => 'Telling me sooner when somebody overlaps',
+            'more_about_them'  => 'Knowing more about the people before I contact them',
+            'plans_not_people' => 'Things to do, more than people to meet',
+            'nothing'          => 'Nothing, it is fine',
+        ],
+    ],
 ];
 
 const RMT_VQ_NOTE_MAX = 300;

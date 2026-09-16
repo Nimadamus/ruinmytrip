@@ -69,6 +69,32 @@ $ctrl = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
 ok('and the controller does not put it there either',
    (bool) preg_match("/rmt_track\([^)]*input\('note'\)/", $ctrl), false);
 
+echo "\n-- asked only at moments worth asking at --\n";
+ok('there are two questions, not a survey', count(RMT_VQ_QUESTIONS), 2);
+ok('one is for an empty match list',  isset(RMT_VQ_QUESTIONS['no_match_hoped_for']), true);
+ok('one is for a first trip',         isset(RMT_VQ_QUESTIONS['after_first_trip']), true);
+foreach (RMT_VQ_QUESTIONS as $k => $qq) {
+    ok("$k actually asks something", str_contains((string) $qq['question'], '?'), true);
+    ok("$k offers between three and six answers",
+       count($qq['answers']) >= 3 && count($qq['answers']) <= 6, true);
+}
+/* Neither is a popup. Both are a disclosure the reader opens, on a page they were already on. */
+$partial = (string) file_get_contents(BASE_PATH . '/views/_visitor_question.php');
+ok('it is a disclosure, not a modal', str_contains($partial, '<details'), true);
+ok('nothing about it is a dialog',    (bool) preg_match('/<dialog|role="dialog"|modal/i', $partial), false);
+$matchesView = (string) file_get_contents(BASE_PATH . '/views/matches.php');
+$tripView    = (string) file_get_contents(BASE_PATH . '/views/trip_show.php');
+ok('the empty match list asks the first', str_contains($matchesView, "'no_match_hoped_for'"), true);
+ok('your own trip page asks the second',  str_contains($tripView, "'after_first_trip'"), true);
+
+echo "\n-- where it sends somebody afterwards --\n";
+$ctrl2 = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+$fn = substr($ctrl2, (int) strpos($ctrl2, 'function visitor_answer_submit'), 900);
+ok('an off site return is refused',      str_contains($fn, "str_contains(\$back, '://')"), true);
+ok('a protocol relative one too',        str_contains($fn, "str_starts_with(\$back, '//')"), true);
+ok('and the fallback is a page of ours', str_contains($fn, "'/matches'"), true);
+
+
 echo "\n-- the summary reads what is there --\n";
 $sum = rmt_vq_summary('no_match_hoped_for');
 ok('it counts every answer', $sum['total'], 4);

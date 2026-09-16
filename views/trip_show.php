@@ -190,6 +190,9 @@ $authorSaid = $authorSaid ?? [];
   <?php if ($isOwner && in_array($phase, ['upcoming', 'current'], true)): ?>
     <p class="hint" style="margin:6px 0 0">Send this to anybody you know who is going. They see your
       dates and can post theirs, and the two of you show up on each other's matches.</p>
+    <?php /* One question, once, to the only person who can answer it: somebody who has just done
+             the thing the whole site asks for. */ ?>
+    <?php $vqKey = 'after_first_trip'; include __DIR__ . '/_visitor_question.php'; ?>
   <?php endif; ?>
 
 
