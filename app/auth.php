@@ -238,6 +238,24 @@ function rmt_join_intent_line(string $return): ?string {
         $d = q_one('SELECT name FROM destinations WHERE slug = ?', [$m[1]]);
         if ($d) return 'Join and see who else is going to ' . $d['name'] . ', post your own dates, and meet them there.';
     }
+    /* The campaign path, and until now the one this function had nothing to say about. Somebody
+       clicks "Post your Munich dates", the whole link is preserved, and they arrive at a signup page
+       that does not mention Munich or the dates they just chose. The city and the dates are already
+       in the return address, so the page can say what it is for. */
+    if ($path === '/trip/new') {
+        parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
+        $did  = (int) ($q['destination_id'] ?? 0);
+        $from = (string) ($q['date_from'] ?? '');
+        $to   = (string) ($q['date_to'] ?? '');
+        $d = $did > 0 ? q_one('SELECT name FROM destinations WHERE id = ?', [$did]) : null;
+        if ($d && $from !== '' && $to !== '' && strtotime($from) && strtotime($to)) {
+            return 'Join and post your ' . $d['name'] . ' dates, '
+                 . date('j F', (int) strtotime($from)) . ' to ' . date('j F', (int) strtotime($to))
+                 . '. They are already filled in, and you will see which travelers overlap them.';
+        }
+        if ($d) return 'Join and post your ' . $d['name'] . ' dates. You will see which travelers overlap them.';
+        return 'Join and post your dates. Travelers whose trips overlap yours will see them.';
+    }
     if ($path === '/going')    return 'Join and post your dates. Travelers whose trips overlap yours will see them.';
     if ($path === '/matches')  return 'Join to see which travelers have dates that overlap yours.';
     if ($path === '/meetups' || str_starts_with($path, '/meetup/')) {

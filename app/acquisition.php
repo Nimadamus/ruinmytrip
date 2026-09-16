@@ -34,6 +34,16 @@ const RMT_ACQ_MEDIUMS = ['post', 'comment', 'reply', 'bio', 'story', 'group', 'd
    use it is worth more than one that works because we posted in it. */
 const RMT_ACQ_REFERRAL_CAMPAIGN = 'member-share';
 
+/* Our own checks arrive through the front door like anybody else, because that is the only way to
+   check anything honestly. They are real sessions and they are not people we acquired, so they are
+   named here and reported apart from the human count rather than deleted or quietly counted.
+   Anything driving traffic for a test uses one of these campaign labels. */
+const RMT_ACQ_INTERNAL_CAMPAIGNS = ['qa', 'coldqa', 'attrib-qa', 'attrib-qa-crawler', 'live-check', 'zz1'];
+
+function rmt_acq_is_internal(?string $campaign): bool {
+    return $campaign !== null && in_array($campaign, RMT_ACQ_INTERNAL_CAMPAIGNS, true);
+}
+
 const RMT_ACQ_COOKIE = 'rmt_acq';
 const RMT_ACQ_TTL    = 90 * 86400;
 
@@ -389,10 +399,21 @@ function rmt_acq_command_center(int $days = 90): array {
         [$b['d1']['signups'], $b['d7']['signups'], $b['d7']['human'], $b['all']['human']]
     <=> [$a['d1']['signups'], $a['d7']['signups'], $a['d7']['human'], $a['all']['human']]);
 
+    /* A row we generated ourselves is marked rather than removed, so the table still adds up and
+       nobody has to remember which campaign labels were ours. */
+    foreach ($rows as &$row) $row['internal'] = rmt_acq_is_internal($row['campaign'] === '' ? null : $row['campaign']);
+    unset($row);
+
     $totals = [];
     foreach (array_keys($windows) as $w) {
-        $totals[$w] = ['human' => 0, 'signups' => 0, 'confirmed' => 0, 'trips' => 0, 'sessions' => 0];
-        foreach ($rows as $r) foreach (array_keys($totals[$w]) as $m) $totals[$w][$m] += (int) $r[$w][$m];
+        $totals[$w] = ['human' => 0, 'signups' => 0, 'confirmed' => 0, 'trips' => 0, 'sessions' => 0, 'internal_human' => 0];
+        foreach ($rows as $r) {
+            foreach (['human', 'signups', 'confirmed', 'trips', 'sessions'] as $m) {
+                if ($r['internal'] && $m !== 'sessions') continue;   // ours is not acquisition
+                $totals[$w][$m] += (int) $r[$w][$m];
+            }
+            if ($r['internal']) $totals[$w]['internal_human'] += (int) $r[$w]['human'];
+        }
     }
     return ['windows' => $windows, 'rows' => $rows, 'totals' => $totals];
 }

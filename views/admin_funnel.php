@@ -69,7 +69,9 @@
         <?php foreach ($cc['rows'] as $r): ?>
           <tr>
             <td><b><?= e((string) $r['source']) ?></b><?php if ($r['campaign'] !== ''): ?>
-              <span class="hint"><?= e((string) $r['campaign']) ?></span><?php endif; ?></td>
+              <span class="hint"><?= e((string) $r['campaign']) ?></span><?php endif; ?>
+              <?php /* Ours, so it is shown and not counted. */ ?>
+              <?php if (!empty($r['internal'])): ?><span class="hint">(our own check)</span><?php endif; ?></td>
             <?php foreach (['d1', 'd7', 'all'] as $w): $x = $r[$w]; ?>
               <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $x['human'] ?><?php
                   if ((int) $x['sessions'] !== (int) $x['human']): ?><span class="hint"> (<?= (int) $x['sessions'] ?>)</span><?php endif; ?></td>
@@ -91,7 +93,11 @@
       </tbody>
     </table>
     <p class="hint" style="margin:0 0 18px">A rate needs a denominator, so the percentages stay in the
-      table below rather than being printed here off one or two sessions.</p>
+      table below rather than being printed here off one or two sessions.
+      <?php $ih = (int) ($ccT['d7']['internal_human'] ?? 0); if ($ih): ?>
+        <br><b><?= $ih ?></b> human session<?= $ih === 1 ? '' : 's' ?> in the last 7 days were our own
+        checks and are excluded from the totals above. They are still in the table, marked.
+      <?php endif; ?></p>
   <?php endif; ?>
 
   <?php /* Acquisition, first, because it is the question the whole site currently turns on: did

@@ -194,6 +194,15 @@ ok('the city page asks for a near window',  str_contains($cc, 'rmt_acq_window_ne
 ok('...and the campaign still wins',        strpos($cc, 'rmt_acq_window()') < strpos($cc, 'rmt_acq_window_near'), true);
 
 
+/* The signup page has to say what it is for when somebody arrives from a trip link, or the campaign
+   path ends on a page that has forgotten the city and the dates it just carried. */
+$auth = (string) file_get_contents(BASE_PATH . '/app/auth.php');
+ok('signup knows the trip link',   str_contains($auth, "\$path === '/trip/new'"), true);
+ok('...and names the city',        str_contains($auth, "'Join and post your ' . \$d['name'] . ' dates, '"), true);
+$ev = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');
+ok('and the trip form is a named recruiting surface',
+   str_contains($ev, "return 'trip';"), true);
+
 /* The campaign has to survive as far as the empty feed, because that is where somebody lands after
    confirming their email and it is the last place the friction can be removed. */
 $feed = (string) file_get_contents(BASE_PATH . '/views/feed.php');
@@ -242,6 +251,11 @@ ok('...and keyed apart from the city page itself',
 echo "
 -- the operating view asks the same question three times --
 ";
+ok('our own checks are named',        rmt_acq_is_internal('coldqa'), true);
+ok('...and so is the attribution one', rmt_acq_is_internal('attrib-qa'), true);
+ok('a real campaign is not ours',     rmt_acq_is_internal('oktoberfest'), false);
+ok('and neither is nothing at all',   rmt_acq_is_internal(null), false);
+
 $cc = rmt_acq_command_center(3650);
 ok('it reports three windows',    array_keys($cc['windows']), ['d1', 'd7', 'all']);
 ok('the day is one day',          $cc['windows']['d1'], 1);
@@ -249,6 +263,15 @@ ok('the week is seven',           $cc['windows']['d7'], 7);
 ok('every row carries all three', (bool) array_reduce($cc['rows'], static fn($ok, $r) =>
     $ok && isset($r['d1'], $r['d7'], $r['all']), true), true);
 ok('totals exist for each window', array_keys($cc['totals']), ['d1', 'd7', 'all']);
+/* Ours is marked on the row and left out of the totals, so the headline is acquisition and the
+   table is still the whole truth. */
+ok('every row says whether it is ours', (bool) array_reduce($cc['rows'], static fn($ok, $r) =>
+    $ok && array_key_exists('internal', $r), true), true);
+ok('the totals carry our own count separately', array_key_exists('internal_human', $cc['totals']['d7']), true);
+$mineHuman = 0; $allHuman = 0;
+foreach ($cc['rows'] as $r) { $allHuman += (int) $r['all']['human']; if ($r['internal']) $mineHuman += (int) $r['all']['human']; }
+ok('the total excludes what we generated', $cc['totals']['all']['human'], $allHuman - $mineHuman);
+
 /* A day cannot hold more than a week, and a week cannot hold more than the whole window. */
 foreach (['human', 'signups', 'confirmed', 'trips'] as $m) {
     ok("the day never exceeds the week for $m", $cc['totals']['d1'][$m] <= $cc['totals']['d7'][$m], true);

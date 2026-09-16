@@ -438,6 +438,9 @@ function rmt_join_source(string $return): string {
     if ($path === '') return 'other';
     if (preg_match('#^/d/[a-z0-9\-]+/travelers$#', $path)) return 'travelers';
     if (preg_match('#^/d/[a-z0-9\-]+#', $path))            return 'destination';
+    /* The campaign path. It was falling through to 'other', so the surface that recruits most of
+       the people a campaign sends could not be told from anything else. */
+    if ($path === '/trip/new' || str_starts_with($path, '/trip/')) return 'trip';
     if ($path === '/going')                                 return 'going';
     if ($path === '/matches')                               return 'matches';
     if ($path === '/meetups' || str_starts_with($path, '/meetup/')) return 'meetups';
