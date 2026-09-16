@@ -50,8 +50,12 @@ const RMT_ACQ_INTERNAL_CONTENT = 'selfcheck';
    campaign names and cannot be told apart now. It is not rewritten: a row is what happened. It is
    labelled, everywhere a number from that period is shown, and the honest reading of anything dated
    inside it is "this was us unless a post was actually published".
-   The marker went in at 2026-09-16 00:30 Pacific, which is 07:30 UTC. */
-const RMT_ACQ_CLEAN_FROM = '2026-09-16 07:30:00';
+   The marker went in at 2026-09-16 00:30 Pacific. The boundary below is set LATER than that on
+   purpose: the campaign validation run that checked all seven windows went out in the minutes
+   before the marker existed, under the real campaign names, and left eleven human sessions that
+   are ours. Rather than rewrite those rows or pretend they are travelers, the clean window starts
+   after them. Nothing genuine is lost, because nothing had been published anywhere. */
+const RMT_ACQ_CLEAN_FROM = '2026-09-16 08:20:00';
 
 function rmt_acq_window_is_contaminated(int $days): bool {
     if ($days <= 0) return true;                                  // all time always includes it
