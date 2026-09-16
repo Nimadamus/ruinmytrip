@@ -1314,3 +1314,10 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   .cc-follow{flex:0 0 auto}
   .cc-post-img{max-height:380px}
 }
+.cc-photos{margin-top:16px}
+.cc-photos .section-rule{margin-bottom:10px}
+/* Three across, always. The shared wall grid sizes itself to the column it is in, and inside this
+   block on a phone that worked out at two big squares per row: half a screen of photograph in
+   front of the conversation the block exists for. A teaser is a strip, not a wall. */
+.cc-photos .photo-grid{grid-template-columns:repeat(3,1fr)}
+@media (min-width:760px){.cc-photos .photo-grid{grid-template-columns:repeat(6,1fr)}}

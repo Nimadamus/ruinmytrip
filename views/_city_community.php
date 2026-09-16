@@ -14,7 +14,7 @@
  * crowd is the one thing that would make this site worthless.
  *
  * Expects: $d, $me, $talk, $talkCount, $saved, $wantCount, $beenCount, $going, $hereNow,
- *          $photoCount, $meetups, $avg.
+ *          $photoCount, $photos, $meetups, $avg.
  */
 $cityUrl   = url('d/' . $d['slug']);
 $cityName  = (string) $d['name'];
@@ -139,4 +139,22 @@ $stats = array_values(array_filter([
       </article>
     <?php endforeach; ?>
   </div>
+
+  <?php /* What the city looks like from a traveler's phone, not from a stock library. Six at most,
+           because this is a taste of the wall rather than the wall, and drawn only when real
+           photographs exist. Every one opens its own page and carries its owner with it. */ ?>
+  <?php $ccPhotos = array_slice($photos ?? [], 0, 6); ?>
+  <?php if ($ccPhotos): ?>
+    <div class="cc-photos">
+      <div class="section-rule">
+        <h3>Recent photos</h3>
+        <span class="count"><?= (int) $photoN ?></span>
+      </div>
+      <?php $gridPhotos = $ccPhotos; $gridLead = false;   // a lead tile here is half a screen of photograph in front of the conversation
+            include __DIR__ . '/_photo_grid.php'; ?>
+      <?php if ($photoN > count($ccPhotos)): ?>
+        <p class="hint" style="margin:10px 0 0"><a href="<?= e(url('d/' . $d['slug'] . '/photos')) ?>">See all <?= (int) $photoN ?> photos</a></p>
+      <?php endif; ?>
+    </div>
+  <?php endif; ?>
 </section>

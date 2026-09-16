@@ -450,20 +450,9 @@
         </div></div>
       <?php endforeach; ?>
 
-      <?php if ($photos): ?>
-        <div class="section-rule">
-          <h2>Photos</h2>
-          <span class="count"><?= $photoCount ?></span>
-        </div>
-        <?php /* The same grid the photo wall and the profile use, so a photograph opens its own
-                 page wherever it is clicked rather than dumping the reader into a trip. */ ?>
-        <?php $gridPhotos = $photos; $gridLead = count($photos) > 3;
-              include __DIR__ . '/_photo_grid.php'; ?>
-        <div style="height:16px"></div>
-        <?php if ($photoCount > count($photos)): ?>
-          <p style="margin:0 0 26px"><a href="<?= e(url('d/'.$d['slug'].'/photos')) ?>">See all <?= $photoCount ?> photos →</a></p>
-        <?php endif; ?>
-      <?php endif; ?>
+      <?php /* The photographs moved up into the community block, where a face and a street are
+               part of what a reader meets first rather than a gallery four sections down. Same
+               grid, same photo pages, same wall behind "see all". */ ?>
 
       <?php /* The conversation used to sit here, under everything this site wrote about the city.
                It is the first thing on the page now, in views/_city_community.php. */ ?>
