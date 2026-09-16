@@ -70,6 +70,22 @@ $stats = array_values(array_filter([
     </div>
   </div>
 
+  <?php /* Somebody who arrived from a campaign about a real window already knows the city and
+           roughly the fortnight. Making them pick both again from an empty form is asking them to
+           redo work we have already done, so the obvious next action is offered with the dates in
+           it. It creates nothing: the form is still theirs to change and to submit.
+           Only for the city the campaign is about, and only while the window is still ahead. */ ?>
+  <?php $ccWindow = function_exists('rmt_acq_window') ? rmt_acq_window() : null; ?>
+  <?php if ($ccWindow && $ccWindow['slug'] === (string) $d['slug']): ?>
+    <p class="cc-window">
+      <b><?= e((string) $ccWindow['label']) ?> runs
+        <?= e(date('j F', strtotime((string) $ccWindow['from']))) ?> to
+        <?= e(date('j F', strtotime((string) $ccWindow['to']))) ?>.</b>
+      Put your dates up and you will see which other travelers are here at the same time.
+      <a class="btn btn-primary btn-sm" href="<?= e(rmt_acq_trip_link($ccWindow)) ?>">Post your <?= e($cityName) ?> dates</a>
+    </p>
+  <?php endif; ?>
+
   <?php /* Sharing, on the page that is worth sharing.
            A young site is not found by a search engine first, it is found by one person sending a
            link to another, and this page had no way to do that at all: the control existed and was

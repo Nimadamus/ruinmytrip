@@ -129,6 +129,29 @@ ok('...with nothing after the arrival', $by['search']['signed_up'], 0);
 ok('a rate with a zero denominator is left blank rather than zero', $by['search']['trip_rate_pct'], null);
 ok('the campaign travels with it',    $by['reddit']['campaign'], 'miami');
 
+echo "
+-- a campaign that names a real window suggests it, and never creates it --
+";
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
+$pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (42,'munich-germany','Munich')");
+$w = rmt_acq_window('oktoberfest');
+ok('the campaign knows its city',  $w['slug'] ?? null, 'munich-germany');
+ok('...and its destination id',    $w['id'] ?? null, 42);
+ok('...and the verified window',   ($w['from'] ?? '') . ' to ' . ($w['to'] ?? ''), '2026-09-19 to 2026-10-04');
+ok('a campaign we do not know suggests nothing', rmt_acq_window('some-other-thing'), null);
+ok('and neither does no campaign at all', rmt_acq_window(''), null);
+/* A city this database does not hold cannot be suggested, whatever the campaign says. */
+ok('a city we do not hold suggests nothing', rmt_acq_window('web-summit'), null);
+
+$link = rmt_acq_trip_link($w);
+ok('the link opens the trip form', str_contains($link, '/trip/new?'), true);
+ok('...with the city',             str_contains($link, 'destination_id=42'), true);
+ok('...and both dates',            str_contains($link, 'date_from=2026-09-19') && str_contains($link, 'date_to=2026-10-04'), true);
+/* The link is a GET to a form. Nothing here writes a trip, and nothing should: the person still
+   chooses the dates and submits them. */
+$acqSrc = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
+ok('nothing here writes a trip', (bool) preg_match('/INSERT INTO trips/i', $acqSrc), false);
+
 echo "\n-- what attribution is not allowed to store --\n";
 $src = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 $events = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');

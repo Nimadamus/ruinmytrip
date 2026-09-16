@@ -226,3 +226,47 @@ function rmt_acq_report(int $days = 30): array {
                                              <=> [$a['signed_up'], $a['human'], $a['sessions']]);
     return $out;
 }
+
+/**
+ * The campaigns that name a real travel window, and what that window is.
+ *
+ * Why this exists. Somebody who clicks a link about Oktoberfest already knows which city and
+ * roughly which fortnight; making them pick both again from a blank form is asking them to do work
+ * we have already done. So a campaign can carry a destination and a date range, and the pages a
+ * campaign visitor sees offer that as the obvious next action.
+ *
+ * It never creates anything. The dates are a suggestion pre filled into a form the person still
+ * submits themselves, and they can change both before they do.
+ *
+ * Every window here is checked against a primary source and recorded in docs/ACQUISITION_COHORTS.md
+ * with what was verified. A campaign that is not in this list still tracks perfectly well; it just
+ * does not know a date to suggest.
+ *
+ * @return array{slug:string, id:int, from:string, to:string, label:string}|null
+ */
+const RMT_ACQ_WINDOWS = [
+    // Oktoberfest 2026: 19 September to 4 October, Theresienwiese (muenchen.de, oktoberfest.de).
+    'oktoberfest'    => ['slug' => 'munich-germany',      'from' => '2026-09-19', 'to' => '2026-10-04', 'label' => 'Oktoberfest'],
+    // Web Summit 2026: 9 to 12 November, Altice Arena and FIL (websummit.com).
+    'web-summit'     => ['slug' => 'lisbon-portugal',     'from' => '2026-11-09', 'to' => '2026-11-12', 'label' => 'Web Summit'],
+    // Yi Peng and Loy Krathong: guides give 23 to 25 November 2026 and disagree on the exact night.
+    'yi-peng'        => ['slug' => 'chiang-mai-thailand', 'from' => '2026-11-23', 'to' => '2026-11-25', 'label' => 'Yi Peng'],
+    // Miami Art Week: fairs in the first week of December, the travel window is the whole week.
+    'miami-art-week' => ['slug' => 'miami-usa',           'from' => '2026-12-01', 'to' => '2026-12-07', 'label' => 'Art Week'],
+];
+
+function rmt_acq_window(?string $campaign = null): ?array {
+    $c = $campaign ?? (rmt_acq_current()['campaign'] ?? null);
+    if ($c === null || !isset(RMT_ACQ_WINDOWS[$c])) return null;
+    $w = RMT_ACQ_WINDOWS[$c];
+    $d = q_one('SELECT id FROM destinations WHERE slug = ?', [$w['slug']]);
+    if (!$d) return null;                      // a city we no longer hold is not a suggestion
+    if ($w['to'] < gmdate('Y-m-d')) return null;   // a window that has closed suggests nothing
+    return $w + ['id' => (int) $d['id']];
+}
+
+/** The link that opens a trip form with the city and both dates already in it. */
+function rmt_acq_trip_link(array $w): string {
+    return url('trip/new?destination_id=' . (int) $w['id']
+             . '&date_from=' . rawurlencode($w['from']) . '&date_to=' . rawurlencode($w['to']));
+}

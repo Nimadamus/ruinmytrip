@@ -4964,6 +4964,14 @@ function verify_email_confirm(array $a): void {
                               : 'Email confirmed. Your ' . $released . ' reviews are live.');
         redirect('/reviews?mine=1');
     }
+    /* Somebody who came in on a campaign about a real window arrived to do one thing, and this is
+       the moment they can finally do it. Back to the trip form with the city and the dates already
+       in it, rather than to a welcome page that asks them to start again. Nothing is created for
+       them: they still choose and submit. */
+    if (function_exists('rmt_acq_window') && ($w = rmt_acq_window()) !== null) {
+        flash('Email confirmed. Add your ' . $w['label'] . ' dates and see who else will be there.');
+        redirect(str_replace(rtrim((string) cfg('app_url'), '/'), '', rmt_acq_trip_link($w)));
+    }
     flash('Email confirmed. Welcome to RuinMyTrip.');
     redirect('/welcome');
 }

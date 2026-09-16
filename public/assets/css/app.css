@@ -1374,3 +1374,8 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
 .cc-share .btn,.cc-share summary{min-height:44px;display:inline-flex;align-items:center}
 /* One line telling a stranger what site they are on, above the city community block. */
 .cc-what{margin:0 0 12px;color:var(--muted);font-size:.95rem;overflow-wrap:anywhere}
+/* The campaign line on a city page: a real window, and the one action it implies. */
+.cc-window{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0;
+  background:var(--surface-2,rgba(127,127,127,.09));border:1px solid var(--line);
+  border-radius:var(--radius);padding:12px 14px;overflow-wrap:anywhere}
+.cc-window .btn{min-height:44px;display:inline-flex;align-items:center}
