@@ -86,6 +86,12 @@
                zero it says zero, which is the whole reason it exists. */ ?>
       <?php $cl = $dy['clean'] ?? null; if ($cl): ?>
         <hr style="margin:12px 0">
+        <?php if ((int) ($cl['direct_human_not_counted'] ?? 0) > 0): ?>
+          <p class="hint" style="margin:0 0 6px"><b><?= (int) $cl['direct_human_not_counted'] ?></b>
+            human sessions arrived with no channel we can name. They are not counted below: with
+            nothing published there is no external link for somebody to have followed, so a direct
+            session cannot be told apart from the automated floor.</p>
+        <?php endif; ?>
         <p class="hint" style="margin:0 0 6px">Counted from <?= e((string) $cl['since']) ?>,
           <?= (int) $cl['days'] ?> day<?= (int) $cl['days'] === 1 ? '' : 's' ?> ago, with our own
           checks and automated traffic already out. Nothing before that date is counted here.</p>

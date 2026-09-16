@@ -566,10 +566,18 @@ function rmt_acq_daily(int $days = 90): array {
  */
 function rmt_acq_clean_totals(): array {
     $days = max(1, (int) ceil((time() - strtotime(RMT_ACQ_CLEAN_FROM)) / 86400));
-    $human = 0; $signups = 0; $confirmed = 0; $trips = 0;
+    $human = 0; $direct = 0; $signups = 0; $confirmed = 0; $trips = 0;
     foreach (rmt_acq_report($days) as $r) {
         if (rmt_acq_is_internal($r['campaign'] === '' ? null : $r['campaign'])) continue;
-        $human     += (int) $r['human'] - (int) ($r['selfcheck_human'] ?? 0);
+        $n = (int) $r['human'] - (int) ($r['selfcheck_human'] ?? 0);
+        /* Direct is counted apart and NOT toward the milestone. On this site 778 sessions arrived
+           direct in one day against 30 that passed the human test, and with nothing published there
+           is no external link for a person to have followed. A session with no source we can name is
+           indistinguishable from the automated floor, and a milestone that counts it is a milestone
+           that congratulates us for crawlers. When a real link is published this will be obvious:
+           the named channels will move and this number will not. */
+        if ($r['source'] === 'direct' || $r['source'] === '') { $direct += max(0, $n); continue; }
+        $human     += $n;
         $signups   += (int) $r['signed_up'];
         $confirmed += (int) $r['confirmed'];
         $trips     += (int) $r['trips'];
@@ -578,6 +586,11 @@ function rmt_acq_clean_totals(): array {
         'since'       => RMT_ACQ_CLEAN_FROM . ' UTC',
         'days'        => $days,
         'human_visits'=> max(0, $human),
+        'direct_human_not_counted' => $direct,
+        'note' => 'Milestone 1 counts human visits carrying a channel we can name. Direct is shown '
+                . 'beside it and not counted: with nothing published there is no external link for '
+                . 'somebody to have followed, so a direct session cannot be told from the automated '
+                . 'floor.',
         'signups'     => $signups,
         'confirmed'   => $confirmed,
         'trips'       => $trips,

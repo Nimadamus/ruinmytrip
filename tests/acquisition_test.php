@@ -309,6 +309,19 @@ ok('today is never more than the week', $dy['human_visits']['today'] <= $dy['hum
 ok('there is a date the numbers get clean from', (bool) strtotime(RMT_ACQ_CLEAN_FROM), true);
 ok('a window reaching before it is flagged', rmt_acq_window_is_contaminated(3650), true);
 ok('all time is always flagged',             rmt_acq_window_is_contaminated(0), true);
+/* The milestone counts channels we can name. Direct is shown and not counted, because with nothing
+   published a direct session cannot be told from the automated floor. */
+$clean = rmt_acq_clean_totals();
+ok('the milestone counter names its start',  (bool) strtotime((string) $clean['since']), true);
+ok('direct is reported separately',          array_key_exists('direct_human_not_counted', $clean), true);
+ok('...and says why it is not counted',      str_contains((string) $clean['note'], 'automated floor'), true);
+ok('there are four milestones',              count($clean['milestones']), 4);
+ok('the first one is a hundred',             $clean['milestones'][0]['target'], 100);
+ok('and it can be zero',                     $clean['milestones'][0]['now'] >= 0, true);
+ok('the counter reads named channels only',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                "\$r['source'] === 'direct'"), true);
+
 $acqSrc2 = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 ok('nothing rewrites a historical row',
    (bool) preg_match('/UPDATE contribution_events|DELETE FROM contribution_events/i', $acqSrc2), false);
