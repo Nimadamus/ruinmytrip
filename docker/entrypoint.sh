@@ -48,6 +48,11 @@ fi
 # content problem belongs in the log, not in a crash loop.
 php /var/www/html/scripts/publish_editorial.php --apply   || echo "entrypoint: editorial publish reported errors, continuing"
 
+# Ten questions asked openly by the site, under the editorial account, each beginning "RuinMyTrip
+# asks:". Idempotent and matched on destination plus first line, so this rewrites the same rows
+# rather than stacking duplicates on every deploy. No answers are ever written: that is the line.
+php /var/www/html/scripts/publish_questions.php --apply   || echo "entrypoint: question publish reported errors, continuing"
+
 # Keep the autocomplete index in step: fill any missing normalised names and seed destination
 # aliases. Idempotent and fast, and it has to run AFTER enrichment, because enrichment is what
 # may have just changed a place's name.

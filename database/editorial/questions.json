@@ -1,0 +1,45 @@
+{
+  "_comment": "Ten questions asked openly by RuinMyTrip, one per destination. Every one begins 'RuinMyTrip asks:' so nobody can mistake who wrote it, and every one is a question a real traveler asks about that city. There are no answers here and there never will be: an answer written by us pretending to be a traveler is the one thing that is never allowed. Applied by scripts/publish_questions.php, idempotent, matched on destination and the opening line.",
+  "questions": [
+    {
+      "slug": "munich-germany",
+      "body": "RuinMyTrip asks: if you have done Oktoberfest without a group, did you find people beforehand or sort out a table on the day?\n\nWiesn runs 19 September to 4 October. Every table is shared, the good ones are gone by ten in the morning, and a group of six walks into one far more easily than one person does. We keep reading the same two pieces of advice and they contradict each other.\n\nIf you have done it alone or as a pair, which actually worked?"
+    },
+    {
+      "slug": "munich-germany",
+      "body": "RuinMyTrip asks: which days of Oktoberfest would you tell a first timer to avoid entirely?\n\nEverything written about this says weekday mornings and then stops. We would rather hear the specific days people regretted, and why.\n\nIf you have been more than once, which day would you not repeat?"
+    },
+    {
+      "slug": "oaxaca-mexico",
+      "body": "RuinMyTrip asks: for Dia de Muertos, which cemetery on which night, and which are better left to the families?\n\nThe 1st and 2nd are the main nights and the comparsas start on the 31st. The guides all name different villages and none of them agree, and there is a line somewhere between visiting and intruding that nobody writes down.\n\nIf you live there or have been more than once, where would you send somebody, and where would you not?"
+    },
+    {
+      "slug": "lisbon-portugal",
+      "body": "RuinMyTrip asks: Web Summit fills 9 to 12 November. What is worth doing in Lisbon on the days either side?\n\nThe conference covers four days and most people are in the city for six or seven. The middle is planned for you. The weekend is not.\n\nWhat would somebody who lives there actually do with those days?"
+    },
+    {
+      "slug": "chiang-mai-thailand",
+      "body": "RuinMyTrip asks: for Yi Peng, is the ticketed release out of town worth it over the free ones in the old city?\n\nThe guides put the festival around 23 to 25 November this year and disagree on the exact night, which is its own problem. The ticketed mass releases are expensive and the free ones are apparently packed.\n\nWhich did you do, and would you do the same again?"
+    },
+    {
+      "slug": "bangkok-thailand",
+      "body": "RuinMyTrip asks: New Year in Bangkok, or head north to Chiang Mai?\n\nThe week from 27 December to 2 January is the busiest of the year here and everybody splits between those two answers. We cannot tell whether that is taste or whether one of them is obviously better.\n\nIf you have done both, which would you repeat?"
+    },
+    {
+      "slug": "miami-usa",
+      "body": "RuinMyTrip asks: during Art Week, which days are worth being in Wynwood and which are the ones locals avoid?\n\nArt Basel runs at the convention center in the first week of December with the satellite fairs spread either side, and the honest question is not which fair but which days are worth the crowds.\n\nIf you live in Miami, which days do you plan around?"
+    },
+    {
+      "slug": "rio-de-janeiro-brazil",
+      "body": "RuinMyTrip asks: how do you choose blocos at Carnival when you do not know anybody there?\n\nThe Sambadrome is the easy part because you buy a seat. The blocos have no ticket and no door, there are hundreds of them, and which one is good seems to depend entirely on who you are standing with.\n\nDo you plan them in advance or follow whoever you meet?"
+    },
+    {
+      "slug": "amsterdam-netherlands",
+      "body": "RuinMyTrip asks: what is the one thing you would tell somebody arriving alone here for a weekend?\n\nNot the museum list. The thing that would have changed the trip and that nobody mentions until afterwards.\n\nWhat was yours?"
+    },
+    {
+      "slug": "marrakech-morocco",
+      "body": "RuinMyTrip asks: is the Atlas or desert day trip worth it, and does the answer change if you are going on your own?\n\nThey are priced per vehicle, which means the same trip costs very different amounts depending on how many of you there are, and that changes the decision rather than just the bill.\n\nWould you do it again, and would you do it alone?"
+    }
+  ]
+}
