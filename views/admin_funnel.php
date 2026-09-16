@@ -156,6 +156,19 @@
       No arrivals have been counted yet.
     <?php endif; ?>
   </p>
+  <?php /* The top line is people, not requests. It used to be every signed out session that
+           reached a public page, which on this site was overwhelmingly automated, so the signup
+           rate was being divided by crawlers. The raw number is still here beside it, with the two
+           other buckets, because a bot filter that hides what it threw away is a filter nobody can
+           check. */ ?>
+  <p class="hint" style="margin:-4px 0 12px">
+    Of <b><?= (int) ($growth['visits_raw'] ?? 0) ?></b> signed out sessions in this window:
+    <b><?= (int) ($growth['visits'] ?? 0) ?></b> look like a person,
+    <b><?= (int) ($growth['visits_automated'] ?? 0) ?></b> are automated,
+    <b><?= (int) ($growth['visits_uncertain'] ?? 0) ?></b> could be either and are counted as
+    neither. Classified by session shape and by whether the client ever gave back a cookie; no
+    address, agent or referrer is kept. The traveler figures below use the human number.
+  </p>
   <table class="table" style="margin:0 0 18px">
     <tbody>
     <?php foreach ($growth['spine'] as $row): ?>

@@ -149,8 +149,17 @@ ok(array_key_exists('arrivals_cover', $f), 'the report knows whether its own win
 if (!$f['arrivals_cover']) {
     ok($f['spine'][1]['of'] === null, 'and withholds the signup rate until it is');
 }
-ok(str_contains($growthSrc, '$covers ? $pct($members, $visits) : null'),
+ok(str_contains($growthSrc, '$covers ? $pct($members, $visitsHuman) : null'),
    'the rate is gated on coverage rather than estimated');
+/* And the denominator is people rather than requests. The top line used to be every signed out
+   session that reached a public page, which on this site was overwhelmingly automated, so the
+   signup rate was being computed against crawlers. The raw count is kept beside it; it is simply
+   not what the funnel divides by. */
+ok(str_contains($growthSrc, "'visits_raw' => \$visits"), 'the raw session count is still reported');
+ok(str_contains($growthSrc, "'visits'  => \$visitsHuman"), 'and the headline is the human one');
+foreach (['visits_raw', 'visits_automated', 'visits_uncertain'] as $k) {
+    ok(array_key_exists($k, $f), "the three buckets stay visible: $k");
+}
 
 echo "\n-- activation is counted in members, never in pairs --\n";
 /* The two numbers that decide whether the social half of this product does anything. Network

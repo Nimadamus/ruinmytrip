@@ -44,7 +44,9 @@ function rmt_traffic_shape(int $days = 30): array {
 
     $rows = q_all(
         "SELECT journey, COUNT(*) events, COUNT(DISTINCT event) kinds,
-                MIN(created_at) first_at, MAX(created_at) last_at
+                MIN(created_at) first_at, MAX(created_at) last_at,
+                MAX(COALESCE(cookied, 0)) gave_cookie_back,
+                COUNT(cookied) rows_with_the_bit
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
        GROUP BY journey", [$since]);
@@ -75,13 +77,29 @@ function rmt_traffic_shape(int $days = 30): array {
 
         $acted = false;
         foreach (RMT_SHAPE_HUMAN_EVENTS as $he) { if (isset($ev[$he])) { $acted = true; break; } }
+        /* Whether the client ever handed back a token we set. Only meaningful on a session that
+           produced more than one event: a person's first page has no cookie either, so a single
+           hit without one proves nothing and stays uncertain. */
+        $gaveCookie = (int) ($r['gave_cookie_back'] ?? 0) === 1;
+        $bitKnown   = (int) ($r['rows_with_the_bit'] ?? 0) > 0;   // rows from before migration 093 have none
 
         if ($acted) {
             $human++; $verdict[$j] = 'human';
             $why['human']['did_something_only_a_person_does'] = ($why['human']['did_something_only_a_person_does'] ?? 0) + 1;
+        } elseif ($gaveCookie) {
+            /* It stored what we sent and sent it back. Automation can do this and almost none
+               does, so on its own it is enough to call a session a browser. */
+            $human++; $verdict[$j] = 'human';
+            $why['human']['returned_the_cookie_we_set'] = ($why['human']['returned_the_cookie_we_set'] ?? 0) + 1;
         } elseif ((int) $r['kinds'] >= 2 && $span >= 20) {
             $human++; $verdict[$j] = 'human';
             $why['human']['read_several_pages_over_human_time'] = ($why['human']['read_several_pages_over_human_time'] ?? 0) + 1;
+        } elseif ($bitKnown && $n >= 2 && !$gaveCookie) {
+            /* Several requests and not one of them carried state back. No browser does this; it is
+               the shape of a fetcher following links, which is what was being counted as arrivals.
+               Only applied where the bit was actually recorded, so history is not reinterpreted. */
+            $auto++; $verdict[$j] = 'auto';
+            $why['automated']['several_requests_never_returned_a_cookie'] = ($why['automated']['several_requests_never_returned_a_cookie'] ?? 0) + 1;
         } elseif ($n >= 8 && $span <= 30) {
             $auto++; $verdict[$j] = 'auto';
             $why['automated']['many_pages_in_seconds'] = ($why['automated']['many_pages_in_seconds'] ?? 0) + 1;

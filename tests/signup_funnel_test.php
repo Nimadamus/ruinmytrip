@@ -31,7 +31,7 @@ function is_logged_in(): bool { return false; }
 
 db()->exec('CREATE TABLE contribution_events (id INTEGER PRIMARY KEY AUTOINCREMENT, event TEXT,
               source TEXT, journey TEXT, place_id INT, destination_id INT, is_authed INT,
-              reason TEXT, created_at TEXT, visitor TEXT)');
+              reason TEXT, created_at TEXT, visitor TEXT, cookied INT)');
 
 $fails = 0;
 function ok(string $name, bool $cond, string $detail = ''): void {

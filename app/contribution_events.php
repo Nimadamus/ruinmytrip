@@ -178,6 +178,10 @@ function rmt_visitor_id(): string {
     if ($known) return $GLOBALS['_rmt_visitor_id'] = $seen;
 
     $fresh = bin2hex(random_bytes(8));
+    /* Minted here, which means the client did not send one. The flag survives the line below that
+       puts it into $_COOKIE so the rest of the request agrees with itself, because otherwise every
+       first page of every visit would look like a returning browser to the check above. */
+    $GLOBALS['_rmt_visitor_minted'] = true;
     if (!headers_sent()) {
         setcookie(RMT_VISITOR_COOKIE, $fresh, [
             'expires'  => time() + RMT_VISITOR_TTL, 'path' => '/',
@@ -187,6 +191,20 @@ function rmt_visitor_id(): string {
         $_COOKIE[RMT_VISITOR_COOKIE] = $fresh;   // so the rest of this request agrees with itself
     }
     return $GLOBALS['_rmt_visitor_id'] = $fresh;
+}
+
+/**
+ * Did this request arrive carrying a token we had already issued?
+ *
+ * The one signal that separates a browser from a fetcher without keeping anything about the
+ * person: we set the cookie on the first response of every visit, a browser sends it back on the
+ * next request, and almost no crawler does. It is recorded per event so a session can be read
+ * afterwards as "returned state at least once" or "never returned state at all", and only the
+ * second of those is evidence, because a real person's first page has no cookie either.
+ */
+function rmt_visitor_presented_cookie(): bool {
+    return (bool) preg_match('/^[a-f0-9]{16}$/', (string) ($_COOKIE[RMT_VISITOR_COOKIE] ?? ''))
+        && !($GLOBALS['_rmt_visitor_minted'] ?? false);
 }
 
 /** Was this browser here before this session started? False for one we have never seen. */
@@ -228,9 +246,10 @@ function rmt_track(string $event, array $ctx = []): bool {
 
     try {
         q_run('INSERT INTO contribution_events
-               (event, source, journey, visitor, place_id, destination_id, is_authed, reason, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?)',
+               (event, source, journey, visitor, cookied, place_id, destination_id, is_authed, reason, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?)',
               [$event, $source, rmt_journey_id(), rmt_visitor_id(),
+               rmt_visitor_presented_cookie() ? 1 : 0,
                !empty($ctx['place_id']) ? (int) $ctx['place_id'] : null,
                !empty($ctx['destination_id']) ? (int) $ctx['destination_id'] : null,
                function_exists('is_logged_in') && is_logged_in() ? 1 : 0,

@@ -44,6 +44,7 @@ $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/052_contribution_
    migration alone passes while the live INSERT fails against a column the test never created,
    and that is a green suite reporting on a table nobody has. */
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/090_event_visitor.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/093_event_cookied.sqlite.sql'));
 
 // The journey token lives in the session, so the test drives it through the session rather than
 // redefining the function -- PHP hoists a test file's declarations before the require runs, so a
@@ -67,7 +68,10 @@ check('there is no address column',           in_array('ip', $cols, true), false
 check('there is no user agent column',        in_array('user_agent', $cols, true), false);
 check('there is nowhere to put review text',  in_array('body', $cols, true), false);
 check('what it does hold', $cols,
-      ['id','event','source','journey','place_id','destination_id','is_authed','reason','created_at','visitor']);
+      ['id','event','source','journey','place_id','destination_id','is_authed','reason','created_at','visitor','cookied']);
+/* `cookied` is one bit: did this request arrive carrying a token we had already set. It is the
+   only honest way to tell a browser from a fetcher without keeping a user agent or an address,
+   and it says nothing about the person on either side of it. */
 /* `visitor` is random bytes in a first party cookie, and the reason it is allowed to exist in a
    table this careful is that it is not made out of the person: no address, no agent, no
    fingerprint, nothing hashed from any of those, and nothing it could be joined to that names

@@ -105,9 +105,25 @@ function rmt_growth_funnel(int $days = 0): array {
 
     $pct = static fn(int $a, int $b): ?float => $b > 0 ? round($a * 100 / $b, 1) : null;
 
+    /* The headline is PEOPLE now, not requests. `visits` counted every session that reached an
+       indexable page while signed out, which on this site was overwhelmingly automated: 8,066 of
+       8,272 sessions lasted zero seconds and not one browser in a hundred and eighteen ever came
+       back. A funnel whose top line is mostly crawlers reports a conversion catastrophe every week
+       and teaches whoever reads it to stop looking.
+       Nothing is deleted or rewritten: the raw count is still here beside the classified one, and
+       the classification keeps its three honest buckets rather than pretending the split is
+       perfect. */
+    $shape = function_exists('rmt_traffic_shape') ? rmt_traffic_shape($days) : null;
+    $visitsHuman = $shape ? (int) $shape['sessions']['likely_human'] : $visits;
+    $visitsAuto  = $shape ? (int) $shape['sessions']['likely_automated'] : 0;
+    $visitsUnsure = $shape ? (int) $shape['sessions']['uncertain'] : 0;
+
     return [
         'days'    => $days,
-        'visits'  => $visits,
+        'visits'  => $visitsHuman,          // the headline: sessions that look like a person
+        'visits_raw' => $visits,            // every signed out session that reached a public page
+        'visits_automated' => $visitsAuto,
+        'visits_uncertain' => $visitsUnsure,
         'members' => $members,
         /* When the arrival counter started, and whether it covers the window. A rate the
            report cannot honestly compute is left out rather than estimated. */
@@ -116,8 +132,8 @@ function rmt_growth_funnel(int $days = 0): array {
         /* The spine. Each step as a share of the step above it, because a funnel read as a share of
            the top hides which single step is the broken one. */
         'spine'   => [
-            ['label' => 'Arrived on the front page',  'n' => $visits,    'of' => null],
-            ['label' => 'Signed up',                  'n' => $members,   'of' => $covers ? $pct($members, $visits) : null],
+            ['label' => 'Arrived (likely human)',     'n' => $visitsHuman, 'of' => null],
+            ['label' => 'Signed up',                  'n' => $members,   'of' => $covers ? $pct($members, $visitsHuman) : null],
             ['label' => 'Confirmed their email',      'n' => $confirmed, 'of' => $pct($confirmed, $members)],
             ['label' => 'Wrote a trip',               'n' => $trip,      'of' => $pct($trip, $members)],
             ['label' => 'Planned or saved something', 'n' => $useful,    'of' => $pct($useful, $members)],
