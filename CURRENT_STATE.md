@@ -292,8 +292,21 @@ something we published. On your own trip the control reads Invite a traveler.
 says so plainly and then offers four things that are real on that city today: follow it, ask it, see
 everyone in it, and invite somebody, with your own trip link when you have one.
 
+**The whole chain is verified rather than assumed.** Campaign landing, signed out click on the
+prefilled button, a signup page that names the city and both dates, signup returning straight to the
+filled form, and a trip written with the campaign still on it. Driven end to end on 2026-09-16.
+
+**Our own checks do not count as travelers.** Verification campaigns are named in a list, and checks
+that have to use a real campaign name carry `utm_content=selfcheck`, which the report subtracts from
+that row's human count. The three production checks live in `docs/qa` with their traps written down.
+
 What is not done is the only thing that moves the numbers: nobody has posted a link where travelers
-are. Twenty posts are written in `docs/ACQUISITION_PACKAGES.md`, six cohorts specified in
+are. Reddit is blocked from this machine, there is no personal Facebook account, and the only X
+account is a sports betting brand, so every channel that needs a human account is waiting on one.
+The copy for all of them is written: `docs/ACQUISITION_PUBLICATIONS.md` (twenty posts),
+`docs/ACQUISITION_FACEBOOK.md` (five), `docs/ACQUISITION_VIDEO.md` (ten video scripts),
+`docs/ACQUISITION_WEEKLY.md` (the repeating week) and `docs/ACQUISITION_CHANNELS.md` (ranked, with
+what could not be read said plainly). Twenty posts are written in `docs/ACQUISITION_PACKAGES.md`, six cohorts specified in
 `docs/ACQUISITION_COHORTS.md`, and the state of the effort is `docs/ACQUISITION_QUEUE.md`. Reddit is
 blocked at the network layer from this machine, for reading as well as posting.
 
