@@ -7,7 +7,17 @@ and any two of those trips overlapping in one city.
 
 ## USER ACTION REQUIRED
 
-**All three are the same shape: everything is finished except a person with a normal account.**
+**Two accounts unlock almost everything. The full ranking is in `docs/SOCIAL_ACCOUNTS.md`.**
+
+1. **A personal Facebook account in three travel groups.** Five finished posts, fifteen minutes.
+2. **A TikTok account**, if somebody will film. Ten scripts written, and it is the only channel where
+   reach does not need an existing audience.
+3. **Decide on `docs/EDITORIAL_QUESTIONS_PROPOSAL.md`**: ten questions asked openly by the site, on
+   the cohort cities. Yes or no. Nothing posted without it.
+4. **Decide on the three missing emails** in `docs/ACTIVATION_AUDIT.md`: a match appearing, a
+   connection request, and an acceptance all write an in app notification and send nothing.
+
+**The old list, unchanged in substance:**
 
 0. **Post one Facebook group post.** Five are ready in `docs/ACQUISITION_FACEBOOK.md`, each with its
    group type, tracked link, CTA, threshold, whether the link belongs in the body or the first
