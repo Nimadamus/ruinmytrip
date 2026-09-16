@@ -84,6 +84,25 @@ it; the rating, editorial review, places, reviews, trips, map and related cities
 one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
 `tests/city_community_test.php`.
 
+## The traffic numbers count people now, 2026-09-15
+
+The dashboard's top line was every signed out session that reached an indexable page, and on this
+site that was overwhelmingly automated: 8,279 sessions of which 8,073 lasted zero seconds, against
+zero search clicks in the same window. The cause is our own markup: /register and /review/new are
+linked from every place and destination page, a signed out fetch of either records an event, and a
+cookieless client mints a new session per request, so sessions counted requests.
+
+Migration 093 adds `contribution_events.cookied`: did this request arrive carrying a token we had
+already set. `rmt_traffic_shape()` in `app/traffic_shape.php` classifies each session human,
+automated or uncertain, and `rmt_growth_funnel()` leads with the human count while publishing the
+raw one and the other two buckets beside it. One page and nothing after it stays UNCERTAIN for
+good: a bored person and a polite crawler are the same row.
+
+Nothing was deleted and no row was rewritten. Rows from before the bit carry null and are never
+called automated on a signal they never had. Read the numbers without an account at
+`/cron/funnel?key=CRON_KEY&days=0`, which now carries the social funnel, the stages with their
+conversions, communities, attribution, sources and the traffic shape.
+
 ## Messaging is mutual opt in, 2026-09-15
 
 `rmt_message_allowed()` in `app/messages.php` is the whole policy and the only place it lives.
