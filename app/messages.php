@@ -227,7 +227,13 @@ function messages_send(array $a): void {
         redirect($return);
     }
 
+    /* A first message to somebody is the event; every reply after it is the conversation, and
+       counting those would measure how talkative two people are rather than how often a stranger
+       gets spoken to at all. Asked before the conversation row exists, because afterwards the
+       answer is always yes. Nothing about who, and never a word of what was typed. */
+    $isFirst = !rmt_conversation_exists($meId, $themId);
     $convId = rmt_get_or_create_conversation($meId, $themId);
+    if ($isFirst && function_exists('rmt_track')) rmt_track('message_started');
     $now = date('Y-m-d H:i:s');
     q_run('INSERT INTO messages (conversation_id, sender_id, body, created_at) VALUES (?,?,?,?)',
         [$convId, $meId, $body, $now]);

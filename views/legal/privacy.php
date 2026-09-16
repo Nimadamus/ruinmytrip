@@ -13,6 +13,17 @@
   <p>To operate the community, show your content, power “who's going” discovery at the destination level, and keep the platform safe.</p>
   <h2>What we don't do</h2>
   <p>We don't sell your personal data. We don't broadcast live location. We don't expose your exact address or coordinates.</p>
+  <h2>Measurement</h2>
+  <p>We count how the site is used with our own software on our own servers. There is no third
+    party analytics service here, nothing is sold or shared, and nothing follows you to other
+    sites. What we keep is a count of things that happened: a destination page was opened, a
+    follow was pressed, a question was posted. Those records carry no name, no account, no email,
+    no address, no browser details, no referring site and none of the words you wrote.</p>
+  <p>Two cookies make those counts add up rather than double. Your session links the steps of one
+    visit together. A cookie named <code>rmt_v</code>, sixteen random characters, lets us tell
+    that a browser has been here before, so "how many people came back" is a number we can answer.
+    It is random: it is not made from anything about you, it is not connected to your account, and
+    clearing your cookies gives you a new one and makes you new to us.</p>
   <h2>Your controls</h2>
   <p>Edit or delete your content and plans, control who can see your travel dates, block users, and request account deletion at any time.</p>
   <h2>Asking us for something</h2>

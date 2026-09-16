@@ -134,7 +134,10 @@ $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac 
 ok(!rmt_is_crawler(), 'a phone is a traveler');
 $_SERVER['HTTP_USER_AGENT'] = $realUA;
 $events = (string) file_get_contents($root . '/app/contribution_events.php');
-ok(str_contains($events, 'if (rmt_is_crawler()) return;'),
+/* rmt_track() reports whether it wrote, so the refusal returns false rather than nothing: a
+   caller that spends a once-per-session marker has to be able to tell a dropped row from a
+   written one. The guard itself is unchanged and still sits before every write. */
+ok(str_contains($events, 'if (rmt_is_crawler()) return false;'),
    'and nothing a robot does reaches the table at all');
 ok(!preg_match('/INSERT INTO contribution_events.{0,400}HTTP_USER_AGENT/s', $events),
    'the agent is read to make that decision and never written down');

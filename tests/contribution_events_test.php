@@ -40,6 +40,10 @@ function check(string $name, $got, $expect): void {
 
 $pdo = db();
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/052_contribution_events.sqlite.sql'));
+/* The table as production actually has it, migrations and all: a fixture built from the first
+   migration alone passes while the live INSERT fails against a column the test never created,
+   and that is a green suite reporting on a table nobody has. */
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/090_event_visitor.sqlite.sql'));
 
 // The journey token lives in the session, so the test drives it through the session rather than
 // redefining the function -- PHP hoists a test file's declarations before the require runs, so a
@@ -63,7 +67,14 @@ check('there is no address column',           in_array('ip', $cols, true), false
 check('there is no user agent column',        in_array('user_agent', $cols, true), false);
 check('there is nowhere to put review text',  in_array('body', $cols, true), false);
 check('what it does hold', $cols,
-      ['id','event','source','journey','place_id','destination_id','is_authed','reason','created_at']);
+      ['id','event','source','journey','place_id','destination_id','is_authed','reason','created_at','visitor']);
+/* `visitor` is random bytes in a first party cookie, and the reason it is allowed to exist in a
+   table this careful is that it is not made out of the person: no address, no agent, no
+   fingerprint, nothing hashed from any of those, and nothing it could be joined to that names
+   anybody. It recognises a browser coming back and can do nothing else. */
+check('the visitor token is sixteen hex characters and nothing else',
+      (bool) preg_match('/^[a-f0-9]{16}$/', rmt_visitor_id()), true);
+check('it is stable within a request', rmt_visitor_id(), rmt_visitor_id());
 
 $pdo->exec('DELETE FROM contribution_events');
 

@@ -46,6 +46,25 @@
     });
   }, true);
 
+  /* The one social step the server cannot see: somebody putting the cursor in a composer and not
+     finishing. A posted question is a row in the database; an abandoned one leaves nothing at all,
+     and the gap between the two is the number that says whether the box is working.
+
+     Focus, once per element per page. Not keystrokes, not what was typed, not how long they sat
+     there. An element opts in by carrying data-track, so this never fires on a form nobody asked
+     it to watch. */
+  document.addEventListener('focus', function (ev) {
+    var el = ev.target;
+    if (!el || !el.getAttribute || el.getAttribute('data-track-sent')) return;
+    var name = el.getAttribute('data-track');
+    if (!name) return;
+    el.setAttribute('data-track-sent', '1');
+    send(name, {
+      source: el.getAttribute('data-track-source') || '',
+      destination_id: el.getAttribute('data-destination-id') || ''
+    });
+  }, true);
+
   // Exposed so the draft script can report a restore without duplicating the beacon plumbing.
   window.rmtTrack = send;
 })();

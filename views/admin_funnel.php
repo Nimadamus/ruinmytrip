@@ -1,4 +1,4 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap */ ?>
+<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap @var array $social @var array $socialC @var array $visitors @var array $topCities @var array $attrib */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
@@ -25,6 +25,126 @@
   };
   $spineTop = max(1, (int) $growth['spine'][0]['n'], (int) $growth['spine'][1]['n']);
   ?>
+
+  <?php
+  /* The social funnel, first on the page because it is the loop the product is built around:
+     land on a city, touch it, join, follow, post a trip, ask something, come back.
+
+     Everything here is counted by journey, which is one session's attempt, except the two visitor
+     numbers, which are counted by browser and are floors rather than totals: clearing cookies
+     makes somebody new to us, and there is no honest fix for that which does not involve
+     identifying the person. Zero is printed as zero. A funnel that rounded a quiet week up would
+     be worth less than no funnel at all. */
+  $socialTop = max(1, (int) ($social[0]['count'] ?? 0));
+  $pct = static function (int $n, int $of): string {
+      return $of > 0 ? (string) round($n * 100 / $of) . '%' : '';
+  };
+  ?>
+  <h2 style="margin:6px 0 4px">The social funnel</h2>
+  <p class="hint" style="margin:0 0 10px">
+    Landing on a destination through to coming back. Each row is sessions that reached that step,
+    and the percentage is a share of the step above. "Touched it" is a follow, an ask, a reaction
+    or a comment, because the page offers several first moves and which one is a later question.
+  </p>
+  <table class="table" style="margin:0 0 18px">
+    <tbody>
+      <?php $prev = null; foreach ($social as $st): ?>
+        <tr>
+          <td style="width:230px"><?= e($st['label']) ?>
+            <?php if ($st['note'] !== ''): ?><br><span class="hint"><?= e($st['note']) ?></span><?php endif; ?>
+          </td>
+          <td style="width:70px;text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $st['count'] ?></b></td>
+          <td style="width:64px;text-align:right" class="hint">
+            <?= $prev === null ? '' : e($pct((int) $st['count'], (int) $prev)) ?>
+          </td>
+          <td><?= $bar((int) $st['count'], $socialTop) ?></td>
+        </tr>
+      <?php $prev = (int) $st['count']; endforeach; ?>
+    </tbody>
+  </table>
+
+  <h3 style="margin:14px 0 4px">Counters</h3>
+  <p class="hint" style="margin:0 0 10px">Distinct sessions in this window, per event. Crawlers are
+    excluded before anything is written, so these are people rather than robots.</p>
+  <table class="table" style="margin:0 0 18px">
+    <tbody>
+      <?php
+      $rows = [
+        ['Destination page views',   (int) $socialC['destination_page_view']],
+        ['Unique visitors (floor)',  (int) $visitors['unique']],
+        ['Returning visitors (floor)', (int) $visitors['returning']],
+        ['Follow pressed',           (int) $socialC['destination_follow_click']],
+        ['Follows that stuck',       (int) $socialC['destination_follow_success']],
+        ['Questions started',        (int) $socialC['ask_question_click']],
+        ['Questions posted',         (int) $socialC['question_posted']],
+        ['Posts of any kind',        (int) $socialC['post_created']],
+        ['Comments',                 (int) $socialC['comment_created']],
+        ['Reactions',                (int) $socialC['reaction_created']],
+        ['Signup form seen',         (int) $socialC['join_view']],
+        ['Signup started',           (int) $socialC['join_submit']],
+        ['Signup completed',         (int) $socialC['join_created']],
+        ['Signed in',                (int) $socialC['login_completed']],
+        ['Trip form opened',         (int) $socialC['trip_create_started']],
+        ['Trips created',            (int) $socialC['trip_created']],
+        ['Profiles read',            (int) $socialC['profile_viewed']],
+        ['...from a discovery page', (int) $socialC['traveler_profile_clicked']],
+        ['Profile editor opened',    (int) $socialC['profile_edit_started']],
+        ['Profiles filled in',       (int) $socialC['profile_completed']],
+        ['Overlapping travelers seen', (int) $socialC['overlapping_traveler_viewed']],
+        ['First messages sent',      (int) $socialC['message_started']],
+      ];
+      foreach ($rows as [$label, $n]): ?>
+        <tr><td><?= e($label) ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $n ?></b></td></tr>
+      <?php endforeach; ?>
+      <tr><td><b>Signup conversion</b><br><span class="hint">completed as a share of started</span></td>
+          <td style="text-align:right"><b><?= e($pct((int) $socialC['join_created'], (int) $socialC['join_submit']) ?: 'no data') ?></b></td></tr>
+      <tr><td><b>Follow conversion</b><br><span class="hint">follows that stuck, as a share of presses</span></td>
+          <td style="text-align:right"><b><?= e($pct((int) $socialC['destination_follow_success'], (int) $socialC['destination_follow_click']) ?: 'no data') ?></b></td></tr>
+      <tr><td><b>Ask conversion</b><br><span class="hint">questions posted, as a share of composers opened</span></td>
+          <td style="text-align:right"><b><?= e($pct((int) $socialC['question_posted'], (int) $socialC['ask_question_click']) ?: 'no data') ?></b></td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin:14px 0 4px">Destination communities by activity</h3>
+  <p class="hint" style="margin:0 0 10px">Views and actions in separate columns on purpose: a city
+    with traffic and no follows is a different problem from a city with neither, and one score
+    would hide which one we have.</p>
+  <?php if (!$topCities): ?>
+    <p class="muted" style="margin:0 0 18px">Nothing recorded in this window yet.</p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 18px">
+      <thead><tr><th>City</th><th style="text-align:right">Views</th><th style="text-align:right">Follows</th><th style="text-align:right">Questions</th></tr></thead>
+      <tbody>
+        <?php foreach ($topCities as $tc): ?>
+          <tr>
+            <td><a href="<?= e(url('d/' . $tc['slug'])) ?>"><?= e($tc['name']) ?></a></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $tc['views'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $tc['follows'] ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $tc['questions'] ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
+  <h3 style="margin:14px 0 4px">Which city recruited them</h3>
+  <p class="hint" style="margin:0 0 10px">The city that was on screen in the same session as the
+    account being created. Read from the session token this table already keeps, so nothing is
+    followed across sites and no referrer is stored.</p>
+  <?php if (!$attrib): ?>
+    <p class="muted" style="margin:0 0 22px">No signups with a city behind them in this window.</p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 22px">
+      <tbody>
+        <?php foreach ($attrib as $at): ?>
+          <tr><td><a href="<?= e(url('d/' . $at['slug'])) ?>"><?= e($at['name']) ?></a></td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $at['signups'] ?></b></td></tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
   <h2 style="margin:6px 0 4px">Members</h2>
   <p class="hint" style="margin:0 0 10px">Counted from trips, saves, plans and confirmations
     themselves, not from anything recorded about anybody. Each percentage is a share of the line

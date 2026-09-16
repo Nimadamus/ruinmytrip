@@ -217,6 +217,13 @@ function country_show(array $a): void {
 function destination(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $id = (int)$d['id'];
+    /* Once per city per session, not once per request: a reader who opens the page, follows a
+       link and comes back has arrived once. The return visit is a separate event and asks a
+       different question, which is whether the browser had been here before this session at all. */
+    rmt_track_once_for('destination_page_view', (string) $id, ['source' => 'destination', 'destination_id' => $id]);
+    if (rmt_visitor_is_returning()) {
+        rmt_track_once_for('destination_return_visit', (string) $id, ['source' => 'destination', 'destination_id' => $id]);
+    }
     /* The city's trip stories, through the visibility clause like everything else that reads a
        trip. Without it a private trip's title, body and cover were on the city page. */
     [$dTripVis, $dTripVisArgs] = rmt_plan_visibility_sql('t', current_user());
@@ -735,6 +742,18 @@ function profile(array $a): void {
     $uid = (int)$u['id'];
     $me = current_user();
     $isMe = $me && (int)$me['id'] === $uid;
+    /* Whose profile is not recorded, and neither is whose it was not: the row carries the fact
+       that a profile was read and where the reader came from, nothing else. The surface is read
+       off the referring path for the length of one comparison and never stored, exactly as the
+       crawler check reads the agent. A profile reached from a city page, the travelers hub or the
+       overlap page was clicked out of discovery, which is the thing worth separating. */
+    if (!$isMe) {
+        $from = rmt_join_source((string) ($_SERVER['HTTP_REFERER'] ?? ''));
+        rmt_track_once_for('profile_viewed', (string) $uid, ['source' => $from]);
+        if (in_array($from, ['destination', 'travelers', 'matches', 'meetups'], true)) {
+            rmt_track_once_for('traveler_profile_clicked', (string) $uid, ['source' => $from]);
+        }
+    }
 
     /* Trips carry dates and a visibility since migration 071, so this list has to respect both.
        Without the visibility clause a plan somebody marked "only you" would appear on their public
@@ -864,6 +883,7 @@ function profile_edit_form(array $a): void {
     require_login();
     $me = current_user();
     if ($me['username'] !== $a['username']) { forbidden('You can only edit your own profile.'); }
+    rmt_track_once('profile_edit_started', ['source' => 'profile']);
     /* current_user() carries the handful of profile columns the header needs, not all of them, so
        the editor reads its own row. Without this the two newest fields, travel style and the open
        to meeting opt-in, rendered as unset every time somebody opened the form and were then
@@ -940,6 +960,16 @@ function profile_edit_submit(array $a): void {
                    (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
     /* Interests, from the fixed vocabulary. Saved after the profile row is certain to exist. */
     rmt_interests_save((int) $me['id'], (array) ($_POST['interests'] ?? []));
+
+    /* "Completed" is a threshold, not a save: a name somebody can recognise, a few words about
+       themselves and a home city. That is the point at which a profile is worth another traveler
+       clicking, and it is the number worth watching rather than how often the form was submitted.
+       What is stored is the fact that a profile crossed the line, never any of the fields. */
+    if (trim((string) $d['display_name']) !== ''
+        && mb_strlen(trim((string) $d['bio'])) >= 20
+        && trim((string) $d['home_city']) !== '') {
+        rmt_track_once('profile_completed', ['source' => 'profile']);
+    }
 
     flash('Profile updated.');
     redirect('/u/'.$me['username']);
@@ -3093,6 +3123,7 @@ function unsubscribe_action(array $a): void {
 
 /* ---------- forms & writes ---------- */
 function trip_new_form(array $a): void {
+    rmt_track_once('trip_create_started', ['source' => 'trip']);
     require_login();
     view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip | RuinMyTrip','description'=>'Post a trip story with photos.']);
 }
@@ -3296,6 +3327,10 @@ function rmt_trip_create_row(int $userId, array $d): int {
         [$userId, $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
          $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'], 0, date('Y-m-d H:i:s')]);
     rmt_sync_tags('trip', $id, $d['title'], $d['body']);
+    /* Here rather than in trip_create(), so a trip held back for email confirmation and written
+       the moment it arrives is counted once, on the same line, as one that published straight
+       away. A funnel that missed exactly the new members is the wrong funnel. */
+    rmt_track('trip_created', ['source' => 'trip', 'destination_id' => $d['destination_id'] ?: null]);
     rmt_notify_mentions('trip', $id, $userId, [], $d['title'], $d['body']);
     return $id;
 }
@@ -4125,6 +4160,9 @@ function react_action(array $a): void {
            does not. */
         if ($kind === 'like') rmt_notify_like((int) $me['id'], $tt, $tid);
         if ($kind === 'save') rmt_notify_save($tt, $tid);
+        // The add branch only. Taking a like back is not a reaction, and counting it as one would
+        // report a page as twice as engaging as it is.
+        rmt_track('reaction_created');
     }
     redirect(rmt_return_to());
 }
@@ -4207,6 +4245,9 @@ function founding(array $a): void {
 function destination_save_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $did = (int) input('destination_id');
+    /* The press, before anything can refuse it. Recorded against the intent rather than the
+       outcome, because the gap between the two is the whole point of having both. */
+    rmt_track('destination_follow_click', ['source' => 'destination', 'destination_id' => $did ?: null]);
     if (!$did || !dest_by_id($did)) redirect(rmt_return_to());
     if (!rmt_rate_ok('react', (string)$me['id'], 120, 3600)) {
         flash('You are doing that very fast. Try again shortly.');
@@ -4226,6 +4267,7 @@ function destination_save_action(array $a): void {
             if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         }
     }
+    if ($wantSaved) rmt_track('destination_follow_success', ['source' => 'destination', 'destination_id' => $did]);
     redirect(rmt_return_to());
 }
 
@@ -4464,6 +4506,7 @@ function comment_action(array $a): void {
 
     q_run("INSERT INTO comments (user_id,target_type,target_id,body,status,created_at,parent_id) VALUES (?,?,?,?, 'published', ?,?)",
         [(int)$me['id'], $tt, $tid, $body, date('Y-m-d H:i:s'), $parentId ?: null]);
+    rmt_track('comment_created');   // that one happened. Never what it said, never who it was to.
 
     // Tell the content's author someone commented (follows and compliments already notified, but
     // comments never did). Skip self-comments; @mentions in the body ping their own recipients,
@@ -4573,6 +4616,7 @@ function login_submit(array $a): void {
             rmt_track('review_login_completed');
             rmt_track('review_return_after_auth');
         }
+        rmt_track('login_completed', ['source' => rmt_join_source($return)]);
         flash('Welcome back.');
         redirect($return);
     }
@@ -5282,6 +5326,14 @@ function admin_funnel(array $a): void {
     if (!in_array($days, [1, 7, 30, 0], true)) $days = 30;
     view('admin_funnel', [
         'days'      => $days,
+        /* The social funnel leads the page. The review funnel below it measures somebody writing
+           something finished; this measures the loop the product is built around, which is the one
+           that has to work first. */
+        'social'    => rmt_social_funnel($days),
+        'socialC'   => rmt_social_counts($days),
+        'visitors'  => rmt_visitor_counts($days),
+        'topCities' => rmt_top_communities($days),
+        'attrib'    => rmt_signup_attribution($days),
         'board'     => rmt_community_scoreboard(),
         'steps'     => rmt_funnel_steps($days),
         'byAuth'    => rmt_funnel_by_auth($days),
@@ -5900,6 +5952,7 @@ function communities_index(array $a): void {
  * is never indexed and never shown signed out.
  */
 function matches_index(array $a): void {
+    rmt_track_once('overlapping_traveler_viewed', ['source' => 'matches']);
     require_login();
     $me = current_user();
     $uid = (int) $me['id'];
@@ -6071,6 +6124,10 @@ function post_create(array $a): void {
         if (!$img['ok']) flash($img['error']);   // the words are already posted; say what happened
     }
     rmt_notify_mentions('post', $id, (int) $me['id'], [], (string) $v['data']['body']);
+    rmt_track('post_created', ['destination_id' => $v['data']['destination_id'] ?? null]);
+    if (!empty($v['data']['destination_id'])) {
+        rmt_track('question_posted', ['source' => 'destination', 'destination_id' => (int) $v['data']['destination_id']]);
+    }
     rmt_seo_announce('/post/' . $id);
     /* Back where it was written, when the composer says so. A question asked on a city page is
        part of that city's conversation, and throwing the reader onto a bare post page takes them

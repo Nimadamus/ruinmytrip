@@ -52,6 +52,29 @@ const RMT_CONTRIB_EVENTS = [
        leaves nothing in the product to count. Recorded once per session, never per request,
        and it carries no address, agent or referrer -- it is an arrival, not a visitor. */
     'landing_view',                // the public front page was rendered for somebody signed out
+    /* The social funnel, added 2026-09-15. The review funnel measures somebody writing something
+       finished; this measures the loop the product is actually built around: land on a city, touch
+       it, join, follow it, post a trip, ask a question, come back. Every one of these is recorded
+       by the server from a thing that happened, except the two marked, which only the browser can
+       see. */
+    'destination_page_view',       // a city page was rendered, once per city per session
+    'destination_return_visit',    // ...by a browser that had been here on an earlier visit
+    'destination_follow_click',    // follow was pressed
+    'destination_follow_success',  // ...and the city is now followed
+    'ask_question_click',          // the city composer was focused (browser)
+    'question_posted',             // a post was published with a city on it
+    'post_created',                // any post was published, city or not
+    'comment_created',
+    'reaction_created',            // a like or a save
+    'login_completed',
+    'profile_viewed',
+    'traveler_profile_clicked',    // ...arrived at from a discovery surface rather than anywhere
+    'profile_edit_started',
+    'profile_completed',           // saved with a name, a few words and a home city on it
+    'trip_create_started',
+    'trip_created',
+    'overlapping_traveler_viewed', // a page of people whose dates cross the reader's was rendered
+    'message_started',             // a first message to somebody, never the message
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
@@ -59,6 +82,8 @@ const RMT_CONTRIB_SOURCES = [
     'place', 'destination', 'browse', 'contribute', 'profile', 'search', 'home', 'review', 'feed',
     // The surfaces a signup can come from, so "which page recruits" is a question with an answer.
     'travelers', 'going', 'meetups', 'talk', 'blog', 'matches', 'invite',
+    // The trip composer, which is its own surface: somebody posting dates is not on a city page.
+    'trip',
     'other',
 ];
 
@@ -107,6 +132,57 @@ function rmt_journey_id(): string {
     return (string) $_SESSION['_journey'];
 }
 
+/**
+ * The token that outlives the session, so a second visit can be recognised as one.
+ *
+ * Sixteen random hex characters in a first party cookie. It is not derived from the person in any
+ * way: not their address, not their agent, not a fingerprint, not a hash of any of those. It is
+ * random bytes, so it cannot be recomputed from somebody, only recognised when the same browser
+ * sends it back, and it is never joined to an account because this table holds no account.
+ *
+ * Returns an empty string when the response has already started, which is the only case where a
+ * cookie cannot be set. A missing visitor token loses one number on a dashboard; a warning printed
+ * into the middle of a page loses the page.
+ */
+const RMT_VISITOR_COOKIE = 'rmt_v';
+const RMT_VISITOR_TTL    = 180 * 86400;
+
+function rmt_visitor_id(): string {
+    /* Cached per request, in a global rather than a static: one request serves one browser, and a
+       test that simulates the next request has to be able to clear it. */
+    if (isset($GLOBALS['_rmt_visitor_id'])) return (string) $GLOBALS['_rmt_visitor_id'];
+
+    $seen = (string) ($_COOKIE[RMT_VISITOR_COOKIE] ?? '');
+    $known = (bool) preg_match('/^[a-f0-9]{16}$/', $seen);
+    /* Decided once per session and remembered there, which is the difference between "this
+       browser has been here before" and "this browser has loaded a page before". The cookie is
+       written on the first page of a first visit, so by the second page of that same first visit
+       it is present and every request after it would otherwise report a returning visitor. That
+       is not somebody coming back, it is somebody still here. */
+    if (session_status() === PHP_SESSION_ACTIVE && !isset($_SESSION['_v_returning'])) {
+        $_SESSION['_v_returning'] = $known ? 1 : 0;
+    }
+    if ($known) return $GLOBALS['_rmt_visitor_id'] = $seen;
+
+    $fresh = bin2hex(random_bytes(8));
+    if (!headers_sent()) {
+        setcookie(RMT_VISITOR_COOKIE, $fresh, [
+            'expires'  => time() + RMT_VISITOR_TTL, 'path' => '/',
+            'httponly' => true, 'samesite' => 'Lax',
+            'secure'   => (string) (function_exists('cfg') ? cfg('app_env') : '') === 'production',
+        ]);
+        $_COOKIE[RMT_VISITOR_COOKIE] = $fresh;   // so the rest of this request agrees with itself
+    }
+    return $GLOBALS['_rmt_visitor_id'] = $fresh;
+}
+
+/** Was this browser here before this session started? False for one we have never seen. */
+function rmt_visitor_is_returning(): bool {
+    rmt_visitor_id();
+    if (session_status() === PHP_SESSION_ACTIVE) return (int) ($_SESSION['_v_returning'] ?? 0) === 1;
+    return (bool) preg_match('/^[a-f0-9]{16}$/', (string) ($_COOKIE[RMT_VISITOR_COOKIE] ?? ''));
+}
+
 /** Start a fresh attempt. Called after a publish, so the funnel counts attempts and not sessions. */
 function rmt_journey_rotate(): void {
     if (session_status() === PHP_SESSION_ACTIVE) $_SESSION['_journey'] = bin2hex(random_bytes(8));
@@ -119,11 +195,17 @@ function rmt_journey_rotate(): void {
  * name is dropped rather than stored, so a stale client or a hostile one cannot define new columns
  * of meaning in this table by accident.
  *
+ * Returns whether a row was actually written. That return value is load bearing: rmt_track_once()
+ * used to spend the session's one slot for an event BEFORE finding out the row was dropped, so a
+ * crawler visit, or any other refusal, silently deafened the rest of that session to that event.
+ * Measured the hard way: three pages instrumented correctly recorded nothing at all, because a
+ * headless browser had opened them earlier in the same session and burned the marker.
+ *
  * @param array{source?:string,place_id?:int,destination_id?:int,reason?:string} $ctx
  */
-function rmt_track(string $event, array $ctx = []): void {
-    if (!in_array($event, RMT_CONTRIB_EVENTS, true)) return;
-    if (rmt_is_crawler()) return;
+function rmt_track(string $event, array $ctx = []): bool {
+    if (!in_array($event, RMT_CONTRIB_EVENTS, true)) return false;
+    if (rmt_is_crawler()) return false;
 
     $source = (string) ($ctx['source'] ?? '');
     if (!in_array($source, RMT_CONTRIB_SOURCES, true)) $source = null;
@@ -133,15 +215,17 @@ function rmt_track(string $event, array $ctx = []): void {
 
     try {
         q_run('INSERT INTO contribution_events
-               (event, source, journey, place_id, destination_id, is_authed, reason, created_at)
-               VALUES (?,?,?,?,?,?,?,?)',
-              [$event, $source, rmt_journey_id(),
+               (event, source, journey, visitor, place_id, destination_id, is_authed, reason, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?)',
+              [$event, $source, rmt_journey_id(), rmt_visitor_id(),
                !empty($ctx['place_id']) ? (int) $ctx['place_id'] : null,
                !empty($ctx['destination_id']) ? (int) $ctx['destination_id'] : null,
                function_exists('is_logged_in') && is_logged_in() ? 1 : 0,
                $reason, date('Y-m-d H:i:s')]);
+        return true;
     } catch (Throwable $e) {
         // Measuring the funnel must never break the funnel.
+        return false;
     }
 }
 
@@ -156,9 +240,31 @@ function rmt_track_once(string $event, array $ctx = []): void {
     if (session_status() !== PHP_SESSION_ACTIVE) { rmt_track($event, $ctx); return; }
     $seen = $_SESSION['_tracked'] ?? [];
     if (isset($seen[$event])) return;
+    // Marked only if it was written. See rmt_track() for why that order matters.
+    if (!rmt_track($event, $ctx)) return;
     $seen[$event] = 1;
     $_SESSION['_tracked'] = $seen;
-    rmt_track($event, $ctx);
+}
+
+/**
+ * Record an event at most once per session PER KEY.
+ *
+ * rmt_track_once() keys on the event alone, which is right for "the front page was seen" and wrong
+ * for "a city page was seen": the first city somebody opened would be the only one ever counted,
+ * and every other city would read as having no traffic. The key here is the city.
+ */
+function rmt_track_once_for(string $event, string $key, array $ctx = []): void {
+    if (session_status() !== PHP_SESSION_ACTIVE) { rmt_track($event, $ctx); return; }
+    $slot = $event . ':' . $key;
+    $seen = $_SESSION['_tracked_keyed'] ?? [];
+    if (isset($seen[$slot])) return;
+    /* A session that opened two hundred city pages would otherwise carry two hundred keys in the
+       cookie jar forever. Keep the most recent fifty, which is far more than any real reading
+       session and small enough to stay a rounding error in the session file. */
+    if (count($seen) > 50) $seen = array_slice($seen, -25, null, true);
+    if (!rmt_track($event, $ctx)) return;
+    $seen[$slot] = 1;
+    $_SESSION['_tracked_keyed'] = $seen;
 }
 
 /**
@@ -340,4 +446,158 @@ function rmt_signup_funnel(int $days = 30): array {
     // so a tie in a quiet week is not reported in whatever order the database happened to group.
     uasort($by, static fn(array $x, array $y) => [$y['views'], $y['created']] <=> [$x['views'], $x['created']]);
     return ['steps' => $steps, 'by_source' => $by];
+}
+
+/* ------------------------------------------------------------------------- *
+ * The social funnel, 2026-09-15.
+ *
+ * The question this answers, in one line: somebody lands on a city page, and what share of them
+ * touch it, join, follow it, post a trip, ask something, and come back?
+ *
+ * Counted by journey, like everything else here, except the two places where the honest unit is a
+ * browser rather than an attempt: unique and returning visitors. Both are floors, because clearing
+ * cookies makes somebody new again, and a floor stated as a floor is worth more than a precise
+ * number built out of the person.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * The landing to return funnel, as ordered steps with the attempts that reached each.
+ *
+ * "Touched it" is deliberately any of follow, ask, reaction or comment rather than a single event:
+ * the page offers several first touches and which one somebody uses is a later question than
+ * whether they used any.
+ *
+ * @return list<array{key:string,label:string,count:int,note:string}>
+ */
+function rmt_social_funnel(int $days = 30): array {
+    $since = rmt_funnel_since($days);
+    $interact = "('destination_follow_click','ask_question_click','reaction_created','comment_created')";
+    $rows = q_all("SELECT journey,
+                     MAX(CASE WHEN event = 'destination_page_view' THEN 1 ELSE 0 END) landed,
+                     MAX(CASE WHEN event IN $interact THEN 1 ELSE 0 END) interacted,
+                     MAX(CASE WHEN event = 'join_submit' THEN 1 ELSE 0 END) signup_started,
+                     MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signup_done,
+                     MAX(CASE WHEN event = 'destination_follow_success' THEN 1 ELSE 0 END) followed,
+                     MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped,
+                     MAX(CASE WHEN event IN ('question_posted','post_created') THEN 1 ELSE 0 END) posted,
+                     MAX(CASE WHEN event = 'destination_return_visit' THEN 1 ELSE 0 END) returned
+                   FROM contribution_events
+                  WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
+                  GROUP BY journey", [$since]);
+
+    $n = ['landed' => 0, 'interacted' => 0, 'signup_started' => 0, 'signup_done' => 0,
+          'followed' => 0, 'tripped' => 0, 'posted' => 0, 'returned' => 0];
+    foreach ($rows as $r) {
+        foreach (array_keys($n) as $k) if ((int) $r[$k] === 1) $n[$k]++;
+    }
+    return [
+        ['key' => 'landed',         'label' => 'Landed on a destination', 'count' => $n['landed'],         'note' => ''],
+        ['key' => 'interacted',     'label' => 'Touched it',              'count' => $n['interacted'],     'note' => 'follow, ask, react or comment'],
+        ['key' => 'signup_started', 'label' => 'Started signing up',      'count' => $n['signup_started'], 'note' => ''],
+        ['key' => 'signup_done',    'label' => 'Finished signing up',     'count' => $n['signup_done'],    'note' => ''],
+        ['key' => 'followed',       'label' => 'Followed a destination',  'count' => $n['followed'],       'note' => ''],
+        ['key' => 'tripped',        'label' => 'Created a trip',          'count' => $n['tripped'],        'note' => ''],
+        ['key' => 'posted',         'label' => 'Posted or asked',         'count' => $n['posted'],         'note' => ''],
+        ['key' => 'returned',       'label' => 'Came back later',         'count' => $n['returned'],       'note' => 'a browser we had seen on an earlier visit'],
+    ];
+}
+
+/**
+ * Browsers, not attempts: how many distinct ones were seen, and how many of those had been here
+ * before. Both are floors. A browser with cookies cleared is a new one to us and there is no
+ * honest way around that which does not involve identifying the person.
+ *
+ * @return array{unique:int,returning:int}
+ */
+function rmt_visitor_counts(int $days = 30): array {
+    $since = rmt_funnel_since($days);
+    $u = (int) (q_one("SELECT COUNT(DISTINCT visitor) c FROM contribution_events
+                        WHERE created_at >= ? AND visitor IS NOT NULL AND visitor <> ''", [$since])['c'] ?? 0);
+    $r = (int) (q_one("SELECT COUNT(DISTINCT visitor) c FROM contribution_events
+                        WHERE created_at >= ? AND event = 'destination_return_visit'
+                          AND visitor IS NOT NULL AND visitor <> ''", [$since])['c'] ?? 0);
+    return ['unique' => $u, 'returning' => $r];
+}
+
+/**
+ * The cities people actually do something in, busiest first.
+ *
+ * Views and actions are separate columns rather than one score, because a city with a thousand
+ * views and no follows is a different problem from a city with fifty of each, and a single number
+ * would hide which one we have.
+ *
+ * @return list<array{destination_id:int,name:string,slug:string,views:int,follows:int,questions:int,acts:int}>
+ */
+function rmt_top_communities(int $days = 30, int $limit = 12): array {
+    $since = rmt_funnel_since($days);
+    $rows = q_all("SELECT destination_id,
+                          COUNT(DISTINCT CASE WHEN event = 'destination_page_view' THEN journey END) views,
+                          COUNT(DISTINCT CASE WHEN event = 'destination_follow_success' THEN journey END) follows,
+                          COUNT(DISTINCT CASE WHEN event = 'question_posted' THEN journey END) questions
+                     FROM contribution_events
+                    WHERE created_at >= ? AND destination_id IS NOT NULL
+                    GROUP BY destination_id", [$since]);
+    $out = [];
+    foreach ($rows as $r) {
+        $d = q_one('SELECT name, slug FROM destinations WHERE id = ?', [(int) $r['destination_id']]);
+        if (!$d) continue;      // a city that has since been removed is not a row worth printing
+        $out[] = ['destination_id' => (int) $r['destination_id'],
+                  'name' => (string) $d['name'], 'slug' => (string) $d['slug'],
+                  'views' => (int) $r['views'], 'follows' => (int) $r['follows'],
+                  'questions' => (int) $r['questions'],
+                  'acts' => (int) $r['follows'] + (int) $r['questions']];
+    }
+    usort($out, static fn(array $a, array $b) => [$b['acts'], $b['views']] <=> [$a['acts'], $a['views']]);
+    return array_slice($out, 0, $limit);
+}
+
+/**
+ * Which city was on screen when somebody signed up.
+ *
+ * This is the attribution question, and it is answered without following anybody anywhere: the
+ * journey token already links the steps of one session, so the city viewed in the same session as
+ * the account creation is the city that recruited them. No referrer is stored, no identity is
+ * involved, and nothing leaves this site.
+ *
+ * @return list<array{name:string,slug:string,signups:int}>
+ */
+function rmt_signup_attribution(int $days = 30, int $limit = 12): array {
+    $since = rmt_funnel_since($days);
+    $joined = q_all("SELECT DISTINCT journey FROM contribution_events
+                      WHERE created_at >= ? AND event = 'join_created'
+                        AND journey IS NOT NULL AND journey <> ''", [$since]);
+    $tally = [];
+    foreach ($joined as $j) {
+        $d = q_one("SELECT destination_id FROM contribution_events
+                     WHERE journey = ? AND destination_id IS NOT NULL
+                       AND event IN ('destination_page_view','destination_follow_success','question_posted')
+                     ORDER BY id LIMIT 1", [(string) $j['journey']]);
+        if (!$d) continue;
+        $id = (int) $d['destination_id'];
+        $tally[$id] = ($tally[$id] ?? 0) + 1;
+    }
+    $rows = [];
+    foreach ($tally as $id => $n) {
+        $d = q_one('SELECT name, slug FROM destinations WHERE id = ?', [$id]);
+        if ($d) $rows[] = ['name' => (string) $d['name'], 'slug' => (string) $d['slug'], 'signups' => $n];
+    }
+    usort($rows, static fn(array $a, array $b) => $b['signups'] <=> $a['signups']);
+    return array_slice($rows, 0, $limit);
+}
+
+/**
+ * The plain counters the dashboard leads with, in one pass.
+ *
+ * @return array<string,int>
+ */
+function rmt_social_counts(int $days = 30): array {
+    $c = rmt_funnel_counts($days);
+    $keys = ['destination_page_view','destination_follow_click','destination_follow_success',
+             'ask_question_click','question_posted','post_created','comment_created','reaction_created',
+             'join_view','join_submit','join_created','login_completed','trip_create_started','trip_created',
+             'profile_viewed','traveler_profile_clicked','profile_edit_started','profile_completed',
+             'overlapping_traveler_viewed','message_started','destination_return_visit'];
+    $out = [];
+    foreach ($keys as $k) $out[$k] = (int) ($c[$k] ?? 0);
+    return $out;
 }

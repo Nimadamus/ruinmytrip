@@ -79,6 +79,8 @@ $stats = array_values(array_filter([
         <input type="hidden" name="return" value="<?= e($cityUrl . '#city-talk') ?>">
         <label class="sr-only" for="cc-body">Ask the <?= e($cityName) ?> community</label>
         <textarea id="cc-body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
+                  data-track="ask_question_click" data-track-source="destination"
+                  data-destination-id="<?= (int) $d['id'] ?>"
                   placeholder="Ask <?= e($cityName) ?> travelers something: where to stay, whether November is worth it, who is around in October."></textarea>
         <div class="cc-ask-row">
           <label class="btn btn-ghost btn-sm" style="cursor:pointer">
