@@ -292,6 +292,21 @@ something we published. On your own trip the control reads Invite a traveler.
 says so plainly and then offers four things that are real on that city today: follow it, ask it, see
 everyone in it, and invite somebody, with your own trip link when you have one.
 
+**The dashboard separates four classes of traffic** and never folds one into another: real human,
+self check, automated, uncertain. Top source, top campaign and best conversion are top REAL anything.
+The milestone counter runs only from 2026-09-16 07:30 UTC, when the self check marker started;
+everything before that was our own verification under real campaign names and is labelled rather
+than rewritten.
+
+**Every page type that earns a search impression now offers the social product.** Place pages, guides
+and discussion posts had no link to a city's community, its travelers or the trip form, and they
+carry roughly four times the impressions of destination pages. One shared component,
+`views/_dest_social_cta.php`, included where the city is known, carrying the campaign window when one
+is running. `/events` lists the seven verified windows from the same list the campaign links use.
+
+**The empty match list asks one question**, once per person, about what they were hoping to find.
+Answers live in `visitor_answers`, never in the event stream. Not a popup and not a survey tool.
+
 **The whole chain is verified rather than assumed.** Campaign landing, signed out click on the
 prefilled button, a signup page that names the city and both dates, signup returning straight to the
 filled form, and a trip written with the campaign still on it. Driven end to end on 2026-09-16.
