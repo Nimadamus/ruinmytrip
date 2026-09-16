@@ -7,6 +7,20 @@ and any two of those trips overlapping in one city.
 
 ## USER ACTION REQUIRED
 
+**All three are the same shape: everything is finished except a person with a normal account.**
+
+0. **Post one Facebook group post.** Five are ready in `docs/ACQUISITION_FACEBOOK.md`, each with its
+   group type, tracked link, CTA, threshold, whether the link belongs in the body or the first
+   comment, and the disclosure line. Start with F1 or F3, both low risk. **Why not from here:** the
+   only Facebook asset on this machine is the TrustMyRecord Page, a sports betting brand, whose Page
+   access is broken and which cannot post into travel groups anyway.
+0b. **X:** two posts written. The only account here is **BetLegend**, a sports betting brand.
+   Posting travel content from it would be off brand and would risk an unrelated account, so it is
+   queued rather than published.
+0c. **TikTok or Reels:** ten scripts written in `docs/ACQUISITION_VIDEO.md`. No account exists. This
+   is the one channel that needs no existing audience.
+
+
 Each of these is finished except for one action only a person can take. **None of them blocks the
 rest of the work.**
 
