@@ -21,7 +21,7 @@ require BASE_PATH . '/app/matching.php';
 function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations WHERE id = ?', [$id]); }
 
 $pdo = db();
-$pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT)');
+$pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT, role TEXT)');
 $pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT, home_city TEXT, travel_style TEXT)');
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT, PRIMARY KEY (follower_id, followee_id))');
@@ -197,7 +197,13 @@ check('somebody in my community is suggested', in_array('cara', $names, true), t
 check('a person I already follow is not', in_array('bob', $names, true), false);
 $reason = null;
 foreach (rmt_follow_suggestions(1, 8) as $r) if ($r['username'] === 'cara') $reason = $r['reason'];
-check('and the reason says why', $reason, 'in a community with you');
+// cara is also going to Lisbon, and a shared trip outranks a shared community.
+check('and the reason says why, travel first', $reason, 'Also going to Lisbon');
+$pdo->exec("INSERT INTO users (id,username,status) VALUES (90,'zed','active')");
+$pdo->exec("INSERT INTO collection_members (collection_id,user_id,status) VALUES (7,90,'active')");
+$zr = null;
+foreach (rmt_follow_suggestions(1, 8) as $r) if ($r['username'] === 'zed') $zr = $r['reason'];
+check('somebody with no trip is still suggested by community', $zr, 'in a community with you');
 check('never myself', in_array('alice', $names, true), false);
 check('never a deleted account', in_array('gone', $names, true), false);
 $pdo->exec('INSERT INTO blocks (blocker_id,blocked_id) VALUES (3,1)');

@@ -182,6 +182,7 @@ $routes = [
     ['POST', '#^/react$#',                     'react_action'],   // like/save
     ['POST', '#^/comment$#',                   'comment_action'],
     ['POST', '#^/comment/(?<id>\d+)/delete$#', 'comment_delete'],
+    ['POST', '#^/comment/(?<id>\d+)/edit$#',   'comment_edit'],
     ['GET',  '#^/report$#',                    'report_form'],
     ['POST', '#^/report$#',                    'report_submit'],
     ['GET',  '#^/admin$#',                     'admin_dashboard'],

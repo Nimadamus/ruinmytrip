@@ -406,9 +406,22 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
                    'review' => 0.20, 'post' => 0.15, 'guide' => 0.05, 'blog_post' => 0.0,
                    'collection' => 0.0];
 
+    /* The house account. Its questions and articles are there to start conversations, so they give
+       way the moment members are having their own: if anybody other than the reader and the house
+       wrote something on this page, editorial rows lose weight. */
+    $houseId = function_exists('rmt_editorial_user') ? (int) (rmt_editorial_user()['id'] ?? 0) : 0;
+    $membersActive = false;
+    foreach ($items as $it) {
+        $a = (int) ($it['user_id'] ?? 0);
+        if ($a > 0 && $a !== $uid && $a !== $houseId) { $membersActive = true; break; }
+    }
+
     $now = time();
     foreach ($items as $i => $it) {
         $age = max(0.0, ($now - strtotime((string) ($it['created_at'] ?? 'now'))) / 3600);
+        /* Travel boosts fade with age too. Without this a three month old post in a city you are
+           going to sat above everything written this morning, forever. */
+        $stale = $age <= 168 ? 1.0 : ($age <= 720 ? 0.5 : 0.2);
         $score = 1.6 / (1 + $age / 36);          // half of its weight after a day and a half
         $why = '';
         $boosted = false;
@@ -416,6 +429,7 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
         $author = (int) ($it['user_id'] ?? 0);
         $dest = (int) ($it['destination_id'] ?? 0);
 
+        $fresh = $score;
         if (isset($overlap[$author])) {
             $score += 1.2;
             $boosted = true;
@@ -435,7 +449,21 @@ function rmt_feed_rank(array $items, int $uid, array $engagement = []): array {
             $score += 0.6;
             if ($why === '') $why = '';   // following somebody is not news, it is the default
         }
+        /* Everything added above the freshness base, scaled by how old the row is. */
+        $score = $fresh + ($score - $fresh) * $stale;
         $score += $kindWeight[(string) ($it['kind'] ?? '')] ?? 0.0;
+
+        /* A question nobody has answered, in a city the reader cares about, is the one row where the
+           reader is the most useful person on the page. */
+        if (($it['kind'] ?? '') === 'post' && $author !== $uid && $dest > 0
+            && (isset($myCities[$dest]) || isset($saved[$dest]))
+            && str_contains((string) ($it['body'] ?? ''), '?')
+            && (int) ($engagement['comments']['post:' . (int) ($it['id'] ?? 0)] ?? 0) === 0 && $age <= 720) {
+            $score += 0.4;
+            $boosted = true;
+            $why = 'Unanswered question in ' . (string) ($it['dest_name'] ?? 'your city');
+        }
+        if ($houseId > 0 && $author === $houseId && $membersActive) $score -= 0.6;
 
         /* A plan is the one kind where the reader can do something about it, and two facts decide
            whether they can: is it on while they are there, and are they allowed to come. Both are

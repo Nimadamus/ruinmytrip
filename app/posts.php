@@ -35,6 +35,10 @@ function rmt_post_validate(array $in, ?array $user): array {
         $errors[] = 'That is too long for a post (' . RMT_POST_MAX . ' characters max). A trip story or guide fits better.';
     }
 
+    if (!$errors && function_exists('rmt_quality_check') && ($why = rmt_quality_check($body, $user, 'post')) !== null) {
+        $errors[] = $why;
+    }
+
     $destId = (int) ($in['destination_id'] ?? 0);
     if ($destId > 0 && !q_one('SELECT id FROM destinations WHERE id=?', [$destId])) {
         $errors[] = 'That destination does not exist.';

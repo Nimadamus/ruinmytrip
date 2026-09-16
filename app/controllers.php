@@ -1345,7 +1345,12 @@ function feed(array $a): void {
                        LEFT JOIN destinations d ON d.id = t.destination_id
                            WHERE n.user_id = ? AND n.type = ? AND n.read_at IS NULL
                         ORDER BY n.id DESC LIMIT 1", [$uid, RMT_MATCH_NOTIFY_TYPE]);
-    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads','overlapLine'), [
+    /* The composer can say which city a post is about, defaulting to the next trip, so a question
+       lands in that city's community instead of floating free. Names only, one query. */
+    $composeDests = q_all('SELECT id, name, country FROM destinations ORDER BY name');
+    $composeDest = (int) ($rails['next_trip']['destination_id'] ?? 0);
+    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads','overlapLine',
+                         'composeDests','composeDest'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
             'app_shell' => true,
@@ -4775,6 +4780,9 @@ function comment_action(array $a): void {
         flash('That comment is too long (2000 characters max). Please shorten it and try again.');
         redirect(rmt_return_to());
     }
+    if (function_exists('rmt_quality_check') && ($why = rmt_quality_check($body, $me, 'comment')) !== null) {
+        flash($why); redirect(rmt_return_to());
+    }
     if (!rmt_submit_ok('comment_'.$tt.'_'.$tid, input('_submit'))) {
         flash('That comment was already posted.'); redirect(rmt_return_to());
     }
@@ -4842,6 +4850,30 @@ function comment_delete(array $a): void {
     if (!$c) not_found();
     if ((int)$c['user_id'] !== (int)$me['id']) { forbidden('That is not your comment.'); }
     db()->prepare("UPDATE comments SET status='removed' WHERE id=?")->execute([(int)$c['id']]);
+    redirect(rmt_return_to());
+}
+
+/**
+ * POST /comment/{id}/edit - fix your own words. Same length limit and quality rules as posting,
+ * and the comment says it was edited, so a reply that answered the original still makes sense.
+ */
+function comment_edit(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $c = q_one("SELECT * FROM comments WHERE id=? AND status='published'", [(int) $a['id']]);
+    if (!$c) not_found();
+    if ((int) $c['user_id'] !== (int) $me['id']) { forbidden('That is not your comment.'); }
+    $body = trim((string) input('body'));
+    if ($body === '' || $body === (string) $c['body']) redirect(rmt_return_to());
+    if (mb_strlen($body) > 2000) {
+        flash('That comment is too long (2000 characters max).'); redirect(rmt_return_to());
+    }
+    if (!rmt_rate_ok('comment_edit', (string) $me['id'], 30, 3600)) {
+        flash('You are editing very fast. Try again shortly.'); redirect(rmt_return_to());
+    }
+    if (function_exists('rmt_quality_check') && ($why = rmt_quality_check($body, $me, 'comment')) !== null) {
+        flash($why); redirect(rmt_return_to());
+    }
+    q_run('UPDATE comments SET body = ?, updated_at = ? WHERE id = ?', [$body, date('Y-m-d H:i:s'), (int) $c['id']]);
     redirect(rmt_return_to());
 }
 

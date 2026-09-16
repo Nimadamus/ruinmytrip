@@ -484,6 +484,11 @@ function rmt_meetup_notify_travelers(int $meetupId, int $hostId, int $destId, st
  *
  * @return list<array<string,mixed>> user rows plus `reason`
  */
+/** The editorial role name, or a value no account has when the constant is not loaded. */
+function rmt_editorial_role_name(): string {
+    return defined('RMT_EDITORIAL_ROLE') ? (string) RMT_EDITORIAL_ROLE : " none";
+}
+
 function rmt_follow_suggestions(int $userId, int $limit = 8): array {
     if ($userId < 1) return [];
     [$blockSql] = rmt_match_block_sql('u.id');
@@ -502,6 +507,34 @@ function rmt_follow_suggestions(int $userId, int $limit = 8): array {
 
     // Four placeholders in $exclude: the self check, the follow check, and two for the block pair.
     $exclArgs = [$userId, $userId, $userId, $userId];
+
+    /* Travel first, because that is what this site is for. Both trips upcoming and public on their
+       side; the reason names the city, never the dates or anything more precise. */
+    $today = date('Y-m-d');
+    $going = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city, d.name dest_name,
+                           CASE WHEN theirs.date_from <= mine.date_to AND theirs.date_to >= mine.date_from
+                                THEN 1 ELSE 0 END same_days
+                      FROM trips mine
+                      JOIN trips theirs ON theirs.destination_id = mine.destination_id
+                                       AND theirs.user_id <> mine.user_id AND theirs.status = 'published'
+                                       AND COALESCE(theirs.visibility, 'public') = 'public'
+                                       AND theirs.date_to IS NOT NULL AND theirs.date_to >= ?
+                      JOIN users u ON u.id = theirs.user_id
+                      JOIN destinations d ON d.id = mine.destination_id
+                 LEFT JOIN profiles p ON p.user_id = u.id
+                     WHERE mine.user_id = ? AND mine.status = 'published' AND mine.destination_id IS NOT NULL
+                       AND mine.date_to IS NOT NULL AND mine.date_to >= ?
+                       AND COALESCE(u.role, '') <> ? AND $exclude
+                  ORDER BY same_days DESC, theirs.date_from
+                     LIMIT 40", array_merge([$today, $userId, $today, rmt_editorial_role_name()], $exclArgs));
+    $add(array_filter($going, static fn(array $r) => (int) $r['same_days'] === 1), '');
+    foreach ($rows as $id => $r) {
+        if ($r['reason'] === '') $rows[$id]['reason'] = 'Same dates in ' . $r['dest_name'];
+    }
+    $add($going, '');
+    foreach ($rows as $id => $r) {
+        if ($r['reason'] === '') $rows[$id]['reason'] = 'Also going to ' . $r['dest_name'];
+    }
     $add(q_all("SELECT DISTINCT u.id, u.username, p.display_name, p.avatar_url, p.home_city
                   FROM collection_members mine
                   JOIN collection_members theirs ON theirs.collection_id = mine.collection_id
@@ -519,12 +552,35 @@ function rmt_follow_suggestions(int $userId, int $limit = 8): array {
                  WHERE mine.follower_id = ? AND $exclude
                  LIMIT 20", array_merge([$userId], $exclArgs)), 'followed by people you follow');
 
+    /* Shared interests, only when there are at least two: one shared box ticked is everybody. */
+    try {
+        $shared = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city, COUNT(*) n
+                           FROM profile_interests mine
+                           JOIN profile_interests theirs ON theirs.interest = mine.interest AND theirs.user_id <> mine.user_id
+                           JOIN users u ON u.id = theirs.user_id
+                      LEFT JOIN profiles p ON p.user_id = u.id
+                          WHERE mine.user_id = ? AND COALESCE(u.role, '') <> ? AND $exclude
+                       GROUP BY u.id, u.username, p.display_name, p.avatar_url, p.home_city
+                         HAVING COUNT(*) >= 2
+                       ORDER BY n DESC LIMIT 20", array_merge([$userId, rmt_editorial_role_name()], $exclArgs));
+    } catch (Throwable) {
+        $shared = [];
+    }
+    foreach ($shared as $r) {
+        $id = (int) $r['id'];
+        if (!isset($rows[$id])) $rows[$id] = $r + ['reason' => (int) $r['n'] . ' shared travel interests'];
+    }
+
+    $followed = [];
+    foreach (q_all('SELECT followee_id FROM follows WHERE follower_id = ?', [$userId]) as $f) {
+        $followed[(int) $f['followee_id']] = true;
+    }
     foreach (rmt_wishlist_matches($userId, 20) as $w) {
         $id = (int) $w['user_id'];
         if (isset($rows[$id])) continue;
         // rmt_wishlist_matches already excludes blocks; the follow check is the one thing it does
         // not do, because there it is a list of travelers rather than a list of suggestions.
-        if (q_one('SELECT 1 x FROM follows WHERE follower_id=? AND followee_id=?', [$userId, $id])) continue;
+        if (isset($followed[$id])) continue;
         $rows[$id] = ['id' => $id, 'username' => $w['username'], 'display_name' => $w['display_name'] ?? null,
                       'avatar_url' => $w['avatar_url'] ?? null, 'home_city' => $w['home_city'] ?? null,
                       'reason' => 'wants to go where you want'];

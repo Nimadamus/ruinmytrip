@@ -1391,3 +1391,7 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   background:var(--surface-2,rgba(127,127,127,.09));border:1px solid var(--line);
   border-radius:var(--radius);padding:12px 14px;overflow-wrap:anywhere}
 .cc-window .btn{min-height:44px;display:inline-flex;align-items:center}
+.composer-dest{width:auto;max-width:160px;min-height:36px;border-radius:999px;padding:.3rem .7rem;font-size:.88rem}
+@media (max-width:560px){.composer-dest{max-width:none;flex:1 1 100%}}
+.comment-by{display:inline-flex;align-items:center;gap:8px;min-width:0;color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.comment-when{margin-right:auto;white-space:nowrap}

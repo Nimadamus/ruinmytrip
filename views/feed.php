@@ -248,6 +248,15 @@ $threads = $threads ?? [];
         <a class="btn btn-ghost btn-sm" href="<?= e(url('meetup/new')) ?>">Host a meetup</a>
         <?php /* A travel network that makes you go to another page to post a photograph is a
                  message board. The endpoint already accepts one; the feed just never offered it. */ ?>
+        <?php if (!empty($composeDests)): ?>
+          <label class="sr-only" for="feed-dest">City this is about</label>
+          <select id="feed-dest" name="destination_id" class="composer-dest">
+            <option value="">No city</option>
+            <?php foreach ($composeDests as $cd): ?>
+              <option value="<?= (int) $cd['id'] ?>"<?= (int) $cd['id'] === (int) ($composeDest ?? 0) ? ' selected' : '' ?>><?= e((string) $cd['name']) ?></option>
+            <?php endforeach; ?>
+          </select>
+        <?php endif; ?>
         <label class="btn btn-ghost btn-sm" style="cursor:pointer">Photo
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp"
                  style="display:none" id="feed-photo"></label>

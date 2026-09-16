@@ -55,6 +55,7 @@ require BASE_PATH . '/app/place_provider_osm.php';
 require BASE_PATH . '/app/osm_hours.php';
 require BASE_PATH . '/app/places_cron.php';
 require BASE_PATH . '/app/posts.php';
+require BASE_PATH . '/app/content_quality.php';
 require BASE_PATH . '/app/polls.php';
 require BASE_PATH . '/app/cards.php';
 require BASE_PATH . '/app/invites.php';

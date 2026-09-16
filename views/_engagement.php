@@ -52,16 +52,31 @@ $rmt_render_comment = static function (array $c, bool $isReply) use ($me, $retur
     ?>
     <div class="card" id="comment-<?= (int) $c['id'] ?>" style="margin:0 0 10px <?= $isReply ? '28px' : '0' ?>"><div class="card-body" style="padding:12px 16px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <span><b>@<?= e($c['username']) ?></b> <span class="hint"><?= e(ago($c['created_at'])) ?></span></span>
+        <a class="comment-by" href="<?= e(url('u/'.$c['username'])) ?>">
+          <img class="avatar" style="width:28px;height:28px" src="<?= e(avatar_url($c['avatar_url'] ?? null)) ?>" alt="" loading="lazy">
+          <b>@<?= e($c['username']) ?></b></a>
+        <span class="hint comment-when" title="<?= e((string) $c['created_at']) ?>"><?= e(ago($c['created_at'])) ?><?= !empty($c['updated_at']) ? ' · edited' : '' ?></span>
         <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>
           <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/delete')) ?>"
                 onsubmit="return confirm('Delete this comment?');"><?= csrf_field() ?>
             <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
             <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
           </form>
+        <?php elseif ($me): ?>
+          <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=comment&target_id='.(int)$c['id'])) ?>" aria-label="Report this comment">⚑</a>
         <?php endif; ?>
       </div>
-      <p style="margin:.3rem 0 0"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e($c['body'])))) ?></p>
+      <p style="margin:.3rem 0 0;overflow-wrap:anywhere"><?= rmt_linkify_tags(rmt_linkify_mentions(nl2br(e($c['body'])))) ?></p>
+      <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>
+        <details style="margin-top:.4rem">
+          <summary class="hint" style="cursor:pointer">Edit</summary>
+          <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/edit')) ?>" style="margin:8px 0 0"><?= csrf_field() ?>
+            <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
+            <textarea name="body" maxlength="2000" style="min-height:60px"><?= e((string) $c['body']) ?></textarea>
+            <button class="btn btn-ghost btn-sm" style="margin-top:6px">Save</button>
+          </form>
+        </details>
+      <?php endif; ?>
       <?php if ($me): ?>
         <details style="margin-top:.4rem">
           <summary class="hint" style="cursor:pointer">Reply</summary>

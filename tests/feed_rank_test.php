@@ -169,5 +169,24 @@ foreach ($all as $row) {
 ok($unexplained === [], 'every row the feed pushed up says why'
    . ($unexplained ? ': ' . implode(', ', $unexplained) : ''));
 
+
+// --- freshness and questions ------------------------------------------------------------
+$old = date('Y-m-d H:i:s', strtotime('-60 days'));
+$r2 = rmt_feed_rank([
+    $item(['id' => 11, 'kind' => 'post', 'created_at' => $old, 'body' => 'Tram tips']),                 // my city, two months old
+    $item(['id' => 12, 'kind' => 'post', 'destination_id' => 2, 'dest_name' => 'Porto', 'user_id' => 3, 'created_at' => $now, 'body' => 'Fresh']),
+], 1);
+ok((int) $r2[0]['id'] === 12, 'a two month old city post no longer sits above something written today');
+
+$r3 = rmt_feed_rank([
+    $item(['id' => 21, 'kind' => 'post', 'body' => 'Best fado bar?', 'user_id' => 3]),
+    $item(['id' => 22, 'kind' => 'post', 'body' => 'Loved the fado', 'user_id' => 2]),
+], 1, ['comments' => [], 'likes' => []]);
+ok((int) $r3[0]['id'] === 21 && str_starts_with((string) $r3[0]['feed_reason'], 'Unanswered question'), 'an unanswered question in my city rises and says why');
+$r4 = rmt_feed_rank([
+    $item(['id' => 21, 'kind' => 'post', 'body' => 'Best fado bar?', 'user_id' => 3]),
+    $item(['id' => 22, 'kind' => 'post', 'body' => 'Loved the fado', 'user_id' => 2]),
+], 1, ['comments' => ['post:21' => 2], 'likes' => []]);
+ok(!str_starts_with((string) $r4[0]['feed_reason'], 'Unanswered'), 'an answered question is not called unanswered');
 echo "feed_rank_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);
