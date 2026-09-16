@@ -97,6 +97,28 @@
     </div></section>
   <?php endif; ?>
 
+  <?php /* What the people who got nothing said they wanted. The only thing on this page that is not
+           a number we inferred: it is what somebody typed. */ ?>
+  <?php $vq = function_exists('rmt_vq_summary') ? rmt_vq_summary('no_match_hoped_for') : null; ?>
+  <?php if ($vq && $vq['total'] > 0): ?>
+    <section class="card" style="margin:0 0 18px"><div class="card-body">
+      <h2 style="margin:0 0 6px;font-size:1.05rem">What people with no matches were hoping to find</h2>
+      <p class="hint" style="margin:0 0 8px"><?= (int) $vq['total'] ?> answer<?= $vq['total'] === 1 ? '' : 's' ?>.</p>
+      <?php foreach (RMT_VQ_QUESTIONS['no_match_hoped_for']['answers'] as $k => $label): ?>
+        <?php $n = (int) ($vq['answers'][$k] ?? 0); if (!$n) continue; ?>
+        <p style="margin:2px 0;font-size:.94rem"><span class="muted"><?= e((string) $label) ?></span>
+          <strong style="float:right"><?= $n ?></strong></p>
+      <?php endforeach; ?>
+      <?php if ($vq['notes']): ?>
+        <p class="hint" style="margin:10px 0 4px">In their words:</p>
+        <?php foreach ($vq['notes'] as $nt): ?>
+          <p style="margin:2px 0;font-size:.92rem">&ldquo;<?= e((string) $nt['note']) ?>&rdquo;
+            <span class="hint"><?= e(substr((string) $nt['at'], 0, 10)) ?></span></p>
+        <?php endforeach; ?>
+      <?php endif; ?>
+    </div></section>
+  <?php endif; ?>
+
   <?php /* The operating view. A thirty day table answers "did that campaign ever work"; the
            question somebody running one actually has is "is it working now", so the same channels
            are shown over a day, a week and the whole period side by side. Same counting rules, same

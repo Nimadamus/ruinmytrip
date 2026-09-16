@@ -115,6 +115,10 @@
                   $shareLabel = 'Invite a traveler';
                   include __DIR__ . '/_share.php'; ?>
           </div>
+          <?php /* And the one question worth asking here, because this is the exact screen where a
+                   real visitor finds out we cannot do the thing yet, and the only useful response
+                   to that is to ask what they wanted. */ ?>
+          <?php $vqKey = 'no_match_hoped_for'; include __DIR__ . '/_visitor_question.php'; ?>
           <?php /* Three things that are real on this city today, so an empty page is still a page
                    worth being on. Following is how the reader hears when somebody does post dates,
                    which is the only thing that fixes an empty match list. */ ?>

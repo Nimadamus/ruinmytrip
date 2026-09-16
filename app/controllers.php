@@ -146,6 +146,29 @@ function home(array $a): void {
  * page per event: seven verified windows is a useful list and seventy invented ones is a directory
  * nobody asked for.
  */
+/**
+ * POST /answer - one answer to one question we asked.
+ *
+ * Signed in only, one answer per person per question, and both the question and the answer must be
+ * ours. The note is the person's own words and goes to its own table; the event stream records only
+ * that an answer happened.
+ */
+function visitor_answer_submit(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $ok = rmt_vq_record((int) $me['id'], (string) input('question'), (string) input('answer'),
+                        (string) input('note'));
+    if ($ok) flash('Thank you. That genuinely helps.');
+    /* Back to the page that asked, and nowhere else. The general return helper falls back to
+       /feed, which is the wrong place to drop somebody who just answered a question on their
+       matches page, and a redirect target taken from a form is worth keeping narrow anyway. */
+    $back = trim((string) input('return'));
+    $ok2  = $back !== '' && $back[0] === '/' && !str_starts_with($back, '//')
+            && !str_contains($back, '://') && !str_contains($back, "
+");
+    redirect($ok2 ? $back : '/matches');
+}
+
 function events_index(array $a): void {
     $events = function_exists('rmt_acq_upcoming_events') ? rmt_acq_upcoming_events() : [];
     view('events', ['events' => $events, 'me' => current_user()], [
