@@ -280,6 +280,18 @@ fresh context per campaign. Verified live on 2026-09-15: six campaign paths at 3
 zero failures, and `/cron/funnel` returning per campaign rows. The 29 sessions that verification
 generated are all counted as **zero human**, which is the property that matters.
 
+**The operating view is `/admin/funnel` under "Acquisition, now"**, and `command_center` in the key
+gated JSON: human visits, signups, confirmations and trips per channel over 24 hours, 7 days and the
+window, with automated traffic excluded from every number and the raw session count beside it.
+
+**Sharing is a channel now, not a button.** Every outbound share link carries the channel it left by,
+`utm_medium=share` and a member-share campaign, so a link one member sent another is never counted as
+something we published. On your own trip the control reads Invite a traveler.
+
+**The empty page is part of the campaign.** Most arrivals will match nobody, so the no match state
+says so plainly and then offers four things that are real on that city today: follow it, ask it, see
+everyone in it, and invite somebody, with your own trip link when you have one.
+
 What is not done is the only thing that moves the numbers: nobody has posted a link where travelers
 are. Twenty posts are written in `docs/ACQUISITION_PACKAGES.md`, six cohorts specified in
 `docs/ACQUISITION_COHORTS.md`, and the state of the effort is `docs/ACQUISITION_QUEUE.md`. Reddit is
