@@ -8,6 +8,9 @@
     <img class="avatar" src="<?= e(avatar_url($p['author']['avatar_url'] ?? null)) ?>" alt="">
     <div>
       <b><a href="<?= e(url('u/'.$p['author']['username'])) ?>">@<?= e((string) $p['author']['username']) ?></a></b>
+      <?php /* The badge the editorial reviews carry. The site asks questions in its own communities
+               and the body says so, but a byline that reads like a member's is what somebody skims. */ ?>
+      <?php if (function_exists('rmt_is_editorial') && rmt_is_editorial($p)): ?><?= rmt_editorial_badge() ?><?php endif; ?>
       <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?><?php if (!empty($p['updated_at'])): ?> · edited<?php endif; ?></span>
       <?php if (!empty($p['place_slug'])): ?>
         <div class="hint">about <a href="<?= e(url('p/'.$p['place_slug'])) ?>"><?= e((string) $p['place_name']) ?></a></div>

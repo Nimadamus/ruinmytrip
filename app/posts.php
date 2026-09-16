@@ -155,7 +155,10 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
     if ($placeId !== null)      { $where[] = 'p.place_id = ?';       $args[] = $placeId; }
     $sql = implode(' AND ', $where);
     $rows = q_all(
-        "SELECT p.*, u.username, pr.avatar_url, pr.display_name,
+        /* The author's role travels with the row so a reader can see who wrote it. The site asks
+           questions in its own communities and the body says so, but a byline that looks exactly
+           like a member's is the part somebody skims past. */
+        "SELECT p.*, u.username, u.role author_role, pr.avatar_url, pr.display_name,
                 d.slug dest_slug, d.name dest_name,
                 c.slug community_slug, c.title community_title,
                 pl.slug place_slug, pl.name place_name,

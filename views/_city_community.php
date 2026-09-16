@@ -179,6 +179,12 @@ $stats = array_values(array_filter([
         <div class="cc-post-main">
           <p class="cc-post-by">
             <b><a href="<?= e(url('u/' . $tp['username'])) ?>">@<?= e((string) $tp['username']) ?></a></b>
+            <?php /* The badge the editorial reviews already carry. The question body says who is
+                     asking, and this says it in the place a reader actually looks. */ ?>
+            <?php if (defined('RMT_EDITORIAL_ROLE') && ($tp['author_role'] ?? '') === RMT_EDITORIAL_ROLE
+                      && function_exists('rmt_editorial_badge')): ?>
+              <?= rmt_editorial_badge() ?>
+            <?php endif; ?>
             <span class="hint"> · <?= e(ago((string) $tp['created_at'])) ?></span>
             <?php if (!empty($tp['place_slug'])): ?>
               <span class="hint"> · <a href="<?= e(url('p/' . $tp['place_slug'])) ?>"><?= e((string) $tp['place_name']) ?></a></span>

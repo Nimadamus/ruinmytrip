@@ -46,6 +46,18 @@ ok('the script writes no reaction', (bool) preg_match('/INSERT INTO reactions/i'
 ok('the script writes no user',     (bool) preg_match('/INSERT INTO users/i', $src), false);
 ok('it posts only as the editorial account', str_contains($src, 'rmt_editorial_user()'), true);
 
+echo "\n-- a reader can see who asked, in the byline as well as the body --\n";
+/* The body says "RuinMyTrip asks:" and that is the safety condition. The byline is what somebody
+   actually skims, and it read as a plain member handle until this was added. */
+$cc    = (string) file_get_contents(BASE_PATH . '/views/_city_community.php');
+$ps    = (string) file_get_contents(BASE_PATH . '/views/post_show.php');
+$posts = (string) file_get_contents(BASE_PATH . '/app/posts.php');
+ok('the city page badges an editorial byline',      str_contains($cc, 'rmt_editorial_badge()'), true);
+ok('...using the role that travelled with the row', str_contains($cc, 'author_role'), true);
+ok('the query carries that role',                   str_contains($posts, 'u.role author_role'), true);
+ok('the question page badges it too',               str_contains($ps, 'rmt_is_editorial($p)'), true);
+
+
 echo "\n-- running it twice does not double it --\n";
 ok('it matches an existing row first', str_contains($src, 'SELECT id, body FROM posts'), true);
 ok('...on destination and first line', str_contains($src, "\$firstLine . '%'"), true);
