@@ -68,6 +68,7 @@
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('talk')) ?>">Talk</a>
       <a href="<?= e(url('explore')) ?>">Explore</a>
+      <a href="<?= e(url('events')) ?>">Events</a>
       <details class="nav-more">
         <summary aria-label="More of the site">More</summary>
         <div class="nav-more-panel">

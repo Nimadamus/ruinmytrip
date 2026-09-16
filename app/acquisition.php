@@ -285,6 +285,18 @@ function rmt_acq_report(int $days = 30): array {
  *
  * @return array{slug:string, id:int, from:string, to:string, label:string}|null
  */
+/* One sentence per window, for the events page. Why a stranger's presence that week changes the
+   trip, which is the only reason any of these is on the list. */
+const RMT_ACQ_WINDOW_WHY = [
+    'oktoberfest'     => 'A tent table is a group activity. Arriving without one is the thing everybody complains about.',
+    'day-of-the-dead' => 'The vigils are in cemeteries outside the city, after dark. Almost nobody wants to do that alone.',
+    'web-summit'      => 'The conference app matches you with attendees. Nothing matches you for the weekend either side.',
+    'yi-peng'         => 'The mass lantern releases are ticketed and out of town, so getting there costs one other person.',
+    'miami-art-week'  => 'The fairs are easy. Which days are worth staying for is the question, and it is better with company.',
+    'new-year-2027'   => 'New Year in a city you landed in yesterday is the exact problem this site was built for.',
+    'rio-carnival'    => 'Blocos have no ticket and no door. Which one, on which morning, with whom, is the whole problem.',
+];
+
 const RMT_ACQ_WINDOWS = [
     // Oktoberfest 2026: 19 September to 4 October, Theresienwiese (muenchen.de, oktoberfest.de).
     'oktoberfest'    => ['slug' => 'munich-germany',      'from' => '2026-09-19', 'to' => '2026-10-04', 'label' => 'Oktoberfest'],
@@ -588,4 +600,35 @@ function rmt_acq_accepted_connects(): int {
     } catch (Throwable) {
         return 0;
     }
+}
+
+/**
+ * The windows that are still ahead, for the events page.
+ *
+ * Built from the same list the campaign links use, so there is one place where a date lives and the
+ * page cannot drift from the campaign. A window whose last day has passed drops off on its own.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_acq_upcoming_events(): array {
+    $out = [];
+    foreach (array_keys(RMT_ACQ_WINDOWS) as $campaign) {
+        $w = rmt_acq_window($campaign);
+        if ($w === null) continue;                       // closed, or a city we no longer hold
+        $d = q_one('SELECT name FROM destinations WHERE id = ?', [(int) $w['id']]);
+        $from = (int) strtotime($w['from']); $to = (int) strtotime($w['to']);
+        $out[] = [
+            'campaign'  => $campaign,
+            'label'     => $w['label'],
+            'slug'      => $w['slug'],
+            'city'      => (string) ($d['name'] ?? $w['slug']),
+            'from'      => $w['from'],
+            'to'        => $w['to'],
+            'dates'     => date('j F', $from) . ' to ' . date('j F Y', $to),
+            'why'       => RMT_ACQ_WINDOW_WHY[$campaign] ?? '',
+            'trip_link' => rmt_acq_trip_link($w),
+        ];
+    }
+    usort($out, static fn(array $a, array $b) => strcmp($a['from'], $b['from']));
+    return $out;
 }

@@ -2,6 +2,10 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Explore</p>
   <h1>Explore destinations</h1>
+  <?php /* The other way into a community, and the one with a reason attached: somebody who does not
+           know which city they want often does know which week they are free. */ ?>
+  <p class="hint" style="margin:0 0 12px">Travelling for something in particular?
+    <a href="<?= e(url('events')) ?>">See the upcoming events</a> and who else is going.</p>
   <p class="muted">Every destination here carries a researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a> and practical tips. The review counts below are travelers only, so they read zero until real people post.</p>
   <form action="<?= e(url('explore')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
     <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">

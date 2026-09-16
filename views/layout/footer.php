@@ -21,6 +21,7 @@
     <div>
       <h4>Explore</h4>
       <a href="<?= e(url('explore')) ?>">Destinations</a>
+      <a href="<?= e(url('events')) ?>">Upcoming events</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('guides')) ?>">Guides & itineraries</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>

@@ -46,6 +46,12 @@
       <a class="btn btn-accent" href="<?= e(url('review/new'.($g['destination_id'] ? '?destination='.(int)$g['destination_id'] : ''))) ?>">Share your experience</a>
     </div>
   <?php endif;?>
+  <?php /* Same component. A guide is the one page on this site somebody reads all the way through,
+           which makes it the best moment to offer them the thing the site is for. */ ?>
+  <?php if (!empty($g['dest_slug'])):
+          $dsSlug = (string) $g['dest_slug']; $dsName = (string) ($g['dest_name'] ?? $g['dest_slug']);
+          $dsId = isset($g['destination_id']) ? (int) $g['destination_id'] : 0;
+          include __DIR__ . '/_dest_social_cta.php'; endif; ?>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?php if($g['dest_slug']):?><?= e(url('d/'.$g['dest_slug'])) ?><?php else:?><?= e(url('guides')) ?><?php endif;?>">← More about this destination</a>
     <?php if (rmt_guide_can_edit($g, $me)): ?>

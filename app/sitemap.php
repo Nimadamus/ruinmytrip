@@ -61,7 +61,7 @@ function rmt_sitemap_group(string $group): array {
             // Pages that are the site rather than an entity in it. Community indexes are included
             // only when they have something on them -- an empty /meetups is a thin page, not a
             // ranking strategy.
-            foreach (['/', '/explore', '/travelers', '/founding', '/start', '/guides', '/reviews',
+            foreach (['/', '/explore', '/events', '/travelers', '/founding', '/start', '/guides', '/reviews',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
 

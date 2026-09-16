@@ -153,6 +153,12 @@
     <?php elseif ($me): ?>
       <a class="btn btn-ghost" href="<?= e(url('collection/new')) ?>">Start a list</a>
     <?php endif; ?>
+  <?php /* The social product, offered on a page that earns search impressions and previously offered
+           nothing but a review form. One shared component, only where the city is actually known. */ ?>
+  <?php if (!empty($p['dest_slug'])):
+          $dsSlug = (string) $p['dest_slug']; $dsName = (string) $p['dest_name'];
+          $dsId = isset($p['destination_id']) ? (int) $p['destination_id'] : 0;
+          include __DIR__ . '/_dest_social_cta.php'; endif; ?>
     <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
     <?php /* Editors get a direct route into the place editor from the page they are looking at. */ ?>
     <?php if ($me && in_array($me['role'], ['admin','mod'], true)): ?>

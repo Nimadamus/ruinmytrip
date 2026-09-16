@@ -107,6 +107,10 @@
   <?php endif; ?>
 
   <p style="margin:26px 0 50px"><a class="btn btn-ghost" href="<?= e(url('talk')) ?>">← All travel talk</a>
+  <?php if (!empty($p['dest_slug'])):
+          $dsSlug = (string) $p['dest_slug']; $dsName = (string) $p['dest_name'];
+          $dsId = isset($p['destination_id']) ? (int) $p['destination_id'] : 0;
+          include __DIR__ . '/_dest_social_cta.php'; endif; ?>
     <?php if (!empty($p['dest_slug'])): ?>
       <a class="btn btn-ghost" href="<?= e(url('talk?d='.$p['dest_slug'])) ?>">More about <?= e((string) $p['dest_name']) ?></a>
     <?php endif; ?>

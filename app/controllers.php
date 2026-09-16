@@ -139,6 +139,22 @@ function home(array $a): void {
     ]);
 }
 
+/**
+ * GET /events - the windows this site is set up for, and nothing else.
+ *
+ * One page built from the campaign list, so a date lives in exactly one place. Deliberately not a
+ * page per event: seven verified windows is a useful list and seventy invented ones is a directory
+ * nobody asked for.
+ */
+function events_index(array $a): void {
+    $events = function_exists('rmt_acq_upcoming_events') ? rmt_acq_upcoming_events() : [];
+    view('events', ['events' => $events, 'me' => current_user()], [
+        'title'       => 'Upcoming travel events, and who else is going | RuinMyTrip',
+        'description' => 'Festivals and conferences where a lot of travelers are in one city at the '
+                       . 'same time. Post your dates and see whose overlap.',
+    ]);
+}
+
 function explore(array $a): void {
     $qs = trim((string)($_GET['q'] ?? '')); $cat = trim((string)($_GET['category'] ?? ''));
     $sortIn = (string) ($_GET['sort'] ?? '');

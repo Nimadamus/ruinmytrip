@@ -11,6 +11,7 @@ if ($path === '/') $path = '/';
 $routes = [
     ['GET',  '#^/$#',                          'home'],
     ['GET',  '#^/explore$#',                   'explore'],
+    ['GET',  '#^/events$#',                    'events_index'],
     ['GET',  '#^/in/(?<slug>[a-z0-9\-]+)$#',   'country_show'],
     ['GET',  '#^/discover$#',                  'discover'],
     ['GET',  '#^/d/(?<slug>[a-z0-9\-]+)$#',    'destination'],
