@@ -640,17 +640,30 @@ function rmt_acq_accepted_connects(): int {
  * @return list<array<string,mixed>>
  */
 function rmt_acq_upcoming_events(): array {
+    /* One query for every city the windows name, rather than two per window. Search calls this on
+       every query and the query budget test caught the first version asking seven times. */
+    static $cache = null;
+    if ($cache !== null) return $cache;
+    $slugs = array_values(array_unique(array_column(RMT_ACQ_WINDOWS, 'slug')));
+    $cities = [];
+    if ($slugs) {
+        $ph = implode(',', array_fill(0, count($slugs), '?'));
+        foreach (q_all("SELECT id, slug, name FROM destinations WHERE slug IN ($ph)", $slugs) as $r) {
+            $cities[(string) $r['slug']] = $r;
+        }
+    }
+    $today = gmdate('Y-m-d');
     $out = [];
-    foreach (array_keys(RMT_ACQ_WINDOWS) as $campaign) {
-        $w = rmt_acq_window($campaign);
-        if ($w === null) continue;                       // closed, or a city we no longer hold
-        $d = q_one('SELECT name FROM destinations WHERE id = ?', [(int) $w['id']]);
+    foreach (RMT_ACQ_WINDOWS as $campaign => $w) {
+        $d = $cities[$w['slug']] ?? null;
+        if (!$d || $w['to'] < $today) continue;         // a city we no longer hold, or a closed window
+        $w['id'] = (int) $d['id'];
         $from = (int) strtotime($w['from']); $to = (int) strtotime($w['to']);
         $out[] = [
             'campaign'  => $campaign,
             'label'     => $w['label'],
             'slug'      => $w['slug'],
-            'city'      => (string) ($d['name'] ?? $w['slug']),
+            'city'      => (string) $d['name'],
             'from'      => $w['from'],
             'to'        => $w['to'],
             'dates'     => date('j F', $from) . ' to ' . date('j F Y', $to),
@@ -659,7 +672,7 @@ function rmt_acq_upcoming_events(): array {
         ];
     }
     usort($out, static fn(array $a, array $b) => strcmp($a['from'], $b['from']));
-    return $out;
+    return $cache = $out;
 }
 
 /**

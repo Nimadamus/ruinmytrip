@@ -26,8 +26,10 @@ $idx  = (string) file_get_contents(BASE_PATH . '/public/index.php');
 
 echo "\n-- one list, one page --\n";
 ok(str_contains($acq, 'function rmt_acq_upcoming_events'), 'the page has a source of events');
-ok(str_contains($acq, 'rmt_acq_window($campaign)'),
+ok(str_contains($acq, 'foreach (RMT_ACQ_WINDOWS as $campaign => $w)'),
    'and it reads the campaign windows rather than a second list');
+ok(str_contains($acq, 'WHERE slug IN ($ph)'),
+   'every event city is loaded in one query, not one per window');
 ok(!preg_match('/const RMT_EVENTS|\$events = \[\s*\[/', $view),
    'the view does not hold a list of its own');
 ok(str_contains($ctrl, 'function events_index'), 'there is a controller');
