@@ -106,10 +106,31 @@
                    a link they hand over themselves. */ ?>
           <div class="cc-share" style="margin-top:0">
             <span class="hint">Know somebody going to <?= e((string) $c['name']) ?>?</span>
-            <?php $shareUrl = abs_url('/d/' . $slug);
-                  $shareText = 'Going to ' . (string) $c['name'] . '? See who else is traveling there.';
+            <?php $shareUrl = !empty($c['trip_id'])
+                      ? abs_url('/trip/' . (int) $c['trip_id'])
+                      : abs_url('/d/' . $slug);
+                  $shareText = !empty($c['trip_id'])
+                      ? 'My dates for ' . (string) $c['name'] . ' are up. Post yours and we will both see it.'
+                      : 'Going to ' . (string) $c['name'] . '? See who else is traveling there.';
+                  $shareLabel = 'Invite a traveler';
                   include __DIR__ . '/_share.php'; ?>
           </div>
+          <?php /* Three things that are real on this city today, so an empty page is still a page
+                   worth being on. Following is how the reader hears when somebody does post dates,
+                   which is the only thing that fixes an empty match list. */ ?>
+          <p class="cc-empty-acts" style="margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap">
+            <form method="post" action="<?= e(url('destination/save')) ?>" style="margin:0">
+              <?= csrf_field() ?>
+              <input type="hidden" name="destination_id" value="<?= (int) $c['id'] ?>">
+              <input type="hidden" name="return" value="/matches">
+              <input type="hidden" name="want" value="<?= !empty($c['following']) ? 'off' : 'on' ?>">
+              <button class="btn btn-ghost btn-sm"><?= !empty($c['following'])
+                  ? '★ Following ' . e((string) $c['name'])
+                  : '☆ Follow ' . e((string) $c['name']) ?></button>
+            </form>
+            <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $slug . '#city-ask')) ?>">Ask the community</a>
+            <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $slug . '/travelers')) ?>">Everyone in <?= e((string) $c['name']) ?></a>
+          </p>
         </div>
       <?php endif; ?>
 

@@ -5531,6 +5531,7 @@ function admin_funnel(array $a): void {
            that has to work first. */
         'social'    => rmt_social_funnel($days),
         'acq'       => rmt_acq_report($days),
+        'cc'        => rmt_acq_command_center($days > 0 ? $days : 3650),
         'socialC'   => rmt_social_counts($days),
         'visitors'  => rmt_visitor_counts($days),
         'topCities' => rmt_top_communities($days),

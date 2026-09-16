@@ -37,9 +37,13 @@ ok('everything else it defines is namespaced', $leaked === [], implode(',', $lea
 ok('it still defines the two it documents',
    in_array('shareUrl', $assigned, true) && in_array('shareText', $assigned, true));
 
-// The links must still be built from encoded values, not from raw text.
-ok('the share links use the encoded values',
-   substr_count($src, '$rmt_share_t') >= 3 && substr_count($src, '$rmt_share_u') >= 3);
+/* The links must still be built from encoded values, not from raw text. The URL is now encoded
+   inside $rmt_share_enc, which also tags it with the channel, so the check is that every outbound
+   link goes through that and none of them prints the address raw. */
+ok('the share text is still encoded', substr_count($src, '$rmt_share_t') >= 3);
+ok('every outbound link is encoded through the tagger', substr_count($src, '$rmt_share_enc(') >= 4);
+ok('no outbound link prints the raw url',
+   !preg_match('/href="[^"]*<\?=\s*\$shareUrl/', $src));
 ok('nothing still prints a bare $t or $u', !preg_match('/<\?=\s*\$[tu]\s*\?>/', $src));
 
 // The page that this actually broke: the trip story reads $t after including the partial.

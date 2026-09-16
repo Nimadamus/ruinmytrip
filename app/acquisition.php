@@ -26,7 +26,13 @@ const RMT_ACQ_SOURCES = [
 ];
 
 /** How it was shared, when a link says so. Also closed. */
-const RMT_ACQ_MEDIUMS = ['post', 'comment', 'reply', 'bio', 'story', 'group', 'dm', 'social', 'organic', 'email', 'referral', 'other'];
+const RMT_ACQ_MEDIUMS = ['post', 'comment', 'reply', 'bio', 'story', 'group', 'dm', 'social', 'organic', 'email', 'referral', 'share', 'other'];
+
+/* What a member's own share is called, so it is never confused with a campaign we published.
+   `utm_medium=share` plus this campaign is one traveler handing a link to another; anything else is
+   us. The distinction is the whole point of the referral loop: a channel that works because members
+   use it is worth more than one that works because we posted in it. */
+const RMT_ACQ_REFERRAL_CAMPAIGN = 'member-share';
 
 const RMT_ACQ_COOKIE = 'rmt_acq';
 const RMT_ACQ_TTL    = 90 * 86400;
@@ -301,4 +307,88 @@ function rmt_acq_window_near(string $slug, int $withinDays = 30): ?array {
         if ($resolved !== null) return $resolved;
     }
     return null;
+}
+
+/**
+ * A shareable version of one of our own URLs, tagged so the click can be told apart.
+ *
+ * Two kinds of link leave this site and they are not the same thing. One is a link we published in
+ * a campaign. The other is a member sending a page to somebody they know, which is the only channel
+ * that compounds. Both are tagged; only the second carries `utm_medium=share`.
+ *
+ * It refuses to tag anything that is not ours, so a stray absolute URL cannot be decorated and
+ * handed out looking like us, and it preserves an existing query string rather than trampling it.
+ * Nothing private goes in: the input is a page address that is already public to whoever holds it.
+ */
+function rmt_share_url(string $url, string $channel, ?string $campaign = null): string {
+    $self = strtolower((string) (parse_url((string) cfg('app_url'), PHP_URL_HOST) ?: ''));
+    $host = strtolower((string) (parse_url($url, PHP_URL_HOST) ?: ''));
+    if ($host !== '' && $self !== '' && $host !== $self && !str_ends_with($host, '.' . $self)) return $url;
+
+    $src = rmt_acq_slug($channel) ?? 'other';
+    if (!in_array($src, RMT_ACQ_SOURCES, true)) $src = 'other';
+    $q = http_build_query([
+        'utm_source'   => $src,
+        'utm_medium'   => 'share',
+        'utm_campaign' => rmt_acq_slug($campaign) ?? RMT_ACQ_REFERRAL_CAMPAIGN,
+    ]);
+    return $url . (str_contains($url, '?') ? '&' : '?') . $q;
+}
+
+/**
+ * The operating view: the same channels over three windows at once.
+ *
+ * One table over thirty days answers "did that campaign ever work". It does not answer the question
+ * somebody running a campaign actually has, which is "is it working now". So the report is taken
+ * over a day, a week and the whole period, and the three are lined up per channel.
+ *
+ * `rmt_acq_report()` already does the counting and the human filtering, so this adds no new rules:
+ * it runs it three times and joins the answers. Channels are ordered by the recent end, because a
+ * channel that produced a signup yesterday matters more than one that produced ten in August.
+ *
+ * @return array{windows:array<string,int>, rows:list<array<string,mixed>>, totals:array<string,int>}
+ */
+function rmt_acq_command_center(int $days = 90): array {
+    $windows = ['d1' => 1, 'd7' => 7, 'all' => max(1, $days)];
+    $byWindow = [];
+    foreach ($windows as $key => $n) {
+        foreach (rmt_acq_report($n) as $row) {
+            $byWindow[$key][$row['source'] . '|' . $row['campaign']] = $row;
+        }
+    }
+
+    $keys = [];
+    foreach ($byWindow as $rows) foreach (array_keys($rows) as $k) $keys[$k] = true;
+
+    $rows = [];
+    foreach (array_keys($keys) as $k) {
+        [$source, $campaign] = array_pad(explode('|', (string) $k, 2), 2, '');
+        $row = ['source' => $source, 'campaign' => $campaign];
+        foreach (array_keys($windows) as $w) {
+            $r = $byWindow[$w][$k] ?? null;
+            $row[$w] = [
+                'human'     => (int) ($r['human'] ?? 0),
+                'signups'   => (int) ($r['signed_up'] ?? 0),
+                'confirmed' => (int) ($r['confirmed'] ?? 0),
+                'trips'     => (int) ($r['trips'] ?? 0),
+                'visit_to_signup_pct' => $r['visit_to_signup_pct'] ?? null,
+                'signup_to_trip_pct'  => $r['signup_to_trip_pct'] ?? null,
+                'visit_to_trip_pct'   => $r['visit_to_trip_pct'] ?? null,
+                /* Kept beside the human number rather than folded into it, so the gap between what
+                   arrived and what was a person stays visible instead of being quietly corrected. */
+                'sessions'  => (int) ($r['sessions'] ?? 0),
+            ];
+        }
+        $rows[] = $row;
+    }
+    usort($rows, static fn(array $a, array $b) =>
+        [$b['d1']['signups'], $b['d7']['signups'], $b['d7']['human'], $b['all']['human']]
+    <=> [$a['d1']['signups'], $a['d7']['signups'], $a['d7']['human'], $a['all']['human']]);
+
+    $totals = [];
+    foreach (array_keys($windows) as $w) {
+        $totals[$w] = ['human' => 0, 'signups' => 0, 'confirmed' => 0, 'trips' => 0, 'sessions' => 0];
+        foreach ($rows as $r) foreach (array_keys($totals[$w]) as $m) $totals[$w][$m] += (int) $r[$w][$m];
+    }
+    return ['windows' => $windows, 'rows' => $rows, 'totals' => $totals];
 }

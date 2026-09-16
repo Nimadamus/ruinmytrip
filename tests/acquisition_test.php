@@ -203,6 +203,53 @@ ok('...only when there is no trip yet',  str_contains($feed, '(!$nt && !$je && f
 ok('...and still asks everybody else',   str_contains($feed, 'Where are you going?'), true);
 ok('...without creating anything',       (bool) preg_match('/INSERT INTO trips/i', $feed), false);
 
+
+echo "
+-- a member's share is told apart from something we published --
+";
+$s1 = rmt_share_url(abs_url('/d/munich-germany'), 'whatsapp');
+ok('a share carries its channel',   str_contains($s1, 'utm_source=whatsapp'), true);
+ok('...and says it was a share',    str_contains($s1, 'utm_medium=share'), true);
+ok('...under the member campaign',  str_contains($s1, 'utm_campaign=' . RMT_ACQ_REFERRAL_CAMPAIGN), true);
+ok('member share is not a campaign we ran', RMT_ACQ_REFERRAL_CAMPAIGN !== 'oktoberfest', true);
+$s2 = rmt_share_url(abs_url('/d/munich-germany') . '?x=1', 'x');
+ok('an existing query is kept',     str_contains($s2, 'x=1') && str_contains($s2, '&utm_source=x'), true);
+ok('a channel we do not publish becomes other',
+   str_contains(rmt_share_url(abs_url('/d/x'), 'myspace'), 'utm_source=other'), true);
+ok('a campaign can override the label',
+   str_contains(rmt_share_url(abs_url('/d/x'), 'x', 'oktoberfest'), 'utm_campaign=oktoberfest'), true);
+/* Somebody else's address is never decorated to look like ours. */
+ok('a foreign url is left alone', rmt_share_url('https://example.com/a', 'x'), 'https://example.com/a');
+ok('share is a medium we publish', in_array('share', RMT_ACQ_MEDIUMS, true), true);
+
+$share = (string) file_get_contents(BASE_PATH . '/views/_share.php');
+foreach (['whatsapp', 'facebook', 'x', 'reddit'] as $ch) {
+    ok("the share control tags $ch", str_contains($share, "rmt_share_enc('$ch')"), true);
+}
+ok('and the copied link is tagged too', str_contains($share, 'data-copy="<?= e($rmt_share_copy) ?>"'), true);
+ok('the campaign does not leak to the next control', str_contains($share, 'unset($shareCampaign, $shareLabel)'), true);
+
+echo "
+-- the operating view asks the same question three times --
+";
+$cc = rmt_acq_command_center(3650);
+ok('it reports three windows',    array_keys($cc['windows']), ['d1', 'd7', 'all']);
+ok('the day is one day',          $cc['windows']['d1'], 1);
+ok('the week is seven',           $cc['windows']['d7'], 7);
+ok('every row carries all three', (bool) array_reduce($cc['rows'], static fn($ok, $r) =>
+    $ok && isset($r['d1'], $r['d7'], $r['all']), true), true);
+ok('totals exist for each window', array_keys($cc['totals']), ['d1', 'd7', 'all']);
+/* A day cannot hold more than a week, and a week cannot hold more than the whole window. */
+foreach (['human', 'signups', 'confirmed', 'trips'] as $m) {
+    ok("the day never exceeds the week for $m", $cc['totals']['d1'][$m] <= $cc['totals']['d7'][$m], true);
+    ok("the week never exceeds the window for $m", $cc['totals']['d7'][$m] <= $cc['totals']['all'][$m], true);
+}
+$adm = (string) file_get_contents(BASE_PATH . '/views/admin_funnel.php');
+ok('the dashboard draws it',       str_contains($adm, 'Acquisition, now'), true);
+ok('...and keeps automated out',   str_contains($adm, 'Automated traffic is excluded'), true);
+$gf = (string) file_get_contents(BASE_PATH . '/app/growth_funnel.php');
+ok('the key gated json carries it', str_contains($gf, "'command_center'"), true);
+
 echo "\n-- what attribution is not allowed to store --\n";
 $src = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
 $events = (string) file_get_contents(BASE_PATH . '/app/contribution_events.php');

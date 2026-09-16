@@ -1,4 +1,4 @@
-<?php /** @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap @var array $social @var array $socialC @var array $visitors @var array $topCities @var array $attrib @var array $acq */ ?>
+<?php /** @var array $cc @var array $board @var int $days @var array $steps @var array $byAuth @var array $bySource @var array $failures @var array $counts @var array $signup @var array $growth @var array $inventory @var array $overlap @var array $social @var array $socialC @var array $visitors @var array $topCities @var array $attrib @var array $acq */ ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url('admin')) ?>">Moderation</a> / Contribution funnel</p>
   <h1 style="margin:.2rem 0 .4rem">Signup and contribution funnels</h1>
@@ -40,6 +40,60 @@
       return $of > 0 ? (string) round($n * 100 / $of) . '%' : '';
   };
   ?>
+  <?php /* The operating view. A thirty day table answers "did that campaign ever work"; the
+           question somebody running one actually has is "is it working now", so the same channels
+           are shown over a day, a week and the whole period side by side. Same counting rules, same
+           human filter: this adds no new arithmetic, it just asks three times. */ ?>
+  <h2 style="margin:6px 0 4px">Acquisition, now</h2>
+  <?php $ccT = $cc['totals'] ?? []; ?>
+  <p class="hint" style="margin:0 0 10px">Human sessions, signups, confirmations and trips, over the
+    last 24 hours, the last 7 days and the whole window. Automated traffic is excluded from every
+    number here and the raw session count is in brackets where it differs.</p>
+  <?php if (empty($cc['rows'])): ?>
+    <p class="hint" style="margin:0 0 18px">No channel has produced anything yet, in any window.</p>
+  <?php else: ?>
+    <table class="table" style="margin:0 0 6px">
+      <thead>
+        <tr><th>Channel</th>
+          <th colspan="4" style="text-align:center">Last 24 hours</th>
+          <th colspan="4" style="text-align:center">Last 7 days</th>
+          <th colspan="4" style="text-align:center">Window</th></tr>
+        <tr><th class="hint"></th>
+          <?php for ($i = 0; $i < 3; $i++): ?>
+            <th class="hint" style="text-align:right">Human</th><th class="hint" style="text-align:right">Join</th>
+            <th class="hint" style="text-align:right">Conf</th><th class="hint" style="text-align:right">Trip</th>
+          <?php endfor; ?>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($cc['rows'] as $r): ?>
+          <tr>
+            <td><b><?= e((string) $r['source']) ?></b><?php if ($r['campaign'] !== ''): ?>
+              <span class="hint"><?= e((string) $r['campaign']) ?></span><?php endif; ?></td>
+            <?php foreach (['d1', 'd7', 'all'] as $w): $x = $r[$w]; ?>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $x['human'] ?><?php
+                  if ((int) $x['sessions'] !== (int) $x['human']): ?><span class="hint"> (<?= (int) $x['sessions'] ?>)</span><?php endif; ?></td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $x['signups'] ?></td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $x['confirmed'] ?></td>
+              <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $x['trips'] ?></b></td>
+            <?php endforeach; ?>
+          </tr>
+        <?php endforeach; ?>
+        <tr>
+          <td><b>All channels</b></td>
+          <?php foreach (['d1', 'd7', 'all'] as $w): $x = $ccT[$w] ?? ['human'=>0,'signups'=>0,'confirmed'=>0,'trips'=>0]; ?>
+            <td style="text-align:right"><b><?= (int) $x['human'] ?></b></td>
+            <td style="text-align:right"><b><?= (int) $x['signups'] ?></b></td>
+            <td style="text-align:right"><b><?= (int) $x['confirmed'] ?></b></td>
+            <td style="text-align:right"><b><?= (int) $x['trips'] ?></b></td>
+          <?php endforeach; ?>
+        </tr>
+      </tbody>
+    </table>
+    <p class="hint" style="margin:0 0 18px">A rate needs a denominator, so the percentages stay in the
+      table below rather than being printed here off one or two sessions.</p>
+  <?php endif; ?>
+
   <?php /* Acquisition, first, because it is the question the whole site currently turns on: did
            anything we did outside this site bring a person in. A channel is one word, decided on
            first touch and held, so the post that did the work keeps the credit. Crawlers never

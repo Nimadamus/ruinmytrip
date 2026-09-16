@@ -180,8 +180,17 @@ $authorSaid = $authorSaid ?? [];
       <?php endif; ?>
     </form>
   <?php endif; ?>
+  <?php /* On your own trip this control is not "share a page", it is the one useful thing you can do
+           while nobody overlaps you yet: hand the link to somebody you already know is going. The
+           link is tagged as a member share, so a click that arrives this way is never counted as
+           something we published. Nothing is sent for anybody. */ ?>
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
+        if ($isOwner) { $shareLabel = 'Invite a traveler'; }
         include __DIR__ . '/_share.php'; ?>
+  <?php if ($isOwner && in_array($phase, ['upcoming', 'current'], true)): ?>
+    <p class="hint" style="margin:6px 0 0">Send this to anybody you know who is going. They see your
+      dates and can post theirs, and the two of you show up on each other's matches.</p>
+  <?php endif; ?>
 
 
   <?php /* The one thing a reader of somebody else's upcoming trip actually wants to do. Before
