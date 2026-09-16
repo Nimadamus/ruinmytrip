@@ -397,6 +397,79 @@ moderator removes one, record why and do not repost there.
 
     https://ruinmytrip.com/d/munich-germany?utm_source=tiktok&utm_medium=bio&utm_campaign=oktoberfest
 
+
+---
+
+# Oktoberfest, the full set
+
+Five more pieces for the same cohort, so a week of posting does not repeat itself. **The window is
+19 September to 4 October 2026** ([muenchen.de](https://www.muenchen.de/en/events/oktoberfest)).
+
+**The campaign link, which now does something extra:** any link carrying
+`utm_campaign=oktoberfest` makes the Munich page show the window and a **Post your Munich dates**
+button that opens the trip form with 19 September to 4 October already in it. A signed out visitor
+who clicks it goes to signup and lands back on the filled form. Verified cold today.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source={channel}&utm_medium={medium}&utm_campaign=oktoberfest
+
+## 11. Reddit comment, for any Oktoberfest thread already asking about groups
+
+**Only** paste this where somebody is genuinely asking about going alone or finding people.
+
+    Going without a group is the common version of this and the tables are the whole problem. I put
+    my dates on a site I built for finding travelers whose dates overlap in a city, so if anyone is
+    around the same days it shows up. Take it with the usual pinch of salt since it is mine.
+    https://ruinmytrip.com/d/munich-germany?utm_source=reddit&utm_medium=comment&utm_campaign=oktoberfest
+
+## 12. Facebook, a solo travel group
+
+    Question for people who have done Oktoberfest alone: did you find people beforehand or just at
+    the table?
+
+    Asking because I built a thing for the first version, a page per city where you put your dates
+    and see which other travelers overlap them, and Wiesn is the clearest case for it I have seen.
+    19 September to 4 October if anyone is going.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=group&utm_campaign=oktoberfest
+
+## 13. X, the question version
+
+    Oktoberfest is 19 September to 4 October.
+
+    Genuine question for anyone who has gone without a group: did you find people before you went,
+    or just share a table when you got there?
+
+    Building the first version at ruinmytrip.com, so I am biased, but I would like to know.
+
+    https://ruinmytrip.com/d/munich-germany?utm_source=x&utm_medium=post&utm_campaign=oktoberfest
+
+## 14. TikTok or Reels, fifteen seconds, screen recording
+
+**Hook, on screen, first second:** "Going to Oktoberfest without a group?"
+
+**Script**
+
+    Wiesn is sixteen days and the hard part alone is not the beer, it is the table.
+    This is a page per city. You put in your dates.
+    It shows you the travelers whose dates cross yours, and nothing about where anybody is.
+    Mine are up. Nineteenth of September to the fourth of October.
+
+**Caption**
+
+    Oktoberfest 19 September to 4 October. Post your dates, see who else is in Munich the same days.
+    https://ruinmytrip.com/d/munich-germany?utm_source=tiktok&utm_medium=bio&utm_campaign=oktoberfest
+
+## 15. Instagram Reels, the same footage, different framing
+
+**Hook:** "First Oktoberfest. Do you actually need a group?"
+
+**Caption**
+
+    Every answer online says find a group. Nobody says how, if you are arriving alone.
+    Put your dates up and see which travelers are in Munich the same days. Free, no app.
+    19 September to 4 October.
+    https://ruinmytrip.com/d/munich-germany?utm_source=instagram&utm_medium=bio&utm_campaign=oktoberfest
+
 ---
 
 # The exact human action needed

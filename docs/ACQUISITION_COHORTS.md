@@ -24,6 +24,11 @@ time this product does the thing it exists for.
   single most common complaint. "Who else is in Munich on the 26th" is a genuinely useful question.
 * **Landing:** `/d/munich-germany`
 * **Tracked:** `https://ruinmytrip.com/d/munich-germany?utm_source={channel}&utm_medium={medium}&utm_campaign=oktoberfest`
+* **What the campaign link does:** the Munich page shows the window and a **Post your Munich dates**
+  button opening the trip form with 19 September to 4 October already in it. A signed out visitor is
+  sent to signup and lands back on the filled form. Verified cold on 2026-09-15.
+* **Launch:** now. The window opens on the 19th.
+* **Traveler use case:** arriving without a group and needing a table.
 * **Communities:** r/Munich, r/Oktoberfest, r/solotravel, Facebook "Oktoberfest" groups, backpacker
   hostel groups. **Rules unverified from here, see the blocker note.**
 * **Caveat, stated because it matters:** we are four days out. Most people going have booked, and
