@@ -21,6 +21,15 @@
         $openNow === null ? null : ($openNow ? 'Open now' : 'Closed now'),
       ]))) ?></p>
   <h1 style="margin:.2rem 0 .5rem"><?= e($p['name']) ?></h1>
+  <?php /* Directly under the name, because this is the whole reason a search visitor is worth
+           having: they came for one building and the thing we have that the other ten results
+           do not is the people going to that city. It sat at the bottom of the page, which on a
+           phone is three or four screens after the reader has decided. */ ?>
+  <?php if (!empty($p['dest_slug'])): ?>
+    <?php $destSlug = (string) $p['dest_slug']; $destName = (string) $p['dest_name'];
+          include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
 
   <?php /* Said once, at the top, before the address and the hours and the buttons. A closed place
            keeps its page -- the reviews on it are still true about the time they describe, and
@@ -153,13 +162,7 @@
     <?php elseif ($me): ?>
       <a class="btn btn-ghost" href="<?= e(url('collection/new')) ?>">Start a list</a>
     <?php endif; ?>
-  <?php /* The social product, offered on a page that earns search impressions and previously offered
-           nothing but a review form. One shared component, only where the city is actually known. */ ?>
-  <?php if (!empty($p['dest_slug'])):
-          $dsSlug = (string) $p['dest_slug']; $dsName = (string) $p['dest_name'];
-          $dsId = isset($p['destination_id']) ? (int) $p['destination_id'] : 0;
-          include __DIR__ . '/_dest_social_cta.php'; endif; ?>
-    <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
+      <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
     <?php /* Editors get a direct route into the place editor from the page they are looking at. */ ?>
     <?php if ($me && in_array($me['role'], ['admin','mod'], true)): ?>
       <a class="btn btn-ghost" href="<?= e(url('admin/place/'.(int)$p['id'])) ?>">Edit this place</a>
@@ -435,10 +438,6 @@
   <?php /* Questions, above reviews on purpose. A review is what somebody says after going; a
            question is what the person reading this page has right now, and answering it is a far
            smaller thing to ask of the community than writing a review. */ ?>
-  <?php if (!empty($p['dest_slug'])): ?>
-    <?php $destSlug = (string) $p['dest_slug']; $destName = (string) $p['dest_name'];
-          include __DIR__ . '/_meet_travelers.php'; ?>
-  <?php endif; ?>
 
   <h2 class="h-card" style="margin:0 0 10px">Questions about <?= e($p['name']) ?></h2>
   <?php foreach ($talk as $tp): ?>

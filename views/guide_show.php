@@ -9,6 +9,13 @@
   <?php if($isEd):?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif;?>
   <?php if ($g['cover_url']): ?><img class="article-hero" src="<?= e($g['cover_url']) ?>" alt="<?= e($g['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($g['summary']) ?></p>
+  <?php /* After the summary and before the guide itself. A guide is read all the way through by
+           almost nobody, and it was offering this at 57% of the page height. */ ?>
+  <?php if (!empty($g['dest_slug'])): ?>
+    <?php $destSlug = (string) $g['dest_slug']; $destName = (string) $g['dest_name'];
+          include __DIR__ . '/_meet_travelers.php'; ?>
+  <?php endif; ?>
+
   <?php if ($g['premium']): ?><div class="callout warn"><b>Premium guide.</b> A preview is shown. Full booking-ready detail unlocks with a creator subscription (coming soon).</div><?php endif; ?>
   <?php /* Editorial guides are seeded/edited by our own team and trusted with rich HTML. Traveler
            guides are untrusted user input -- rendering them raw would be stored XSS, so they get
@@ -46,13 +53,7 @@
       <a class="btn btn-accent" href="<?= e(url('review/new'.($g['destination_id'] ? '?destination='.(int)$g['destination_id'] : ''))) ?>">Share your experience</a>
     </div>
   <?php endif;?>
-  <?php /* Same component. A guide is the one page on this site somebody reads all the way through,
-           which makes it the best moment to offer them the thing the site is for. */ ?>
-  <?php if (!empty($g['dest_slug'])):
-          $dsSlug = (string) $g['dest_slug']; $dsName = (string) ($g['dest_name'] ?? $g['dest_slug']);
-          $dsId = isset($g['destination_id']) ? (int) $g['destination_id'] : 0;
-          include __DIR__ . '/_dest_social_cta.php'; endif; ?>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?php if($g['dest_slug']):?><?= e(url('d/'.$g['dest_slug'])) ?><?php else:?><?= e(url('guides')) ?><?php endif;?>">← More about this destination</a>
     <?php if (rmt_guide_can_edit($g, $me)): ?>
       <a class="btn btn-ghost" href="<?= e(url('guide/'.(int)$g['id'].'/edit')) ?>">Edit</a>
@@ -62,10 +63,6 @@
   <?php $shareUrl = url('g/'.$g['slug']); $shareText = (string) $g['title'];
         include __DIR__ . '/_share.php'; ?>
 
-  <?php if (!empty($g['dest_slug'])): ?>
-    <?php $destSlug = (string) $g['dest_slug']; $destName = (string) $g['dest_name'];
-          include __DIR__ . '/_meet_travelers.php'; ?>
-  <?php endif; ?>
 
   <?php
     // showActionsBar defaults true: renders Like/Save + Report (Edit is handled above instead).

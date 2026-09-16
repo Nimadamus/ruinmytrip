@@ -5,18 +5,15 @@
  *
  *  Every page that ranks on this site answers a question about a building, and then offers the
  *  reader nothing to do but leave. The one thing they cannot get from the ten other pages on that
- *  results screen is the people: who is going to this city, and when. So that is the offer, and it
- *  is made in the reader's own context rather than as a generic "sign up for our newsletter".
+ *  results screen is the people: who is going to this city, and when.
+ *
+ *  This used to be a line of text with two links. It is now an adapter onto _dest_social_cta.php,
+ *  which carries the campaign window and a trip form with the city already in it, because having
+ *  two components doing this job meant two of them on the same page and neither being the one that
+ *  was maintained. One component, five call sites: blog, guide, place, review and trip.
  */
-$rmt_mt_here = '/d/' . $destSlug . '/travelers';
-?>
-<div class="callout" style="margin:22px 0">
-  <b>Going to <?= e($destName) ?>?</b>
-  See who else will be there and when, join a meetup, or ask travelers who have been.
-  <?php if ($me): ?>
-    <a href="<?= e(url(ltrim($rmt_mt_here, '/'))) ?>">Travelers in <?= e($destName) ?> &rarr;</a>
-  <?php else: ?>
-    <a href="<?= e(url(ltrim($rmt_mt_here, '/'))) ?>">Travelers in <?= e($destName) ?></a>
-    &middot; <a href="<?= e(url('register?return=' . rawurlencode($rmt_mt_here))) ?>"><b>Join free</b></a>
-  <?php endif; ?>
-</div>
+$dsSlug = (string) ($destSlug ?? '');
+$dsName = (string) ($destName ?? '');
+$dsId   = isset($destId) ? (int) $destId
+        : (int) (q_one('SELECT id FROM destinations WHERE slug = ?', [$dsSlug])['id'] ?? 0);
+include __DIR__ . '/_dest_social_cta.php';
