@@ -263,6 +263,29 @@ whoever is first in a list.
 downloaded Geofabrik extract, same canonical rows, proved against a fixture and deliberately not
 wired into production.
 
+## Acquisition, 2026-09-15
+
+A campaign can name a real travel window, and the pages a campaign visitor sees offer it.
+`RMT_ACQ_WINDOWS` in `app/acquisition.php` holds six: Oktoberfest, Web Summit, Yi Peng, Miami Art
+Week, New Year in Bangkok and Carnival in Rio, each with dates checked against a primary source and
+a comment saying what was checked. A visitor arriving on `?utm_campaign=oktoberfest` sees the window
+on the Munich page with a button that opens the trip form with the city and both dates in it; a
+signed out visitor goes to signup and comes back to that same filled form; after confirming their
+email they land on it again, and the empty feed card names the window instead of asking where they
+are going. The line never appears on a city the campaign does not name, and nothing creates a trip:
+the person still submits it.
+
+Attribution is first touch and survives the whole path, which is why any browser check has to use a
+fresh context per campaign. Verified live on 2026-09-15: six campaign paths at 390px and 1280px,
+zero failures, and `/cron/funnel` returning per campaign rows. The 29 sessions that verification
+generated are all counted as **zero human**, which is the property that matters.
+
+What is not done is the only thing that moves the numbers: nobody has posted a link where travelers
+are. Twenty posts are written in `docs/ACQUISITION_PACKAGES.md`, six cohorts specified in
+`docs/ACQUISITION_COHORTS.md`, and the state of the effort is `docs/ACQUISITION_QUEUE.md`. Reddit is
+blocked at the network layer from this machine, for reading as well as posting.
+
+
 ## Waiting on Nima
 
 Four things, all in BACKLOG.md with the detail: R2 (`10042`, enable it in the Cloudflare
