@@ -28,6 +28,9 @@ time this product does the thing it exists for.
   button opening the trip form with 19 September to 4 October already in it. A signed out visitor is
   sent to signup and lands back on the filled form. Verified cold on 2026-09-15.
 * **Launch:** now. The window opens on the 19th.
+* **Search traffic gets it too:** the window and the prefilled form are shown to anybody on the
+  Munich page once the window is within thirty days, not only to campaign visitors. Cities in the
+  destination title experiment are excluded, which is why Lisbon shows nothing until that test ends.
 * **Traveler use case:** arriving without a group and needing a table.
 * **Communities:** r/Munich, r/Oktoberfest, r/solotravel, Facebook "Oktoberfest" groups, backpacker
   hostel groups. **Rules unverified from here, see the blocker note.**

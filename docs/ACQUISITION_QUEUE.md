@@ -73,6 +73,14 @@ rest of the work.**
 * **Twenty posts written**, the last five covering New Year and Carnival, in
   `docs/ACQUISITION_PACKAGES.md`. None posted.
 
+* **The Oktoberfest window is now shown to search traffic too, live and verified 2026-09-15.** The
+  Munich page mentions Oktoberfest ten times and, until this change, offered an organic visitor
+  nothing four days before it starts. `rmt_acq_window_near()` shows the window and the prefilled
+  form once it is within thirty days, campaign or not. Verified on production: Munich carries the
+  line with no UTM at all and the link is `/trip/new?destination_id=42&date_from=2026-09-19&date_to=2026-10-04`;
+  Lisbon, Berlin and Bangkok carry nothing. **The nine title experiment cities are excluded by name**,
+  so the SEO test running until 2026-09-29 is untouched.
+
 ## IN PROGRESS
 
 * Nothing. Everything that can be done without an external account is done.
