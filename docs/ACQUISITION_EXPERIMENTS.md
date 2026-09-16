@@ -132,6 +132,33 @@ was actually published. From 16 September onward the marker does the job automat
 * **Outcome:** direct is shown beside the milestone and not counted toward it. **This is the check
   that matters when a link finally goes out:** the named channels will move and direct will not.
 
+### E7, the Facebook Page launch, 2026-09-16 (Pacific)
+
+* **Page:** Ruin My Trip, `https://www.facebook.com/profile.php?id=61594217710086`, category Travel
+  Company, bio as specified, profile image the site mark, cover "Two people. One city. The same
+  week.", website link tracked `utm_campaign=page&utm_content=profile_link`. Facebook rejected
+  "RuinMyTrip" as one word with internal capitals, so the display name is "Ruin My Trip". Phone,
+  email, address and WhatsApp left empty on purpose: the admin profile is a personal account and none
+  of its details belong on the Page. "Invite friends" was declined for the same reason.
+* **Seeded:** five posts, each confirmed live after publishing and none duplicated. Intro (pinned,
+  `page/intro`), Oktoberfest (`oktoberfest_2026/fb_post_munich`), Bangkok
+  (`new-year-2027/fb_post_bangkok`), a solo travel question with no link, and how overlap works
+  (`page/fb_post_howitworks`).
+* **Group test: NOT POSTED.** Ten groups read, none permits an unapproved project post:
+  * Oktoberfest 2026 (6.9K): bans self promotion, and is about Blumenau in Brazil, not Munich.
+  * Oktoberfest 2026 (308): no written rules, calls itself "the official site". Ambiguous, skipped.
+  * Munich Travel Tips (6.6K): no written rules, 162 posts a day. Ambiguous, skipped.
+  * NEW in MUNICH (77K): "no unauthorized spam". Needs admin authorization.
+  * FIND A TRAVEL BUDDY (80K): bans self promotion.
+  * TripMates (670K): rule 1 requires "verifying" on an unrelated outside site. Scam signal, avoided.
+  * Solo Travelers Find a Travel Buddy (17K): no written rules. Ambiguous, skipped.
+  * Munich Oktoberfest (90K, the largest English one): "no ads or spam", paid ads by email only.
+  * **Let's Go Solo (4.2K):** rule 6, "Discuss, don't promote (without approval)", and it invites
+    contacting the admins, who set aside dates for approved promotional posts. **The only compliant
+    route found**, and it needs a message to the admins first.
+* **Decision needed:** whether to message the Let's Go Solo admins asking to post, which is the one
+  route the rules explicitly permit.
+
 ### Template for the next one
 
 * **Hypothesis:**
