@@ -139,6 +139,11 @@ ok('the campaign knows its city',  $w['slug'] ?? null, 'munich-germany');
 ok('...and its destination id',    $w['id'] ?? null, 42);
 ok('...and the verified window',   ($w['from'] ?? '') . ' to ' . ($w['to'] ?? ''), '2026-09-19 to 2026-10-04');
 ok('a campaign we do not know suggests nothing', rmt_acq_window('some-other-thing'), null);
+/* The Facebook links are tagged oktoberfest_2026. The Munich page has to recognise that as its own
+   campaign, or those visitors get no window line and no prefilled dates. */
+ok('the facebook campaign name finds the same window', rmt_acq_window('oktoberfest_2026')['slug'] ?? null, 'munich-germany');
+ok('...with the same dates', (rmt_acq_window('oktoberfest_2026')['from'] ?? '') . ' ' . (rmt_acq_window('oktoberfest_2026')['to'] ?? ''), '2026-09-19 2026-10-04');
+ok('the name survives the slug cleaner', rmt_acq_slug('oktoberfest_2026'), 'oktoberfest_2026');
 ok('and neither does no campaign at all', rmt_acq_window(''), null);
 /* A city this database does not hold cannot be suggested, whatever the campaign says. */
 ok('a city we do not hold suggests nothing', rmt_acq_window('web-summit'), null);

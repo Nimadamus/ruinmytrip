@@ -324,8 +324,17 @@ const RMT_ACQ_WINDOWS = [
     'rio-carnival'   => ['slug' => 'rio-de-janeiro-brazil', 'from' => '2027-02-05', 'to' => '2027-02-13', 'label' => 'Carnival'],
 ];
 
+/* Other names a channel may use for the same window. The Facebook package tags Oktoberfest as
+   oktoberfest_2026, and without this the Munich page would not recognise its own campaign: no window
+   line, no prefilled dates, for exactly the visitors the campaign exists to catch. The dashboard
+   still reports the name that was actually on the link. */
+const RMT_ACQ_WINDOW_ALIASES = [
+    'oktoberfest_2026' => 'oktoberfest',
+];
+
 function rmt_acq_window(?string $campaign = null): ?array {
     $c = $campaign ?? (rmt_acq_current()['campaign'] ?? null);
+    if ($c !== null && isset(RMT_ACQ_WINDOW_ALIASES[$c])) $c = RMT_ACQ_WINDOW_ALIASES[$c];
     if ($c === null || !isset(RMT_ACQ_WINDOWS[$c])) return null;
     $w = RMT_ACQ_WINDOWS[$c];
     $d = q_one('SELECT id FROM destinations WHERE slug = ?', [$w['slug']]);

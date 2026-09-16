@@ -60,21 +60,27 @@ go up first, over about a week, so the Page has something behind the link.
 * **CTA:** learn what it is, then look at a city.
 * **Visual:** the cover line as a plain type card. No photograph.
 
-> Find the people going where you're going.
+> Find people traveling where you're going.
 >
 > You book a city and a week, and you have no idea who else will be there. Hostel common rooms solve
 > it if you are staying in one. Apps are mostly dating. Groups are mostly people selling tours.
 >
-> So: post your dates for a city, and see which other travelers overlap them. That is the whole
-> idea. Nobody sees your dates until you post them, nobody can message you unless you have both
-> agreed to it, and when a city has nobody on it yet, the page says so.
+> So this is how RuinMyTrip works:
 >
-> It is new and quiet. That is the honest version, and we would rather say it than pretend.
+> 1. Add a trip.
+> 2. Enter the city and your dates. That is the whole form.
+> 3. See which other travelers' dates overlap yours.
+> 4. Join that city's community: the questions being asked, and what people who went actually said.
+> 5. Connect safely. Nobody can message you unless you have both agreed to it, and nobody sees your
+>    dates until you post them.
+>
+> It is new and quiet, and when a city has nobody on it yet, the page says so. That is the honest
+> version, and we would rather say it than pretend otherwise.
 
 ### Post 2. Oktoberfest and Munich.
 
-* **Campaign:** `oktoberfest` · **Content:** `fb_post_munich` · **Pin: no**
-* **Tracked URL:** `https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=social&utm_campaign=oktoberfest&utm_content=fb_post_munich`
+* **Campaign:** `oktoberfest_2026` · **Content:** `fb_post_munich` · **Pin: no**
+* **Tracked URL:** `https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=social&utm_campaign=oktoberfest_2026&utm_content=fb_post_munich`
 * **CTA:** answer in the comments, then look at the Munich page.
 * **Visual:** a photograph of a Wiesn tent interior, or plain type reading "19 September to 4 October".
 
@@ -130,7 +136,7 @@ go up first, over about a week, so the Page has something behind the link.
 * **CTA:** look at the upcoming events, post dates for one.
 * **Visual:** three plain cards in sequence: a city, two date ranges, the overlap highlighted.
 
-> How the overlap thing actually works, since a few people have asked.
+> How the overlap thing actually works.
 >
 > One. You post a city and two dates. That is the whole form, and it takes about a minute.
 > Two. Anybody else with dates in that city sees where yours cross theirs, and you see where theirs
@@ -161,7 +167,7 @@ go up first, over about a week, so the Page has something behind the link.
 
 **The post, for a Munich or Oktoberfest group:**
 
-* **Tracked URL:** `https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=group&utm_campaign=oktoberfest&utm_content=group_test_1`
+* **Tracked URL:** `https://ruinmytrip.com/d/munich-germany?utm_source=facebook&utm_medium=social&utm_campaign=oktoberfest_2026&utm_content=group_test_1`
 
 > I am building a way for people going to Oktoberfest around the same dates to find each other, and
 > I would rather hear from people actually travelling to Munich than keep guessing.
@@ -184,13 +190,16 @@ Every Facebook link carries all four parameters:
 
 ```
 utm_source=facebook
-utm_medium=social      (a Page post)  |  group  (a post inside a group)
-utm_campaign=<oktoberfest | new-year-2027 | day-of-the-dead | web-summit | yi-peng |
+utm_medium=social
+utm_campaign=<oktoberfest_2026 | new-year-2027 | day-of-the-dead | web-summit | yi-peng |
               miami-art-week | rio-carnival | page>
-utm_content=<the specific post, e.g. fb_post_munich>
+utm_content=<the specific post: fb_post_munich, group_test_1, and so on>
 ```
 
-`social` is already in the accepted medium list, `facebook` in the accepted source list, and the
+The group test is told apart from the Page posts by `utm_content`, not by a different medium.
+`oktoberfest_2026` is recognised by the Munich page as the Oktoberfest window, so a visitor from any
+of these links still gets the window line and the prefilled dates. `social` is already in the
+accepted medium list, `facebook` in the accepted source list, and the
 dashboard will show facebook as its own row within seconds of the first click, with human visits,
 signups, confirmations and trips beside it. **Self check traffic is excluded automatically**: every
 internal verification carries `utm_content=selfcheck`, which the report subtracts.
@@ -226,7 +235,23 @@ thousands of travelers", or a screenshot of activity that did not happen.
 
 ---
 
-## 6. The decision that is yours
+## 6. What operating the Page needs from this machine
+
+Posting, pinning, reading group rules and answering comments all happen inside Facebook while signed
+in. I do that through the Chrome instance this machine automates (debugging port 9223), so **the
+account that administers the RuinMyTrip Page has to be signed in to Facebook in that Chrome**. I
+will not type a Facebook password anywhere, and I will not use any other account that happens to be
+signed in there. If the Page's admin account is not the one signed in, I stop and say so.
+
+A group test post is made from whichever profile the group's rules require. If that is your personal
+profile, the post is the transparent one in section 3 and nothing else.
+
+## 7. The decision that was yours, now made
+
+You will create the Page from an account you control, not from the vault account that administers
+unrelated Pages. The notes below are kept for the record.
+
+## 6 (original). The decision that is yours
 
 **There is no clean Facebook identity to create this Page from.**
 
