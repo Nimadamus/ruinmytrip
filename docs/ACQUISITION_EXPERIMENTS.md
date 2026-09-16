@@ -72,6 +72,33 @@ week is whether it did anything.
   here will be too small to read, and the honest answer will be "no data" rather than "no effect".
 * **Decision:** read on 2026-10-05, after the window closes.
 
+### E3
+
+* **Hypothesis:** a signup page that names the city and the dates somebody just chose converts
+  better than one that says only "Join RuinMyTrip", on the campaign path where the visitor arrived
+  for one specific thing.
+* **Date:** shipped 2026-09-16.
+* **Campaign:** all of them, this is on the path itself.
+* **Change:** clicking "Post your Munich dates" now reaches a signup page that says "Join and post
+  your Munich dates, 19 September to 4 October. They are already filled in, and you will see which
+  travelers overlap them."
+* **Baseline:** 1,303 join form views against 2 submissions in the 30 days to 2026-09-15, though
+  almost all of those views were automated.
+* **Status:** running. **Read it when there is real traffic**, not before: with 2 signups in the
+  window there is nothing to compare.
+
+### E4
+
+* **Hypothesis:** the two controls a stranger came for, see who is going and post your dates, were
+  around 6,400 pixels down a phone page. Putting them at the top will change the share of arrivals
+  that do anything at all.
+* **Date:** shipped 2026-09-16.
+* **Measured before:** travelers link at 6,410px on a 390px screen, no visible trip control at all
+  for a signed in visitor on a phone.
+* **Measured after:** 768px and 820px, zero failures across five destinations at two widths.
+* **Status:** running. Read against `destination_follow_click` and `trip_create_started` per human
+  session once real traffic exists.
+
 ### Template for the next one
 
 * **Hypothesis:**

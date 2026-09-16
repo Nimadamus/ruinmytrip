@@ -119,6 +119,22 @@ rest of the work.**
   and both dates survive signup; a trip typed before the address is confirmed is **held and written
   the instant it is confirmed** rather than discarded; and confirmation lands on the filled form.
 
+* **The whole chain closed, 2026-09-16.** Campaign landing to a created trip, driven end to end:
+  the Munich page with the campaign line, a signed out click on the prefilled button, a signup page
+  that named the city and both dates, signup returning **straight to the filled form** rather than a
+  welcome page, and the trip written with `trip_created` carrying `facebook/group/oktoberfest`,
+  landing on `/matches?new=…`. Every link in that chain is now verified rather than assumed.
+* **All seven campaigns validated on production, zero failures.** Page, campaign line with the right
+  window, prefilled dates, purpose built social card, canonical and robots untouched, and the signed
+  out click reaching signup with the link preserved.
+* **Daily line live** at the top of `/admin/funnel` and as `daily` in the key gated JSON: human
+  visits, signups, confirmed, trips, top source, top campaign, top landing page, best conversion and
+  the change against the weekly average. No rate is reported with fewer than five human sessions
+  behind it.
+* **Channel work:** five Facebook posts (`docs/ACQUISITION_FACEBOOK.md`), ten video scripts
+  (`docs/ACQUISITION_VIDEO.md`), the weekly operating plan (`docs/ACQUISITION_WEEKLY.md`) and the
+  ranked channel research (`docs/ACQUISITION_CHANNELS.md`).
+
 ## IN PROGRESS
 
 * Nothing. Everything that can be done without an external account is done.
