@@ -156,6 +156,31 @@
            part a visitor cares about, and it exists only between the viewer and this profile. */ ?>
   <?php $interests = $interests ?? []; $sharedInterests = $sharedInterests ?? []; ?>
   <?php $rmtLangs = function_exists('rmt_languages_for_user') ? rmt_language_labels(rmt_languages_for_user((int) $u['id'])) : []; ?>
+  <?php /* Only the owner sees this, only for what is missing, and nothing is ever blocked by it. It
+           disappears on its own once the profile says enough for another traveler to recognise
+           somebody worth meeting. */
+        if ($isMe) {
+            $rmtMissing = array_keys(array_filter([
+                'a photo'           => empty($u['avatar_url']),
+                'a short bio'       => trim((string) ($u['bio'] ?? '')) === '',
+                'the languages you speak' => !$rmtLangs,
+                'your travel interests'   => !$interests,
+                'an upcoming trip'  => empty($upcomingTrips),
+            ]));
+        } else {
+            $rmtMissing = [];
+        } ?>
+  <?php if ($rmtMissing): ?>
+    <p class="profile-complete hint">
+      <b>Complete your traveler profile.</b> Add <?= e(implode(', ', array_slice($rmtMissing, 0, -1)) . (count($rmtMissing) > 1 ? ' and ' : '') . end($rmtMissing)) ?>
+      so other travelers know who they are meeting.
+      <?php if (in_array('an upcoming trip', $rmtMissing, true) && count($rmtMissing) === 1): ?>
+        <a href="<?= e(url('trip/new')) ?>">Post your dates</a>
+      <?php else: ?>
+        <a href="<?= e(url('u/' . $u['username'] . '/edit')) ?>">Edit profile</a>
+      <?php endif; ?>
+    </p>
+  <?php endif; ?>
   <?php if ($rmtLangs): ?>
     <p class="hint" style="margin:6px 0 0">Speaks <?= e(implode(', ', $rmtLangs)) ?></p>
   <?php endif; ?>

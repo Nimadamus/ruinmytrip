@@ -74,6 +74,21 @@ $pdo->exec('DROP TABLE blocks');
 unset($GLOBALS['_rmt_blocked_ids_7']);
 ok('a missing blocks table filters nothing rather than throwing', rmt_blocked_ids(7), []);
 
+
+echo "\n-- the whole matrix, read from source --\n";
+$conn = (string) file_get_contents(BASE_PATH . '/app/connects.php');
+$match = (string) file_get_contents(BASE_PATH . '/app/matching.php');
+$ment = (string) file_get_contents(BASE_PATH . '/app/mentions.php');
+$msgs = (string) file_get_contents(BASE_PATH . '/app/messages.php');
+ok('messaging refuses a blocked pair', str_contains($msgs, "if (rmt_is_blocked(\$meId, \$themId)) return ['ok' => false, 'reason' => 'blocked']"), true);
+ok('connecting refuses a blocked pair', str_contains($conn, 'rmt_is_blocked($userId, $ownerId)'), true);
+ok('following refuses a blocked pair', (bool) preg_match('/function follow_action.*?rmt_is_blocked/s', $ctrl), true);
+ok('compliments refuse a blocked pair', (bool) preg_match('/function compliment_action.*?rmt_is_blocked/s', $ctrl), true);
+ok('reposts refuse a blocked pair', (bool) preg_match('/function post_repost.*?rmt_is_blocked/s', $ctrl), true);
+ok('comments refuse a blocked pair', (bool) preg_match('/function comment_action.*?rmt_blocked_from/s', $ctrl), true);
+ok('overlap matching excludes blocks', (bool) preg_match('/function rmt_trip_matches.*?rmt_match_block_sql/s', $match), true);
+ok('follow suggestions exclude blocks', (bool) preg_match('/function rmt_follow_suggestions.*?rmt_match_block_sql/s', $match), true);
+ok('mentions skip a blocked pair', str_contains($ment, 'isset($blocked[(int) $uid])'), true);
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed, {$pass} passed\n"; exit(1); }
 echo "ALL BLOCK SUPPRESSION TESTS PASS ({$pass})\n";

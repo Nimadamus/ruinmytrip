@@ -56,6 +56,14 @@ foreach ($popular as $pp) $rmt_popular_ids[(int) $pp['id']] = true;
           </select>
         </div>
       </div>
+      <?php if (defined('RMT_INTERESTS')): ?>
+        <fieldset class="onboard-interests">
+          <legend class="hint">What you like doing when you get there (optional)</legend>
+          <?php foreach (RMT_INTERESTS as $ik => $il): ?>
+            <label class="chip-check"><input type="checkbox" name="interests[]" value="<?= e($ik) ?>"> <?= e($il) ?></label>
+          <?php endforeach; ?>
+        </fieldset>
+      <?php endif; ?>
     </section>
 
     <section class="onboard-step">

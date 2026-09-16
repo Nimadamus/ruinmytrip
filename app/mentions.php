@@ -54,7 +54,11 @@ function rmt_notify_mentions(string $targetType, int $targetId, int $actorId, ar
     foreach ($skipUserIds as $skip) unset($users[(int)$skip]);
     if (!$users) return;
     $now = date('Y-m-d H:i:s');
+    /* Naming somebody who blocked you, or whom you blocked, reaches nobody. */
+    $blocked = function_exists('rmt_blocked_ids') ? rmt_blocked_ids($actorId) : [];
+    $actor = q_one("SELECT username FROM users WHERE id=?", [$actorId]);
     foreach ($users as $uid => $_name) {
+        if (isset($blocked[(int) $uid])) continue;
         $dup = q_one("SELECT 1 FROM notifications WHERE user_id=? AND type='mention' AND target_type=? AND target_id=?",
                      [$uid, $targetType, $targetId]);
         if ($dup) continue;
@@ -63,7 +67,6 @@ function rmt_notify_mentions(string $targetType, int $targetId, int $actorId, ar
 
         /* Being named is addressed to one person, so it is one of the few things worth an email
            the same day. Capped hard in rmt_notify_email_direct(); silent when over. */
-        $actor = q_one("SELECT username FROM users WHERE id=?", [$actorId]);
         $href = rmt_notification_target_url($targetType, $targetId, (int) $uid);
         if ($actor && $href) {
             rmt_notify_email_direct((int) $uid, 'You were mentioned on RuinMyTrip',

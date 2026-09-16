@@ -2632,6 +2632,12 @@ function welcome_submit(array $a): void {
                        $ident['data']['travel_style'] ?? null, $uid]);
     }
 
+    /* Optional, and only written when somebody ticked something: skipping the step must never
+       wipe interests set on the profile page. */
+    if (!empty($_POST['interests']) && is_array($_POST['interests']) && function_exists('rmt_interests_save')) {
+        rmt_interests_save($uid, array_map('strval', $_POST['interests']));
+    }
+
     $wants = array_slice(array_unique(array_map('intval', (array)($_POST['want'] ?? []))), 0, 12);
     $now = date('Y-m-d H:i:s');
     foreach ($wants as $did) {

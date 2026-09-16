@@ -486,7 +486,7 @@ function rmt_meetup_notify_travelers(int $meetupId, int $hostId, int $destId, st
  */
 /** The editorial role name, or a value no account has when the constant is not loaded. */
 function rmt_editorial_role_name(): string {
-    return defined('RMT_EDITORIAL_ROLE') ? (string) RMT_EDITORIAL_ROLE : " none";
+    return defined('RMT_EDITORIAL_ROLE') ? (string) RMT_EDITORIAL_ROLE : '__no_editorial_role__';
 }
 
 function rmt_follow_suggestions(int $userId, int $limit = 8): array {

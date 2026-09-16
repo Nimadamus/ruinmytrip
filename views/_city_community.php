@@ -156,6 +156,33 @@ $stats = array_values(array_filter([
     <?php endif; ?>
   </div>
 
+  <?php /* Who is going soon, as faces. Only dates still ahead, only what plan visibility already
+           lets this reader see, and never more than the city and the month. */ ?>
+  <?php $ccSoon = array_slice(array_values(array_filter($going ?? [], static fn(array $g): bool =>
+            !empty($g['date_to']) && (string) $g['date_to'] >= date('Y-m-d')
+            && (!$me || (int) ($g['user_id'] ?? 0) !== (int) $me['id']))), 0, 6); ?>
+  <?php if ($ccSoon): ?>
+    <div class="cc-soon">
+      <span class="hint">Going soon</span>
+      <?php foreach ($ccSoon as $g): ?>
+        <a class="cc-soon-p" href="<?= e(url('u/' . $g['username'])) ?>" title="@<?= e((string) $g['username']) ?> · <?= e(date('M', strtotime((string) $g['date_from']))) ?>">
+          <img class="avatar" src="<?= e(avatar_url($g['avatar_url'] ?? null)) ?>" alt="@<?= e((string) $g['username']) ?>" loading="lazy">
+          <span class="hint"><?= e(date('M', strtotime((string) $g['date_from']))) ?></span></a>
+      <?php endforeach; ?>
+      <a class="hint" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">Find travelers</a>
+    </div>
+  <?php endif; ?>
+
+  <?php /* The verified event weeks for this city that are still ahead, from the same list /events
+           uses, so nothing here is a date we have not checked. */ ?>
+  <?php $ccEvents = function_exists('rmt_acq_upcoming_events')
+          ? array_values(array_filter(rmt_acq_upcoming_events(), static fn(array $ev): bool => $ev['slug'] === (string) $d['slug']))
+          : []; ?>
+  <?php foreach ($ccEvents as $ev): if ($ccWindow && ($ccWindow['from'] ?? '') === $ev['from']) continue; ?>
+    <p class="cc-event hint"><b><?= e((string) $ev['label']) ?></b> · <?= e((string) $ev['dates']) ?> ·
+      <a href="<?= e((string) $ev['trip_link']) ?>">Post dates for it</a> · <a href="<?= e(url('events')) ?>">All events</a></p>
+  <?php endforeach; ?>
+
   <div class="cc-talk" id="city-talk">
     <div class="section-rule">
       <h3>Travelers talking about <?= e($cityName) ?></h3>
@@ -171,6 +198,18 @@ $stats = array_values(array_filter([
         <p style="margin:0 0 6px"><b>No questions about <?= e($cityName) ?> yet.</b></p>
         <p class="hint" style="margin:0">Ask the first one. It is what the next traveler searching for <?= e($cityName) ?> will find.</p>
       </div>
+    <?php endif; ?>
+    <?php /* Questions still waiting, pulled out of the same rows so no second query: members first,
+             because a member's question going unanswered is the one that costs us a traveler. */ ?>
+    <?php $ccWaiting = array_values(array_filter($talk ?? [], static fn(array $tp): bool =>
+              (int) ($tp['reply_count'] ?? 0) === 0 && str_contains((string) $tp['body'], '?')));
+          usort($ccWaiting, static fn(array $x, array $y): int =>
+              ((defined('RMT_EDITORIAL_ROLE') && ($x['author_role'] ?? '') === RMT_EDITORIAL_ROLE) ? 1 : 0)
+              <=> ((defined('RMT_EDITORIAL_ROLE') && ($y['author_role'] ?? '') === RMT_EDITORIAL_ROLE) ? 1 : 0)); ?>
+    <?php if ($ccWaiting): ?>
+      <p class="cc-waiting hint"><b>Waiting for an answer:</b>
+        <?php foreach (array_slice($ccWaiting, 0, 3) as $i => $wq): ?><?= $i ? ' · ' : ' ' ?><a href="<?= e(url('post/' . (int) $wq['id'])) ?>"><?= e(mb_strimwidth((string) $wq['body'], 0, 70, '…')) ?></a><?php endforeach; ?>
+      </p>
     <?php endif; ?>
     <?php foreach (($talk ?? []) as $tp): ?>
       <article class="cc-post">

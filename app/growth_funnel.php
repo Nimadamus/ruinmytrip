@@ -64,6 +64,17 @@ function rmt_growth_funnel(int $days = 0): array {
                    OR EXISTS (SELECT 1 FROM activity_photos p WHERE p.user_id = u.id)
                    OR EXISTS (SELECT 1 FROM review_photos p WHERE p.user_id = u.id)");
 
+    /* The community steps. Counted from rows, never from what anybody wrote: a post, a comment,
+       a save of anything, a connection accepted in either direction. A table this database has not
+       got yet counts nobody rather than failing the whole report. */
+    $nSafe = static function (string $extra) use ($n): int {
+        try { return $n($extra); } catch (Throwable) { return 0; }
+    };
+    $posted     = $nSafe("EXISTS (SELECT 1 FROM posts x WHERE x.user_id = u.id AND x.status = 'published')");
+    $commented  = $nSafe("EXISTS (SELECT 1 FROM comments x WHERE x.user_id = u.id)");
+    $savedAny   = $nSafe("EXISTS (SELECT 1 FROM saves x WHERE x.user_id = u.id)");
+    $connected  = $nSafe("EXISTS (SELECT 1 FROM trip_connects x WHERE (x.from_user_id = u.id OR x.to_user_id = u.id) AND x.state = 'accepted')");
+
     /* Anything that counts as having got value out of the site, deliberately a list rather than one
        action, because planning does not have a single shape. Somebody who saved four places got
        something out of this even if they never wrote a plan, and so did somebody who scheduled a
@@ -146,6 +157,10 @@ function rmt_growth_funnel(int $days = 0): array {
             ['label' => 'Saved a place',           'n' => $savedPlace, 'of' => $pct($savedPlace, $members)],
             ['label' => 'Added something to a plan', 'n' => $plan,     'of' => $pct($plan, $members)],
             ['label' => 'Followed a traveler',     'n' => $followed,   'of' => $pct($followed, $members)],
+            ['label' => 'Posted in a community',   'n' => $posted,     'of' => $pct($posted, $members)],
+            ['label' => 'Commented or replied',    'n' => $commented,  'of' => $pct($commented, $members)],
+            ['label' => 'Saved anything',          'n' => $savedAny,   'of' => $pct($savedAny, $members)],
+            ['label' => 'Made a connection',       'n' => $connected,  'of' => $pct($connected, $members)],
             ['label' => 'Sent a message',          'n' => $messaged,   'of' => $pct($messaged, $members)],
             ['label' => 'Asked to join something', 'n' => $joined,     'of' => $pct($joined, $members)],
             ['label' => 'Uploaded a photo',        'n' => $photo,      'of' => $pct($photo, $members)],
