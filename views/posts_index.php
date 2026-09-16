@@ -10,6 +10,12 @@
   <p class="muted" style="max-width:62ch">Questions, warnings and what a place is actually like. Short
     is fine. If it turns into a story worth keeping, write it up as a
     <a href="<?= e(url('trip/new')) ?>">trip</a> or a <a href="<?= e(url('review/new')) ?>">review</a>.</p>
+  <?php /* Somebody reading one city's conversation is the reader most likely to be going there. The
+           filtered list is where that is true, so the offer appears there and nowhere else on this
+           page. Same component every other page uses. */ ?>
+  <?php if ($dest):
+          $destSlug = (string) $dest['slug']; $destName = (string) $dest['name']; $destId = (int) $dest['id'];
+          include __DIR__ . '/_meet_travelers.php'; endif; ?>
 
   <?php /* The composer sits above the stream, not behind a button. A conversation surface whose
            first job is to make you click "new post" gets one post a week. */ ?>
@@ -96,6 +102,7 @@
           <img class="avatar" style="width:36px;height:36px" src="<?= e(avatar_url($p['avatar_url'] ?? null)) ?>" alt="">
           <div style="flex:1;min-width:0">
             <b><a href="<?= e(url('u/'.$p['username'])) ?>">@<?= e((string) $p['username']) ?></a></b>
+            <?php if (function_exists('rmt_is_editorial') && rmt_is_editorial($p)): ?><?= rmt_editorial_badge() ?><?php endif; ?>
             <span class="hint"> · <?= e(ago((string) $p['created_at'])) ?></span>
             <?php if (!empty($p['place_slug'])): ?>
               <span class="hint"> · <a href="<?= e(url('p/'.$p['place_slug'])) ?>"><?= e((string) $p['place_name']) ?></a></span>

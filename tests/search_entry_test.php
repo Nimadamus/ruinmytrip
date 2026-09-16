@@ -50,6 +50,13 @@ ok('and nothing is called trending', (bool) preg_match('/trending/i', $cta), fal
 ok('it renders nothing without a city',
    str_contains($cta, "if (\$dsSlug === '' || \$dsName === '') return;"), true);
 
+echo "\n-- a single city's conversation offers that city --\n";
+$pi = (string) file_get_contents(BASE_PATH . '/views/posts_index.php');
+ok('the filtered talk list offers the city', str_contains($pi, '_meet_travelers.php'), true);
+ok('...only when a city is chosen',          str_contains($pi, '<?php if ($dest):'), true);
+ok('and editorial posts carry the badge there too', str_contains($pi, 'rmt_is_editorial($p)'), true);
+
+
 echo "\n-- the adapter keeps the old call signature --\n";
 $adapter = (string) file_get_contents(BASE_PATH . '/views/_meet_travelers.php');
 ok('callers still pass destSlug',  str_contains($adapter, '$destSlug'), true);
