@@ -439,6 +439,13 @@ function neighborhood_show(array $a): void {
 function destination_travelers(array $a): void {
     $d = dest_by_slug($a['slug']); if (!$d) not_found();
     $me = current_user();
+    /* This page is on the campaign path: the city block links to it as "Everyone in {city}", so it
+       is the second page a lot of arrivals read. It was recording nothing, and a session whose only
+       later pages record nothing can never present our cookie back to us, which is the signal that
+       tells a person from a fetcher. So it counts, as the same event under its own source, keyed
+       separately from the city page so one does not swallow the other. */
+    rmt_track_once_for('destination_page_view', 'travelers:' . (int) $d['id'],
+                       ['source' => 'travelers', 'destination_id' => (int) $d['id']]);
     $hub = rmt_city_traveler_hub((int) $d['id'], $me);
     $myGoing = $me ? rmt_going_for_user_dest((int) $me['id'], (int) $d['id']) : null;
     /* The three things that turn a city page into a room: who is here today, what it looks like,

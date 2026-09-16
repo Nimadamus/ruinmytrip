@@ -228,6 +228,16 @@ foreach (['whatsapp', 'facebook', 'x', 'reddit'] as $ch) {
 }
 ok('and the copied link is tagged too', str_contains($share, 'data-copy="<?= e($rmt_share_copy) ?>"'), true);
 ok('the campaign does not leak to the next control', str_contains($share, 'unset($shareCampaign, $shareLabel)'), true);
+/* The second page a campaign arrival reads has to record something, or the session can never hand
+   our cookie back and a real person is filed as a fetcher. */
+$ctrl = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
+ok('the city travelers page is counted',
+   str_contains($ctrl, "rmt_track_once_for('destination_page_view', 'travelers:'"), true);
+ok('...under a source the vocabulary publishes',
+   in_array('travelers', RMT_CONTRIB_SOURCES, true), true);
+ok('...and keyed apart from the city page itself',
+   substr_count($ctrl, "rmt_track_once_for('destination_page_view'") >= 2, true);
+
 
 echo "
 -- the operating view asks the same question three times --

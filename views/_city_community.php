@@ -67,6 +67,14 @@ $stats = array_values(array_filter([
         <a class="btn btn-primary cc-follow" href="<?= e(url('register?return=' . rawurlencode('/d/' . $d['slug']))) ?>">Follow <?= e($cityName) ?></a>
       <?php endif; ?>
       <a class="btn btn-accent cc-ask" href="#city-ask">Ask the community</a>
+      <?php /* The two things a stranger arriving from a link is actually here for, put where they
+               can see them. Both existed already and both were thousands of pixels down the page,
+               under the editorial: on a phone the link to the travelers hub sat around seven screens
+               below the fold, and the only "post a trip" control was inside the collapsed menu, so a
+               signed in visitor on a phone could not see one at all. Neither is a new feature and
+               neither claims anybody is there; the pages they open say honestly when they are empty. */ ?>
+      <a class="btn btn-ghost cc-travelers" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">See who is going</a>
+      <a class="btn btn-ghost cc-post-dates" href="<?= e(url('trip/new?destination_id=' . (int) $d['id'])) ?>">Post your dates</a>
     </div>
   </div>
 

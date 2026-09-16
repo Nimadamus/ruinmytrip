@@ -121,6 +121,20 @@ ok(str_contains($rule('.cc-post-body'), 'overflow-wrap:anywhere'),
 ok(str_contains($rule('.cc-head'), 'flex-direction:column'),
    'the block stacks in one column by default, and only widens when there is room');
 
+/* The four first moves a stranger has, all in the actions row at the top of the block rather than
+   thousands of pixels down the page. On a phone the travelers hub used to sit about seven screens
+   below the fold, and the only trip control was inside the collapsed menu, so a signed in visitor
+   on a phone could not see one at all. */
+$ccSrc = (string) file_get_contents(dirname(__DIR__) . '/views/_city_community.php');
+$acts  = substr($ccSrc, (int) strpos($ccSrc, 'cc-actions'), 2600);
+ok(str_contains($acts, 'cc-follow'),      'follow is in the actions row');
+ok(str_contains($acts, 'cc-ask'),         'ask is in the actions row');
+ok(str_contains($acts, 'cc-travelers'),   'see who is going is in the actions row');
+ok(str_contains($acts, 'cc-post-dates'),  'post your dates is in the actions row');
+ok(str_contains($acts, '/travelers'),     'the travelers control opens the hub');
+ok(str_contains($acts, 'trip/new?destination_id='), 'the trip control carries the city');
+ok(!preg_match('/\d+\s+travelers going/i', $acts), 'neither control claims anybody is there');
+
 echo "\n";
 if ($fail > 0) { echo "FAIL: {$fail} case(s) failed, {$pass} passed\n"; exit(1); }
 echo "ALL CITY COMMUNITY TESTS PASS ({$pass})\n";
