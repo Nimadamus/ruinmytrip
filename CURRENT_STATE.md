@@ -84,6 +84,24 @@ it; the rating, editorial review, places, reviews, trips, map and related cities
 one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
 `tests/city_community_test.php`.
 
+## What is measured, since 2026-09-15
+
+`app/contribution_events.php` holds both funnels. The review one was always there; the social one
+is new and leads `/admin/funnel`: a city page opened, follow pressed and follow stuck, composer
+focused and question posted, posts, comments, reactions, signup seen, started and finished, sign
+in, profile read, profile filled in, trip form opened, trip created, overlapping travelers seen,
+first message, return visit. Migration 090 adds `visitor`, sixteen random characters in a first
+party cookie, which is the only way "did they come back" can be answered and is not made out of
+the person. The journey token already linked one session's steps, which is what makes signup
+attribution work: the city seen in the same session as the account being created is the city that
+recruited them.
+
+Two traps that cost an afternoon and are now tests. `rmt_track()` returns whether it wrote, and
+`rmt_track_once*` only spends the session marker on a row that was actually written, because a
+crawler visit used to deafen a session to an event permanently. And a return visit is decided once
+per session from the cookie as it arrived, because the cookie is written on the first page of a
+first visit and is present by the second.
+
 ## What the product does now
 
 A member lands on a ranked feed with a composer, an expiring "how was it?" card above it, and rails
