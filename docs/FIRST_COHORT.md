@@ -2,6 +2,23 @@
 
 Everything needed to run the first ten real travelers, in one file. Nothing here has been sent.
 
+> **Re-audited 2026-09-15 against the product as it stands.** The wedge still holds: Miami Art Week
+> is 1 to 7 December 2026, eleven weeks out, which is when that week gets planned. What has changed
+> since this was written is that the whole loop downstream now exists and is verified on production:
+> a city page that opens with its community and explains itself to a stranger, a trip form that a
+> cold visitor reaches in about five seconds, overlap notifications, a connect request, and
+> messaging gated behind both people agreeing. Verified live today: `/d/miami-usa` with the tracked
+> link, the community block, Follow and Ask; `/blog/miami-art-week-2026` with its CTA pre filling
+> 1 to 7 December; the Miami share card; and the acquisition cookie set on arrival.
+>
+> **What is new and changes how this is run:** every link now carries
+> `?utm_source=…&utm_medium=…&utm_campaign=…`, the channel is held from first touch through signup
+> and trip creation, and `/admin/funnel` opens with a table of sessions, signups, confirmations and
+> trips per channel. The ready to post copy lives in `docs/ACQUISITION_PACKAGES.md`.
+>
+> **The blocker in section 13 is unchanged and was re-measured today, not assumed.** See the note
+> at the end of this file.
+
 ---
 
 ## 1. The wedge, locked
@@ -329,3 +346,23 @@ inbound seeds a trickle, not a cohort.
 in section 8. Everything downstream of a real person arriving is built, tested and
 monitored.
 
+---
+
+## 14. Why the post has still not gone out, measured 2026-09-15
+
+Nima authorised posting from his account. The preconditions he set could not be met, and the
+evidence is worth keeping rather than rediscovering:
+
+* **The rules cannot be read from here.** Reddit answers **403** to every unauthenticated request
+  from this machine, and the logged in browser on the CDP port is answered with **"You've been
+  blocked by network security"**. Verifying a subreddit's current rules immediately before posting
+  is impossible, and his instruction is explicit: if any rule is ambiguous, do not post there.
+* **The only account available fails on its own record.** The browser is signed in as
+  **u/TrustMyRecord**: karma 1, a sports betting brand name, and its last **three** posts were
+  removed by Reddit's sitewide spam filter, including in its own subreddit. `/api/submit` returns
+  BAD_CAPTCHA for it. A karma 1 brand account posting a travel link into a travel community is the
+  exact shape that gets an account banned rather than a post removed.
+
+So the post is written, the link is tracked and the landing page is verified, and the last action
+is one a person with a normal Reddit history has to take. It is sixty seconds of his time and it
+cannot be engineered around from here.
