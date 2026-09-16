@@ -1,10 +1,50 @@
-<?php /** @var array $byDest @var array $wishlist @var array $shared @var array $myPlans @var array $me @var ?array $home @var array $visitors @var array $neighbours @var ?array $newTrip @var array $cities @var array $interests @var array $followingIds */ ?>
+<?php /** @var array $byDest @var array $wishlist @var array $shared @var array $myPlans @var array $me @var ?array $home @var array $visitors @var array $neighbours @var ?array $newTrip @var array $cities @var array $interests @var array $followingIds @var array $myConnects @var array $connectsIn */ ?>
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Matches</p></div>
 <div class="wrap">
   <h1>Your matches</h1>
   <p class="muted" style="max-width:60ch">Travelers who will be in the same city at the same time as
     you, and people who want to go where you want to go. Destination and dates only, the same as
     everywhere else on RuinMyTrip.</p>
+
+  <?php /* People waiting on an answer from this reader. It is above the matches because it is the
+           only thing on the page that somebody else is waiting for: a match list can be read
+           tomorrow, a person who asked to meet you cannot. Two buttons and no text box, because
+           the whole point of the request is that it carries no words for anybody to have to read
+           or report. */ ?>
+  <?php $rmtPending = []; foreach ($connectsIn as $tid => $rows) { foreach ($rows as $r) { if ((string) $r['state'] === 'interested') $rmtPending[] = [$tid, $r]; } } ?>
+  <?php if ($rmtPending): ?>
+    <section class="card connect-inbox" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px"><?= count($rmtPending) === 1 ? 'Somebody would like to meet on your trip' : count($rmtPending) . ' travelers would like to meet on your trips' ?></p>
+      <?php foreach ($rmtPending as [$tid, $r]):
+              $rt = $cities[$tid] ?? null; ?>
+        <div class="ci-row">
+          <a href="<?= e(url('u/' . $r['username'])) ?>"><img class="avatar" src="<?= e(avatar_url($r['avatar_url'] ?? null)) ?>" alt=""></a>
+          <div class="ci-main">
+            <p style="margin:0">
+              <b><a href="<?= e(url('u/' . $r['username'])) ?>"><?= e(trim((string) ($r['display_name'] ?? '')) !== '' ? (string) $r['display_name'] : '@' . $r['username']) ?></a></b>
+              <span class="hint">would like to meet
+                <?php if ($rt): ?>on your <?= e((string) $rt['name']) ?> trip<?php endif; ?></span>
+            </p>
+            <p class="hint" style="margin:.1rem 0 0">Saying yes lets you message each other. Saying no
+              tells them nothing.</p>
+            <div class="ci-acts">
+              <form method="post" action="<?= e(url('connect/' . (int) $r['id'] . '/decide')) ?>"><?= csrf_field() ?>
+                <input type="hidden" name="answer" value="accept">
+                <input type="hidden" name="return" value="/matches">
+                <button class="btn btn-primary btn-sm">Yes</button>
+              </form>
+              <form method="post" action="<?= e(url('connect/' . (int) $r['id'] . '/decide')) ?>"><?= csrf_field() ?>
+                <input type="hidden" name="answer" value="decline">
+                <input type="hidden" name="return" value="/matches">
+                <button class="btn btn-ghost btn-sm">No thanks</button>
+              </form>
+              <a class="btn btn-ghost btn-sm" href="<?= e(url('u/' . $r['username'])) ?>">View profile</a>
+            </div>
+          </div>
+        </div>
+      <?php endforeach; ?>
+    </div></section>
+  <?php endif; ?>
 
   <?php /* The trip somebody has just posted, named back to them. Everything below it is the answer
            to the question posting it asked. */ ?>
@@ -48,7 +88,7 @@
         <p class="eyebrow" style="margin:14px 0 8px">On your dates</p>
         <div class="grid g-2">
           <?php foreach ($c['people'] as $tc):
-                  $tcBack = '/matches'; $tcInterests = $interests; $tcFollowing = $followingIds;
+                  $tcBack = '/matches'; $tcInterests = $interests; $tcFollowing = $followingIds; $tcConnects = $myConnects;
                   include __DIR__ . '/_traveler_card.php'; ?>
           <?php endforeach; ?>
         </div>
@@ -67,7 +107,7 @@
         <p class="eyebrow" style="margin:18px 0 8px">Just before or after you</p>
         <div class="grid g-2">
           <?php foreach ($c['near'] as $tc):
-                  $tcBack = '/matches'; $tcInterests = $interests; $tcFollowing = $followingIds;
+                  $tcBack = '/matches'; $tcInterests = $interests; $tcFollowing = $followingIds; $tcConnects = $myConnects;
                   include __DIR__ . '/_traveler_card.php'; ?>
           <?php endforeach; ?>
         </div>

@@ -192,6 +192,30 @@ $threads = $threads ?? [];
     </section>
   <?php endif; ?>
 
+  <?php /* One line, when somebody's dates have just landed on yours. Subtle on purpose: a feed
+           that fills with notifications stops being a feed, and the notifications page is the
+           record. Dismissing marks it read there too, so the two cannot disagree. */ ?>
+  <?php if (!empty($overlapLine)): ?>
+    <div class="feed-overlap">
+      <img class="avatar" src="<?= e(avatar_url($overlapLine['avatar_url'] ?? null)) ?>" alt="">
+      <span class="fo-text">
+        <b><?= e(trim((string) ($overlapLine['display_name'] ?? '')) !== ''
+                 ? (string) $overlapLine['display_name'] : '@' . $overlapLine['username']) ?></b>
+        <?php if (!empty($overlapLine['dest_name'])): ?>
+          will be in <a href="<?= e(url('d/' . $overlapLine['dest_slug'])) ?>"><?= e((string) $overlapLine['dest_name']) ?></a> while you are there.
+        <?php else: ?>
+          has dates that overlap yours.
+        <?php endif; ?>
+      </span>
+      <a class="btn btn-ghost btn-sm" href="<?= e(url('matches')) ?>">See the overlap</a>
+      <form method="post" action="<?= e(url('notifications/dismiss')) ?>"><?= csrf_field() ?>
+        <input type="hidden" name="id" value="<?= (int) $overlapLine['id'] ?>">
+        <input type="hidden" name="return" value="/feed">
+        <button class="btn btn-ghost btn-sm" aria-label="Dismiss">Dismiss</button>
+      </form>
+    </div>
+  <?php endif; ?>
+
   <?php /* The composer, above both columns. The difference between a feed and a network is whether
            the reader can answer it without going somewhere else, and on a phone that means it has
            to be reachable before the scrolling starts. It posts to the same endpoint /talk uses. */ ?>

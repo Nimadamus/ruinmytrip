@@ -84,6 +84,26 @@ it; the rating, editorial review, places, reviews, trips, map and related cities
 one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
 `tests/city_community_test.php`.
 
+## Somebody learns their dates were landed on, 2026-09-15
+
+`rmt_match_notify()` existed and was wired only to the old `/going` form, so every trip posted
+through the form people actually use told nobody. It now fires from `rmt_trip_create_row()`, which
+means the held-until-confirmed path notifies too, and from an edit in both directions: moving out
+of everybody's way takes back the unread rows (`rmt_match_notify_clear`), moving back in tells them
+again. Restraint is the point: one per recipient per trip ever, one per pair per city while the
+first is still unread, nothing if either side said they are not looking to meet, nothing for a
+followers only or private trip, nothing across a block. A read row is never deleted.
+
+The reader meets it in three places: one dismissible line at the top of the feed (dismissing marks
+the notification read, so the two cannot disagree), the notifications list, which now reads the
+trip from `trips` rather than the legacy `going` table and so finally says which city, and
+`/matches`.
+
+`app/connects.php` and migration 092 add the deliberate signal between them: "Interested in
+meeting", one row per (trip, sender) enforced by a unique index. It carries no words, discloses
+nothing either side has not published, enrols nobody, and a no is final. Messaging between
+strangers is gated on `rmt_connect_mutual()`.
+
 ## The first session, 2026-09-15
 
 Post a trip and the next screen is the people it just put you in front of: `/matches?new={id}`,

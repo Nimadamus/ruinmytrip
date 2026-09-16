@@ -150,6 +150,13 @@ $routes = [
     ['GET',  '#^/messages$#',                  'messages_index'],
     ['GET',  '#^/messages/(?<username>[A-Za-z0-9_]+)$#',      'messages_thread'],
     ['POST', '#^/messages/(?<username>[A-Za-z0-9_]+)/send$#','messages_send'],
+    /* Saying you would like to meet on somebody's trip, and their answer. POST only: neither is a
+       page, both are decisions, and a decision that can be made by following a link is a decision
+       somebody else can make for you. */
+    ['POST', '#^/notifications/dismiss$#',     'notification_dismiss'],
+    ['POST', '#^/connect$#',                   'connect_request'],
+    ['POST', '#^/connect/(?<id>\d+)/decide$#',  'connect_decide'],
+    ['POST', '#^/connect/(?<id>\d+)/withdraw$#','connect_withdraw'],
     ['POST', '#^/block$#',                     'block_action'],
     ['POST', '#^/unblock$#',                   'unblock_action'],
     ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],

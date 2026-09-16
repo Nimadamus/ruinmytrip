@@ -753,6 +753,9 @@ function profile(array $a): void {
         if (in_array($from, ['destination', 'travelers', 'matches', 'meetups'], true)) {
             rmt_track_once_for('traveler_profile_clicked', (string) $uid, ['source' => $from]);
         }
+        /* The narrower question: a profile opened off the overlap page is somebody looking at a
+           person their dates landed on, which is the step this whole loop exists to produce. */
+        if ($from === 'matches') rmt_track_once_for('overlap_profile_opened', (string) $uid, ['source' => 'matches']);
     }
 
     /* Trips carry dates and a visibility since migration 071, so this list has to respect both.
@@ -1271,7 +1274,20 @@ function feed(array $a): void {
        the only thing it knows about you is when you loaded the page. Every boost that moves a row
        also writes the line that says why it moved. */
     $items = rmt_feed_rank($items, $uid, $engagement);
-    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads'), [
+    /* One line, one overlap, dismissible. The newest unread overlap notification and nothing else:
+       the notifications list is the record, and this is a tap on the shoulder for the one thing
+       that is worth interrupting a feed for. Dismissing it marks that notification read, so the
+       feed and the notification list cannot disagree about whether it has been seen. */
+    $overlapLine = q_one("SELECT n.id, u.username, p.display_name, p.avatar_url,
+                                 d.name dest_name, d.slug dest_slug, t.date_from, t.date_to
+                            FROM notifications n
+                            JOIN users u ON u.id = n.actor_id AND u.status = 'active'
+                       LEFT JOIN profiles p ON p.user_id = n.actor_id
+                       LEFT JOIN trips t ON t.id = n.target_id
+                       LEFT JOIN destinations d ON d.id = t.destination_id
+                           WHERE n.user_id = ? AND n.type = ? AND n.read_at IS NULL
+                        ORDER BY n.id DESC LIMIT 1", [$uid, RMT_MATCH_NOTIFY_TYPE]);
+    view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads','overlapLine'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
             'app_shell' => true,
@@ -3069,6 +3085,15 @@ function notifications(array $a): void {
     $unreadIds = [];
     foreach ($items as $n) if (empty($n['read_at'])) $unreadIds[(int) $n['id']] = true;
 
+    /* One event when an overlap notification is actually read, not when the page is opened: a page
+       with nothing new on it is not somebody seeing an overlap. */
+    foreach ($items as $n) {
+        if (empty($n['read_at']) && (string) $n['type'] === RMT_MATCH_NOTIFY_TYPE) {
+            rmt_track('overlap_notification_viewed');
+            break;
+        }
+    }
+
     $items = rmt_notifications_rollup($items);
 
     /* Everything the plan rows need, in one query rather than two per row. A page of fifty
@@ -3347,6 +3372,16 @@ function rmt_trip_create_row(int $userId, array $d): int {
        the moment it arrives is counted once, on the same line, as one that published straight
        away. A funnel that missed exactly the new members is the wrong funnel. */
     rmt_track('trip_created', ['source' => 'trip', 'destination_id' => $d['destination_id'] ?: null]);
+    /* The people already holding dates in that city are the ones this trip is news to. It was
+       wired to the old /going form and to nothing else, so every trip posted through the form
+       people actually use told nobody at all. Here, in the row writer, so a trip held for email
+       confirmation tells them at the moment it goes live rather than never. */
+    if (!empty($d['destination_id']) && !empty($d['date_from']) && !empty($d['date_to'])) {
+        $sent = rmt_match_notify($userId, $id, (int) $d['destination_id'],
+                                 (string) $d['date_from'], (string) $d['date_to'],
+                                 (string) ($d['visibility'] ?? 'public'));
+        if ($sent > 0) rmt_track('overlap_notification_created', ['destination_id' => (int) $d['destination_id']]);
+    }
     rmt_notify_mentions('trip', $id, $userId, [], $d['title'], $d['body']);
     return $id;
 }
@@ -3449,6 +3484,29 @@ function trip_edit_submit(array $a): void {
                    date('Y-m-d H:i:s'), (int)$t['id']]);
     rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
     rmt_notify_mentions('trip', (int)$t['id'], (int)current_user()['id'], [], $d['title'], $d['body']);
+    /* Dates moved, so the overlaps this trip caused have to be re-asked in both directions. The
+       people it still lands on keep what they were sent, the people it no longer lands on have
+       theirs taken back if they have not read it, and anybody it lands on for the first time is
+       told. rmt_match_notify() is idempotent per recipient per trip, so the ones who already know
+       are not told twice. */
+    $rmtMoved = (string) ($d['date_from'] ?? '')    !== (string) ($t['date_from'] ?? '')
+             || (string) ($d['date_to'] ?? '')      !== (string) ($t['date_to'] ?? '')
+             || (int)    ($d['destination_id'] ?? 0) !== (int)    ($t['destination_id'] ?? 0)
+             || (string) ($d['visibility'] ?? '')    !== (string) ($t['visibility'] ?? 'public');
+    if ($rmtMoved) {
+        $rmtOpen = !empty($d['destination_id']) && !empty($d['date_from']) && !empty($d['date_to'])
+                   && (string) $d['visibility'] === 'public';
+        $still = $rmtOpen
+            ? rmt_trip_match_user_ids((int) $t['user_id'], (int) $d['destination_id'],
+                                      (string) $d['date_from'], (string) $d['date_to'])
+            : [];
+        rmt_match_notify_clear((int) $t['id'], $still);
+        if ($still) {
+            $sent = rmt_match_notify((int) $t['user_id'], (int) $t['id'], (int) $d['destination_id'],
+                                     (string) $d['date_from'], (string) $d['date_to'], (string) $d['visibility']);
+            if ($sent > 0) rmt_track('overlap_notification_created', ['destination_id' => (int) $d['destination_id']]);
+        }
+    }
     /* Captions on photos already attached. A caption is the difference between a photograph and
        an image, and until now there was nowhere at all to type one. */
     foreach ((array) ($_POST['caption'] ?? []) as $pid => $cap) {
@@ -3495,6 +3553,8 @@ function trip_delete(array $a): void {
     foreach (q_all('SELECT storage_key FROM trip_photos WHERE trip_id=?', [(int)$t['id']]) as $ph) {
         if (!empty($ph['storage_key'])) rmt_storage_delete((string)$ph['storage_key']);
     }
+    // And the news it caused, where nobody has read it yet. See rmt_match_notify_clear().
+    rmt_match_notify_clear((int) $t['id']);
     flash('Trip deleted.');
     redirect('/u/'.current_user()['username']);
 }
@@ -4019,6 +4079,91 @@ function rmt_want_on(bool $isOn): bool {
     if ($want === 'on')  return true;
     if ($want === 'off') return false;
     return !$isOn;
+}
+
+
+/**
+ * POST /connect — "I would like to meet on this trip."
+ *
+ * Deliberately the smallest thing that can be said between two strangers on this site: no words,
+ * nothing private disclosed, and nothing that changes the other person's trip. They decide.
+ */
+function connect_request(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $tripId = (int) input('trip_id');
+    /* Same ceiling as follows, and for the same reason: this creates a notification, and anything
+       that creates a notification is a way to bother a lot of people quickly. */
+    if (!rmt_rate_ok('connect', (string) $me['id'], 60, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect(rmt_return_to('/matches'));
+    }
+    $r = rmt_connect_request((int) $me['id'], $tripId);
+    if (!$r['ok']) {
+        flash($r['reason'] ?? 'That is not available.');
+        redirect(rmt_return_to('/matches'));
+    }
+    if ($r['created']) {
+        $trip = q_one('SELECT * FROM trips WHERE id = ?', [$tripId]);
+        if ($trip) {
+            q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+                  [(int) $trip['user_id'], RMT_CONNECT_NOTIFY_TYPE, (int) $me['id'], 'trip', $tripId, date('Y-m-d H:i:s')]);
+        }
+        rmt_track('trip_connect_requested', ['destination_id' => $trip['destination_id'] ?? null]);
+        flash('Said. They will see it and decide.');
+    } else {
+        // A repeat press is not an error and is not a second request. It is the state they are in.
+        flash($r['state'] === 'declined' ? 'That traveler has already answered.' : 'Already said.');
+    }
+    redirect(rmt_return_to('/matches'));
+}
+
+/** POST /connect/{id}/decide — the trip owner answers, yes or no. */
+function connect_decide(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $answer = input('answer') === 'accept' ? 'accept' : 'decline';
+    $r = rmt_connect_decide((int) $me['id'], (int) $a['id'], $answer);
+    if (!$r['ok']) { forbidden('That is not yours to answer.'); }
+    if ($r['changed'] && $r['state'] === 'accepted') {
+        $c = q_one('SELECT * FROM trip_connects WHERE id = ?', [(int) $a['id']]);
+        if ($c) {
+            q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+                  [(int) $c['from_user_id'], RMT_CONNECT_NOTIFY_TYPE, (int) $me['id'], 'connect', (int) $c['id'], date('Y-m-d H:i:s')]);
+        }
+        rmt_track('trip_connect_accepted');
+        flash('You both said yes. You can message each other now.');
+    } elseif ($r['changed']) {
+        /* A no is not announced. Being told somebody declined you is a notification nobody has
+           ever been glad to receive, and the asker can see the answer on their own page. */
+        flash('Declined. They are not told.');
+    }
+    redirect(rmt_return_to('/matches'));
+}
+
+/**
+ * POST /notifications/dismiss — put one notification away without opening it.
+ *
+ * The feed line and the notifications list have to agree about what has been seen, so dismissing
+ * the line marks the row read rather than hiding it somewhere the list cannot see. Only ever the
+ * caller's own row.
+ */
+function notification_dismiss(array $a): void {
+    require_login(); csrf_check();
+    $id = (int) input('id');
+    if ($id > 0) {
+        db()->prepare('UPDATE notifications SET read_at = ? WHERE id = ? AND user_id = ? AND read_at IS NULL')
+            ->execute([date('Y-m-d H:i:s'), $id, (int) current_user()['id']]);
+    }
+    redirect(rmt_return_to('/feed'));
+}
+
+/** POST /connect/{id}/withdraw — the asker changes their mind, while it is still a question. */
+function connect_withdraw(array $a): void {
+    require_login(); csrf_check();
+    rmt_connect_withdraw((int) current_user()['id'], (int) $a['id']);
+    flash('Taken back.');
+    redirect(rmt_return_to('/matches'));
 }
 
 function follow_action(array $a): void {
@@ -6098,6 +6243,18 @@ function matches_index(array $a): void {
     foreach ($wishlist as $w) $faces[] = (int) $w['user_id'];
     $interests = function_exists('rmt_interests_for_many') ? rmt_interests_for_many($faces) : [];
 
+    /* Connects, both directions, in two queries rather than one per card: what this reader has
+       asked of other people's trips, and who is waiting on an answer about theirs. */
+    $theirTrips = [];
+    foreach ($cities as $c) {
+        foreach ($c['people'] as $r) $theirTrips[] = (int) $r['their_trip_id'];
+        foreach ($c['near'] as $r)   $theirTrips[] = (int) $r['their_trip_id'];
+    }
+    $connectState = rmt_connect_state_for($uid, $theirTrips);
+    $myConnects   = [];
+    foreach ($connectState['sent'] as $tripId => $row) $myConnects[(int) $tripId] = $row;
+    $connectsIn   = $connectState['received'];
+
     /* Who the reader already follows, so a card can say "Following" instead of offering it again. */
     $followingIds = [];
     if ($faces) {
@@ -6125,7 +6282,7 @@ function matches_index(array $a): void {
     }
 
     view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me', 'home', 'visitors', 'neighbours',
-                            'newTrip', 'cities', 'interests', 'followingIds'), [
+                            'newTrip', 'cities', 'interests', 'followingIds', 'myConnects', 'connectsIn'), [
         'title' => 'Your trip matches | RuinMyTrip',
         'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader

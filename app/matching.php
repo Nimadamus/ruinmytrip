@@ -135,6 +135,37 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
 }
 
 /**
+ * Take back the notifications a trip no longer justifies.
+ *
+ * Two cases, and they are the same case. Somebody moves their dates out of everybody else's, or
+ * deletes the trip entirely: the taps on the shoulder it caused are now about something that is
+ * not true. Unread ones are removed, because nobody has acted on them and a notification for a
+ * trip that no longer overlaps is worse than no notification at all.
+ *
+ * Read ones are LEFT ALONE, on purpose. Somebody has already seen it, possibly acted on it, and
+ * deleting what a person has read is rewriting their history rather than correcting ours.
+ *
+ * @param list<int> $keep recipients who still overlap and should keep theirs
+ * @return int notifications removed
+ */
+function rmt_match_notify_clear(int $tripId, array $keep = []): int {
+    if ($tripId < 1) return 0;
+    $sql = "DELETE FROM notifications
+             WHERE type = ? AND target_type = 'going' AND target_id = ? AND read_at IS NULL";
+    $args = [RMT_MATCH_NOTIFY_TYPE, $tripId];
+    $keep = array_values(array_unique(array_map('intval', $keep)));
+    if ($keep) {
+        $sql .= ' AND user_id NOT IN (' . implode(',', array_fill(0, count($keep), '?')) . ')';
+        $args = array_merge($args, $keep);
+    }
+    /* Prepared here rather than through q_run(), which returns a last insert id and would report
+       every delete as zero rows removed. The count is the return value this function is for. */
+    $st = db()->prepare($sql);
+    $st->execute($args);
+    return $st->rowCount();
+}
+
+/**
  * Travelers in the same city who just miss: their trip ends before mine starts, or starts after
  * mine ends, inside a window of a fortnight either way.
  *
@@ -239,6 +270,7 @@ function rmt_trip_match_user_ids(int $actorId, int $destId, string $from, string
             AND u.status = 'active' AND o.status = 'published'
             AND o.date_from IS NOT NULL AND o.date_to IS NOT NULL
             AND o.date_from <= ? AND o.date_to >= ?
+            AND COALESCE(o.open_to_meeting, 1) = 1
             AND $blockSql
        ORDER BY o.date_from
           LIMIT " . (int) $limit,
@@ -270,6 +302,16 @@ function rmt_match_notify(int $actorId, int $goingId, int $destId, string $from,
         $seen = q_one('SELECT 1 x FROM notifications WHERE user_id=? AND type=? AND actor_id=? AND target_id=?',
                       [$uid, RMT_MATCH_NOTIFY_TYPE, $actorId, $goingId]);
         if ($seen) continue;
+        /* And not a second time for the same pair and the same city while the first one is still
+           unread. Somebody posting three trips to Bangkok in one evening is one piece of news to
+           the people already going there, not three taps on the shoulder. A row they have read
+           does not suppress: next month, on another trip, it is news again. */
+        $pending = q_one("SELECT 1 x FROM notifications n
+                            JOIN trips t ON t.id = n.target_id
+                           WHERE n.user_id = ? AND n.type = ? AND n.actor_id = ?
+                             AND n.target_type = 'going' AND t.destination_id = ? AND n.read_at IS NULL",
+                         [$uid, RMT_MATCH_NOTIFY_TYPE, $actorId, $destId]);
+        if ($pending) continue;
         q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
               [$uid, RMT_MATCH_NOTIFY_TYPE, $actorId, 'going', $goingId, $now]);
         $sent++;

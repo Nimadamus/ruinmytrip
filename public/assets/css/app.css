@@ -1348,3 +1348,17 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   .tcard-acts .btn,.mcity-acts .btn{justify-content:center}
   .tcard-acts button,.mcity-acts button{width:100%;min-height:44px}
 }
+
+/* The connect inbox: people waiting on an answer. Phone first, two clear answers, nothing tiny. */
+.connect-inbox .ci-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.connect-inbox .ci-row:first-of-type{border-top:0;padding-top:0}
+.connect-inbox .avatar{width:44px;height:44px}
+.ci-main{flex:1;min-width:0;overflow-wrap:anywhere}
+.ci-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ci-acts .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:560px){ .ci-acts form,.ci-acts .btn{flex:1 1 auto} .ci-acts button{width:100%;min-height:44px} }
+/* The one line at the top of the feed. A line, not a wall: one overlap, dismissible, gone. */
+.feed-overlap{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--card);
+  border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;margin:0 0 14px}
+.feed-overlap .fo-text{flex:1;min-width:180px;overflow-wrap:anywhere}
+.feed-overlap .btn{min-height:44px;display:inline-flex;align-items:center}

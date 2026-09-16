@@ -17,6 +17,7 @@
  *   $tcBack    where the follow button should return to
  *   $tcInterests  array<int,list<string>> keyed by user id
  *   $tcFollowing  array<int,true> the reader already follows these
+ *   $tcConnects   array<int,array> the reader's own connect rows, keyed by trip id
  */
 $tcId    = (int) ($tc['user_id'] ?? 0);
 $tcName  = trim((string) ($tc['display_name'] ?? ''));
@@ -69,6 +70,29 @@ $tcIsFollowing = !empty($tcFollowing[$tcId]);
 
     <div class="tcard-acts">
       <a class="btn btn-ghost btn-sm" href="<?= e(url('u/' . $tcUser)) ?>">View profile</a>
+      <?php /* The small deliberate signal. It carries no words, shares nothing either of them has
+               not already published, and enrols nobody in anything: the other traveler decides.
+               Drawn only where there is a trip to meet on, and only where they have not already
+               answered. */ ?>
+      <?php $tcTrip = (int) ($tc['their_trip_id'] ?? 0); $tcCon = $tcConnects[$tcTrip] ?? null; ?>
+      <?php if ($tcTrip > 0 && !$tcCon): ?>
+        <form method="post" action="<?= e(url('connect')) ?>"><?= csrf_field() ?>
+          <input type="hidden" name="trip_id" value="<?= $tcTrip ?>">
+          <input type="hidden" name="return" value="<?= e((string) $tcBack) ?>">
+          <button class="btn btn-ghost btn-sm">Interested in meeting</button>
+        </form>
+      <?php elseif ($tcCon && (string) $tcCon['state'] === 'interested'): ?>
+        <span class="chip">Waiting on them</span>
+        <form method="post" action="<?= e(url('connect/' . (int) $tcCon['id'] . '/withdraw')) ?>"><?= csrf_field() ?>
+          <input type="hidden" name="return" value="<?= e((string) $tcBack) ?>">
+          <button class="btn btn-ghost btn-sm">Take it back</button>
+        </form>
+      <?php elseif ($tcCon && (string) $tcCon['state'] === 'accepted'): ?>
+        <span class="chip">You both said yes</span>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('messages/' . $tcUser)) ?>">Message</a>
+      <?php elseif ($tcCon && (string) $tcCon['state'] === 'declined'): ?>
+        <span class="chip">Answered</span>
+      <?php endif; ?>
       <?php if ($tcIsFollowing): ?>
         <span class="chip">Following</span>
       <?php else: ?>

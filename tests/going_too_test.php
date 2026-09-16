@@ -32,7 +32,8 @@ $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT)');
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, destination_id INT,
               title TEXT NOT NULL DEFAULT '', slug TEXT NOT NULL DEFAULT '', body TEXT,
               status TEXT NOT NULL DEFAULT 'published', visibility TEXT NOT NULL DEFAULT 'public',
-              date_from TEXT, date_to TEXT, visited_on TEXT, created_at TEXT, updated_at TEXT)");
+              date_from TEXT, date_to TEXT, visited_on TEXT, travel_style TEXT, open_to_meeting INT,
+              created_at TEXT, updated_at TEXT)");
 $pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT, type TEXT,
               actor_id INT, target_type TEXT, target_id INT, created_at TEXT)');

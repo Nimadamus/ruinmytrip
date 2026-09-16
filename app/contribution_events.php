@@ -75,6 +75,14 @@ const RMT_CONTRIB_EVENTS = [
     'trip_created',
     'overlapping_traveler_viewed', // a page of people whose dates cross the reader's was rendered
     'message_started',             // a first message to somebody, never the message
+    /* The overlap loop, added 2026-09-15. A trip lands on somebody else's dates, they are told,
+       they look, and they decide whether they want to meet. Five events, one per step, and the
+       last two are the only ones that say anybody agreed to anything. */
+    'overlap_notification_created',
+    'overlap_notification_viewed',
+    'overlap_profile_opened',
+    'trip_connect_requested',
+    'trip_connect_accepted',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */

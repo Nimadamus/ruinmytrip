@@ -6,7 +6,9 @@
   <form method="post" enctype="multipart/form-data" action="<?= e(url('trip/'.(int)$t['id'].'/edit')) ?>">
     <?= csrf_field() ?>
     <label for="title">Title</label>
-    <input type="text" id="title" name="title" value="<?= e($t['title'] ?? '') ?>" placeholder="Three quiet mornings in Kyoto" required>
+    <?php /* Not required, for the same reason the create form does not require it: a trip is a city
+             and two dates, and rmt_trip_validate() names an unnamed one after them. */ ?>
+    <input type="text" id="title" name="title" value="<?= e($t['title'] ?? '') ?>" placeholder="Three quiet mornings in Kyoto">
     <label for="destination_id">Destination</label>
     <select id="destination_id" name="destination_id">
       <option value="">Select a destination</option>
@@ -37,7 +39,11 @@
       <option value="private"<?= $vis === 'private' ? ' selected' : '' ?>>Only me</option>
     </select>
     <label for="body">Your story</label>
-    <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?" required><?= e($t['body'] ?? '') ?></textarea>
+    <?php /* This said required, and a trip posted as a city and two dates has no body, so the browser
+             silently refused to submit the form and the Save button did nothing at all: no message,
+             no error, no way to change your dates once you had posted them. Found by trying to edit
+             a trip made through the flow people actually use. */ ?>
+    <textarea id="body" name="body" placeholder="What made it memorable? What would you tell a friend?"><?= e($t['body'] ?? '') ?></textarea>
 
     <?php if (!empty($photos)): ?>
       <label>Photos on this trip</label>

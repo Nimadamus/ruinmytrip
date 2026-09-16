@@ -240,13 +240,29 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php endif; ?>
         <?php elseif ($n['type']===RMT_MATCH_NOTIFY_TYPE):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
-          $dest = q_one('SELECT d.name FROM going g JOIN destinations d ON d.id=g.destination_id WHERE g.id=?',
-                        [(int)$n['target_id']])['name'] ?? null;
-          /* Leads with the fact that matters -- the same city at the same time -- because that is
-             what makes somebody open it rather than clear it. */
-          $line = $dest ? $who.' will be in '.$dest.' while you are.' : $who.' has dates that overlap yours.';
+          /* Read from TRIPS, which is where a trip lives. This read the legacy going table, and
+             since rmt_going_upsert() has returned a trip id for two migrations the lookup found
+             nothing every time and every one of these fell back to the vague sentence. */
+          $trip = q_one("SELECT t.date_from, t.date_to, d.name, d.slug
+                           FROM trips t JOIN destinations d ON d.id = t.destination_id
+                          WHERE t.id = ?", [(int)$n['target_id']]);
+          $line = $trip
+            ? $who.' is also going to '.$trip['name'].' while you are there.'
+            : $who.' has dates that overlap yours.';
         ?>
           <a href="<?= e(url('matches')) ?>"><b><?= e($line) ?></b></a>
+          <?php if ($trip): ?>
+            <span class="hint"><?= e(date('M j', strtotime((string) $trip['date_from']))) ?>
+              to <?= e(date('M j', strtotime((string) $trip['date_to']))) ?></span>
+          <?php endif; ?>
+        <?php elseif ($n['type']===RMT_CONNECT_NOTIFY_TYPE):
+          $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          /* Two halves of one conversation, told apart by what the row points at: a trip means
+             somebody asked about yours, a connect means they said yes to your asking. */
+          $asked = (string) $n['target_type'] === 'trip';
+        ?>
+          <a href="<?= e(url('matches')) ?>"><b><?= e($who) ?></b>
+            <?= $asked ? 'would like to meet on your trip.' : 'said yes. You can message each other now.' ?></a>
         <?php elseif ($n['type']==='going'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url('going', (int)$n['target_id']);
