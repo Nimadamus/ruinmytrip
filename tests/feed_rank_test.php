@@ -43,7 +43,7 @@ $pdo->exec("CREATE TABLE saves (user_id INT, target_type TEXT, target_id INT)");
 $pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, name TEXT, slug TEXT)");
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
               slug TEXT, status TEXT DEFAULT 'published', visibility TEXT DEFAULT 'public',
-              date_from TEXT, date_to TEXT)");
+              date_from TEXT, date_to TEXT, travel_style TEXT, open_to_meeting INT)");
 $pdo->exec("CREATE TABLE trip_members (trip_id INT, user_id INT, role TEXT, state TEXT,
               invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 

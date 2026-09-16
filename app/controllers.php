@@ -3195,6 +3195,18 @@ function rmt_trip_validate(array $in): array {
     } elseif ($fromTs && $toTs && ($toTs - $fromTs) > 400 * 86400) {
         $errors[] = 'That range is longer than a year.';
     }
+    /* How they are travelling this time, from the same four words a profile uses rather than a
+       second vocabulary meaning the same thing. Unanswered is a real answer and stays null: the
+       card falls back to the profile, and a blank is never filled in on somebody's behalf. */
+    $style = (string) ($in['travel_style'] ?? '');
+    if ($style !== '' && !isset(RMT_TRAVEL_STYLES[$style])) $style = '';
+
+    /* Whether they want to be introduced to the people whose dates land on theirs. Three states,
+       and the third one is the point: null is unstated and behaves the way the site always has,
+       1 is yes, 0 is a no that every match list has to honour. */
+    $meet = array_key_exists('open_to_meeting', $in) ? (string) $in['open_to_meeting'] : '';
+    $meetVal = $meet === '' ? null : ($meet === '1' ? 1 : 0);
+
     /* Name it after the city and the dates when nobody named it, which is what a person would
        say out loud: "Lisbon, 3 to 10 October". Same helper the plan form has always used. */
     if (trim($title) === '' && $isPlan && function_exists('rmt_plan_title')) {
@@ -3215,6 +3227,8 @@ function rmt_trip_validate(array $in): array {
         'date_from' => $fromTs ? date('Y-m-d', $fromTs) : null,
         'date_to'   => $toTs ? date('Y-m-d', $toTs) : null,
         'visibility' => $vis,
+        'travel_style' => $style ?: null,
+        'open_to_meeting' => $meetVal,
     ]];
 }
 
@@ -3322,10 +3336,12 @@ function rmt_trip_create_row(int $userId, array $d): int {
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
     $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
     $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,
-                                         date_from,date_to,visibility,verified,status,created_at)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
+                                         date_from,date_to,visibility,travel_style,open_to_meeting,
+                                         verified,status,created_at)
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
         [$userId, $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
-         $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'], 0, date('Y-m-d H:i:s')]);
+         $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'],
+         $d['travel_style'] ?? null, $d['open_to_meeting'] ?? null, 0, date('Y-m-d H:i:s')]);
     rmt_sync_tags('trip', $id, $d['title'], $d['body']);
     /* Here rather than in trip_create(), so a trip held back for email confirmation and written
        the moment it arrives is counted once, on the same line, as one that published straight
@@ -3364,6 +3380,20 @@ function trip_create(array $a): void {
         view('trip_new', ['dests'=>all_dests(),'errors'=>$v['errors']], ['title'=>'Share a trip | RuinMyTrip']); return;
     }
     $d = $v['data'];
+    /* The same city on the same two dates, posted twice. The one-use submit token already stops a
+       double click; this stops the other version, which is somebody going back, not seeing their
+       trip and posting it again. Two identical trips are never what anybody meant, and on the
+       matching page they read as "and 1 other trip", which is a lie made of a mistake. */
+    if (!empty($d['destination_id']) && !empty($d['date_from'])) {
+        $dupe = q_one("SELECT id, slug FROM trips
+                        WHERE user_id = ? AND destination_id = ? AND date_from = ? AND date_to = ?
+                          AND status = 'published'",
+                      [(int) $me['id'], (int) $d['destination_id'], $d['date_from'], $d['date_to']]);
+        if ($dupe) {
+            flash('You have already posted that trip. Here is who else will be there.');
+            redirect('/matches?new=' . (int) $dupe['id']);
+        }
+    }
     $id = rmt_trip_create_row((int) $me['id'], $d);
     // Photo failures must never be silent, and must never cost the user their written story --
     // same rule as reviews (rmt_attach_review_photos).
@@ -3372,6 +3402,13 @@ function trip_create(array $a): void {
     if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
     flash($msg);
     rmt_seo_announce('/trip/'.$id.'/'.slugify($d['title']));
+    /* The answer to "I am going here" is "here is who else is", and it is worth nothing a day
+       later on a page nobody goes back to. A trip with a city and dates lands on the people it
+       just put this traveler in front of; a trip that is only a story has nobody to show, so it
+       lands on itself, which is where its photographs and its text are. */
+    if (!empty($d['destination_id']) && !empty($d['date_from'])) {
+        redirect('/matches?new=' . $id);
+    }
     redirect('/trip/'.$id.'/'.slugify($d['title']));
 }
 
@@ -4752,8 +4789,11 @@ function verify_email_confirm(array $a): void {
        and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
        the trip you wrote ten minutes ago sits somewhere unmentioned, is how the moment is lost. */
     if (!empty($applied['trip']) && !empty($applied['trip_id'])) {
-        flash('Email confirmed. Your trip is live. Here it is.');
-        redirect('/trip/' . (int) $applied['trip_id'] . '/' . (string) ($applied['trip_slug'] ?? ''));
+        /* Same landing as posting a trip while already confirmed: the people, not the page about
+           the trip. A traveler who has just written where they are going is asking one question,
+           and it is not "what does my own trip look like". */
+        flash('Email confirmed. Your trip is live. Here is who else will be there.');
+        redirect('/matches?new=' . (int) $applied['trip_id']);
     }
     if ($applied['going'] && $applied['hello']) {
         flash('Email confirmed. Your dates and your first post are live.');
@@ -5967,6 +6007,32 @@ function matches_index(array $a): void {
         $byDest[(string) $m['dest_slug']]['people'][] = $m;
     }
 
+    /* The trip somebody has this second posted, if they arrived here from posting it. It leads the
+       page and says so, because "you are going to Bangkok on the 12th" is the sentence that makes
+       the list underneath it mean something. Only ever their own trip: the id comes from a URL. */
+    $newTrip = null;
+    if (($newId = (int) input('new')) > 0) {
+        $newTrip = q_one("SELECT t.*, d.slug dest_slug, d.name dest_name
+                            FROM trips t LEFT JOIN destinations d ON d.id = t.destination_id
+                           WHERE t.id = ? AND t.user_id = ? AND t.status = 'published'", [$newId, $uid]);
+    }
+
+    /* Near misses: the same city, dates that do not touch. On a network this small the true answer
+       to "who else is going" is often nobody, and the person who was there last week is the next
+       best thing rather than nothing at all. Grouped by city like everything else on this page. */
+    $nearByTrip = [];
+    foreach (rmt_trip_near_misses($uid) as $n) {
+        $nearByTrip[(int) $n['my_trip_id']][] = $n;
+    }
+    /* Keyed by MY trip rather than by the city. Somebody with two trips to Bangkok had the second
+       one's near misses drawn under the first one's dates, so a card read "six days before you
+       arrive" under a heading saying a date two months later. A gap is measured from one trip, so
+       it belongs to that trip. */
+    $peopleByTrip = [];
+    foreach ($matches as $mrow) {
+        $peopleByTrip[(int) $mrow['my_trip_id']][] = $mrow;
+    }
+
     // What is already happening while they are there, so the next step is not "message a stranger".
     foreach ($byDest as $slug => $g) {
         $d = $g['dest'];
@@ -5977,6 +6043,70 @@ function matches_index(array $a): void {
     $wishlist = rmt_wishlist_matches($uid);
     $shared = rmt_match_shared_destinations($uid, array_column($wishlist, 'user_id'));
     $myPlans = rmt_going_list_for_profile($uid, $me);
+
+    /* Every city this page is about, whether or not anybody overlaps there. A city with no matches
+       is exactly where the page has to keep being useful, so it gets the same treatment: what is
+       being asked there, who has actually been, and the controls to join in. */
+    $cities = [];
+    foreach ($myPlans as $mp) {
+        if (empty($mp['destination_id']) || empty($mp['date_from'])) continue;
+        if ((string) $mp['date_to'] < gmdate('Y-m-d')) continue;      // over is not upcoming
+        $slug = (string) ($mp['dest_slug'] ?? '');
+        if ($slug === '') continue;
+        $tripId = (int) $mp['id'];
+        $destId = (int) $mp['destination_id'];
+        $cities[$tripId] = [
+            'id' => $destId, 'slug' => $slug, 'name' => (string) ($mp['dest_name'] ?? $slug),
+            'trip_id' => (int) $mp['id'],
+            'my_from' => (string) $mp['date_from'], 'my_to' => (string) $mp['date_to'],
+            'people'  => $peopleByTrip[$tripId] ?? [],
+            'meetups' => rmt_meetups_in_window($destId, (string) $mp['date_from'], (string) $mp['date_to']),
+            'near'    => $nearByTrip[$tripId] ?? [],
+            // Real activity in that city, never a placeholder for it.
+            'talk'    => function_exists('rmt_posts_for_destination') ? rmt_posts_for_destination($destId, 3) : [],
+            /* Filtered by the same control as the match list. Somebody who said they are not
+               looking to meet should not be a face to click on a page whose whole subject is
+               meeting people, even under a heading about where they have been. */
+            'been'    => function_exists('rmt_city_travelers')
+                ? array_slice(array_values(array_filter(rmt_city_travelers($destId, 12),
+                    static fn(array $b) => !q_one("SELECT 1 FROM trips WHERE user_id = ? AND destination_id = ?
+                                                     AND status = 'published' AND open_to_meeting = 0",
+                                                  [(int) $b['user_id'], $destId]))), 0, 6)
+                : [],
+            'following' => (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?",
+                                        [$uid, $destId]),
+        ];
+    }
+    /* The trip just posted leads, then the soonest. A page that opened on next April while the
+       reader was thinking about the trip they wrote ten seconds ago would be answering somebody
+       else's question. */
+    uasort($cities, static function (array $a, array $b) use ($newTrip): int {
+        if ($newTrip) {
+            $an = (int) $a['trip_id'] === (int) $newTrip['id'] ? 0 : 1;
+            $bn = (int) $b['trip_id'] === (int) $newTrip['id'] ? 0 : 1;
+            if ($an !== $bn) return $an <=> $bn;
+        }
+        return strcmp((string) $a['my_from'], (string) $b['my_from']);
+    });
+
+    /* Interests for everybody named on the page, in one query rather than one per card. */
+    $faces = [];
+    foreach ($cities as $c) {
+        foreach ($c['people'] as $r) $faces[] = (int) $r['user_id'];
+        foreach ($c['near'] as $r)   $faces[] = (int) $r['user_id'];
+    }
+    foreach ($wishlist as $w) $faces[] = (int) $w['user_id'];
+    $interests = function_exists('rmt_interests_for_many') ? rmt_interests_for_many($faces) : [];
+
+    /* Who the reader already follows, so a card can say "Following" instead of offering it again. */
+    $followingIds = [];
+    if ($faces) {
+        $in = implode(',', array_fill(0, count(array_unique($faces)), '?'));
+        foreach (q_all("SELECT followee_id FROM follows WHERE follower_id = ? AND followee_id IN ($in)",
+                       array_merge([$uid], array_values(array_unique($faces)))) as $f) {
+            $followingIds[(int) $f['followee_id']] = true;
+        }
+    }
 
     /* Who is coming to where you live. Everywhere else on this site "matching" means two people
        travelling to the same place; for somebody at home it means a visitor, and the person who
@@ -5994,7 +6124,8 @@ function matches_index(array $a): void {
                                                 static fn(array $l) => $l['user_id'] !== $uid));
     }
 
-    view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me', 'home', 'visitors', 'neighbours'), [
+    view('matches', compact('byDest', 'wishlist', 'shared', 'myPlans', 'me', 'home', 'visitors', 'neighbours',
+                            'newTrip', 'cities', 'interests', 'followingIds'), [
         'title' => 'Your trip matches | RuinMyTrip',
         'description' => 'Travelers whose dates overlap yours, and people who want to go where you want to go.',
         'robots' => rmt_robots_for(rmt_indexable('private')),  // other people's plans, assembled for one reader

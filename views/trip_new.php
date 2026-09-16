@@ -43,6 +43,28 @@
     <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)">
       <p class="eyebrow" style="margin:0 0 10px">Everything below is optional</p>
 
+      <?php /* Two questions that change who this trip is shown to, so they sit at the top of the
+               optional block rather than under the photographs. Neither is required and neither is
+               answered on somebody's behalf: "no answer" is stored as no answer. */ ?>
+      <label for="travel_style">How are you travelling this time?</label>
+      <select id="travel_style" name="travel_style">
+        <option value="">Rather not say</option>
+        <?php foreach (RMT_TRAVEL_STYLES as $tsKey => $tsLabel): ?>
+          <option value="<?= e($tsKey) ?>"<?= input('travel_style') === $tsKey ? ' selected' : '' ?>><?= e($tsLabel) ?></option>
+        <?php endforeach; ?>
+      </select>
+
+      <label for="open_to_meeting">Open to meeting other travelers on this trip?</label>
+      <select id="open_to_meeting" name="open_to_meeting">
+        <option value=""<?= input('open_to_meeting') === '' ? ' selected' : '' ?>>No answer</option>
+        <option value="1"<?= input('open_to_meeting') === '1' ? ' selected' : '' ?>>Yes, introduce me to people whose dates overlap</option>
+        <option value="0"<?= input('open_to_meeting') === '0' ? ' selected' : '' ?>>No, I am just posting where I will be</option>
+      </select>
+      <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
+        Say no and you are never offered as a match to anybody. Your trip stays as visible as you
+        set it above; you are simply not on the list of people to meet.
+      </p>
+
       <label for="title">Title <span class="hint">(we will name it after the city and the dates if you leave this)</span></label>
       <input type="text" id="title" name="title" value="<?= e(input('title')) ?>" placeholder="Three quiet mornings in Kyoto">
 

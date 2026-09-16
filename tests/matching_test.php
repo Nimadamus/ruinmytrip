@@ -22,7 +22,7 @@ function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations 
 
 $pdo = db();
 $pdo->exec('CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT)');
-$pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT, home_city TEXT)');
+$pdo->exec('CREATE TABLE profiles (user_id INT, display_name TEXT, avatar_url TEXT, home_city TEXT, travel_style TEXT)');
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
 $pdo->exec('CREATE TABLE follows (follower_id INT, followee_id INT, PRIMARY KEY (follower_id, followee_id))');
 $pdo->exec('CREATE TABLE blocks (blocker_id INT, blocked_id INT, PRIMARY KEY (blocker_id, blocked_id))');
@@ -38,6 +38,7 @@ $pdo->exec("CREATE TABLE trips (
               title TEXT NOT NULL, slug TEXT NOT NULL, body TEXT, cover_url TEXT, visited_on TEXT,
               verified INT DEFAULT 0, status TEXT NOT NULL DEFAULT 'published',
               visibility TEXT NOT NULL DEFAULT 'public', date_from TEXT, date_to TEXT,
+              travel_style TEXT, open_to_meeting INT,
               created_at TEXT NOT NULL, updated_at TEXT)");
 $pdo->exec("CREATE TABLE IF NOT EXISTS trip_members (trip_id INT, user_id INT, role TEXT, state TEXT, invited_by INT, created_at TEXT, decided_at TEXT, PRIMARY KEY (trip_id, user_id))");
 $pdo->exec('CREATE UNIQUE INDEX idx_going_user_dest ON going (user_id, destination_id)');

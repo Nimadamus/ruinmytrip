@@ -78,8 +78,9 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
     [$visSql, $visArgs] = rmt_going_visibility_sql('o', ['id' => $userId]);
     [$blockSql] = rmt_match_block_sql('o.user_id');
     $rows = q_all(
-        "SELECT o.user_id, o.date_from their_from, o.date_to their_to, o.visibility,
-                g.date_from my_from, g.date_to my_to,
+        "SELECT o.id their_trip_id, o.user_id, o.date_from their_from, o.date_to their_to, o.visibility,
+                COALESCE(o.travel_style, p.travel_style) travel_style,
+                g.id my_trip_id, g.date_from my_from, g.date_to my_to,
                 d.slug dest_slug, d.name dest_name, d.id dest_id,
                 u.username, p.display_name, p.avatar_url, p.home_city
            FROM trips g
@@ -93,6 +94,7 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
             AND g.date_from IS NOT NULL AND o.date_from IS NOT NULL
             AND o.date_from <= g.date_to AND o.date_to >= g.date_from
             AND g.date_to >= ?
+            AND COALESCE(o.open_to_meeting, 1) = 1
             AND $visSql
             AND $blockSql
        ORDER BY g.date_from, o.date_from
@@ -133,6 +135,95 @@ function rmt_trip_matches(int $userId, int $limit = 40): array {
 }
 
 /**
+ * Travelers in the same city who just miss: their trip ends before mine starts, or starts after
+ * mine ends, inside a window of a fortnight either way.
+ *
+ * Why it is worth a section of its own. On a network this small the honest answer to "who else is
+ * going to Bangkok while I am there" is very often nobody, and a page that stops at that has
+ * thrown away the person who was there the week before and could tell them everything. A near miss
+ * is not a match and is never drawn as one: it is labelled by how it misses, before or after, and
+ * by how many days.
+ *
+ * Every rule the overlap list obeys applies here too, in the same words: the visibility clause
+ * decides what this viewer was allowed to see, blocks are honoured, and somebody who said they do
+ * not want to be met is not on it.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_trip_near_misses(int $userId, int $windowDays = 14, int $limit = 12): array {
+    if ($userId < 1) return [];
+    $today = gmdate('Y-m-d');
+    [$visSql, $visArgs] = rmt_going_visibility_sql('o', ['id' => $userId]);
+    [$blockSql] = rmt_match_block_sql('o.user_id');
+    $rows = q_all(
+        "SELECT o.id their_trip_id, o.user_id, o.date_from their_from, o.date_to their_to,
+                COALESCE(o.travel_style, p.travel_style) travel_style,
+                g.id my_trip_id, g.date_from my_from, g.date_to my_to,
+                d.slug dest_slug, d.name dest_name, d.id dest_id,
+                u.username, p.display_name, p.avatar_url, p.home_city
+           FROM trips g
+           JOIN trips o ON o.destination_id = g.destination_id AND o.user_id <> g.user_id
+           JOIN destinations d ON d.id = g.destination_id
+           JOIN users u ON u.id = o.user_id
+      LEFT JOIN profiles p ON p.user_id = o.user_id
+          WHERE g.user_id = ?
+            AND u.status = 'active'
+            AND g.status = 'published' AND o.status = 'published'
+            AND g.date_from IS NOT NULL AND o.date_from IS NOT NULL
+            AND g.date_to >= ?
+            AND NOT (o.date_from <= g.date_to AND o.date_to >= g.date_from)
+            AND COALESCE(o.open_to_meeting, 1) = 1
+            AND $visSql
+            AND $blockSql
+       ORDER BY o.date_from
+          LIMIT " . (int) max(1, $limit * 3),
+        array_merge([$userId, $today], $visArgs, [$userId, $userId])
+    );
+
+    $out = [];
+    foreach ($rows as $r) {
+        /* Which side, and by how far. Counted in whole days from the edge that is nearest, so
+           "four days after you leave" means what it says. */
+        $myFrom = (int) strtotime((string) $r['my_from']);
+        $myTo   = (int) strtotime((string) $r['my_to']);
+        $thFrom = (int) strtotime((string) $r['their_from']);
+        $thTo   = (int) strtotime((string) $r['their_to']);
+        if ($thTo < $myFrom) { $side = 'before'; $gap = (int) round(($myFrom - $thTo) / 86400); }
+        else                 { $side = 'after';  $gap = (int) round(($thFrom - $myTo) / 86400); }
+        if ($gap < 1 || $gap > $windowDays) continue;
+        $uid = (int) $r['user_id'];
+        // One row per person, the nearest miss, for the same reason the overlap list groups.
+        if (isset($out[$uid]) && (int) $out[$uid]['gap_days'] <= $gap) continue;
+        $r['side'] = $side;
+        $r['gap_days'] = $gap;
+        $out[$uid] = $r;
+    }
+    usort($out, static fn(array $a, array $b) => $a['gap_days'] <=> $b['gap_days']);
+    return array_slice(array_values($out), 0, $limit);
+}
+
+/**
+ * Interests for a set of members in one query, keyed by user id.
+ *
+ * A card reads better with two or three words about what somebody is actually into, and a list of
+ * twelve cards must not be twelve queries to say so.
+ *
+ * @return array<int,list<string>>
+ */
+function rmt_interests_for_many(array $userIds): array {
+    $ids = array_values(array_unique(array_map('intval', $userIds)));
+    if (!$ids || !defined('RMT_INTERESTS')) return [];
+    $in = implode(',', array_fill(0, count($ids), '?'));
+    $out = [];
+    foreach (q_all("SELECT user_id, interest FROM profile_interests WHERE user_id IN ($in)", $ids) as $r) {
+        $k = (string) $r['interest'];
+        if (!isset(RMT_INTERESTS[$k])) continue;   // a key we no longer publish is not a label
+        $out[(int) $r['user_id']][] = $k;
+    }
+    return $out;
+}
+
+/**
  * The same question from one plan's point of view: who does this plan land on top of. Used when a
  * plan is saved, so the people it affects hear about it instead of waiting to go looking.
  *
@@ -167,6 +258,11 @@ function rmt_trip_match_user_ids(int $actorId, int $destId, string $from, string
  */
 function rmt_match_notify(int $actorId, int $goingId, int $destId, string $from, string $to, string $visibility): int {
     if ($visibility !== 'public' || $goingId < 1) return 0;
+    /* Somebody who said they are not looking to meet is not announced to strangers either. The
+       notification is the same offer as the match list, delivered rather than browsed, and a
+       control that stops one and not the other would not be a control. */
+    $trip = q_one('SELECT open_to_meeting FROM trips WHERE id = ?', [$goingId]);
+    if ($trip && $trip['open_to_meeting'] !== null && (int) $trip['open_to_meeting'] === 0) return 0;
     $now = date('Y-m-d H:i:s');
     $sent = 0;
     foreach (rmt_trip_match_user_ids($actorId, $destId, $from, $to) as $uid) {

@@ -84,6 +84,26 @@ it; the rating, editorial review, places, reviews, trips, map and related cities
 one section lower. No route, canonical, robots rule or sitemap entry changed. Guarded by
 `tests/city_community_test.php`.
 
+## The first session, 2026-09-15
+
+Post a trip and the next screen is the people it just put you in front of: `/matches?new={id}`,
+which names the trip back to you and then answers it. Measured at about five seconds from landing
+on a city page to standing in traveler discovery, on a phone.
+
+A trip is still a city and two dates. Migration 091 adds two optional answers to one:
+`travel_style` (the same four words a profile uses, not a second vocabulary) and `open_to_meeting`,
+which has three states and the third is the point. Null is unstated and behaves exactly as the site
+always has. Zero is somebody saying they do not want to be introduced, and it holds in the overlap
+list, the near miss list, the "have actually been" faces on the matching page, and the notification
+that goes out when a trip is posted. Their trip stays as visible as they set it; they are simply
+not offered as somebody to meet.
+
+`/matches` is one block per upcoming TRIP, not per city: keyed by trip id because somebody with two
+trips to Bangkok had the second one's near misses drawn under the first one's dates. Near misses
+(`rmt_trip_near_misses`) are travelers in the same city within a fortnight either side, labelled by
+which side and by how many days, never drawn as an overlap. An exact duplicate trip is refused and
+lands on the one that already exists.
+
 ## What is measured, since 2026-09-15
 
 `app/contribution_events.php` holds both funnels. The review one was always there; the social one

@@ -230,8 +230,18 @@
         <?php endforeach; ?>
       </ul>
       <?php if ($isMe): ?>
-        <p style="margin:10px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('going')) ?>">Add another trip</a></p>
+        <p style="margin:10px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('trip/new')) ?>">Add another trip</a></p>
       <?php endif; ?>
+    </div></div>
+  <?php elseif ($isMe): ?>
+    <?php /* The profile of somebody who has not posted a trip yet used to say nothing about the
+             one thing that puts them in front of other travelers. It is the first thing to do
+             here, so it is on the page rather than waiting to be found in the navigation. */ ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 6px">Your upcoming trips</p>
+      <p style="margin:0 0 10px"><b>Nothing posted yet.</b> A city and two dates is the whole of it,
+        and it is what puts you in front of the travelers who will be there at the same time.</p>
+      <a class="btn btn-primary btn-sm" href="<?= e(url('trip/new')) ?>">Post your first trip</a>
     </div></div>
   <?php endif; ?>
 

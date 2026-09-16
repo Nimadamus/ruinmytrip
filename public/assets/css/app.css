@@ -1321,3 +1321,30 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
    front of the conversation the block exists for. A teaser is a strip, not a wall. */
 .cc-photos .photo-grid{grid-template-columns:repeat(3,1fr)}
 @media (min-width:760px){.cc-photos .photo-grid{grid-template-columns:repeat(6,1fr)}}
+
+/* Traveler cards and the per city blocks on /matches.
+   Phone first: one card per row, every control at least 44px, and a card that never grows wider
+   than its column no matter how long a display name or an interest label turns out to be. */
+.tcard{margin:0}
+.tcard-body{display:flex;gap:12px;align-items:flex-start;padding:14px}
+.tcard-av{flex:0 0 auto}
+.tcard-av .avatar{width:52px;height:52px}
+.tcard-main{flex:1;min-width:0}
+.tcard-name{margin:0;overflow-wrap:anywhere}
+.tcard-name .hint{margin-left:6px}
+.tcard-where{margin:.15rem 0 0;color:var(--muted);font-size:.92rem;overflow-wrap:anywhere}
+.tcard-overlap{margin:.3rem 0 0;font-weight:650}
+.tcard-near{margin:.3rem 0 0;color:var(--muted)}
+.tcard-int{margin:.25rem 0 0;font-size:.86rem;color:var(--muted);overflow-wrap:anywhere}
+.tcard-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.tcard-acts .btn,.mcity-acts .btn{min-height:44px;display:inline-flex;align-items:center}
+.mcity{scroll-margin-top:70px}
+.mcity-new{border-left:3px solid var(--brand);padding-left:14px;margin-left:-17px}
+.mcity-acts{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.newtrip{margin:0 0 6px}
+@media (max-width:560px){
+  .mcity-new{margin-left:0;padding-left:10px}
+  .tcard-acts .btn,.tcard-acts form,.mcity-acts .btn,.mcity-acts form{flex:1 1 auto}
+  .tcard-acts .btn,.mcity-acts .btn{justify-content:center}
+  .tcard-acts button,.mcity-acts button{width:100%;min-height:44px}
+}
