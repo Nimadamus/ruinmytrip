@@ -253,6 +253,11 @@ const RMT_ACQ_WINDOWS = [
     'yi-peng'        => ['slug' => 'chiang-mai-thailand', 'from' => '2026-11-23', 'to' => '2026-11-25', 'label' => 'Yi Peng'],
     // Miami Art Week: fairs in the first week of December, the travel window is the whole week.
     'miami-art-week' => ['slug' => 'miami-usa',           'from' => '2026-12-01', 'to' => '2026-12-07', 'label' => 'Art Week'],
+    // New Year: no organiser to verify, the date is the date. Peak of the Southeast Asia season.
+    'new-year-2027'  => ['slug' => 'bangkok-thailand',    'from' => '2026-12-27', 'to' => '2027-01-02', 'label' => 'New Year'],
+    // Rio Carnival 2027: Ash Wednesday falls on 10 February, so the street days are 5 to 9 February
+    // and the champions parade is the 13th (riocarnaval.org, and the Easter calendar agrees).
+    'rio-carnival'   => ['slug' => 'rio-de-janeiro-brazil', 'from' => '2027-02-05', 'to' => '2027-02-13', 'label' => 'Carnival'],
 ];
 
 function rmt_acq_window(?string $campaign = null): ?array {

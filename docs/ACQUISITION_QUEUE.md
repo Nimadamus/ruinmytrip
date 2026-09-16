@@ -52,9 +52,15 @@ rest of the work.**
   the city and both dates already in it. Destination ids: Munich 42, Lisbon 2, Chiang Mai 39,
   Miami 85, Bangkok 15.
 
+* **The Oktoberfest campaign path is live on production.** Verified 2026-09-15 on
+  `https://ruinmytrip.com/d/munich-germany?utm_source=reddit&utm_medium=post&utm_campaign=oktoberfest`:
+  the `cc-window` line renders with the real window, and its button is
+  `/trip/new?destination_id=42&date_from=2026-09-19&date_to=2026-10-04`. A signed out visitor is sent
+  to signup and returns to that same filled form. The line appears only on the campaign's own city.
+
 ## IN PROGRESS
 
-* Nothing. Everything that can be done without an external account is done.
+* Cohort preparation for the four windows after Oktoberfest, in `docs/ACQUISITION_COHORTS.md`.
 
 ## NEXT
 

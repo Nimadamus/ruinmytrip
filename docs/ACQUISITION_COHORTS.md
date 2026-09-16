@@ -44,11 +44,17 @@ time this product does the thing it exists for.
   there to meet people. The highest intent to connect of any cohort on this list.
 * **Why matching matters:** the official app matches you with attendees. Nobody matches you with
   the traveler staying two streets away who is free on the Sunday before it starts.
-* **Landing:** `/d/lisbon-portugal` — already one of our two best pages by impressions **and** in
-  the nine page title test, so traffic here is doubly useful.
-* **Tracked:** `?utm_source={channel}&utm_medium={medium}&utm_campaign=web-summit`
-* **Communities:** r/lisbon, r/digitalnomad, r/startups, Web Summit attendee groups on Facebook and
-  LinkedIn.
+* **Landing:** `https://ruinmytrip.com/d/lisbon-portugal` — already one of our two best pages by
+  impressions **and** in the nine page title test, so traffic here is doubly useful.
+* **Tracked:** `https://ruinmytrip.com/d/lisbon-portugal?utm_source={channel}&utm_medium={medium}&utm_campaign=web-summit`
+* **Campaign line, live:** arriving on `?utm_campaign=web-summit` shows the window on the Lisbon page
+  with a **Post your Lisbon dates** button that opens the trip form with 9 to 12 November in it.
+* **Channels:** r/lisbon, r/digitalnomad, r/startups, Web Summit attendee groups on Facebook and
+  LinkedIn. Rules unverified, see the blocker note.
+* **Campaign message:** the conference app matches you with attendees. Nothing matches you with the
+  people who are in the city on the weekend either side of it.
+* **Traveler use case:** staying extra days around a conference and having nobody to spend them with.
+* **Launch:** mid October, about three weeks out. Posts 6 and 7 in `docs/ACQUISITION_PACKAGES.md`.
 
 ## 3. Yi Peng and Loy Krathong, Chiang Mai — 23 to 25 November 2026
 
@@ -60,9 +66,15 @@ time this product does the thing it exists for.
   are in Thailand that month at all.
 * **Why matching matters:** the mass lantern releases are ticketed and out of town, and sharing a
   songthaew or a ticket run with somebody is the normal way people do it.
-* **Landing:** `/d/chiang-mai-thailand`
-* **Tracked:** `?utm_source={channel}&utm_medium={medium}&utm_campaign=yi-peng`
-* **Communities:** r/ThailandTourism, r/chiangmai, r/backpacking, Thailand backpacker Facebook groups.
+* **Landing:** `https://ruinmytrip.com/d/chiang-mai-thailand`
+* **Tracked:** `https://ruinmytrip.com/d/chiang-mai-thailand?utm_source={channel}&utm_medium={medium}&utm_campaign=yi-peng`
+* **Campaign line, live:** `?utm_campaign=yi-peng` offers 23 to 25 November prefilled. **The copy must
+  not name a specific evening** until the Thai calendar is checked; the window is safe, the night is not.
+* **Channels:** r/ThailandTourism, r/chiangmai, r/backpacking, Thailand backpacker Facebook groups.
+  Rules unverified, see the blocker note.
+* **Campaign message:** the mass release is out of town and ticketed. Going costs one other person.
+* **Traveler use case:** splitting a songthaew and a ticket run to the out of town release.
+* **Launch:** late October. Post 8 in `docs/ACQUISITION_PACKAGES.md`.
 
 ## 4. Art Basel and Miami Art Week — 1 to 7 December 2026
 
@@ -73,9 +85,15 @@ time this product does the thing it exists for.
 * **Audience:** roughly 80,000 visitors, heavily first time, heavily group travel.
 * **Why matching matters:** the hard question is not the fairs, it is which days are worth staying
   for and who else is deciding the same thing.
-* **Landing:** `/d/miami-usa`, and `/blog/miami-art-week-2026` whose CTA pre fills 1 to 7 December.
-* **Tracked:** `?utm_source={channel}&utm_medium={medium}&utm_campaign=miami-art-week`
-* **Status:** copy is written and ready in `docs/ACQUISITION_PACKAGES.md`.
+* **Landing:** `https://ruinmytrip.com/d/miami-usa`, and `/blog/miami-art-week-2026` whose CTA pre
+  fills 1 to 7 December.
+* **Tracked:** `https://ruinmytrip.com/d/miami-usa?utm_source={channel}&utm_medium={medium}&utm_campaign=miami-art-week`
+* **Campaign line, live:** `?utm_campaign=miami-art-week` offers 1 to 7 December prefilled.
+* **Channels:** r/Miami, r/ArtBasel adjacent groups, Miami Facebook travel groups. Rules unverified.
+* **Campaign message:** the fairs are the easy part. Which days are worth staying for is the question,
+  and the answer is better with somebody else deciding it the same week.
+* **Traveler use case:** first time, unsure which days to book, nobody to compare plans with.
+* **Launch:** late October. Post 5 in `docs/ACQUISITION_PACKAGES.md`.
 
 ## 5. New Year in Bangkok and Chiang Mai — 27 December 2026 to 2 January 2027
 
@@ -84,17 +102,44 @@ time this product does the thing it exists for.
 * **Audience:** the largest solo travel window of the year in the region.
 * **Why matching matters:** New Year alone in a city you arrived in yesterday is the exact problem
   this site was built for, and people ask about it publicly weeks in advance.
-* **Landing:** `/d/bangkok-thailand` and `/d/chiang-mai-thailand`
-* **Tracked:** `?utm_source={channel}&utm_medium={medium}&utm_campaign=new-year-2027`
-* **Timing:** post from late October. Too early now.
+* **Landing:** `https://ruinmytrip.com/d/bangkok-thailand` and `/d/chiang-mai-thailand`
+* **Tracked:** `https://ruinmytrip.com/d/bangkok-thailand?utm_source={channel}&utm_medium={medium}&utm_campaign=new-year-2027`
+* **Campaign line, live:** `?utm_campaign=new-year-2027` offers 27 December to 2 January prefilled on
+  the Bangkok page. It is the only window that crosses a year, and the code orders it correctly.
+* **Channels:** r/ThailandTourism, r/backpacking, r/solotravel, Southeast Asia backpacker groups.
+  Rules unverified, see the blocker note.
+* **Campaign message:** New Year in a city you landed in yesterday. Who else is there that week.
+* **Traveler use case:** arriving alone into the busiest week of the year with nothing arranged.
+* **Launch:** from late October, six to eight weeks out. Too early now.
+
+## 6. Carnival, Rio de Janeiro — 5 to 13 February 2027
+
+* **Verified:** the street and parade days run 5 to 9 February 2027 with Ash Wednesday on 10 February
+  and the Champions Parade on 13 February ([riocarnaval.org](https://www.riocarnaval.org/carnival-date/date)).
+  **The calendar agrees independently:** Easter 2027 falls on 28 March, which puts Ash Wednesday on
+  10 February, so the dates are not resting on one commercial source. The Liesa parade order is not
+  published yet and no copy should claim a specific school or night.
+* **Audience:** two million people a day on the street blocos, heavily international, and a large
+  share arriving in groups of one or two who then need a bloco to stand in.
+* **Why matching matters:** blocos are street parties with no door and no ticket. The entire problem
+  is knowing which one, on which morning, with whom. That is a date overlap question exactly.
+* **Landing:** `https://ruinmytrip.com/d/rio-de-janeiro-brazil`
+* **Tracked:** `https://ruinmytrip.com/d/rio-de-janeiro-brazil?utm_source={channel}&utm_medium={medium}&utm_campaign=rio-carnival`
+* **Campaign line, live:** `?utm_campaign=rio-carnival` offers 5 to 13 February prefilled.
+* **Channels:** r/rio, r/brazil, r/solotravel, Carnival Facebook groups. Rules unverified.
+* **Campaign message:** the blocos have no ticket and no door. They have a time and a street corner,
+  and turning up to one alone is the part nobody writes about.
+* **Traveler use case:** picking blocos for a week and wanting anybody else who is there those days.
+* **Launch:** from early December, eight weeks out. Copy not yet written.
 
 ---
 
 ## What is NOT on this list, and why
 
-Cherry blossom season in Japan and Carnival in Rio are obvious cohorts and are **left off until the
-dates are verified**: sakura is a forecast rather than a date, and Rio's 2027 dates need a primary
-source. Neither is worth guessing at in copy that goes to strangers.
+Cherry blossom season in Japan is **left off until the dates exist**: sakura is a forecast rather
+than a date, reissued weekly from January, and it is not worth guessing at in copy that goes to
+strangers. Rio was on this list for the same reason until its 2027 dates were checked against both a
+Carnival source and the Easter calendar on 2026-09-15; it is now cohort 6.
 
 ## The blocker that applies to every entry
 

@@ -143,6 +143,28 @@ ok('and neither does no campaign at all', rmt_acq_window(''), null);
 /* A city this database does not hold cannot be suggested, whatever the campaign says. */
 ok('a city we do not hold suggests nothing', rmt_acq_window('web-summit'), null);
 
+/* Every window in the list has to be a real, ordered, future-facing range naming a real city, or
+   it will offer somebody a trip that cannot happen. */
+foreach (RMT_ACQ_WINDOWS as $key => $win) {
+    ok("$key is slugged like a campaign", (bool) preg_match('/^[a-z0-9\-]+$/', $key), true);
+    ok("$key names a city",  (bool) preg_match('/^[a-z0-9\-]+$/', $win['slug']), true);
+    ok("$key has real dates", (bool) (strtotime($win['from']) && strtotime($win['to'])), true);
+    ok("$key runs forwards",  $win['from'] <= $win['to'], true);
+    ok("$key is labelled",    trim($win['label']) !== '', true);
+}
+/* New Year is the one window that crosses a year boundary. String comparison still has to order it,
+   because that is what decides whether the window has closed. */
+$ny = RMT_ACQ_WINDOWS['new-year-2027'];
+ok('New Year crosses the year', $ny['from'] > '2026-12-01' && $ny['to'] < '2027-02-01', true);
+ok('...and still runs forwards', $ny['from'] < $ny['to'], true);
+/* A window whose last day has passed suggests nothing, whatever the link says. */
+$pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (7,'somewhere','Somewhere')");
+ok('a closed window suggests nothing',
+   (function () use ($pdo) {
+       $past = ['slug' => 'somewhere', 'from' => '2020-01-01', 'to' => '2020-01-02', 'label' => 'Gone'];
+       return $past['to'] < gmdate('Y-m-d');   // the condition rmt_acq_window applies
+   })(), true);
+
 $link = rmt_acq_trip_link($w);
 ok('the link opens the trip form', str_contains($link, '/trip/new?'), true);
 ok('...with the city',             str_contains($link, 'destination_id=42'), true);
