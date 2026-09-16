@@ -7,6 +7,13 @@ and any two of those trips overlapping in one city.
 
 ## USER ACTION REQUIRED
 
+**One decision unblocks the Facebook launch: which account owns the Page.** The whole package is
+ready in `docs/FACEBOOK_PAGE_LAUNCH.md`: name, username and three backups, category, bio, About,
+cover line, button, the five seeding posts, the group test checklist, the tracking scheme and a
+thirty day queue. The vault's only personal Facebook account administers three adult content Pages
+and the TrustMyRecord Page, and a Page created from it is tied to it for as long as it exists.
+Recommendation: your own account, or a clean one, with the two brands unconnected.
+
 **Two accounts unlock almost everything. The full ranking is in `docs/SOCIAL_ACCOUNTS.md`.**
 
 1. **A personal Facebook account in three travel groups.** Five finished posts, fifteen minutes.
