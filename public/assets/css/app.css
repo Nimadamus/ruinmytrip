@@ -630,6 +630,8 @@ section.block{padding:64px 0}
 .act-row{display:flex;gap:4px;align-items:center;margin:14px -6px 0;padding-top:12px;
   border-top:1px solid var(--line-soft)}
 .act-row form{margin:0}
+.act-row .act-hide{margin-left:auto}
+.act-row .act-hide .act{font-size:.85rem;min-height:40px}
 .act{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;
   font:inherit;font-size:.88rem;font-weight:600;color:var(--muted);padding:.32rem .6rem;
   border-radius:999px;line-height:1}

@@ -26,6 +26,12 @@ $commentsHeading ??= 'Comments';
     <?php if ((int)$ownerId === (int)$me['id']): ?>
       <?php /* Edit link is intentionally left to each page -- edit URLs differ per content type. */ ?>
     <?php else: ?>
+      <?php if ($targetType !== 'destination'): ?>
+      <form class="inline-form" method="post" action="<?= e(url('hide')) ?>"><?= csrf_field() ?>
+        <input type="hidden" name="target_type" value="<?= e($targetType) ?>"><input type="hidden" name="target_id" value="<?= (int)$targetId ?>">
+        <input type="hidden" name="return" value="/feed">
+        <button class="btn btn-ghost btn-sm" title="Stop seeing this in your feed and lists">Hide</button></form>
+      <?php endif; ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type='.$targetType.'&target_id='.$targetId)) ?>">⚑ Report</a>
     <?php endif; ?>
   <?php endif; ?>

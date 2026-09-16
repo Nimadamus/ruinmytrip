@@ -66,6 +66,52 @@ function rmt_without_blocked(array $rows, ?int $viewerId, string $col = 'user_id
     return array_values(array_filter($rows, static fn(array $r) => !isset($blocked[(int) ($r[$col] ?? 0)])));
 }
 
+/**
+ * What one member chose to stop seeing, keyed "type:id". Cached per request like the block set,
+ * and empty rather than fatal if the table is not there yet.
+ *
+ * @return array<string,true>
+ */
+function rmt_hidden_keys(?int $viewerId): array {
+    if (!$viewerId) return [];
+    $key = '_rmt_hidden_keys_' . $viewerId;
+    if (isset($GLOBALS[$key])) return $GLOBALS[$key];
+    $out = [];
+    try {
+        foreach (q_all('SELECT target_type, target_id FROM hidden_content WHERE user_id = ?', [$viewerId]) as $r) {
+            $out[(string) $r['target_type'] . ':' . (int) $r['target_id']] = true;
+        }
+    } catch (Throwable) {
+        return [];
+    }
+    return $GLOBALS[$key] = $out;
+}
+
+/** Hide one item from one member. Idempotent. */
+function rmt_hide_content(int $userId, string $targetType, int $targetId): void {
+    if ($userId < 1 || $targetId < 1 || $targetType === '') return;
+    if (!q_one('SELECT 1 x FROM hidden_content WHERE user_id = ? AND target_type = ? AND target_id = ?',
+               [$userId, $targetType, $targetId])) {
+        q_run('INSERT INTO hidden_content (user_id, target_type, target_id, created_at) VALUES (?,?,?,?)',
+              [$userId, $targetType, $targetId, date('Y-m-d H:i:s')]);
+    }
+    unset($GLOBALS['_rmt_hidden_keys_' . $userId]);
+}
+
+/**
+ * Drop the rows a member hid. $type is either a fixed target type or, with $typeCol, read per row
+ * (the feed mixes kinds; "going" rows are trips).
+ */
+function rmt_without_hidden(array $rows, ?int $viewerId, string $type, string $idCol = 'id', ?string $typeCol = null): array {
+    $hidden = rmt_hidden_keys($viewerId);
+    if (!$hidden) return $rows;
+    return array_values(array_filter($rows, static function (array $r) use ($hidden, $type, $idCol, $typeCol): bool {
+        $t = $typeCol !== null ? (string) ($r[$typeCol] ?? '') : $type;
+        if ($t === 'going') $t = 'trip';
+        return !isset($hidden[$t . ':' . (int) ($r[$idCol] ?? 0)]);
+    }));
+}
+
 /** Canonical [lo, hi] ordering for a conversation between two user ids. */
 function rmt_conversation_pair(int $a, int $b): array {
     return $a < $b ? [$a, $b] : [$b, $a];
@@ -418,5 +464,14 @@ function unblock_action(array $a): void {
  */
 function rmt_unread_notification_count(int $uid): int {
     if ($uid < 1) return 0;
-    return (int) (q_one('SELECT COUNT(*) n FROM notifications WHERE user_id=? AND read_at IS NULL', [$uid])['n'] ?? 0);
+    /* A block silences the badge as well as the list: somebody you blocked must not be able to
+       make a number appear on every page you open. */
+    $blocked = rmt_blocked_ids($uid);
+    if (!$blocked) {
+        return (int) (q_one('SELECT COUNT(*) n FROM notifications WHERE user_id=? AND read_at IS NULL', [$uid])['n'] ?? 0);
+    }
+    $ids = array_map('intval', array_keys($blocked));
+    $ph = implode(',', array_fill(0, count($ids), '?'));
+    return (int) (q_one("SELECT COUNT(*) n FROM notifications WHERE user_id=? AND read_at IS NULL
+                          AND (actor_id IS NULL OR actor_id NOT IN ($ph))", array_merge([$uid], $ids))['n'] ?? 0);
 }

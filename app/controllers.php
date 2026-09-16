@@ -1320,6 +1320,7 @@ function feed(array $a): void {
     /* Blocked in either direction means absent from your feed, including the Everyone scope, where
        nothing about following would otherwise have kept them out. */
     if (function_exists('rmt_without_blocked')) $items = rmt_without_blocked($items, $uid);
+    if (function_exists('rmt_without_hidden')) $items = rmt_without_hidden($items, $uid, '', 'id', 'kind');
     // Named on the page, because a feed that mixes in a city's activity without saying which
     // cities reads as strangers appearing in a list you thought you had chosen.
     $cities = rmt_feed_followed_destinations($uid);
@@ -3151,6 +3152,8 @@ function notifications(array $a): void {
                  LEFT JOIN users u ON u.id = n.actor_id
                  LEFT JOIN profiles p ON p.user_id = n.actor_id
                      WHERE n.user_id = ? ORDER BY n.id DESC LIMIT 50", [(int)$me['id']]);
+    /* Blocked in either direction: what they did before the block stops being news after it. */
+    $items = rmt_without_blocked($items, (int) $me['id'], 'actor_id');
     /* Which of these were new when the page was asked for. The update below marks everything read,
        so without capturing it first the one thing the page is opened to find out, what is new, is
        destroyed by the act of looking. */
@@ -4482,6 +4485,7 @@ function rmt_save_count(string $tt, int $tid): int {
 function rmt_notify_like(int $actorId, string $tt, int $tid): void {
     $owner = rmt_content_owner_id($tt, $tid);
     if ($owner < 1 || $owner === $actorId) return;
+    if (rmt_is_blocked($owner, $actorId)) return;
     $seen = q_one("SELECT 1 x FROM notifications
                     WHERE user_id=? AND type='like' AND actor_id=? AND target_type=? AND target_id=?",
                   [$owner, $actorId, $tt, $tid]);
@@ -7297,4 +7301,21 @@ function suggest_users_json(array $a): void {
         'username' => (string) $r['username'],
         'name' => (string) ($r['display_name'] ?? ''),
     ], $rows)]);
+}
+
+/**
+ * POST /hide - take one item out of your own feed and lists. Nobody else is affected and the author
+ * is not told. Only types that can be interacted with can be hidden, and never your own.
+ */
+function hide_action(array $a): void {
+    require_login(); csrf_check(); $me = current_user();
+    $tt  = (string) input('target_type');
+    $tid = (int) input('target_id');
+    if ($tt === 'going') $tt = 'trip';
+    if (isset(RMT_INTERACT_TARGETS[$tt]) && $tid > 0 && rmt_content_owner_id($tt, $tid) > 0
+        && rmt_content_owner_id($tt, $tid) !== (int) $me['id']) {
+        rmt_hide_content((int) $me['id'], $tt, $tid);
+        flash('Hidden. You will not see that again. If it breaks the rules, report it too.');
+    }
+    redirect(rmt_return_to('/feed'));
 }

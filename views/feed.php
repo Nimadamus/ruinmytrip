@@ -369,6 +369,14 @@ $threads = $threads ?? [];
                 <input type="hidden" name="return" value="<?= e($scope === 'everyone' ? '/feed?scope=everyone' : '/feed') ?>">
                 <button class="act" title="Save" aria-label="Save this"><span aria-hidden="true">&#9733;</span></button>
               </form>
+              <?php if ((int) ($it['user_id'] ?? $it['host_id'] ?? 0) !== (int) ($me['id'] ?? 0)): ?>
+                <form method="post" action="<?= e(url('hide')) ?>" class="act-hide"><?= csrf_field() ?>
+                  <input type="hidden" name="target_type" value="<?= e($rmt_t) ?>">
+                  <input type="hidden" name="target_id" value="<?= (int) $it['id'] ?>">
+                  <input type="hidden" name="return" value="<?= e($scope === 'everyone' ? '/feed?scope=everyone' : '/feed') ?>">
+                  <button class="act" title="Hide this from your feed" aria-label="Hide this from your feed">Hide</button>
+                </form>
+              <?php endif; ?>
             </div>
 
             <?php /* The thread, in place. A like says somebody was here and nothing about what

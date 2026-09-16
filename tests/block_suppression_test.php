@@ -58,6 +58,14 @@ ok('every recent posts list is filtered', str_contains($posts, 'rmt_without_bloc
 ok('the home feed is filtered, Everyone scope included', str_contains($ctrl, '$items = rmt_without_blocked($items, $uid)'), true);
 /* The places that already enforced it must keep doing so. */
 ok('messaging still checks blocks', str_contains((string) file_get_contents(BASE_PATH . '/app/messages.php'), 'function rmt_is_blocked'), true);
+
+echo "\n-- notifications --\n";
+$pdo->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY, user_id INT, type TEXT, actor_id INT, read_at TEXT)');
+$pdo->exec("INSERT INTO notifications (user_id,type,actor_id) VALUES (1,'follow',2),(1,'like',3),(1,'like',4),(1,'save',NULL)");
+ok('the badge ignores blocked actors and keeps actorless rows', rmt_unread_notification_count(1), 2);
+ok('a member with no blocks counts everything', rmt_unread_notification_count(4), 0);
+ok('the notifications page filters actors', str_contains($ctrl, "rmt_without_blocked(\$items, (int) \$me['id'], 'actor_id')"), true);
+ok('a blocked member cannot trigger a like notification', str_contains($ctrl, 'if (rmt_is_blocked($owner, $actorId)) return;'), true);
 ok('matching still excludes blocks', str_contains((string) file_get_contents(BASE_PATH . '/app/matching.php'), 'function rmt_match_block_sql'), true);
 ok('discovery still excludes blocks', str_contains((string) file_get_contents(BASE_PATH . '/app/discovery.php'), 'rmt_discover_blocks('), true);
 

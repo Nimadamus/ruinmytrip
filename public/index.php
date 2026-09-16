@@ -161,6 +161,7 @@ $routes = [
     ['POST', '#^/connect/(?<id>\d+)/withdraw$#','connect_withdraw'],
     ['POST', '#^/block$#',                     'block_action'],
     ['POST', '#^/unblock$#',                   'unblock_action'],
+    ['POST', '#^/hide$#',                      'hide_action'],
     ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],
     ['GET',  '#^/settings$#',                  'settings_form'],
     ['POST', '#^/settings$#',                  'settings_save'],

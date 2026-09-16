@@ -180,6 +180,7 @@ function rmt_posts_recent(int $limit = 40, ?int $destId = null, ?int $collection
     if (function_exists('rmt_without_blocked') && function_exists('current_user')) {
         $viewer = current_user();
         if ($viewer) $rows = rmt_without_blocked($rows, (int) $viewer['id']);
+        if ($viewer && function_exists('rmt_without_hidden')) $rows = rmt_without_hidden($rows, (int) $viewer['id'], 'post');
     }
     return rmt_posts_attach_originals($rows);
 }
