@@ -199,8 +199,11 @@ function rmt_acq_current(): array {
  *
  * @return list<array<string,mixed>>
  */
-function rmt_acq_report(int $days = 30): array {
-    $since = rmt_funnel_since($days);
+function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
+    /* A day count cannot express "since 08:20 this morning", and the clean window is a moment
+       rather than a number of days: moving the boundary a few hours forward changed nothing at all
+       while this rounded up to one whole day. So a caller that knows the exact moment passes it. */
+    $since = $sinceOverride ?? rmt_funnel_since($days);
     $rows = q_all(
         "SELECT COALESCE(acq_source, 'direct') src,
                 COALESCE(acq_campaign, '') campaign,
@@ -571,7 +574,7 @@ function rmt_acq_daily(int $days = 90): array {
 function rmt_acq_clean_totals(): array {
     $days = max(1, (int) ceil((time() - strtotime(RMT_ACQ_CLEAN_FROM)) / 86400));
     $human = 0; $direct = 0; $signups = 0; $confirmed = 0; $trips = 0;
-    foreach (rmt_acq_report($days) as $r) {
+    foreach (rmt_acq_report($days, RMT_ACQ_CLEAN_FROM) as $r) {
         if (rmt_acq_is_internal($r['campaign'] === '' ? null : $r['campaign'])) continue;
         $n = (int) $r['human'] - (int) ($r['selfcheck_human'] ?? 0);
         /* Direct is counted apart and NOT toward the milestone. On this site 778 sessions arrived

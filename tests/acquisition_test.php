@@ -318,6 +318,12 @@ ok('...and says why it is not counted',      str_contains((string) $clean['note'
 ok('there are four milestones',              count($clean['milestones']), 4);
 ok('the first one is a hundred',             $clean['milestones'][0]['target'], 100);
 ok('and it can be zero',                     $clean['milestones'][0]['now'] >= 0, true);
+ok('the counter cuts at the exact moment, not a whole day',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                'rmt_acq_report($days, RMT_ACQ_CLEAN_FROM)'), true);
+ok('and the report accepts that moment',
+   str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
+                '?string $sinceOverride = null'), true);
 ok('the counter reads named channels only',
    str_contains((string) file_get_contents(BASE_PATH . '/app/acquisition.php'),
                 "\$r['source'] === 'direct'"), true);
