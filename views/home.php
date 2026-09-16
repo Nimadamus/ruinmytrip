@@ -21,9 +21,13 @@
              covered the people half and left the other half invisible: a visitor could read the
              whole hero and never learn there are real places to browse in eighty five cities,
              which is the part that works on day one whether or not anybody else is here. */ ?>
-    <p>Post your dates and see whose overlap. Browse real places in the city you are going to,
-      build the trip, and meet up in public. Then read what travelers who actually went said about
-      it, rather than what we did.</p>
+    <?php /* One sentence, three steps, in the order somebody does them. The old version was four
+             sentences and ended on reading reviews, which is the last thing a stranger cares about
+             and the first thing that made this sound like a guidebook again. What it says now is
+             what the product is: dates, overlap, meeting in public. The places and the reviews are
+             still on the page, further down, where somebody who is interested will reach them. */ ?>
+    <p>Post the dates of your next trip, see which travelers will be there at the same time, and
+      meet up in public if you both want to.</p>
     <form class="hero-search" action="<?= e(url('explore')) ?>" method="get">
       <input type="search" name="q" placeholder="Which city? Try Lisbon, Tokyo, Mexico City…" aria-label="Search destinations">
       <button class="btn btn-primary" type="submit">Search</button>
@@ -35,14 +39,15 @@
         <a class="btn btn-accent" href="<?= e(url('going')) ?>">Post your dates</a>
       <?php endif; ?>
       <a class="btn btn-ghost btn-on-dark" href="<?= e(url('travelers')) ?>">See who is going</a>
-      <?php /* The hero answered four of the five questions a first-time visitor has -- what this is,
-               how it differs from a travel blog, what to read, how to search -- and not the fifth:
-               that they can contribute. The button it replaces said "Founding Traveler", which is
-               the name of our launch programme and means nothing to somebody who arrived a minute
-               ago. The programme is still explained on /founding and linked from signup, so
-               nothing is orphaned. */ ?>
-      <a class="btn btn-ghost btn-on-dark" data-review-cta="home" href="<?= e(url('contribute')) ?>"
-        >Been somewhere? Review it</a>
+      <?php /* Writing a review is the third thing a cold visitor would ever do, and it was sitting
+               in the hero with the same weight as joining. A stranger who has never used the site
+               is not going to review anything, and a third equal button is what makes somebody
+               choose none of them. It is offered to members, who are the people it is for, and it
+               is still on the page below for everybody else. */ ?>
+      <?php if (current_user()): ?>
+        <a class="btn btn-ghost btn-on-dark" data-review-cta="home" href="<?= e(url('contribute')) ?>"
+          >Been somewhere? Review it</a>
+      <?php endif; ?>
     </p>
     <?php /* People first, and every number is a live COUNT(*) of something real.
 
