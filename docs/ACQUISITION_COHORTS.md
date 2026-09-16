@@ -115,6 +115,26 @@ time this product does the thing it exists for.
 * **Traveler use case:** arriving alone into the busiest week of the year with nothing arranged.
 * **Launch:** from late October, six to eight weeks out. Too early now.
 
+## 5b. Day of the Dead, Oaxaca - 31 October to 2 November 2026
+
+* **Verified:** 1 and 2 November are fixed by the calendar; the comparsas, markets and altar
+  building start around 31 October and the cemetery vigils run through both nights. Multiple guides
+  and the Oaxaca tourism pages agree on the 31 October to 2 November window, checked 2026-09-15.
+* **Audience:** culture travelers, photographers and a heavily solo crowd, many of whom fly in for
+  this specific week.
+* **Why matching matters:** the nights are spent in cemeteries and on streets in villages outside
+  the city, after dark, and almost nobody wants to do that entirely alone.
+* **Landing:** `https://ruinmytrip.com/d/oaxaca-mexico`
+* **Tracked:** `https://ruinmytrip.com/d/oaxaca-mexico?utm_source={channel}&utm_medium={medium}&utm_campaign=day-of-the-dead`
+* **Campaign line, live:** `?utm_campaign=day-of-the-dead` offers 31 October to 2 November prefilled.
+  **The organic line is deliberately off on this page**: Oaxaca is one of the nine cities in the
+  destination title experiment, and changing what that page says to search traffic mid experiment
+  would make the result unreadable. Campaign visitors are unaffected.
+* **Channels:** r/oaxaca, r/mexico, Mexico travel groups on Facebook. Rules unverified.
+* **Campaign message:** which cemetery, which night, and who with.
+* **Traveler use case:** arriving alone for a night event in villages outside the city.
+* **Launch:** from 5 October. Posts 11 and 12 in `docs/ACQUISITION_PUBLICATIONS.md`.
+
 ## 6. Carnival, Rio de Janeiro — 5 to 13 February 2027
 
 * **Verified:** the street and parade days run 5 to 9 February 2027 with Ash Wednesday on 10 February
@@ -150,3 +170,40 @@ Carnival source and the Easter calendar on 2026-09-15; it is now cohort 6.
 requests and blocks the logged in browser at network security, from three different clients tested
 on 2026-09-15. Every "communities" line above is a candidate list, not a cleared one, and each needs
 its sidebar read by a person before anything is posted there.
+
+
+---
+
+## What every campaign relies on, and where it breaks
+
+These are the same for all of them, which is why they are written once rather than seven times.
+
+**The signup to first trip path.** Campaign link to the city page, which shows the window and a
+button carrying the city and both dates. A signed out visitor goes to signup with the whole link
+preserved and lands back on the filled form. After confirming their email they are sent to that same
+form again rather than to a welcome page, and if they reach the feed first its opening card names the
+window instead of asking where they are going. **Nothing is ever submitted for them.** Verified cold
+end to end on production.
+
+**The empty match fallback.** Every campaign will send people into a network with almost nobody in
+it, so the no match state is part of the campaign rather than an edge case. It says plainly that
+nobody's dates overlap yet, says the page fills in on its own, and then offers four things that are
+real on that city today: follow it, ask it a question, see everyone who has been, and invite somebody
+you already know is going, with your own trip link when you have one. **No invented travelers, no
+counts that are not counts, no urgency that is not real.**
+
+**The measurement target, per campaign.** The same four numbers, read in `/admin/funnel` under
+"Acquisition, now" or in `command_center` in the key gated JSON:
+
+1. human visits attributed to that campaign,
+2. signups,
+3. trips with dates inside the window,
+4. whether any two of those trips overlap in that city.
+
+The fourth has never happened. It is the only one that proves the product works, and one campaign
+producing it is worth more than every impression this site has ever had.
+
+**What would make a campaign a failure rather than a miss.** Visits and no signups means the landing
+page did not explain itself. Signups and no trips means activation is broken. No visits at all means
+the channel or the hook was wrong, and that is the cheapest failure of the three because it costs one
+post.
