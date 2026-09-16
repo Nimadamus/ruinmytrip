@@ -77,10 +77,32 @@ function rmt_discover_same_city(int $uid, int $limit = 12): array {
  * @return list<array<string,mixed>>
  */
 function rmt_discover_here_now(int $destId, ?array $viewer, int $limit = 12): array {
-    if ($destId < 1) return [];
     $today = date('Y-m-d');
+    return rmt_discover_in_city($destId, $viewer, $today, $today, null, false, $limit);
+}
+
+/**
+ * Who will be in a city at some point between two dates, optionally narrowed to people who share
+ * one interest or who said yes to meeting on that trip. Only the trip's own city and date range are
+ * ever shown: no precise place, no live location. Visibility and blocks apply exactly as they do on
+ * "right now", because this is the same question with a wider window.
+ *
+ * "Open to meeting" means the traveler answered yes on that trip. Unstated is not yes.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_discover_in_city(int $destId, ?array $viewer, string $from, string $to,
+                              ?string $interest = null, bool $openOnly = false, int $limit = 12): array {
+    if ($destId < 1) return [];
+    if ($to < $from) [$from, $to] = [$to, $from];
     [$visSql, $visArgs] = rmt_plan_visibility_sql('t', $viewer);
     [$blockSql, $blockArgs] = rmt_discover_blocks('t.user_id', $viewer);
+    $extra = ''; $extraArgs = [];
+    if ($interest !== null && $interest !== '') {
+        $extra .= ' AND EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = t.user_id AND pi.interest = ?)';
+        $extraArgs[] = $interest;
+    }
+    if ($openOnly) $extra .= ' AND t.open_to_meeting = 1';
     return q_all(
         "SELECT t.user_id, t.date_from, t.date_to, u.username, p.avatar_url, p.display_name, p.home_city
            FROM trips t
@@ -89,9 +111,9 @@ function rmt_discover_here_now(int $destId, ?array $viewer, int $limit = 12): ar
           WHERE t.destination_id = ? AND t.status = 'published'
             AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL
             AND t.date_from <= ? AND t.date_to >= ?
-            AND $visSql AND $blockSql
-       ORDER BY t.date_to LIMIT " . (int) $limit,
-        array_merge([$destId, $today, $today], $visArgs, $blockArgs)
+            AND $visSql AND $blockSql$extra
+       ORDER BY t.date_to, t.date_from LIMIT " . (int) $limit,
+        array_merge([$destId, $to, $from], $visArgs, $blockArgs, $extraArgs)
     );
 }
 

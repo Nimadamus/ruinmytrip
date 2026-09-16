@@ -147,5 +147,20 @@ ok(array_keys($all) === ['overlapping', 'same_city', 'kindred', 'meetup_peers', 
 ok(rmt_discover_all(0) !== null && rmt_discover_all(0)['same_city'] === [],
    'a signed out visitor gets empty lists rather than an error');
 
+// --- a city between two dates, with filters --------------------------------------------
+$win = $names(rmt_discover_in_city(7, ['id' => 1], $soon, $soon2));
+ok(in_array('dev', $win, true) && in_array('ana', $win, true), 'dates touching the window are found');
+ok(!in_array('cleo', $win, true), 'weeks outside the window are not');
+ok(!in_array('eze', $win, true), 'a private trip stays out of a date search');
+$pdo->exec("INSERT INTO profile_interests VALUES (4,'food')");
+ok($names(rmt_discover_in_city(7, ['id' => 1], $soon, $soon2, 'food')) === ['dev'], 'an interest narrows to people who listed it');
+ok(rmt_discover_in_city(7, ['id' => 1], $soon, $soon2, null, true) === [], 'unstated is not open to meeting');
+$pdo->exec("UPDATE trips SET open_to_meeting = 1 WHERE id = 2");
+ok($names(rmt_discover_in_city(7, ['id' => 1], $soon, $soon2, null, true)) === ['dev'], 'a yes on the trip is open to meeting');
+$pdo->exec("INSERT INTO blocks VALUES (4,1)");
+ok(!in_array('dev', $names(rmt_discover_in_city(7, ['id' => 1], $soon, $soon2)), true), 'a block hides them from a date search');
+$pdo->exec("DELETE FROM blocks");
+ok($names(rmt_discover_in_city(7, ['id' => 1], $soon2, $soon, 'food')) === ['dev'], 'reversed dates are read the right way round');
+
 echo "discovery_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

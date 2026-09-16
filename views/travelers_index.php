@@ -29,6 +29,21 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
           <?= e($dd['name']) ?><?= !empty($dd['country']) ? ', ' . e((string) $dd['country']) : '' ?></option>
       <?php endforeach; ?>
     </select>
+    <?php $filters = $filters ?? ['from' => '', 'to' => '', 'interest' => '', 'open' => false]; ?>
+    <label class="sr-only" for="tf-from">From</label>
+    <input id="tf-from" type="date" name="from" value="<?= e((string) $filters['from']) ?>" aria-label="From">
+    <label class="sr-only" for="tf-to">To</label>
+    <input id="tf-to" type="date" name="to" value="<?= e((string) $filters['to']) ?>" aria-label="To">
+    <?php if (defined('RMT_INTERESTS')): ?>
+      <label class="sr-only" for="tf-interest">Interest</label>
+      <select id="tf-interest" name="interest">
+        <option value="">Any interest</option>
+        <?php foreach (RMT_INTERESTS as $ik => $il): ?>
+          <option value="<?= e($ik) ?>"<?= $filters['interest'] === $ik ? ' selected' : '' ?>><?= e($il) ?></option>
+        <?php endforeach; ?>
+      </select>
+    <?php endif; ?>
+    <label class="tf-open"><input type="checkbox" name="open" value="1"<?= $filters['open'] ? ' checked' : '' ?>> Open to meeting</label>
     <button class="btn btn-primary btn-sm">Who is there</button>
     <?php if ($cityRow): ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$cityRow['slug'].'/travelers')) ?>">Everything about <?= e((string) $cityRow['name']) ?></a>
@@ -36,6 +51,23 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
   </form>
 
   <?php /* ---------------------------------------------------------------- a city, asked */ ?>
+  <?php if ($cityRow && is_array($filtered ?? null)): ?>
+    <section class="find-block">
+      <h2 class="find-h">In <?= e((string) $cityRow['name']) ?> between <?= $rmt_day($filters['from_eff']) ?> and <?= $rmt_day($filters['to_eff']) ?></h2>
+      <?php if ($filtered): ?>
+        <p class="hint">Published dates that touch that window<?= $filters['interest'] !== '' ? ', who listed ' . e(strtolower(RMT_INTERESTS[$filters['interest']])) : '' ?><?= $filters['open'] ? ', and who said yes to meeting on that trip' : '' ?>. A city and a date range, never a precise location.</p>
+        <?php foreach ($filtered as $pp): ?>
+          <?php $person = $pp; $because = $rmt_day($pp['date_from']) . ' to ' . $rmt_day($pp['date_to']);
+                include __DIR__ . '/_person_card.php'; ?>
+        <?php endforeach; ?>
+      <?php else: ?>
+        <p class="muted">Nobody matches that yet in <?= e((string) $cityRow['name']) ?>.
+          <a href="<?= e($me ? url('trip/new?destination_id='.(int) $cityRow['id']) : url('register?return='.rawurlencode($backTo))) ?>">Post your dates</a>
+          and you are the one the next person finds.</p>
+      <?php endif; ?>
+    </section>
+  <?php endif; ?>
+
   <?php if ($cityRow): ?>
     <section class="find-block">
       <h2 class="find-h">In <?= e((string) $cityRow['name']) ?> right now</h2>

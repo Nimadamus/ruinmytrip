@@ -2535,6 +2535,23 @@ function travelers_index(array $a): void {
     $cityId = (int) ($_GET['city'] ?? 0);
     $cityRow = $cityId > 0 ? q_one('SELECT id, name, slug FROM destinations WHERE id = ?', [$cityId]) : null;
     $hereNow = $cityRow ? rmt_discover_here_now((int) $cityRow['id'], $me, 12) : [];
+    /* The same question over a date range, with two optional narrowings. Every input is checked
+       against a fixed shape, so a hand-edited URL can only ever ask a smaller question. */
+    $isDay = static fn(string $v): bool => (bool) preg_match('/^\d{4}-\d{2}-\d{2}$/', $v) && strtotime($v) !== false;
+    $fFrom = (string) ($_GET['from'] ?? ''); $fTo = (string) ($_GET['to'] ?? '');
+    $fFrom = $isDay($fFrom) ? $fFrom : ''; $fTo = $isDay($fTo) ? $fTo : '';
+    $fInterest = (string) ($_GET['interest'] ?? '');
+    $fInterest = defined('RMT_INTERESTS') && isset(RMT_INTERESTS[$fInterest]) ? $fInterest : '';
+    $fOpen = ($_GET['open'] ?? '') === '1';
+    $filters = ['from' => $fFrom, 'to' => $fTo, 'interest' => $fInterest, 'open' => $fOpen];
+    $filtered = null;
+    if ($cityRow && ($fFrom !== '' || $fTo !== '' || $fInterest !== '' || $fOpen)) {
+        $a1 = $fFrom !== '' ? $fFrom : date('Y-m-d');
+        $a2 = $fTo !== '' ? $fTo : date('Y-m-d', strtotime($a1 . ' +90 days'));
+        $filtered = rmt_discover_in_city((int) $cityRow['id'], $me, $a1, $a2,
+                                         $fInterest !== '' ? $fInterest : null, $fOpen, 24);
+        $filters['from_eff'] = min($a1, $a2); $filters['to_eff'] = max($a1, $a2);
+    }
     $cityLocals = $cityRow ? rmt_discover_locals((int) $cityRow['id'], $me, 8) : [];
     $allDests = all_dests();
     /* Every city's people page hangs off this one. Cities with somebody in them come first, because
@@ -2550,7 +2567,8 @@ function travelers_index(array $a): void {
                     [date('Y-m-d'), date('Y-m-d H:i:s')]);
     view('travelers_index', ['people'=>$people, 'me'=>$me, 'suggested'=>$suggested, 'cities'=>$cities,
                              'find'=>$find, 'matchCount'=>$matchCount, 'cityRow'=>$cityRow,
-                             'hereNow'=>$hereNow, 'cityLocals'=>$cityLocals, 'allDests'=>$allDests], [
+                             'hereNow'=>$hereNow, 'cityLocals'=>$cityLocals, 'allDests'=>$allDests,
+                             'filters'=>$filters, 'filtered'=>$filtered], [
         'title' => 'Travelers: meet the people going where you are going',
         'description' => 'Real members of RuinMyTrip, and the city pages that show who is going where and when. Follow the travelers whose trips and reviews you trust.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Travelers','url'=>url('travelers')]],
