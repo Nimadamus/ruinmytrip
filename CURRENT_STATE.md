@@ -41,7 +41,7 @@ pages made of members.
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
 the reads this product actually does · `086` provider kind on a place, and a stadium category ·
 `087` who said these opening hours · `095` visitor answers · `096` profiles.languages ·
-`097` hidden_content (per member hide).
+`097` hidden_content (per member hide) · `098` comments.updated_at.
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
@@ -335,6 +335,32 @@ blocked at the network layer from this machine, for reading as well as posting.
 * Safety: blocks filter feed, city hubs, post lists, search talk, notifications list and badge, like notifications.
   `POST /hide` hides one item for one member (feed, post lists, search). Report and `/admin/moderation` unchanged.
 * 390px audit (headless, local): feed, travelers filters, events, search, notifications, profile edit/show, matches clean.
+
+## Engagement batch, 2026-09-16 (live, 123 suites green, prod at 098)
+
+* Feed rank: travel boosts fade (7d full, 30d half, then 0.2); unanswered question in your city +0.4 with reason;
+  editorial rows -0.6 when members are active. Composer has optional city (defaults to next trip).
+* `app/content_quality.php`: >2 links, links from accounts <24h, crypto/contact/dating/affiliate patterns,
+  same long text twice a day. Runs on posts and comments (and comment edits).
+* Comments: `POST /comment/{id}/edit`, avatar + profile link, report flag, "edited".
+* Follow suggestions lead with "Same dates in X", "Also going to X", "N shared travel interests".
+* City community: Going soon faces (month only), Waiting for an answer, city event line.
+* Welcome step 2 has optional interests; owner-only "Complete your traveler profile" prompt.
+* Growth funnel firsts add posted, commented, saved anything, made a connection.
+* Mentions skip blocked pairs; block_suppression_test holds the full block matrix.
+* Long usernames wrap sitewide (`main :is(...)` rule), tests/long_username_test.php.
+
+## Resume here next session
+
+1. **Sunday 2026-09-20 Facebook Page post is NOT scheduled.** Nima to pick: queue post #3 (Chiang Mai Yi Peng
+   question, `yi-peng`) or the no-link solo question. Schedule via Business Suite composer
+   (asset_id 1374505149069040). Thursday Oaxaca post is scheduled; leave it alone. Cadence ~3/week.
+2. Let's Go Solo admin: request sent 2026-09-16 03:57 PDT, no reply. Check at sensible intervals, never follow up.
+3. Clean acquisition (read 2026-09-16 09:42 PDT from /cron/funnel?days=0): 0 external visits, 0 signups, 0 trips.
+   23 direct human sessions today are not counted by design. Tag any production check `utm_content=selfcheck`.
+4. Not done from the engagement brief: "Helpful" reaction (Like only), user suspend via moderation untested,
+   moderation queue does one reasons query per row (fine at current volume). TikTok stays channel 2, no account.
+5. SEO title experiment first read 2026-09-29. Do not touch the nine cities.
 
 ## Waiting on Nima
 
