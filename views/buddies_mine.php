@@ -1,4 +1,4 @@
-<?php /** @var array $posts @var array $trips @var array $received @var array $sent @var array $buddies @var array $saved @var array $matches @var array $profile @var array $dests @var array $me */
+<?php /** @var array $posts @var array $trips @var array $pastPosts @var array $pastTrips @var array $received @var array $sent @var array $buddies @var array $saved @var array $matches @var array $profile @var array $dests @var array $me */
 $back = '/buddies/mine';
 $range = static fn($a, $b): string => date('M j', strtotime((string) $a)) . ' to ' . date('M j, Y', strtotime((string) $b));
 $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted', 'declined' => 'Not this time', 'withdrawn' => 'Withdrawn'];
@@ -37,7 +37,7 @@ $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted'
     </div>
   <?php endforeach; endif; ?>
 
-  <h2>Your travel buddies</h2>
+  <h2>People you are connected with</h2>
   <?php if (!$buddies): ?>
     <p class="muted">Once you accept somebody, or they accept you, they show up here and you can message each other.</p>
   <?php else: foreach ($buddies as $bu): ?>
@@ -59,28 +59,52 @@ $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted'
         <span class="chip"><?= e(RMT_BUDDY_TYPES[$p['trip_type']] ?? 'Trip') ?></span><?php if ($p['status'] === 'closed'): ?> <span class="chip">Closed</span><?php endif; ?>
         <br><b><a href="<?= e(url('buddy/' . (int) $p['id'])) ?>"><?= e($p['title']) ?></a></b>
         <br><span class="hint"><?= e($p['where_text']) ?> &middot; <?= e($range($p['date_from'], $p['date_to'])) ?></span>
-        <br><span class="hint"><?= (int) $p['waiting'] ?> waiting &middot; <?= (int) $p['accepted'] ?> accepted<?php if ($m): ?> &middot; <a href="<?= e(url($p['trip_type'] === 'cruise' ? 'buddies/cruise' : 'buddies') . $m['query']) ?>"><?= (int) $m['count'] ?> <?= $m['count'] === 1 ? 'traveler lines up' : 'travelers line up' ?></a><?php endif; ?></span>
+        <br><span class="hint"><?= (int) $p['waiting'] ?> waiting &middot; <?= (int) $p['accepted'] ?> accepted<?php if ($m && $m['count'] > 0): ?> &middot; <a href="<?= e(url($p['trip_type'] === 'cruise' ? 'buddies/cruise' : 'buddies') . $m['query']) ?>"><?= (int) $m['count'] ?> <?= $m['count'] === 1 ? 'traveler lines up' : 'travelers line up' ?></a><?php elseif ($m): ?> &middot; no matches yet, you will be told<?php endif; ?></span>
       </div>
       <div class="bdash-acts">
         <a class="btn btn-ghost btn-sm" href="<?= e(url('buddy/' . (int) $p['id'] . '/edit')) ?>">Edit</a>
+        <?php if ((string) $p['date_from'] <= date('Y-m-d')): ?>
+          <form method="post" action="<?= e(url('buddy/' . (int) $p['id'] . '/status')) ?>"><?= csrf_field() ?><input type="hidden" name="return" value="<?= e($back) ?>">
+            <input type="hidden" name="status" value="completed"><button class="btn btn-ghost btn-sm">Mark completed</button></form>
+        <?php endif; ?>
         <form method="post" action="<?= e(url('buddy/' . (int) $p['id'] . '/status')) ?>" onsubmit="return confirm('Cancel this trip and remove the post?')"><?= csrf_field() ?>
-          <input type="hidden" name="status" value="removed"><button class="btn btn-ghost btn-sm">Cancel</button></form>
+          <input type="hidden" name="status" value="removed"><button class="btn btn-ghost btn-sm">Cancel trip</button></form>
       </div>
     </div>
   <?php endforeach; ?>
   <?php foreach ($trips as $t): $m = $matches['trip:' . $t['id']] ?? null; ?>
     <div class="bdash-row">
       <div class="bdash-main">
-        <span class="chip">Trip</span><?php if (($t['visibility'] ?? 'public') !== 'public'): ?> <span class="chip"><?= e(ucfirst((string) $t['visibility'])) ?></span><?php endif; ?>
+        <span class="chip"><?= e(RMT_BUDDY_TYPES[$t['trip_type'] ?? ''] ?? RMT_BUDDY_TYPES['trip']) ?></span><?php if (($t['visibility'] ?? 'public') !== 'public'): ?> <span class="chip"><?= e(ucfirst((string) $t['visibility'])) ?></span><?php endif; ?>
         <br><b><a href="<?= e(url('trip/' . (int) $t['id'] . '/' . $t['slug'])) ?>"><?= e($t['title']) ?></a></b>
         <br><span class="hint"><?= e((string) ($t['dest_name'] ?? '')) ?> &middot; <?= e($range($t['date_from'], $t['date_to'])) ?></span>
-        <?php if ($m): ?><br><span class="hint"><a href="<?= e(url('buddies') . $m['query']) ?>"><?= (int) $m['count'] ?> <?= $m['count'] === 1 ? 'traveler lines up' : 'travelers line up' ?></a></span><?php endif; ?>
+        <?php if ($m && $m['count'] > 0): ?><br><span class="hint"><a href="<?= e(url('buddies') . $m['query']) ?>"><?= (int) $m['count'] ?> <?= $m['count'] === 1 ? 'traveler lines up' : 'travelers line up' ?></a></span>
+        <?php elseif ($m): ?><br><span class="hint">No matches yet, you will be told</span><?php endif; ?>
       </div>
       <div class="bdash-acts">
         <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/' . (int) $t['id'] . '/edit')) ?>">Edit</a>
+        <form method="post" action="<?= e(url('trip/' . (int) $t['id'] . '/delete')) ?>" onsubmit="return confirm('Cancel this trip? It is removed from your profile and from searches, along with any photos on it.')"><?= csrf_field() ?>
+          <button class="btn btn-ghost btn-sm">Cancel trip</button></form>
       </div>
     </div>
   <?php endforeach; ?>
+
+  <?php if ($pastPosts || $pastTrips): ?>
+    <details class="bdash-past"><summary><h2 style="display:inline">Past trips</h2> <span class="hint">(<?= count($pastPosts) + count($pastTrips) ?>)</span></summary>
+      <?php foreach ($pastPosts as $p): ?>
+        <p class="bdash-row" style="margin:0"><span class="bdash-main">
+          <span class="chip"><?= $p['status'] === 'completed' ? 'Completed' : 'Ended' ?></span>
+          <a href="<?= e(url('buddy/' . (int) $p['id'])) ?>"><?= e($p['title']) ?></a>
+          <br><span class="hint"><?= e($p['where_text']) ?> &middot; <?= e($range($p['date_from'], $p['date_to'])) ?></span></span></p>
+      <?php endforeach; ?>
+      <?php foreach ($pastTrips as $t): ?>
+        <p class="bdash-row" style="margin:0"><span class="bdash-main">
+          <span class="chip">Trip taken</span>
+          <a href="<?= e(url('trip/' . (int) $t['id'] . '/' . $t['slug'])) ?>"><?= e($t['title']) ?></a>
+          <br><span class="hint"><?= e((string) ($t['dest_name'] ?? '')) ?> &middot; <?= e($range($t['date_from'], $t['date_to'])) ?> &middot; <a href="<?= e(url('review/new?destination_id=' . (int) $t['destination_id'])) ?>">Write about it</a></span></span></p>
+      <?php endforeach; ?>
+    </details>
+  <?php endif; ?>
 
   <h2>Requests you sent</h2>
   <?php if (!$sent): ?>

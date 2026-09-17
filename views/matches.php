@@ -2,6 +2,7 @@
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Matches</p></div>
 <div class="wrap">
   <h1>Your matches</h1>
+  <p style="margin:.2rem 0 0"><a href="<?= e(url('buddies/mine')) ?>">Your travel buddies, requests and cruise matches &rarr;</a></p>
   <p class="muted" style="max-width:60ch">Travelers who will be in the same city at the same time as
     you, and people who want to go where you want to go. Destination and dates only, the same as
     everywhere else on RuinMyTrip.</p>

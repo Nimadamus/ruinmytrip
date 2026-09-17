@@ -159,6 +159,8 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
             'buddy_interest' => $who . ' wants to join ' . ($title ? '"' . $title . '"' : 'your trip') . '.',
             'buddy_accepted' => $who . ' accepted you on ' . ($title ? '"' . $title . '"' : 'their trip') . '. You can message each other now.',
             'buddy_match'    => $who . ' posted ' . ($title ? '"' . $title . '"' : 'a trip') . ', which lines up with yours.',
+            'buddy_sailing'  => $who . ' joined your sailing: ' . ($title ? '"' . $title . '"' : 'the same ship and day') . '.',
+            'buddy_city'     => $who . ' is looking for travel buddies in a city you saved: ' . ($title ? '"' . $title . '"' : 'see the trip') . '.',
             'local_connect'  => $who . ' would like to meet you as a local.',
             default          => $who . ' accepted your request to meet. You can message each other now.',
           };

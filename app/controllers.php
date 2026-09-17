@@ -4423,7 +4423,7 @@ function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
     }
     /* A travel buddy post is open or closed rather than published; either is a real trip to save. */
     if ($tt === 'buddy') {
-        return (bool) q_one("SELECT id FROM buddy_posts WHERE id = ? AND status IN ('open','closed')", [$tid]);
+        return (bool) q_one("SELECT id FROM buddy_posts WHERE id = ? AND status IN ('open','closed','completed')", [$tid]);
     }
     if ($tt === 'activity') {
         $act = rmt_activity_get($tid);
@@ -4690,7 +4690,7 @@ function saved_index(array $a): void {
           WHERE s.user_id = ? AND s.target_type = 'meetup'",
         // A travel buddy trip somebody is thinking about joining.
         "SELECT 'buddy' kind, b.title, b.id, '' slug, s.created_at saved_at, b.user_id
-           FROM saves s JOIN buddy_posts b ON b.id = s.target_id AND b.status IN ('open','closed')
+           FROM saves s JOIN buddy_posts b ON b.id = s.target_id AND b.status IN ('open','closed','completed')
           WHERE s.user_id = ? AND s.target_type = 'buddy'",
     ];
     foreach ($sources as $sql) {

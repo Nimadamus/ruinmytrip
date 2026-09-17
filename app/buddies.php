@@ -39,8 +39,9 @@ const RMT_BUDDY_PARTIES = [
     'group'   => 'Group trip',
 ];
 const RMT_BUDDY_BUDGETS = ['any' => 'Any budget', 'budget' => 'Budget', 'mid' => 'Mid range', 'luxury' => 'Luxury'];
-const RMT_BUDDY_AGE_BANDS = ['18-25' => [18, 25], '26-35' => [26, 35], '36-50' => [36, 50], '51-99' => [51, 99]];
-const RMT_BUDDY_NOTIFY_TYPES = ['buddy_interest', 'buddy_accepted', 'buddy_match', 'local_connect', 'local_accepted'];
+const RMT_BUDDY_NOTIFY_TYPES = ['buddy_interest', 'buddy_accepted', 'buddy_match', 'buddy_sailing', 'buddy_city', 'local_connect', 'local_accepted'];
+/** What a post can be. Completed and removed posts are the owner's history, never listed. */
+const RMT_BUDDY_VISIBLE_STATUSES = ['open', 'closed', 'completed'];
 /** How far "flexible dates" stretches a range, each side. */
 const RMT_BUDDY_FLEX_DAYS = 7;
 const RMT_BUDDY_MATCH_NOTIFY_MAX = 40;
@@ -271,7 +272,10 @@ function rmt_buddy_filters(array $g): array {
         'type' => isset(RMT_BUDDY_TYPES[$g['type'] ?? '']) ? (string) $g['type'] : '',
         'party' => isset(RMT_BUDDY_PARTIES[$g['party'] ?? '']) ? (string) $g['party'] : '',
         'interest' => (defined('RMT_INTERESTS') && isset(RMT_INTERESTS[$g['interest'] ?? ''])) ? (string) $g['interest'] : '',
-        'age' => isset(RMT_BUDDY_AGE_BANDS[$g['age'] ?? '']) ? (string) $g['age'] : '',
+        /* Age is never searched on other people's birthdates: that would let a stranger narrow
+           members down by how old they are. The only age question is the poster's own stated
+           preference, asked of the reader's own age, which the reader never sees for anybody else. */
+        'myage' => !empty($g['myage']),
         'show' => in_array($g['show'] ?? '', ['going', 'here', 'locals'], true) ? (string) $g['show'] : 'all',
         'flexible' => !empty($g['flexible']),
         'line' => $s('line'), 'ship' => $s('ship'), 'port' => $s('port'),
@@ -296,27 +300,17 @@ function rmt_buddy_filters(array $g): array {
 
 /** Did the reader narrow the search by anything at all. */
 function rmt_buddy_filters_active(array $f): bool {
-    foreach (['where', 'from', 'type', 'party', 'interest', 'age', 'line', 'ship', 'port'] as $k) if ($f[$k] !== '') return true;
-    return $f['show'] !== 'all' || $f['flexible'];
+    foreach (['where', 'from', 'type', 'party', 'interest', 'line', 'ship', 'port'] as $k) if ($f[$k] !== '') return true;
+    return $f['show'] !== 'all' || $f['flexible'] || $f['myage'];
 }
 
 /** The same form as a query string, for links and "widen the search". */
 function rmt_buddy_query(array $f, array $override = []): string {
     $q = ['where' => $f['where'], 'from' => $f['from'], 'to' => $f['to'], 'type' => $f['type'], 'party' => $f['party'],
-          'interest' => $f['interest'], 'age' => $f['age'], 'show' => $f['show'] === 'all' ? '' : $f['show'],
+          'interest' => $f['interest'], 'myage' => $f['myage'] ? '1' : '', 'show' => $f['show'] === 'all' ? '' : $f['show'],
           'flexible' => $f['flexible'] ? '1' : '', 'line' => $f['line'], 'ship' => $f['ship'], 'port' => $f['port']];
     $q = array_filter(array_merge($q, $override), static fn($v) => $v !== '' && $v !== null);
     return $q ? '?' . http_build_query($q) : '';
-}
-
-/** Age band as a birthdate range, compared as Y-m-d text on both drivers. @return array{0:string,1:string}|null */
-function rmt_buddy_age_bounds(string $band, ?string $today = null): ?array {
-    if (!isset(RMT_BUDDY_AGE_BANDS[$band])) return null;
-    [$min, $max] = RMT_BUDDY_AGE_BANDS[$band];
-    $t = $today ?? date('Y-m-d');
-    $y = (int) substr($t, 0, 4); $md = substr($t, 4);
-    // Born on or before today minus $min years, and after today minus ($max + 1) years.
-    return [($y - $max - 1) . $md, ($y - $min) . $md];
 }
 
 /**
@@ -346,7 +340,11 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
     $slack = $f['flexible'] ? RMT_BUDDY_FLEX_DAYS : 0;
     $qFrom = $hasDates ? rmt_buddy_date_shift($f['from'], -$slack) : '';
     $qTo   = $hasDates ? rmt_buddy_date_shift($f['to'], $slack) : '';
-    $age = $f['age'] !== '' ? rmt_buddy_age_bounds($f['age']) : null;
+    $myAge = null;
+    if ($f['myage'] && $vid && function_exists('age_from')) {
+        $bd = (string) (q_one('SELECT birthdate FROM users WHERE id = ?', [$vid])['birthdate'] ?? '');
+        if ($bd !== '') $myAge = age_from($bd);
+    }
     $cruiseOnly = $f['type'] === 'cruise' || $f['line'] !== '' || $f['ship'] !== '' || $f['port'] !== '';
     $like = static fn(string $v): string => '%' . str_replace(['%', '_'], '', mb_strtolower($v)) . '%';
     $blocks = static function (string $col) use ($vid): array {
@@ -386,7 +384,7 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
             array_push($a, (string) rmt_buddy_ship_key($f['ship']), $like($f['ship']));
         }
         if ($f['port'] !== '') { $w[] = "LOWER(COALESCE(b.departure_port,'')) LIKE ?"; $a[] = $like($f['port']); }
-        if ($age) { $w[] = 'u.birthdate > ? AND u.birthdate <= ?'; array_push($a, $age[0], $age[1]); }
+        if ($myAge !== null) { $w[] = '(b.age_min IS NULL OR b.age_min <= ?) AND (b.age_max IS NULL OR b.age_max >= ?)'; array_push($a, $myAge, $myAge); }
         [$bs, $ba] = $blocks('b.user_id'); $w[] = $bs; array_push($a, ...$ba);
         $rows = q_all("SELECT b.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
                               u.username, u.email_verified_at, p.avatar_url, p.display_name, p.languages, p.travel_style profile_style,
@@ -407,8 +405,22 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
                 'cruise_line' => (string) ($r['cruise_line'] ?? ''), 'ship' => (string) ($r['ship'] ?? ''),
                 'ship_key' => (string) ($r['ship_key'] ?? ''), 'departure_port' => (string) ($r['departure_port'] ?? ''),
                 'nights' => rmt_buddy_nights((string) $r['date_from'], (string) $r['date_to']),
+                'itinerary' => (string) ($r['itinerary'] ?? ''),
+                'age_min' => (int) ($r['age_min'] ?? 0), 'age_max' => (int) ($r['age_max'] ?? 0),
             ], $f);
         }
+    }
+
+    /* How many other travelers are on each cruise card's exact sailing, in one grouped read. */
+    $keys = array_values(array_unique(array_filter(array_map(static fn($c) => $c['kind'] === 'post' ? $c['ship_key'] : '', $out))));
+    if ($keys) {
+        $n = [];
+        foreach (q_all("SELECT ship_key, date_from, COUNT(*) c FROM buddy_posts WHERE status IN ('open','closed') AND ship_key IN ("
+                       . implode(',', array_fill(0, count($keys), '?')) . ') GROUP BY ship_key, date_from', $keys) as $r) {
+            $n[$r['ship_key'] . '|' . substr((string) $r['date_from'], 0, 10)] = (int) $r['c'];
+        }
+        foreach ($out as &$c) if ($c['ship_key'] !== '') $c['on_sailing'] = max(0, ($n[$c['ship_key'] . '|' . $c['from']] ?? 1) - 1);
+        unset($c);
     }
 
     /* ---- dated trips ---- */
@@ -428,7 +440,6 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
             $a[] = $f['party'] === 'group' ? 'friends' : $f['party'];
         }
         if ($f['interest'] !== '') { $w[] = 'EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = t.user_id AND pi.interest = ?)'; $a[] = $f['interest']; }
-        if ($age) { $w[] = 'u.birthdate > ? AND u.birthdate <= ?'; array_push($a, $age[0], $age[1]); }
         [$bs, $ba] = $blocks('t.user_id'); $w[] = $bs; array_push($a, ...$ba);
         // The visibility clause is in here: $vis, from rmt_plan_visibility_sql(), is the first filter.
         $whereSql = implode(' AND ', $w);
@@ -469,7 +480,6 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
         if ($f['country'] !== '') { $w[] = 'd.country = ?'; $a[] = $f['country']; }
         if ($f['text'] !== '') { $w[] = '(LOWER(d.name) LIKE ? OR LOWER(d.country) LIKE ?)'; array_push($a, $like($f['text']), $like($f['text'])); }
         if ($f['interest'] !== '') { $w[] = 'EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = u.id AND pi.interest = ?)'; $a[] = $f['interest']; }
-        if ($age) { $w[] = 'u.birthdate > ? AND u.birthdate <= ?'; array_push($a, $age[0], $age[1]); }
         [$bs, $ba] = $blocks('u.id'); $w[] = $bs; array_push($a, ...$ba);
         $rows = q_all("SELECT u.id user_id, u.username, u.email_verified_at, p.avatar_url, p.display_name, p.languages,
                               p.bio, p.travel_style, d.name dest_name, d.slug dest_slug, d.country dest_country
@@ -516,6 +526,7 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
     usort($out, static function (array $x, array $y) use ($hasDates): int {
         $rank = ['post' => 0, 'trip' => 0, 'local' => 1];
         if ($rank[$x['kind']] !== $rank[$y['kind']]) return $rank[$x['kind']] <=> $rank[$y['kind']];
+        if ($x['rank'] !== $y['rank']) return $y['rank'] <=> $x['rank'];
         if ($hasDates && $x['overlap_days'] !== $y['overlap_days']) return $y['overlap_days'] <=> $x['overlap_days'];
         return strcmp($x['from'], $y['from']);
     });
@@ -538,7 +549,26 @@ function rmt_buddy_card(string $kind, array $r, array $c, array $f): array {
         'here_now' => $c['from'] !== '' && $c['from'] <= $today && $c['to'] >= $today,
         'overlap_days' => $overlap, 'viewer_state' => null, 'saved' => false,
         'spots' => 0, 'interest_count' => 0, 'cruise_line' => '', 'ship' => '', 'ship_key' => '', 'departure_port' => '', 'nights' => 0,
-    ], $c);
+        'itinerary' => '', 'age_min' => 0, 'age_max' => 0, 'example' => false, 'on_sailing' => 0,
+    ], $c, ['rank' => rmt_buddy_rank($c, $f)]);
+}
+
+/**
+ * How strong a match is beyond date overlap. For a cruise search: the exact sailing (same ship,
+ * same departure day) beats the same ship on another day, which beats the same line or port.
+ */
+function rmt_buddy_rank(array $c, array $f): int {
+    if (($c['type'] ?? '') !== 'cruise') return 0;
+    $rank = 0;
+    $key = rmt_buddy_ship_key($f['ship'] ?? '');
+    if ($key !== null && ($c['ship_key'] ?? '') === $key) {
+        $rank = 2;
+        if (($f['from'] ?? '') !== '' && ($c['from'] ?? '') === $f['from']) $rank = 3;
+    } elseif ((($f['line'] ?? '') !== '' && stripos((string) ($c['cruise_line'] ?? ''), (string) $f['line']) !== false)
+           || (($f['port'] ?? '') !== '' && stripos((string) ($c['departure_port'] ?? ''), (string) $f['port']) !== false)) {
+        $rank = 1;
+    }
+    return $rank;
 }
 
 function rmt_buddy_overlap_days(string $aFrom, string $aTo, string $bFrom, string $bTo): int {
@@ -563,7 +593,7 @@ function rmt_buddy_same_sailing(array $post, ?array $viewer = null, int $limit =
     return q_all("SELECT b.id, b.title, b.date_from, b.date_to, b.user_id, u.username, p.avatar_url, p.display_name
                     FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active'
                LEFT JOIN profiles p ON p.user_id=b.user_id
-                   WHERE b.status IN ('open','closed') AND b.id <> ? AND b.ship_key = ?
+                   WHERE b.status IN ('open','closed','completed') AND b.id <> ? AND b.ship_key = ?
                      AND b.date_from >= ? AND b.date_from <= ?
                 ORDER BY b.date_from LIMIT " . (int) $limit,
                  [(int) $post['id'], (string) $post['ship_key'],
@@ -606,46 +636,62 @@ function rmt_buddy_group_sailings(array $cards): array {
  * Tell the people a new post or trip lands on. One notification per recipient per target, only
  * active members, blocks respected, capped. Returns how many were written.
  *
- * $kind 'buddy' for a buddy post, 'trip' for a dated trip (whose trip owners /matches already tells;
- * this only adds the buddy posters it lands on).
+ * Three kinds, most specific first, and a person gets only the most specific one:
+ *   buddy_sailing  somebody joined the same ship on the same departure day
+ *   buddy_match    somebody's city and dates overlap a trip or post of theirs
+ *   buddy_city     somebody posted a trip to a city they saved
+ *
+ * $kind 'buddy' for a buddy post, 'trip' for a dated trip (whose trip owners and city watchers the
+ * trip code already tells; this only adds the buddy posters it lands on).
  */
 function rmt_buddy_notify_matches(string $kind, int $targetId): int {
-    $recipients = [];
+    $recipients = [];   // uid => type, most specific wins
+    $today = date('Y-m-d');
+    $add = static function (array $rows, string $type) use (&$recipients): void {
+        foreach ($rows as $r) { $uid = (int) $r['user_id']; if (!isset($recipients[$uid])) $recipients[$uid] = $type; }
+    };
     if ($kind === 'buddy') {
         $p = rmt_buddy_get($targetId);
         if (!$p || $p['status'] !== 'open') return 0;
         $actor = (int) $p['user_id'];
+        if ($p['trip_type'] === 'cruise') $add(rmt_buddy_same_sailing($p, null, RMT_BUDDY_MATCH_NOTIFY_MAX), 'buddy_sailing');
         if (!empty($p['destination_id'])) {
-            foreach (q_all("SELECT DISTINCT user_id FROM trips WHERE destination_id=? AND status='published' AND visibility='public'
-                              AND date_from IS NOT NULL AND date_to IS NOT NULL AND date_from <= ? AND date_to >= ? AND date_to >= ?
-                              AND COALESCE(open_to_meeting,1)=1",
-                           [(int) $p['destination_id'], $p['date_to'], $p['date_from'], date('Y-m-d')]) as $r) $recipients[] = (int) $r['user_id'];
-            foreach (q_all("SELECT DISTINCT user_id FROM buddy_posts WHERE destination_id=? AND status='open' AND id<>?
-                              AND date_from <= ? AND date_to >= ? AND date_to >= ?",
-                           [(int) $p['destination_id'], $targetId, $p['date_to'], $p['date_from'], date('Y-m-d')]) as $r) $recipients[] = (int) $r['user_id'];
+            $add(q_all("SELECT DISTINCT user_id FROM trips WHERE destination_id=? AND status='published' AND visibility='public'
+                          AND date_from IS NOT NULL AND date_to IS NOT NULL AND date_from <= ? AND date_to >= ? AND date_to >= ?
+                          AND COALESCE(open_to_meeting,1)=1",
+                        [(int) $p['destination_id'], $p['date_to'], $p['date_from'], $today]), 'buddy_match');
+            $add(q_all("SELECT DISTINCT user_id FROM buddy_posts WHERE destination_id=? AND status='open' AND id<>?
+                          AND date_from <= ? AND date_to >= ? AND date_to >= ?",
+                        [(int) $p['destination_id'], $targetId, $p['date_to'], $p['date_from'], $today]), 'buddy_match');
+            $add(q_all("SELECT s.user_id FROM saves s WHERE s.target_type='destination' AND s.target_id=?", [(int) $p['destination_id']]), 'buddy_city');
         }
-        if ($p['trip_type'] === 'cruise') foreach (rmt_buddy_same_sailing($p, null, RMT_BUDDY_MATCH_NOTIFY_MAX) as $r) $recipients[] = (int) $r['user_id'];
         $targetType = 'buddy';
     } else {
         $t = q_one("SELECT * FROM trips WHERE id=? AND status='published'", [$targetId]);
         if (!$t || ($t['visibility'] ?? 'public') !== 'public' || empty($t['destination_id']) || empty($t['date_from'])) return 0;
         if ($t['open_to_meeting'] !== null && (int) $t['open_to_meeting'] === 0) return 0;
         $actor = (int) $t['user_id'];
-        foreach (q_all("SELECT DISTINCT user_id FROM buddy_posts WHERE destination_id=? AND status='open'
-                          AND date_from <= ? AND date_to >= ? AND date_to >= ?",
-                       [(int) $t['destination_id'], $t['date_to'], $t['date_from'], date('Y-m-d')]) as $r) $recipients[] = (int) $r['user_id'];
+        $add(q_all("SELECT DISTINCT user_id FROM buddy_posts WHERE destination_id=? AND status='open'
+                      AND date_from <= ? AND date_to >= ? AND date_to >= ?",
+                    [(int) $t['destination_id'], $t['date_to'], $t['date_from'], $today]), 'buddy_match');
         $targetType = 'trip';
     }
+    $mail = [
+        'buddy_sailing' => ['Somebody joined your sailing', 'A traveler posted the same cruise and departure day as you on RuinMyTrip.', 'somebody joined your sailing'],
+        'buddy_match'   => ['A traveler is heading your way', 'Somebody posted a trip that lines up with yours on RuinMyTrip.', 'a new trip lines up with yours'],
+        'buddy_city'    => ['A trip to a city you saved', 'A traveler is looking for company in a city you saved on RuinMyTrip.', 'you saved that city'],
+    ];
     $sent = 0;
-    foreach (array_slice(array_values(array_unique($recipients)), 0, RMT_BUDDY_MATCH_NOTIFY_MAX) as $uid) {
+    foreach (array_slice($recipients, 0, RMT_BUDDY_MATCH_NOTIFY_MAX, true) as $uid => $type) {
         if ($uid === $actor) continue;
         if (function_exists('rmt_is_blocked') && rmt_is_blocked($uid, $actor)) continue;
-        if (q_one("SELECT 1 x FROM notifications WHERE user_id=? AND type='buddy_match' AND target_type=? AND target_id=?", [$uid, $targetType, $targetId])) continue;
+        if (q_one("SELECT 1 x FROM notifications WHERE user_id=? AND type IN ('buddy_match','buddy_sailing','buddy_city') AND target_type=? AND target_id=?",
+                  [$uid, $targetType, $targetId])) continue;
         if (!q_one("SELECT 1 x FROM users WHERE id=? AND status='active'", [$uid])) continue;
-        rmt_buddy_notify($uid, 'buddy_match', $actor, $targetId, $targetType);
-        if (function_exists('rmt_notify_email_direct')) {
-            rmt_notify_email_direct($uid, 'A traveler is heading your way', 'Somebody posted a trip that lines up with yours on RuinMyTrip.',
-                                    '/buddies/mine', 'a new trip lines up with yours');
+        rmt_buddy_notify($uid, $type, $actor, $targetId, $targetType);
+        // A saved city is a softer signal than a matching trip, so it stays in the app and never emails.
+        if ($type !== 'buddy_city' && function_exists('rmt_notify_email_direct')) {
+            rmt_notify_email_direct($uid, $mail[$type][0], $mail[$type][1], $targetType === 'buddy' ? '/buddy/' . $targetId : '/buddies/mine', $mail[$type][2]);
         }
         $sent++;
     }
@@ -664,6 +710,13 @@ function rmt_buddy_dashboard(int $uid): array {
                      WHERE b.user_id=? AND b.status IN ('open','closed') AND b.date_to >= ? ORDER BY b.date_from", [$uid, $today]);
     $trips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
                      WHERE t.user_id=? AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to >= ? ORDER BY t.date_from", [$uid, $today]);
+    // Trips that are over, or that the member marked as done, newest first.
+    $pastPosts = q_all("SELECT b.*, d.name dest_name, d.slug dest_slug FROM buddy_posts b LEFT JOIN destinations d ON d.id=b.destination_id
+                         WHERE b.user_id=? AND (b.status='completed' OR (b.status IN ('open','closed') AND b.date_to < ?))
+                      ORDER BY b.date_from DESC LIMIT 20", [$uid, $today]);
+    $pastTrips = q_all("SELECT t.*, d.name dest_name, d.slug dest_slug FROM trips t LEFT JOIN destinations d ON d.id=t.destination_id
+                         WHERE t.user_id=? AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to < ?
+                      ORDER BY t.date_from DESC LIMIT 20", [$uid, $today]);
 
     $received = array_merge(
         array_map(static fn($r) => $r + ['kind' => 'post'], q_all(
@@ -717,7 +770,7 @@ function rmt_buddy_dashboard(int $uid): array {
     }
 
     $saved = q_all("SELECT b.id, b.title, b.date_from, b.date_to, b.where_text, b.status, u.username FROM saves s
-                      JOIN buddy_posts b ON b.id=s.target_id AND b.status IN ('open','closed') JOIN users u ON u.id=b.user_id
+                      JOIN buddy_posts b ON b.id=s.target_id AND b.status IN ('open','closed','completed') JOIN users u ON u.id=b.user_id
                      WHERE s.user_id=? AND s.target_type='buddy' ORDER BY b.date_from", [$uid]);
 
     // How many people each of my upcoming plans already lines up with.
@@ -737,7 +790,7 @@ function rmt_buddy_dashboard(int $uid): array {
     }
     $profile = q_one('SELECT p.open_to_meeting, p.home_destination_id, d.name home_name, d.slug home_slug FROM profiles p
                       LEFT JOIN destinations d ON d.id=p.home_destination_id WHERE p.user_id=?', [$uid]) ?: [];
-    return compact('posts', 'trips', 'received', 'sent', 'buddies', 'saved', 'matches', 'profile');
+    return compact('posts', 'trips', 'pastPosts', 'pastTrips', 'received', 'sent', 'buddies', 'saved', 'matches', 'profile');
 }
 
 /* ---------- controllers ---------- */
@@ -751,6 +804,10 @@ function buddies_index(array $a): void {
     $res = rmt_buddy_search($f, $me, 60);
     $cards = rmt_buddy_card_interests($res['cards']);
     $sailings = $f['type'] === 'cruise' ? rmt_buddy_group_sailings($cards) : [];
+    /* While the real list is thin, labeled examples show what the section does. Never stored,
+       never counted; see app/buddy_examples.php. ?examples=0 hides them. */
+    $realPeople = count($cards);
+    $examples = ($realPeople < RMT_BUDDY_EXAMPLES_BELOW && input('examples') !== '0') ? rmt_buddy_examples_for($f) : [];
     $dests = all_dests();
     $countries = array_values(array_unique(array_filter(array_column($dests, 'country'))));
     sort($countries);
@@ -783,7 +840,7 @@ function buddies_index(array $a): void {
            : ($f['dest'] ? 'Travel buddies in ' . $f['dest']['name'] . ': who is going and who lives there'
            : 'Find a travel buddy: meet people going where you are going'));
     $bf = $f;
-    view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'me', 'dests', 'countries', 'label', 'mine'), [
+    view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'examples', 'me', 'dests', 'countries', 'label', 'mine'), [
         'title' => $title . ' | RuinMyTrip',
         'description' => 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Free, 18+, and nobody can message you until you say yes.',
         'canonical' => url($path),
@@ -860,7 +917,7 @@ function buddy_edit_submit(array $a): void {
 
 function buddy_show(array $a): void {
     $b = rmt_buddy_get((int) $a['id']);
-    if (!$b || !in_array($b['status'], ['open', 'closed'], true)) not_found();
+    if (!$b || !in_array($b['status'], RMT_BUDDY_VISIBLE_STATUSES, true)) not_found();
     $b['author'] = author((int) $b['user_id']);
     if (!$b['author']) not_found();
     $me = current_user();
@@ -920,9 +977,15 @@ function buddy_status(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $b = rmt_buddy_get((int) $a['id']); if (!$b) not_found();
     $to = (string) input('status');
-    if ((int) $me['id'] === (int) $b['user_id'] && in_array($b['status'], ['open', 'closed'], true) && in_array($to, ['open', 'closed', 'removed'], true)) {
+    $mine = (int) $me['id'] === (int) $b['user_id'];
+    $allowed = ['open', 'closed', 'removed'];
+    // Done is only offered once the trip has started: a trip nobody has taken yet is not complete.
+    if ((string) $b['date_from'] <= date('Y-m-d')) $allowed[] = 'completed';
+    if ($mine && in_array($b['status'], RMT_BUDDY_VISIBLE_STATUSES, true) && in_array($to, $allowed, true)) {
+        if ($to === 'open' && (string) $b['date_to'] < date('Y-m-d')) { flash('That trip is over, so it cannot be reopened.'); redirect('/buddy/' . (int) $b['id']); }
         q_run('UPDATE buddy_posts SET status=?, updated_at=? WHERE id=?', [$to, date('Y-m-d H:i:s'), (int) $b['id']]);
         if ($to === 'removed') { flash('Trip cancelled and removed.'); redirect('/buddies/mine'); }
+        if ($to === 'completed') { flash('Marked as completed. It stays in your past trips, and is no longer listed.'); redirect('/buddies/mine'); }
     }
     redirect(rmt_return_to('/buddy/' . (int) $b['id']));
 }

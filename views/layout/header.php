@@ -64,7 +64,7 @@
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
       <?php endif; ?>
-      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
+      <a href="<?= e(url('buddies')) ?>" title="Travel buddies">Buddies</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('talk')) ?>">Talk</a>

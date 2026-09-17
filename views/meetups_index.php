@@ -7,7 +7,8 @@ $anything = (bool) $items; ?>
   <div class="section-head">
     <div><h1 style="margin:0">Meet other travelers</h1>
       <p class="hint" style="margin:.3rem 0 0">Meetups anyone can post, and plans on somebody's trip
-        that they opened to other people. Same thing, one list.</p></div>
+        that they opened to other people. Same thing, one list.
+        Want company for a whole trip or a cruise? <a href="<?= e(url('buddies')) ?>">Find a travel buddy</a>.</p></div>
     <?php /* The host route is offered to everyone, signed in or not. A page that says "when a
              traveler hosts one, it shows up here" and never shows anyone how is the reason there
              were none. The 18+ rule is enforced on the route, and stated here rather than hiding

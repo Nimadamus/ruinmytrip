@@ -1487,3 +1487,42 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .buddy-home p{color:#e3edf2}
 .buddy-mine{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
 .buddy-mine .chip{text-decoration:none}
+.bcard-example{background:var(--tint-warm);border-style:dashed}
+.bcard-av-ex{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--tint-2);color:var(--brand);font-size:1.5rem;flex:0 0 auto}
+.bcard-tag-ex{background:var(--surface-3);color:var(--ink-2)}
+.bcard-itin{margin:0;font-size:.88rem;color:var(--muted)}
+.bcard-sailing{margin:0;font-weight:650;color:var(--brand);font-size:.92rem}
+.buddy-first{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:var(--tint);border-radius:var(--radius-sm);padding:14px 16px;margin:0 0 8px}
+.buddy-first p{margin:0;flex:1 1 280px}
+.buddy-examples{margin-top:26px}
+.buddy-examples-head h2{margin:0 0 4px}
+.buddy-examples-head p{margin:0 0 14px;color:var(--muted);max-width:70ch}
+.bdash-past summary{cursor:pointer;margin:26px 0 8px;list-style:none}
+.bdash-past summary::-webkit-details-marker{display:none}
+.bdash-past summary h2::after{content:" \25BE";font-size:.8em;color:var(--muted)}
+
+/* Travel buddies, visual pass 1. */
+.bs-filters{margin-top:10px}
+.bs-filters > summary{cursor:pointer;font-weight:650;color:var(--brand);min-height:44px;display:flex;align-items:center;list-style:none}
+.bs-filters > summary::-webkit-details-marker{display:none}
+.bs-filters > summary::after{content:"\25BE";margin-left:6px;font-size:.85em}
+.bs-filters[open] > summary::after{content:"\25B4"}
+@media (min-width:760px){.bs-filters > summary{display:none}}
+.bcard-title{margin:.1rem 0 0;font-family:var(--sans);font-size:1.02rem;line-height:1.35;font-weight:700;letter-spacing:0}
+.bcard-title a{color:var(--ink);text-decoration:none}
+.bcard-title a:hover{color:var(--brand)}
+.bcard-chips .chip{min-height:0;padding:3px 10px;font-size:.78rem;font-weight:600}
+.bcard-tag{font-size:.72rem}
+@media (max-width:560px){
+  .buddy-hero{padding:10px 0 24px}
+  .buddy-hero h1{font-size:1.8rem}
+  .buddy-lede{font-size:.98rem}
+  .buddy-cta{margin:14px 0 16px}
+  .bcard{padding:12px}
+}
+@media (max-width:759px){
+  .buddy-search > .bs-row:first-child{grid-template-columns:1fr 1fr}
+  .buddy-search > .bs-row:first-child .bs-where,.buddy-search > .bs-row:first-child .bs-go{grid-column:1 / -1}
+  .buddy-search > .bs-row:first-child input[type=date]{padding-left:10px;padding-right:6px;font-size:.92rem}
+}
+.bcard-where b{font-weight:600;color:var(--ink-2)}

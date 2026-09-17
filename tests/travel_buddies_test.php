@@ -53,7 +53,7 @@ $y = (int) date('Y') + 1;
 $d = static fn(string $md): string => $y . '-' . $md;
 $today = date('Y-m-d');
 $pdo->exec("INSERT INTO destinations (id,slug,name,country) VALUES (1,'paris-france','Paris','France'),(2,'bangkok-thailand','Bangkok','Thailand'),
-              (3,'chiang-mai-thailand','Chiang Mai','Thailand'),(4,'tokyo-japan','Tokyo','Japan')");
+              (3,'chiang-mai-thailand','Chiang Mai','Thailand'),(4,'tokyo-japan','Tokyo','Japan'),(5,'phuket-thailand','Phuket','Thailand')");
 $names = [1 => 'me', 2 => 'ana', 3 => 'leo', 4 => 'kim', 5 => 'sam', 6 => 'noor', 7 => 'priv', 8 => 'shy', 9 => 'blk', 10 => 'loc', 11 => 'nolo', 12 => 'now'];
 foreach ($names as $id => $n) {
     q_run("INSERT INTO users (id,username,birthdate,email_verified_at,created_at) VALUES (?,?,?,?,?)",
@@ -150,12 +150,29 @@ ok('filter by interest uses the post and the profile',
    && $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'interest' => 'nightlife', 'show' => 'going']), $me)['cards']) === ['trip:leo']);
 ok('filter solo finds the solo traveler', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'party' => 'solo']), $me)['cards']) === ['post:ana']);
 ok('filter group finds people travelling with friends', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'party' => 'group']), $me)['cards']) === ['trip:leo']);
-ok('filter by age band', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'age' => '18-25', 'show' => 'going']), $me)['cards']) === ['trip:kim']);
+// Age: only the poster's stated preference, checked against the reader's own age. kim is 22, me is 40.
+q_run('UPDATE buddy_posts SET age_min = 20, age_max = 30 WHERE id = ?', [$anaPost]);
+ok('"open to my age" hides a post whose preferred ages exclude me', !in_array('post:ana', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'myage' => '1']), $me)['cards']), true));
+ok('and shows it to somebody inside the range', in_array('post:ana', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'myage' => '1']), ['id' => 4])['cards']), true));
+ok('without the option, the preference hides nothing', in_array('post:ana', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris']), $me)['cards']), true));
+ok('no search ever reads another member birthdate', !str_contains((string) file_get_contents(BASE_PATH . '/app/buddies.php'), 'u.birthdate'));
+q_run('UPDATE buddy_posts SET age_min = NULL, age_max = NULL WHERE id = ?', [$anaPost]);
+// The exact cases from the brief: Paris June 5 to 12 against June 8 to 15, and against July.
+$p815 = $trip(6, 1, $d('06-08'), $d('06-15'));
+$pj = rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'from' => $d('06-05'), 'to' => $d('06-12')]), $me)['cards'];
+$noor = array_values(array_filter($pj, static fn($c) => $c['username'] === 'noor'));
+ok('Paris June 5 to 12 matches a June 8 to 15 trip', count($noor) === 1);
+ok('and reports 5 overlapping days', ($noor[0]['overlap_days'] ?? 0) === 5);
+ok('Paris June 5 to 12 does not match July', !array_filter(rmt_buddy_search_run(rmt_buddy_filters(['where' => 'Paris', 'from' => $d('07-01'), 'to' => $d('07-10'), 'show' => 'going']), $me, 60), static fn($c) => $c['username'] === 'noor'));
+q_run("UPDATE trips SET status='removed' WHERE id=?", [$p815]);
 ok('show locals lists only locals', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'show' => 'locals']), $me)['cards']) === ['local:loc']);
 
 $thai = rmt_buddy_filters(['where' => 'thailand']);
 ok('"thailand" resolves to the country', $thai['country'] === 'Thailand');
-ok('a country search finds a month in Chiang Mai and somebody in Bangkok', count(array_intersect(['trip:sam', 'trip:now'], $who(rmt_buddy_search($thai, $me)['cards']))) === 2);
+$phuketPost = $post(11, ['destination_id' => '5', 'date_from' => $d('04-01'), 'date_to' => $d('04-09')]);
+$thaiCards = rmt_buddy_search($thai, $me)['cards'];
+ok('a country search finds Chiang Mai, Bangkok and Phuket', count(array_intersect(['trip:sam', 'trip:now', 'post:nolo'], $who($thaiCards))) === 3, json_encode($who($thaiCards)));
+ok('a country search never reaches another country', !array_filter($thaiCards, static fn($c) => $c['country'] !== 'Thailand'));
 $here = rmt_buddy_search(rmt_buddy_filters(['where' => 'Bangkok', 'show' => 'here']), $me);
 ok('there right now finds the traveler whose dates cover today', $who($here['cards']) === ['trip:now'] && $here['cards'][0]['here_now']);
 
@@ -167,11 +184,18 @@ ok('a member with a post and a trip for Paris appears once', count(array_filter(
 $c1 = rmt_buddy_insert(2, $v['data']);
 $c2 = rmt_buddy_insert(3, rmt_buddy_validate(['ship' => 'icon of the seas'] + $good, $today)['data']);
 $c3 = rmt_buddy_insert(4, rmt_buddy_validate(['ship' => 'Wonder of the Seas', 'date_from' => $d('03-10'), 'date_to' => $d('03-17')] + $good, $today)['data']);
+$c4 = rmt_buddy_insert(5, rmt_buddy_validate(['date_from' => $d('03-15'), 'date_to' => $d('03-22')] + $good, $today)['data']);
+$rk = rmt_buddy_search(rmt_buddy_filters(['type' => 'cruise', 'ship' => 'Icon of the Seas', 'from' => $d('03-15'), 'to' => $d('03-15'), 'flexible' => '1']), $me)['cards'];
+ok('the exact sailing ranks first', ($rk[0]['username'] ?? '') === 'sam' && $rk[0]['rank'] === 3, json_encode(array_map(fn($c) => $c['username'] . $c['rank'], $rk)));
+$rl = rmt_buddy_search(rmt_buddy_filters(['type' => 'cruise', 'line' => 'Royal', 'ship' => 'Wonder of the Seas']), $me)['cards'];
+ok('the named ship ranks above the rest of the line', ($rl[0]['username'] ?? '') === 'kim' && $rl[0]['rank'] === 2, json_encode(array_map(fn($c) => $c['username'] . $c['rank'], $rl)));
+q_run("UPDATE buddy_posts SET status='removed' WHERE id=?", [$c4]);
 $sail = rmt_buddy_same_sailing(rmt_buddy_get($c1));
 ok('the same ship on the same day is the same sailing', array_column($sail, 'id') == [$c2]);
 ok('a sister ship from the same port nine days later is a similar sailing', array_column(rmt_buddy_similar_sailings(rmt_buddy_get($c1)), 'id') == [$c3]);
 $cr = rmt_buddy_search(rmt_buddy_filters(['type' => 'cruise', 'ship' => 'Icon of the Seas']), $me);
 ok('searching a ship finds both people on it', $who($cr['cards']) === ['post:ana', 'post:leo'], json_encode($who($cr['cards'])));
+ok('each card says how many are on the exact sailing', ($cr['cards'][0]['on_sailing'] ?? -1) === 1);
 $groups = rmt_buddy_group_sailings(rmt_buddy_search(rmt_buddy_filters(['type' => 'cruise']), $me)['cards']);
 ok('cruise results group into sailings, the fullest first', count($groups) === 2 && count($groups[0]['cards']) === 2);
 
@@ -208,8 +232,12 @@ ok('and never twice for the same post', rmt_buddy_notify_matches('buddy', $tokyo
 $late = $trip(4, 4, $d('09-11'), $d('09-15'));
 ok('a new trip tells the buddy poster it lands on', rmt_buddy_notify_matches('trip', $late) === 1
    && (int) q_one("SELECT COUNT(*) n FROM notifications WHERE user_id=5 AND type='buddy_match'")['n'] === 1);
-ok('a new sailing tells the people on the same ship', rmt_buddy_notify_matches('buddy', $c2) >= 1
-   && (int) q_one("SELECT COUNT(*) n FROM notifications WHERE user_id=2 AND type='buddy_match' AND target_id=?", [$c2])['n'] === 1);
+ok('a new sailing tells the people on the same ship, as a sailing', rmt_buddy_notify_matches('buddy', $c2) >= 1
+   && (int) q_one("SELECT COUNT(*) n FROM notifications WHERE user_id=2 AND type='buddy_sailing' AND target_id=?", [$c2])['n'] === 1);
+q_run("INSERT INTO saves (user_id,target_type,target_id,created_at) VALUES (12,'destination',4,?)", [date('Y-m-d H:i:s')]);
+$tokyo2 = $post(3, ['destination_id' => '4', 'date_from' => $d('10-01'), 'date_to' => $d('10-05')]);
+rmt_buddy_notify_matches('buddy', $tokyo2);
+ok('a post to a saved city tells the member who saved it', (int) q_one("SELECT COUNT(*) n FROM notifications WHERE user_id=12 AND type='buddy_city' AND target_id=?", [$tokyo2])['n'] === 1);
 
 /* ---- the member's own page ---- */
 $dash = rmt_buddy_dashboard(2);
@@ -230,6 +258,27 @@ ok('withdrawing removes the request and the connection', $r['action'] === 'withd
 q_run("UPDATE buddy_posts SET status='closed' WHERE id=?", [$anaPost]);
 ok('a closed post takes no new requests', !rmt_buddy_toggle_interest(rmt_buddy_get($anaPost), 3)['ok']);
 ok('and is not listed', !in_array('post:ana', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Paris', 'show' => 'going']), $me)['cards']), true));
+
+/* ---- completed and past ---- */
+$startedPost = $post(12, ['destination_id' => '2', 'date_from' => date('Y-m-d', strtotime('-3 days')), 'date_to' => date('Y-m-d', strtotime('+2 days'))]);
+q_run("UPDATE buddy_posts SET status='completed' WHERE id=?", [$startedPost]);
+$dn = rmt_buddy_dashboard(12);
+ok('a completed trip moves to past trips', count($dn['pastPosts']) === 1 && !array_filter($dn['posts'], static fn($x) => (int) $x['id'] === $startedPost));
+ok('a completed trip is not listed', !in_array('post:now', $who(rmt_buddy_search(rmt_buddy_filters(['where' => 'Bangkok', 'show' => 'going']), $me)['cards']), true));
+
+/* ---- examples ---- */
+require BASE_PATH . '/app/buddy_examples.php';
+$pdo->exec("INSERT INTO destinations (id,slug,name,country) VALUES (6,'rome-italy','Rome','Italy'),(7,'tulum-mexico','Tulum','Mexico'),(8,'lisbon-portugal','Lisbon','Portugal'),(9,'barcelona-spain','Barcelona','Spain')");
+$ex = rmt_buddy_examples();
+ok('examples cover the brief', count(array_intersect(['Tokyo', 'Bangkok', 'Paris', 'Rome', 'Tulum', 'Lisbon', 'Barcelona'], array_column($ex, 'dest_name'))) === 7
+   && count(array_filter($ex, fn($c) => $c['type'] === 'cruise')) >= 2 && array_filter($ex, fn($c) => $c['here_now']) && array_filter($ex, fn($c) => $c['kind'] === 'local'));
+ok('every example is flagged, has no account and no person', !array_filter($ex, fn($c) => !$c['example'] || $c['user_id'] !== 0 || $c['name'] !== 'Example traveler' || $c['avatar_url'] !== null));
+ok('no example is in the past', !array_filter($ex, fn($c) => $c['to'] !== '' && $c['to'] < date('Y-m-d')));
+ok('examples follow a country filter', array_column(rmt_buddy_examples_for(rmt_buddy_filters(['where' => 'thailand'])), 'dest_name') === ['Bangkok']);
+ok('examples follow a ship filter', count(rmt_buddy_examples_for(rmt_buddy_filters(['type' => 'cruise', 'ship' => 'icon of the seas']))) === 2);
+ok('examples follow a date filter', rmt_buddy_examples_for(rmt_buddy_filters(['where' => 'Tokyo', 'from' => date('Y-m-d', strtotime('+200 days'))])) === []);
+ok('two examples share a sailing', (rmt_buddy_examples_for(rmt_buddy_filters(['type' => 'cruise', 'ship' => 'Icon of the Seas']))[0]['on_sailing'] ?? 0) === 1);
+ok('examples never touch the database', (int) q_one('SELECT COUNT(*) n FROM buddy_posts WHERE title LIKE ?', ['%Tokyo and Kyoto%'])['n'] === 0);
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

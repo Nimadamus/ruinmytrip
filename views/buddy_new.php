@@ -24,23 +24,6 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
       <?php endforeach; ?>
     </select>
 
-    <label for="title">Title</label>
-    <input type="text" id="title" name="title" maxlength="140" required value="<?= e($val('title')) ?>"
-           placeholder="Two weeks in Tokyo and Kyoto, looking for people to explore with">
-
-    <label for="destination_id">City</label>
-    <select id="destination_id" name="destination_id">
-      <option value="">Not listed, or a cruise</option>
-      <?php foreach ($dests as $d): ?>
-        <option value="<?= (int) $d['id'] ?>"<?= $val('destination_id') === (string) $d['id'] ? ' selected' : '' ?>><?= e($d['name'] . ', ' . $d['country']) ?></option>
-      <?php endforeach; ?>
-    </select>
-    <p class="hint" style="margin:.2rem 0 0">Picking a city puts you in front of everyone searching it, and tells travelers whose dates overlap.</p>
-
-    <label for="where_text">Where, in your words <span class="hint">(a region, a route, a country)</span></label>
-    <input type="text" id="where_text" name="where_text" maxlength="140" value="<?= e($val('where_text')) ?>"
-           placeholder="Thailand: Bangkok, Chiang Mai and the islands">
-
     <fieldset class="cruise-fields" id="cruise-fields" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 14px;margin:14px 0">
       <legend style="font-weight:700;padding:0 6px">Cruise details</legend>
       <p class="hint" style="margin:0">Line and ship are how people on the same sailing find each other. Never add your cabin number.</p>
@@ -58,6 +41,26 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
       </div>
     </fieldset>
 
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title" maxlength="140" required value="<?= e($val('title')) ?>"
+           placeholder="Two weeks in Tokyo and Kyoto, looking for people to explore with">
+
+    <div id="city-fields">
+    <label for="destination_id">City</label>
+    <select id="destination_id" name="destination_id">
+      <option value="">Not listed, or a cruise</option>
+      <?php foreach ($dests as $d): ?>
+        <option value="<?= (int) $d['id'] ?>"<?= $val('destination_id') === (string) $d['id'] ? ' selected' : '' ?>><?= e($d['name'] . ', ' . $d['country']) ?></option>
+      <?php endforeach; ?>
+    </select>
+    <p class="hint" style="margin:.2rem 0 0">Picking a city puts you in front of everyone searching it, and tells travelers whose dates overlap.</p>
+    </div>
+
+    <label for="where_text">Where, in your words <span class="hint">(a region, a route, a country)</span></label>
+    <input type="text" id="where_text" name="where_text" maxlength="140" value="<?= e($val('where_text')) ?>"
+           placeholder="Thailand: Bangkok, Chiang Mai and the islands">
+
+
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <div style="flex:1;min-width:160px"><label for="date_from">Leaving</label>
         <input type="date" id="date_from" name="date_from" required value="<?= e($val('date_from')) ?>"></div>
@@ -73,7 +76,7 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
         <select id="travel_party" name="travel_party"><option value="">Rather not say</option>
           <?php foreach (RMT_BUDDY_PARTIES as $k => $v): ?><option value="<?= e($k) ?>"<?= $val('travel_party') === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?>
         </select></div>
-      <div style="flex:1;min-width:160px"><label for="spots">Looking for how many people</label>
+      <div style="flex:1;min-width:160px"><label for="spots">How many people</label>
         <input type="number" id="spots" name="spots" min="1" max="20" value="<?= e($val('spots', '1')) ?>"></div>
       <div style="flex:1;min-width:160px"><label for="budget">Budget</label>
         <select id="budget" name="budget">
@@ -116,7 +119,8 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
 (function () {
   var sel = document.getElementById('trip_type'), box = document.getElementById('cruise-fields');
   if (!sel || !box) return;
-  function sync() { box.style.display = sel.value === 'cruise' ? '' : 'none'; }
+  var city = document.getElementById('city-fields');
+  function sync() { var c = sel.value === 'cruise'; box.style.display = c ? '' : 'none'; if (city) city.style.display = c ? 'none' : ''; }
   sel.addEventListener('change', sync); sync();
 })();
 </script>

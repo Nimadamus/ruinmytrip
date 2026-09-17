@@ -32,6 +32,11 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
       <?php foreach ($dests as $d): ?><option value="<?= e($d['name']) ?>"><?= e((string) $d['country']) ?></option><?php endforeach; ?>
       <?php foreach ($countries as $c): ?><option value="<?= e($c) ?>"></option><?php endforeach; ?>
     </datalist>
+    <?php $pathType = str_starts_with(trim((string) parse_url($bcBack, PHP_URL_PATH), '/'), 'buddies/');
+          // A type that came from the address (/buddies/cruise) is the page, not a filter somebody set.
+          $moreActive = ($bf['type'] !== '' && !$pathType) || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '' || $bf['party'] !== '' || $bf['interest'] !== '' || $bf['show'] !== 'all' || $bf['flexible'] || $bf['myage']; ?>
+    <details class="bs-filters" id="bs-filters"<?= $moreActive ? ' open' : '' ?>>
+    <summary>More filters<?= $moreActive ? ' (on)' : '' ?></summary>
     <div class="bs-row bs-more">
       <label><span>Trip type</span><select name="type"><option value="">Any trip</option>
         <?php foreach (RMT_BUDDY_TYPES as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['type'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
@@ -39,12 +44,13 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <?php foreach (RMT_BUDDY_PARTIES as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['party'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
       <label><span>Into</span><select name="interest"><option value="">Any interest</option>
         <?php foreach (RMT_INTERESTS as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['interest'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
-      <label><span>Age</span><select name="age"><option value="">Any age</option>
-        <?php foreach (array_keys(RMT_BUDDY_AGE_BANDS) as $k): ?><option value="<?= e($k) ?>"<?= $bf['age'] === $k ? ' selected' : '' ?>><?= e(str_replace('-99', '+', str_replace('-', ' to ', $k))) ?></option><?php endforeach; ?></select></label>
       <label><span>Show</span><select name="show">
         <?php foreach (['all' => 'Everyone', 'going' => 'Travelers going', 'here' => 'There right now', 'locals' => 'Locals open to meeting'] as $k => $v): ?>
           <option value="<?= e($k) ?>"<?= $bf['show'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
-      <label class="bs-check"><input type="checkbox" name="flexible" value="1"<?= $bf['flexible'] ? ' checked' : '' ?>> <span>Flexible dates (a week either side)</span></label>
+      <label class="bs-check"><input type="checkbox" name="flexible" value="1"<?= $bf['flexible'] ? ' checked' : '' ?>> <span>Flexible dates, a week either side</span></label>
+      <?php if ($me): ?>
+        <label class="bs-check" title="Uses only the age range a poster asked for, checked against your own age. Nobody else's age is ever searched or shown."><input type="checkbox" name="myage" value="1"<?= $bf['myage'] ? ' checked' : '' ?>> <span>Only trips open to my age</span></label>
+      <?php endif; ?>
     </div>
     <details class="bs-cruise"<?= $cruiseOpen ? ' open' : '' ?>><summary>Cruise details: line, ship, port</summary>
       <div class="bs-row">
@@ -53,7 +59,11 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <label><span>Departure port</span><input type="text" name="port" value="<?= e($bf['port']) ?>" placeholder="Miami"></label>
       </div>
     </details>
+    </details>
   </form>
+  <script>
+  (function () { var d = document.getElementById('bs-filters'); if (d && window.matchMedia('(min-width: 760px)').matches) d.open = true; })();
+  </script>
 </div></section>
 
 <div class="wrap buddy-body">
@@ -71,7 +81,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
   <div class="buddy-layout">
     <main class="buddy-results">
       <div class="buddy-count">
-        <h2><?php if ($n === 0): ?>Nobody here yet<?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
+        <h2><?php if ($n === 0): ?>No travelers <?= $place !== '' ? 'for ' . e($place) . ' ' : '' ?>yet<?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
         <?php if ($n): ?><p class="hint"><?= implode(' · ', array_filter([
             $res['counts']['post'] ? $res['counts']['post'] . ' looking for company' : '',
             $res['counts']['trip'] ? $res['counts']['trip'] . ' with trips posted' : '',
@@ -95,7 +105,13 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         </section>
       <?php endif; ?>
 
-      <?php if ($n === 0): ?>
+      <?php if ($n === 0 && $examples): ?>
+        <div class="buddy-first">
+          <p><b><?= $place !== '' ? 'Be the first real traveler people find for ' . e($place) . '.' : 'Be the first real traveler people find.' ?></b>
+            Post where you are going and when, and you will be told the moment somebody lines up with you.</p>
+          <a class="btn btn-accent btn-sm" href="<?= e($postHref) ?>">Post your trip</a>
+        </div>
+      <?php elseif ($n === 0): ?>
         <div class="empty-cta">
           <h3><?= $place !== '' ? 'Be the first traveler people find for ' . e($place) . '.' : 'Be the first traveler people find.' ?></h3>
           <p class="muted">Post where you are going and when. When somebody posts a trip that lines up with yours, you get told, and they can find you here.</p>
@@ -106,6 +122,18 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <div class="buddy-grid">
           <?php foreach ($cards as $bc): ?><?php include __DIR__ . '/_buddy_card.php'; ?><?php endforeach; ?>
         </div>
+      <?php endif; ?>
+
+      <?php if ($examples): ?>
+        <section class="buddy-examples" aria-labelledby="bx-h">
+          <div class="buddy-examples-head">
+            <h2 id="bx-h">Example listings</h2>
+            <p>These are samples, not real travelers. They show how Travel Buddies works while the community grows: people post a city or a cruise and dates, others ask to join, and messages open once the poster says yes.</p>
+          </div>
+          <div class="buddy-grid">
+            <?php foreach ($examples as $bc): ?><?php include __DIR__ . '/_buddy_card.php'; ?><?php endforeach; ?>
+          </div>
+        </section>
       <?php endif; ?>
     </main>
 

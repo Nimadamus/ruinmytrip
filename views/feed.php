@@ -475,10 +475,12 @@ $threads = $threads ?? [];
           </a>
         <?php endforeach; ?>
         <a class="rail-more" href="<?= e(url('trip/new')) ?>">Post another</a>
+        <a class="rail-more" href="<?= e(url('buddies/mine')) ?>">Travel buddies for your trips</a>
       <?php else: ?>
         <p class="hint" style="margin:0 0 10px">Post where you are going and the people going at the
           same time can find you. Destination and dates only.</p>
         <a class="btn btn-primary btn-sm" href="<?= e(url('trip/new')) ?>">Post a trip</a>
+        <a class="rail-more" href="<?= e(url('buddies')) ?>">Find a travel buddy</a>
       <?php endif; ?>
     </section>
 

@@ -8,6 +8,7 @@ foreach ($dests as $dd) if ((int) $dd['id'] === $filterDest) $rmt_city_name = (s
   <h1 style="margin-bottom:.2rem">Who's going where</h1>
   <p class="muted" style="max-width:62ch">Travelers post the city and the dates they will be there.
     Destination and date range only, never a precise or live location.</p>
+  <p style="margin:.3rem 0 0"><a href="<?= e(url('buddies')) ?>">Search Travel Buddies by dates, interests, cruise and locals &rarr;</a></p>
 
   <?php /* The board leads. This page used to open with a form and three explainer cards, so the one
            thing it exists to show, the people, was four screens down: somebody searching "who is

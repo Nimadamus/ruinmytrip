@@ -1,6 +1,7 @@
 <?php /** @var array $b @var ?array $me @var bool $isOwner @var array $interest @var ?array $mine @var int $accepted @var bool $isPast
  *  @var array $interests @var array $langs @var array $sameSailing @var array $similar @var array $alsoGoing @var bool $saved */
 $open = $b['status'] === 'open' && !$isPast;
+$started = (string) $b['date_from'] <= date('Y-m-d');
 $pid = (int) $b['id'];
 $poster = (string) $b['author']['username'];
 $back = '/buddy/' . $pid;
@@ -28,7 +29,9 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
     <?php if (!empty($b['age_min']) || !empty($b['age_max'])): ?> &middot; ages <?= (int) ($b['age_min'] ?: 18) ?> to <?= (int) ($b['age_max'] ?: 99) ?><?php endif; ?>
     &middot; <?= count($interest) ?> interested &middot; <?= (int) $accepted ?> accepted</p>
 
-  <?php if ($b['status'] === 'closed'): ?>
+  <?php if ($b['status'] === 'completed'): ?>
+    <div class="callout" style="margin:14px 0"><b>This trip is completed.</b> It is kept here as a record and is no longer taking requests.</div>
+  <?php elseif ($b['status'] === 'closed'): ?>
     <div class="callout" style="margin:14px 0"><b>The poster has found their buddies.</b> This trip is no longer taking new requests.</div>
   <?php elseif ($isPast): ?>
     <div class="callout" style="margin:14px 0"><b>This trip has already happened.</b></div>
@@ -95,10 +98,18 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
       <?php endforeach; ?>
     <?php endif; ?>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin:20px 0">
+      <?php if ($b['status'] !== 'completed'): ?>
       <a class="btn btn-ghost" href="<?= e(url('buddy/' . $pid . '/edit')) ?>">Edit</a>
+      <?php if (!$isPast): ?>
       <form method="post" action="<?= e(url('buddy/' . $pid . '/status')) ?>" style="margin:0"><?= csrf_field() ?>
         <input type="hidden" name="status" value="<?= $b['status'] === 'open' ? 'closed' : 'open' ?>">
         <button class="btn btn-ghost"><?= $b['status'] === 'open' ? 'I found my buddies, close it' : 'Reopen' ?></button></form>
+      <?php endif; ?>
+      <?php if ($started): ?>
+      <form method="post" action="<?= e(url('buddy/' . $pid . '/status')) ?>" style="margin:0"><?= csrf_field() ?>
+        <input type="hidden" name="status" value="completed"><button class="btn btn-ghost">Mark completed</button></form>
+      <?php endif; ?>
+      <?php endif; ?>
       <form method="post" action="<?= e(url('buddy/' . $pid . '/status')) ?>" style="margin:0" onsubmit="return confirm('Cancel this trip and remove the post?')"><?= csrf_field() ?>
         <input type="hidden" name="status" value="removed"><button class="btn btn-ghost">Cancel trip</button></form>
     </div>
@@ -111,7 +122,7 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
         <input type="hidden" name="target_id" value="<?= $pid ?>"><input type="hidden" name="return" value="<?= e($back) ?>">
         <button class="btn btn-ghost btn-sm" aria-pressed="<?= $saved ? 'true' : 'false' ?>"><?= $saved ? 'Saved' : 'Save trip' ?></button></form>
     <?php endif; ?>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=buddy&target_id=' . $pid)) ?>">Report</a>
+    <?php if (!$isOwner): ?><a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=buddy&target_id=' . $pid)) ?>">Report</a><?php endif; ?>
   </div>
 
   <?php if ($sameSailing): ?>
