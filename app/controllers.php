@@ -5230,6 +5230,7 @@ const RMT_REPORT_TARGETS = [
     'guide'      => 'guides',
     'blog_post'  => 'blog_posts',
     'meetup'     => 'meetups',
+    'buddy'      => 'buddy_posts',
     'comment'    => 'comments',
     'user'       => 'users',
     'collection' => 'collections',

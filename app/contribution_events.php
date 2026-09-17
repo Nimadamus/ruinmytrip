@@ -458,6 +458,7 @@ function rmt_join_source(string $return): string {
     if ($path === '/invite')                                return 'invite';
     if ($path === '/')                                      return 'home';
     if ($path === '/travelers')                             return 'travelers';
+    if (str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/')) return 'buddies';
     return 'other';
 }
 

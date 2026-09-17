@@ -61,7 +61,7 @@ function rmt_sitemap_group(string $group): array {
             // Pages that are the site rather than an entity in it. Community indexes are included
             // only when they have something on them -- an empty /meetups is a thin page, not a
             // ranking strategy.
-            foreach (['/', '/explore', '/events', '/travelers', '/founding', '/start', '/guides', '/reviews',
+            foreach (['/', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/founding', '/start', '/guides', '/reviews',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
 
@@ -78,6 +78,7 @@ function rmt_sitemap_group(string $group): array {
                         AND (SELECT COUNT(*) FROM collection_items i WHERE i.collection_id=c2.id) >= " . RMT_COMMUNITY_MIN_ITEMS))
                 $add('/communities');
             if ($has("SELECT COUNT(*) c FROM meetups WHERE status='published'"))      $add('/meetups');
+            foreach (q_all("SELECT id FROM buddy_posts WHERE status='open' AND date_to >= ?", [date('Y-m-d')]) as $bp) $add('/buddy/' . (int) $bp['id']);
             if ($has("SELECT COUNT(*) c FROM trips t WHERE t.visibility='public' AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL")) $add('/going');
             if ($has("SELECT COUNT(*) c FROM posts WHERE status='published'"))       $add('/talk');
             if ($has("SELECT COUNT(*) c FROM reviews WHERE status='published'"))      $add('/discover');

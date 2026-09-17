@@ -66,6 +66,7 @@
       <?php endif; ?>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
       <a href="<?= e(url('talk')) ?>">Talk</a>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('events')) ?>">Events</a>

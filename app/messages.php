@@ -202,6 +202,11 @@ function rmt_message_allowed(int $meId, int $themId): array {
     if ($convId && q_one('SELECT 1 FROM messages WHERE conversation_id = ? LIMIT 1', [$convId])) {
         return ['ok' => true, 'reason' => 'existing'];
     }
+    /* Accepted on a travel buddy post, in either direction. Accepting somebody is the poster saying
+       yes to a conversation, the same as accepting a trip connect. */
+    if (function_exists('rmt_buddy_mutual') && rmt_buddy_mutual($meId, $themId)) {
+        return ['ok' => true, 'reason' => 'accepted'];
+    }
     if (function_exists('rmt_connect_mutual') && rmt_connect_mutual($meId, $themId)) {
         return ['ok' => true, 'reason' => 'accepted'];
     }

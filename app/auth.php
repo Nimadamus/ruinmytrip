@@ -228,7 +228,7 @@ function rmt_return_is_join_intent(string $return): bool {
     $exact = ['/review/new', '/trip/new', '/going', '/contribute', '/matches', '/talk', '/meetups'];
     if (in_array($path, $exact, true)) return true;
     return (bool) preg_match('#^/d/[a-z0-9\-]+/(travelers|going)$#', $path)
-        || str_starts_with($path, '/meetup/');
+        || str_starts_with($path, '/meetup/') || str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/');
 }
 
 function rmt_join_intent_line(string $return): ?string {
@@ -260,6 +260,9 @@ function rmt_join_intent_line(string $return): ?string {
     if ($path === '/matches')  return 'Join to see which travelers have dates that overlap yours.';
     if ($path === '/meetups' || str_starts_with($path, '/meetup/')) {
         return 'Join to RSVP. Meetups are public, 18+, and you can leave any time.';
+    }
+    if (str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/')) {
+        return 'Join to find a travel buddy for your cruise or trip. 18+, and nobody can message you until you accept them.';
     }
     if ($path === '/talk')     return 'Join and ask the travelers who have actually been.';
     // A question typed into a place page, carried here in the return address. Search traffic lands

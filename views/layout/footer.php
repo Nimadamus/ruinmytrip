@@ -32,6 +32,8 @@
       <a href="<?= e(url('communities')) ?>">Communities</a>
       <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
+      <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
 <?php /* Signed out this is a redirect to /login, which is a link worth nothing to a reader
              and a wasted crawl to everybody else. */ ?>

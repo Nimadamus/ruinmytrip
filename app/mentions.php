@@ -125,6 +125,8 @@ function rmt_notification_target_url(string $type, int $id, int $forUserId = 0):
         case 'blog_post':
             $r = q_one("SELECT slug FROM blog_posts WHERE id=? AND status='published'", [$id]);
             return $r ? url('blog/' . $r['slug']) : null;
+        case 'buddy':
+            return q_one("SELECT id FROM buddy_posts WHERE id=? AND status IN ('open','closed')", [$id]) ? url('buddy/' . $id) : null;
         case 'meetup':
             $r = q_one('SELECT id FROM meetups WHERE id=?', [$id]);
             return $r ? url('meetup/' . (int)$r['id']) : null;

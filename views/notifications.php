@@ -149,6 +149,15 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b><?= e($line) ?></b>
           <?php endif; ?>
+        <?php elseif (in_array($n['type'], RMT_BUDDY_NOTIFY_TYPES, true)):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
+          $title = q_one('SELECT title FROM buddy_posts WHERE id=?', [(int)$n['target_id']])['title'] ?? null;
+          $line = $n['type'] === 'buddy_interest'
+            ? $who . ' wants to join ' . ($title ? '"' . $title . '"' : 'your trip') . '.'
+            : $who . ' accepted you on ' . ($title ? '"' . $title . '"' : 'their trip') . '. You can message each other now.';
+        ?>
+          <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($line) ?></b></a><?php else: ?><b><?= e($line) ?></b><?php endif; ?>
         <?php elseif (in_array($n['type'], RMT_CITY_NOTIFY_TYPES, true)):
           $who = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $city = null;
