@@ -795,6 +795,8 @@ function profile(array $a): void {
     $uid = (int)$u['id'];
     $me = current_user();
     $isMe = $me && (int)$me['id'] === $uid;
+    // A suspended or removed account is not a traveler anybody should find. Staff can still look.
+    if (($u['status'] ?? 'active') !== 'active' && !in_array($me['role'] ?? '', ['admin', 'mod'], true)) not_found();
     /* Whose profile is not recorded, and neither is whose it was not: the row carries the fact
        that a profile was read and where the reader came from, nothing else. The surface is read
        off the referring path for the length of one comparison and never stored, exactly as the
