@@ -40,7 +40,7 @@ and locals (`profiles.open_to_meeting` + `home_destination_id`). Filters: where 
 text), overlapping dates with flexible slack, trip type, party, interest, age band, show
 (all/going/here/locals), cruise line/ship/port. Answers: buddy_interest (post), trip_connects (trip),
 local_connects (local); any accepted row opens messages via `rmt_buddy_mutual()` in
-`rmt_message_allowed()`. `/buddies/mine` is the member dashboard. `rmt_buddy_notify_matches()` runs on
+`rmt_message_allowed()`. `/buddies/mine` is the member dashboard. Example listings (`app/buddy_examples.php`) are code only, never stored, labeled, and show while real results are under six. Age is never searched on other members' birthdates: the only age option checks the poster's stated range against the reader's own age. Cruise results rank exact sailing > same ship > same line or port. Visual QA: `shots.py` pattern, headless Edge over CDP with a temp profile; local server must run on 127.0.0.1:8099 (app_url) or CSS will not load. `rmt_buddy_notify_matches()` runs on
 post create/edit and in `rmt_trip_create_row` / trip edit. Tests: `tests/travel_buddies_test.php`.
 Postgres was verified with a throwaway docker container (`postgres:16-alpine` on 127.0.0.1:55432,
 `env -u RESEND_API_KEY` so no mail leaves).

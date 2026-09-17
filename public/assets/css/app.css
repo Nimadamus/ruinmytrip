@@ -1526,3 +1526,5 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
   .buddy-search > .bs-row:first-child input[type=date]{padding-left:10px;padding-right:6px;font-size:.92rem}
 }
 .bcard-where b{font-weight:600;color:var(--ink-2)}
+.bcard-here .bcard-tag.bcard-tag-ex{background:var(--surface-3);color:var(--ink-2)}
+.bcard-example.bcard-here{border-color:var(--line)}
