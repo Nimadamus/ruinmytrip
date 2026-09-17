@@ -32,6 +32,19 @@ pages made of members.
   Kinds: post, review, c, u, meetup, tag, city and now trip. A trip card refuses to draw anything
   for a trip that is not public, because the route is open to anybody holding the link.
 
+## Travel buddies (2026-09-17)
+
+`/buddies` is the discovery hub and `app/buddies.php` is its whole API. `rmt_buddy_search()` reads three
+sources as one list: buddy posts, dated trips (through `rmt_plan_visibility_sql`, open_to_meeting not 0)
+and locals (`profiles.open_to_meeting` + `home_destination_id`). Filters: where (city, country or free
+text), overlapping dates with flexible slack, trip type, party, interest, age band, show
+(all/going/here/locals), cruise line/ship/port. Answers: buddy_interest (post), trip_connects (trip),
+local_connects (local); any accepted row opens messages via `rmt_buddy_mutual()` in
+`rmt_message_allowed()`. `/buddies/mine` is the member dashboard. `rmt_buddy_notify_matches()` runs on
+post create/edit and in `rmt_trip_create_row` / trip edit. Tests: `tests/travel_buddies_test.php`.
+Postgres was verified with a throwaway docker container (`postgres:16-alpine` on 127.0.0.1:55432,
+`env -u RESEND_API_KEY` so no mail leaves).
+
 ## Migrations
 
 `070` home_destination_id · `071` trips carry dates and visibility · `072` posts.trip_id ·
@@ -41,7 +54,7 @@ pages made of members.
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
 the reads this product actually does · `086` provider kind on a place, and a stadium category ·
 `087` who said these opening hours · `095` visitor answers · `096` profiles.languages ·
-`097` hidden_content (per member hide) · `098` comments.updated_at · `099` travel buddies (`buddy_posts`, `buddy_interest`; app/buddies.php, `/buddies`, accepted buddies can message).
+`097` hidden_content (per member hide) · `098` comments.updated_at · `099` travel buddies (`buddy_posts`, `buddy_interest`) · `100` buddy matching (party, interests, ages, cruise line/ship/port/ship_key on posts; `trips.trip_type`; `local_connects`).
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.

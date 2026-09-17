@@ -64,6 +64,10 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     <?php endforeach; ?>
   </nav>
 
+  <?php if (!empty($mine)): ?>
+    <p class="buddy-mine"><span class="hint">Who else is going on your trips:</span>
+      <?php foreach ($mine as $m): ?><a class="chip" href="<?= e($m['href']) ?>"><?= e($m['label']) ?></a><?php endforeach; ?></p>
+  <?php endif; ?>
   <div class="buddy-layout">
     <main class="buddy-results">
       <div class="buddy-count">

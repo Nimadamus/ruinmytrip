@@ -754,6 +754,26 @@ function buddies_index(array $a): void {
     $dests = all_dests();
     $countries = array_values(array_unique(array_filter(array_column($dests, 'country'))));
     sort($countries);
+    /* "Who else is going where I am going", one tap: the member's own upcoming plans as ready made
+       searches. Their own rows only. */
+    $mine = [];
+    if ($me) {
+        foreach (q_all("SELECT d.slug, d.name, t.date_from, t.date_to FROM trips t JOIN destinations d ON d.id = t.destination_id
+                         WHERE t.user_id = ? AND t.status = 'published' AND t.date_from IS NOT NULL AND t.date_to >= ?
+                         ORDER BY t.date_from LIMIT 6", [(int) $me['id'], date('Y-m-d')]) as $t) {
+            $mine[] = ['label' => $t['name'] . ', ' . date('M j', strtotime((string) $t['date_from'])),
+                       'href' => url('buddies') . '?' . http_build_query(['dest' => $t['slug'], 'from' => $t['date_from'], 'to' => $t['date_to']])];
+        }
+        foreach (q_all("SELECT b.trip_type, b.ship, b.title, b.date_from, b.date_to, d.slug FROM buddy_posts b LEFT JOIN destinations d ON d.id = b.destination_id
+                         WHERE b.user_id = ? AND b.status = 'open' AND b.date_to >= ? ORDER BY b.date_from LIMIT 6", [(int) $me['id'], date('Y-m-d')]) as $b) {
+            if ($b['trip_type'] === 'cruise' && !empty($b['ship'])) {
+                $mine[] = ['label' => $b['ship'] . ', ' . date('M j', strtotime((string) $b['date_from'])),
+                           'href' => url('buddies/cruise') . '?' . http_build_query(['ship' => $b['ship'], 'from' => $b['date_from'], 'to' => $b['date_from']])];
+            } elseif (!empty($b['slug'])) {
+                $mine[] = ['label' => $b['title'], 'href' => url('buddies') . '?' . http_build_query(['dest' => $b['slug'], 'from' => $b['date_from'], 'to' => $b['date_to'], 'flexible' => '1'])];
+            }
+        }
+    }
     $label = $f['type'] ? RMT_BUDDY_TYPES[$f['type']] : null;
     $path = isset($a['type']) ? 'buddies/' . str_replace('_', '-', $f['type']) : 'buddies';
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'Travel buddies', 'url' => url('buddies')]];
@@ -763,7 +783,7 @@ function buddies_index(array $a): void {
            : ($f['dest'] ? 'Travel buddies in ' . $f['dest']['name'] . ': who is going and who lives there'
            : 'Find a travel buddy: meet people going where you are going'));
     $bf = $f;
-    view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'me', 'dests', 'countries', 'label'), [
+    view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'me', 'dests', 'countries', 'label', 'mine'), [
         'title' => $title . ' | RuinMyTrip',
         'description' => 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Free, 18+, and nobody can message you until you say yes.',
         'canonical' => url($path),

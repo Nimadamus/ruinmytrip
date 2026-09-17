@@ -25,7 +25,7 @@ $bcLogin = url('login?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH) .
     <a href="<?= e(url('u/' . $bc['username'])) ?>" class="bcard-av"><img class="avatar" src="<?= e(avatar_url($bc['avatar_url'])) ?>" alt="" loading="lazy"></a>
     <div class="bcard-who">
       <a class="bcard-name" href="<?= e(url('u/' . $bc['username'])) ?>"><?= e($bcName) ?></a>
-      <span class="hint">@<?= e($bc['username']) ?><?php if ($bc['verified']): ?> &middot; <span class="bcard-ok" title="This member confirmed their email address">Email confirmed</span><?php endif; ?></span>
+      <span class="hint"><?php if (mb_strtolower($bc['name']) !== mb_strtolower($bc['username']) && $bc['name'] !== ''): ?>@<?= e($bc['username']) ?><?php if ($bc['verified']): ?> &middot; <?php endif; ?><?php endif; ?><?php if ($bc['verified']): ?><span class="bcard-ok" title="This member confirmed their email address">Email confirmed</span><?php endif; ?></span>
     </div>
     <span class="bcard-tag"><?= $bc['kind'] === 'local' ? 'Local' : ($bc['here_now'] ? 'There now' : e(RMT_BUDDY_TYPES[$bc['type']] ?? 'Trip')) ?></span>
   </header>
@@ -33,14 +33,17 @@ $bcLogin = url('login?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH) .
   <p class="bcard-where">
     <?php if ($bc['kind'] === 'local'): ?>
       Lives in <a href="<?= e(url('d/' . $bc['dest_slug'])) ?>"><?= e($bc['dest_name']) ?></a>, open to meeting travelers
+    <?php elseif ($bc['type'] === 'cruise' && $bc['ship'] !== ''): ?>
+      <b><?= e($bc['ship']) ?></b>
+      <span class="bcard-dates">Sails <?= e($bcDates) ?><?= $bc['flexible'] ? ' (flexible)' : '' ?></span>
     <?php else: ?>
       <b><?php if ($bc['dest_slug'] !== '' && $bc['kind'] === 'trip'): ?><a href="<?= e(url('d/' . $bc['dest_slug'])) ?>"><?= e($bc['dest_name']) ?></a><?php else: ?><?= e($bc['where']) ?><?php endif; ?></b>
       <span class="bcard-dates"><?= e($bcDates) ?><?= $bc['flexible'] ? ' (flexible)' : '' ?></span>
     <?php endif; ?>
   </p>
 
-  <?php if ($bc['type'] === 'cruise' && ($bc['ship'] !== '' || $bc['cruise_line'] !== '')): ?>
-    <p class="bcard-cruise"><?= e(implode(' · ', array_filter([$bc['ship'], $bc['cruise_line'], $bc['departure_port'] !== '' ? 'from ' . $bc['departure_port'] : '', $bc['nights'] ? $bc['nights'] . ' nights' : '']))) ?></p>
+  <?php if ($bc['type'] === 'cruise' && ($bc['cruise_line'] !== '' || $bc['departure_port'] !== '')): ?>
+    <p class="bcard-cruise"><?= e(implode(' · ', array_filter([$bc['cruise_line'], $bc['departure_port'] !== '' ? 'from ' . $bc['departure_port'] : '', $bc['nights'] ? $bc['nights'] . ' nights' : '']))) ?></p>
   <?php endif; ?>
 
   <?php if ($bc['overlap_days'] > 0): ?>

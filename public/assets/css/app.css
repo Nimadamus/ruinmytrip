@@ -1485,3 +1485,5 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .buddy-home{background:linear-gradient(125deg,#0d1826,#123f48 60%,#0f766e);color:#fff}
 .buddy-home h2{color:#fff}
 .buddy-home p{color:#e3edf2}
+.buddy-mine{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
+.buddy-mine .chip{text-decoration:none}
