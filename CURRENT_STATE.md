@@ -41,7 +41,7 @@ pages made of members.
 meeting point, end time, cancellation, activity photos) · `083` trip_members (collaborative trips) · `084` place source ids and aliases · `085` indexes for
 the reads this product actually does · `086` provider kind on a place, and a stadium category ·
 `087` who said these opening hours · `095` visitor answers · `096` profiles.languages ·
-`097` hidden_content (per member hide) · `098` comments.updated_at.
+`097` hidden_content (per member hide) · `098` comments.updated_at · `099` travel buddies (`buddy_posts`, `buddy_interest`; app/buddies.php, `/buddies`, accepted buddies can message).
 
 Check what production is actually at with `curl https://ruinmytrip.com/readyz`, which prints the
 highest applied migration. A green deploy is not a migration.
