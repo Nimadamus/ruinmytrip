@@ -969,7 +969,11 @@ function buddy_interest(array $a): void {
 function buddy_decide(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $b = rmt_buddy_get((int) $a['id']); if (!$b) not_found();
-    rmt_buddy_decide($b, (int) $me['id'], (int) $a['user_id'], (string) input('answer'));
+    $answer = (string) input('answer');
+    // Acceptance opens messaging, the same moment a trip connect emails about, so it emails too.
+    if (rmt_buddy_decide($b, (int) $me['id'], (int) $a['user_id'], $answer) && $answer === 'accepted' && function_exists('rmt_notify_email_direct')) {
+        rmt_notify_email_direct((int) $a['user_id'], 'You can message your travel buddy now', 'A traveler accepted your request to join their trip on RuinMyTrip.', '/buddy/' . (int) $b['id'], 'your request was accepted');
+    }
     redirect(rmt_return_to('/buddy/' . (int) $b['id']));
 }
 
@@ -1045,6 +1049,9 @@ function buddies_local_connect(array $a): void {
 
 function buddies_local_decide(array $a): void {
     require_login(); csrf_check(); $me = current_user();
-    rmt_local_connect_decide((int) $me['id'], (int) $a['user_id'], input('answer') === 'accepted' ? 'accepted' : 'declined');
+    $answer = input('answer') === 'accepted' ? 'accepted' : 'declined';
+    if (rmt_local_connect_decide((int) $me['id'], (int) $a['user_id'], $answer) && $answer === 'accepted' && function_exists('rmt_notify_email_direct')) {
+        rmt_notify_email_direct((int) $a['user_id'], 'A local said yes', 'A local you asked to meet accepted on RuinMyTrip. You can message each other now.', '/buddies/mine', 'your request was accepted');
+    }
     redirect(rmt_return_to('/buddies/mine'));
 }

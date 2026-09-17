@@ -58,8 +58,12 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
           <?php if ($mine['state'] === 'accepted'): ?>
             <a class="btn btn-primary" href="<?= e(url('messages/' . $poster)) ?>">Message @<?= e($poster) ?></a>
           <?php endif; ?>
+          <?php /* Taking a request back belongs to a trip that is still happening. Once it is closed,
+                   over or completed, withdrawing would only erase the record of who went. */ ?>
+          <?php if ($open): ?>
           <form method="post" action="<?= e(url('buddy/' . $pid . '/interest')) ?>" style="margin:0"><?= csrf_field() ?>
             <button class="btn btn-ghost">Withdraw</button></form>
+          <?php endif; ?>
         </div>
       <?php elseif ($open): ?>
         <form method="post" action="<?= e(url('buddy/' . $pid . '/interest')) ?>"><?= csrf_field() ?>
