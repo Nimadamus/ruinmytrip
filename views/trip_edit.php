@@ -38,6 +38,14 @@
       <option value="followers"<?= $vis === 'followers' ? ' selected' : '' ?>>People who follow me</option>
       <option value="private"<?= $vis === 'private' ? ' selected' : '' ?>>Only me</option>
     </select>
+    <label for="trip_type">What kind of trip is it?</label>
+    <select id="trip_type" name="trip_type">
+      <?php $tt = (string) ($t['trip_type'] ?? ''); ?>
+      <option value="">City trip</option>
+      <?php foreach (RMT_BUDDY_TYPES as $ttKey => $ttLabel): if ($ttKey === 'trip') continue; ?>
+        <option value="<?= e($ttKey) ?>"<?= $tt === $ttKey ? ' selected' : '' ?>><?= e($ttLabel) ?></option>
+      <?php endforeach; ?>
+    </select>
     <label for="body">Your story</label>
     <?php /* This said required, and a trip posted as a city and two dates has no body, so the browser
              silently refused to submit the form and the Save button did nothing at all: no message,

@@ -187,6 +187,9 @@ $authorSaid = $authorSaid ?? [];
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
         if ($isOwner) { $shareLabel = 'Invite a traveler'; }
         include __DIR__ . '/_share.php'; ?>
+  <?php if (in_array($phase, ['upcoming', 'current'], true) && !empty($t['dest_slug'] ?? '')): ?>
+    <p style="margin:10px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('buddies?' . http_build_query(['dest' => $t['dest_slug'], 'from' => $t['date_from'], 'to' => $t['date_to']]))) ?>">Find travel buddies for these dates</a></p>
+  <?php endif; ?>
   <?php if ($isOwner && in_array($phase, ['upcoming', 'current'], true)): ?>
     <p class="hint" style="margin:6px 0 0">Send this to anybody you know who is going. They see your
       dates and can post theirs, and the two of you show up on each other's matches.</p>

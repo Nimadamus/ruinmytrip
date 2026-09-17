@@ -152,10 +152,16 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
         <?php elseif (in_array($n['type'], RMT_BUDDY_NOTIFY_TYPES, true)):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id']);
-          $title = q_one('SELECT title FROM buddy_posts WHERE id=?', [(int)$n['target_id']])['title'] ?? null;
-          $line = $n['type'] === 'buddy_interest'
-            ? $who . ' wants to join ' . ($title ? '"' . $title . '"' : 'your trip') . '.'
-            : $who . ' accepted you on ' . ($title ? '"' . $title . '"' : 'their trip') . '. You can message each other now.';
+          $title = $n['target_type'] === 'buddy' ? (q_one('SELECT title FROM buddy_posts WHERE id=?', [(int)$n['target_id']])['title'] ?? null)
+                 : ($n['target_type'] === 'trip' ? (q_one('SELECT title FROM trips WHERE id=?', [(int)$n['target_id']])['title'] ?? null) : null);
+          if (in_array($n['type'], ['local_connect', 'local_accepted'], true)) $href = url('buddies/mine');
+          $line = match ($n['type']) {
+            'buddy_interest' => $who . ' wants to join ' . ($title ? '"' . $title . '"' : 'your trip') . '.',
+            'buddy_accepted' => $who . ' accepted you on ' . ($title ? '"' . $title . '"' : 'their trip') . '. You can message each other now.',
+            'buddy_match'    => $who . ' posted ' . ($title ? '"' . $title . '"' : 'a trip') . ', which lines up with yours.',
+            'local_connect'  => $who . ' would like to meet you as a local.',
+            default          => $who . ' accepted your request to meet. You can message each other now.',
+          };
         ?>
           <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($line) ?></b></a><?php else: ?><b><?= e($line) ?></b><?php endif; ?>
         <?php elseif (in_array($n['type'], RMT_CITY_NOTIFY_TYPES, true)):

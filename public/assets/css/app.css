@@ -1409,3 +1409,79 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
    a word that would otherwise overflow. tests/long_username_test.php keeps it. */
 main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .person-who,.cc-post-main,.cc-post-by,.meta-row,.card-body,.rail-row,.thread-line,.profile-head > div{min-width:0}
+
+/* Travel buddies. Phone first: the search stacks, cards are one column, every control is 44px. */
+.buddy-hero{background:linear-gradient(125deg,#0d1826,#123f48 60%,#0f766e);color:#fff;padding:18px 0 34px;border-radius:0 0 28px 28px}
+.buddy-hero .crumbs,.buddy-hero .crumbs a{color:#cfe3e6}
+.buddy-hero .eyebrow{color:#7ee0d2;margin:14px 0 4px}
+.buddy-hero h1{color:#fff;font-size:clamp(1.9rem,4.6vw,3.1rem);letter-spacing:-.02em;max-width:20ch;margin:0 0 10px}
+.buddy-lede{color:#e3edf2;font-size:clamp(1rem,1.8vw,1.18rem);max-width:60ch;margin:0}
+.buddy-cta{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 22px}
+.btn-ghost-light{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35)}
+.btn-ghost-light:hover{background:rgba(255,255,255,.18)}
+.buddy-search{background:var(--card);color:var(--text);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:14px}
+.bs-row{display:grid;grid-template-columns:1fr;gap:10px}
+.bs-row label{display:flex;flex-direction:column;gap:4px;margin:0;font-weight:600;font-size:.82rem;color:var(--muted)}
+.bs-row input,.bs-row select{margin:0;min-height:44px;width:100%}
+.bs-more{margin-top:10px}
+.bs-check{flex-direction:row !important;align-items:center;gap:8px !important;color:var(--text) !important}
+.bs-check input{width:auto;min-height:0}
+.bs-go{min-height:44px;align-self:end}
+.bs-cruise{margin-top:10px}
+.bs-cruise summary{cursor:pointer;font-weight:600;color:var(--brand);min-height:36px;display:flex;align-items:center}
+@media (min-width:760px){
+  .bs-row{grid-template-columns:2fr 1fr 1fr auto}
+  .bs-more{grid-template-columns:repeat(3,1fr)}
+  .bs-cruise .bs-row{grid-template-columns:repeat(3,1fr)}
+}
+@media (min-width:1080px){.bs-more{grid-template-columns:repeat(6,1fr)}}
+.buddy-body{padding:18px 16px 50px}
+.buddy-types{display:flex;gap:8px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:thin}
+.buddy-types .chip{white-space:nowrap;text-decoration:none}
+.buddy-types .chip.active{background:var(--brand);color:#fff}
+.buddy-layout{display:grid;grid-template-columns:1fr;gap:22px}
+@media (min-width:1000px){.buddy-layout{grid-template-columns:minmax(0,1fr) 300px}}
+.buddy-count h2{margin:0}
+.buddy-count .hint{margin:.2rem 0 12px}
+.buddy-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:700px){.buddy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.buddy-side{display:flex;flex-direction:column;gap:14px}
+.buddy-side h3{margin:0 0 4px;font-size:1.05rem}
+.buddy-side select,.buddy-side input{width:100%}
+.buddy-sailings{background:var(--tint);border-radius:var(--radius-sm);padding:12px 14px;margin:0 0 14px}
+.buddy-sailings h3{margin:0 0 6px;font-size:1rem}
+.sailing{margin:.2rem 0}
+.bcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.bcard-here{border-color:var(--brand-2)}
+.bcard-local{border-style:dashed}
+.bcard-head{display:flex;gap:10px;align-items:center;min-width:0}
+.bcard-av .avatar{width:52px;height:52px}
+.bcard-who{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.bcard-name{font-weight:700;color:var(--ink);text-decoration:none;overflow-wrap:anywhere}
+.bcard-ok{color:var(--brand);font-weight:600}
+.bcard-tag{flex:0 0 auto;background:var(--tint);color:var(--brand);border-radius:999px;padding:.2rem .65rem;font-size:.74rem;font-weight:700}
+.bcard-here .bcard-tag{background:var(--brand);color:#fff}
+.bcard-where{margin:0;overflow-wrap:anywhere}
+.bcard-dates{display:block;color:var(--muted);font-size:.92rem}
+.bcard-cruise{margin:0;font-size:.9rem;color:var(--ink-2)}
+.bcard-overlap{margin:0;font-weight:650;color:var(--brand)}
+.bcard-title{margin:0;font-weight:650}
+.bcard-sum{margin:0;color:var(--text);font-size:.94rem}
+.bcard-chips{display:flex;flex-wrap:wrap;gap:6px}
+.bcard-chips:empty{display:none}
+.chip-soft{background:var(--surface-2);color:var(--ink-2);font-weight:600}
+.bcard-lang{margin:0}
+.bcard-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:auto;padding-top:6px}
+.bcard-acts form{margin:0}
+.bcard-acts .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:560px){.bcard-acts form,.bcard-acts > .btn{flex:1 1 auto}.bcard-acts button{width:100%}}
+.bdash h2{margin:26px 0 8px}
+.bdash-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.bdash-row .avatar{width:44px;height:44px}
+.bdash-main{flex:1;min-width:200px}
+.bdash-acts{display:flex;gap:8px;flex-wrap:wrap}
+.bdash-acts form{margin:0}
+.bdash-acts .btn{min-height:44px}
+.buddy-home{background:linear-gradient(125deg,#0d1826,#123f48 60%,#0f766e);color:#fff}
+.buddy-home h2{color:#fff}
+.buddy-home p{color:#e3edf2}

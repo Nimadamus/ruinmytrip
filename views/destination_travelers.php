@@ -43,6 +43,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
   <h1 style="margin-bottom:.2rem">Travelers in <?= e($city) ?></h1>
   <p class="muted" style="max-width:62ch">Who is going and when, what meetups are on, and the people
     who have already been. Everything here is posted by members, not by us.</p>
+  <p><a class="btn btn-accent btn-sm" href="<?= e(url('buddies?dest=' . rawurlencode($d['slug']))) ?>">Search travel buddies for <?= e($city) ?> by dates and interests</a></p>
 
   <?php /* The one thing a stranger who landed from search is asked to do. It is the product, not a
            mailing list: three real actions, each of which is why they searched. */ ?>

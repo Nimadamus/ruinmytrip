@@ -64,9 +64,9 @@
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
       <?php endif; ?>
+      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
-      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
       <a href="<?= e(url('talk')) ?>">Talk</a>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('events')) ?>">Events</a>
@@ -84,6 +84,7 @@
           <a href="<?= e(url('blog')) ?>">Blog</a>
           <?php if ($me): ?>
             <a href="<?= e(url('matches')) ?>">Matches</a>
+            <a href="<?= e(url('buddies/mine')) ?>">Your travel buddies</a>
             <a href="<?= e(url('saved')) ?>">Saved</a>
             <a href="<?= e(url('invite')) ?>">Invite a traveler</a>
             <a href="<?= e(url('settings')) ?>">Settings</a>

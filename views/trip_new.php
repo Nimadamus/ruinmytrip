@@ -72,6 +72,14 @@
         <?php endforeach; ?>
       </select>
 
+      <label for="trip_type">What kind of trip is it?</label>
+      <select id="trip_type" name="trip_type">
+        <option value="">City trip</option>
+        <?php foreach (RMT_BUDDY_TYPES as $ttKey => $ttLabel): if ($ttKey === 'trip') continue; ?>
+          <option value="<?= e($ttKey) ?>"<?= input('trip_type') === $ttKey ? ' selected' : '' ?>><?= e($ttLabel) ?></option>
+        <?php endforeach; ?>
+      </select>
+
       <label for="open_to_meeting">Open to meeting other travelers on this trip?</label>
       <select id="open_to_meeting" name="open_to_meeting">
         <option value=""<?= input('open_to_meeting') === '' ? ' selected' : '' ?>>No answer</option>

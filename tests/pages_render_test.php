@@ -63,7 +63,7 @@ if (!$up) {
 /** Anything PHP prints when a page falls over. A page may not contain any of it. */
 const BROKEN = ['Fatal error', 'Uncaught', 'SQLSTATE', 'Parse error', 'Warning:', 'Deprecated:'];
 
-$routes = ['/', '/explore', '/travelers', '/going', '/meetups', '/buddies', '/buddies/cruise', '/talk', '/discover', '/reviews',
+$routes = ['/', '/explore', '/travelers', '/going', '/meetups', '/buddies', '/buddies/cruise', '/buddies?where=Paris&from=2027-06-05&to=2027-06-12&flexible=1', '/buddies?where=Thailand&show=here', '/buddies?show=locals&interest=food&age=26-35', '/buddies/cruise?ship=Icon+of+the+Seas&line=Royal', '/buddies?where=nowhere-at-all&from=2027-01-01', '/talk', '/discover', '/reviews',
            '/guides', '/blog', '/collections', '/communities', '/tags', '/ruined', '/contribute',
            '/leaderboard', '/about', '/safety', '/register', '/login', '/sitemap.xml', '/feed.xml'];
 
@@ -168,14 +168,14 @@ if ($acct) {
     $birthBefore = $pdo->query('SELECT birthdate FROM users WHERE id = ' . (int) $acct['id'])->fetch(PDO::FETCH_NUM)[0] ?? null;
     $pdo->prepare("UPDATE users SET birthdate = '1990-01-01' WHERE id = ?")->execute([$acct['id']]);
     $pdo->prepare("INSERT INTO buddy_posts (user_id,trip_type,title,where_text,date_from,date_to,spots,budget,description,status,created_at)
-                   VALUES (?,'cruise','Render test cruise','Miami',?,?,1,'any','Render test description text','open',?)")
+                   VALUES (?,'cruise','Render test cruise','Render ship from Miami',?,?,1,'any','Render test description text','open',?)")
         ->execute([$acct['id'], date('Y-m-d', strtotime('+30 days')), date('Y-m-d', strtotime('+37 days')), date('Y-m-d H:i:s')]);
     $buddyId = (int) $pdo->lastInsertId();
     $pdo->prepare("INSERT INTO buddy_interest (post_id,user_id,note,state,created_at)
                    SELECT ?, id, 'Render test note', 'interested', ? FROM users WHERE id <> ? AND status='active' ORDER BY id LIMIT 1")
         ->execute([$buddyId, date('Y-m-d H:i:s'), $acct['id']]);
     foreach (['/feed', '/matches', '/notifications', '/saved', '/messages', $editor,
-              '/trip/new', '/review/new', '/invite', '/buddies/new', '/buddy/' . $buddyId] as $path) {
+              '/trip/new', '/review/new', '/invite', '/buddies/new', '/buddies/new?type=cruise', '/buddy/' . $buddyId, '/buddy/' . $buddyId . '/edit', '/buddies/mine', '/buddies?where=Paris', '/saved'] as $path) {
         [$st, $body] = $req($path, null, $cookie);
         $hit = '';
         foreach (BROKEN as $needle) {
@@ -517,6 +517,14 @@ if ($restore) {
         [$st, $body] = $req('/buddy/' . $buddyId, null, '');
         ok('GET /buddy/{id} (signed out)', $st === 200 && str_contains($body, 'Render test cruise') && !str_contains($body, 'Render test note'),
            "status $st");
+        // The results page with a real card on it, signed out, in both the plain and the cruise view.
+        foreach (['/buddies', '/buddies/cruise?where=Render+ship', '/buddies?show=going&flexible=1'] as $path) {
+            [$st, $body] = $req($path, null, '');
+            $hit = '';
+            foreach (BROKEN as $needle) if (str_contains($body, $needle)) { $hit = $needle; break; }
+            ok("GET $path shows the card", $st === 200 && $hit === '' && str_contains($body, 'class="bcard') && str_contains($body, 'Render test cruise'),
+               "status $st" . ($hit ? " contains $hit" : ''));
+        }
         $pdo->prepare('DELETE FROM buddy_interest WHERE post_id = ?')->execute([$buddyId]);
         $pdo->prepare('DELETE FROM buddy_posts WHERE id = ?')->execute([$buddyId]);
         $pdo->prepare('UPDATE users SET birthdate = ? WHERE id = ?')->execute([$birthBefore, $restore[0]]);

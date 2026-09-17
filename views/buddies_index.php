@@ -1,42 +1,143 @@
-<?php /** @var array $posts @var ?array $me @var ?string $type @var ?string $label */
-$fmtRange = static fn(array $p): string =>
-    date('M j', strtotime((string) $p['date_from'])) . ' to ' . date('M j, Y', strtotime((string) $p['date_to']));
-$newPath = '/buddies/new' . ($type ? '?type=' . $type : '');
-$newHref = url($me ? ltrim($newPath, '/') : 'login?return=' . rawurlencode($newPath)); ?>
-<div class="wrap">
-  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if ($type): ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a> / <?= e($label) ?><?php else: ?>Travel buddies<?php endif; ?></p>
-  <div class="section-head">
-    <div><h1 style="margin:0"><?= $type === 'cruise' ? 'Find a cruise buddy' : ($type ? 'Find a ' . e(strtolower($label)) . ' buddy' : 'Find a travel buddy') ?></h1>
-      <p class="hint" style="margin:.3rem 0 0">Members posting the cruise or trip they are taking and the kind of company they want.
-        Put your hand up, and once the poster accepts you, you can message each other.</p></div>
-    <a class="btn btn-accent btn-sm" href="<?= e($newHref) ?>">Post your trip</a>
+<?php /** @var array $bf @var array $res @var array $cards @var array $sailings @var ?array $me @var array $dests @var array $countries @var ?string $label */
+$bcBack = (string) ($_SERVER['REQUEST_URI'] ?? '/buddies');
+$action = url(ltrim((string) parse_url($bcBack, PHP_URL_PATH), '/'));
+$cruiseOpen = $bf['type'] === 'cruise' || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '';
+$postQuery = array_filter(['type' => $bf['type'], 'dest' => $bf['dest']['slug'] ?? '', 'from' => $bf['from'], 'to' => $bf['to'],
+                           'ship' => $bf['ship'], 'line' => $bf['line'], 'port' => $bf['port']]);
+$postPath = '/buddies/new' . ($postQuery ? '?' . http_build_query($postQuery) : '');
+$postHref = $me ? url(ltrim($postPath, '/')) : url('login?return=' . rawurlencode($postPath));
+$n = count($cards);
+$place = $bf['dest']['name'] ?? ($bf['country'] !== '' ? $bf['country'] : ($bf['where'] !== '' ? $bf['where'] : ''));
+$shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
+?>
+<section class="buddy-hero"><div class="wrap">
+  <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if ($label && str_starts_with(trim((string) parse_url($bcBack, PHP_URL_PATH), '/'), 'buddies/')): ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a> / <?= e($label) ?><?php else: ?>Travel buddies<?php endif; ?></p>
+  <p class="eyebrow">Travel buddies</p>
+  <h1><?= $bf['type'] === 'cruise' ? 'Find people on your cruise.' : 'Going somewhere? Find people heading the same way.' ?></h1>
+  <p class="buddy-lede">Meet travelers going where you are going, connect with locals and people already there, or find others on the same cruise. Nobody can message you until you say yes.</p>
+  <div class="buddy-cta">
+    <a class="btn btn-accent" href="<?= e($postHref) ?>">Post your trip</a>
+    <?php if ($me): ?><a class="btn btn-ghost-light" href="<?= e(url('buddies/mine')) ?>">Your buddies and requests</a><?php endif; ?>
   </div>
-  <nav style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0" aria-label="Kind of trip">
-    <a class="chip<?= $type === null ? ' active' : '' ?>" href="<?= e(url('buddies')) ?>">All</a>
+
+  <form class="buddy-search" method="get" action="<?= e($action) ?>" role="search">
+    <div class="bs-row">
+      <label class="bs-where"><span>Where</span>
+        <input type="text" name="where" list="bs-places" value="<?= e($bf['where']) ?>" placeholder="Tokyo, Thailand, a ship name" autocomplete="off"></label>
+      <label><span>From</span><input type="date" name="from" value="<?= e($bf['from']) ?>"></label>
+      <label><span>To</span><input type="date" name="to" value="<?= e($bf['to']) ?>"></label>
+      <button class="btn btn-accent bs-go" type="submit">Find travelers</button>
+    </div>
+    <datalist id="bs-places">
+      <?php foreach ($dests as $d): ?><option value="<?= e($d['name']) ?>"><?= e((string) $d['country']) ?></option><?php endforeach; ?>
+      <?php foreach ($countries as $c): ?><option value="<?= e($c) ?>"></option><?php endforeach; ?>
+    </datalist>
+    <div class="bs-row bs-more">
+      <label><span>Trip type</span><select name="type"><option value="">Any trip</option>
+        <?php foreach (RMT_BUDDY_TYPES as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['type'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
+      <label><span>Travelling</span><select name="party"><option value="">Solo, group, anyone</option>
+        <?php foreach (RMT_BUDDY_PARTIES as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['party'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
+      <label><span>Into</span><select name="interest"><option value="">Any interest</option>
+        <?php foreach (RMT_INTERESTS as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['interest'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
+      <label><span>Age</span><select name="age"><option value="">Any age</option>
+        <?php foreach (array_keys(RMT_BUDDY_AGE_BANDS) as $k): ?><option value="<?= e($k) ?>"<?= $bf['age'] === $k ? ' selected' : '' ?>><?= e(str_replace('-99', '+', str_replace('-', ' to ', $k))) ?></option><?php endforeach; ?></select></label>
+      <label><span>Show</span><select name="show">
+        <?php foreach (['all' => 'Everyone', 'going' => 'Travelers going', 'here' => 'There right now', 'locals' => 'Locals open to meeting'] as $k => $v): ?>
+          <option value="<?= e($k) ?>"<?= $bf['show'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
+      <label class="bs-check"><input type="checkbox" name="flexible" value="1"<?= $bf['flexible'] ? ' checked' : '' ?>> <span>Flexible dates (a week either side)</span></label>
+    </div>
+    <details class="bs-cruise"<?= $cruiseOpen ? ' open' : '' ?>><summary>Cruise details: line, ship, port</summary>
+      <div class="bs-row">
+        <label><span>Cruise line</span><input type="text" name="line" value="<?= e($bf['line']) ?>" placeholder="Royal Caribbean"></label>
+        <label><span>Ship</span><input type="text" name="ship" value="<?= e($bf['ship']) ?>" placeholder="Icon of the Seas"></label>
+        <label><span>Departure port</span><input type="text" name="port" value="<?= e($bf['port']) ?>" placeholder="Miami"></label>
+      </div>
+    </details>
+  </form>
+</div></section>
+
+<div class="wrap buddy-body">
+  <nav class="buddy-types" aria-label="Kind of trip">
+    <a class="chip<?= $bf['type'] === '' ? ' active' : '' ?>" href="<?= e(url('buddies')) ?>">All trips</a>
     <?php foreach (RMT_BUDDY_TYPES as $k => $v): ?>
-      <a class="chip<?= $type === $k ? ' active' : '' ?>" href="<?= e(url('buddies/' . str_replace('_', '-', $k))) ?>"><?= e($v) ?></a>
+      <a class="chip<?= $bf['type'] === $k ? ' active' : '' ?>" href="<?= e(url('buddies/' . str_replace('_', '-', $k))) ?>"><?= e($v) ?></a>
     <?php endforeach; ?>
   </nav>
-  <div class="callout"><b>Company for a trip, not dating.</b> 18+ only. Nobody can message you until you accept them, and you can block or <a href="<?= e(url('report')) ?>">report</a> anyone. Meet in public before you travel together. <a href="<?= e(url('safety')) ?>">Safety guide</a></div>
-  <?php if (!$posts): ?>
-    <div class="empty-cta" style="margin:14px 0 50px">
-      <h3>Nobody has posted <?= $type ? 'a ' . e(strtolower($label)) : 'a trip' ?> here yet.</h3>
-      <p class="muted" style="margin:0">Booked a cruise and would rather not go alone? Planning a trip and want someone to split the cabin, the car or the room? Post it and be the first one people find.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e($newHref) ?>">Post your trip</a></p>
-    </div>
-  <?php else: ?>
-    <div class="grid g-2" style="padding:14px 0 50px">
-      <?php foreach ($posts as $p): ?>
-        <article class="card"><div class="card-body">
-          <span class="chip"><?= e(RMT_BUDDY_TYPES[$p['trip_type']] ?? 'Trip') ?></span>
-          <?php if (!empty($p['dest_name'])): ?><span class="chip"><?= e((string) $p['dest_name']) ?></span><?php endif; ?>
-          <h3 style="margin:.4rem 0 .2rem"><a href="<?= e(url('buddy/' . (int) $p['id'])) ?>"><?= e((string) $p['title']) ?></a></h3>
-          <p class="muted" style="margin:0"><?= e((string) $p['where_text']) ?> &middot; <?= e($fmtRange($p)) ?><?= (int) $p['flexible'] ? ' (flexible)' : '' ?></p>
-          <p style="margin:.5rem 0"><?= e(mb_strimwidth((string) $p['description'], 0, 160, '…')) ?></p>
-          <div class="meta-row">Posted by @<?= e($p['author']['username'] ?? '') ?> &middot;
-            looking for <?= (int) $p['spots'] ?> &middot; <?= (int) $p['interest_count'] ?> interested<?php if ($p['budget'] !== 'any'): ?> &middot; <?= e(RMT_BUDDY_BUDGETS[$p['budget']] ?? '') ?><?php endif; ?></div>
-        </div></article>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
+
+  <div class="buddy-layout">
+    <main class="buddy-results">
+      <div class="buddy-count">
+        <h2><?php if ($n === 0): ?>Nobody here yet<?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
+        <?php if ($n): ?><p class="hint"><?= implode(' · ', array_filter([
+            $res['counts']['post'] ? $res['counts']['post'] . ' looking for company' : '',
+            $res['counts']['trip'] ? $res['counts']['trip'] . ' with trips posted' : '',
+            $res['counts']['here'] ? $res['counts']['here'] . ' there right now' : '',
+            $res['counts']['local'] ? $res['counts']['local'] . ($res['counts']['local'] === 1 ? ' local' : ' locals') : '',
+          ])) ?></p><?php endif; ?>
+      </div>
+      <?php if ($res['widened']): ?>
+        <div class="callout">Nobody overlaps <?= e(date('M j', strtotime($bf['from']))) ?> to <?= e(date('M j', strtotime($bf['to']))) ?> yet, so these are the people going<?= $place !== '' ? ' to ' . e($place) : '' ?> at other times. <a href="<?= e($postHref) ?>">Post your dates</a> and the next traveler who matches will be told.</div>
+      <?php endif; ?>
+
+      <?php if ($shown): ?>
+        <section class="buddy-sailings">
+          <h3>On the same sailing</h3>
+          <?php foreach ($shown as $s): ?>
+            <p class="sailing"><b><?= e($s['ship'] !== '' ? $s['ship'] : $s['cruise_line']) ?></b>
+              <?= e(date('M j, Y', strtotime($s['from']))) ?><?= $s['nights'] ? ', ' . (int) $s['nights'] . ' nights' : '' ?><?= $s['port'] !== '' ? ', from ' . e($s['port']) : '' ?>
+              &middot; <?= count($s['cards']) ?> travelers
+              <a href="<?= e(url('buddies/cruise') . rmt_buddy_query($bf, ['ship' => $s['ship'], 'from' => $s['from'], 'to' => $s['from'], 'type' => ''])) ?>">See them</a></p>
+          <?php endforeach; ?>
+        </section>
+      <?php endif; ?>
+
+      <?php if ($n === 0): ?>
+        <div class="empty-cta">
+          <h3><?= $place !== '' ? 'Be the first traveler people find for ' . e($place) . '.' : 'Be the first traveler people find.' ?></h3>
+          <p class="muted">Post where you are going and when. When somebody posts a trip that lines up with yours, you get told, and they can find you here.</p>
+          <p><a class="btn btn-accent" href="<?= e($postHref) ?>">Post your trip</a>
+            <?php if (rmt_buddy_filters_active($bf)): ?><a class="btn btn-ghost" href="<?= e(url('buddies')) ?>">Clear the search</a><?php endif; ?></p>
+        </div>
+      <?php else: ?>
+        <div class="buddy-grid">
+          <?php foreach ($cards as $bc): ?><?php include __DIR__ . '/_buddy_card.php'; ?><?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+    </main>
+
+    <aside class="buddy-side">
+      <?php if ($me): ?>
+        <div class="card"><div class="card-body">
+          <h3>Already there?</h3>
+          <p class="hint">Show up for travelers searching a city while you are in it. Only the city and your dates show.</p>
+          <form method="post" action="<?= e(url('buddies/here')) ?>"><?= csrf_field() ?>
+            <label for="here-dest">I am in</label>
+            <select id="here-dest" name="destination_id" required><option value="">Pick a city</option>
+              <?php foreach ($dests as $d): ?><option value="<?= (int) $d['id'] ?>"<?= (int) ($bf['dest_id'] ?? 0) === (int) $d['id'] ? ' selected' : '' ?>><?= e($d['name']) ?></option><?php endforeach; ?></select>
+            <label for="here-until">Until</label>
+            <input id="here-until" type="date" name="until" min="<?= e(date('Y-m-d')) ?>" value="<?= e(date('Y-m-d', strtotime('+3 days'))) ?>">
+            <button class="btn btn-primary btn-sm" style="margin-top:10px">I'm here now</button>
+          </form>
+        </div></div>
+        <div class="card"><div class="card-body">
+          <h3>Live somewhere travelers go?</h3>
+          <p class="hint">List yourself as a local who is happy to meet travelers. Only your city shows, and you choose who to accept.</p>
+          <form method="post" action="<?= e(url('buddies/local')) ?>"><?= csrf_field() ?>
+            <input type="hidden" name="return" value="<?= e($bcBack) ?>">
+            <label for="local-dest">I live in</label>
+            <select id="local-dest" name="destination_id" required><option value="">Pick a city</option>
+              <?php foreach ($dests as $d): ?><option value="<?= (int) $d['id'] ?>"><?= e($d['name']) ?></option><?php endforeach; ?></select>
+            <button class="btn btn-ghost btn-sm" style="margin-top:10px">I'm open to meeting travelers</button>
+          </form>
+        </div></div>
+      <?php else: ?>
+        <div class="card"><div class="card-body">
+          <h3>Join to connect</h3>
+          <p class="hint">Free and 18+. Post your trip, say you are already there, or list yourself as a local.</p>
+          <a class="btn btn-accent btn-sm" href="<?= e(url('register?return=' . rawurlencode('/buddies'))) ?>">Create an account</a>
+        </div></div>
+      <?php endif; ?>
+      <div class="callout buddy-safety"><b>How privacy works.</b> Cards show a city or ship and dates, never a hotel, cabin, address or live location. Requests carry no contact details, and messages open only after the other person accepts. Block or <a href="<?= e(url('report')) ?>">report</a> anyone. Meet in public first. <a href="<?= e(url('safety')) ?>">Safety guide</a></div>
+    </aside>
+  </div>
 </div>

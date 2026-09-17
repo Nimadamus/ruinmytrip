@@ -58,6 +58,9 @@
           <?php /* The one fact a traveler heading somewhere most wants on a profile: this person is
                    there all the time. Links to that city's people page. */ ?>
           <span><a class="chip" href="<?= e(url('d/'.$homeDest['slug'].'/travelers')) ?>">Local in <?= e($homeDest['name']) ?></a></span>
+          <?php if ((int) ($homeDest['open_to_meeting'] ?? 0) === 1): ?>
+            <span><a class="chip" href="<?= e(url('buddies?dest=' . rawurlencode($homeDest['slug']) . '&show=locals')) ?>">Open to meeting travelers</a></span>
+          <?php endif; ?>
         <?php endif; ?>
         <?php if ((int) ($stats['countries'] ?? 0) > 0): ?>
           <span><b><?= (int)$stats['countries'] ?></b> <?= $stats['countries'] === 1 ? 'country' : 'countries' ?></span>
@@ -238,6 +241,20 @@
         <?php endforeach; ?>
       </div>
       <p class="hint" style="margin:8px 0 0">Self-asserted. Not a review and not a rating.</p>
+    </div></div>
+  <?php endif; ?>
+
+  <?php if (!empty($buddyPosts)): ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <p class="eyebrow" style="margin:0 0 8px"><?= $isMe ? 'Your trips looking for travel buddies' : 'Looking for travel buddies' ?></p>
+      <ul class="list-plain" style="margin:0">
+        <?php foreach ($buddyPosts as $bp): ?>
+          <li style="padding:6px 0;border-bottom:1px solid var(--line)">
+            <a href="<?= e(url('buddy/' . (int) $bp['id'])) ?>"><b><?= e($bp['title']) ?></b></a>
+            <span class="muted"> · <?= e(RMT_BUDDY_TYPES[$bp['trip_type']] ?? 'Trip') ?> · <?= e($bp['where_text']) ?> · <?= e(date('M j', strtotime((string) $bp['date_from']))) ?> to <?= e(date('M j, Y', strtotime((string) $bp['date_to']))) ?></span>
+          </li>
+        <?php endforeach; ?>
+      </ul>
     </div></div>
   <?php endif; ?>
 

@@ -82,6 +82,30 @@
   </div>
 </section>
 
+<?php /* Travel buddies leads the people half of the page: the one question every visitor who might
+         join is asking, answered with a search box rather than a paragraph. No queries here, so the
+         homepage costs nothing extra. */ ?>
+<section class="block buddy-home"><div class="wrap">
+  <p class="eyebrow" style="color:#7ee0d2">Travel buddies</p>
+  <h2 style="margin:.2rem 0 .4rem;font-size:clamp(1.6rem,3.6vw,2.4rem)">Going somewhere? Find people heading the same way.</h2>
+  <p style="max-width:62ch;margin:0 0 16px">Meet travelers going where you are going, connect with locals and people already there, or find others on the same cruise. Nobody can message you until you say yes.</p>
+  <form class="buddy-search" method="get" action="<?= e(url('buddies')) ?>" role="search">
+    <div class="bs-row">
+      <label class="bs-where"><span>Where</span><input type="text" name="where" placeholder="Paris, Thailand, a ship name"></label>
+      <label><span>From</span><input type="date" name="from"></label>
+      <label><span>To</span><input type="date" name="to"></label>
+      <button class="btn btn-accent bs-go" type="submit">Find travelers</button>
+    </div>
+  </form>
+  <p style="margin:14px 0 0;display:flex;flex-wrap:wrap;gap:8px">
+    <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
+    <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies/backpacking')) ?>">Backpacking</a>
+    <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies/road-trip')) ?>">Road trips</a>
+    <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies?show=here')) ?>">There right now</a>
+    <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies?show=locals')) ?>">Locals open to meeting</a>
+  </p>
+</div></section>
+
 <?php /* Who is here, before anything we wrote. A visitor deciding whether to join is deciding
          whether there are people, and no amount of research answers that question. When there is
          nobody yet the section says so and offers the empty chair, which is the only version of

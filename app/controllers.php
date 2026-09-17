@@ -862,8 +862,11 @@ function profile(array $a): void {
     $photoWall = rmt_member_photos($uid, $me, 18);
     // Where they live, when it is a city this site has a page for. Shown as a chip, because a
     // local is the person a traveler most wants to find and the profile never said so.
-    $homeDest = q_one('SELECT d.name, d.slug FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
+    $homeDest = q_one('SELECT d.name, d.slug, COALESCE(p.open_to_meeting, 0) open_to_meeting FROM profiles p JOIN destinations d ON d.id = p.home_destination_id
                         WHERE p.user_id = ?', [$uid]);
+    // Trips this member posted looking for company. Public by nature; city and dates only.
+    $buddyPosts = q_all("SELECT id, title, trip_type, where_text, date_from, date_to FROM buddy_posts
+                          WHERE user_id = ? AND status = 'open' AND date_to >= ? ORDER BY date_from LIMIT 10", [$uid, date('Y-m-d')]);
 
     /* A profile with no cover was a flat teal rectangle, which is what every profile looked like,
        because almost nobody uploads one. A traveler's own most recent trip photograph is both more
@@ -889,7 +892,7 @@ function profile(array $a): void {
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','beenPlaces','photoWall','coverUrl','interests','sharedInterests'), [
+    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','buddyPosts','beenPlaces','photoWall','coverUrl','interests','sharedInterests'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
@@ -3341,6 +3344,10 @@ function rmt_trip_validate(array $in): array {
     $vis = (string) ($in['visibility'] ?? 'public');
     if (!in_array($vis, RMT_PLAN_VISIBILITIES, true)) $vis = 'public';
 
+    // The kind of trip, so travel buddy searches for a road trip or a resort week find it.
+    $tripType = (string) ($in['trip_type'] ?? '');
+    if (!defined('RMT_BUDDY_TYPES') || !isset(RMT_BUDDY_TYPES[$tripType])) $tripType = '';
+
     return ['ok' => !$errors, 'errors' => $errors, 'data' => [
         'title' => $title, 'body' => $body, 'destination_id' => $dest ?: null,
         'cover_url' => $cover, 'visited_on' => $visited ?: null,
@@ -3349,6 +3356,7 @@ function rmt_trip_validate(array $in): array {
         'visibility' => $vis,
         'travel_style' => $style ?: null,
         'open_to_meeting' => $meetVal,
+        'trip_type' => $tripType ?: null,
     ]];
 }
 
@@ -3456,12 +3464,12 @@ function rmt_trip_create_row(int $userId, array $d): int {
     $dest = $d['destination_id'] ? dest_by_id($d['destination_id']) : null;
     $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? '');
     $id = (int) q_run("INSERT INTO trips (user_id,destination_id,title,slug,body,cover_url,visited_on,
-                                         date_from,date_to,visibility,travel_style,open_to_meeting,
+                                         date_from,date_to,visibility,travel_style,open_to_meeting,trip_type,
                                          verified,status,created_at)
-                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
+                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, 'published', ?)",
         [$userId, $d['destination_id'], $d['title'], slugify($d['title']), $d['body'], $cover,
          $d['visited_on'], $d['date_from'], $d['date_to'], $d['visibility'],
-         $d['travel_style'] ?? null, $d['open_to_meeting'] ?? null, 0, date('Y-m-d H:i:s')]);
+         $d['travel_style'] ?? null, $d['open_to_meeting'] ?? null, $d['trip_type'] ?? null, 0, date('Y-m-d H:i:s')]);
     rmt_sync_tags('trip', $id, $d['title'], $d['body']);
     /* Here rather than in trip_create(), so a trip held back for email confirmation and written
        the moment it arrives is counted once, on the same line, as one that published straight
@@ -3476,6 +3484,8 @@ function rmt_trip_create_row(int $userId, array $d): int {
                                  (string) $d['date_from'], (string) $d['date_to'],
                                  (string) ($d['visibility'] ?? 'public'));
         if ($sent > 0) rmt_track('overlap_notification_created', ['destination_id' => (int) $d['destination_id']]);
+        // And the travel buddy posts it lands on, whose owners have no trip row for the above to find.
+        if (function_exists('rmt_buddy_notify_matches')) rmt_buddy_notify_matches('trip', $id);
     }
     rmt_notify_mentions('trip', $id, $userId, [], $d['title'], $d['body']);
     return $id;
@@ -3573,9 +3583,9 @@ function trip_edit_submit(array $a): void {
     $cover = $d['cover_url'] ?: ($dest['hero_url'] ?? $t['cover_url']);
     $slug = slugify($d['title']);
     db()->prepare("UPDATE trips SET destination_id=?, title=?, slug=?, body=?, cover_url=?, visited_on=?,
-                                   date_from=?, date_to=?, visibility=?, updated_at=? WHERE id=?")
+                                   date_from=?, date_to=?, visibility=?, trip_type=?, updated_at=? WHERE id=?")
         ->execute([$d['destination_id'], $d['title'], $slug, $d['body'], $cover, $d['visited_on'],
-                   $d['date_from'], $d['date_to'], $d['visibility'],
+                   $d['date_from'], $d['date_to'], $d['visibility'], $d['trip_type'],
                    date('Y-m-d H:i:s'), (int)$t['id']]);
     rmt_sync_tags('trip', (int)$t['id'], $d['title'], $d['body']);
     rmt_notify_mentions('trip', (int)$t['id'], (int)current_user()['id'], [], $d['title'], $d['body']);
@@ -3601,6 +3611,7 @@ function trip_edit_submit(array $a): void {
                                      (string) $d['date_from'], (string) $d['date_to'], (string) $d['visibility']);
             if ($sent > 0) rmt_track('overlap_notification_created', ['destination_id' => (int) $d['destination_id']]);
         }
+        if ($rmtOpen && function_exists('rmt_buddy_notify_matches')) rmt_buddy_notify_matches('trip', (int) $t['id']);
     }
     /* Captions on photos already attached. A caption is the difference between a photograph and
        an image, and until now there was nowhere at all to type one. */
@@ -4342,6 +4353,7 @@ const RMT_INTERACT_TARGETS = [
        anybody want to share a taxi. That is a comment thread on the plan, not a private message,
        and it is deliberately not a second messaging system. */
     'activity'     => 'trip_activities',
+    'buddy'        => 'buddy_posts',
 ];
 
 /**
@@ -4408,6 +4420,10 @@ function rmt_can_interact(string $tt, int $tid, ?array $user): bool {
     if ($tt === 'trip_photo' || $tt === 'review_photo') {
         $photo = rmt_photo_get($tt === 'trip_photo' ? 'trip' : 'review', $tid);
         return $photo !== null && rmt_photo_visible_to($photo, $user);
+    }
+    /* A travel buddy post is open or closed rather than published; either is a real trip to save. */
+    if ($tt === 'buddy') {
+        return (bool) q_one("SELECT id FROM buddy_posts WHERE id = ? AND status IN ('open','closed')", [$tid]);
     }
     if ($tt === 'activity') {
         $act = rmt_activity_get($tid);
@@ -4672,6 +4688,10 @@ function saved_index(array $a): void {
         "SELECT 'meetup' kind, m.title, m.id, '' slug, s.created_at saved_at, m.host_id user_id
            FROM saves s JOIN meetups m ON m.id = s.target_id
           WHERE s.user_id = ? AND s.target_type = 'meetup'",
+        // A travel buddy trip somebody is thinking about joining.
+        "SELECT 'buddy' kind, b.title, b.id, '' slug, s.created_at saved_at, b.user_id
+           FROM saves s JOIN buddy_posts b ON b.id = s.target_id AND b.status IN ('open','closed')
+          WHERE s.user_id = ? AND s.target_type = 'buddy'",
     ];
     foreach ($sources as $sql) {
         foreach (q_all($sql, [$uid]) as $row) {
