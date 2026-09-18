@@ -220,6 +220,10 @@ Owner authorized organic outreach (Reddit, Facebook groups, r/solotravel, cruise
 * **Groups:** still none posted; no group read in E7 allows unapproved promotion. Let's Go Solo admin
   reply not checked this round (Messenger opened in the Page inbox, not the personal one).
 * **Read results:** 24h and 7d human visits by `utm_content`, from /cron/funnel.
+* **Added later on 2026-09-18:** scheduled Thu 24 Sep, 10:00 AM, Public: Japan izakaya evenings,
+  link `/travel-buddies/japan`, `utm_content=fb_post_japan`. Confirmed in the Scheduled list. Queue is
+  now Sun 20, Tue 22, Thu 24. The cruise link preview was re-scraped in the Sharing Debugger and now
+  shows the new default image.
 
 ### Template for the next one
 

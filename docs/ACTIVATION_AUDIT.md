@@ -1,5 +1,7 @@
 # What happens after somebody arrives
 
+> **Update 2026-09-18:** all three gaps below are closed in code (match email in `app/matching.php`, connect request and acceptance emails in `app/controllers.php`). A travel buddy post written before the email is confirmed is now held and published on confirmation, like trips.
+
 An audit of every moment between a signup and a connection, and what reaches the person at each one.
 Read from the code on 2026-09-16. **Nothing here was built; three gaps are documented with the exact
 change each needs, because sending mail to real people is outward facing and is your call.**
