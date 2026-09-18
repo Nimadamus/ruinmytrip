@@ -15,7 +15,7 @@ $anything = (bool) $items; ?>
              were none. The 18+ rule is enforced on the route, and stated here rather than hiding
              the button, so an under-18 member is told why instead of wondering. */ ?>
     <?php if (!$me): ?>
-      <a class="btn btn-accent btn-sm" href="<?= e(url('login?return=' . rawurlencode('/meetup/new'))) ?>">Host a meetup</a>
+      <a class="btn btn-accent btn-sm" href="<?= e(url('register?return=' . rawurlencode('/meetup/new'))) ?>">Host a meetup</a>
     <?php elseif ($canHost): ?>
       <a class="btn btn-accent btn-sm" href="<?= e(url('meetup/new')) ?>">Host a meetup</a>
     <?php else: ?>
