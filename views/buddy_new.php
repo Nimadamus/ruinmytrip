@@ -41,8 +41,8 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
       </div>
     </fieldset>
 
-    <label for="title">Title</label>
-    <input type="text" id="title" name="title" maxlength="140" required value="<?= e($val('title')) ?>"
+    <label for="title">Title <span class="hint">(optional, we will use the place and dates)</span></label>
+    <input type="text" id="title" name="title" maxlength="140" value="<?= e($val('title')) ?>"
            placeholder="Two weeks in Tokyo and Kyoto, looking for people to explore with">
 
     <div id="city-fields">

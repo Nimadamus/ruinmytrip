@@ -89,7 +89,9 @@ function rmt_buddy_validate(array $in, ?string $today = null): array {
     $type = (string) ($in['trip_type'] ?? '');
     if (!isset(RMT_BUDDY_TYPES[$type])) $e[] = 'Pick what kind of trip it is.';
     $title = trim((string) ($in['title'] ?? ''));
-    if (mb_strlen($title) < 8 || mb_strlen($title) > 140) $e[] = 'The title needs 8 to 140 characters.';
+    /* A blank title is filled in below from the place and dates. Inventing a headline is the one
+       field on this form that asks for writing rather than facts, and it stopped people. */
+    if ($title !== '' && (mb_strlen($title) < 8 || mb_strlen($title) > 140)) $e[] = 'The title needs 8 to 140 characters, or leave it blank.';
     $where = trim((string) ($in['where_text'] ?? ''));
     $destId = (int) ($in['destination_id'] ?? 0);
     if ($destId > 0 && !q_one('SELECT id FROM destinations WHERE id=?', [$destId])) $destId = 0;
@@ -133,6 +135,10 @@ function rmt_buddy_validate(array $in, ?string $today = null): array {
     $desc = trim((string) ($in['description'] ?? ''));
     if (mb_strlen($desc) < 20 || mb_strlen($desc) > 4000) $e[] = 'Describe the trip and who you are hoping to go with (20 to 4000 characters).';
     if (empty($in['safety_ack'])) $e[] = 'Please confirm the safety terms.';
+    if ($title === '' && !$e) {
+        $span = date('M j', strtotime($from)) . ($to !== $from ? ' to ' . date(date('M', strtotime($from)) === date('M', strtotime($to)) ? 'j' : 'M j', strtotime($to)) : '');
+        $title = mb_substr(($type === 'cruise' ? ($cruise['ship'] ?: $cruise['cruise_line']) . ' sailing' : $where) . ', ' . $span, 0, 140);
+    }
     return ['ok' => !$e, 'errors' => $e, 'data' => [
         'trip_type' => $type, 'title' => $title, 'where_text' => $where, 'destination_id' => $destId ?: null,
         'date_from' => $from, 'date_to' => $to, 'flexible' => empty($in['flexible']) ? 0 : 1,
