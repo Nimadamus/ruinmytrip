@@ -204,6 +204,23 @@ Owner authorized organic outreach (Reddit, Facebook groups, r/solotravel, cruise
   drafts in `docs/ACQUISITION_PACKAGES.md` directly. The new landing pages (`/travel-buddies/{country}`,
   `/cruise-buddies/{line}`) are the right links for those drafts.
 
+### E10, Page posts for the buddy landing pages, 2026-09-18 (Pacific)
+
+* **Correction to E9:** Page access was never lost. The Page's admin is the Badri Jooyandeh
+  profile; the automation and Chrome sessions had been signed in as a different profile. The owner
+  signed Chrome back in to the admin profile on 2026-09-18, and Business Suite works again.
+* **Published** Fri 18 Sep, about 11:55 AM: cruise port day tip, link
+  `/buddies/cruise`, `utm_campaign=buddy_pages&utm_content=fb_post_cruise`. Confirmed on the Page.
+* **Scheduled** Sun 20 Sep, 10:00 AM, Public: "best city you have ever arrived in on your own",
+  no link. Confirmed in the Scheduled list.
+* **Scheduled** Tue 22 Sep, 10:00 AM, Public: Iceland Ring Road car split, link
+  `/travel-buddies/iceland`, `utm_content=fb_post_iceland`. Confirmed in the Scheduled list.
+* **Note:** links to pages without their own image (like `/buddies/cruise`) preview with the site
+  default share image, which is still the old dark building photo.
+* **Groups:** still none posted; no group read in E7 allows unapproved promotion. Let's Go Solo admin
+  reply not checked this round (Messenger opened in the Page inbox, not the personal one).
+* **Read results:** 24h and 7d human visits by `utm_content`, from /cron/funnel.
+
 ### Template for the next one
 
 * **Hypothesis:**
