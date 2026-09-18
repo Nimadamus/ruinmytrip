@@ -6735,6 +6735,12 @@ function cron_indexnow(array $a): void {
         }
         echo "offered={$queued}\n";
     }
+    // One time catch up for the travel buddy landing pages (app/buddy_landing.php), same rules.
+    if ((string) input('announce') === 'buddy_pages' && function_exists('rmt_buddy_landing_path')) {
+        $queued = 0;
+        foreach (array_keys(RMT_BUDDY_LANDING) as $slug) { rmt_seo_announce('/' . rmt_buddy_landing_path($slug)); $queued++; }
+        echo "offered={$queued}\n";
+    }
 
     $pending = count(rmt_seo_pending(500));
     $sent = rmt_seo_flush(500);

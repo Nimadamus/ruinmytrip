@@ -158,9 +158,12 @@ const RMT_BUDDY_WRITE_COLS = ['trip_type', 'title', 'where_text', 'destination_i
 function rmt_buddy_insert(int $userId, array $d): int {
     $cols = RMT_BUDDY_WRITE_COLS;
     $vals = array_map(static fn($c) => $d[$c] ?? null, $cols);
-    return (int) q_run('INSERT INTO buddy_posts (user_id,' . implode(',', $cols) . ",status,created_at)
+    $id = (int) q_run('INSERT INTO buddy_posts (user_id,' . implode(',', $cols) . ",status,created_at)
                         VALUES (?," . implode(',', array_fill(0, count($cols), '?')) . ", 'open', ?)",
                        array_merge([$userId], $vals, [date('Y-m-d H:i:s')]));
+    // Announced like trips and reviews: an open post is in the sitemap, and the index should hear.
+    if ($id > 0 && function_exists('rmt_seo_announce')) rmt_seo_announce('/buddy/' . $id);
+    return $id;
 }
 
 function rmt_buddy_update(int $postId, array $d): void {
