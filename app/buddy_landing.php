@@ -83,6 +83,25 @@ function rmt_buddy_landing_for_post(array $b): ?array {
     return null;
 }
 
+/**
+ * The landing page a search query is asking about: a country or cruise line by name ("greece",
+ * "royal caribbean", "ncl"), or a city we have in one of those countries ("santorini").
+ */
+function rmt_buddy_landing_for_query(string $q): ?array {
+    $q = mb_strtolower(trim(preg_replace('/\s+/', ' ', $q)));
+    $q = trim(preg_replace('/\b(travel|buddy|buddies|cruise|cruises|cruising|line|trip|trips|partner|partners|in|to|for)\b/u', ' ', $q));
+    $q = trim(preg_replace('/\s+/', ' ', $q));
+    if ($q === '' || mb_strlen($q) < 3) return null;
+    foreach (rmt_buddy_landing_all() as $p) {
+        $names = [mb_strtolower($p['name']), str_replace('-', ' ', $p['slug'])];
+        if ($p['kind'] === 'cruise') $names[] = mb_strtolower($p['line']);
+        if ($p['slug'] === 'norwegian') $names[] = 'ncl';
+        if (in_array($q, $names, true)) return $p;
+    }
+    $d = q_one('SELECT slug, country FROM destinations WHERE LOWER(name) = ? OR slug = ? LIMIT 1', [$q, $q]);
+    return $d ? rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country']) : null;
+}
+
 /** The cities a page covers, with how many people are going to each and upcoming meetups. */
 function rmt_buddy_landing_cities(array $p): array {
     if ($p['kind'] !== 'country') return [];

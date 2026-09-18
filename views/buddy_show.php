@@ -153,6 +153,6 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
   <?php endif; ?>
   <?php if ($bl = rmt_buddy_landing_for_post($b)): ?>
     <p class="hint" style="margin-top:18px"><?= $bl['kind'] === 'cruise' ? 'More ' . e($bl['name']) . ' cruisers' : 'More travelers going to ' . e($bl['name']) ?>:
-      <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>"><?= $bl['kind'] === 'cruise' ? e($bl['name']) . ' cruise buddies' : 'Travel buddies in ' . e($bl['name']) ?></a></p>
+      <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>"><?= $bl['kind'] === 'cruise' ? e($bl['line']) . ' cruise buddies' : 'Travel buddies in ' . e($bl['name']) ?></a></p>
   <?php endif; ?>
 </div>

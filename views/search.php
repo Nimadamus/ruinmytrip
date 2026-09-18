@@ -6,6 +6,15 @@
     <button class="btn btn-primary">Search</button>
   </form>
   <?php if ($qs===''): ?><p class="muted">Type a place, a trip, a review, or a traveler to begin.</p><?php else: ?>
+    <?php /* A country, city or cruise line we have a travel buddy page for: the people going there
+             come before anything written about the place. */ ?>
+    <?php if ($bl = rmt_buddy_landing_for_query($qs)): ?>
+      <div class="card" style="margin:0 0 14px"><div class="card-body">
+        <p class="eyebrow" style="margin:0 0 2px"><?= $bl['kind'] === 'cruise' ? 'Cruise buddies' : 'Travel buddies' ?></p>
+        <p style="margin:0 0 8px"><b><?= $bl['kind'] === 'cruise' ? 'Find people on your ' . e($bl['name']) . ' sailing' : 'Find people going to ' . e($bl['name']) . ' on your dates' ?></b></p>
+        <a class="btn btn-accent btn-sm" href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>"><?= $bl['kind'] === 'cruise' ? e($bl['line']) . ' cruise buddies' : 'Travel buddies in ' . e($bl['name']) ?></a>
+      </div></div>
+    <?php endif; ?>
     <?php /* An event somebody typed goes first: "oktoberfest" is a question about dates and people,
              and the dates are the one thing no other result on this page carries. */ ?>
     <?php foreach (($events ?? []) as $ev): ?>

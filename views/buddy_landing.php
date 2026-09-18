@@ -10,7 +10,7 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
     <?php if ($isCruise): ?><a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a><?php else: ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a><?php endif; ?>
     / <?= e($p['name']) ?></p>
   <p class="eyebrow"><?= $isCruise ? 'Cruise buddies' : 'Travel buddies' ?></p>
-  <h1><?= $isCruise ? e($p['name']) . ' cruise buddies' : 'Travel buddies in ' . e($p['name']) ?></h1>
+  <h1><?= $isCruise ? e($p['line']) . ' cruise buddies' : 'Travel buddies in ' . e($p['name']) ?></h1>
   <p class="buddy-lede"><?= e($p['lede']) ?></p>
   <div class="buddy-cta">
     <a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a>
