@@ -36,6 +36,7 @@ require BASE_PATH . '/app/destination_new.php';
 require BASE_PATH . '/app/meetups.php';
 require BASE_PATH . '/app/buddies.php';
 require BASE_PATH . '/app/buddy_examples.php';
+require BASE_PATH . '/app/buddy_landing.php';
 require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/feed_scope.php';

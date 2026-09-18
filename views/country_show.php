@@ -3,6 +3,7 @@
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <?= e($country) ?></p>
   <h1><?= e($country) ?> in 2026</h1>
   <p class="muted"><?= count($dests) ?> <?= count($dests)===1?'destination':'destinations' ?> with current costs, tickets, taxes and the part that nearly ruins the trip.</p>
+  <?php if ($bl = rmt_buddy_landing_for_country($country)): ?><p><a class="btn btn-accent btn-sm" href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Find travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <div class="grid g-3" style="padding:18px 0 40px">
     <?php foreach ($dests as $d): ?>

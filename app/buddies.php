@@ -865,7 +865,7 @@ function buddy_new_form(array $a): void {
     $t = (string) input('type');
     if (isset(RMT_BUDDY_TYPES[$t])) $pre['trip_type'] = $t;
     if (($d = q_one('SELECT id FROM destinations WHERE slug=?', [(string) input('dest')]))) $pre['destination_id'] = (string) $d['id'];
-    foreach (['date_from' => 'from', 'date_to' => 'to', 'ship' => 'ship', 'cruise_line' => 'line', 'departure_port' => 'port'] as $col => $q) {
+    foreach (['date_from' => 'from', 'date_to' => 'to', 'ship' => 'ship', 'cruise_line' => 'line', 'departure_port' => 'port', 'where_text' => 'where'] as $col => $q) {
         if (input($q) !== '') $pre[$col] = input($q);
     }
     view('buddy_new', ['dests' => all_dests(), 'errors' => [], 'b' => $pre, 'isEdit' => false], [

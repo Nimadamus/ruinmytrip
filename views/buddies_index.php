@@ -170,6 +170,13 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
           <a class="btn btn-accent btn-sm" href="<?= e(url('register?return=' . rawurlencode('/buddies'))) ?>">Create an account</a>
         </div></div>
       <?php endif; ?>
+      <?php /* Hub for the country and cruise line landing pages (app/buddy_landing.php). */ ?>
+      <nav class="card bl-hub" aria-label="Travel buddies by place"><div class="card-body">
+        <h3>Travel buddies by country</h3>
+        <p class="bl-links"><?php foreach (rmt_buddy_landing_all('country') as $lp): ?><a class="chip" href="<?= e(url(rmt_buddy_landing_path($lp['slug']))) ?>"><?= e($lp['name']) ?></a><?php endforeach; ?></p>
+        <h3>Cruise buddies by line</h3>
+        <p class="bl-links"><?php foreach (rmt_buddy_landing_all('cruise') as $lp): ?><a class="chip" href="<?= e(url(rmt_buddy_landing_path($lp['slug']))) ?>"><?= e($lp['name']) ?></a><?php endforeach; ?></p>
+      </div></nav>
       <div class="callout buddy-safety"><b>How privacy works.</b> Cards show a city or ship and dates, never a hotel, cabin, address or live location. Requests carry no contact details, and messages open only after the other person accepts. Block or <a href="<?= e(url('report')) ?>">report</a> anyone. Meet in public first. <a href="<?= e(url('safety')) ?>">Safety guide</a></div>
     </aside>
   </div>

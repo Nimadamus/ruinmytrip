@@ -1537,3 +1537,21 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .meet-nav a:hover{background:var(--line-soft)}
 .meet-nav a.on{background:var(--brand);color:#fff}
 @media (max-width:480px){.meet-nav .wrap{gap:2px}.meet-nav a{padding:.45rem .65rem;font-size:.86rem}}
+
+/* Travel buddy landing pages (views/buddy_landing.php) */
+.bl-block{margin:30px 0}
+.bl-block h2{font-size:clamp(1.3rem,2.6vw,1.7rem);margin:0 0 10px}
+.bl-prose{max-width:70ch;font-size:1.05rem;line-height:1.65;margin:0}
+.bl-tips{max-width:70ch;padding-left:1.2rem;line-height:1.6}
+.bl-tips li{margin:6px 0}
+.bl-cities{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.bl-cities li{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:10px 12px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.bl-city{font-weight:700}
+.bl-faq{border-bottom:1px solid var(--line);padding:10px 0;max-width:70ch}
+.bl-faq summary{cursor:pointer;font-weight:600;min-height:32px}
+.bl-faq p{margin:8px 0 0;line-height:1.6}
+.bl-links{display:flex;flex-wrap:wrap;gap:8px}
+.bl-links .chip{text-decoration:none}
+.bl-hub{margin-bottom:14px}
+.bl-hub h3{font-size:1rem;margin:0 0 8px}
+.bl-hub h3 + .bl-links{margin-bottom:14px}

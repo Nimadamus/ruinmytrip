@@ -44,6 +44,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
   <p class="muted" style="max-width:62ch">Who is going and when, what meetups are on, and the people
     who have already been. Everything here is posted by members, not by us.</p>
   <p><a class="btn btn-accent btn-sm" style="white-space:normal;text-align:center" href="<?= e(url('buddies?dest=' . rawurlencode($d['slug']))) ?>">Find travel buddies in <?= e($city) ?></a></p>
+  <?php if ($bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint">Traveling more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <?php /* The one thing a stranger who landed from search is asked to do. It is the product, not a
            mailing list: three real actions, each of which is why they searched. */ ?>

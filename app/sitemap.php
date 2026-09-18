@@ -64,6 +64,7 @@ function rmt_sitemap_group(string $group): array {
             foreach (['/', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start', '/guides', '/reviews',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
+            foreach (array_keys(RMT_BUDDY_LANDING) as $bl) $add('/' . rmt_buddy_landing_path($bl));
 
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
             if (function_exists('rmt_reviews_ruined_count') && rmt_reviews_ruined_count() > 0) $add('/ruined');

@@ -131,6 +131,9 @@ $routes = [
     ['POST', '#^/meetup/(?<id>\d+)/rsvp$#',    'meetup_rsvp'],
     // Travel buddies: who else is going where I am going, locals, and people on the same cruise.
     ['GET',  '#^/buddies$#',                   'buddies_index'],
+    // Landing pages for the countries and cruise lines people search a companion for (app/buddy_landing.php).
+    ['GET',  '#^/travel-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_country'],
+    ['GET',  '#^/cruise-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_cruise'],
     ['GET',  '#^/buddies/mine$#',              'buddies_mine'],
     ['GET',  '#^/buddies/new$#',               'buddy_new_form'],
     ['POST', '#^/buddies/new$#',               'buddy_create'],
