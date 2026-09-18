@@ -46,7 +46,7 @@ function rmt_quality_check(string $body, ?array $user, string $kind = 'post'): ?
             return match ($why) {
                 'crypto'    => 'RuinMyTrip is for travel. Investment and crypto offers are not allowed here.',
                 'contact'   => 'Please keep contact on RuinMyTrip. Once you both connect, messaging opens here.',
-                'dating'    => 'RuinMyTrip is for meeting travelers, not for dating or adult content.',
+                'dating'    => 'Adult content, escort and hookup offers are not allowed here.',
                 default     => 'Promo codes, referral and affiliate links are not allowed here.',
             };
         }

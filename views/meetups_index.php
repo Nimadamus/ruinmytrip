@@ -22,12 +22,12 @@ $anything = (bool) $items; ?>
       <span class="hint">Hosting and attending are 18+.</span>
     <?php endif; ?>
   </div>
-  <div class="callout"><b>Optional, public, and safety-first.</b> Meetups are a way to meet fellow travelers in a destination, <b>not dating, not hookups</b>. We never share precise or real-time location. <a href="<?= e(url('safety')) ?>">Read the safety guidance →</a></div>
+  <div class="callout"><b>Optional, public, and safety-first.</b> Meetups are a way to meet fellow travelers in a destination, <b>not hookups</b>. We never share precise or real-time location. <a href="<?= e(url('safety')) ?>">Read the safety guidance →</a></div>
   <?php if (!$anything): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
       <h3>Nothing to turn up to yet.</h3>
       <p class="muted" style="margin:0">Host a meetup, or open a plan on a trip you have already
-        posted so other travelers can join it. Optional, public, never dating, and never precise
+        posted so other travelers can join it. Optional, public, and never precise
         location.</p>
       <p style="margin:16px 0 0">
         <?php if ($canHost): ?><a class="btn btn-accent" href="<?= e(url('meetup/new')) ?>">Host a meetup</a><?php endif; ?>

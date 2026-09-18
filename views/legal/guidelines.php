@@ -42,7 +42,7 @@
       anyone's precise or real-time location.</li>
     <li><b>Content that is not about the place.</b> Political arguments, personal disputes, and
       complaints about a delivery company that has nothing to do with the restaurant.</li>
-    <li><b>Sexual, adult or hookup content.</b> This is not a dating platform.</li>
+    <li><b>Sexual, adult or hookup content.</b></li>
     <li><b>Anything illegal or unsafe, and anything involving minors.</b></li>
   </ul>
 

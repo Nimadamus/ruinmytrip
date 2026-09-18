@@ -229,7 +229,7 @@
         <p><a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a></p>
       <?php endif; ?>
       <p class="eyebrow" style="margin-top:28px">Meet fellow travelers</p><h2>Upcoming public meetups</h2>
-      <div class="callout">Meetups are <b>optional and public</b>. Never dating, never precise location. <a href="<?= e(url('safety')) ?>">Safety approach →</a></div>
+      <div class="callout">Meetups are <b>optional and public</b>. Never precise location. <a href="<?= e(url('safety')) ?>">Safety approach →</a></div>
       <?php if ($meetups): ?>
         <div class="grid" style="gap:14px">
           <?php foreach ($meetups as $m): ?>

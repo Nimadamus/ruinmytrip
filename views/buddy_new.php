@@ -103,7 +103,7 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
     <p class="hint" style="margin:.2rem 0 0">Everyone can read this. Leave out your hotel, cabin number, address, phone number and booking reference.</p>
 
     <div class="callout warn" style="margin-top:18px">
-      <b>Posting means:</b> this is about company for a trip, not dating; you are 18 or over; you will get to know someone and meet in public before travelling together; and you will block or <a href="<?= e(url('report')) ?>">report</a> anyone who makes you uneasy. <a href="<?= e(url('safety')) ?>">Safety guide</a>
+      <b>Posting means:</b> you are 18 or over; you will get to know someone and meet in public before travelling together; and you will block or <a href="<?= e(url('report')) ?>">report</a> anyone who makes you uneasy. <a href="<?= e(url('safety')) ?>">Safety guide</a>
     </div>
     <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-weight:400">
       <input type="checkbox" name="safety_ack" value="1" style="width:auto;margin-top:.25rem" required <?= ($val('safety_ack') !== '' || $isEdit) ? 'checked' : '' ?>>

@@ -2228,7 +2228,7 @@ function meetups_index(array $a): void {
 
     view('meetups_index', compact('meetups', 'me', 'canHost', 'openPlans', 'items'), [
         'title'=>'Travel meetups: meet other travelers in person',
-        'description'=>'Meetups and open plans posted by members: coffee, a walk, a match, dinner with other travelers in the city you are in. Never dating, never precise location, always 18+.',
+        'description'=>'Meetups and open plans posted by members: coffee, a walk, a match, dinner with other travelers in the city you are in. Never precise location, always 18+.',
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Meetups','url'=>url('meetups')]],
     ]);
 }
