@@ -5,7 +5,7 @@ $cruiseOpen = $bf['type'] === 'cruise' || $bf['line'] !== '' || $bf['ship'] !== 
 $postQuery = array_filter(['type' => $bf['type'], 'dest' => $bf['dest']['slug'] ?? '', 'from' => $bf['from'], 'to' => $bf['to'],
                            'ship' => $bf['ship'], 'line' => $bf['line'], 'port' => $bf['port']]);
 $postPath = '/buddies/new' . ($postQuery ? '?' . http_build_query($postQuery) : '');
-$postHref = $me ? url(ltrim($postPath, '/')) : url('login?return=' . rawurlencode($postPath));
+$postHref = $me ? url(ltrim($postPath, '/')) : url('register?return=' . rawurlencode($postPath));
 $n = count($cards);
 $place = $bf['dest']['name'] ?? ($bf['country'] !== '' ? $bf['country'] : ($bf['where'] !== '' ? $bf['where'] : ''));
 $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);

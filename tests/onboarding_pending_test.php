@@ -84,7 +84,7 @@ ok('the slot is empty afterwards', !rmt_pending_has());
 
 // Applied exactly once: a second confirmation must not post the same sentence again.
 $again = rmt_pending_apply($me);
-ok('applying twice does nothing', $again === ['going' => false, 'hello' => false, 'trip' => false]
+ok('applying twice does nothing', $again === ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false]
     && (int) q_one('SELECT COUNT(*) c FROM posts')['c'] === 1);
 
 // The halves are independent.
@@ -145,6 +145,10 @@ $controllers = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
 ok('welcome no longer redirects to verify-email mid-form',
    !str_contains($controllers, "flash('Confirm your email before sharing travel dates.');"));
 ok('confirming the address applies what was held', str_contains($controllers, 'rmt_pending_apply('));
+$buddies = (string) file_get_contents(dirname(__DIR__) . '/app/buddies.php');
+ok('an unconfirmed buddy post is held, not discarded',
+   str_contains($buddies, "rmt_pending_stash(['buddy' => \$_POST])"));
+ok('a held buddy post is re-validated before it is written', str_contains((string) file_get_contents(dirname(__DIR__) . '/app/onboarding_pending.php'), "rmt_buddy_validate(\$held['buddy'])"));
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

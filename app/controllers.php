@@ -5108,6 +5108,10 @@ function verify_email_confirm(array $a): void {
         flash('Email confirmed. Your trip is live. Here is who else will be there.');
         redirect('/matches?new=' . (int) $applied['trip_id']);
     }
+    if (!empty($applied['buddy']) && !empty($applied['buddy_id'])) {
+        flash('Email confirmed. Your travel buddy post is live.');
+        redirect('/buddy/' . (int) $applied['buddy_id']);
+    }
     if ($applied['going'] && $applied['hello']) {
         flash('Email confirmed. Your dates and your first post are live.');
         redirect('/matches');

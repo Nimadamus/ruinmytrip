@@ -261,6 +261,13 @@ function rmt_join_intent_line(string $return): ?string {
     if ($path === '/meetups' || str_starts_with($path, '/meetup/')) {
         return 'Join to RSVP. Meetups are public, 18+, and you can leave any time.';
     }
+    if ($path === '/buddies/new') {
+        parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
+        $line  = mb_substr(trim((string) ($q['line'] ?? '')), 0, 60);
+        $where = mb_substr(trim((string) ($q['where'] ?? '')), 0, 60);
+        if ($line !== '')  return 'Join and post your ' . $line . ' sailing. Other travelers on the same ship and date will find you. 18+, and nobody can message you until you accept them.';
+        if ($where !== '') return 'Join and post your ' . $where . ' trip. Travelers going on the same dates will find you. 18+, and nobody can message you until you accept them.';
+    }
     if (str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/')) {
         return 'Join to find a travel buddy for your cruise or trip. 18+, and nobody can message you until you accept them.';
     }

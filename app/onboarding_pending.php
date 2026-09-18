@@ -36,6 +36,9 @@ function rmt_pending_stash(array $data): void {
        flight loses the only thing the member has made. Photographs cannot ride along in a
        session and are not pretended to: the trip arrives without them and can be added to. */
     if (!empty($data['trip']) && is_array($data['trip'])) $keep['trip'] = $data['trip'];
+    /* A travel buddy post, for the same reason: the landing pages send brand new members straight
+       to that form, and it is the longest thing on the site anyone fills in before confirming. */
+    if (!empty($data['buddy']) && is_array($data['buddy'])) $keep['buddy'] = $data['buddy'];
     if ($keep) $_SESSION[RMT_PENDING_KEY] = $keep;
 }
 
@@ -51,7 +54,7 @@ function rmt_pending_has(): bool {
  * Each half is independent -- a rejected post must not take the travel dates down with it.
  */
 function rmt_pending_apply(array $user): array {
-    $done = ['going' => false, 'hello' => false, 'trip' => false];
+    $done = ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false];
     if (session_status() !== PHP_SESSION_ACTIVE) return $done;
     $held = $_SESSION[RMT_PENDING_KEY] ?? null;
     unset($_SESSION[RMT_PENDING_KEY]);
@@ -79,6 +82,19 @@ function rmt_pending_apply(array $user): array {
                 $done['trip'] = true;
                 $done['trip_id'] = $tid;
                 $done['trip_slug'] = function_exists('slugify') ? slugify((string) $tv['data']['title']) : '';
+            }
+        }
+    }
+    if (!empty($held['buddy']) && function_exists('rmt_buddy_validate') && can_host_meetups($user)) {
+        // Re-validated, not trusted, like the rest.
+        $bv = rmt_buddy_validate($held['buddy']);
+        if ($bv['ok']) {
+            $bid = rmt_buddy_insert($uid, $bv['data']);
+            if ($bid > 0) {
+                rmt_buddy_notify_matches('buddy', $bid);
+                if (function_exists('rmt_track')) rmt_track('buddy_post_created', ['destination_id' => $bv['data']['destination_id']]);
+                $done['buddy'] = true;
+                $done['buddy_id'] = $bid;
             }
         }
     }

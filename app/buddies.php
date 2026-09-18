@@ -875,8 +875,17 @@ function buddy_new_form(array $a): void {
 }
 
 function buddy_create(array $a): void {
-    require_verified_email(); csrf_check(); $me = current_user();
+    require_login(); csrf_check(); $me = current_user();
     if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
+    /* Same gate as before: nothing is published until the address is confirmed. A valid post is
+       held and goes live on confirmation (app/onboarding_pending.php) instead of being discarded. */
+    if (!email_is_verified($me)) {
+        $hold = rmt_buddy_validate($_POST);
+        if (!$hold['ok']) { view('buddy_new', ['dests' => all_dests(), 'errors' => $hold['errors'], 'b' => $_POST, 'isEdit' => false], ['title' => 'Find a travel buddy | RuinMyTrip']); return; }
+        rmt_pending_stash(['buddy' => $_POST]);
+        flash('Your post is saved. It goes live the moment you confirm your email address.');
+        redirect('/verify-email');
+    }
     $opts = ['title' => 'Find a travel buddy | RuinMyTrip'];
     if (!rmt_submit_ok('buddy_new', input('_submit'))) { flash('That post was already published.'); redirect('/buddies/mine'); return; }
     if (!rmt_rate_ok('buddy_create', (string) $me['id'], 5, 3600)) {

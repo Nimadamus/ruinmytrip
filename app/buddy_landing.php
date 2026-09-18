@@ -106,7 +106,7 @@ function buddy_landing_show(array $a): void {
 
     $postQuery = $p['kind'] === 'cruise' ? ['type' => 'cruise', 'line' => $p['line']] : ['where' => $p['name']];
     $postPath = '/buddies/new?' . http_build_query($postQuery);
-    $postHref = $me ? url(ltrim($postPath, '/')) : url('login?return=' . rawurlencode($postPath));
+    $postHref = $me ? url(ltrim($postPath, '/')) : url('register?return=' . rawurlencode($postPath));
 
     $path = rmt_buddy_landing_path($slug);
     $hub = $p['kind'] === 'cruise' ? ['name' => 'Cruise buddies', 'url' => url('buddies/cruise')]
