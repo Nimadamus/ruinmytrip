@@ -78,8 +78,8 @@
 <nav class="tabbar" aria-label="Primary mobile">
   <a href="<?= e(url()) ?>" class="<?= $rmt_path === '/' ? 'on' : '' ?>" aria-label="Home">
     <span aria-hidden="true">&#8962;</span><span class="tabbar-l">Home</span></a>
-  <a href="<?= e(url('travelers')) ?>" class="<?= str_starts_with($rmt_path, '/travelers') || str_starts_with($rmt_path, '/explore') ? 'on' : '' ?>" aria-label="Travelers">
-    <span aria-hidden="true">&#9906;</span><span class="tabbar-l">Travelers</span></a>
+  <a href="<?= e(url('buddies')) ?>" class="<?= str_starts_with($rmt_path, '/buddies') || str_starts_with($rmt_path, '/travelers') || str_starts_with($rmt_path, '/meetups') || str_starts_with($rmt_path, '/explore') ? 'on' : '' ?>" aria-label="Meet travelers">
+    <span aria-hidden="true">&#9906;</span><span class="tabbar-l">Meet</span></a>
   <?php
     /* One tap to the thing the site is for. Where that leads depends on where the reader is
        standing: on a city page it is that city's composer, because somebody looking at Lisbon who

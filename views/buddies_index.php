@@ -10,6 +10,7 @@ $n = count($cards);
 $place = $bf['dest']['name'] ?? ($bf['country'] !== '' ? $bf['country'] : ($bf['where'] !== '' ? $bf['where'] : ''));
 $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
 ?>
+<?php $meetOn = 'going'; include __DIR__ . '/_meet_nav.php'; ?>
 <section class="buddy-hero"><div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if ($label && str_starts_with(trim((string) parse_url($bcBack, PHP_URL_PATH), '/'), 'buddies/')): ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a> / <?= e($label) ?><?php else: ?>Travel buddies<?php endif; ?></p>
   <p class="eyebrow">Travel buddies</p>

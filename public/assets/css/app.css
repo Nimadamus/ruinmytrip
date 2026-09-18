@@ -1528,3 +1528,12 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .bcard-where b{font-weight:600;color:var(--ink-2)}
 .bcard-here .bcard-tag.bcard-tag-ex{background:var(--surface-3);color:var(--ink-2)}
 .bcard-example.bcard-here{border-color:var(--line)}
+
+/* Meet travelers: one section, three views (views/_meet_nav.php) */
+.meet-nav{background:var(--card);border-bottom:1px solid var(--line)}
+.meet-nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+.meet-nav .wrap::-webkit-scrollbar{display:none}
+.meet-nav a{flex:0 0 auto;padding:.45rem .95rem;border-radius:999px;font-size:.92rem;font-weight:600;color:var(--text);text-decoration:none;white-space:nowrap}
+.meet-nav a:hover{background:var(--line-soft)}
+.meet-nav a.on{background:var(--brand);color:#fff}
+@media (max-width:480px){.meet-nav .wrap{gap:2px}.meet-nav a{padding:.45rem .65rem;font-size:.86rem}}

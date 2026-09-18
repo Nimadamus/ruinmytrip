@@ -5,6 +5,7 @@ $rmt_day = static fn(?string $d): string => $d ? date('j M', strtotime($d)) : ''
 $rmt_days = static fn(?string $a, ?string $b): string => rmt_card_date_range((string) $a, (string) $b);
 $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
 ?>
+<?php $meetOn = 'people'; include __DIR__ . '/_meet_nav.php'; ?>
 <section class="block"><div class="wrap">
   <div class="section-head">
     <div>

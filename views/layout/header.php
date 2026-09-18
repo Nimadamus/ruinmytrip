@@ -64,9 +64,7 @@
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
       <?php endif; ?>
-      <a href="<?= e(url('buddies')) ?>" title="Travel buddies">Buddies</a>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('buddies')) ?>" title="Find people going where you are going">Meet travelers</a>
       <a href="<?= e(url('talk')) ?>">Talk</a>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('events')) ?>">Events</a>
@@ -74,6 +72,8 @@
         <summary aria-label="More of the site">More</summary>
         <div class="nav-more-panel">
           <a href="<?= e(url('going')) ?>">Who is going</a>
+          <a href="<?= e(url('travelers')) ?>">All travelers</a>
+          <a href="<?= e(url('meetups')) ?>">Meetups</a>
           <a href="<?= e(url('communities')) ?>">Communities</a>
           <a href="<?= e(url('ruined')) ?>">Ruined</a>
           <a href="<?= e(url('reviews')) ?>">Reviews</a>

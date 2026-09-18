@@ -2,6 +2,7 @@
 $openPlans = $openPlans ?? [];
 $items = $items ?? [];
 $anything = (bool) $items; ?>
+<?php $meetOn = 'meetups'; include __DIR__ . '/_meet_nav.php'; ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Meetups</p>
   <div class="section-head">
