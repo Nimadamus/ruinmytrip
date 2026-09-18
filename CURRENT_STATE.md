@@ -365,6 +365,7 @@ blocked at the network layer from this machine, for reading as well as posting.
 
 ## Resume here next session
 
+0. **2026-09-18:** 25 travel buddy landing pages live (`app/buddy_landing_pages.php`, `/travel-buddies/*`, `/cruise-buddies/*`), linked from home, /buddies, /in/*, city pages, sitemap. Outreach blocked: no usable Reddit/Facebook/Cruise Critic account on this machine (E9 in `docs/ACQUISITION_EXPERIMENTS.md`); drafts in `docs/OUTREACH_BUDDY_PAGES.md`. First GSC read on the new pages around 2026-10-02.
 1. **Sunday 2026-09-20 Facebook Page post is NOT scheduled.** Nima to pick: queue post #3 (Chiang Mai Yi Peng
    question, `yi-peng`) or the no-link solo question. Schedule via Business Suite composer
    (asset_id 1374505149069040). Thursday Oaxaca post is scheduled; leave it alone. Cadence ~3/week.
