@@ -52,6 +52,37 @@ function rmt_buddy_landing_for_country(string $country): ?array {
     return null;
 }
 
+/** The country page for a destination known only by its slug (trip pages carry no country). */
+function rmt_buddy_landing_for_dest_slug(string $destSlug): ?array {
+    if ($destSlug === '') return null;
+    $d = q_one('SELECT country FROM destinations WHERE slug = ?', [$destSlug]);
+    return $d ? rmt_buddy_landing_for_dest($destSlug, (string) $d['country']) : null;
+}
+
+/**
+ * The landing page a single buddy post belongs to: its cruise line, else its city's country, else
+ * a country named in its own "where" words. Null when none fits, which is most of the world.
+ */
+function rmt_buddy_landing_for_post(array $b): ?array {
+    $line = mb_strtolower(trim((string) ($b['cruise_line'] ?? '')));
+    if ($line !== '') {
+        foreach (rmt_buddy_landing_all('cruise') as $p) {
+            if (str_contains($line, mb_strtolower($p['line']))) return $p;
+        }
+    }
+    if (!empty($b['dest_slug'])) {
+        $p = rmt_buddy_landing_for_dest((string) $b['dest_slug'], (string) ($b['dest_country'] ?? ''));
+        if ($p) return $p;
+    }
+    $where = mb_strtolower((string) ($b['where_text'] ?? ''));
+    if ($where !== '') {
+        foreach (rmt_buddy_landing_all('country') as $p) {
+            if (preg_match('/\b' . preg_quote(mb_strtolower($p['name']), '/') . '\b/u', $where)) return $p;
+        }
+    }
+    return null;
+}
+
 /** The cities a page covers, with how many people are going to each and upcoming meetups. */
 function rmt_buddy_landing_cities(array $p): array {
     if ($p['kind'] !== 'country') return [];

@@ -49,6 +49,9 @@ $authorSaid = $authorSaid ?? [];
       <?php endif; ?>
       <?php if (!empty($t['dest_slug'])): ?>
         · <a href="<?= e(url('d/'.$t['dest_slug'].'/travelers')) ?>">who else is going to <?= e($t['dest_name']) ?></a>
+        <?php if ($bl = rmt_buddy_landing_for_dest_slug((string) $t['dest_slug'])): ?>
+          · <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">travel buddies in <?= e($bl['name']) ?></a>
+        <?php endif; ?>
       <?php endif; ?>
     </p>
   <?php endif; ?>
