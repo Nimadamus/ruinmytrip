@@ -18,7 +18,7 @@ if ($bc['from'] !== '') {
     $sameYear = substr($bc['from'], 0, 4) === substr($bc['to'], 0, 4);
     $bcDates = date($sameYear ? 'M j' : 'M j, Y', strtotime($bc['from'])) . ' to ' . date('M j, Y', strtotime($bc['to']));
 }
-$bcLogin = url('login?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH) . (parse_url($bcBack, PHP_URL_QUERY) ? '?' . parse_url($bcBack, PHP_URL_QUERY) : '')));
+$bcLogin = url('register?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH) . (parse_url($bcBack, PHP_URL_QUERY) ? '?' . parse_url($bcBack, PHP_URL_QUERY) : '')));
 ?>
 <?php $bcEx = !empty($bc['example']); ?>
 <article class="bcard<?= $bc['here_now'] ? ' bcard-here' : '' ?><?= $bc['kind'] === 'local' ? ' bcard-local' : '' ?><?= $bcEx ? ' bcard-example' : '' ?>">
@@ -82,9 +82,9 @@ $bcLogin = url('login?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH) .
 
   <div class="bcard-acts">
     <?php if ($bcEx): ?>
-      <a class="btn btn-primary btn-sm" href="<?= e($me ? $bc['url'] : url('login?return=' . rawurlencode((string) parse_url($bc['url'], PHP_URL_PATH) . '?' . (string) parse_url($bc['url'], PHP_URL_QUERY)))) ?>"><?= $bc['kind'] === 'local' ? 'Post your own trip' : 'Post a trip like this' ?></a>
+      <a class="btn btn-primary btn-sm" href="<?= e($me ? $bc['url'] : url('register?return=' . rawurlencode((string) parse_url($bc['url'], PHP_URL_PATH) . '?' . (string) parse_url($bc['url'], PHP_URL_QUERY)))) ?>"><?= $bc['kind'] === 'local' ? 'Post your own trip' : 'Post a trip like this' ?></a>
     <?php elseif (!$me): ?>
-      <a class="btn btn-primary btn-sm" href="<?= e($bcLogin) ?>">Sign in to connect</a>
+      <a class="btn btn-primary btn-sm" href="<?= e($bcLogin) ?>">Join to connect</a>
     <?php elseif ($bc['kind'] === 'post'): ?>
       <?php if ($bcState === 'accepted'): ?>
         <a class="btn btn-primary btn-sm" href="<?= e(url('messages/' . $bc['username'])) ?>">Message</a>

@@ -51,7 +51,8 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
     <div class="callout warn" style="margin-top:14px"><b>Before you travel with anyone:</b> talk first, meet somewhere public, check they are who they say, never send money, and tell someone your plans. <a href="<?= e(url('safety')) ?>">Safety guide</a></div>
     <div style="margin:20px 0">
       <?php if (!$me): ?>
-        <?php if ($open): ?><a class="btn btn-primary" href="<?= e(url('login?return=' . rawurlencode($back))) ?>">Sign in to join this trip</a><?php endif; ?>
+        <?php if ($open): ?><a class="btn btn-primary" href="<?= e(url('register?return=' . rawurlencode($back))) ?>">Join to ask about this trip</a>
+          <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode($back))) ?>">Sign in</a><?php endif; ?>
       <?php elseif ($mine): ?>
         <p><b><?= $mine['state'] === 'accepted' ? 'You are accepted.' : ($mine['state'] === 'declined' ? 'The poster has passed on this one.' : 'Your request is in. Waiting for the poster.') ?></b></p>
         <div style="display:flex;gap:10px;flex-wrap:wrap">

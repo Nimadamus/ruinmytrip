@@ -37,5 +37,5 @@
     <p class="hint" style="margin-top:14px">By joining you agree to our <a href="<?= e(url('terms')) ?>">Terms</a>, <a href="<?= e(url('privacy')) ?>">Privacy Policy</a>, and <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>.</p>
     <div style="margin-top:12px"><button class="btn btn-primary btn-block">Create account</button></div>
   </form>
-  <p class="muted" style="margin-top:16px">Already have an account? <a href="<?= e(url('login')) ?>">Sign in</a></p>
+  <p class="muted" style="margin-top:16px">Already have an account? <a href="<?= e(url('login') . (!empty($return) ? '?return=' . rawurlencode((string) $return) : '')) ?>">Sign in</a></p>
 </div></div>

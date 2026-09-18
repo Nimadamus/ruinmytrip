@@ -37,7 +37,8 @@
         <span class="chip">Full</span>
       <?php endif; ?>
     <?php elseif (!$me && !$closed): ?>
-      <a class="btn btn-primary" href="<?= e(url('login?return=' . rawurlencode('/meetup/'.(int)$m['id']))) ?>">Sign in to RSVP</a>
+      <a class="btn btn-primary" href="<?= e(url('register?return=' . rawurlencode('/meetup/'.(int)$m['id']))) ?>">Join to RSVP</a>
+      <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode('/meetup/'.(int)$m['id']))) ?>">Sign in</a>
     <?php endif; ?>
     <?php if ($isHost && $m['status'] !== 'cancelled'): ?>
       <a class="btn btn-ghost" href="<?= e(url('meetup/'.(int)$m['id'].'/edit')) ?>">Edit</a>
