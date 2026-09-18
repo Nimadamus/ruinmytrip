@@ -173,7 +173,7 @@ function editable_url_value(?string $u): string {
  * cannot use its own image, has to be able to ask for it by name instead of copying the key.
  */
 function rmt_default_og_image(): string {
-    return url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg');
+    return url('assets/img/og-default.jpg');
 }
 
 /** Render a view within the layout. */
