@@ -180,6 +180,30 @@ was actually published. From 16 September onward the marker does the job automat
   the date could be set, and nothing was published. Schedule it through Business Suite when the
   browser is responsive; skip it if Sunday passes.
 
+### E9, outreach channel check for the buddy landing pages, 2026-09-18 (Pacific)
+
+Owner authorized organic outreach (Reddit, Facebook groups, r/solotravel, cruise forums) on
+2026-09-18, with no spam, no deception and no account risk. What was checked, this session:
+
+* **Reddit:** `www.reddit.com` and `old.reddit.com` both answer 403 from this machine (09:31 PDT).
+  The only Reddit login on file is u/TrustMyRecord: betting brand, karma 1, last three posts removed
+  by the sitewide spam filter. Posting RuinMyTrip from it would be off brand and risks the account.
+  **Nothing posted.**
+* **Cruise forums:** `boards.cruisecritic.com` answers 403 from this machine. No account exists, and
+  creating one is not something this machine does. **Nothing posted.**
+* **Facebook groups:** the only personal profile signed in (edge-automation, port 9223) is the
+  pseudonymous profile that administers the adult content Pages with strikes. Posting in travel
+  groups from it would be a deceptive persona and risks every Page it holds. **Nothing posted.**
+* **Let's Go Solo admin request (sent 2026-09-16 03:57 PDT):** no reply visible in the inbox list.
+  No follow up, per the rule.
+* **RuinMyTrip Page (61594217710086):** 0 followers. Business Suite for asset 1374505149069040 now
+  says "this content isn't available" from this session, so Page admin access is not currently held
+  here. Nothing scheduled.
+* **Outcome:** no compliant channel is reachable from this machine. **Needs:** an established
+  personal Reddit or Facebook account the owner is willing to post from, or the owner posting the
+  drafts in `docs/ACQUISITION_PACKAGES.md` directly. The new landing pages (`/travel-buddies/{country}`,
+  `/cruise-buddies/{line}`) are the right links for those drafts.
+
 ### Template for the next one
 
 * **Hypothesis:**

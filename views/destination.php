@@ -117,6 +117,7 @@
       </div>
     </div>
   <?php endif; ?>
+  <?php if ($bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint" style="margin:14px 0 0">Seeing more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>
   <?php include __DIR__ . '/_city_community.php'; ?>

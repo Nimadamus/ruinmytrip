@@ -104,6 +104,11 @@
     <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies?show=here')) ?>">There right now</a>
     <a class="btn btn-ghost-light btn-sm" href="<?= e(url('buddies?show=locals')) ?>">Locals open to meeting</a>
   </p>
+  <p class="home-bl-links">Popular:
+    <?php foreach (['greece', 'thailand', 'japan', 'italy', 'bali', 'mexico', 'royal-caribbean', 'carnival', 'norwegian'] as $bl): if (!($lp = rmt_buddy_landing($bl))) continue; ?>
+      <a href="<?= e(url(rmt_buddy_landing_path($bl))) ?>"><?= e($lp['kind'] === 'cruise' ? $lp['line'] . ' cruises' : $lp['name']) ?></a>
+    <?php endforeach; ?>
+  </p>
 </div></section>
 
 <?php /* Who is here, before anything we wrote. A visitor deciding whether to join is deciding

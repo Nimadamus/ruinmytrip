@@ -1555,3 +1555,5 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .bl-hub{margin-bottom:14px}
 .bl-hub h3{font-size:1rem;margin:0 0 8px}
 .bl-hub h3 + .bl-links{margin-bottom:14px}
+.home-bl-links{margin:12px 0 0;color:#cfe3e6;font-size:.9rem;display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
+.home-bl-links a{color:#fff;text-decoration:underline;text-underline-offset:3px}
