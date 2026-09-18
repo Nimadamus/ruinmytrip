@@ -9,7 +9,7 @@
   </div></div></div>
 <?php endif; ?>
 <section class="hero">
-  <div class="hero-bg" style="background-image:url('<?= e(url('media/4667ce3c70aadb7989e73b6fb6eb8c5e.jpg')) ?>')"></div>
+  <div class="hero-bg" style="background-image:url('<?= e(url('assets/img/hero-santorini.jpg')) ?>');background-position:80% center"></div>
   <div class="hero-inner">
     <?php /* The front door said "here is our research on ticket prices", which is what every travel
              page on the internet says and is not what this is. This site's one thing is the people:
