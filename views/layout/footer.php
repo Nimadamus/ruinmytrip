@@ -20,21 +20,18 @@
     </div>
     <div>
       <h4>Explore</h4>
-      <a href="<?= e(url('explore')) ?>">Destinations</a>
-      <a href="<?= e(url('events')) ?>">Upcoming events</a>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('guides')) ?>">Guides & itineraries</a>
-      <a href="<?= e(url('reviews')) ?>">Reviews</a>
-      <a href="<?= e(url('contribute')) ?>">Write a review</a>
-      <a href="<?= e(url('blog')) ?>">Blog</a>
-      <a href="<?= e(url('discover')) ?>">Discover</a>
-      <a href="<?= e(url('talk')) ?>">Travel talk</a>
-      <a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('collections')) ?>">Collections</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a>
       <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
       <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
+      <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
+      <a href="<?= e(url('meetups')) ?>">Meetups</a>
+      <a href="<?= e(url('talk')) ?>">Travel talk</a>
+      <a href="<?= e(url('explore')) ?>">Destinations</a>
+      <a href="<?= e(url('events')) ?>">Upcoming events</a>
+      <a href="<?= e(url('contribute')) ?>">Write a review</a>
+      <a href="<?= e(url('reviews')) ?>">Reviews</a>
+      <a href="<?= e(url('communities')) ?>">Communities</a>
+      <a href="<?= e(url('collections')) ?>">Collections</a>
 <?php /* Signed out this is a redirect to /login, which is a link worth nothing to a reader
              and a wasted crawl to everybody else. */ ?>
       <?php if (current_user()): ?><a href="<?= e(url('matches')) ?>">Your matches</a><?php endif; ?>

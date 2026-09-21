@@ -1,4 +1,4 @@
-<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var array $guides @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var ?array $taxPost @var array $latestPosts @var array $goingSoon @var array $liveCities */ ?>
+<?php /** @var array $trending @var array $stories @var array $reviews @var array $meetups @var int $stat_destinations @var int $stat_community_reviews @var int $stat_editorial_reviews @var array $goingSoon @var array $liveCities */ ?>
 <?php if (!empty($refUser)): ?>
   <?php /* The one line that turns a forwarded link into a signup: who sent it, by name. */ ?>
   <div class="wrap" style="margin-top:14px"><div class="card"><div class="card-body" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
@@ -183,29 +183,25 @@
 <section class="block band" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)"><div class="wrap">
   <div class="grid g-2" style="align-items:start">
     <div>
-      <p class="eyebrow">Trusted reviews</p><h2>What nearly ruins the trip</h2>
-      <?php if ($stat_community_reviews === 0 && $reviews): ?>
-        <p class="muted">Everything below is an <b>editorial review</b>, researched and labelled as such. There are no traveler reviews yet, and we are not going to invent any. <a data-review-cta="home" href="<?= e(url('contribute')) ?>">Yours would be the first.</a></p>
+      <p class="eyebrow">Traveler reviews</p><h2>What nearly ruins the trip</h2>
+      <?php if (!$reviews): ?>
+        <p class="muted">No traveler has posted a review yet. Yours would be the first, and it is the one the next person reads.</p>
       <?php endif; ?>
       <div class="grid" style="gap:14px">
         <?php foreach ($reviews as $r): ?>
-          <div class="card <?= rmt_is_editorial($r) ? 'ed-panel' : '' ?>"><div class="card-body">
+          <div class="card"><div class="card-body">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
               <span class="stars"><?= stars((int)$r['rating']) ?></span>
-              <?php if (rmt_is_editorial($r)): ?><?= rmt_editorial_badge('review') ?>
-              <?php elseif (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
+              <?php if (show_verified($r)): ?><span class="verified">Verified</span><?php endif; ?>
             </div>
             <h3 style="margin:.35rem 0 .2rem;font-size:1.05rem">
               <a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a>
             </h3>
             <p class="muted" style="margin:0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span></p>
             <p style="margin:.5rem 0 0"><?= e(mb_strimwidth($r['body'],0,120,'…')) ?></p>
-            <div class="meta-row"><?= rmt_is_editorial($r) ? e(rmt_editorial_name()) : '@'.e($r['author']['username'] ?? 'traveler') ?></div>
+            <div class="meta-row">@<?= e($r['author']['username'] ?? 'traveler') ?></div>
           </div></div>
         <?php endforeach; ?>
-        <?php if (!$reviews): ?>
-          <p class="muted">No reviews yet. <a data-review-cta="home" href="<?= e(url('contribute')) ?>">The first honest one can be yours.</a></p>
-        <?php endif; ?>
       </div>
       <p style="margin-top:16px">
         <?php /* Points at /contribute rather than the bare form: somebody arriving from the
@@ -213,7 +209,11 @@
                  exactly that. Tagged so the funnel can say whether the homepage produces reviews
                  rather than only clicks. */ ?>
         <a class="btn btn-accent" data-review-cta="home" href="<?= e(url('contribute')) ?>">Share your experience</a>
-        <a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a>
+        <?php if ($reviews): ?>
+          <a class="btn btn-ghost" href="<?= e(url('reviews')) ?>">All reviews</a>
+        <?php else: ?>
+          <a class="btn btn-ghost" href="<?= e(url('buddies')) ?>">Find travelers</a>
+        <?php endif; ?>
       </p>
     </div>
     <div>
@@ -271,37 +271,6 @@
       <?php endif; ?>
     </div>
   </div>
-</div></section>
-
-<?php /* The research is real and it is kept, and it is one strip rather than three sections with
-         a heading each in the middle of the page. A homepage that gives guides, prices and
-         "destinations we researched" that much room is a guidebook with a community bolted on, and
-         this site is the other way round. Every one of those pages is still one click from here,
-         still in the footer, and still in the sitemap. */ ?>
-<section class="block band" style="border-top:1px solid var(--line)"><div class="wrap">
-  <div class="section-head">
-    <div><p class="eyebrow">We also do the homework</p><h2>The boring bits, checked</h2></div>
-    <a class="btn btn-ghost btn-sm" href="<?= e(url('explore')) ?>">Explore all</a>
-  </div>
-  <div class="grid g-3">
-    <?php foreach (array_slice($guides, 0, 3) as $g): ?>
-      <article class="card"><div class="card-body">
-        <p class="eyebrow" style="margin:0 0 4px">Guide</p>
-        <h3 style="font-size:1.02rem"><a href="<?= e(url('g/'.$g['slug'])) ?>"><?= e($g['title']) ?></a></h3>
-        <?php if (!empty($g['dest_name'])): ?><p class="hint" style="margin:.2rem 0 0"><?= e($g['dest_name']) ?></p><?php endif; ?>
-      </div></article>
-    <?php endforeach; ?>
-    <?php foreach (array_slice($latestPosts, 0, 3) as $bp): ?>
-      <article class="card"><div class="card-body">
-        <p class="eyebrow" style="margin:0 0 4px"><?= e((string) ($bp['category'] ?: 'Note')) ?></p>
-        <h3 style="font-size:1.02rem"><a href="<?= e(url('blog/'.$bp['slug'])) ?>"><?= e($bp['title']) ?></a></h3>
-        <?php if (!empty($bp['summary'])): ?><p class="hint" style="margin:.2rem 0 0"><?= e(mb_strimwidth((string) $bp['summary'], 0, 90, '...')) ?></p><?php endif; ?>
-      </div></article>
-    <?php endforeach; ?>
-  </div>
-  <p style="margin:16px 0 0"><a href="<?= e(url('guides')) ?>">All guides</a> &middot;
-     <a href="<?= e(url('blog')) ?>">All notes</a> &middot;
-     <a href="<?= e(url('explore')) ?>">Every destination we have researched</a></p>
 </div></section>
 
 <section class="block"><div class="wrap" style="text-align:center;background:linear-gradient(120deg,var(--ink),var(--brand));color:#fff;border-radius:24px;padding:56px 24px">

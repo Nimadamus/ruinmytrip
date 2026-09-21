@@ -1,4 +1,4 @@
-<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $guides @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery @var array $talk */ // reviews/editorial rows also carry 'useful_count' ?>
+<?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery @var array $talk */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('in/'.rmt_country_slug((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
@@ -121,17 +121,6 @@
 
   <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>
   <?php include __DIR__ . '/_city_community.php'; ?>
-
-  <?php if (!empty($relatedPosts)): ?>
-    <div class="callout" style="margin-top:16px">
-      <p style="margin:0 0 8px"><b>2026 costs for <?= e($d['name']) ?></b></p>
-      <ul style="margin:0;padding-left:1.2em">
-        <?php foreach ($relatedPosts as $rp): ?>
-          <li><a href="<?= e(url('blog/'.$rp['slug'])) ?>"><?= e($rp['title']) ?></a></li>
-        <?php endforeach; ?>
-      </ul>
-    </div>
-  <?php endif; ?>
 
   <?php /* Two ratings, never blended. The community score is what travelers said; the editorial
             score is the site's own research-based assessment and is labelled as such. */ ?>
@@ -525,20 +514,6 @@
 
     <aside>
       <div class="card"><div class="card-body">
-        <h3>Guides &amp; itineraries</h3>
-        <?php if (!$guides): ?><p class="muted">No guides yet.</p><?php endif; ?>
-        <ul class="list-plain">
-          <?php foreach ($guides as $g): ?>
-            <li style="padding:8px 0;border-bottom:1px solid var(--line)">
-              <a href="<?= e(url('g/'.$g['slug'])) ?>"><?= e($g['title']) ?></a>
-              <?php if (rmt_is_editorial($g)): ?><br><?= rmt_editorial_badge() ?><?php endif; ?>
-            </li>
-          <?php endforeach; ?>
-        </ul>
-        <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('guides')) ?>">All guides</a>
-      </div></div>
-
-      <div class="card" style="margin-top:18px"><div class="card-body">
         <h3>Who's going</h3>
         <p class="hint">Destination + date range only. Never precise location.</p>
         <?php if (!$going): ?><p class="muted">No travelers listed yet. Be the first.</p><?php endif; ?>

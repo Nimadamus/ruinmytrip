@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-15 (tenth pass).
+Replace stale lines here; do not append history. Last touched 2026-09-21.
 
 ## What the product is
 
@@ -376,6 +376,7 @@ blocked at the network layer from this machine, for reading as well as posting.
 4. Not done from the engagement brief: "Helpful" reaction (Like only), user suspend via moderation untested,
    moderation queue does one reasons query per row (fine at current volume). TikTok stays channel 2, no account.
 5. SEO title experiment first read 2026-09-29. Do not touch the nine cities.
+6. Sitemap (2026-09-21) submits member pages: home, buddy landings, city pages, `/d/{slug}/travelers`, traveler reviews, talk, profiles. It does not submit places, category or neighborhood pages, guides, or the blog. Those pages stay indexable. Homepage, footer, nav, and city pages no longer feature guides or the blog.
 
 ## Waiting on Nima
 

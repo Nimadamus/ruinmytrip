@@ -58,9 +58,8 @@
                two buttons, which is what a product looks like when every feature is argued for one
                at a time: nothing was wrong with any single link, and together they read as a
                directory rather than a place. The four that lead now are the four a member opens
-               daily. Nothing is removed, because a page nobody can reach from the nav is a page
-               that quietly dies: the rest sit in a disclosure that needs no JavaScript, so they
-               are one click away, in the markup for a crawler, and keyboard reachable. */ ?>
+               daily. Guides and the blog stay on their own URLs and out of this menu: a link on
+               every page is what we ask a crawler to treat as the site. */ ?>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
       <?php endif; ?>
@@ -77,11 +76,9 @@
           <a href="<?= e(url('communities')) ?>">Communities</a>
           <a href="<?= e(url('ruined')) ?>">Ruined</a>
           <a href="<?= e(url('reviews')) ?>">Reviews</a>
-          <a href="<?= e(url('guides')) ?>">Guides</a>
           <a href="<?= e(url('collections')) ?>">Collections</a>
           <a href="<?= e(url('leaderboard')) ?>">Top travelers</a>
           <a href="<?= e(url('tags')) ?>">Topics</a>
-          <a href="<?= e(url('blog')) ?>">Blog</a>
           <?php if ($me): ?>
             <a href="<?= e(url('matches')) ?>">Matches</a>
             <a href="<?= e(url('buddies/mine')) ?>">Your travel buddies</a>

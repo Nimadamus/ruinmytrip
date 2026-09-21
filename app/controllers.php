@@ -77,18 +77,15 @@ function home(array $a): void {
                         FROM meetups m LEFT JOIN destinations d ON d.id=m.destination_id
                        WHERE m.status='published' AND m.date_start >= ?
                        ORDER BY m.date_start ASC LIMIT 6", [date('Y-m-d H:i:s')]);
-    $guides = q_all("SELECT g.*, d.name dest_name FROM guides g
-                     LEFT JOIN destinations d ON d.id=g.destination_id
-                     WHERE g.status='published' ORDER BY g.id DESC LIMIT 6");
-    // Homepage reviews are destination-level: place reviews belong on /p/ pages, and the
-    // query-shaped titles (tourist tax, tickets, what nearly ruins it) are the destination ones.
+    // Traveler reviews only. A house write-up on the front door is how this site kept
+    // introducing itself as a guidebook.
     $reviews = q_all("SELECT r.*, d.slug dest_slug FROM reviews r
+                      JOIN users u ON u.id = r.user_id
                       LEFT JOIN destinations d ON d.id=r.destination_id
-                      WHERE r.status='published' AND r.place_id IS NULL
-                      ORDER BY r.id DESC LIMIT 4");
+                      WHERE r.status='published' AND r.place_id IS NULL AND u.role <> ?
+                      ORDER BY r.id DESC LIMIT 4", [RMT_EDITORIAL_ROLE]);
     authors_fill($stories);
     authors_fill($reviews);
-    authors_fill($guides);
     $stat_destinations = (int)(q_one('SELECT COUNT(*) c FROM destinations')['c'] ?? 0);
     $stat_community_reviews = (int)(q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
                                             WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])['c'] ?? 0);
@@ -99,8 +96,6 @@ function home(array $a): void {
        what this site has, and "1,211 places across 85 cities" answers it; three travellers does
        not, however honest it is. Nothing is invented to get there: this is a count of rows. */
     $stat_places = (int)(q_one("SELECT COUNT(*) c FROM places WHERE status = 'active'")['c'] ?? 0);
-    $taxPost = q_one("SELECT slug, title FROM blog_posts WHERE slug = 'tourist-taxes-2026' AND status = 'published'");
-    $latestPosts = q_all("SELECT slug, title, summary, cover_url, category, created_at FROM blog_posts WHERE status='published' ORDER BY created_at DESC, id DESC LIMIT 3");
     $refUser = current_user() ? null : rmt_invite_referrer();
     $ruinedLines = rmt_reviews_ruined(3);
     $ruinedTotal = rmt_reviews_ruined_count();
@@ -128,7 +123,7 @@ function home(array $a): void {
                            FROM destinations d
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name
                           LIMIT 12", [date('Y-m-d'), date('Y-m-d H:i:s')]);
-    view('home', compact('trending','stories','reviews','meetups','guides','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','taxPost','latestPosts','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+    view('home', compact('trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.
@@ -297,8 +292,6 @@ function destination(array $a): void {
     // Editorial and community reviews are rendered in separate, separately labelled sections.
     [$editorial, $reviews] = rmt_split_editorial($reviews);
     $tips = rmt_destination_tips($id);
-    $guides = q_all("SELECT g.* FROM guides g WHERE g.destination_id=? AND g.status='published' ORDER BY g.id DESC", [$id]);
-    authors_fill($guides);
     $meetups = q_all("SELECT m.* FROM meetups m WHERE m.destination_id=? AND m.status='published' ORDER BY m.date_start", [$id]);
     // Community score only. An editorial rating is the site's own opinion and must never be
     // presented, or marked up for search engines, as traveler consensus.
@@ -379,7 +372,7 @@ function destination(array $a): void {
             rmt_activities_in_city($id, $me, date('Y-m-d'), date('Y-m-d', strtotime('+120 days')), 40),
             static fn(array $r) => empty($r['cancelled_at']))), 0, 5)
         : [];
-    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','guides','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
+    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,

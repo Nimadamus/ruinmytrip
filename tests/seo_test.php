@@ -71,26 +71,23 @@ check('travelers directory is in', in_array('https://example.test/travelers', $l
 check('founding page is in', in_array('https://example.test/founding', $locs, true), true);
 check('destination is in', in_array('https://example.test/d/barcelona-spain', $locs, true), true);
 check('country hub is in', in_array('https://example.test/in/spain', $locs, true), true);
-check('guide is in', in_array('https://example.test/g/barcelona-spain-travel-guide', $locs, true), true);
+check('a guide is not submitted', in_array('https://example.test/g/barcelona-spain-travel-guide', $locs, true), false);
 check('empty meetups is out', in_array('https://example.test/meetups', $locs, true), false);
 check('empty blog index is out', in_array('https://example.test/blog', $locs, true), false);
 check('empty leaderboard is out', in_array('https://example.test/leaderboard', $locs, true), false);
 check('empty going is out', in_array('https://example.test/going', $locs, true), false);
-check('discover in when editorial content exists', in_array('https://example.test/discover', $locs, true), true);
+check('discover stays out while only the house has written', in_array('https://example.test/discover', $locs, true), false);
 
 $pdo->exec("INSERT INTO blog_posts (slug,title,summary,body,status,created_at) VALUES ('tourist-taxes-2026','Taxes','sum','See <a href=\"/d/barcelona-spain\">Barcelona</a>','published','2026-08-26')");
 $locs = array_column(rmt_sitemap_entries(), 'loc');
-check('blog index in once a post exists', in_array('https://example.test/blog', $locs, true), true);
-check('blog post is in', in_array('https://example.test/blog/tourist-taxes-2026', $locs, true), true);
+check('blog index stays out', in_array('https://example.test/blog', $locs, true), false);
+check('a blog post is not submitted', in_array('https://example.test/blog/tourist-taxes-2026', $locs, true), false);
 
 echo "\n-- destination related posts --\n";
 $rel = rmt_blog_posts_for_destination('barcelona-spain');
 check('related post found via /d/slug in body', count($rel) === 1 && $rel[0]['slug'] === 'tourist-taxes-2026', true);
 check('unrelated slug is empty', rmt_blog_posts_for_destination('kyoto-japan'), []);
 check('junk slug rejected', rmt_blog_posts_for_destination('../etc'), []);
-
-$withMod = array_values(array_filter(rmt_sitemap_entries(), static fn($r) => $r['loc'] === 'https://example.test/g/barcelona-spain-travel-guide'));
-check('guide lastmod is a date', $withMod && $withMod[0]['lastmod'] === '2026-08-01', true);
 
 echo "\n-- review slug --\n";
 check('trailing hyphen stripped', rmt_review_slug(['title' => 'Barcelona 2026: Gaudi Glory Behind a Doubled Tourist Tax and an Airbnb Countdown to Zero']),

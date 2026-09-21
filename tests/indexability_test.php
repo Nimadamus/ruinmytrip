@@ -267,9 +267,10 @@ foreach ($parts as $pt) {
 check('no URL appears twice across the whole sitemap', count($all), count(array_unique($all)));
 
 $has = static fn(string $path): bool => in_array('https://example.test/' . ltrim($path, '/'), $all, true);
-check('the qualifying category page is listed',    $has('d/paris-france/hotels'), true);
+check('the qualifying category page is not submitted', $has('d/paris-france/hotels'), false);
 check('the thin one is NOT',                       $has('d/paris-france/restaurants'), false);
-check('the enriched place is listed',              $has('p/h1'), true);
+check('the enriched place is not submitted',       $has('p/h1'), false);
+check('the city travelers page is listed',         $has('d/paris-france/travelers'), true);
 check('the bare place is NOT',                     $has('p/bare'), false);
 check('the closed place is NOT',                   $has('p/shut'), false);
 check('the contributor profile is listed',         $has('u/contributor'), true);
@@ -300,8 +301,8 @@ check('a rendered child is a urlset', str_contains($xml, '<urlset'), true);
 check('and holds its 5', substr_count($xml, '<loc>'), 5);
 
 echo "\nlastmod is only claimed where we hold one:\n";
-$placesXml = (string) q_one("SELECT xml FROM sitemap_cache WHERE group_key='places' AND part=1")['xml'];
-check('a place with an updated_at claims it', str_contains($placesXml, '<lastmod>2026-08-20</lastmod>'), true);
+$listsXml = (string) q_one("SELECT xml FROM sitemap_cache WHERE group_key='lists' AND part=1")['xml'];
+check('a list with an updated_at claims it', str_contains($listsXml, '<lastmod>2026-08-02</lastmod>'), true);
 $destXml = (string) q_one("SELECT xml FROM sitemap_cache WHERE group_key='destinations' AND part=1")['xml'];
 check('a destination, which has no timestamp, claims none', str_contains($destXml, '<lastmod>'), false);
 check('and today is never invented', str_contains($destXml, gmdate('Y-m-d')), false);

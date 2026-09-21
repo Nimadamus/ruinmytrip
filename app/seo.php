@@ -230,19 +230,12 @@ function rmt_sitemap_entries(): array {
     $add('/travelers');
     $add('/founding');
     $add('/start');
-    $add('/guides');
-    $add('/reviews');
     $add('/editorial-policy');
     $add('/terms');
     $add('/privacy');
     $add('/guidelines');
     $add('/affiliate');
     $add('/safety');
-
-    if (function_exists('rmt_reviews_ruined_count') && rmt_reviews_ruined_count() > 0) $add('/ruined');
-
-    $nBlog = (int) (q_one("SELECT COUNT(*) c FROM blog_posts WHERE status='published'")['c'] ?? 0);
-    if ($nBlog > 0) $add('/blog');
 
     $nCol = (int) (q_one("SELECT COUNT(*) c FROM collections WHERE status='published'")['c'] ?? 0);
     if ($nCol > 0) $add('/collections');
@@ -253,13 +246,14 @@ function rmt_sitemap_entries(): array {
     $nGoing = (int) (q_one("SELECT COUNT(*) c FROM trips t WHERE t.visibility='public' AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL")['c'] ?? 0);
     if ($nGoing > 0) $add('/going');
 
-    $nActivity = (int) (q_one("SELECT (
-        (SELECT COUNT(*) FROM reviews WHERE status='published') +
-        (SELECT COUNT(*) FROM guides WHERE status='published') +
-        (SELECT COUNT(*) FROM blog_posts WHERE status='published') +
-        (SELECT COUNT(*) FROM trips WHERE status='published')
-    ) c")['c'] ?? 0);
-    if ($nActivity > 0) $add('/discover');
+    $nMemberReviews = (int) (q_one(
+        "SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
+         WHERE r.status='published' AND u.role <> ?",
+        [RMT_EDITORIAL_ROLE]
+    )['c'] ?? 0);
+    if ($nMemberReviews > 0) $add('/reviews');
+    $nTrips = (int) (q_one("SELECT COUNT(*) c FROM trips WHERE status='published'")['c'] ?? 0);
+    if ($nMemberReviews + $nTrips > 0) $add('/discover');
 
     $nCommunity = (int) (q_one(
         "SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
@@ -286,14 +280,7 @@ function rmt_sitemap_entries(): array {
                        OR EXISTS (SELECT 1 FROM review_photos rp JOIN reviews r ON r.id=rp.review_id WHERE r.destination_id=d.id AND r.status='published')") as $d) {
         $add('/d/'.$d['slug'].'/photos');
     }
-    foreach (q_all("SELECT DISTINCT d.slug FROM destinations d JOIN places p ON p.destination_id=d.id
-                    WHERE p.status='active'") as $d) {
-        $add('/d/'.$d['slug'].'/places');
-    }
-    foreach (q_all("SELECT DISTINCT p.slug FROM places p JOIN reviews r ON r.place_id=p.id
-                    WHERE p.status='active' AND r.status='published'") as $p) {
-        $add('/p/'.$p['slug']);
-    }
+
     /* Public trips only. This queue hands URLs to search engines, and a private trip's URL is not
        ours to hand anybody: the page itself 404s for a stranger, so all this ever did was announce
        that the URL exists and spend the quota saying it. */
@@ -301,16 +288,12 @@ function rmt_sitemap_entries(): array {
                      WHERE status='published' AND COALESCE(visibility,'public')='public'") as $t) {
         $add('trip/'.$t['id'].'/'.$t['slug'], $t['created_at'] ?? null);
     }
-    foreach (q_all("SELECT slug, created_at FROM guides WHERE status='published'") as $g) {
-        $add('g/'.$g['slug'], $g['created_at'] ?? null);
-    }
     foreach (q_all("SELECT slug, created_at FROM collections WHERE status='published'") as $c) {
         $add('c/'.$c['slug'], $c['created_at'] ?? null);
     }
-    foreach (q_all("SELECT slug, created_at FROM blog_posts WHERE status='published'") as $bp) {
-        $add('blog/'.$bp['slug'], $bp['created_at'] ?? null);
-    }
-    foreach (q_all("SELECT id, slug, title, subject_name, created_at FROM reviews WHERE status='published'") as $rv) {
+    foreach (q_all("SELECT r.id, r.slug, r.title, r.subject_name, r.created_at FROM reviews r
+                     JOIN users u ON u.id=r.user_id
+                    WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE]) as $rv) {
         $add('review/'.$rv['id'].'/'.($rv['slug'] ?: rmt_review_slug($rv)), $rv['created_at'] ?? null);
     }
     foreach (q_all("SELECT username FROM users WHERE status='active'") as $u) {

@@ -61,14 +61,16 @@ function rmt_sitemap_group(string $group): array {
             // Pages that are the site rather than an entity in it. Community indexes are included
             // only when they have something on them -- an empty /meetups is a thin page, not a
             // ranking strategy.
-            foreach (['/', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start', '/guides', '/reviews',
+            // Guides, the blog and the review index are real pages. They are not submitted.
+            // Search was spending this site's impressions on hotel taxes and ticket notes,
+            // and those visits do not become members. /reviews comes back on its own once
+            // a traveler, rather than the house account, has published one.
+            foreach (['/', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
             foreach (array_keys(RMT_BUDDY_LANDING) as $bl) $add('/' . rmt_buddy_landing_path($bl));
 
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
-            if (function_exists('rmt_reviews_ruined_count') && rmt_reviews_ruined_count() > 0) $add('/ruined');
-            if ($has("SELECT COUNT(*) c FROM blog_posts WHERE status='published'"))   $add('/blog');
             if ($has("SELECT COUNT(*) c FROM collections WHERE status='published'"))  $add('/collections');
             // Same rule the browse page applies to itself: /communities is worth a result once at
             // least one community has earned its place on it, and is a thin page before that.
@@ -82,9 +84,11 @@ function rmt_sitemap_group(string $group): array {
             foreach (q_all("SELECT id FROM buddy_posts WHERE status='open' AND date_to >= ?", [date('Y-m-d')]) as $bp) $add('/buddy/' . (int) $bp['id']);
             if ($has("SELECT COUNT(*) c FROM trips t WHERE t.visibility='public' AND t.status='published' AND t.date_from IS NOT NULL AND t.date_to IS NOT NULL")) $add('/going');
             if ($has("SELECT COUNT(*) c FROM posts WHERE status='published'"))       $add('/talk');
-            if ($has("SELECT COUNT(*) c FROM reviews WHERE status='published'"))      $add('/discover');
             if ($has("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id=r.user_id
-                       WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])) $add('/leaderboard');
+                       WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE])) {
+                $add('/reviews');
+                $add('/leaderboard');
+            }
 
             foreach (q_all("SELECT DISTINCT country FROM destinations
                              WHERE country IS NOT NULL AND country <> ''") as $c) {
@@ -103,60 +107,33 @@ function rmt_sitemap_group(string $group): array {
             foreach (rmt_index_destinations() as $d) {
                 if (!$d['verdict']['ok']) continue;
                 $add('/d/' . $d['slug']);
-                // The browse page is a real page with its own inventory, not a filtered view.
-                if ($d['place_count'] > 0) $add('/d/' . $d['slug'] . '/places');
                 // The people page for the city. Submitted for every destination, empty or not:
                 // the search it answers ("travel buddy in X", "who is going to X") is one nobody
                 // is served well on, and a page that recruits the first member is worth more to
                 // this site than a page that lists the tenth museum.
                 $add('/d/' . $d['slug'] . '/travelers');
             }
-            foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
-                             WHERE EXISTS (SELECT 1 FROM trip_photos tp JOIN trips t ON t.id=tp.trip_id
-                                            WHERE t.destination_id=d.id AND t.status='published')
-                                OR EXISTS (SELECT 1 FROM review_photos rp JOIN reviews r ON r.id=rp.review_id
-                                            WHERE r.destination_id=d.id AND r.status='published')") as $d) {
-                $add('/d/' . $d['slug'] . '/photos');
-            }
             break;
 
         case 'categories':
-            // The SEO landing pages. Only the combinations that passed the threshold exist as URLs
-            // at all, so this group is the pilot's exact footprint.
-            foreach (rmt_index_categories() as $c) {
-                if (!$c['verdict']['ok']) continue;
-                $add('/d/' . $c['dest_slug'] . '/' . rmt_category_slug((string) $c['type']));
-            }
-            break;
-
         case 'neighborhoods':
-            foreach (rmt_index_neighborhoods() as $n) {
-                if (!$n['verdict']['ok']) continue;
-                $add('/d/' . $n['dest_slug'] . '/n/' . $n['slug']);
-            }
-            break;
-
         case 'places':
-            foreach (rmt_index_places() as $p) {
-                if (!$p['verdict']['ok']) continue;
-                // Enrichment and editing both touch updated_at, so it is a real answer to "when
-                // did this page last change".
-                $add('/p/' . $p['slug'], $p['updated_at'] ?? null);
-            }
+            // Still indexable, still linked from the city a person is reading. Not submitted.
+            // The place catalog was 832 of the URLs we handed Google, and it ranked for
+            // restaurant names. A venue page stays where it is for the traveler who has it.
             break;
 
         case 'editorial':
-            foreach (q_all("SELECT slug, created_at FROM guides WHERE status='published'") as $g) {
-                $add('g/' . $g['slug'], $g['created_at'] ?? null);
-            }
-            foreach (q_all("SELECT slug, created_at FROM blog_posts WHERE status='published'") as $b) {
-                $add('blog/' . $b['slug'], $b['created_at'] ?? null);
-            }
+            // Guides and blog posts stay indexable. They are not submitted. The counts stay
+            // so a missing table fails this group alone, the same as every other group.
+            q_one("SELECT COUNT(*) c FROM guides WHERE status='published'");
+            q_one("SELECT COUNT(*) c FROM blog_posts WHERE status='published'");
             break;
 
         case 'community':
-            foreach (q_all("SELECT id, slug, title, subject_name, created_at FROM reviews
-                             WHERE status='published'") as $r) {
+            foreach (q_all("SELECT r.id, r.slug, r.title, r.subject_name, r.created_at FROM reviews r
+                              JOIN users u ON u.id = r.user_id
+                             WHERE r.status='published' AND u.role <> ?", [RMT_EDITORIAL_ROLE]) as $r) {
                 $add('review/' . $r['id'] . '/' . ($r['slug'] ?: rmt_review_slug($r)), $r['created_at'] ?? null);
             }
             /* Public trips that have something on them. A trip marked for followers or for
@@ -198,8 +175,9 @@ function rmt_sitemap_group(string $group): array {
             }
             foreach (q_all("SELECT rp.id, rp.created_at FROM review_photos rp
                               JOIN reviews r ON r.id = rp.review_id
-                             WHERE r.status='published'
-                               AND rp.caption IS NOT NULL AND rp.caption <> ''") as $ph) {
+                              JOIN users u ON u.id = r.user_id
+                             WHERE r.status='published' AND u.role <> ?
+                               AND rp.caption IS NOT NULL AND rp.caption <> ''", [RMT_EDITORIAL_ROLE]) as $ph) {
                 $add('photo/review/' . (int) $ph['id'], $ph['created_at'] ?? null);
             }
             break;
