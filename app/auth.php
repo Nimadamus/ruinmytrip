@@ -265,11 +265,11 @@ function rmt_join_intent_line(string $return): ?string {
         parse_str((string) (parse_url($return, PHP_URL_QUERY) ?: ''), $q);
         $line  = mb_substr(trim((string) ($q['line'] ?? '')), 0, 60);
         $where = mb_substr(trim((string) ($q['where'] ?? '')), 0, 60);
-        if ($line !== '')  return 'Join and post your ' . $line . ' sailing. Other travelers on the same ship and date will find you. 18+, and nobody can message you until you accept them.';
-        if ($where !== '') return 'Join and post your ' . $where . ' trip. Travelers going on the same dates will find you. 18+, and nobody can message you until you accept them.';
+        if ($line !== '')  return 'Join free at 16. Posting your ' . $line . ' sailing is 18+, and nobody can message you until you accept them.';
+        if ($where !== '') return 'Join free at 16. Posting your ' . $where . ' trip is 18+, and nobody can message you until you accept them.';
     }
     if (str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/')) {
-        return 'Join to find a travel buddy for your cruise or trip. 18+, and nobody can message you until you accept them.';
+        return 'Join free at 16 to find a travel buddy. Posting a trip is 18+, and nobody can message you until you accept them.';
     }
     if ($path === '/talk')     return 'Join and ask the travelers who have actually been.';
     // A question typed into a place page, carried here in the return address. Search traffic lands

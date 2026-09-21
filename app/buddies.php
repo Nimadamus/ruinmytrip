@@ -851,7 +851,7 @@ function buddies_index(array $a): void {
     $bf = $f;
     view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'examples', 'me', 'dests', 'countries', 'label', 'mine'), [
         'title' => $title . ' | RuinMyTrip',
-        'description' => 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Free, 18+, and nobody can message you until you say yes.',
+        'description' => 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Join free at 16. Posting a trip is 18+, and nobody can message you until you say yes.',
         'canonical' => url($path),
         'breadcrumbs' => $crumbs,
     ]);

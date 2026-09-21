@@ -166,7 +166,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
       <?php else: ?>
         <div class="card"><div class="card-body">
           <h3>Join to connect</h3>
-          <p class="hint">Free and 18+. Post your trip, say you are already there, or list yourself as a local.</p>
+          <p class="hint">Join free at 16. Posting a trip is 18+. Say you are already there, or list yourself as a local.</p>
           <a class="btn btn-accent btn-sm" href="<?= e(url('register?return=' . rawurlencode('/buddies'))) ?>">Create an account</a>
         </div></div>
       <?php endif; ?>

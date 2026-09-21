@@ -20,7 +20,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Greece', 'country' => 'Greece',
         'search' => [['where' => 'Greece']],
         'title' => 'Travel buddies in Greece: find people going on your dates',
-        'desc' => 'Going to Greece? See who else is going to Athens, Santorini and the islands on your dates, split ferries and cars, and meet up in public. Free, 18+.',
+        'desc' => 'Going to Greece? See who else is going to Athens, Santorini and the islands on your dates, split ferries and cars, and meet up in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Greece is an island hopping country, and island hopping is better with somebody to split the ferry tickets, the rental car and the table at dinner with.',
         'sections' => [
             ['How people pair up in Greece', 'Most trips start in Athens and head out by ferry from Piraeus or Rafina. The simplest buddy match is two people on the same boat on the same day: you meet at the port, you already know you both like the same islands, and nobody has to commit to more than a crossing. On bigger islands like Crete and Naxos, sharing a rental car is the other classic reason to find somebody, because the best beaches are not on a bus route.'],
@@ -43,7 +43,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Thailand', 'country' => 'Thailand',
         'search' => [['where' => 'Thailand']],
         'title' => 'Travel buddies in Thailand: meet people going on your dates',
-        'desc' => 'Find travelers going to Bangkok, Chiang Mai, Phuket and the islands when you are. Share boats and day trips, meet in public, and only talk to people you accept. Free, 18+.',
+        'desc' => 'Find travelers going to Bangkok, Chiang Mai, Phuket and the islands when you are. Share boats and day trips, meet in public, and only talk to people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Thailand is where a lot of people take their first big solo trip, and where a lot of them discover that the best days were the ones spent with somebody they met on the way.',
         'sections' => [
             ['How people pair up in Thailand', 'The well worn route runs Bangkok, north to Chiang Mai and Pai, then south to the islands. Because so many people follow some version of it, the chance that somebody is a few days ahead or behind you is high. Travel buddies here usually share a leg rather than a whole trip: a longtail boat charter to a quieter beach, a scooter day in the mountains, a cooking class, a night train.'],
@@ -66,7 +66,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Japan', 'country' => 'Japan',
         'search' => [['where' => 'Japan']],
         'title' => 'Travel buddies in Japan: find people going to Tokyo, Kyoto and Osaka',
-        'desc' => 'See who is going to Japan on your dates. Find company for izakaya nights, day trips from Kyoto and Osaka, and hikes, and meet in public. Free, 18+.',
+        'desc' => 'See who is going to Japan on your dates. Find company for izakaya nights, day trips from Kyoto and Osaka, and hikes, and meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Japan is one of the easiest countries in the world to travel alone, which is exactly why people look for company for the parts that are more fun shared.',
         'sections' => [
             ['How people pair up in Japan', 'Solo travel is completely normal in Japan: ramen counters, capsule hotels and trains are built for one. Travelers usually look for a buddy for the social side instead. An izakaya crawl in Tokyo or Osaka, where ordering lots of small plates works better for two or three. A day trip from Kyoto to Nara or from Osaka to Himeji. A longer walk like the Kumano Kodo, or a night out in Shinjuku or Dotonbori.'],
@@ -89,7 +89,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Italy', 'country' => 'Italy',
         'search' => [['where' => 'Italy']],
         'title' => 'Travel buddies in Italy: meet people going to Rome, Venice and the coast',
-        'desc' => 'Find travelers going to Italy on your dates. Share a boat on the Amalfi Coast, an aperitivo in Milan or a day in Pompeii, and meet in public. Free, 18+.',
+        'desc' => 'Find travelers going to Italy on your dates. Share a boat on the Amalfi Coast, an aperitivo in Milan or a day in Pompeii, and meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Italy is built around eating slowly with other people. A table for one is fine; a long dinner with somebody you met that morning is better.',
         'sections' => [
             ['How people pair up in Italy', 'Most first trips link Rome, Florence and Venice by train, and many add Naples, Pompeii and the Amalfi Coast. Travel buddies here tend to share the things that are priced for groups: a private boat around Capri, a driver along the Amalfi Coast, a cooking class, a wine tour in Tuscany. Walking the trails between the Cinque Terre villages is another popular day to share.'],
@@ -113,7 +113,7 @@ const RMT_BUDDY_LANDING = [
         'search' => [['where' => 'Bali'], ['dest' => 'ubud-indonesia'], ['dest' => 'seminyak-bali-indonesia']],
         'dests' => ['ubud-indonesia', 'seminyak-bali-indonesia'],
         'title' => 'Travel buddies in Bali: find people going to Ubud, Canggu and Seminyak',
-        'desc' => 'Going to Bali? See who is there on your dates, share a driver for the day, a sunrise trek or a boat to Nusa Penida, and meet in public. Free, 18+.',
+        'desc' => 'Going to Bali? See who is there on your dates, share a driver for the day, a sunrise trek or a boat to Nusa Penida, and meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Bali is small enough that everyone ends up in the same few places, and big enough that a day with a shared driver is the best way to see it.',
         'sections' => [
             ['How people pair up in Bali', 'Hiring a driver for the whole day is how most people see Bali: rice terraces, temples and waterfalls in one loop. It is a natural thing to split with one or two other travelers. The sunrise trek up Mount Batur starts in the dark and is more fun with company, and the fast boat to Nusa Penida and the islands is another popular shared day. Canggu and Ubud also have large communities of remote workers who are happy to meet people.'],
@@ -136,7 +136,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Mexico', 'country' => 'Mexico',
         'search' => [['where' => 'Mexico']],
         'title' => 'Travel buddies in Mexico: meet people going to Mexico City, Tulum and Oaxaca',
-        'desc' => 'Find travelers going to Mexico on your dates: Mexico City food tours, cenote days near Tulum, Day of the Dead in Oaxaca. Meet in public, free, 18+.',
+        'desc' => 'Find travelers going to Mexico on your dates: Mexico City food tours, cenote days near Tulum, Day of the Dead in Oaxaca. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Mexico rewards company: the food is meant for sharing, the cenotes are better with somebody to jump with, and Day of the Dead is a celebration, not a spectator sport.',
         'sections' => [
             ['How people pair up in Mexico', 'In Mexico City, people team up for taco crawls, Lucha Libre nights and day trips to the Teotihuacan pyramids. On the Caribbean coast, around Cancún and Tulum, the classic shared day is a cenote loop by car, or a trip out to the Mayan ruins. In Oaxaca, travelers pair up for mezcal tastings, markets and villages in the valley.'],
@@ -159,7 +159,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Portugal', 'country' => 'Portugal',
         'search' => [['where' => 'Portugal']],
         'title' => 'Travel buddies in Portugal: meet people going to Lisbon and Porto',
-        'desc' => 'See who is going to Portugal on your dates. Share a Douro Valley day, a surf lesson or a Sintra trip, meet in public, and stay in control of who can message you.',
+        'desc' => 'See who is going to Portugal on your dates. Share a Douro Valley day, a surf lesson or a Sintra trip, meet in public, and stay in control of who can message you. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Portugal is compact, easy and social. You can be in Lisbon, Sintra and on a surf beach in the same week, and it is nicer with somebody to share it with.',
         'sections' => [
             ['How people pair up in Portugal', 'Lisbon and Porto are the two bases. From Lisbon, people team up for Sintra, the coast at Cascais and surf towns like Ericeira and Peniche. From Porto, the Douro Valley wine day is the classic trip to share. Porto is also a starting point for the Portuguese route of the Camino de Santiago, and walkers often look for company on the first stages.'],
@@ -182,7 +182,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Spain', 'country' => 'Spain',
         'search' => [['where' => 'Spain']],
         'title' => 'Travel buddies in Spain: find people going to Barcelona and beyond',
-        'desc' => 'Find travelers going to Spain on your dates: tapas nights, festivals, the Camino de Santiago. Meet in public and only talk to people you accept. Free, 18+.',
+        'desc' => 'Find travelers going to Spain on your dates: tapas nights, festivals, the Camino de Santiago. Meet in public and only talk to people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Spain eats late, stays out late and celebrates constantly. It is one of the best countries in Europe to meet people, and one of the worst to eat dinner alone at ten at night.',
         'sections' => [
             ['How people pair up in Spain', 'Tapas are designed for sharing, so a tapas crawl is the most natural buddy plan in the country. Barcelona is the most visited city, and people team up for the beach, Montjuïc and nights in the Gothic Quarter. The Camino de Santiago is the other big one: thousands of walkers start alone each year and most of them walk at least part of it with people they met on the way.'],
@@ -205,7 +205,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'France', 'country' => 'France',
         'search' => [['where' => 'France']],
         'title' => 'Travel buddies in France: meet people going to Paris and the Riviera',
-        'desc' => 'See who is going to Paris, Nice and the rest of France on your dates. Find company for picnics, museums, the Riviera and festivals. Meet in public, free, 18+.',
+        'desc' => 'See who is going to Paris, Nice and the rest of France on your dates. Find company for picnics, museums, the Riviera and festivals. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Paris can feel surprisingly lonely for a solo traveler. A picnic by the Seine with somebody who is also there for a week fixes that fast.',
         'sections' => [
             ['How people pair up in France', 'In Paris, travelers team up for museums, food markets, picnics by the Seine or Canal Saint Martin and evenings out. On the Riviera, the coast train from Nice to Monaco and Menton makes easy shared day trips, and people split boat days and beach clubs. Many visitors add a day trip to Versailles or the Loire castles.'],
@@ -228,7 +228,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Vietnam', 'country' => 'Vietnam',
         'search' => [['where' => 'Vietnam']],
         'title' => 'Travel buddies in Vietnam: find people on your route north or south',
-        'desc' => 'Find travelers doing Vietnam on your dates: Ha Giang, Hoi An, Ho Chi Minh City and the coast. Share buses, loops and boats, and meet in public. Free, 18+.',
+        'desc' => 'Find travelers doing Vietnam on your dates: Ha Giang, Hoi An, Ho Chi Minh City and the coast. Share buses, loops and boats, and meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Almost everyone travels Vietnam in a straight line, north to south or south to north, which makes it one of the easiest countries to find people on the same route.',
         'sections' => [
             ['How people pair up in Vietnam', 'The route runs between Hanoi and Ho Chi Minh City, with stops like Ha Long Bay, Ninh Binh, Hue, Hoi An and Da Lat. People team up for sleeper buses and trains, Ha Long Bay boat trips, and the Ha Giang loop in the far north, which many travelers ride with a local driver as part of a group. In Hoi An, people share bikes out to the beach and tailor visits.'],
@@ -251,7 +251,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Colombia', 'country' => 'Colombia',
         'search' => [['where' => 'Colombia']],
         'title' => 'Travel buddies in Colombia: meet people going to Medellín and Cartagena',
-        'desc' => 'See who is going to Colombia on your dates. Find company for Guatapé, the Lost City trek, Tayrona and salsa nights. Meet in public, free, 18+.',
+        'desc' => 'See who is going to Colombia on your dates. Find company for Guatapé, the Lost City trek, Tayrona and salsa nights. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Colombia is one of the most social countries in South America, and travelers here tend to move in loose groups from Medellín to the coast.',
         'sections' => [
             ['How people pair up in Colombia', 'Medellín is the base most people start from, with day trips to Guatapé and coffee farms. On the Caribbean coast, Cartagena, Santa Marta and Tayrona National Park are the next stops. The Lost City trek (Ciudad Perdida) takes several days through the jungle from near Santa Marta and is done in guided groups, so many people look for friends to book it with.'],
@@ -274,7 +274,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Peru', 'country' => 'Peru',
         'search' => [['where' => 'Peru']],
         'title' => 'Travel buddies in Peru: find people going to Cusco and Machu Picchu',
-        'desc' => 'Find travelers going to Peru on your dates: the Inca Trail, Salkantay, Rainbow Mountain and Lima food. Meet in public and connect only with people you accept.',
+        'desc' => 'Find travelers going to Peru on your dates: the Inca Trail, Salkantay, Rainbow Mountain and Lima food. Meet in public and connect only with people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Peru is a country of treks, and treks are done in groups. Finding your group before you land makes the whole trip easier.',
         'sections' => [
             ['How people pair up in Peru', 'Cusco is the hub. From there, people head to Machu Picchu by the Inca Trail, the Salkantay trek or the train, and do day trips to the Sacred Valley and Rainbow Mountain. Inca Trail permits are limited and sell out months ahead, so people who want to go together need to plan early. Lima is the food capital, and a food tour or a ceviche lunch is a great first meetup.'],
@@ -297,7 +297,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Morocco', 'country' => 'Morocco',
         'search' => [['where' => 'Morocco']],
         'title' => 'Travel buddies in Morocco: meet people going to Marrakech and the Sahara',
-        'desc' => 'See who is going to Morocco on your dates. Share a Sahara trip, a riad or a day in the Atlas Mountains, meet in public, and only talk to people you accept.',
+        'desc' => 'See who is going to Morocco on your dates. Share a Sahara trip, a riad or a day in the Atlas Mountains, meet in public, and only talk to people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Morocco is intense in the best way, and a lot of travelers find the medinas and the desert easier, and more fun, with a companion.',
         'sections' => [
             ['How people pair up in Morocco', 'Marrakech is where most trips start. The classic shared trip is the drive to the Sahara at Merzouga, usually two or three days with a night in a desert camp, which tour groups and private drivers both run. People also team up for the Atlas Mountains, the blue city of Chefchaouen, Fes and the coast at Essaouira. Many solo travelers, especially women, like having a buddy for the first walk through a busy medina.'],
@@ -320,7 +320,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Iceland', 'country' => 'Iceland',
         'search' => [['where' => 'Iceland']],
         'title' => 'Travel buddies in Iceland: share the Ring Road and the northern lights',
-        'desc' => 'Find travelers going to Iceland on your dates to split a car or campervan on the Ring Road, chase the northern lights and hike. Meet in public, free, 18+.',
+        'desc' => 'Find travelers going to Iceland on your dates to split a car or campervan on the Ring Road, chase the northern lights and hike. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Iceland is the country where a travel buddy saves you the most money: the car is the trip, and a car costs the same with one person or four.',
         'sections' => [
             ['How people pair up in Iceland', 'The Ring Road, Route 1, loops about 1,300 kilometers around the island and most people drive it over a week or more, or pick a region like the south coast or the Snæfellsnes peninsula. Splitting a rental car or campervan is the most common reason travelers look for a buddy here. Glacier walks, ice caves and whale watching are also shared bookings.'],
@@ -343,7 +343,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'country', 'name' => 'Croatia', 'country' => 'Croatia',
         'search' => [['where' => 'Croatia']],
         'title' => 'Travel buddies in Croatia: meet people for Dubrovnik, Split and a week at sea',
-        'desc' => 'See who is going to Croatia on your dates. Share a sailing week, island ferries or a Plitvice day, meet in public, and only talk to people you accept.',
+        'desc' => 'See who is going to Croatia on your dates. Share a sailing week, island ferries or a Plitvice day, meet in public, and only talk to people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Croatia is best seen from the water, and sailing weeks where travelers book by the cabin are one of the easiest ways to meet a whole boat of people.',
         'sections' => [
             ['How people pair up in Croatia', 'The coast runs from Split to Dubrovnik with islands like Hvar, Brač, Vis and Korčula in between. Island hopping by ferry is easy and cheap to share, and week long sailing trips where people book by the cabin are very popular with solo travelers and pairs of friends. Plitvice Lakes, inland, is the big day trip, and Game of Thrones fans walk Dubrovnik together.'],
@@ -368,7 +368,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Royal Caribbean', 'line' => 'Royal Caribbean',
         'search' => [['type' => 'cruise', 'line' => 'Royal Caribbean']],
         'title' => 'Royal Caribbean cruise buddies: find people on your sailing',
-        'desc' => 'Find other travelers on your Royal Caribbean ship and sailing date. Plan shore days, meet on board and connect only with people you accept. Free, 18+.',
+        'desc' => 'Find other travelers on your Royal Caribbean ship and sailing date. Plan shore days, meet on board and connect only with people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Royal Caribbean ships are floating resorts with thousands of guests. Knowing a few of them before you board turns a big ship into a small one.',
         'sections' => [
             ['How people pair up on Royal Caribbean', 'The line is known for its large ships and onboard attractions, and it sails a lot of short Bahamas and Caribbean cruises from Florida and Texas, with stops at its private island, Perfect Day at CocoCay. Cruise buddies usually connect before the sailing to plan shore days together, meet for sail away, and have somebody to try the shows, the bars and the trivia nights with.'],
@@ -391,7 +391,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Carnival', 'line' => 'Carnival',
         'search' => [['type' => 'cruise', 'line' => 'Carnival']],
         'title' => 'Carnival cruise buddies: meet people on your Carnival sailing',
-        'desc' => 'Find other travelers on your Carnival ship and date. Share shore days, meet at sail away and connect only with people you accept. Free, 18+.',
+        'desc' => 'Find other travelers on your Carnival ship and date. Share shore days, meet at sail away and connect only with people you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Carnival is about fun, and fun is easier with a group. A lot of Carnival cruisers are on short trips and want to make the most of every day.',
         'sections' => [
             ['How people pair up on Carnival', 'Carnival runs many short cruises of three to five nights to the Bahamas, Mexico and the Caribbean, from lots of US ports, so it is a popular choice for friend groups, first time cruisers and people celebrating something. Cruise buddies connect to meet at the pool, share tables, do karaoke and comedy nights, and team up on shore.'],
@@ -414,7 +414,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Norwegian Cruise Line', 'line' => 'Norwegian',
         'search' => [['type' => 'cruise', 'line' => 'Norwegian'], ['type' => 'cruise', 'line' => 'NCL']],
         'title' => 'Norwegian cruise buddies: find people on your NCL sailing',
-        'desc' => 'Find other travelers on your Norwegian Cruise Line ship and sailing. Solo cruisers, shore days and nights on board. Meet in public, free, 18+.',
+        'desc' => 'Find other travelers on your Norwegian Cruise Line ship and sailing. Solo cruisers, shore days and nights on board. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Norwegian is one of the most popular lines with solo cruisers, which makes it one of the easiest places to find company on board.',
         'sections' => [
             ['How people pair up on Norwegian', 'NCL is known for Freestyle Cruising, with no fixed dining times and a relaxed dress code, so plans are flexible and easy to share. Several ships have studio cabins designed for solo travelers, with a shared lounge for studio guests, which is where a lot of solo cruisers meet. Cruise buddies connect to share dinners, shows and shore days.'],
@@ -437,7 +437,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Celebrity Cruises', 'line' => 'Celebrity',
         'search' => [['type' => 'cruise', 'line' => 'Celebrity']],
         'title' => 'Celebrity cruise buddies: meet people on your Celebrity sailing',
-        'desc' => 'Find other travelers on your Celebrity Cruises ship and sailing date. Plan shore days in Europe and the Caribbean together. Meet in public, free, 18+.',
+        'desc' => 'Find other travelers on your Celebrity Cruises ship and sailing date. Plan shore days in Europe and the Caribbean together. Meet in public. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Celebrity attracts travelers who care about food, ports and a calmer ship, and finding a few like minded people on your sailing makes long port days much better.',
         'sections' => [
             ['How people pair up on Celebrity', 'Celebrity is a premium line with a strong focus on dining and destination heavy itineraries. Several of its newer ships have single staterooms for solo travelers. Cruise buddies tend to plan port days together, share a private guide in European ports, and meet for dinner or at the wine bar in the evening.'],
@@ -460,7 +460,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'MSC Cruises', 'line' => 'MSC',
         'search' => [['type' => 'cruise', 'line' => 'MSC']],
         'title' => 'MSC cruise buddies: find people on your MSC sailing',
-        'desc' => 'Find other travelers on your MSC Cruises ship and date, in the Caribbean or the Mediterranean. Share shore days and meet on board. Free, 18+.',
+        'desc' => 'Find other travelers on your MSC Cruises ship and date, in the Caribbean or the Mediterranean. Share shore days and meet on board. Join free at 16. Posting a trip is 18+.',
         'lede' => 'MSC ships carry guests from all over the world, so finding a few people who speak your language and share your plans is a real help.',
         'sections' => [
             ['How people pair up on MSC', 'MSC is a Swiss based line with a very international mix of passengers and a big presence in the Mediterranean. Its Caribbean sailings stop at its private island, Ocean Cay MSC Marine Reserve. Cruise buddies connect to find people with the same language and interests, share tables and shows, and plan port days together.'],
@@ -483,7 +483,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Princess Cruises', 'line' => 'Princess',
         'search' => [['type' => 'cruise', 'line' => 'Princess']],
         'title' => 'Princess cruise buddies: meet people on your Princess sailing',
-        'desc' => 'Find other travelers on your Princess Cruises ship and date, from Alaska to the Caribbean. Share shore days and meet on board. Free, 18+.',
+        'desc' => 'Find other travelers on your Princess Cruises ship and date, from Alaska to the Caribbean. Share shore days and meet on board. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Princess is one of the big names in Alaska cruising, and an Alaska cruise is full of excursions that are more fun, and often cheaper, with a small group.',
         'sections' => [
             ['How people pair up on Princess', 'Princess is especially known for Alaska, with cruises from Seattle and Vancouver and land and sea trips that add time inland. Its MedallionClass wearable makes getting around the ship easy. Cruise buddies connect to plan excursions like whale watching, glacier flights and train rides, and to meet for dinner and shows.'],
@@ -506,7 +506,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Disney Cruise Line', 'line' => 'Disney',
         'search' => [['type' => 'cruise', 'line' => 'Disney']],
         'title' => 'Disney cruise buddies: find families and adults on your sailing',
-        'desc' => 'Find other families and adults on your Disney Cruise Line ship and date. Plan port days and meet on board. Nobody can message you until you accept. 18+ members.',
+        'desc' => 'Find other families and adults on your Disney Cruise Line ship and date. Plan port days and meet on board. Nobody can message you until you accept. Join free at 16. Posting a trip is 18+.',
         'lede' => 'On a Disney cruise the kids make friends in minutes. Finding the parents, or other adults, on your sailing before you board is the grown up version.',
         'sections' => [
             ['How people pair up on Disney', 'Disney Cruise Line sails mostly family cruises, with a strong kids program and adults only areas on board. Families connect before the sailing to meet at the pool, plan the private island day at Castaway Cay together, and share excursions. Adults without kids use it to find company for the adults only restaurants, lounges and pool.'],
@@ -529,7 +529,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Holland America Line', 'line' => 'Holland America',
         'search' => [['type' => 'cruise', 'line' => 'Holland America']],
         'title' => 'Holland America cruise buddies: meet people on your sailing',
-        'desc' => 'Find other travelers on your Holland America Line ship and date, in Alaska, Europe or on a long voyage. Share shore days and dinners. Free, 18+.',
+        'desc' => 'Find other travelers on your Holland America Line ship and date, in Alaska, Europe or on a long voyage. Share shore days and dinners. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Holland America guests tend to take longer cruises, and on a long cruise the people you share it with matter even more.',
         'sections' => [
             ['How people pair up on Holland America', 'Holland America is known for Alaska, longer itineraries and a calmer, more traditional ship with a strong music program. Many guests are experienced cruisers traveling as couples or solo. Cruise buddies connect to share dinner tables, trivia teams, card games and port days.'],
@@ -552,7 +552,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Virgin Voyages', 'line' => 'Virgin',
         'search' => [['type' => 'cruise', 'line' => 'Virgin']],
         'title' => 'Virgin Voyages cruise buddies: find people on your adults only sailing',
-        'desc' => 'Find other travelers on your Virgin Voyages ship and date. Adults only, social and made for meeting people. Share shore days and nights out. Free, 18+.',
+        'desc' => 'Find other travelers on your Virgin Voyages ship and date. Adults only, social and made for meeting people. Share shore days and nights out. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Virgin Voyages is adults only and built to be social, which makes it one of the best ships to find people to hang out with.',
         'sections' => [
             ['How people pair up on Virgin Voyages', 'Every guest on Virgin Voyages is 18 or over, and the ships lean into nightlife, restaurants instead of a main dining room, and events. Cruise buddies connect to meet at the pool, share dinners, go to the shows and parties, and plan port days together. Many guests travel solo or as pairs of friends.'],
@@ -575,7 +575,7 @@ const RMT_BUDDY_LANDING = [
         'kind' => 'cruise', 'name' => 'Viking', 'line' => 'Viking',
         'search' => [['type' => 'cruise', 'line' => 'Viking']],
         'title' => 'Viking cruise buddies: meet people on your river or ocean voyage',
-        'desc' => 'Find other travelers on your Viking river or ocean cruise. Adults only, destination focused and relaxed. Share port days and dinners. Free, 18+.',
+        'desc' => 'Find other travelers on your Viking river or ocean cruise. Adults only, destination focused and relaxed. Share port days and dinners. Join free at 16. Posting a trip is 18+.',
         'lede' => 'Viking is adults only and about the places, not the ship, and the people you share a river or ocean voyage with become a big part of it.',
         'sections' => [
             ['How people pair up on Viking', 'Viking sails river cruises on rivers like the Danube, Rhine and Seine, and ocean cruises around the world. Guests are all 18 or over, there are no casinos, and the focus is on history and culture. Many guests are experienced travelers, often couples and solo travelers, who connect to share dinners, walking tours and free time in port.'],
