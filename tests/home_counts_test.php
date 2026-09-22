@@ -33,9 +33,13 @@ $home = (string) file_get_contents($root . '/views/home.php');
    the zero rule exists to prevent, one order of magnitude up. A small number is left out rather
    than rounded up, and it comes back the moment it is worth reading. */
 ok('a hero stat is only added when it is worth reading',
-   preg_match_all('/\$heroStats\[\] = \[/', $home) === 4
+   preg_match_all('/\$heroStats\[\] = \[/', $home) === 2
    && substr_count($home, '>= 10)') >= 2
-   && substr_count($home, '> 0)') >= 2);
+   && !str_contains($home, "Places']")
+   && !str_contains($home, "Cities']"));
+ok('the hero search looks for travelers',
+   str_contains($home, 'class="hero-search" action="<?= e(url(\'buddies\')) ?>"')
+   && str_contains($home, 'name="where"'));
 ok('and the row never grows past three',
    str_contains($home, 'array_slice($heroStats, 0, 3)'));
 ok('the hero row disappears entirely rather than printing an empty strip',

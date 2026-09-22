@@ -44,6 +44,8 @@ ok(rmt_reviews_ruined_count() === 3, 'count matches the list');
 ok(array_column(rmt_reviews_ruined(50, 2), 'id') === [3], 'city filter');
 ok(rmt_reviews_ruined_count(2) === 1, 'city count');
 ok(array_column(rmt_reviews_ruined(1), 'id') === [7], 'limit');
+ok(array_column(rmt_reviews_ruined(50, null, true), 'id') === [3, 1], 'members only drops the house account');
+ok(rmt_reviews_ruined_count(null, true) === 2, 'members only count');
 
 echo "ruined_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

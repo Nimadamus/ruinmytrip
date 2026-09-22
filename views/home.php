@@ -28,9 +28,9 @@
              still on the page, further down, where somebody who is interested will reach them. */ ?>
     <p>Post the dates of your next trip, see which travelers will be there at the same time, and
       meet up in public if you both want to.</p>
-    <form class="hero-search" action="<?= e(url('explore')) ?>" method="get">
-      <input type="search" name="q" placeholder="Which city? Try Lisbon, Tokyo, Mexico City…" aria-label="Search destinations">
-      <button class="btn btn-primary" type="submit">Search</button>
+    <form class="hero-search" action="<?= e(url('buddies')) ?>" method="get">
+      <input type="search" name="where" placeholder="Which city? Try Lisbon, Tokyo, Mexico City…" aria-label="Find travelers">
+      <button class="btn btn-primary" type="submit">Find travelers</button>
     </form>
     <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap">
       <?php if (!current_user()): ?>
@@ -64,12 +64,8 @@
          it comes back the moment it is worth reading. */
       if ((int)($stat_travelers ?? 0) >= 10)
           $heroStats[] = [(int)$stat_travelers, 'Travelers'];
-      if ((int)$stat_community_reviews >= 10)
+      if ((int)($stat_community_reviews ?? 0) >= 10)
           $heroStats[] = [(int)$stat_community_reviews, 'Traveler reviews'];
-      if ((int)($stat_places ?? 0) > 0)
-          $heroStats[] = [(int)$stat_places, (int)$stat_places === 1 ? 'Place' : 'Places'];
-      if ((int)$stat_destinations > 0)
-          $heroStats[] = [(int)$stat_destinations, (int)$stat_destinations === 1 ? 'City' : 'Cities'];
       $heroStats = array_slice($heroStats, 0, 3);
     ?>
     <?php if ($heroStats): ?>

@@ -97,8 +97,10 @@ function home(array $a): void {
        not, however honest it is. Nothing is invented to get there: this is a count of rows. */
     $stat_places = (int)(q_one("SELECT COUNT(*) c FROM places WHERE status = 'active'")['c'] ?? 0);
     $refUser = current_user() ? null : rmt_invite_referrer();
-    $ruinedLines = rmt_reviews_ruined(3);
-    $ruinedTotal = rmt_reviews_ruined_count();
+    // The homepage quotes travelers. The house account's lines stay on /ruined, which is
+    // where that research lives, and they are not the pitch under the Join button.
+    $ruinedLines = rmt_reviews_ruined(3, null, true);
+    $ruinedTotal = rmt_reviews_ruined_count(null, true);
     $askDests = all_dests();
     /* Who is actually going somewhere, soonest first. This is the site's own answer to "is anybody
        here", and it belongs above the research: a visitor deciding whether to join is deciding
@@ -235,11 +237,8 @@ function country_show(array $a): void {
     $slug = rmt_country_slug($country);
     $dests = q_all('SELECT * FROM destinations WHERE country = ? ORDER BY name', [$country]);
     if (!$dests) not_found();
-    $guides = q_all("SELECT g.*, d.name dest_name FROM guides g JOIN destinations d ON d.id=g.destination_id
-                     WHERE d.country = ? AND g.status='published' ORDER BY g.id DESC", [$country]);
-    authors_fill($guides);
     $n = count($dests);
-    view('country_show', compact('country','slug','dests','guides'), [
+    view('country_show', compact('country','slug','dests'), [
         'title' => $country.' cities and the travelers going there | RuinMyTrip',
         'description' => $n.' destination'.($n===1?'':'s').' in '.$country.' on RuinMyTrip. See who is going, and find travel buddies on your dates.',
         'og_image' => abs_url($dests[0]['hero_url'] ?? ''),
