@@ -223,8 +223,8 @@ function explore(array $a): void {
     $countries = q_all('SELECT country, COUNT(*) n FROM destinations WHERE country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY country');
     $topTags = rmt_top_tags(14);
     view('explore', compact('dests','cats','qs','cat','sort','topTags','countries'), [
-        'title' => 'Explore destinations: 2026 costs, taxes and tickets | RuinMyTrip',
-        'description' => 'Browse traveler-reviewed destinations. Filter by style: culture, adventure, nature, food, city.',
+        'title' => 'Explore destinations and the travelers going there | RuinMyTrip',
+        'description' => 'Browse cities on RuinMyTrip and find the travelers heading there. Post your dates and see who is going when you are.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
     ]);
 }
@@ -240,8 +240,8 @@ function country_show(array $a): void {
     authors_fill($guides);
     $n = count($dests);
     view('country_show', compact('country','slug','dests','guides'), [
-        'title' => $country.' 2026: costs, tickets, taxes and what nearly ruins it | RuinMyTrip',
-        'description' => $n.' destination'.($n===1?'':'s').' in '.$country.' with 2026 prices, tourist taxes, tickets and the friction that catches visitors off guard.',
+        'title' => $country.' cities and the travelers going there | RuinMyTrip',
+        'description' => $n.' destination'.($n===1?'':'s').' in '.$country.' on RuinMyTrip. See who is going, and find travel buddies on your dates.',
         'og_image' => abs_url($dests[0]['hero_url'] ?? ''),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$country,'url'=>url('in/'.$slug)]],

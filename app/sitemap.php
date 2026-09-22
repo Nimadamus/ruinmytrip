@@ -90,10 +90,9 @@ function rmt_sitemap_group(string $group): array {
                 $add('/leaderboard');
             }
 
-            foreach (q_all("SELECT DISTINCT country FROM destinations
-                             WHERE country IS NOT NULL AND country <> ''") as $c) {
-                $add('in/' . rmt_country_slug((string) $c['country']));
-            }
+            // Country hubs (/in/greece) are lists of cities plus the old cost guides.
+            // The page we want crawled for "travel buddies in Greece" is /travel-buddies/greece,
+            // already added above. Submitting both asks Google to rank the guidebook.
             if (function_exists('rmt_top_tags')) {
                 $tags = rmt_top_tags(100);
                 if ($tags) {

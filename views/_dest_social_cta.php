@@ -23,6 +23,8 @@ $dsId = isset($dsId) ? (int) $dsId : 0;
 /* A campaign window that names this city, when one is running, so a reader of the Munich guide in
    September is offered the Oktoberfest dates rather than an empty form. */
 $dsWindow = function_exists('rmt_acq_window_near') ? rmt_acq_window_near($dsSlug) : null;
+$dsBuddy = ($dsSlug !== '' && function_exists('rmt_buddy_landing_for_dest_slug'))
+    ? rmt_buddy_landing_for_dest_slug($dsSlug) : null;
 ?>
 <section class="ds-cta card" style="margin:26px 0"><div class="card-body">
   <p style="margin:0 0 6px;font-size:1.02rem"><b>Going to <?= e($dsName) ?>?</b>
@@ -42,7 +44,10 @@ $dsWindow = function_exists('rmt_acq_window_near') ? rmt_acq_window_near($dsSlug
         ? rmt_acq_trip_link($dsWindow)
         : url('trip/new' . ($dsId > 0 ? '?destination_id=' . $dsId : ''))) ?>">Post your <?= e($dsName) ?> dates</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $dsSlug . '/travelers')) ?>">See who is going</a>
+    <?php if ($dsBuddy): ?>
+    <a class="btn btn-ghost btn-sm" href="<?= e(url(rmt_buddy_landing_path($dsBuddy['slug']))) ?>">Travel buddies in <?= e($dsBuddy['name']) ?></a>
+    <?php endif; ?>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $dsSlug)) ?>">The <?= e($dsName) ?> community</a>
   </p>
 </div></section>
-<?php unset($dsSlug, $dsName, $dsId, $dsWindow); ?>
+<?php unset($dsSlug, $dsName, $dsId, $dsWindow, $dsBuddy); ?>

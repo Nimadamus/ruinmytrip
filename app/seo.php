@@ -270,9 +270,8 @@ function rmt_sitemap_entries(): array {
         }
     }
 
-    foreach (q_all('SELECT DISTINCT country FROM destinations WHERE country IS NOT NULL AND country <> \'\'') as $c) {
-        $add('in/'.rmt_country_slug((string) $c['country']));
-    }
+    // Country hubs stay off this list. The live sitemap is app/sitemap.php, and it
+    // submits /travel-buddies/{country} instead of /in/{country}.
     foreach (q_all('SELECT slug FROM destinations') as $d) $add('/d/'.$d['slug']);
 
     foreach (q_all("SELECT DISTINCT d.slug FROM destinations d
