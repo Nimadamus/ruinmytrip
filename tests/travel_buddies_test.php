@@ -104,6 +104,10 @@ $good = ['trip_type' => 'cruise', 'title' => 'Cabin mate for a Caribbean cruise'
          'ship' => 'The Icon of the Seas', 'departure_port' => 'Miami', 'date_from' => $d('03-01'), 'date_to' => $d('03-08'), 'spots' => '1',
          'budget' => 'mid', 'description' => 'Booked an inside cabin and would like someone to split it with.', 'safety_ack' => '1'];
 $v = rmt_buddy_validate($good, $today);
+$kept = rmt_buddy_post_query(['type' => '', 'dest' => null, 'from' => '2026-10-01', 'to' => '2026-10-08', 'ship' => '', 'line' => '', 'port' => '', 'where' => 'Iceland']);
+ok('a country search is carried into the post', ($kept['where'] ?? '') === 'Iceland' && ($kept['from'] ?? '') === '2026-10-01' && !isset($kept['dest']));
+$cityQ = rmt_buddy_post_query(['type' => '', 'dest' => ['slug' => 'lisbon-portugal'], 'from' => '', 'to' => '', 'ship' => '', 'line' => '', 'port' => '', 'where' => 'Lisbon']);
+ok('a matched city is carried as the city, not as free text', ($cityQ['dest'] ?? '') === 'lisbon-portugal' && !isset($cityQ['where']));
 ok('a complete cruise post validates', $v['ok'], json_encode($v['errors']));
 ok('a cruise without a where gets one from the ship and port', str_contains($v['data']['where_text'], 'Icon of the Seas') && str_contains($v['data']['where_text'], 'Miami'));
 ok('ship names share a key however they are typed', $v['data']['ship_key'] === rmt_buddy_ship_key('icon of the seas') && $v['data']['ship_key'] === 'iconoftheseas');

@@ -313,6 +313,30 @@ function rmt_buddy_filters_active(array $f): bool {
     return $f['show'] !== 'all' || $f['flexible'] || $f['myage'];
 }
 
+/**
+ * What "Post your trip" carries from a search.
+ *
+ * A city that matched a destination goes across as that city. A country or a
+ * phrase that did not ("Iceland", "Ring Road") has to go across as where, or
+ * the signup page and the form both open blank and the search is thrown away.
+ *
+ * @param array<string,mixed> $f
+ * @return array<string,string>
+ */
+function rmt_buddy_post_query(array $f): array {
+    $q = [
+        'type' => (string) ($f['type'] ?? ''),
+        'dest' => (string) ($f['dest']['slug'] ?? ''),
+        'from' => (string) ($f['from'] ?? ''),
+        'to'   => (string) ($f['to'] ?? ''),
+        'ship' => (string) ($f['ship'] ?? ''),
+        'line' => (string) ($f['line'] ?? ''),
+        'port' => (string) ($f['port'] ?? ''),
+    ];
+    if ($q['dest'] === '' && (string) ($f['where'] ?? '') !== '') $q['where'] = (string) $f['where'];
+    return array_filter($q, static fn($v) => $v !== '');
+}
+
 /** The same form as a query string, for links and "widen the search". */
 function rmt_buddy_query(array $f, array $override = []): string {
     $q = ['where' => $f['where'], 'from' => $f['from'], 'to' => $f['to'], 'type' => $f['type'], 'party' => $f['party'],

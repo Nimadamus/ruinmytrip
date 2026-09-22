@@ -2,8 +2,7 @@
 $bcBack = (string) ($_SERVER['REQUEST_URI'] ?? '/buddies');
 $action = url(ltrim((string) parse_url($bcBack, PHP_URL_PATH), '/'));
 $cruiseOpen = $bf['type'] === 'cruise' || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '';
-$postQuery = array_filter(['type' => $bf['type'], 'dest' => $bf['dest']['slug'] ?? '', 'from' => $bf['from'], 'to' => $bf['to'],
-                           'ship' => $bf['ship'], 'line' => $bf['line'], 'port' => $bf['port']]);
+$postQuery = rmt_buddy_post_query($bf);
 $postPath = '/buddies/new' . ($postQuery ? '?' . http_build_query($postQuery) : '');
 $postHref = $me ? url(ltrim($postPath, '/')) : url('register?return=' . rawurlencode($postPath));
 $n = count($cards);
@@ -83,6 +82,15 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     <main class="buddy-results">
       <div class="buddy-count">
         <h2><?php if ($n === 0): ?>No travelers <?= $place !== '' ? 'for ' . e($place) . ' ' : '' ?>yet<?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
+        <?php
+          $blMatch = null;
+          if (($bf['country'] ?? '') !== '' && function_exists('rmt_buddy_landing_for_country')) {
+              $blMatch = rmt_buddy_landing_for_country((string) $bf['country']);
+          } elseif (!empty($bf['dest']['slug']) && function_exists('rmt_buddy_landing_for_dest')) {
+              $blMatch = rmt_buddy_landing_for_dest((string) $bf['dest']['slug'], (string) ($bf['dest']['country'] ?? ''));
+          }
+        ?>
+        <?php if ($blMatch): ?><p class="hint"><a href="<?= e(url(rmt_buddy_landing_path($blMatch['slug']))) ?>">Travel buddies in <?= e($blMatch['name']) ?></a></p><?php endif; ?>
         <?php if ($n): ?><p class="hint"><?= implode(' · ', array_filter([
             $res['counts']['post'] ? $res['counts']['post'] . ' looking for company' : '',
             $res['counts']['trip'] ? $res['counts']['trip'] . ' with trips posted' : '',
@@ -167,7 +175,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <div class="card"><div class="card-body">
           <h3>Join to connect</h3>
           <p class="hint">Join free at 16. Posting a trip is 18+. Say you are already there, or list yourself as a local.</p>
-          <a class="btn btn-accent btn-sm" href="<?= e(url('register?return=' . rawurlencode('/buddies'))) ?>">Create an account</a>
+          <a class="btn btn-accent btn-sm" href="<?= e($postHref) ?>">Create an account</a>
         </div></div>
       <?php endif; ?>
       <?php /* Hub for the country and cruise line landing pages (app/buddy_landing.php). */ ?>
