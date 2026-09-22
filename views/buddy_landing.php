@@ -50,7 +50,7 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
       <p><a href="<?= e($isCruise ? url('buddies/cruise') . '?' . http_build_query(['line' => $p['line']]) : url('buddies') . '?' . http_build_query(['where' => $p['name']])) ?>">See everyone and filter by your dates</a></p>
     <?php else: ?>
       <div class="empty-cta">
-        <h3><?= $isCruise ? 'Nobody has posted a ' . e($p['name']) . ' sailing yet.' : 'Nobody has posted a ' . e($p['name']) . ' trip yet.' ?></h3>
+        <h3><?= $isCruise ? 'Nobody has posted a sailing with ' . e($p['name']) . ' yet.' : 'Nobody has posted a trip to ' . e($p['name']) . ' yet.' ?></h3>
         <p class="muted">Be the first. Post <?= $isCruise ? 'your ship and sail date' : 'where you are going and when' ?>, and you will be told when somebody lines up with you. Anyone searching <?= e($p['name']) ?> will find you here.</p>
         <p><a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a></p>
       </div>
@@ -69,7 +69,7 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
     <ul class="bl-tips">
       <?php foreach ($p['tips'] as $t): ?><li><?= e($t) ?></li><?php endforeach; ?>
     </ul>
-    <p class="hint">Members are 18 or over. Cards show only what a member chose to publish: never a hotel, cabin, address or live location. First meetings belong somewhere public. <a href="<?= e(url('safety')) ?>">How we keep it safe</a></p>
+    <p class="hint">Join free at 16. Posting a trip is 18+. Cards show only what a member chose to publish: never a hotel, cabin, address or live location. First meetings belong somewhere public. <a href="<?= e(url('safety')) ?>">How we keep it safe</a></p>
   </section>
 
   <?php if ($cities): ?>
@@ -84,7 +84,6 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
           </li>
         <?php endforeach; ?>
       </ul>
-      <?php if (empty($p['dests'])): ?><p><a href="<?= e(url('in/' . rmt_country_slug($p['country']))) ?>"><?= e($p['country']) ?> costs, tickets and taxes</a></p><?php endif; ?>
     </section>
   <?php endif; ?>
 
