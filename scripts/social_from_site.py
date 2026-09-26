@@ -55,10 +55,12 @@ def candidates(feed):
                     'text': 'There are %d open travel buddy requests for %s right now. Going around then? Have a look.' % (int(c['n']), c['name'])})
     for q in feed.get('questions', []):
         place = q.get('dest_name') or ''
+        # Our team's questions are said as ours; only a member's question is "a traveler asked".
+        who = 'A traveler asked' if q['review'] else 'We asked'
         out.append({'id': 'q_%d' % q['id'], 'pillar': 'destination debates', 'review': bool(q['review']),
                     'path': '/post/%d' % q['id'], 'place': place,
-                    'slides': ['A traveler asked', q['body'][:120], 'Can you help?'],
-                    'text': 'A traveler asked%s: "%s" Can you help? Answer here.' % ((' about ' + place) if place else '', q['body'])})
+                    'slides': [who, q['body'][:120], 'Can you help?'],
+                    'text': '%s%s: "%s" Can you help? Answer here.' % (who, (' about ' + place) if place else '', q['body'])})
     for w in feed.get('warnings', []):
         place = w.get('dest_name') or ''
         out.append({'id': 'w_%d' % w['id'], 'pillar': 'tourist traps', 'review': True,

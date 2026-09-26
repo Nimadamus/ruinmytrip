@@ -3,6 +3,23 @@
 Written 2026-09-25 (Pacific). Product is frozen except bug fixes. Every time below is Pacific.
 Nothing is posted, joined or messaged without Nima's go ahead in his own signed in session.
 
+## The engine (runs without Nima)
+
+The launch does not rest on personal messages. Those are for the first ten members only. The
+repeatable part is a pipeline that keeps our own accounts posting every day and turns what happens on
+the site into more posts:
+
+| Piece | What it does | Runs |
+|---|---|---|
+| Content bank and calendar | 39 posts, 30 day calendar from 2026-09-28 to 2026-10-27, no theme twice in a row | Written; extended monthly |
+| `scripts/social_kit.py` | Carousels, captions, hashtags, tracked links, schedule for all three platforms | On demand; 30 days already built in `~/rmt_social/2026-09-28/` (90 posts) |
+| `/cron/social` + `scripts/social_from_site.py` | Turns site activity into candidates: cities with several travelers going, countries with open buddy requests (counts only, never names), questions, warnings | Daily, 07:30, hidden task "RMT Social Daily" |
+| `scripts/social_daily_check.py` | The next three days of links answer and show their banner, share images load, the trip form renders, arrivals and engaged visitors were recorded | Daily, same task; results in `~/rmt_social/checks/` |
+| Share loops on the site | Trip (share, ask a friend who has been), buddy request (share your request, send to a friend), question, warning pages, city, empty matches | Live |
+
+Review rule: counts and the team's own questions go out as they are; a member's words and any
+warning that makes a claim about a place wait for a person to approve them.
+
 ## Ready now
 
 | Piece | Where | State |
