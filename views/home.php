@@ -84,6 +84,9 @@
 <?php /* Travel buddies leads the people half of the page: the one question every visitor who might
          join is asking, answered with a search box rather than a paragraph. No queries here, so the
          homepage costs nothing extra. */ ?>
+<?php /* The front door shows activity before it asks for anything. */ ?>
+<div class="wrap"><?php $laItems = $live ?? []; include __DIR__ . '/_live_activity.php'; ?></div>
+
 <section class="block buddy-home"><div class="wrap">
   <p class="eyebrow" style="color:#7ee0d2">Travel buddies</p>
   <h2 style="margin:.2rem 0 .4rem;font-size:clamp(1.6rem,3.6vw,2.4rem)">Going somewhere? Find people heading the same way.</h2>

@@ -125,7 +125,9 @@ function home(array $a): void {
                            FROM destinations d
                        ORDER BY going_count DESC, meetup_count DESC, talk_count DESC, d.name
                           LIMIT 12", [date('Y-m-d'), date('Y-m-d H:i:s')]);
-    view('home', compact('trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+    // What is happening, real rows first and our own labelled content only where they are thin.
+    $live = rmt_live_activity(null, 8);
+    view('home', compact('live', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.
@@ -1346,8 +1348,16 @@ function feed(array $a): void {
        lands in that city's community instead of floating free. Names only, one query. */
     $composeDests = q_all('SELECT id, name, country FROM destinations ORDER BY name');
     $composeDest = (int) ($rails['next_trip']['destination_id'] ?? 0);
+    /* While the network is young, a member's feed is mostly other people's quiet. The activity
+       block puts what is actually happening at the top: in their next trip's city when they have
+       one, otherwise anywhere. It steps aside once the feed has enough of its own. */
+    $live = []; $liveTitle = 'Happening on RuinMyTrip'; $liveCity = null;
+    if (count($items) < 15 || $isEveryone) {
+        $live = rmt_live_activity($uid, 6, $composeDest ?: null);
+        if ($composeDest && ($ld = dest_by_id($composeDest))) { $liveTitle = 'Happening in ' . $ld['name']; $liveCity = (string) $ld['slug']; }
+    }
     view('feed', compact('items','me','isEveryone','scope','cities','rails','engagement','threads','overlapLine',
-                         'composeDests','composeDest'), [
+                         'composeDests','composeDest','live','liveTitle','liveCity'), [
         'title' => 'Your feed | RuinMyTrip',
         'description' => 'Latest trips, reviews, guides, collections and blog posts from travelers you follow.',
             'app_shell' => true,
@@ -4846,8 +4856,11 @@ function comment_action(array $a): void {
             [$owner, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
         $href = rmt_notification_target_url($tt, $tid, $owner);
         if ($href) {
-            rmt_notify_email_direct($owner, 'Somebody replied to you on RuinMyTrip',
-                '@' . $me['username'] . ' replied to something you wrote.', $href);
+            /* Said as what it is: an answer to their question about a city, a comment on their
+               trip. A vague "somebody replied" is the email people learn to ignore. Same caps as
+               every direct email (one an hour, six a day, confirmed addresses, opt out honoured). */
+            [$subj, $line] = rmt_comment_email_words($tt, $tid, (string) $me['username']);
+            rmt_notify_email_direct($owner, $subj, $line, $href, 'somebody replied to something you posted');
         }
     }
     // The person actually being answered. Skipped when they wrote the thing anyway: one
@@ -4857,6 +4870,12 @@ function comment_action(array $a): void {
         if ($parentAuthor > 0 && $parentAuthor !== (int) $me['id'] && $parentAuthor !== $owner) {
             q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
                 [$parentAuthor, 'comment', (int)$me['id'], $tt, $tid, date('Y-m-d H:i:s')]);
+            // The person answered hears it by email too, under the same caps as everything else.
+            $pHref = rmt_notification_target_url($tt, $tid, $parentAuthor);
+            if ($pHref) {
+                rmt_notify_email_direct($parentAuthor, 'Somebody replied to your comment on RuinMyTrip',
+                    '@' . $me['username'] . ' replied to your comment.', $pHref, 'somebody replied to your comment');
+            }
         }
     }
     /* A meetup is a plan other people arranged their day around, so a new line on its page is
@@ -4872,6 +4891,26 @@ function comment_action(array $a): void {
     }
     rmt_notify_mentions($tt, $tid, (int)$me['id'], array_merge([$owner], $meetupCrowd), $body);
     redirect(rmt_return_to());
+}
+
+/**
+ * The subject and line for "somebody commented on your thing", named for the thing.
+ *
+ * @return array{0:string,1:string}
+ */
+function rmt_comment_email_words(string $tt, int $tid, string $actor): array {
+    $who = '@' . $actor;
+    if ($tt === 'post') {
+        $city = (string) (q_one('SELECT d.name FROM posts p JOIN destinations d ON d.id = p.destination_id WHERE p.id = ?', [$tid])['name'] ?? '');
+        if ($city !== '') return ['Somebody answered your question about ' . $city, $who . ' answered what you asked the ' . $city . ' community.'];
+        return ['Somebody replied to your post', $who . ' replied to your post on RuinMyTrip.'];
+    }
+    if ($tt === 'trip') {
+        $city = (string) (q_one('SELECT d.name FROM trips t JOIN destinations d ON d.id = t.destination_id WHERE t.id = ?', [$tid])['name'] ?? '');
+        return ['Somebody commented on your ' . ($city !== '' ? $city . ' ' : '') . 'trip', $who . ' commented on your ' . ($city !== '' ? $city . ' ' : '') . 'trip.'];
+    }
+    if ($tt === 'review') return ['Somebody commented on your review', $who . ' commented on your review on RuinMyTrip.'];
+    return ['Somebody replied to you on RuinMyTrip', $who . ' replied to something you wrote.'];
 }
 
 /** POST /comment/{id}/delete — author only. Soft delete, same as reviews and trips. */

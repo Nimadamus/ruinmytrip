@@ -380,6 +380,17 @@ human_interaction (browser, first tap/type/scroll), and buddy_post_created now a
 (it was never in the allowlist). landing_view carries `path`. E2E: 41 checks on SQLite and on a
 throwaway Postgres (pgserver binaries, `postgres.exe -p 55432`, cookies forced non-secure).
 
+## The site shows activity (2026-09-25, later)
+
+`app/live_activity.php` builds "Happening on RuinMyTrip" for the front page and the member feed
+(feed: when it has under 15 items or fell back to Everyone; scoped to the next trip's city). Real
+rows first (trips, buddy posts, questions, traveler reviews, meetups, one lane at a time); only when
+thin is it topped up with research "what went wrong" lines and team questions, both bylined
+RuinMyTrip. City pages get buddy requests, what went wrong, "I'm going here" (`rmt_city_extras`),
+except the nine title test cities until 2026-09-29 (`rmt_in_title_test`). Buddies has a "Looking
+for" filter (`want=companion|meet`). Reply emails name the thing (`rmt_comment_email_words`) and
+the author of an answered comment is emailed too, under the usual 1/hour 6/day caps.
+
 ## Resume here next session
 
 0. **2026-09-18:** 25 travel buddy landing pages live (`app/buddy_landing_pages.php`, `/travel-buddies/*`, `/cruise-buddies/*`), linked from home, /buddies, /in/*, city pages, sitemap. Outreach blocked: no usable Reddit/Facebook/Cruise Critic account on this machine (E9 in `docs/ACQUISITION_EXPERIMENTS.md`); drafts in `docs/OUTREACH_BUDDY_PAGES.md`. First GSC read on the new pages around 2026-10-02.

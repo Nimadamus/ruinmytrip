@@ -185,6 +185,42 @@ $stats = array_values(array_filter([
     </div>
   <?php endif; ?>
 
+  <?php /* Buddy requests and what went wrong, with the two actions that answer them. Left off the
+           nine pages in the title experiment until it is read on 2026-09-29. */ ?>
+  <?php if (function_exists('rmt_city_extras') && !rmt_in_title_test((string) $d['slug'])):
+        $ccX = rmt_city_extras((int) $d['id']); $ed = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial'; ?>
+    <div class="cc-extra">
+      <div>
+        <h3>Looking for a travel buddy in <?= e($cityName) ?></h3>
+        <?php if ($ccX['buddies']): ?>
+          <ul><?php foreach ($ccX['buddies'] as $b): ?>
+            <li><a href="<?= e(url('buddy/' . (int) $b['id'])) ?>"><?= e((string) $b['title']) ?></a>
+              <span class="hint">@<?= e((string) $b['username']) ?> · <?= e(rmt_live_range((string) $b['date_from'], (string) $b['date_to'])) ?></span></li>
+          <?php endforeach; ?></ul>
+        <?php else: ?>
+          <p class="hint" style="margin:0 0 8px">Nobody has asked yet. Post your dates and say who you would like to go with.</p>
+        <?php endif; ?>
+        <a class="btn btn-ghost btn-sm" data-cta="cta_buddy" data-destination-id="<?= (int) $d['id'] ?>"
+           href="<?= e($me ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Find a travel buddy</a>
+        <a class="btn btn-ghost btn-sm" data-cta="cta_dates" data-destination-id="<?= (int) $d['id'] ?>"
+           href="<?= e($me ? url('trip/new?destination_id=' . (int) $d['id']) : url('plan?cta=cta_dates&d=' . rawurlencode((string) $d['slug']))) ?>">I'm going here</a>
+      </div>
+      <div>
+        <h3>What went wrong in <?= e($cityName) ?></h3>
+        <?php if ($ccX['warnings']): ?>
+          <ul><?php foreach ($ccX['warnings'] as $w): ?>
+            <li><a href="<?= e(url('review/' . (int) $w['id'])) ?>">“<?= e(excerpt((string) $w['what_ruined'], 140)) ?>”</a>
+              <span class="hint"><?= $w['role'] === $ed ? 'RuinMyTrip research' : '@' . e((string) $w['username']) ?><?= !empty($w['place_name']) ? ' · ' . e((string) $w['place_name']) : '' ?></span></li>
+          <?php endforeach; ?></ul>
+        <?php else: ?>
+          <p class="hint" style="margin:0 0 8px">No warnings yet. Been? Tell the next traveler what to avoid.</p>
+        <?php endif; ?>
+        <a class="btn btn-ghost btn-sm" data-cta="cta_avoid" data-destination-id="<?= (int) $d['id'] ?>" href="<?= e(url('d/' . $d['slug'] . '?ask=avoid') . '#city-ask') ?>">What should tourists avoid?</a>
+        <a class="btn btn-ghost btn-sm" data-cta="cta_ruined" data-destination-id="<?= (int) $d['id'] ?>" href="<?= e(url('d/' . $d['slug'] . '?ask=ruined') . '#city-ask') ?>">Post what went wrong</a>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <?php /* The verified event weeks for this city that are still ahead, from the same list /events
            uses, so nothing here is a date we have not checked. */ ?>
   <?php $ccEvents = function_exists('rmt_acq_upcoming_events')

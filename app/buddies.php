@@ -287,6 +287,9 @@ function rmt_buddy_filters(array $g): array {
         'myage' => !empty($g['myage']),
         'show' => in_array($g['show'] ?? '', ['going', 'here', 'locals'], true) ? (string) $g['show'] : 'all',
         'flexible' => !empty($g['flexible']),
+        /* What the other person is after: an actual travel companion (a buddy post is exactly that
+           request) or to meet up casually (a trip open to meeting, or a local). */
+        'want' => in_array($g['want'] ?? '', ['companion', 'meet'], true) ? (string) $g['want'] : '',
         'line' => $s('line'), 'ship' => $s('ship'), 'port' => $s('port'),
     ];
     if ($f['from'] !== '' && $f['to'] === '') $f['to'] = $f['from'];
@@ -309,7 +312,7 @@ function rmt_buddy_filters(array $g): array {
 
 /** Did the reader narrow the search by anything at all. */
 function rmt_buddy_filters_active(array $f): bool {
-    foreach (['where', 'from', 'type', 'party', 'interest', 'line', 'ship', 'port'] as $k) if ($f[$k] !== '') return true;
+    foreach (['where', 'from', 'type', 'party', 'interest', 'line', 'ship', 'port', 'want'] as $k) if (($f[$k] ?? '') !== '') return true;
     return $f['show'] !== 'all' || $f['flexible'] || $f['myage'];
 }
 
@@ -360,6 +363,10 @@ function rmt_buddy_search(array $f, ?array $viewer, int $limit = 60): array {
     if (!$travelers && $f['from'] !== '' && $f['show'] !== 'locals' && ($f['dest_id'] || $f['country'] !== '' || $f['text'] !== '' || $f['ship'] !== '' || $f['line'] !== '')) {
         $wider = rmt_buddy_search_run(array_merge($f, ['from' => '', 'to' => '']), $viewer, $limit);
         if (array_filter($wider, static fn($c) => $c['kind'] !== 'local')) { $cards = $wider; $widened = true; }
+    }
+    if (($f['want'] ?? '') !== '') {
+        $keep = $f['want'] === 'companion' ? ['post'] : ['trip', 'local'];
+        $cards = array_values(array_filter($cards, static fn($c) => in_array($c['kind'], $keep, true)));
     }
     $counts = ['post' => 0, 'trip' => 0, 'local' => 0, 'here' => 0];
     foreach ($cards as $c) { $counts[$c['kind']]++; if (!empty($c['here_now'])) $counts['here']++; }

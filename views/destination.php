@@ -528,7 +528,7 @@
         <?php if ($me): ?>
           <?php $dests = [['id'=>$d['id'],'name'=>$d['name'],'country'=>$d['country']]]; $current = $myGoing; $lockDestId = (int)$d['id']; include __DIR__.'/_going_form.php'; ?>
         <?php else: ?>
-          <a class="btn btn-accent btn-sm btn-block" style="margin-top:10px" href="<?= e(url('register')) ?>">Join to share dates</a>
+          <a class="btn btn-accent btn-sm btn-block" style="margin-top:10px" href="<?= e(url('plan?cta=cta_dates&d=' . rawurlencode((string) $d['slug']))) ?>">Post your dates</a>
         <?php endif; ?>
         <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Travelers in <?= e($d['name']) ?></a>
       </div></div>

@@ -36,7 +36,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     </datalist>
     <?php $pathType = str_starts_with(trim((string) parse_url($bcBack, PHP_URL_PATH), '/'), 'buddies/');
           // A type that came from the address (/buddies/cruise) is the page, not a filter somebody set.
-          $moreActive = ($bf['type'] !== '' && !$pathType) || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '' || $bf['party'] !== '' || $bf['interest'] !== '' || $bf['show'] !== 'all' || $bf['flexible'] || $bf['myage']; ?>
+          $moreActive = ($bf['type'] !== '' && !$pathType) || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '' || $bf['party'] !== '' || $bf['interest'] !== '' || $bf['show'] !== 'all' || $bf['flexible'] || $bf['myage'] || ($bf['want'] ?? '') !== ''; ?>
     <details class="bs-filters" id="bs-filters"<?= $moreActive ? ' open' : '' ?>>
     <summary>More filters<?= $moreActive ? ' (on)' : '' ?></summary>
     <div class="bs-row bs-more">
@@ -46,6 +46,9 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <?php foreach (RMT_BUDDY_PARTIES as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['party'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
       <label><span>Into</span><select name="interest"><option value="">Any interest</option>
         <?php foreach (RMT_INTERESTS as $k => $v): ?><option value="<?= e($k) ?>"<?= $bf['interest'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
+      <label><span>Looking for</span><select name="want">
+        <?php foreach (['' => 'Either', 'companion' => 'A travel companion', 'meet' => 'To meet up casually'] as $k => $v): ?>
+          <option value="<?= e($k) ?>"<?= ($bf['want'] ?? '') === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>
       <label><span>Show</span><select name="show">
         <?php foreach (['all' => 'Everyone', 'going' => 'Travelers going', 'here' => 'There right now', 'locals' => 'Locals open to meeting'] as $k => $v): ?>
           <option value="<?= e($k) ?>"<?= $bf['show'] === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?></select></label>

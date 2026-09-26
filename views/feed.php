@@ -94,6 +94,9 @@ $threads = $threads ?? [];
     </section>
   <?php endif; ?>
 
+  <?php $laItems = $live ?? []; $laTitle = $liveTitle ?? null; $laCity = $liveCity ?? null;
+        include __DIR__ . '/_live_activity.php'; ?>
+
   <?php /* Somebody is waiting on an answer about a trip they are planning right now. Above even
            the "how was it" card, because it is a person waiting rather than a question. */ ?>
   <?php if (!empty($rails['invites'])): ?>
