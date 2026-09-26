@@ -66,9 +66,10 @@ def link(path, source, medium, pid, campaign):
     return SITE + path + ('&' if '?' in path else '?') + q
 
 
-def slide(text, idx, total, pillar, out):
+def slide(text, idx, total, pillar, out, h=H):
+    """One slide. h=1350 for Instagram and Facebook (4:5), h=1920 for TikTok (9:16)."""
     first = idx == 0
-    img = Image.new('RGB', (W, H), INK if first else PAPER)
+    img = Image.new('RGB', (W, h), INK if first else PAPER)
     d = ImageDraw.Draw(img)
     fg = PAPER if first else INK
     d.rectangle([0, 0, W, 18], fill=BRAND)
@@ -76,13 +77,15 @@ def slide(text, idx, total, pillar, out):
     size = 96 if first else 78
     body = font('georgiab.ttf', size)
     lines = textwrap.wrap(text, width=16 if first else 20)
-    y = (H - len(lines) * int(size * 1.25)) // 2
+    y = (h - len(lines) * int(size * 1.25)) // 2
     for ln in lines:
         d.text((80, y), ln, font=body, fill=fg)
         y += int(size * 1.25)
     foot = font('segoeuib.ttf', 34)
-    d.text((80, H - 130), 'ruinmytrip.com', font=foot, fill=ACCENT)
-    d.text((W - 80, H - 130), f'{idx + 1}/{total}', font=foot, fill=fg, anchor='ra')
+    # TikTok lays its caption and buttons over the bottom fifth, so the footer sits higher there.
+    fy = h - 130 if h == H else h - 420
+    d.text((80, fy), 'ruinmytrip.com', font=foot, fill=ACCENT)
+    d.text((W - 80, fy), f'{idx + 1}/{total}', font=foot, fill=fg, anchor='ra')
     img.save(out, 'PNG', optimize=True)
 
 
@@ -115,6 +118,10 @@ def main():
         os.makedirs(pdir, exist_ok=True)
         for j, s in enumerate(p['slides']):
             slide(s, j, len(p['slides']), p['pillar'], os.path.join(pdir, f'slide{j + 1}.png'))
+        tdir = os.path.join(pdir, 'tiktok')
+        os.makedirs(tdir, exist_ok=True)
+        for j, s in enumerate(p['slides']):
+            slide(s, j, len(p['slides']), p['pillar'], os.path.join(tdir, f'slide{j + 1}.png'), h=1920)
         fb = p['facebook'] + '\n\n' + link(p['link_path'], 'facebook', 'post', p['id'], camp)
         place = p.get('place', '')
         ig = p['caption'] + ' Link in bio.\n\n' + tags(p['pillar'], place)
