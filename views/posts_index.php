@@ -68,8 +68,23 @@
       </form>
     </div></div>
   <?php else: ?>
-    <p style="margin:16px 0"><a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free to reply</a>
-      <a class="btn btn-ghost" href="<?= e(url('login')) ?>">Sign in</a></p>
+    <?php /* Write first, join after (app/plan_first.php): the same held question path the city
+             composer uses, so a visitor from a social post can answer before making an account. */ ?>
+    <div class="card" style="margin:18px 0"><div class="card-body">
+      <form id="say" method="post" action="<?= e(url('plan/ask')) ?>">
+        <?= csrf_field() ?>
+        <input type="hidden" name="destination_id" value="<?= (int) ($dest['id'] ?? 0) ?>">
+        <label for="say-body"><b>Say something to travelers</b></label>
+        <textarea id="say-body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
+                  data-track="ask_question_click" data-track-source="talk"
+                  placeholder="A question, a warning, your answer to this week's question, an opinion you will defend."></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+          <button class="btn btn-accent">Post it</button>
+          <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode('/talk#say'))) ?>">Sign in</a>
+          <span class="hint">Next: a free account, and it goes up under your name.</span>
+        </div>
+      </form>
+    </div></div>
   <?php endif; ?>
 
   <p style="margin:18px 0 0">

@@ -106,6 +106,8 @@ const RMT_CTA_KEYS = [
     'cta_dates', 'cta_buddy', 'cta_ask', 'cta_avoid', 'cta_ruined', 'cta_review', 'cta_travelers',
     'cta_community', 'cta_prompt', 'home_plan', 'home_buddy', 'buddy_landing', 'travelers_hub',
     'nav_plan', 'feed_plan',
+    // The banner on a page reached from one of our social posts (app/social_landing.php).
+    'social_answer', 'social_plan',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */

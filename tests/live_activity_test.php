@@ -92,5 +92,23 @@ ok(!array_diff(['search', 'facebook', 'instagram', 'tiktok', 'reddit', 'direct',
 ok(!array_filter($bs, static fn($r) => $r['signup_completed'] > $r['landed'] + $r['signup_started'] + 1000), 'rows are counts');
 ok(isset(rmt_growth_scorecard(7)['by_source']), 'the scorecard carries the by channel table');
 
+// Social landing (app/social_landing.php) and the content bank it reads.
+$bank = rmt_social_bank();
+ok(!empty($bank['posts']) && !empty($bank['calendar']['days']), 'the content bank and its calendar load');
+ok(rmt_social_post_of_day('2026-09-28')['id'] === $bank['calendar']['days'][0], 'day one of the calendar is the first post');
+ok(rmt_social_post_of_day('2026-09-27') === null, 'nothing before the calendar starts');
+ok(rmt_social_post_of_day('2027-01-01')['id'] === end($bank['calendar']['days']), 'after it ends, the last post');
+ok(str_ends_with(rmt_social_answer_url(['link_path' => '/ruined']), '/ruined#ruined-text'), 'a trap post is answered on /ruined');
+ok(str_ends_with(rmt_social_answer_url(['link_path' => '/d/bangkok-thailand']), '/d/bangkok-thailand#city-ask'), 'a city post is answered in the city');
+ok(str_contains(rmt_social_answer_url(['link_path' => '/travel-buddies/japan']), 'plan?buddy=1'), 'a buddy post opens the buddy form');
+ok(rmt_social_question(['facebook' => 'Be honest: which city? And which one?']) === 'Be honest: which city?', 'the banner shows the first question');
+$bad = [];
+foreach ($bank['posts'] as $p) {
+    $all = implode(' ', array_merge([$p['facebook'], $p['caption']], $p['slides']));
+    if (preg_match('/[\x{2013}\x{2014}]| - /u', $all)) $bad[] = $p['id'];
+}
+ok(!$bad, 'no dashes anywhere in the social copy' . ($bad ? ': ' . implode(',', $bad) : ''));
+ok(count(array_unique($bank['calendar']['days'])) === count($bank['calendar']['days']), 'no post repeats in the calendar');
+
 echo "\nlive_activity_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

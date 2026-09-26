@@ -1002,6 +1002,12 @@ function buddy_show(array $a): void {
     view('buddy_show', compact('b', 'me', 'isOwner', 'interest', 'mine', 'accepted', 'isPast', 'interests', 'langs', 'sameSailing', 'similar', 'alsoGoing', 'saved'), [
         'title' => $b['title'] . ' | Travel buddy wanted',
         'description' => mb_substr((RMT_BUDDY_TYPES[$b['trip_type']] ?? 'Trip') . ': ' . $b['where_text'] . '. ' . $b['description'], 0, 155),
+        /* What a link to this page looks like in a chat or a feed: the ask, and the city's picture
+           rather than the site's default. Share fields only; the title and description the search
+           engines read are untouched. */
+        'og_title' => 'Travel buddy wanted: ' . $b['title'],
+        'og_description' => 'Going to ' . ($b['dest_name'] ?: $b['where_text']) . ' around then? Say hello on RuinMyTrip. Nobody can message anyone until both say yes.',
+        'og_image' => !empty($b['dest_slug']) ? rmt_card_url('city', (string) $b['dest_slug']) : rmt_default_og_image(),
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Travel buddies', 'url' => url('buddies')],
                           ['name' => $b['title'], 'url' => url('buddy/' . (int) $b['id'])]],
     ]);

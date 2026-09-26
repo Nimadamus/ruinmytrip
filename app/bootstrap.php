@@ -47,6 +47,7 @@ require BASE_PATH . '/app/onboarding_pending.php';
 require BASE_PATH . '/app/plan_first.php';
 require BASE_PATH . '/app/growth_scorecard.php';
 require BASE_PATH . '/app/live_activity.php';
+require BASE_PATH . '/app/social_landing.php';
 require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/feed_home.php';

@@ -257,6 +257,8 @@ function plan_form(array $a): void {
         'description' => 'Say where and when you are going and see which travelers will be there on the same days. Free, and nobody can message you until you say yes.',
         // A form, not a page anybody searches for. Kept out of the index so it never competes with a city.
         'robots' => 'noindex,follow', 'canonical' => '',
+        // A /plan link sent in a chat for a city shows that city, not the default picture.
+        'og_image' => $dest ? rmt_card_url('city', (string) $dest['slug']) : rmt_default_og_image(),
     ]);
 }
 

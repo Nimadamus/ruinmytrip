@@ -200,6 +200,7 @@ function rmt_source_funnel(int $days = 30): array {
         $rows = q_all("SELECT COALESCE(acq_source, 'direct') src,
                 COUNT(DISTINCT CASE WHEN event = 'landing_view' THEN visitor END) landed,
                 COUNT(DISTINCT CASE WHEN event = 'human_interaction' THEN visitor END) engaged,
+                COUNT(DISTINCT CASE WHEN event = 'cta_click' THEN visitor END) cta,
                 COUNT(DISTINCT CASE WHEN event IN ('plan_view','trip_create_started') THEN visitor END) trip_form,
                 COUNT(DISTINCT CASE WHEN event IN ('plan_started','plan_submitted','ask_question_click','cta_click') THEN visitor END) acted,
                 COUNT(DISTINCT CASE WHEN event IN ('join_view','plan_signup_view') THEN visitor END) signup_started,
@@ -225,7 +226,7 @@ function rmt_source_funnel(int $days = 30): array {
     $out = [];
     foreach ($rows as $r) {
         $row = ['source' => (string) $r['src']];
-        foreach (['landed', 'engaged', 'trip_form', 'acted', 'signup_started', 'signup_completed', 'contributed'] as $k) $row[$k] = (int) $r[$k];
+        foreach (['landed', 'engaged', 'cta', 'trip_form', 'acted', 'signup_started', 'signup_completed', 'contributed'] as $k) $row[$k] = (int) $r[$k];
         $row['returned'] = $back[$row['source']] ?? 0;
         $row['engaged_to_member_pct'] = rmt_sc_pct($row['signup_completed'], $row['engaged']);
         $out[] = $row;
@@ -233,7 +234,7 @@ function rmt_source_funnel(int $days = 30): array {
     // The channels we are working on are always listed, even at zero, so a dead channel is visible.
     foreach (['search', 'facebook', 'instagram', 'tiktok', 'reddit', 'direct', 'referral'] as $s) {
         if (!in_array($s, array_column($out, 'source'), true)) {
-            $out[] = ['source' => $s, 'landed' => 0, 'engaged' => 0, 'trip_form' => 0, 'acted' => 0, 'signup_started' => 0,
+            $out[] = ['source' => $s, 'landed' => 0, 'engaged' => 0, 'cta' => 0, 'trip_form' => 0, 'acted' => 0, 'signup_started' => 0,
                       'signup_completed' => 0, 'contributed' => 0, 'returned' => 0, 'engaged_to_member_pct' => null];
         }
     }

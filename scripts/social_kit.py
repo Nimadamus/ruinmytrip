@@ -79,7 +79,13 @@ def main():
     bank = json.load(open(os.path.join(ROOT, 'docs', 'social', 'content_bank.json'), encoding='utf-8'))
     camp = bank['campaign']
     skip = {s for s in a.skip.split(',') if s}
-    posts = [p for p in bank['posts'] if p['id'] not in skip]
+    byid = {p['id']: p for p in bank['posts']}
+    cal = bank.get('calendar')
+    if cal and a.start == cal['start']:
+        # The planned calendar: one post a day, themes spread on purpose.
+        posts = [byid[i] for i in cal['days'] if i not in skip]
+    else:
+        posts = [p for p in bank['posts'] if p['id'] not in skip]
     start = dt.date.fromisoformat(a.start)
     out = os.path.join(a.out, start.isoformat())
     os.makedirs(out, exist_ok=True)
@@ -98,11 +104,10 @@ def main():
             f.write(f'FACEBOOK\n{fb}\n\nINSTAGRAM\n{ig}\n\nTIKTOK\n{tt}\n\n'
                     f'Instagram and TikTok allow one link, in the bio, so those two are measured per\n'
                     f'platform rather than per post:\n{BIO["instagram"]}\n{BIO["tiktok"]}\n')
-        # Facebook every day at 10:00; Instagram and TikTok on weekdays, the same slides.
+        # Every platform every day, the same slides: Facebook 10:00, Instagram 12:00, TikTok 18:00.
         rows.append([day.isoformat(), '10:00', 'facebook', p['id'], pdir, fb])
-        if day.weekday() < 5:
-            rows.append([day.isoformat(), '12:00', 'instagram', p['id'], pdir, ig])
-            rows.append([day.isoformat(), '18:00', 'tiktok', p['id'], pdir, tt])
+        rows.append([day.isoformat(), '12:00', 'instagram', p['id'], pdir, ig])
+        rows.append([day.isoformat(), '18:00', 'tiktok', p['id'], pdir, tt])
     with open(os.path.join(out, 'schedule.csv'), 'w', newline='', encoding='utf-8') as f:
         w = csv.writer(f)
         w.writerow(['date_pacific', 'time_pacific', 'platform', 'post_id', 'folder', 'text'])

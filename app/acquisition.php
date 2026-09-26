@@ -104,6 +104,11 @@ function rmt_acq_slug(?string $v, int $max = 40): ?string {
  */
 function rmt_acq_from_request(): array {
     $src = rmt_acq_slug((string) (input('utm_source') ?: input('ref')));
+    /* A member's invite link is ?ref=their_username (app/invites.php). That is somebody passing the
+       site on by hand, which is what referral means, not an unknown channel. */
+    if ($src !== null && (string) input('utm_source') === '' && !in_array($src, RMT_ACQ_SOURCES, true)) {
+        $src = 'referral';
+    }
     if ($src !== null && !in_array($src, RMT_ACQ_SOURCES, true)) {
         /* A name we do not publish is still a real arrival, so it is kept as 'other' rather than
            thrown away or allowed to invent a category. */

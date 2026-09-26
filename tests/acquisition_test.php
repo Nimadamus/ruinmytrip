@@ -56,6 +56,7 @@ $request = static function (array $get = [], ?string $referer = null): array {
 echo "-- a channel is named by the link --\n";
 ok('utm_source reddit',     $request(['utm_source' => 'reddit'])['source'], 'reddit');
 ok('the short ref= form',   $request(['ref' => 'facebook'])['source'], 'facebook');
+ok('a member invite link is referral', $request(['ref' => 'some_member'])['source'], 'referral');
 ok('case and spacing do not matter', $request(['utm_source' => '  Reddit '])['source'], 'reddit');
 ok('a channel we do not publish is kept as other', $request(['utm_source' => 'some-newsletter-xyz'])['source'], 'other');
 ok('nothing at all is nothing', $request([])['source'], null);

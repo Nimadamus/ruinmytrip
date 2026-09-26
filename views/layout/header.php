@@ -112,4 +112,15 @@
   </div>
 </header>
 <?php if ($f = flash()): ?><div class="flash wrap"><?= e($f) ?></div><?php endif; ?>
+<?php /* Arrived from one of our social posts: say which, and offer what it asked (app/social_landing.php). */
+      if (function_exists('rmt_social_landing') && ($rmtSocial = rmt_social_landing())): ?>
+  <div class="wrap"><div class="social-land">
+    <span class="hint">From our <?= e(ucfirst((string) input('utm_source'))) ?> post</span>
+    <b><?= e(rmt_social_question($rmtSocial)) ?></b>
+    <span class="social-land-acts">
+      <a class="btn btn-primary btn-sm" data-cta="social_answer" href="<?= e(rmt_social_answer_url($rmtSocial)) ?>">Answer it here</a>
+      <a class="btn btn-ghost btn-sm" data-cta="social_plan" href="<?= e(url('plan?cta=social_plan')) ?>">Going somewhere soon? Post your trip</a>
+    </span>
+  </div></div>
+<?php endif; ?>
 <main id="main">
