@@ -91,7 +91,8 @@
     "your first trip?"
    ],
    "facebook": "If you have been to Bangkok: what is the one thing you wish somebody had told you before your first trip? Answers go to the people planning theirs right now.",
-   "caption": "Been to Bangkok? The one thing you wish you had known before your first trip. For everyone going soon."
+   "caption": "Been to Bangkok? The one thing you wish you had known before your first trip. For everyone going soon.",
+   "place": "Bangkok"
   },
   {
    "id": "disaster_funny",
@@ -130,7 +131,8 @@
     "tourists should avoid."
    ],
    "facebook": "Paris veterans: what is one thing first time visitors should skip, and what should they do instead?",
-   "caption": "Paris veterans, one thing to skip and what to do instead. For everyone going for the first time."
+   "caption": "Paris veterans, one thing to skip and what to do instead. For everyone going for the first time.",
+   "place": "Paris"
   },
   {
    "id": "buddy_japan",
@@ -143,7 +145,8 @@
     "Who else is going this season?"
    ],
    "facebook": "Heading to Japan this season? Tell us which cities and roughly when. Izakaya nights and day trips are more fun with company, and you might be on the same dates as someone here.",
-   "caption": "Going to Japan this season? Which cities and when. Someone might be on your dates."
+   "caption": "Going to Japan this season? Which cities and when. Someone might be on your dates.",
+   "place": "Japan"
   },
   {
    "id": "overrated_food",
@@ -195,7 +198,8 @@
     "a first visit not miss?"
    ],
    "facebook": "Been to Mexico City? Which neighborhood would you stay in on a first visit, and what should nobody miss? Your answer goes straight to people planning their trip.",
-   "caption": "Mexico City people: where to stay on a first visit and what not to miss."
+   "caption": "Mexico City people: where to stay on a first visit and what not to miss.",
+   "place": "MexicoCity"
   },
   {
    "id": "trap_restaurant",
@@ -247,7 +251,8 @@
     "Where do you go?"
    ],
    "facebook": "Four days in Portugal and you can only pick one city: Porto or Lisbon? Tell us why.",
-   "caption": "Four days in Portugal, one city only. Porto or Lisbon, and why?"
+   "caption": "Four days in Portugal, one city only. Porto or Lisbon, and why?",
+   "place": "Porto"
   },
   {
    "id": "solo_eat_alone",
@@ -300,6 +305,224 @@
    ],
    "facebook": "Locals, this one is for you: what is the one thing visitors to your city always get wrong? Tell us the city and what they should do instead.",
    "caption": "Locals, what do visitors to your city always get wrong? City and the fix in the comments."
+  },
+  {
+   "id": "know_before_rome",
+   "pillar": "what tourists should know",
+   "link_path": "/d/rome-italy",
+   "slides": [
+    "Going to Rome?",
+    "The thing first timers",
+    "always get wrong.",
+    "Rome people, tell us."
+   ],
+   "facebook": "Rome regulars: what do first time visitors always get wrong? Tell them what to do instead.",
+   "caption": "Rome regulars, what do first timers always get wrong? Tell them what to do instead.",
+   "place": "Rome"
+  },
+  {
+   "id": "know_before_tokyo",
+   "pillar": "what tourists should know",
+   "link_path": "/d/tokyo-japan",
+   "slides": [
+    "First time in Tokyo?",
+    "What surprised you most",
+    "on your first day?",
+    "Tell the next person."
+   ],
+   "facebook": "What surprised you most on your first day in Tokyo? Tell the people going for the first time this year.",
+   "caption": "Your first day in Tokyo: what surprised you most? For everyone going this year.",
+   "place": "Tokyo"
+  },
+  {
+   "id": "buddy_thailand",
+   "pillar": "travel buddy discussions",
+   "link_path": "/travel-buddies/thailand",
+   "slides": [
+    "Thailand this winter?",
+    "Islands, Bangkok, Chiang Mai?",
+    "Island hopping is better",
+    "with someone to split the boat."
+   ],
+   "facebook": "Heading to Thailand this winter? Tell us where and roughly when. Island hopping and long bus rides are better with someone to share them with.",
+   "caption": "Thailand this winter? Where and when. Someone might be on the same island the same week.",
+   "place": "Thailand"
+  },
+  {
+   "id": "buddy_iceland",
+   "pillar": "travel buddy discussions",
+   "link_path": "/travel-buddies/iceland",
+   "slides": [
+    "Driving Iceland?",
+    "A car split four ways",
+    "is a very different trip.",
+    "Who is going and when?"
+   ],
+   "facebook": "Planning an Iceland road trip? Tell us the month. Splitting a car changes the whole budget, and someone here might be going the same week.",
+   "caption": "Iceland road trip? Month in the comments. A shared car changes everything.",
+   "place": "Iceland"
+  },
+  {
+   "id": "trap_venice",
+   "pillar": "tourist traps",
+   "link_path": "/d/venice-italy",
+   "slides": [
+    "Venice",
+    "Worth it or tourist trap?",
+    "What would you skip,",
+    "and what would you never miss?"
+   ],
+   "facebook": "Venice: tourist trap or worth every minute? What would you skip, and what would you never miss?",
+   "caption": "Venice. Tourist trap or worth it? What to skip and what never to miss.",
+   "place": "Venice"
+  },
+  {
+   "id": "debate_tokyo_seoul",
+   "pillar": "destination debates",
+   "link_path": "/d/seoul-south-korea",
+   "slides": [
+    "Tokyo or Seoul?",
+    "One week. One city.",
+    "Food, nights out, day trips.",
+    "Pick one and defend it."
+   ],
+   "facebook": "One week, one city: Tokyo or Seoul? Pick one and tell us why.",
+   "caption": "One week, one city. Tokyo or Seoul? Defend your pick.",
+   "place": "Seoul"
+  },
+  {
+   "id": "overrated_santorini",
+   "pillar": "overrated destinations",
+   "link_path": "/d/santorini-greece",
+   "slides": [
+    "Santorini",
+    "As good as the photos?",
+    "Or is another island better?",
+    "Greece people, weigh in."
+   ],
+   "facebook": "Santorini: as good as the photos, or is there an island you liked more? Greece travelers, weigh in.",
+   "caption": "Santorini, as good as the photos? Or which island did you like more?",
+   "place": "Santorini"
+  },
+  {
+   "id": "fee_airline_bag",
+   "pillar": "hidden fees",
+   "link_path": "/talk",
+   "slides": [
+    "The airline fee",
+    "that made you angriest.",
+    "Bag? Seat? Printing a boarding pass?",
+    "Name the fee."
+   ],
+   "facebook": "Which airline fee made you the angriest? The bag, the seat, the boarding pass you did not print? Name the fee and the airline.",
+   "caption": "The airline fee that made you angriest. Name it."
+  },
+  {
+   "id": "scam_atm",
+   "pillar": "travel scams",
+   "link_path": "/ruined",
+   "slides": [
+    "Money scams abroad",
+    "The ATM, the card machine,",
+    "the exchange booth.",
+    "What should people watch for?"
+   ],
+   "facebook": "What money trick should travelers watch for abroad? The ATM that offers to convert for you, the exchange booth rate, the card machine at the table. Share what you have seen.",
+   "caption": "The money trick travelers should watch for abroad. What have you seen?"
+  },
+  {
+   "id": "disaster_missed_flight",
+   "pillar": "travel disasters",
+   "link_path": "/ruined",
+   "slides": [
+    "The flight you missed",
+    "and what happened next.",
+    "Worst airport night?",
+    "Tell us."
+   ],
+   "facebook": "Tell us about the flight you missed and what happened next. Worst night you ever spent in an airport?",
+   "caption": "The flight you missed and what happened next. Worst airport night?"
+  },
+  {
+   "id": "solo_hostel",
+   "pillar": "solo travel",
+   "link_path": "/buddies",
+   "slides": [
+    "Solo travel",
+    "Hostel or hotel",
+    "when you go alone?",
+    "And why?"
+   ],
+   "facebook": "Solo travelers: hostel or hotel when you go alone? Does it change with age or with the city?",
+   "caption": "Solo: hostel or hotel when you go alone, and why?"
+  },
+  {
+   "id": "horror_hotel",
+   "pillar": "travel horror stories",
+   "link_path": "/ruined",
+   "slides": [
+    "The hotel that",
+    "looked nothing like",
+    "the photos.",
+    "Where was it?"
+   ],
+   "facebook": "What is the worst hotel you have booked that looked nothing like the photos? Where was it and what did you do?",
+   "caption": "The hotel that looked nothing like the photos. Where was it?"
+  },
+  {
+   "id": "buddy_mexico",
+   "pillar": "travel buddy discussions",
+   "link_path": "/travel-buddies/mexico",
+   "slides": [
+    "Mexico this season?",
+    "Mexico City, the coast,",
+    "or the Yucatan?",
+    "Tell us where and when."
+   ],
+   "facebook": "Going to Mexico this season? Tell us where and roughly when. Someone here might be there the same week.",
+   "caption": "Mexico this season? Where and when. Someone might be there the same week.",
+   "place": "Mexico"
+  },
+  {
+   "id": "know_before_istanbul",
+   "pillar": "what tourists should know",
+   "link_path": "/d/istanbul-turkiye",
+   "slides": [
+    "Istanbul",
+    "One neighborhood",
+    "tourists should not skip.",
+    "Tell us which."
+   ],
+   "facebook": "Been to Istanbul? Which neighborhood should visitors not skip, and why?",
+   "caption": "Istanbul people: the neighborhood visitors should never skip.",
+   "place": "Istanbul"
+  },
+  {
+   "id": "unpopular_plan",
+   "pillar": "unpopular travel opinions",
+   "link_path": "/talk",
+   "slides": [
+    "Unpopular opinion",
+    "The famous city",
+    "you would happily never visit.",
+    "Say it."
+   ],
+   "facebook": "Unpopular opinion time: which famous city would you happily never visit, and why?",
+   "caption": "Unpopular opinion. The famous city you would happily never visit."
+  },
+  {
+   "id": "local_nyc",
+   "pillar": "useful local tips",
+   "link_path": "/d/new-york-city-usa",
+   "slides": [
+    "New Yorkers",
+    "What do visitors",
+    "always do wrong?",
+    "Be kind. Mostly."
+   ],
+   "facebook": "New Yorkers: what do visitors always do wrong? Be kind. Mostly.",
+   "caption": "New Yorkers, what do visitors always get wrong? Be kind. Mostly.",
+   "place": "NYC"
   }
  ],
  "calendar": {
@@ -318,7 +541,23 @@
    "trap_restaurant",
    "fee_rental_car",
    "buddy_japan",
-   "porto_or_lisbon"
+   "porto_or_lisbon",
+   "know_before_rome",
+   "scam_atm",
+   "solo_hostel",
+   "debate_tokyo_seoul",
+   "fee_airline_bag",
+   "buddy_thailand",
+   "horror_hotel",
+   "overrated_santorini",
+   "local_nyc",
+   "disaster_missed_flight",
+   "buddy_iceland",
+   "trap_venice",
+   "unpopular_plan",
+   "know_before_tokyo",
+   "buddy_mexico",
+   "know_before_istanbul"
   ]
  }
 }

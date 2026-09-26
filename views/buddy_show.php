@@ -129,6 +129,14 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
     <?php endif; ?>
     <?php if (!$isOwner): ?><a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=buddy&target_id=' . $pid)) ?>">Report</a><?php endif; ?>
   </div>
+  <?php /* A buddy request travels further in a group chat than on this page. The owner hands it to
+           people they know; a reader passes it to a friend who might go. */ ?>
+  <?php if (!$isPast): ?>
+    <?php $shareUrl = url('buddy/' . $pid);
+          $shareText = $isOwner ? 'Looking for someone to join me: ' . $b['title'] : 'Know anyone who would go? ' . $b['title'];
+          $shareLabel = $isOwner ? 'Share your request' : 'Send to a friend';
+          include __DIR__ . '/_share.php'; ?>
+  <?php endif; ?>
 
   <?php if ($sameSailing): ?>
     <h2>Also on this sailing</h2>

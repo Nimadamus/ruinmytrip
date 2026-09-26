@@ -17,6 +17,11 @@
     </p>
   <?php endif; ?>
 
+  <?php $shareUrl = url($dest ? 'ruined?d=' . $dest['slug'] : 'ruined');
+        $shareText = $dest ? 'What ruined trips to ' . $dest['name'] . '. Read before you go.' : 'What ruined the trip: the things travelers wish somebody had warned them about.';
+        $shareLabel = 'Share these warnings';
+        include __DIR__ . '/_share.php'; ?>
+
   <?php if (!$rows): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
       <h3>Nothing here yet<?= $dest ? ' for ' . e((string) $dest['name']) : '' ?>.</h3>

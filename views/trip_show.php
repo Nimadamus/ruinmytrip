@@ -190,6 +190,14 @@ $authorSaid = $authorSaid ?? [];
   <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']); $shareText = (string) $t['title'];
         if ($isOwner) { $shareLabel = 'Invite a traveler'; }
         include __DIR__ . '/_share.php'; ?>
+  <?php /* The other person worth sending it to: a friend who has been. Their answer comes back on
+           the trip page as a comment, where the next traveler reads it too. */ ?>
+  <?php if ($isOwner && in_array($phase, ['upcoming', 'current'], true) && !empty($t['dest_name'] ?? '')): ?>
+    <?php $shareUrl = url('trip/'.$t['id'].'/'.$t['slug']);
+          $shareText = 'I am going to ' . $t['dest_name'] . '. You have been, what should I not miss? Tell me here.';
+          $shareLabel = 'Ask a friend who has been';
+          include __DIR__ . '/_share.php'; ?>
+  <?php endif; ?>
   <?php if (in_array($phase, ['upcoming', 'current'], true) && !empty($t['dest_slug'] ?? '')): ?>
     <p style="margin:10px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('buddies?' . http_build_query(['dest' => $t['dest_slug'], 'from' => $t['date_from'], 'to' => $t['date_to']]))) ?>">Find travel buddies for these dates</a></p>
   <?php endif; ?>

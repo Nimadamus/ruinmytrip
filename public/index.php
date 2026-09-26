@@ -250,6 +250,8 @@ $routes = [
     ['GET',  '#^/feed\.xml$#',                 'feed_rss'],
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
     ['GET',  '#^/cron/funnel$#',               'cron_funnel'],
+    // What the site has that is worth a social post (app/social_landing.php), for scripts/social_from_site.py.
+    ['GET',  '#^/cron/social$#',               'cron_social'],
     ['GET',  '#^/cron/places$#',               'cron_places'],
     ['GET',  '#^/cron/destinations$#',         'cron_destinations'],
     ['POST', '#^/cron/destinations$#',         'cron_destinations'],

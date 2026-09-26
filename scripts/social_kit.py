@@ -36,6 +36,24 @@ FONTS = r'C:\Windows\Fonts'
 BIO = {src: f'{SITE}/?utm_source={src}&utm_medium=bio&utm_campaign=profile' for src in ('instagram', 'tiktok')}
 
 
+# A few tags per theme for Instagram and TikTok, where they still help discovery. Facebook gets none.
+HASHTAGS = {
+    'tourist traps': '#touristtrap #traveltips #travel', 'hidden fees': '#travelhacks #traveltips #budgettravel',
+    'travel scams': '#travelscams #travelsafety #traveltips', 'travel disasters': '#travelfail #travelstories #travel',
+    'travel horror stories': '#travelfail #travelstories #hotel', 'solo travel': '#solotravel #solotraveler #travel',
+    'travel buddy discussions': '#travelbuddy #solotravel #travelcommunity', 'destination debates': '#travel #traveltalk #wanderlust',
+    'overrated destinations': '#overrated #travel #traveltalk', 'unpopular travel opinions': '#unpopularopinion #travel #traveltalk',
+    'useful local tips': '#localtips #traveltips #travel', 'what tourists should know': '#traveltips #firsttime #travel',
+}
+
+
+def tags(pillar, place=''):
+    t = HASHTAGS.get(pillar, '#travel #traveltips')
+    if place:
+        t += ' #' + ''.join(ch for ch in place.lower() if ch.isalnum())
+    return t
+
+
 def font(name, size):
     try:
         return ImageFont.truetype(os.path.join(FONTS, name), size)
@@ -98,8 +116,9 @@ def main():
         for j, s in enumerate(p['slides']):
             slide(s, j, len(p['slides']), p['pillar'], os.path.join(pdir, f'slide{j + 1}.png'))
         fb = p['facebook'] + '\n\n' + link(p['link_path'], 'facebook', 'post', p['id'], camp)
-        ig = p['caption'] + ' Link in bio.'
-        tt = p['caption'] + ' Link in bio.'
+        place = p.get('place', '')
+        ig = p['caption'] + ' Link in bio.\n\n' + tags(p['pillar'], place)
+        tt = p['caption'] + ' Link in bio. ' + tags(p['pillar'], place)
         with open(os.path.join(pdir, 'copy.txt'), 'w', encoding='utf-8') as f:
             f.write(f'FACEBOOK\n{fb}\n\nINSTAGRAM\n{ig}\n\nTIKTOK\n{tt}\n\n'
                     f'Instagram and TikTok allow one link, in the bio, so those two are measured per\n'

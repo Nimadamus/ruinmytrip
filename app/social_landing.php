@@ -65,3 +65,63 @@ function rmt_social_question(array $post): string {
     if (preg_match('/[^?]*\?/', $t, $m)) $t = $m[0];
     return trim(excerpt($t, 160));
 }
+
+/**
+ * GET /cron/social?key=CRON_KEY
+ *
+ * The site feeding the social channels: what is happening here that is worth a post. Aggregates
+ * only for members (a city with several travelers going, a country with open buddy requests), never
+ * a name, never one person's dates. Member questions come back marked for review, because posting
+ * somebody's words on our account is a choice a person makes. Research warnings are marked for
+ * review too, because they make claims about places and every published fact has to be checked.
+ * The team's own questions and the city prompts need no review.
+ */
+function cron_social(array $a): void {
+    $key = (string) (getenv('CRON_KEY') ?: '');
+    $given = (string) input('key');
+    if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
+    header('Content-Type: application/json; charset=utf-8');
+    header('X-Robots-Tag: noindex');
+    $today = date('Y-m-d');
+    $ed = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+    $safe = static function (callable $f): array { try { return $f(); } catch (Throwable $e) { return []; } };
+
+    $going = $safe(static fn() => q_all("SELECT d.slug, d.name, COUNT(DISTINCT t.user_id) n, MIN(t.date_from) first_from
+          FROM trips t JOIN users u ON u.id = t.user_id AND u.status = 'active' AND u.role <> ?
+          JOIN destinations d ON d.id = t.destination_id
+         WHERE t.status = 'published' AND COALESCE(t.visibility, 'public') = 'public'
+           AND t.date_from IS NOT NULL AND t.date_to >= ?
+      GROUP BY d.slug, d.name HAVING COUNT(DISTINCT t.user_id) >= 2 ORDER BY n DESC LIMIT 10", [$ed, $today]));
+    $buddies = $safe(static fn() => q_all("SELECT d.slug, d.name, d.country, COUNT(*) n FROM buddy_posts b
+          JOIN users u ON u.id = b.user_id AND u.status = 'active'
+          JOIN destinations d ON d.id = b.destination_id
+         WHERE b.status = 'open' AND b.date_to >= ?
+      GROUP BY d.slug, d.name, d.country HAVING COUNT(*) >= 2 ORDER BY n DESC LIMIT 10", [$today]));
+    $questions = $safe(static fn() => q_all("SELECT p.id, p.body, p.created_at, d.slug dest_slug, d.name dest_name,
+               SUBSTR(u.username, 1, 5) = 'team_' AS ours,
+               (SELECT COUNT(*) FROM comments c WHERE c.target_type = 'post' AND c.target_id = p.id AND c.status = 'published') replies
+          FROM posts p JOIN users u ON u.id = p.user_id AND u.status = 'active'
+     LEFT JOIN destinations d ON d.id = p.destination_id
+         WHERE p.status = 'published' AND p.collection_id IS NULL AND p.created_at >= ?
+      ORDER BY p.created_at DESC LIMIT 20", [date('Y-m-d H:i:s', time() - 30 * 86400)]));
+    $warnings = $safe(static fn() => q_all("SELECT r.id, r.what_ruined, d.slug dest_slug, d.name dest_name, pl.name place_name
+          FROM reviews r JOIN users u ON u.id = r.user_id AND u.status = 'active'
+     LEFT JOIN destinations d ON d.id = r.destination_id
+     LEFT JOIN places pl ON pl.id = r.place_id
+         WHERE r.status = 'published' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''
+      ORDER BY r.created_at DESC, r.id DESC LIMIT 30", []));
+
+    echo json_encode([
+        'generated_at' => date('c'),
+        'cities_going' => $going,
+        'buddy_countries' => $buddies,
+        'questions' => array_map(static fn($q) => [
+            'id' => (int) $q['id'], 'body' => excerpt((string) $q['body'], 240), 'dest_slug' => $q['dest_slug'],
+            'dest_name' => $q['dest_name'], 'replies' => (int) $q['replies'], 'review' => !(bool) $q['ours'],
+        ], $questions),
+        'warnings' => array_map(static fn($w) => [
+            'id' => (int) $w['id'], 'text' => excerpt((string) $w['what_ruined'], 240), 'dest_slug' => $w['dest_slug'],
+            'dest_name' => $w['dest_name'], 'place_name' => $w['place_name'], 'review' => true,
+        ], $warnings),
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+}
