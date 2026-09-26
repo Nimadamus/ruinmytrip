@@ -88,6 +88,24 @@ const RMT_CONTRIB_EVENTS = [
        nowhere to put one. 'message_started' already counts a conversation beginning. */
     'message_sent',
     'message_thread_viewed',
+    // Written by app/buddies.php since the buddy feature shipped and dropped here every time,
+    // because it was never added to this list. Nothing about a buddy post was ever counted.
+    'buddy_post_created',
+    /* Trip first, 2026-09-25. The visitor states the trip before being asked for an account, and
+       each step is its own row so the drop between any two is a number, not an impression. */
+    'human_interaction',           // browser: first tap, key or scroll of a visit (one bit, nothing else)
+    'cta_click',                   // browser: a social call to action was pressed, detail = which
+    'plan_view',                   // the trip first form was rendered
+    'plan_started',                // browser: somebody put a value into it
+    'plan_submitted',              // a valid trip came back
+    'plan_signup_view',            // ...and was shown the account step with the trip held
+];
+
+/** The calls to action cta_click may name. Closed, like everything else here. */
+const RMT_CTA_KEYS = [
+    'cta_dates', 'cta_buddy', 'cta_ask', 'cta_avoid', 'cta_ruined', 'cta_review', 'cta_travelers',
+    'cta_community', 'cta_prompt', 'home_plan', 'home_buddy', 'buddy_landing', 'travelers_hub',
+    'nav_plan', 'feed_plan',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
@@ -97,6 +115,8 @@ const RMT_CONTRIB_SOURCES = [
     'travelers', 'going', 'meetups', 'talk', 'blog', 'matches', 'invite',
     // The trip composer, which is its own surface: somebody posting dates is not on a city page.
     'trip',
+    // The trip first form, and the buddy pages that send people to it.
+    'plan', 'buddies',
     'other',
 ];
 
@@ -257,23 +277,41 @@ function rmt_track(string $event, array $ctx = []): bool {
         $acq = function_exists('rmt_acq_current')
             ? rmt_acq_current()
             : ['source' => null, 'medium' => null, 'campaign' => null, 'content' => null];
-        q_run('INSERT INTO contribution_events
-               (event, source, journey, visitor, cookied, place_id, destination_id, is_authed, reason,
-                acq_source, acq_medium, acq_campaign, acq_content, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-              [$event, $source, rmt_journey_id(), rmt_visitor_id(),
+        $cols = ['event', 'source', 'journey', 'visitor', 'cookied', 'place_id', 'destination_id', 'is_authed',
+                 'reason', 'acq_source', 'acq_medium', 'acq_campaign', 'acq_content', 'created_at'];
+        $vals = [$event, $source, rmt_journey_id(), rmt_visitor_id(),
                rmt_visitor_presented_cookie() ? 1 : 0,
                !empty($ctx['place_id']) ? (int) $ctx['place_id'] : null,
                !empty($ctx['destination_id']) ? (int) $ctx['destination_id'] : null,
                function_exists('is_logged_in') && is_logged_in() ? 1 : 0,
                $reason,
                $acq['source'], $acq['medium'], $acq['campaign'], $acq['content'],
-               date('Y-m-d H:i:s')]);
+               date('Y-m-d H:i:s')];
+        /* Named only when there is something to put in them, so a row that has neither is written
+           exactly as it was before migration 102. */
+        $path = rmt_track_path((string) ($ctx['path'] ?? ''));
+        if ($path !== null) { $cols[] = 'path'; $vals[] = $path; }
+        $detail = (string) ($ctx['detail'] ?? '');
+        if ($detail !== '' && in_array($detail, RMT_CTA_KEYS, true)) { $cols[] = 'detail'; $vals[] = $detail; }
+        q_run('INSERT INTO contribution_events (' . implode(', ', $cols) . ') VALUES ('
+              . implode(',', array_fill(0, count($cols), '?')) . ')', $vals);
         return true;
     } catch (Throwable $e) {
         // Measuring the funnel must never break the funnel.
         return false;
     }
+}
+
+/**
+ * A landing path fit to store: the path alone, never a query string or a fragment, which is where
+ * tokens and search terms live. Letters, digits and the few characters our own routes use.
+ */
+function rmt_track_path(string $p): ?string {
+    if ($p === '') return null;
+    $p = (string) strtok($p, '?#');
+    if ($p === '' || $p[0] !== '/') return null;
+    $p = preg_replace('#[^\p{L}\p{N}/_\-.]+#u', '', $p) ?? '';
+    return $p === '' ? null : mb_substr($p, 0, 160);
 }
 
 /**
@@ -621,7 +659,8 @@ function rmt_signup_attribution(int $days = 30, int $limit = 12): array {
     foreach ($joined as $j) {
         $d = q_one("SELECT destination_id FROM contribution_events
                      WHERE journey = ? AND destination_id IS NOT NULL
-                       AND event IN ('destination_page_view','destination_follow_success','question_posted')
+                       AND event IN ('destination_page_view','destination_follow_success','question_posted',
+                                     'plan_view','plan_submitted')
                      ORDER BY id LIMIT 1", [(string) $j['journey']]);
         if (!$d) continue;
         $id = (int) $d['destination_id'];

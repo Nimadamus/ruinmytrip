@@ -39,12 +39,51 @@ function rmt_pending_stash(array $data): void {
     /* A travel buddy post, for the same reason: the landing pages send brand new members straight
        to that form, and it is the longest thing on the site anyone fills in before confirming. */
     if (!empty($data['buddy']) && is_array($data['buddy'])) $keep['buddy'] = $data['buddy'];
-    if ($keep) $_SESSION[RMT_PENDING_KEY] = $keep;
+    if (!empty($data['post']) && is_array($data['post'])) $keep['post'] = $data['post'];
+    // Interests picked on the trip first form (app/plan_first.php), for a profile that has none.
+    if (!empty($data['interests']) && is_array($data['interests'])) $keep['interests'] = array_values(array_map('strval', $data['interests']));
+    if (!$keep) return;
+    $_SESSION[RMT_PENDING_KEY] = $keep;
+    /* And against the account, because the confirmation link is usually opened from a mail app:
+       a different browser, a different session, and the slot above is not there. */
+    $uid = (int) ($_SESSION['uid'] ?? 0);
+    if ($uid > 0) rmt_pending_persist($uid, $keep);
+}
+
+/** Hold the same slot in the database for one member. A second one replaces the first. */
+function rmt_pending_persist(int $uid, array $keep): void {
+    if ($uid < 1 || !$keep) return;
+    try {
+        q_run('DELETE FROM held_work WHERE user_id = ?', [$uid]);
+        q_run('INSERT INTO held_work (user_id, payload, created_at) VALUES (?,?,?)',
+              [$uid, (string) json_encode($keep), date('Y-m-d H:i:s')]);
+    } catch (Throwable $e) {
+        // The session copy still stands; losing the durable one costs a cross browser confirm only.
+    }
+}
+
+/** What the database holds for a member, or null. */
+function rmt_pending_load(int $uid): ?array {
+    if ($uid < 1) return null;
+    try {
+        $row = q_one('SELECT payload FROM held_work WHERE user_id = ?', [$uid]);
+    } catch (Throwable $e) {
+        return null;
+    }
+    $held = $row ? json_decode((string) $row['payload'], true) : null;
+    return is_array($held) && $held ? $held : null;
+}
+
+function rmt_pending_forget(int $uid): void {
+    if ($uid < 1) return;
+    try { q_run('DELETE FROM held_work WHERE user_id = ?', [$uid]); } catch (Throwable $e) { /* nothing held */ }
 }
 
 /** Is anything waiting? Used to word the "check your email" page as a reason rather than a chore. */
 function rmt_pending_has(): bool {
-    return session_status() === PHP_SESSION_ACTIVE && !empty($_SESSION[RMT_PENDING_KEY]);
+    if (session_status() !== PHP_SESSION_ACTIVE) return false;
+    if (!empty($_SESSION[RMT_PENDING_KEY])) return true;
+    return rmt_pending_load((int) ($_SESSION['uid'] ?? 0)) !== null;
 }
 
 /**
@@ -54,12 +93,16 @@ function rmt_pending_has(): bool {
  * Each half is independent -- a rejected post must not take the travel dates down with it.
  */
 function rmt_pending_apply(array $user): array {
-    $done = ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false];
+    $done = ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false, 'post' => false];
     if (session_status() !== PHP_SESSION_ACTIVE) return $done;
+    $uid = (int) ($user['id'] ?? 0);
     $held = $_SESSION[RMT_PENDING_KEY] ?? null;
     unset($_SESSION[RMT_PENDING_KEY]);
+    // Confirmed from another browser: the session is empty, the account row is not.
+    if ((!is_array($held) || !$held) && $uid > 0) $held = rmt_pending_load($uid);
+    // Cleared before anything is written, so a reload of the confirm page cannot publish twice.
+    rmt_pending_forget($uid);
     if (!is_array($held) || !$held) return $done;
-    $uid = (int) $user['id'];
 
     if (!empty($held['going'])) {
         // Re-validated rather than trusted: the session is the member's own, but the row it writes
@@ -85,6 +128,9 @@ function rmt_pending_apply(array $user): array {
             }
         }
     }
+    if (!empty($held['interests']) && is_array($held['interests']) && function_exists('rmt_plan_first_interests')) {
+        rmt_plan_first_interests($uid, $held['interests']);
+    }
     if (!empty($held['buddy']) && function_exists('rmt_buddy_validate') && can_host_meetups($user)) {
         // Re-validated, not trusted, like the rest.
         $bv = rmt_buddy_validate($held['buddy']);
@@ -95,6 +141,25 @@ function rmt_pending_apply(array $user): array {
                 if (function_exists('rmt_track')) rmt_track('buddy_post_created', ['destination_id' => $bv['data']['destination_id']]);
                 $done['buddy'] = true;
                 $done['buddy_id'] = $bid;
+            }
+        }
+    }
+    /* A question typed into a city page before there was an account. Same validator and writer
+       as the composer, so it is exactly the post they would have made signed in. */
+    if (!empty($held['post']) && function_exists('rmt_post_create')) {
+        $pv = rmt_post_validate(['body' => (string) ($held['post']['body'] ?? ''),
+                                 'destination_id' => (int) ($held['post']['destination_id'] ?? 0)], $user);
+        if ($pv['ok']) {
+            $pid = rmt_post_create($uid, $pv['data']);
+            if ($pid > 0) {
+                if (function_exists('rmt_track')) {
+                    rmt_track('post_created', ['destination_id' => $pv['data']['destination_id'] ?? null]);
+                    if (!empty($pv['data']['destination_id'])) {
+                        rmt_track('question_posted', ['source' => 'destination', 'destination_id' => (int) $pv['data']['destination_id']]);
+                    }
+                }
+                $done['post'] = true;
+                $done['post_id'] = $pid;
             }
         }
     }

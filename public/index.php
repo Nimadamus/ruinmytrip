@@ -41,6 +41,12 @@ $routes = [
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/following$#', 'profile_following'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)$#','profile'],
     ['GET',  '#^/feed$#',                      'feed'],
+    // Trip first: say where and when, then make the account (app/plan_first.php).
+    ['GET',  '#^/plan$#',                      'plan_form'],
+    ['POST', '#^/plan$#',                      'plan_submit'],
+    ['POST', '#^/plan/ask$#',                  'plan_ask_submit'],
+    ['GET',  '#^/plan/join$#',                 'plan_join_form'],
+    ['POST', '#^/plan/join$#',                 'plan_join_submit'],
     ['GET',  '#^/trip/new$#',                  'trip_new_form'],
     ['POST', '#^/trip/new$#',                  'trip_create'],
     ['GET',  '#^/trip/(?<id>\d+)/edit$#',      'trip_edit_form'],

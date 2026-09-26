@@ -113,7 +113,7 @@
       <div class="city-people-acts">
         <a class="btn btn-primary btn-sm" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Who is going, and when</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('buddies?dest='.rawurlencode($d['slug']))) ?>">Find a travel buddy</a>
-        <a class="btn btn-ghost btn-sm" href="<?= e($me ? url('trip/new?destination_id='.(int) $d['id']) : url('register?return='.rawurlencode('/d/'.$d['slug'].'/travelers'))) ?>">Post your dates</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e($me ? url('trip/new?destination_id='.(int) $d['id']) : url('plan?cta=cta_dates&d='.rawurlencode($d['slug']))) ?>">Post your dates</a>
       </div>
     </div>
   <?php endif; ?>

@@ -217,7 +217,8 @@ function view(string $name, array $data = [], array $meta = []): void {
     if (function_exists('rmt_track_once')
         && !str_contains((string) $__meta['robots'], 'noindex')
         && !(function_exists('is_logged_in') && is_logged_in())) {
-        rmt_track_once('landing_view');
+        // The path, and only the path, so the page that recruited a member can be named later.
+        rmt_track_once('landing_view', ['path' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
     }
 
     $__view = BASE_PATH . '/views/' . $name . '.php';

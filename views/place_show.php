@@ -27,6 +27,7 @@
            phone is three or four screens after the reader has decided. */ ?>
   <?php if (!empty($p['dest_slug'])): ?>
     <?php $destSlug = (string) $p['dest_slug']; $destName = (string) $p['dest_name'];
+          $dsCompact = true;   // under the name: short, so the place itself is still on the first screen
           include __DIR__ . '/_meet_travelers.php'; ?>
   <?php endif; ?>
 

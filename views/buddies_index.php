@@ -4,7 +4,9 @@ $action = url(ltrim((string) parse_url($bcBack, PHP_URL_PATH), '/'));
 $cruiseOpen = $bf['type'] === 'cruise' || $bf['line'] !== '' || $bf['ship'] !== '' || $bf['port'] !== '';
 $postQuery = rmt_buddy_post_query($bf);
 $postPath = '/buddies/new' . ($postQuery ? '?' . http_build_query($postQuery) : '');
-$postHref = $me ? url(ltrim($postPath, '/')) : url('register?return=' . rawurlencode($postPath));
+$postHref = $me ? url(ltrim($postPath, '/'))
+    : ($cruiseOpen ? url('register?return=' . rawurlencode($postPath))
+                   : url('plan?' . http_build_query(array_filter(['buddy' => '1', 'cta' => 'cta_buddy', 'd' => (string) ($bf['dest']['slug'] ?? '')]))));
 $n = count($cards);
 $place = $bf['dest']['name'] ?? ($bf['country'] !== '' ? $bf['country'] : ($bf['where'] !== '' ? $bf['where'] : ''));
 $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);

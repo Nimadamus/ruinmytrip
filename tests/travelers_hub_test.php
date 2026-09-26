@@ -130,7 +130,8 @@ ok('the destination page links it', str_contains($destView, "/travelers'"));
 $travelers = (string) file_get_contents(BASE_PATH . '/views/travelers_index.php');
 ok('/travelers lists every city hub', str_contains($travelers, "'/travelers'"));
 $hubView = (string) file_get_contents(BASE_PATH . '/views/destination_travelers.php');
-ok('the page asks a logged-out reader to join', str_contains($hubView, 'Join RuinMyTrip'));
+// Trip first since 2026-09-25: the logged out reader is asked for their dates, and the account comes after.
+ok('the page asks a logged-out reader to join', str_contains($hubView, "url('plan?cta=travelers_hub"));
 ok('the page never claims activity it does not have', str_contains($hubView, "Nobody has posted about"));
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";

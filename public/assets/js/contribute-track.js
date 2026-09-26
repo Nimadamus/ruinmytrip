@@ -65,6 +65,36 @@
     });
   }, true);
 
+  /* A social call to action pressed, by name (data-cta, a closed list the server checks), with
+     the page it was pressed on. Which button, on which kind of page, sends people into the trip
+     first form is the question; nothing about the person is in it. */
+  document.addEventListener('click', function (ev) {
+    var el = ev.target && ev.target.closest ? ev.target.closest('[data-cta]') : null;
+    if (!el) return;
+    send('cta_click', {
+      detail: el.getAttribute('data-cta'),
+      destination_id: el.getAttribute('data-destination-id') || '',
+      path: location.pathname
+    });
+  }, true);
+
+  /* One bit per visit: a person touched this page. Added 2026-09-25 because the referrer count
+     said 368 people arrived from Google in a day on which Search Console recorded zero clicks, so
+     "returned a cookie" is not enough to call a session human. A script that loads pages seldom
+     taps, scrolls or types. No coordinates, no timing, no target: the first such event sends one
+     row and every listener is removed. Once per tab session. */
+  (function () {
+    var KEY = 'rmt_hi';
+    try { if (sessionStorage.getItem(KEY)) return; } catch (e) { /* storage refused: still count */ }
+    var kinds = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+    function once() {
+      kinds.forEach(function (k) { window.removeEventListener(k, once, true); });
+      try { sessionStorage.setItem(KEY, '1'); } catch (e) { /* ignore */ }
+      send('human_interaction', { path: location.pathname });
+    }
+    kinds.forEach(function (k) { window.addEventListener(k, once, { capture: true, passive: true }); });
+  })();
+
   // Exposed so the draft script can report a restore without duplicating the beacon plumbing.
   window.rmtTrack = send;
 })();

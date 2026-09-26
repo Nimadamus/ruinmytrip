@@ -93,7 +93,7 @@
     }
   ?>
   <a class="tabbar-post" aria-label="<?= e($rmt_post_label) ?>"
-     href="<?= e($rmt_me ? url(ltrim($rmt_post_to, '/')) : url('register?return=' . rawurlencode($rmt_post_to))) ?>">
+     href="<?= e($rmt_me ? url(ltrim($rmt_post_to, '/')) : ($rmt_post_to === '/going' ? url('plan?cta=nav_plan') : url('register?return=' . rawurlencode($rmt_post_to)))) ?>">
     <span aria-hidden="true">+</span></a>
   <a href="<?= e(url('talk')) ?>" class="<?= str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/') ? 'on' : '' ?>" aria-label="Talk">
     <span aria-hidden="true">&#9993;</span><span class="tabbar-l">Talk</span></a>

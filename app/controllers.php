@@ -60,7 +60,7 @@ function home(array $a): void {
        that "how many arrive" and "how many join" can be read off the same page instead of
        being guessed at. Nothing about who arrived is recorded, and it is deliberately on the
        signed-out branch only: a member reaching their own feed is not an arrival. */
-    rmt_track_once('landing_view', ['source' => 'home']);
+    rmt_track_once('landing_view', ['source' => 'home', 'path' => '/']);
 
     $trending = q_all('SELECT d.*, (SELECT COUNT(*) FROM trips t WHERE t.destination_id=d.id) AS trips
                        FROM destinations d ORDER BY trips DESC, d.name LIMIT 6');
@@ -3241,6 +3241,14 @@ function unsubscribe_action(array $a): void {
 /* ---------- forms & writes ---------- */
 function trip_new_form(array $a): void {
     rmt_track_once('trip_create_started', ['source' => 'trip']);
+    /* Signed out, the trip comes first and the account after it. Every "post your dates" link on
+       the site points here, and this used to be a sign in wall. */
+    if (!is_logged_in()) {
+        $q = ['cta' => 'cta_dates'];
+        if ((int) input('destination_id') > 0) $q['destination_id'] = (int) input('destination_id');
+        foreach (['date_from' => 'from', 'date_to' => 'to'] as $k => $to) if (input($k) !== '') $q[$to] = (string) input($k);
+        redirect('/plan?' . http_build_query($q));
+    }
     require_login();
     view('trip_new', ['dests'=>all_dests(),'errors'=>[]], ['title'=>'Share a trip | RuinMyTrip','description'=>'Post a trip story with photos.']);
 }
@@ -3726,6 +3734,9 @@ function contribution_event(array $a): void {
             'source'         => (string) input('source'),
             'place_id'       => (int) input('place_id'),
             'destination_id' => (int) input('destination_id'),
+            // Both checked against their own rules inside rmt_track: a closed label and a bare path.
+            'detail'         => (string) input('detail'),
+            'path'           => (string) input('path'),
         ]);
     }
     http_response_code(204);
@@ -5088,7 +5099,14 @@ function verify_email_confirm(array $a): void {
     /* Whatever they wrote before the email arrived goes live now, in the same request. Making
        somebody retype their travel dates as the price of confirming an address is how a new
        member's first five minutes end. */
-    $applied = rmt_pending_apply((array) current_user());
+    /* Read the account by id, not through current_user(): that caches its first answer for the
+       request, and in a browser that was signed out a moment ago (the mail app that opened this
+       link) the first answer was nobody. Everything held was then applied to user 0, which wrote
+       nothing, so a trip confirmed from a phone's mail app never went live. */
+    $confirmed = (array) q_one("SELECT u.*, p.display_name, p.avatar_url FROM users u
+                                  LEFT JOIN profiles p ON p.user_id = u.id
+                                 WHERE u.id = ? AND u.status = 'active'", [(int) $row['user_id']]);
+    $applied = $confirmed ? rmt_pending_apply($confirmed) : ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false, 'post' => false];
     $released = rmt_reviews_release_held((int) $row['user_id']);
     /* A first trip that was waiting on this click is the most valuable thing that just happened,
        and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
@@ -5097,8 +5115,15 @@ function verify_email_confirm(array $a): void {
         /* Same landing as posting a trip while already confirmed: the people, not the page about
            the trip. A traveler who has just written where they are going is asking one question,
            and it is not "what does my own trip look like". */
-        flash('Email confirmed. Your trip is live. Here is who else will be there.');
+        flash(!empty($applied['buddy_id'])
+            ? 'Email confirmed. Your trip and your travel buddy post are live. Here is who else will be there.'
+            : 'Email confirmed. Your trip is live. Here is who else will be there.');
         redirect('/matches?new=' . (int) $applied['trip_id']);
+    }
+    if (!empty($applied['post']) && !empty($applied['post_id'])) {
+        // A question asked on a city page before the account existed: back to that city's thread.
+        flash('Email confirmed. Your question is live, and you will hear when somebody answers.');
+        redirect('/post/' . (int) $applied['post_id']);
     }
     if (!empty($applied['buddy']) && !empty($applied['buddy_id'])) {
         flash('Email confirmed. Your travel buddy post is live.');
@@ -5684,6 +5709,7 @@ function admin_funnel(array $a): void {
     if (!in_array($days, [1, 7, 30, 0], true)) $days = 30;
     view('admin_funnel', [
         'days'      => $days,
+        'scorecard' => rmt_growth_scorecard($days),
         /* The social funnel leads the page. The review funnel below it measures somebody writing
            something finished; this measures the loop the product is built around, which is the one
            that has to work first. */

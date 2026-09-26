@@ -48,7 +48,7 @@ foreach ($dests as $dd) if ((int) $dd['id'] === $filterDest) $rmt_city_name = (s
           them sees. Post the city and the range; nothing finer is ever shown.</p>
       <?php endif; ?>
       <p style="margin:14px 0 0">
-        <a class="btn btn-primary btn-sm" href="<?= e($me ? url('trip/new') : url('register?return=%2Fgoing')) ?>">Post your dates</a>
+        <a class="btn btn-primary btn-sm" href="<?= e($me ? url('trip/new') : url('plan?cta=cta_dates')) ?>">Post your dates</a>
       </p>
     </div>
   <?php else: ?>
@@ -94,7 +94,7 @@ foreach ($dests as $dd) if ((int) $dd['id'] === $filterDest) $rmt_city_name = (s
       <b>Post your own dates</b>
       <p class="muted" style="margin:.3rem 0 12px">Free, and destination plus date range only. You
         choose who can see each trip: anyone, the people who follow you, or nobody but you.</p>
-      <a class="btn btn-accent" href="<?= e(url('register?return=%2Fgoing')) ?>">Join free to share dates</a>
+      <a class="btn btn-accent" href="<?= e(url('plan?cta=cta_dates')) ?>">Post your dates, free</a>
     <?php endif; ?>
   </div></div>
 

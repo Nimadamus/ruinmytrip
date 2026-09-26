@@ -892,6 +892,15 @@ function buddies_mine(array $a): void {
 }
 
 function buddy_new_form(array $a): void {
+    /* Signed out, a city trip goes to the trip first form with the buddy box already ticked, so a
+       stranger states the trip before being asked for an account. A cruise keeps its own form,
+       which has the ship fields, and still asks for an account first. */
+    if (!is_logged_in() && (string) input('type') !== 'cruise') {
+        $q = ['buddy' => '1', 'cta' => 'cta_buddy'];
+        if ((string) input('dest') !== '') $q['d'] = (string) input('dest');
+        foreach (['from', 'to'] as $k) if (input($k) !== '') $q[$k] = (string) input($k);
+        redirect('/plan?' . http_build_query($q));
+    }
     require_login();
     if (!can_host_meetups(current_user())) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
     $pre = [];

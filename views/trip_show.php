@@ -229,7 +229,7 @@ $authorSaid = $authorSaid ?? [];
       Going to <?= e((string) $t['dest_name']) ?> yourself? Post your dates and see who else will
       be there that week.
       <a class="btn btn-accent btn-sm" style="margin-left:6px"
-         href="<?= e(url('register?return=' . rawurlencode('/d/'.$t['dest_slug'].'/travelers'))) ?>">Post your dates</a>
+         href="<?= e(url('plan?cta=cta_dates&d=' . rawurlencode((string) $t['dest_slug']))) ?>">Post your dates</a>
     </p>
   <?php endif; ?>
 

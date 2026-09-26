@@ -225,6 +225,24 @@ Owner authorized organic outreach (Reddit, Facebook groups, r/solotravel, cruise
   now Sun 20, Tue 22, Thu 24. The cruise link preview was re-scraped in the Sharing Debugger and now
   shows the new default image.
 
+### E11, Greece Page post drafted, not scheduled, 2026-09-21 (Pacific)
+
+* **Asked:** create a Facebook post.
+* **Not published.** Chrome is not installed, and the Chrome profile on this machine has no Facebook
+  login. The Page admin is the Badri Jooyandeh profile. The Edge profiles this machine can open are
+  not that account, and the personal Edge window was left alone.
+* **Slot:** Sunday 27 September, 10:00 AM Pacific. Tuesday 22 (Iceland) and Thursday 24 (Japan) are
+  already scheduled. Do not stack this on either of those.
+* **Campaign:** `buddy_pages` · **Content:** `fb_post_greece` · **Public**
+* **Link:** `https://ruinmytrip.com/travel-buddies/greece?utm_source=facebook&utm_medium=social&utm_campaign=buddy_pages&utm_content=fb_post_greece`
+* **Copy:**
+
+> Greece is an island hopping trip, and the ferry is the part that is better with one other person.
+>
+> If you are going to Athens, Santorini, or the islands, post the dates. You will see who else is on the same crossing. Nobody can message you until you accept.
+>
+> https://ruinmytrip.com/travel-buddies/greece?utm_source=facebook&utm_medium=social&utm_campaign=buddy_pages&utm_content=fb_post_greece
+
 ### Template for the next one
 
 * **Hypothesis:**

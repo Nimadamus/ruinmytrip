@@ -310,6 +310,8 @@ function cron_funnel(array $a): void {
        that recognises a browser and is never printed. */
     echo json_encode([
         'window_days'        => $days > 0 ? $days : 'all time',
+        // Visitor, member, first contribution, returning: the loop in one block (app/growth_scorecard.php).
+        'scorecard'          => rmt_growth_scorecard($days),
         'growth'             => rmt_growth_funnel($days),
         'signup'             => rmt_signup_funnel($days),
         'inventory'          => rmt_growth_inventory(),

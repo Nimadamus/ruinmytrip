@@ -113,7 +113,7 @@ ok(strpos($home, 'if (current_user()) { feed($a); return; }') < strpos($home, 'l
    acquisition channel available is organic search, which lands people on a blog post or a city
    page, and those arrivals were invisible while only the homepage counted. */
 $helpers = (string) file_get_contents($root . '/app/helpers.php');
-ok(str_contains($helpers, "rmt_track_once('landing_view')"),
+ok(str_contains($helpers, "rmt_track_once('landing_view'"),
    'any public page counts as an arrival, not just the front door');
 ok(str_contains($helpers, "!str_contains((string) \$__meta['robots'], 'noindex')"),
    'but only an indexable one, so 404s, admin and the verification pages are not doors');

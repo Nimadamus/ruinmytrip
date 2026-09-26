@@ -70,7 +70,9 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
         Post your dates and see whose overlap, join a meetup, and ask travelers who have been.
         Free, takes a minute.</p>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <a class="btn btn-accent" href="<?= e($join($here)) ?>">Join RuinMyTrip</a>
+        <?php /* The trip first, the account after it: the button says what they came to do. */ ?>
+        <a class="btn btn-accent" data-cta="travelers_hub" href="<?= e(url('plan?cta=travelers_hub&d=' . rawurlencode((string) $d['slug']))) ?>">Post your <?= e($city) ?> dates</a>
+        <a class="btn btn-ghost btn-sm" href="<?= e(url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Find a travel buddy</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('login?return=' . rawurlencode($here))) ?>">Sign in</a>
         <span class="hint">16+. Meetups are 18+ and always in public.</span>
       </div>
@@ -350,7 +352,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
         <?php if (!empty($rmt_gaps['going'])): ?>
           <?php /* destination_id, not destination: that is the review form's parameter, and the
                    trip form ignored it, so this button opened an empty city picker. */ ?>
-          <a class="first-in-act" href="<?= e($me ? $dtPost : $join($here)) ?>">
+          <a class="first-in-act" href="<?= e($me ? $dtPost : url('plan?cta=cta_dates&d=' . rawurlencode((string) $d['slug']))) ?>">
             <b>Post your dates</b><span class="hint">See whose trip overlaps yours</span></a>
         <?php endif; ?>
         <?php if (!empty($rmt_gaps['meetups'])): ?>

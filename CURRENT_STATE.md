@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-21.
+Replace stale lines here; do not append history. Last touched 2026-09-25.
 
 ## What the product is
 
@@ -362,6 +362,23 @@ blocked at the network layer from this machine, for reading as well as posting.
 * Growth funnel firsts add posted, commented, saved anything, made a connection.
 * Mentions skip blocked pairs; block_suppression_test holds the full block matrix.
 * Long usernames wrap sitewide (`main :is(...)` rule), tests/long_username_test.php.
+
+## Trip first and the scorecard (2026-09-25)
+
+Signed out, every "post your dates" door (`/trip/new`, `/buddies/new` for a city trip, home, city,
+travelers hub, trip page, tab bar +) goes to `/plan` (`app/plan_first.php`): city, dates, who is
+coming, interests, meet yes/maybe/no, optional buddy post. Then `/plan/join` shows the trip back with
+the real overlap count and the account form; publishing still waits for the confirm click. A signed
+out question on a city page posts to `/plan/ask` and rides the same step. Held work is now also
+stored per account in `held_work` (migration 102), and `verify_email_confirm` reads the user by id:
+before this a confirm link opened in another browser (a mail app) applied the held work to user 0
+and nothing went live. `_dest_social_cta.php` is the content page module (who is going, a dates
+form, buddy, ask, avoid, what went wrong, team prompts labelled as ours). Scorecard:
+`app/growth_scorecard.php`, top of `/admin/funnel` and `scorecard` in `/cron/funnel`. New events:
+plan_view, plan_started, plan_submitted, plan_signup_view, cta_click (detail = RMT_CTA_KEYS),
+human_interaction (browser, first tap/type/scroll), and buddy_post_created now actually records
+(it was never in the allowlist). landing_view carries `path`. E2E: 41 checks on SQLite and on a
+throwaway Postgres (pgserver binaries, `postgres.exe -p 55432`, cookies forced non-secure).
 
 ## Resume here next session
 

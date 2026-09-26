@@ -44,6 +44,8 @@ require BASE_PATH . '/app/travelers_hub.php';
 require BASE_PATH . '/app/city_watch.php';
 require BASE_PATH . '/app/locals.php';
 require BASE_PATH . '/app/onboarding_pending.php';
+require BASE_PATH . '/app/plan_first.php';
+require BASE_PATH . '/app/growth_scorecard.php';
 require BASE_PATH . '/app/communities.php';
 require BASE_PATH . '/app/matching.php';
 require BASE_PATH . '/app/feed_home.php';

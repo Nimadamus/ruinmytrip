@@ -64,7 +64,10 @@ $cases[] = ['the travelers page', 26, static function () use ($dest) {
 }];
 
 if ($trip) {
-    $cases[] = ['a trip page', 28, static function () use ($trip) {
+    /* 28 to 31 on 2026-09-25: the city module under a trip now says how many travelers and buddy
+       posts the city has (one statement) and shows its latest two conversations (one, plus a count
+       only when there are two). */
+    $cases[] = ['a trip page', 31, static function () use ($trip) {
         trip_show(['id' => (string) $trip['id']]);
     }];
 }

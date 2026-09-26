@@ -39,8 +39,9 @@ foreach (['guide_show' => 'summary', 'place_show' => '<h1'] as $v => $anchor) {
 
 echo "\n-- what the component may and may not say --\n";
 $cta = (string) file_get_contents(BASE_PATH . '/views/_dest_social_cta.php');
-ok('it asks about the city',      str_contains($cta, 'Going to'), true);
-ok('it offers the trip form',     str_contains($cta, 'trip/new'), true);
+ok('it asks about the city',      str_contains($cta, 'Who is going to'), true);
+// The trip first form since 2026-09-25: the dates go to /plan with the city in them.
+ok('it offers the trip form',     str_contains($cta, "url('plan')"), true);
 ok('it offers the travelers hub', str_contains($cta, '/travelers'), true);
 ok('it carries a campaign window when one is running', str_contains($cta, 'rmt_acq_window_near'), true);
 ok('it says who can see your dates', str_contains($cta, 'Nobody sees your dates until you post them'), true);

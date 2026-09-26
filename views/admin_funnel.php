@@ -13,6 +13,8 @@
     <?php endforeach; ?>
   </p>
 
+  <?php if (!empty($scorecard)) include __DIR__ . '/_scorecard.php'; ?>
+
   <?php
   /* Members, counted from the product's own rows. This block is first because it is the only one
      on the page that cannot be wrong about itself: every number is a COUNT over the thing it

@@ -156,7 +156,10 @@ function buddy_landing_show(array $a): void {
 
     $postQuery = $p['kind'] === 'cruise' ? ['type' => 'cruise', 'line' => $p['line']] : ['where' => $p['name']];
     $postPath = '/buddies/new?' . http_build_query($postQuery);
-    $postHref = $me ? url(ltrim($postPath, '/')) : url('register?return=' . rawurlencode($postPath));
+    /* Signed out, a trip goes to the trip first form with the buddy box ticked; a cruise still needs
+       its own form and an account first. */
+    $postHref = $me ? url(ltrim($postPath, '/'))
+        : ($p['kind'] === 'cruise' ? url('register?return=' . rawurlencode($postPath)) : url('plan?buddy=1&cta=buddy_landing'));
 
     $path = rmt_buddy_landing_path($slug);
     $hub = $p['kind'] === 'cruise' ? ['name' => 'Cruise buddies', 'url' => url('buddies/cruise')]

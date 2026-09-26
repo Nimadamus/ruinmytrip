@@ -84,7 +84,7 @@ ok('the slot is empty afterwards', !rmt_pending_has());
 
 // Applied exactly once: a second confirmation must not post the same sentence again.
 $again = rmt_pending_apply($me);
-ok('applying twice does nothing', $again === ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false]
+ok('applying twice does nothing', $again === ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false, 'post' => false]
     && (int) q_one('SELECT COUNT(*) c FROM posts')['c'] === 1);
 
 // The halves are independent.
@@ -149,6 +149,26 @@ $buddies = (string) file_get_contents(dirname(__DIR__) . '/app/buddies.php');
 ok('an unconfirmed buddy post is held, not discarded',
    str_contains($buddies, "rmt_pending_stash(['buddy' => \$_POST])"));
 ok('a held buddy post is re-validated before it is written', str_contains((string) file_get_contents(dirname(__DIR__) . '/app/onboarding_pending.php'), "rmt_buddy_validate(\$held['buddy'])"));
+
+/* Confirmed from another browser, 2026-09-25. The confirmation link is usually opened from a mail
+   app, which is a new session with an empty slot; the work has to be found by the account. */
+$pdo->exec('CREATE TABLE held_work (user_id INTEGER PRIMARY KEY, payload TEXT NOT NULL, created_at TEXT NOT NULL)');
+$_SESSION['uid'] = 9;
+rmt_pending_stash(['post' => ['body' => 'Anyone in Lisbon the first week of March?', 'destination_id' => 0]]);
+ok('held work is also kept against the account', (int) q_one('SELECT COUNT(*) c FROM held_work WHERE user_id = 9')['c'] === 1);
+$_SESSION = [];                       // the mail app's browser: nothing in the session at all
+$postsBefore = (int) q_one('SELECT COUNT(*) c FROM posts')['c'];
+$x = rmt_pending_apply(['id' => 9]);
+ok('a confirm from another browser still publishes the held question',
+   $x['post'] === true && (int) q_one('SELECT COUNT(*) c FROM posts')['c'] === $postsBefore + 1);
+ok('and the account row is cleared', (int) q_one('SELECT COUNT(*) c FROM held_work')['c'] === 0);
+ok('so a second confirm writes nothing', rmt_pending_apply(['id' => 9])['post'] === false
+   && (int) q_one('SELECT COUNT(*) c FROM posts')['c'] === $postsBefore + 1);
+$_SESSION['uid'] = 9;
+rmt_pending_stash(['trip' => ['title' => 'x']]);
+$_SESSION = ['uid' => 9];
+ok('rmt_pending_has sees the account row with an empty session', rmt_pending_has());
+rmt_pending_forget(9);
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

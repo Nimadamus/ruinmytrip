@@ -127,6 +127,8 @@ $stats = array_values(array_filter([
 
   <?php /* The composer, not a button that opens a composer. A box you can already type in is the
            difference between a page with a conversation on it and a page with a link to one. */ ?>
+  <?php /* A team prompt followed from a content page (?ask=avoid) puts its first words in the box. */
+        $ccStart = function_exists('rmt_city_prompt_start') ? rmt_city_prompt_start((string) input('ask'), $cityName) : ''; ?>
   <div class="cc-ask-box" id="city-ask">
     <?php if ($me): ?>
       <form method="post" action="<?= e(url('post/new')) ?>" enctype="multipart/form-data">
@@ -137,7 +139,7 @@ $stats = array_values(array_filter([
         <textarea id="cc-body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
                   data-track="ask_question_click" data-track-source="destination"
                   data-destination-id="<?= (int) $d['id'] ?>"
-                  placeholder="Ask <?= e($cityName) ?> travelers something: where to stay, whether November is worth it, who is around in October."></textarea>
+                  placeholder="Ask <?= e($cityName) ?> travelers something: where to stay, whether November is worth it, who is around in October."><?= e($ccStart) ?></textarea>
         <div class="cc-ask-row">
           <label class="btn btn-ghost btn-sm" style="cursor:pointer">
             Photo <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none">
@@ -146,13 +148,23 @@ $stats = array_values(array_filter([
         </div>
       </form>
     <?php else: ?>
-      <p style="margin:0 0 10px"><b>Ask <?= e($cityName) ?> travelers anything.</b>
-        Best neighborhood to stay in? Worth it in November? Anybody going in October?</p>
-      <p class="hint" style="margin:0 0 12px">Answers come from travelers who have been there or are going. Joining takes a minute.</p>
-      <div class="cc-ask-row">
-        <a class="btn btn-accent" href="<?= e(url('register?return=' . rawurlencode('/d/' . $d['slug'] . '#city-ask'))) ?>">Join free and ask</a>
-        <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode('/d/' . $d['slug'] . '#city-ask'))) ?>">Sign in</a>
-      </div>
+      <?php /* The same box a member gets. The question is written first and held; the account is
+               the step after it (app/plan_first.php, POST /plan/ask), so nobody is asked to join
+               before they have anything to post. */ ?>
+      <form method="post" action="<?= e(url('plan/ask')) ?>">
+        <?= csrf_field() ?>
+        <input type="hidden" name="destination_id" value="<?= (int) $d['id'] ?>">
+        <label for="cc-body"><b>Ask <?= e($cityName) ?> travelers anything.</b></label>
+        <textarea id="cc-body" name="body" rows="3" required maxlength="<?= RMT_POST_MAX ?>"
+                  data-track="ask_question_click" data-track-source="destination"
+                  data-destination-id="<?= (int) $d['id'] ?>"
+                  placeholder="Best neighborhood to stay in? Worth it in November? Anybody going in October?"><?= e($ccStart) ?></textarea>
+        <div class="cc-ask-row">
+          <button class="btn btn-accent">Post to <?= e($cityName) ?></button>
+          <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode('/d/' . $d['slug'] . '#city-ask'))) ?>">Sign in</a>
+        </div>
+        <p class="hint" style="margin:8px 0 0">Next: a free account, and it goes up under your name. Answers come from travelers who have been there or are going.</p>
+      </form>
     <?php endif; ?>
   </div>
 

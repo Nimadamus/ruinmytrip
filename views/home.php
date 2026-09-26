@@ -34,7 +34,10 @@
     </form>
     <p style="margin:18px 0 0;display:flex;gap:10px;flex-wrap:wrap">
       <?php if (!current_user()): ?>
-        <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
+        <?php /* The trip first, the account after it (app/plan_first.php). "Join free" asked a
+                 stranger to commit before the site had shown them a single traveler. */ ?>
+        <a class="btn btn-accent" data-cta="home_plan" href="<?= e(url('plan?cta=home_plan')) ?>">Post your trip</a>
+        <a class="btn btn-ghost btn-on-dark" data-cta="home_buddy" href="<?= e(url('plan?buddy=1&cta=home_buddy')) ?>">Find a travel buddy</a>
       <?php else: ?>
         <a class="btn btn-accent" href="<?= e(url('going')) ?>">Post your dates</a>
       <?php endif; ?>
@@ -130,7 +133,7 @@
   <?php else: ?>
     <p class="muted" style="margin:0 0 12px">Nobody has posted upcoming dates yet. Whoever goes first is
       the traveler everybody arriving next month sees.</p>
-    <p style="margin:0"><a class="btn btn-accent" href="<?= e(current_user() ? url('going') : url('register?return=' . rawurlencode('/going'))) ?>">Post your dates</a></p>
+    <p style="margin:0"><a class="btn btn-accent" href="<?= e(current_user() ? url('going') : url('plan?cta=home_plan')) ?>">Post your dates</a></p>
   <?php endif; ?>
 
   <?php if (!empty($meetups)): ?>
@@ -273,6 +276,6 @@
   <h2 style="color:#fff;font-size:2rem">Join the people, not the guidebook.</h2>
   <p style="color:#dfe9f2;max-width:52ch;margin:0 auto 20px">Post where you are going and when. See whose dates
     overlap yours, meet in public, and write the review you wish you had read. Free, and 16+.</p>
-  <a class="btn btn-accent" href="<?= e(url('register')) ?>">Join free</a>
+  <a class="btn btn-accent" data-cta="home_plan" href="<?= e(url(current_user() ? 'trip/new' : 'plan?cta=home_plan')) ?>">Post your trip, free</a>
       <a class="btn btn-ghost btn-on-dark" href="<?= e(url('travelers')) ?>">See who is going</a>
 </div></section>
