@@ -391,6 +391,13 @@ except the nine title test cities until 2026-09-29 (`rmt_in_title_test`). Buddie
 for" filter (`want=companion|meet`). Reply emails name the thing (`rmt_comment_email_words`) and
 the author of an answered comment is emailed too, under the usual 1/hour 6/day caps.
 
+## Acquisition mode (2026-09-25, latest)
+
+Product is frozen except bug fixes. The plan is `docs/ACQUISITION_PLAN_FIRST_100.md`. Posts come from
+`docs/social/content_bank.json` through `python scripts/social_kit.py --start YYYY-MM-DD` (output in
+`~/rmt_social/<date>/`: slides, copy, schedule.csv). `/admin/funnel` has a by channel table
+(`rmt_source_funnel`). Nothing is posted without Nima's go ahead and his signed in session.
+
 ## Resume here next session
 
 0. **2026-09-18:** 25 travel buddy landing pages live (`app/buddy_landing_pages.php`, `/travel-buddies/*`, `/cruise-buddies/*`), linked from home, /buddies, /in/*, city pages, sitemap. Outreach blocked: no usable Reddit/Facebook/Cruise Critic account on this machine (E9 in `docs/ACQUISITION_EXPERIMENTS.md`); drafts in `docs/OUTREACH_BUDDY_PAGES.md`. First GSC read on the new pages around 2026-10-02.

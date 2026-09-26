@@ -85,5 +85,12 @@ ok(rmt_in_title_test('milan-italy') === (date('Y-m-d') <= '2026-09-29'), 'a titl
 ok(!rmt_in_title_test('bangkok-thailand'), 'other cities are not');
 ok(str_contains((string) file_get_contents(BASE_PATH . '/views/_city_community.php'), '!rmt_in_title_test('), 'the city strip checks the guard');
 
+// The by channel funnel always lists the channels we are working on, even at zero.
+$bs = rmt_source_funnel(0);
+$srcs = array_column($bs, 'source');
+ok(!array_diff(['search', 'facebook', 'instagram', 'tiktok', 'reddit', 'direct', 'referral'], $srcs), 'every working channel has a row');
+ok(!array_filter($bs, static fn($r) => $r['signup_completed'] > $r['landed'] + $r['signup_started'] + 1000), 'rows are counts');
+ok(isset(rmt_growth_scorecard(7)['by_source']), 'the scorecard carries the by channel table');
+
 echo "\nlive_activity_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

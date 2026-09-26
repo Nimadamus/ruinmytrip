@@ -82,6 +82,17 @@ $v = $sc['visitors']; $m = $sc['members']; $c = $sc['content']; $p = $sc['plan']
     <?= $tile('Join form seen', (int) $s['join_view'], 'attempts, bots included') ?>
   </div>
 
+  <h3 style="margin:0 0 6px;font-size:1rem">By channel (browsers, first touch)</h3>
+  <div style="overflow-x:auto;margin:0 0 20px"><table class="table" style="width:100%;font-size:.9rem">
+    <tr><th style="text-align:left">Channel</th><th>Landed</th><th>Engaged</th><th>Trip form</th><th>Acted</th><th>Signup started</th><th>Signed up</th><th>First contribution</th><th>Came back</th><th>Engaged to member</th></tr>
+    <?php foreach ($sc['by_source'] ?? [] as $bs): ?>
+      <tr><td><b><?= e($bs['source'] === 'search' ? 'search (Google, Bing...)' : $bs['source']) ?></b></td>
+        <?php foreach (['landed', 'engaged', 'trip_form', 'acted', 'signup_started', 'signup_completed', 'contributed', 'returned'] as $k): ?>
+          <td style="text-align:center"><?= (int) $bs[$k] ?></td><?php endforeach; ?>
+        <td style="text-align:center"><?= e($pct($bs['engaged_to_member_pct'])) ?></td></tr>
+    <?php endforeach; ?>
+  </table></div>
+
   <div class="sc-cols">
     <div><h3 style="margin:0 0 6px;font-size:1rem">Landing pages that produced members</h3><?= $list($sc['landing_members'], 'path', 'None yet.') ?></div>
     <div><h3 style="margin:0 0 6px;font-size:1rem">Landing pages that produced trips</h3><?= $list($sc['landing_trips'], 'path', 'None yet.') ?></div>

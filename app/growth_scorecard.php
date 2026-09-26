@@ -159,6 +159,7 @@ function rmt_growth_scorecard(int $days = 30): array {
         'landing_trips'    => $landingTrips,
         'landing_engaged'  => array_map(static fn($r) => ['path' => (string) $r['path'], 'n' => (int) $r['n']], $landingEngaged),
         'destinations_members' => rmt_signup_attribution($days),
+        'by_source'        => rmt_source_funnel($days),
     ];
 }
 
@@ -181,4 +182,61 @@ function rmt_sc_landing_paths(string $event, string $since): array {
         return [];
     }
     return array_map(static fn($r) => ['path' => (string) $r['path'], 'n' => (int) $r['n']], $rows);
+}
+
+/**
+ * The same loop, one row per channel: which source produces engaged visitors, trip forms, signups,
+ * members, first contributions and return visits. Counted in browsers (the visitor token), so a
+ * person who arrived from TikTok on Monday and joined on Wednesday is one TikTok row. The channel
+ * is first touch and held for ninety days (app/acquisition.php); no channel means direct.
+ * "search" is every search engine (Google, Bing, DuckDuckGo and the rest): only the word is stored.
+ *
+ * @return list<array<string,mixed>>
+ */
+function rmt_source_funnel(int $days = 30): array {
+    $since = rmt_funnel_since($days);
+    $contrib = "'trip_created','post_created','comment_created','buddy_post_created','review_publish_success'";
+    try {
+        $rows = q_all("SELECT COALESCE(acq_source, 'direct') src,
+                COUNT(DISTINCT CASE WHEN event = 'landing_view' THEN visitor END) landed,
+                COUNT(DISTINCT CASE WHEN event = 'human_interaction' THEN visitor END) engaged,
+                COUNT(DISTINCT CASE WHEN event IN ('plan_view','trip_create_started') THEN visitor END) trip_form,
+                COUNT(DISTINCT CASE WHEN event IN ('plan_started','plan_submitted','ask_question_click','cta_click') THEN visitor END) acted,
+                COUNT(DISTINCT CASE WHEN event IN ('join_view','plan_signup_view') THEN visitor END) signup_started,
+                COUNT(DISTINCT CASE WHEN event = 'join_created' THEN visitor END) signup_completed,
+                COUNT(DISTINCT CASE WHEN event IN ($contrib) THEN visitor END) contributed
+              FROM contribution_events
+             WHERE created_at >= ? AND visitor IS NOT NULL AND visitor <> ''
+               AND COALESCE(acq_content, '') <> 'selfcheck'
+          GROUP BY COALESCE(acq_source, 'direct')", [$since]);
+        $ret = q_all("SELECT src, COUNT(*) n FROM (
+                         SELECT COALESCE(acq_source, 'direct') src, visitor
+                           FROM contribution_events
+                          WHERE created_at >= ? AND visitor IS NOT NULL AND visitor <> ''
+                            AND COALESCE(acq_content, '') <> 'selfcheck'
+                       GROUP BY COALESCE(acq_source, 'direct'), visitor
+                         HAVING COUNT(DISTINCT SUBSTR(CAST(created_at AS TEXT), 1, 10)) > 1) x
+                      GROUP BY src", [$since]);
+    } catch (Throwable $e) {
+        return [];
+    }
+    $back = [];
+    foreach ($ret as $r) $back[(string) $r['src']] = (int) $r['n'];
+    $out = [];
+    foreach ($rows as $r) {
+        $row = ['source' => (string) $r['src']];
+        foreach (['landed', 'engaged', 'trip_form', 'acted', 'signup_started', 'signup_completed', 'contributed'] as $k) $row[$k] = (int) $r[$k];
+        $row['returned'] = $back[$row['source']] ?? 0;
+        $row['engaged_to_member_pct'] = rmt_sc_pct($row['signup_completed'], $row['engaged']);
+        $out[] = $row;
+    }
+    // The channels we are working on are always listed, even at zero, so a dead channel is visible.
+    foreach (['search', 'facebook', 'instagram', 'tiktok', 'reddit', 'direct', 'referral'] as $s) {
+        if (!in_array($s, array_column($out, 'source'), true)) {
+            $out[] = ['source' => $s, 'landed' => 0, 'engaged' => 0, 'trip_form' => 0, 'acted' => 0, 'signup_started' => 0,
+                      'signup_completed' => 0, 'contributed' => 0, 'returned' => 0, 'engaged_to_member_pct' => null];
+        }
+    }
+    usort($out, static fn($a, $b) => [$b['engaged'], $b['landed']] <=> [$a['engaged'], $a['landed']]);
+    return $out;
 }
