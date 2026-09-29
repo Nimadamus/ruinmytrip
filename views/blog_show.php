@@ -9,6 +9,14 @@
   <?php if ($isEd): ?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif; ?>
   <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e(abs_url($p['cover_url'])) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($p['summary']) ?></p>
+  <?php /* These posts are what search lands on, and the city strip used to sit under the whole
+           article. On 2026-09-29 every engaged search visit of the week was one blog page read
+           for 2 to 10 seconds and left: nobody reached the bottom. So the people going to the
+           city now sit under the summary, in the short form the place pages use. */ ?>
+  <?php if (!empty($blogDest)): ?>
+    <?php $destSlug = (string) $blogDest['slug']; $destName = (string) $blogDest['name']; $dsCompact = true;
+          include __DIR__ . '/_meet_travelers.php'; $dsCompact = false; ?>
+  <?php endif; ?>
   <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $p['body'] : rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
@@ -28,14 +36,6 @@
       <a class="btn btn-ghost" href="<?= e(url('blog/'.(int)$p['id'].'/edit')) ?>">Edit</a>
     <?php endif; ?>
   </div>
-
-  <?php /* These posts are what search currently lands on, and they ended at a comment box. When
-           the post is about a city, the reader gets the one thing this site has that the article
-           does not: the people going there. */ ?>
-  <?php if (!empty($blogDest)): ?>
-    <?php $destSlug = (string) $blogDest['slug']; $destName = (string) $blogDest['name'];
-          include __DIR__ . '/_meet_travelers.php'; ?>
-  <?php endif; ?>
 
   <?php
     $targetType = 'blog_post'; $targetId = (int)$p['id']; $ownerId = (int)$p['user_id'];
