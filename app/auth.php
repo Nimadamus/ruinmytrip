@@ -225,7 +225,7 @@ function can_host_meetups(?array $u): bool {
 function rmt_return_is_join_intent(string $return): bool {
     $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
     if ($path === '') return false;
-    $exact = ['/review/new', '/trip/new', '/going', '/contribute', '/matches', '/talk', '/meetups'];
+    $exact = ['/review/new', '/trip/new', '/going', '/contribute', '/matches', '/talk', '/meetups', '/map', '/map/save'];
     if (in_array($path, $exact, true)) return true;
     return (bool) preg_match('#^/d/[a-z0-9\-]+/(travelers|going)$#', $path)
         || str_starts_with($path, '/meetup/') || str_starts_with($path, '/buddies') || str_starts_with($path, '/buddy/');
@@ -234,6 +234,7 @@ function rmt_return_is_join_intent(string $return): bool {
 function rmt_join_intent_line(string $return): ?string {
     if ($return === '') return null;
     $path = (string) (parse_url($return, PHP_URL_PATH) ?: '');
+    if ($path === '/map') return 'Join to keep your travel map on your profile, and meet travelers going where you are going next.';
     if (preg_match('#^/d/([a-z0-9\-]+)/travelers$#', $path, $m)) {
         $d = q_one('SELECT name FROM destinations WHERE slug = ?', [$m[1]]);
         if ($d) return 'Join and see who else is going to ' . $d['name'] . ', post your own dates, and meet them there.';

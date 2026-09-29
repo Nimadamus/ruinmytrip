@@ -63,7 +63,7 @@ if (!$up) {
 /** Anything PHP prints when a page falls over. A page may not contain any of it. */
 const BROKEN = ['Fatal error', 'Uncaught', 'SQLSTATE', 'Parse error', 'Warning:', 'Deprecated:'];
 
-$routes = ['/', '/explore', '/travelers', '/going', '/meetups', '/plan', '/plan?buddy=1&d=lisbon-portugal&from=2027-06-05&to=2027-06-12', '/buddies', '/buddies/cruise', '/buddies?where=Paris&from=2027-06-05&to=2027-06-12&flexible=1', '/buddies?where=Thailand&show=here', '/buddies?show=locals&interest=food&myage=1', '/buddies/cruise?ship=Icon+of+the+Seas&line=Royal', '/buddies?where=nowhere-at-all&from=2027-01-01', '/talk', '/discover', '/reviews',
+$routes = ['/', '/map', '/map?c=250-380-702-xk', '/explore', '/travelers', '/going', '/meetups', '/plan', '/plan?buddy=1&d=lisbon-portugal&from=2027-06-05&to=2027-06-12', '/buddies', '/buddies/cruise', '/buddies?where=Paris&from=2027-06-05&to=2027-06-12&flexible=1', '/buddies?where=Thailand&show=here', '/buddies?show=locals&interest=food&myage=1', '/buddies/cruise?ship=Icon+of+the+Seas&line=Royal', '/buddies?where=nowhere-at-all&from=2027-01-01', '/talk', '/discover', '/reviews',
            '/guides', '/blog', '/collections', '/communities', '/tags', '/ruined', '/contribute',
            '/leaderboard', '/about', '/safety', '/register', '/login', '/sitemap.xml', '/feed.xml'];
 
@@ -118,7 +118,7 @@ foreach ($routes as $path) {
 
    It borrows an existing dev account rather than creating one, and puts the password hash back. */
 $restore = null;
-$acct = $pdo->query("SELECT id, email, password_hash FROM users WHERE status='active' AND email IS NOT NULL
+$acct = $pdo->query("SELECT id, username, email, password_hash FROM users WHERE status='active' AND email IS NOT NULL
                       AND email <> '' ORDER BY id LIMIT 1")->fetch(PDO::FETCH_ASSOC);
 if ($acct) {
     $restore = [$acct['id'], $acct['password_hash']];
@@ -174,7 +174,7 @@ if ($acct) {
     $pdo->prepare("INSERT INTO buddy_interest (post_id,user_id,note,state,created_at)
                    SELECT ?, id, 'Render test note', 'interested', ? FROM users WHERE id <> ? AND status='active' ORDER BY id LIMIT 1")
         ->execute([$buddyId, date('Y-m-d H:i:s'), $acct['id']]);
-    foreach (['/feed', '/matches', '/notifications', '/saved', '/messages', $editor,
+    foreach (['/map', '/map?c=250-380', '/u/' . $acct['username'] . '/map', '/feed', '/matches', '/notifications', '/saved', '/messages', $editor,
               '/trip/new', '/review/new', '/invite', '/buddies/new', '/buddies/new?type=cruise', '/buddy/' . $buddyId, '/buddy/' . $buddyId . '/edit', '/buddies/mine', '/buddies?where=Paris', '/saved'] as $path) {
         [$st, $body] = $req($path, null, $cookie);
         $hit = '';

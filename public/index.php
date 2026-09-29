@@ -41,6 +41,10 @@ $routes = [
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/following$#', 'profile_following'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)$#','profile'],
     ['GET',  '#^/feed$#',                      'feed'],
+    ['GET',  '#^/map$#',                       'travel_map_page'],
+    ['POST', '#^/map/save$#',                  'travel_map_save'],
+    ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/map$#', 'travel_map_page'],
+    ['GET',  '#^/card/map/(?<key>[a-z0-9\-]+)\.png$#', 'travel_map_card'],
     // Trip first: say where and when, then make the account (app/plan_first.php).
     ['GET',  '#^/plan$#',                      'plan_form'],
     ['POST', '#^/plan$#',                      'plan_submit'],

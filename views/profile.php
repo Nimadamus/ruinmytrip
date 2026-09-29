@@ -93,6 +93,12 @@
         <?php if ($following > 0 || $isMe): ?>
           <a href="<?= e(url('u/'.$u['username'].'/following')) ?>"><b><?= $following ?></b> following</a>
         <?php endif; ?>
+        <?php $mapN = count(rmt_map_for_user((int) $u['id'])); ?>
+        <?php if ($mapN > 0): ?>
+          <a href="<?= e(url('u/'.$u['username'].'/map')) ?>"><b><?= $mapN ?></b> <?= $mapN === 1 ? 'country' : 'countries' ?></a>
+        <?php elseif ($isMe): ?>
+          <a href="<?= e(url('map')) ?>">Make your travel map</a>
+        <?php endif; ?>
       </div>
       <?php /* The same public facts the plan page shows, where somebody is deciding whether to
                meet a stranger. Not on your own profile: it is your account, you know when you

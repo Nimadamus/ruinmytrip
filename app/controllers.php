@@ -7452,3 +7452,75 @@ function hide_action(array $a): void {
     }
     redirect(rmt_return_to('/feed'));
 }
+
+/* ---- The travel map (app/travel_map.php) ---- */
+
+/** /map, or /u/{name}/map: pick countries, share the link, keep it on a profile. */
+function travel_map_page(array $a): void {
+    $me = current_user();
+    $owner = null;
+    if (!empty($a['username'])) {
+        $owner = q_one("SELECT u.id, u.username, u.status, p.display_name FROM users u
+                         LEFT JOIN profiles p ON p.user_id = u.id WHERE u.username = ?", [$a['username']]);
+        if (!$owner || ($owner['status'] ?? 'active') !== 'active') not_found();
+    }
+    $fromUrl = input('c') !== '';
+    if ($owner) {
+        $codes = rmt_map_for_user((int) $owner['id']);
+    } elseif ($fromUrl) {
+        $codes = rmt_map_codes(input('c'));
+    } else {
+        $codes = $me ? rmt_map_for_user((int) $me['id']) : [];
+    }
+    $saved = $me ? rmt_map_for_user((int) $me['id']) : [];
+    try { rmt_track('map_view', ['source' => $owner ? 'profile' : 'browse']); } catch (Throwable $e) {}
+    $isOwnerView = $owner && $me && (int) $me['id'] === (int) $owner['id'];
+    $n = count($codes);
+    $who = $owner ? ((string) ($owner['display_name'] ?: '@' . $owner['username'])) : null;
+    $title = $owner
+        ? $who . "'s travel map: " . rmt_map_count_label($n) . ' | RuinMyTrip'
+        : ($fromUrl && $n > 0 ? 'My travel map: ' . rmt_map_count_label($n) . ' | RuinMyTrip'
+                              : 'Travel map: color in every country you have been to | RuinMyTrip');
+    view('travel_map', [
+        'codes' => $codes, 'saved' => $saved, 'owner' => $owner, 'isOwnerView' => $isOwnerView,
+        'who' => $who, 'me' => $me, 'names' => rmt_map_names(),
+    ], [
+        'title' => $title,
+        'description' => $n > 0
+            ? rmt_map_headline($codes) . '. Make your own travel map in a minute, share it, and meet travelers going where you are going next.'
+            : 'Tap every country you have been to and get a map you can share. Free, no account needed. Keep it on your RuinMyTrip profile and meet travelers going where you are going.',
+        'og_title' => $n > 0 ? rmt_map_headline($codes) : 'Where have you been? Make your travel map',
+        'og_image' => rmt_map_card_url($codes),
+        'canonical' => url('map'),
+    ]);
+}
+
+/** POST /map/save: keep the map on the member's profile. Signed out goes to Join and comes back. */
+function travel_map_save(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    if (!rmt_rate_ok('map_save', (string) $me['id'], 60, 3600)) {
+        flash('You are doing that very fast. Try again shortly.');
+        redirect('/map');
+    }
+    $codes = rmt_map_codes(input('c'));
+    rmt_map_save((int) $me['id'], $codes);
+    try { rmt_track('map_saved', ['source' => 'profile']); } catch (Throwable $e) {}
+    flash($codes ? 'Saved. Your map is on your profile: ' . rmt_map_count_label(count($codes)) . '.' : 'Your map is cleared.');
+    redirect('/u/' . rawurlencode((string) $me['username']) . '/map');
+}
+
+/** /card/map/{key}.png, the share image for a set of countries. */
+function travel_map_card(array $a): void {
+    if (!rmt_card_available()) not_found();
+    $key = (string) ($a['key'] ?? '');
+    $codes = $key === 'none' ? [] : rmt_map_codes($key);
+    $etag = '"m' . substr(sha1('v1|' . rmt_map_key($codes)), 0, 20) . '"';
+    header('Cache-Control: public, max-age=604800');
+    header('ETag: ' . $etag);
+    if (($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $etag) { http_response_code(304); exit; }
+    header('Content-Type: image/png');
+    header('X-Content-Type-Options: nosniff');
+    echo rmt_map_card_png($codes);
+    exit;
+}

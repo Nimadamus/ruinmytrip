@@ -22,6 +22,7 @@
       <h4>Explore</h4>
       <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
       <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
+      <a href="<?= e(url('map')) ?>">Travel map</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>

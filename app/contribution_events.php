@@ -99,6 +99,9 @@ const RMT_CONTRIB_EVENTS = [
     'plan_started',                // browser: somebody put a value into it
     'plan_submitted',              // a valid trip came back
     'plan_signup_view',            // ...and was shown the account step with the trip held
+    // The travel map, 2026-09-29: opened, and kept on a profile. Sharing is a cta_click.
+    'map_view',
+    'map_saved',
 ];
 
 /** The calls to action cta_click may name. Closed, like everything else here. */
@@ -108,6 +111,8 @@ const RMT_CTA_KEYS = [
     'nav_plan', 'feed_plan',
     // The banner on a page reached from one of our social posts (app/social_landing.php).
     'social_answer', 'social_plan',
+    // The travel map (app/travel_map.php).
+    'map_share', 'map_download', 'map_save', 'map_make',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */

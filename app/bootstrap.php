@@ -82,6 +82,7 @@ require BASE_PATH . '/app/storage.php';
 require BASE_PATH . '/app/search_suggest.php';
 require BASE_PATH . '/app/seo.php';
 require BASE_PATH . '/app/session.php';
+require BASE_PATH . '/app/travel_map.php';
 
 // Auto-migrate + seed on local SQLite so the site runs out of the box (before any session read).
 // CLI tools that build their own database define RMT_NO_AUTOSEED first: they must not have a
