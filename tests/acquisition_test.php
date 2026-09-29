@@ -40,7 +40,7 @@ function ok(string $name, $got, $expect): void {
 function is_logged_in(): bool { return false; }
 
 $pdo = db();
-foreach (['052_contribution_events', '090_event_visitor', '093_event_cookied', '094_acquisition_source'] as $m) {
+foreach (['052_contribution_events', '090_event_visitor', '093_event_cookied', '094_acquisition_source', '102_plan_first'] as $m) {
     $pdo->exec(file_get_contents(BASE_PATH . "/database/migrations/$m.sqlite.sql"));
 }
 
@@ -145,6 +145,14 @@ $shape = null;
 foreach (rmt_acq_report(0) as $row) if ($row['campaign'] === 'shape') $shape = $row;
 ok('both sessions are counted as sessions', $shape['sessions'] ?? null, 2);
 ok('only the one that touched the page is human', $shape['human'] ?? null, 1);
+
+$pdo->prepare("UPDATE contribution_events SET path = '/u/somebody/trips' WHERE journey = 'p1' AND event = 'landing_view'")->execute();
+$ev = rmt_acq_engaged_visits(0);
+$p1 = array_values(array_filter($ev, static fn($v) => $v['campaign'] === 'shape'));
+ok('an engaged visit is listed', count($p1), 1);
+ok('the crawler that never touched the page is not', count(array_filter($ev, static fn($v) => str_contains(implode(' ', $v['steps']), 'trip_create_started'))), 0);
+ok('a member path is masked', str_contains(implode(' ', $p1[0]['steps'] ?? []), '/u/*/trips'), true);
+ok('and never printed', str_contains(implode(' ', $p1[0]['steps'] ?? []), 'somebody'), false);
 ok('the campaign travels with it',    $by['reddit']['campaign'], 'miami');
 
 echo "

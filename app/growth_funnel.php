@@ -325,5 +325,7 @@ function cron_funnel(array $a): void {
         'acquisition'        => rmt_acq_report($days),
         'command_center'     => rmt_acq_command_center($days > 0 ? $days : 3650),
         'daily'              => rmt_acq_daily(),
+        // Each engaged visit as the steps it took, so the stopping point is visible (app/acquisition.php).
+        'engaged_visits'     => rmt_acq_engaged_visits($days > 0 ? $days : 7),
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }

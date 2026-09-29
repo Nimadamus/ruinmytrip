@@ -582,6 +582,51 @@ function rmt_acq_daily(int $days = 90): array {
  *
  * @return array<string,mixed>
  */
+/**
+ * What the people who touched the page actually did, one visit per row, oldest event first.
+ *
+ * A count says 27 people arrived and none joined; it cannot say where they stopped. This lists
+ * each engaged visit (it sent `human_interaction`) as the events it produced, each with seconds
+ * since the first and the path when there is one. Member profile paths are masked, because a
+ * `/u/{name}` is a person; everything else is a page of the site. No token, IP or agent is shown.
+ *
+ * @return list<array{source:string,campaign:string,started:string,seconds:int,steps:list<string>}>
+ */
+function rmt_acq_engaged_visits(int $days = 7, int $limit = 40): array {
+    $since = rmt_funnel_since($days);
+    try {
+        $rows = q_all(
+            "SELECT e.journey, e.event, e.path, e.detail, e.created_at,
+                    COALESCE(e.acq_source, 'direct') src, COALESCE(e.acq_campaign, '') campaign
+               FROM contribution_events e
+              WHERE e.journey IN (SELECT journey FROM contribution_events
+                                   WHERE event = 'human_interaction' AND created_at >= ?
+                                     AND COALESCE(acq_content, '') <> ?
+                                     AND journey IS NOT NULL AND journey <> '')
+           ORDER BY e.journey, e.created_at, e.id",
+            [$since, RMT_ACQ_INTERNAL_CONTENT]);
+    } catch (Throwable $e) {
+        return [];
+    }
+    $visits = [];
+    foreach ($rows as $r) {
+        $j = (string) $r['journey'];
+        $t = strtotime((string) $r['created_at']);
+        $visits[$j] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'],
+                         'started' => (string) $r['created_at'], 't0' => $t, 'seconds' => 0, 'steps' => []];
+        $v = &$visits[$j];
+        $v['seconds'] = max(0, $t - $v['t0']);
+        $path = preg_replace('#^/u/[^/]+#', '/u/*', (string) ($r['path'] ?? ''));
+        $step = '+' . $v['seconds'] . 's ' . $r['event'] . ($path !== '' ? ' ' . $path : '')
+              . (($r['detail'] ?? '') !== '' ? ' [' . $r['detail'] . ']' : '');
+        if (count($v['steps']) < 30) $v['steps'][] = $step;
+        unset($v);
+    }
+    $out = array_values(array_map(static function (array $v): array { unset($v['t0']); return $v; }, $visits));
+    usort($out, static fn(array $a, array $b) => strcmp($b['started'], $a['started']));
+    return array_slice($out, 0, $limit);
+}
+
 function rmt_acq_clean_totals(): array {
     $days = max(1, (int) ceil((time() - strtotime(RMT_ACQ_CLEAN_FROM)) / 86400));
     $human = 0; $direct = 0; $signups = 0; $confirmed = 0; $trips = 0;
