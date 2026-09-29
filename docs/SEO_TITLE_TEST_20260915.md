@@ -80,3 +80,19 @@ Then compare, per page and in total:
 65 impressions over 28 days cannot produce a statistically significant CTR result. At these volumes
 the honest reading is directional only: a first click is evidence, a 0.5% difference is noise. The
 real fix for that is traffic, and this test does not provide it.
+
+## First read, 2026-09-29 (GSC data through 2026-09-26, 11 days)
+
+Exact `/d/{slug}` URLs only, per day, against the 28 days to 2026-09-15 re-pulled the same way:
+
+| Group | Before: impr (per day) | After: impr (per day) | Clicks |
+|---|---|---|---|
+| Test, 9 pages | 62 (2.21) | 5 (0.45), 3 pages still showing | 0 and 0 |
+| Control | 20 (0.71), 16 pages | 12 (1.09), 8 pages | 0 and 0 |
+
+Amsterdam went from 28 impressions at position 44 to 2 at position 8; Milan 2 at 5.5; Zanzibar 1 at 5.
+Lisbon, Berlin, Marrakech, Hoi An, Oaxaca and Banff have zero impressions since the change.
+
+Reading against the rules above: zero clicks, test impressions down about 80% per day while the
+control rose about 50%. That is the **Loss** pattern, on tiny numbers. Revert is proposed to Nima,
+not applied (no discretionary changes rule).
