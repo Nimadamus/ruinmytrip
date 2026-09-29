@@ -128,6 +128,23 @@ ok('visit to trip is a share of human visits', $by['reddit']['visit_to_trip_pct'
 ok('search is reported separately',   $by['search']['sessions'], 1);
 ok('...with nothing after the arrival', $by['search']['signed_up'], 0);
 ok('a rate with a zero denominator is left blank rather than zero', $by['search']['trip_rate_pct'], null);
+
+echo "
+-- a returned cookie is not a person, a tap is --
+";
+$ck = $pdo->prepare("INSERT INTO contribution_events (event, journey, visitor, acq_source, acq_campaign, is_authed, cookied, created_at)
+                     VALUES (?,?,?,?,'shape',0,?,?)");
+// A crawler that keeps cookies: three kinds of event, cookie handed back, a minute apart.
+$ck->execute(['landing_view',          'b1', 'vb1', 'search', 1, date('Y-m-d H:i:s', time() - 60)]);
+$ck->execute(['destination_page_view', 'b1', 'vb1', 'search', 1, date('Y-m-d H:i:s', time() - 30)]);
+$ck->execute(['trip_create_started',   'b1', 'vb1', 'search', 1, date('Y-m-d H:i:s')]);
+// A person: one landing and a scroll.
+$ck->execute(['landing_view',      'p1', 'vp1', 'search', 0, date('Y-m-d H:i:s')]);
+$ck->execute(['human_interaction', 'p1', 'vp1', 'search', 0, date('Y-m-d H:i:s')]);
+$shape = null;
+foreach (rmt_acq_report(0) as $row) if ($row['campaign'] === 'shape') $shape = $row;
+ok('both sessions are counted as sessions', $shape['sessions'] ?? null, 2);
+ok('only the one that touched the page is human', $shape['human'] ?? null, 1);
 ok('the campaign travels with it',    $by['reddit']['campaign'], 'miami');
 
 echo "

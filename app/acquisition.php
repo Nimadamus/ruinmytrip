@@ -214,20 +214,17 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 COALESCE(acq_campaign, '') campaign,
                 journey,
                 COUNT(*) events,
-                COUNT(DISTINCT event) kinds,
-                MIN(created_at) first_at,
-                MAX(created_at) last_at,
-                MAX(COALESCE(cookied, 0)) gave_cookie_back,
-                COUNT(cookied) rows_with_the_bit,
                 MAX(CASE WHEN event IN ('landing_view','destination_page_view') THEN 1 ELSE 0 END) landed,
                 MAX(CASE WHEN event = 'join_submit'  THEN 1 ELSE 0 END) signup_started,
                 MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signed_up,
                 MAX(CASE WHEN event = 'join_confirmed' THEN 1 ELSE 0 END) confirmed,
                 MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped,
                 MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck,
+                MAX(CASE WHEN event = 'human_interaction' THEN 1 ELSE 0 END) engaged,
                 MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
-                                        'comment_created','question_posted','post_created','trip_create_started',
-                                        'join_submit','login_completed','trip_connect_requested') THEN 1 ELSE 0 END) acted
+                                        'comment_created','question_posted','post_created','trip_created',
+                                        'join_submit','join_created','login_completed','trip_connect_requested')
+                         THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
        GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), journey",
@@ -241,14 +238,14 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                       'confirmed' => 0, 'trips' => 0, 'selfcheck_human' => 0];
         $agg[$k]['sessions']++;
 
-        /* Human, by the same rules the traffic report uses, because a channel's conversion rate
-           divided by crawlers is the mistake this whole measurement exists to stop making. Did
-           something only a person does, or returned a cookie we set, or read more than one thing
-           over human time. */
-        $span = max(0, strtotime((string) $r['last_at']) - strtotime((string) $r['first_at']));
-        $human = ((int) $r['acted'] === 1)
-              || ((int) $r['gave_cookie_back'] === 1)
-              || ((int) $r['kinds'] >= 2 && $span >= 20);
+        /* Human means a tap, key or scroll reached us (`human_interaction`), or the session did
+           something only a person does. A returned cookie and "two kinds of event over twenty
+           seconds" used to count too, and on 2026-09-29 they were counting headless crawlers: 3,035
+           of 3,154 "human" sessions in a week qualified on the cookie alone, 4,174 lasted zero
+           seconds, 7,112 of 7,113 were a browser never seen before, and search showed 892 humans in
+           a day against a handful of Search Console clicks. `trip_create_started` left the list for
+           the same reason: 119 sessions fired it and none of them typed anything. */
+        $human = ((int) $r['engaged'] === 1) || ((int) $r['acted'] === 1);
         if ($human) {
             $agg[$k]['human']++;
             /* Ours, driven at production to check what a campaign visitor sees. Counted here so the
