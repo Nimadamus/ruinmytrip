@@ -10,8 +10,8 @@ Funnel readout: `python scripts/batch_report.py day-of-the-dead 14`
 | 7 | Instagram post | p2 "Two nights, not one" | ready, needs browser | ig-bio-oaxaca |
 | 8 | Instagram post | p3 solo angle | ready, needs browser | ig-bio-oaxaca |
 | 9 | Instagram story | story.png with link sticker | ready, needs browser | ig-story-oaxaca-1 |
-| 10 | Creator email | Mexico Cassie, hello@mexicocassie.com | Gmail draft | mexicocassie |
-| 11 | Hostel email | Casa Angel Hostel, contactcasaangel@gmail.com (Hostelworld best hostel in Mexico 2025) | Gmail draft | casa-angel-hostel |
+| 10 | Creator email | Mexico Cassie, hello@mexicocassie.com | SENT 2026-10-01 10:35:06 PDT (Gmail id 1a0f888be1714284) | creator / email / mexicocassie |
+| 11 | Hostel email (Spanish) | Casa Angel Hostel, contactcasaangel@gmail.com | SENT 2026-10-01 10:35:08 PDT (Gmail id 1a0f888c85bb506b); QR sheet only if they reply yes | email / email / casa-angel-hostel |
 
 Hostal Central has WhatsApp only, so it is skipped for this batch.
 
