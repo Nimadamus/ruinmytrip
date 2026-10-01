@@ -92,6 +92,19 @@ function rmt_country_slug(string $country): string {
     return slugify($country);
 }
 
+/**
+ * Country hubs that moved for good to their travel buddy page (Q7, approved 2026-10-01). Each
+ * /in/{slug} here answers with a 301 to /travel-buddies/{slug}; every other /in page is unchanged.
+ */
+const RMT_COUNTRY_MOVED = ['colombia', 'croatia', 'france', 'greece', 'iceland', 'italy', 'japan',
+                           'mexico', 'morocco', 'peru', 'portugal', 'spain', 'thailand', 'vietnam'];
+
+/** Site path (no leading slash) of a country's hub, so links never point at a redirect. */
+function rmt_country_path(string $country): string {
+    $slug = rmt_country_slug($country);
+    return (in_array($slug, RMT_COUNTRY_MOVED, true) ? 'travel-buddies/' : 'in/') . $slug;
+}
+
 /** Canonical country name for a slug, or null. */
 function rmt_country_from_slug(string $slug): ?string {
     foreach (q_all('SELECT DISTINCT country FROM destinations WHERE country IS NOT NULL AND country <> \'\'') as $r) {

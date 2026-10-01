@@ -31,7 +31,7 @@
   <?php if (!empty($countries)): ?>
     <div class="tag-row" style="margin:-6px 0 18px">
       <?php foreach ($countries as $co): ?>
-        <a class="chip" href="<?= e(url('in/'.rmt_country_slug((string)$co['country']))) ?>"><?= e($co['country']) ?> <span class="muted"><?= (int)$co['n'] ?></span></a>
+        <a class="chip" href="<?= e(url(rmt_country_path((string)$co['country']))) ?>"><?= e($co['country']) ?> <span class="muted"><?= (int)$co['n'] ?></span></a>
       <?php endforeach; ?>
     </div>
   <?php endif; ?>

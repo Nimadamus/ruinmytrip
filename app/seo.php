@@ -262,8 +262,8 @@ function rmt_sitemap_entries(): array {
     )['c'] ?? 0);
     if ($nCommunity > 0) $add('/leaderboard');
 
-    if (function_exists('rmt_top_tags')) {
-        $tags = rmt_top_tags(100);
+    if (function_exists('rmt_sitemap_tags')) {
+        $tags = rmt_sitemap_tags();
         if ($tags) {
             $add('/tags');
             foreach ($tags as $t) $add('/tag/'.$t['name']);

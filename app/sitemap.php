@@ -97,8 +97,8 @@ function rmt_sitemap_group(string $group): array {
             // Country hubs (/in/greece) are lists of cities plus the old cost guides.
             // The page we want crawled for "travel buddies in Greece" is /travel-buddies/greece,
             // already added above. Submitting both asks Google to rank the guidebook.
-            if (function_exists('rmt_top_tags')) {
-                $tags = rmt_top_tags(100);
+            if (function_exists('rmt_sitemap_tags')) {
+                $tags = rmt_sitemap_tags();
                 if ($tags) {
                     $add('/tags');
                     foreach ($tags as $t) $add('/tag/' . $t['name']);

@@ -86,6 +86,17 @@ function rmt_top_tags(int $limit = 14): array {
 }
 
 /**
+ * Tags a sitemap may submit: only those carrying at least RMT_TAG_SITEMAP_MIN published items
+ * (approved 2026-10-01). A tag with one post is a thin page; it stays live and indexable, it just
+ * is not promoted, and it comes back on its own once it reaches the threshold.
+ */
+const RMT_TAG_SITEMAP_MIN = 3;
+
+function rmt_sitemap_tags(): array {
+    return array_values(array_filter(rmt_top_tags(100), fn($t) => (int) $t['n'] >= RMT_TAG_SITEMAP_MIN));
+}
+
+/**
  * Published items carrying a tag, in the same card shape as rmt_activity_items() so tag pages
  * reuse the Discover/feed card markup.
  */

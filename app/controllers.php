@@ -243,6 +243,8 @@ function explore(array $a): void {
 }
 
 function country_show(array $a): void {
+    $moved = (string) ($a['slug'] ?? '');
+    if (in_array($moved, RMT_COUNTRY_MOVED, true)) redirect_permanent(url('travel-buddies/' . $moved));
     $country = rmt_country_from_slug((string) ($a['slug'] ?? ''));
     if (!$country) not_found();
     $slug = rmt_country_slug($country);
@@ -400,7 +402,7 @@ function destination(array $a): void {
            other travel link on the page already looks like. */
         'og_image' => abs_url('/card/city/' . $d['slug'] . '.png'),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
-                          ['name'=>$d['country'],'url'=>url('in/'.rmt_country_slug((string)$d['country']))],
+                          ['name'=>$d['country'],'url'=>url(rmt_country_path((string)$d['country']))],
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
             'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
