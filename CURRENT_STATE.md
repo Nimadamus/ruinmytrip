@@ -11,7 +11,17 @@ home leads with action tiles and city tiles; empty states are invitations; quick
 16+ tick; migration 104) and Google sign in code (app/quick_join.php) that stays OFF until GOOGLE_CLIENT_ID
 and GOOGLE_CLIENT_SECRET are set on Render (GCP project `ruinmytrip`, consent screen half done, needs the
 User Data Policy accepted); occasions /e/{slug} (app/occasions.php); activation funnel on /admin/funnel.
-Waiting on Nima: Q7 /in/{country} redirects (map in docs/Q7_IN_COUNTRY_MIGRATION_MAP.md).
+
+## 2026-10-01 phase 2: acquisition loop (docs/PHASE2_ACQUISITION_20261001.md)
+
+Live (migration 105): signed out match alerts (app/match_alerts.php, /alerts*, double opt in, adopted into
+trip + follow on a confirmed account), "I'm going" cards (app/going_cards.php, /im-going/{code},
+/card/going/{code}.png, utm_campaign=im-going), full sourced guides on /e/yi-peng-chiang-mai,
+/e/day-of-the-dead-oaxaca, /e/web-summit-lisbon (indexable via rmt_occasion_quality; old dated slugs 301),
+First traveler / First review of a city on profiles (app/recognitions.php; Founding Traveler unchanged),
+`phase` scoreboard in /cron/funnel. Facts: docs/ECOSYSTEM_FACTS_20261001.md. Channels: docs/CHANNELS_RESEARCH_20261001.md.
+Waiting on Nima: Q7 14 redirects (verified table in the phase 2 doc), tag pages out of sitemap, Google
+consent screen policy, which outreach channels to run.
 
 ## What the product is
 
