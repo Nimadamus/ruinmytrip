@@ -81,8 +81,8 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
                 include __DIR__ . '/_person_card.php'; ?>
         <?php endforeach; ?>
       <?php else: ?>
-        <p class="muted">Nobody has dates covering today in <?= e((string) $cityRow['name']) ?>.
-          <a href="<?= e($me ? url('trip/new?destination_id='.(int) $cityRow['id']) : url('register?return='.rawurlencode($backTo))) ?>">Post yours</a>
+        <p class="muted">Going to <?= e((string) $cityRow['name']) ?>?
+          <a href="<?= e($me ? url('trip/new?destination_id='.(int) $cityRow['id']) : url('register?return='.rawurlencode($backTo))) ?>">Add your trip</a>
           and you are the one the next person finds.</p>
       <?php endif; ?>
     </section>

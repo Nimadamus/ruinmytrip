@@ -50,7 +50,7 @@ $meta   = array_filter([
       <?php /* No traveler has written about this yet, and the card says so rather than leaving a
                gap that reads like a missing rating. It is also the most useful thing we can tell
                somebody who has been there. */ ?>
-      <p class="hint" style="margin:0">No traveler reviews yet</p>
+      <p class="hint" style="margin:0">Been here? Help the next traveler</p>
     <?php endif; ?>
 
     <?php if (!empty($cardActions)): ?>
@@ -58,7 +58,7 @@ $meta   = array_filter([
         <a class="btn btn-ghost" style="padding:5px 12px;font-size:.85rem"
            rel="nofollow" data-review-cta="browse" data-place-id="<?= (int) $card['id'] ?>"
            href="<?= e(url('review/new?place=' . (int) $card['id'] . '&src=browse')) ?>">
-          <?= $count > 0 ? 'Review' : 'Be the first' ?>
+          <?= $count > 0 ? 'Review' : 'Write a review' ?>
         </a>
         <?php if (!empty($me)): ?>
           <form method="post" action="<?= e(url('place/save')) ?>" style="margin:0">

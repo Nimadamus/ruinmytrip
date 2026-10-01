@@ -113,6 +113,11 @@ const RMT_CTA_KEYS = [
     'social_answer', 'social_plan',
     // The travel map (app/travel_map.php).
     'map_share', 'map_download', 'map_save', 'map_make',
+    // The home page action tiles and the empty board (2026-10-01), the header Join button, Google sign in.
+    'home_act_trip', 'home_act_find', 'home_act_ask', 'home_act_review', 'home_act_ruined', 'home_act_follow',
+    'home_dates', 'nav_join', 'google_signin',
+    // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
+    'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */

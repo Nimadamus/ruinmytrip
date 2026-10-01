@@ -198,7 +198,7 @@ $stats = array_values(array_filter([
               <span class="hint">@<?= e((string) $b['username']) ?> · <?= e(rmt_live_range((string) $b['date_from'], (string) $b['date_to'])) ?></span></li>
           <?php endforeach; ?></ul>
         <?php else: ?>
-          <p class="hint" style="margin:0 0 8px">Nobody has asked yet. Post your dates and say who you would like to go with.</p>
+          <p class="hint" style="margin:0 0 8px">Going here? Add your dates and say who you would like to go with.</p>
         <?php endif; ?>
         <a class="btn btn-ghost btn-sm" data-cta="cta_buddy" data-destination-id="<?= (int) $d['id'] ?>"
            href="<?= e($me ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Find a travel buddy</a>
@@ -243,8 +243,8 @@ $stats = array_values(array_filter([
                travelers". What it offers instead is the one thing that is true: whoever asks
                first is the reason the next person finds an answer here. */ ?>
       <div class="cc-empty">
-        <p style="margin:0 0 6px"><b>No questions about <?= e($cityName) ?> yet.</b></p>
-        <p class="hint" style="margin:0">Ask the first one. It is what the next traveler searching for <?= e($cityName) ?> will find.</p>
+        <p style="margin:0 0 6px"><b>Start the conversation about <?= e($cityName) ?>.</b></p>
+        <p class="hint" style="margin:0">Ask what you want to know before you go. Travelers who have been, and people heading there, can answer.</p>
       </div>
     <?php endif; ?>
     <?php /* Questions still waiting, pulled out of the same rows so no second query: members first,

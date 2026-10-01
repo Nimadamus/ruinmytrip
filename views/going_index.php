@@ -38,12 +38,12 @@ foreach ($dests as $dd) if ((int) $dd['id'] === $filterDest) $rmt_city_name = (s
   <?php if (!$rows): ?>
     <div class="empty-cta" style="margin:14px 0 40px">
       <?php if ($rmt_filtered): ?>
-        <h3>Nobody has posted dates for that yet.</h3>
+        <h3>Going? Add your dates first.</h3>
         <p class="muted" style="margin:0">You would be the first, which is the one people find.
           <?php if ($rmt_city_name !== ''): ?>Nothing here is hidden from you: this is everything
             posted publicly for <?= e($rmt_city_name) ?>.<?php endif; ?></p>
       <?php else: ?>
-        <h3>Nobody has posted public travel plans yet.</h3>
+        <h3>Be the first traveler with dates on the board.</h3>
         <p class="muted" style="margin:0">Whoever goes first is the traveler everybody arriving after
           them sees. Post the city and the range; nothing finer is ever shown.</p>
       <?php endif; ?>

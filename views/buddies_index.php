@@ -86,7 +86,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
   <div class="buddy-layout">
     <main class="buddy-results">
       <div class="buddy-count">
-        <h2><?php if ($n === 0): ?>No travelers <?= $place !== '' ? 'for ' . e($place) . ' ' : '' ?>yet<?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
+        <h2><?php if ($n === 0): ?>Be the first traveler <?= $place !== '' ? 'heading to ' . e($place) : 'here' ?><?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
         <?php
           $blMatch = null;
           if (($bf['country'] ?? '') !== '' && function_exists('rmt_buddy_landing_for_country')) {

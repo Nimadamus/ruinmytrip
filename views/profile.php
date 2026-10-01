@@ -421,7 +421,7 @@
            becomes, and sends them to the page built for having a trip in mind rather than a URL. */ ?>
   <?php if ($isMe && !$reviews && !$trips): ?>
     <div class="empty-cta" style="margin-top:24px">
-      <h3 style="margin:0 0 4px">Nothing here yet.</h3>
+      <h3 style="margin:0 0 4px">Start your travel record.</h3>
       <p class="muted" style="margin:0">
         This is where your travel record lives: the places you went, what they actually cost, and
         what you would tell a friend. Start with somewhere you went recently, or keep a list of

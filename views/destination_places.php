@@ -80,7 +80,7 @@
 
   <?php if (!$places): ?>
     <div class="empty-cta" style="margin:20px 0">
-      <h3>Nothing here yet<?= $type ? ' in this category' : '' ?>.</h3>
+      <h3>Know a place<?= $type ? ' like this' : '' ?> in <?= e($d['name']) ?>? Add it with a review.</h3>
       <p class="muted" style="margin:0">
         Places appear the moment somebody reviews one. We do not import listings or invent them to
         look busy. If you stayed, ate, or booked something in <?= e($d['name']) ?>, you are the

@@ -310,8 +310,8 @@ $threads = $threads ?? [];
                version of it points at the three things that actually fill it: following somebody,
                going somewhere, or writing the first thing yourself. */ ?>
       <div class="callout">
-        Nothing here yet. This fills up as the travelers you follow post, and as anything
-        happens in a city you saved.
+        Your feed fills up as the travelers you follow post, and as anything happens in a city you
+        saved.
         <a href="<?= e(url('travelers')) ?>">Find travelers</a>,
         <a href="<?= e(url('explore')) ?>">save the cities you care about</a>, or
         <a data-review-cta="feed" href="<?= e(url('contribute')) ?>">review a place you went to</a>.
@@ -515,7 +515,7 @@ $threads = $threads ?? [];
         <?php foreach ($rails['questions'] as $q): ?>
           <a class="rail-row" href="<?= e(url('post/'.(int) $q['id'])) ?>">
             <b><?= e(rmt_post_title($q, 60)) ?></b>
-            <span class="hint"><?= e((string) ($q['dest_name'] ?? '')) ?> · <?= (int) $q['reply_count'] === 0 ? 'No answers yet' : e((int) $q['reply_count'] . ((int) $q['reply_count'] === 1 ? ' answer' : ' answers')) ?></span>
+            <span class="hint"><?= e((string) ($q['dest_name'] ?? '')) ?> · <?= (int) $q['reply_count'] === 0 ? 'Know the answer? Help out' : e((int) $q['reply_count'] . ((int) $q['reply_count'] === 1 ? ' answer' : ' answers')) ?></span>
           </a>
         <?php endforeach; ?>
         <a class="rail-more" href="<?= e(url('talk')) ?>">All discussions</a>

@@ -6,7 +6,7 @@
 
   <?php if (!$photos): ?>
     <div class="empty-cta" style="margin:20px 0">
-      <h3>No traveler photos yet.</h3>
+      <h3>Share the first photos of <?= e($d['name']) ?>.</h3>
       <p class="muted" style="margin:0">Been to <?= e($d['name']) ?>? Add photos to a trip or review.</p>
       <p style="margin:16px 0 0">
         <a class="btn btn-accent" href="<?= e(url('trip/new')) ?>">Share a trip</a>

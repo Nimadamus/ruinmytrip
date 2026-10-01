@@ -95,7 +95,8 @@ if (preg_match('/<div class="cc-empty">(.*?)<\/div>/s', $partial, $m)) {
     $text = preg_replace('/<\?.*?\?>/s', '', $m[1]) ?? '';
     $text = trim(strip_tags($text));
     ok(!preg_match('/\d/', $text), 'the empty state contains no numbers at all');
-    ok(stripos($text, 'yet') !== false, 'the empty state says the city is empty rather than implying a crowd');
+    // 2026-10-01: an invitation rather than "nobody yet", and still never a crowd that is not there.
+    ok(stripos($text, 'Start the conversation') !== false, 'the empty state invites the first question rather than implying a crowd');
 } else {
     ok(false, 'the empty state was not found');
 }

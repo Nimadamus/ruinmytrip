@@ -127,7 +127,16 @@ function home(array $a): void {
                           LIMIT 12", [date('Y-m-d'), date('Y-m-d H:i:s')]);
     // What is happening, real rows first and our own labelled content only where they are thin.
     $live = rmt_live_activity(null, 8);
-    view('home', compact('live', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+    /* Destination communities to step into (Q2, 2026-10-01). A fixed set of cities people often
+       travel to alone, shown with their own photographs: the front door offers places and people
+       before it shows any section that is still waiting for its first member. */
+    $featuredSlugs = ['tokyo-japan', 'lisbon-portugal', 'bangkok-thailand', 'chiang-mai-thailand',
+                      'mexico-city-mexico', 'medellin-colombia', 'barcelona-spain', 'seminyak-bali-indonesia'];
+    $featuredCities = q_all('SELECT slug, name, country, hero_url FROM destinations WHERE slug IN ('
+                            . implode(',', array_fill(0, count($featuredSlugs), '?')) . ')', $featuredSlugs);
+    usort($featuredCities, static fn(array $x, array $y): int =>
+        array_search($x['slug'], $featuredSlugs, true) <=> array_search($y['slug'], $featuredSlugs, true));
+    view('home', compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.

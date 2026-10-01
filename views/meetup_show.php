@@ -92,7 +92,7 @@
       <a class="chip" style="display:inline-flex;align-items:center;gap:6px;padding:.3rem .7rem" href="<?= e(url('u/'.$r['username'])) ?>">
         <img class="avatar" style="width:22px;height:22px" src="<?= e(avatar_url($r['avatar_url']??null)) ?>" alt="">@<?= e($r['username']) ?></a>
     <?php endforeach; ?>
-    <?php if(!$rsvps):?><span class="muted">Be the first to RSVP.</span><?php endif;?>
+    <?php if(!$rsvps):?><span class="muted">Going? RSVP so the host knows.</span><?php endif;?>
   </div>
 
   <?php

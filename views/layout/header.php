@@ -107,7 +107,7 @@
         <a class="btn btn-primary btn-sm" href="<?= e(url('trip/new')) ?>">Post a trip</a>
       <?php else: ?>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('login')) ?>">Sign in</a>
-        <a class="btn btn-primary btn-sm" href="<?= e(url('register')) ?>">Join free</a>
+        <a class="btn btn-primary btn-sm" data-cta="nav_join" href="<?= e(url('register')) ?>">Join free</a>
       <?php endif; ?>
     </nav>
   </div>

@@ -139,7 +139,7 @@
             </p>
           <?php endif; ?>
         <?php else: ?>
-          <p class="rs-value muted" style="font-weight:600">No traveler reviews yet</p>
+          <p class="rs-value muted" style="font-weight:600">Visited recently? Help the next traveler</p>
           <p class="hint" style="margin:0">This score stays empty until real travelers post. We do not fill it in ourselves.</p>
         <?php endif; ?>
       </div>
@@ -280,7 +280,7 @@
             <a class="section-more" href="<?= e(url('d/'.$d['slug'].'/places')) ?>">See all &rarr;</a>
           </div>
           <p class="hint" style="margin:-6px 0 12px">
-            No traveler reviews here yet, so nothing is ranked. These are the places we cover.
+            Places we cover, unranked until travelers review them. Been to one? Your review ranks it.
           </p>
           <?php $renderRow($discovery['fallback']); ?>
         </section>
@@ -517,7 +517,7 @@
       <div class="card"><div class="card-body">
         <h3>Who's going</h3>
         <p class="hint">Destination + date range only. Never precise location.</p>
-        <?php if (!$going): ?><p class="muted">No travelers listed yet. Be the first.</p><?php endif; ?>
+        <?php if (!$going): ?><p class="muted">Going here? Add your trip and be the first traveler people find.</p><?php endif; ?>
         <ul class="list-plain">
           <?php foreach ($going as $g): ?>
             <li class="meta-row" style="justify-content:flex-start">
@@ -536,7 +536,7 @@
 
       <div class="card" style="margin-top:18px"><div class="card-body">
         <h3>Meetups here</h3>
-        <?php if (!$meetups): ?><p class="muted">No public meetups yet.</p><?php endif; ?>
+        <?php if (!$meetups): ?><p class="muted">Planning something? Create the first meetup. Public places only.</p><?php endif; ?>
         <ul class="list-plain">
           <?php foreach ($meetups as $m): ?><li style="padding:6px 0"><a href="<?= e(url('meetup/'.$m['id'])) ?>"><?= e($m['title']) ?></a><br><span class="hint"><?= e(date('M j, g:ia', strtotime((string)$m['date_start']))) ?></span></li><?php endforeach; ?>
         </ul>

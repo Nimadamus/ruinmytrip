@@ -53,7 +53,7 @@ function rmt_live_activity(?int $viewerId, int $limit = 8, ?int $destId = null):
     $lanes['question'] = array_map(static fn($r) => [
         'kind' => 'question', 'label' => !empty($r['dest_name']) ? 'Asked about ' . $r['dest_name'] : 'Travel talk',
         'title' => excerpt((string) $r['body'], 140),
-        'meta' => (int) $r['replies'] > 0 ? ((int) $r['replies'] . ((int) $r['replies'] === 1 ? ' reply' : ' replies')) : 'No replies yet',
+        'meta' => (int) $r['replies'] > 0 ? ((int) $r['replies'] . ((int) $r['replies'] === 1 ? ' reply' : ' replies')) : 'Been there? Answer it',
         'href' => url('post/' . (int) $r['id']), 'who' => $who($r), 'editorial' => false,
     ], $keep($safe(static fn() => q_all("SELECT po.id, po.body, po.user_id, u.username, pr.display_name, d.name dest_name,
                    (SELECT COUNT(*) FROM comments c WHERE c.target_type = 'post' AND c.target_id = po.id AND c.status = 'published') replies

@@ -83,8 +83,8 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
     <?php /* An empty city, said plainly. Pretending otherwise is the thing that makes somebody
              close the tab: they can tell, and then nothing else on the page is believable. */ ?>
     <div class="callout">
-      <b>Nobody has posted about <?= e($city) ?> yet.</b> Whoever goes first is the person every
-      traveler who searches this next month will find. Post your dates, or ask the question you
+      <b>Be the first traveler heading to <?= e($city) ?>.</b> Add your dates and you are the person every
+      traveler who searches this next month will find, and we tell you the moment someone overlaps. Post your dates, or ask the question you
       came here with.
     </div>
   <?php endif; ?>
@@ -142,7 +142,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
       <?php endforeach; ?>
     </ul>
     <?php if (!$cityPlans): ?>
-      <p class="hint">Nothing here matches that yet. <a href="<?= e($planUrl(['cat'=>'','open'=>false])) ?>">Show everything</a>.</p>
+      <p class="hint">Nothing planned in that category yet. Plan it and others can join. <a href="<?= e($planUrl(['cat'=>'','open'=>false])) ?>">Show everything</a>.</p>
     <?php endif; ?>
   <?php endif; ?>
 
@@ -346,8 +346,8 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
              the only argument worth making on an empty page. */ ?>
     <section class="first-in">
       <h2 style="margin:0 0 6px">Be the first in <?= e($city) ?></h2>
-      <p class="muted" style="margin:0 0 16px;max-width:60ch">Nobody has done these yet. Whoever goes
-        first is the traveler everybody searching <?= e($city) ?> next month finds.</p>
+      <p class="muted" style="margin:0 0 16px;max-width:60ch">Each of these takes a minute. Whoever starts
+        is the traveler everybody searching <?= e($city) ?> next month finds.</p>
       <div class="first-in-grid">
         <?php if (!empty($rmt_gaps['going'])): ?>
           <?php /* destination_id, not destination: that is the review form's parameter, and the

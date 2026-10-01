@@ -34,7 +34,7 @@
 
   <?php if (!$reviews): ?>
     <div class="empty-cta">
-      <h3><?= $mine ? 'You have not written a review yet.' : 'Nothing here yet.' ?></h3>
+      <h3><?= $mine ? 'You have not written a review yet.' : 'Visited recently? Help the next traveler.' ?></h3>
       <p class="muted" style="margin:0"><?= $mine
         ? 'Start with the last trip you took. The bad parts are the useful parts.'
         : 'No reviews in this category yet, and we will not pad it with invented ones. The first honest review can be yours.' ?></p>

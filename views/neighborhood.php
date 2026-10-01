@@ -35,7 +35,7 @@
   </div>
 
   <?php if (!$places): ?>
-    <p class="muted">Nothing here yet.</p>
+    <p class="muted">Know a good spot here? Add it with a review.</p>
   <?php else: ?>
     <div class="grid g-3">
       <?php foreach ($places as $card): ?>

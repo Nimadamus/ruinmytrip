@@ -87,7 +87,25 @@
          join is asking, answered with a search box rather than a paragraph. No queries here, so the
          homepage costs nothing extra. */ ?>
 <?php /* The front door shows activity before it asks for anything. */ ?>
-<div class="wrap"><?php $laItems = $live ?? []; include __DIR__ . '/_live_activity.php'; ?></div>
+<?php /* What you can do here, before any section that is waiting for its first member (Q2,
+         2026-10-01). Every tile is an action that works today for the first traveler in a city. */ ?>
+<section class="block-tight home-acts"><div class="wrap">
+  <h2 class="home-acts-h">What you can do here</h2>
+  <ul class="act-grid">
+    <li><a class="act-tile act-main" data-cta="home_act_trip" href="<?= e(url('plan?cta=home_act_trip')) ?>">
+      <b>Add my trip</b><span>Where and when. We alert you the moment someone's dates overlap yours.</span></a></li>
+    <li><a class="act-tile" data-cta="home_act_find" href="<?= e(url('buddies')) ?>">
+      <b>Find travelers</b><span>People going where you are going, locals open to meeting, cruise mates.</span></a></li>
+    <li><a class="act-tile" data-cta="home_act_ask" href="<?= e(url('talk')) ?>#say">
+      <b>Ask a question</b><span>Travelers who have been, and people heading there, answer.</span></a></li>
+    <li><a class="act-tile" data-cta="home_act_review" href="<?= e(url('contribute')) ?>">
+      <b>Write a review</b><span>A place, a tour, a hotel. Help the next traveler.</span></a></li>
+    <li><a class="act-tile" data-cta="home_act_ruined" href="<?= e(url('ruined')) ?>">
+      <b>Share what ruined my trip</b><span>The fee, the scam, the thing you wish you had known.</span></a></li>
+    <li><a class="act-tile" data-cta="home_act_follow" href="<?= e(url('explore')) ?>">
+      <b>Follow a destination</b><span>Get alerts when travelers post dates, questions or meetups there.</span></a></li>
+  </ul>
+</div></section>
 
 <section class="block buddy-home"><div class="wrap">
   <p class="eyebrow" style="color:#7ee0d2">Travel buddies</p>
@@ -115,6 +133,20 @@
   </p>
 </div></section>
 
+<?php if (!empty($featuredCities)): ?>
+<section class="block-tight"><div class="wrap">
+  <div class="section-head"><div><p class="eyebrow">Destination communities</p><h2>Step into a city</h2></div>
+    <a class="section-more" href="<?= e(url('explore')) ?>">Every destination &rarr;</a></div>
+  <ul class="city-tiles">
+    <?php foreach ($featuredCities as $fc): $fcSet = function_exists('rmt_media_srcset') ? rmt_media_srcset($fc['hero_url'] ?? null) : ''; ?>
+      <li><a class="city-tile" href="<?= e(url('d/' . $fc['slug'])) ?>">
+        <?php if (!empty($fc['hero_url'])): ?><img loading="lazy" src="<?= e(abs_url((string) $fc['hero_url'])) ?>"<?php if ($fcSet !== ''): ?> srcset="<?= e($fcSet) ?>" sizes="(max-width: 700px) 50vw, 280px"<?php endif; ?> alt=""><?php endif; ?>
+        <span><b><?= e($fc['name']) ?></b><small><?= e($fc['country']) ?></small></span></a></li>
+    <?php endforeach; ?>
+  </ul>
+</div></section>
+<?php endif; ?>
+
 <?php /* Who is here, before anything we wrote. A visitor deciding whether to join is deciding
          whether there are people, and no amount of research answers that question. When there is
          nobody yet the section says so and offers the empty chair, which is the only version of
@@ -136,9 +168,9 @@
     </div>
     <p class="hint" style="margin:0">Destination and date range only. Never a precise or live location.</p>
   <?php else: ?>
-    <p class="muted" style="margin:0 0 12px">Nobody has posted upcoming dates yet. Whoever goes first is
-      the traveler everybody arriving next month sees.</p>
-    <p style="margin:0"><a class="btn btn-accent" href="<?= e(current_user() ? url('going') : url('plan?cta=home_plan')) ?>">Post your dates</a></p>
+    <p class="muted" style="margin:0 0 12px">Be the first traveler with dates on the board. Add where and
+      when, and we tell you the moment anyone's dates overlap yours. Everybody arriving after you sees you first.</p>
+    <p style="margin:0"><a class="btn btn-accent" data-cta="home_dates" href="<?= e(current_user() ? url('going') : url('plan?cta=home_dates')) ?>">Add your trip</a></p>
   <?php endif; ?>
 
   <?php if (!empty($meetups)): ?>
@@ -234,7 +266,7 @@
         </div>
       <?php else: ?>
         <p class="eyebrow">Community</p><h2>Traveler stories</h2>
-        <p class="muted">Nobody has posted a trip story yet. That is not a bug. RuinMyTrip opened with real destination research and zero invented travelers.</p>
+        <p class="muted">Back from somewhere? Tell the story: what worked, what it cost, and what you wish you had known.</p>
         <p><a class="btn btn-primary" href="<?= e(url('trip/new')) ?>">Share a trip</a></p>
       <?php endif; ?>
       <p class="eyebrow" style="margin-top:28px">Meet fellow travelers</p><h2>Upcoming public meetups</h2>
@@ -250,12 +282,16 @@
           <?php endforeach; ?>
         </div>
       <?php else: ?>
-        <p class="muted">No public meetups yet.</p>
+        <p class="muted">Planning something? Create the first meetup. Coffee in a public place counts.</p>
       <?php endif; ?>
       <p style="margin-top:16px"><a class="btn btn-ghost" href="<?= e(url('meetups')) ?>">Browse meetups</a></p>
     </div>
   </div>
 </div></section>
+
+<?php /* Our own labelled questions, after the sections made of people (Q2, 2026-10-01): they are
+         invitations to answer, not proof that anybody is here. */ ?>
+<div class="wrap"><?php $laItems = $live ?? []; $laTitle = 'Questions travelers can answer'; include __DIR__ . '/_live_activity.php'; ?></div>
 
 <?php /* The one question the site is named after, asked first. A visitor who came to read leaves
          having said the thing that annoyed them, and that sentence becomes their first review. */ ?>
@@ -271,7 +307,7 @@
         <?php endforeach; ?>
         <p style="margin:12px 0 0"><a href="<?= e(url('ruined')) ?>" style="color:#7dd3c8">All <?= (int) ($ruinedTotal ?? 0) ?> warnings →</a></p>
       <?php else: ?>
-        <p style="margin:0;opacity:.85">Nobody has said theirs yet. The first one is the one people remember.</p>
+        <p style="margin:0;opacity:.85">Share what you wish you had known. The first warning is the one people remember.</p>
       <?php endif; ?>
     </div>
   </div>

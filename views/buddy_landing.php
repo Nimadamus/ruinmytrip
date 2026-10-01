@@ -50,8 +50,8 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
       <p><a href="<?= e($isCruise ? url('buddies/cruise') . '?' . http_build_query(['line' => $p['line']]) : url('buddies') . '?' . http_build_query(['where' => $p['name']])) ?>">See everyone and filter by your dates</a></p>
     <?php else: ?>
       <div class="empty-cta">
-        <h3><?= $isCruise ? 'Nobody has posted a sailing with ' . e($p['name']) . ' yet.' : 'Nobody has posted a trip to ' . e($p['name']) . ' yet.' ?></h3>
-        <p class="muted">Be the first. Post <?= $isCruise ? 'your ship and sail date' : 'where you are going and when' ?>, and you will be told when somebody lines up with you. Anyone searching <?= e($p['name']) ?> will find you here.</p>
+        <h3><?= $isCruise ? 'Sailing with ' . e($p['name']) . '? Add your sailing.' : 'Going to ' . e($p['name']) . '? Add your trip.' ?></h3>
+        <p class="muted">Post <?= $isCruise ? 'your ship and sail date' : 'where you are going and when' ?>, and you will be told when somebody lines up with you. Anyone searching <?= e($p['name']) ?> will find you here.</p>
         <p><a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a></p>
       </div>
     <?php endif; ?>

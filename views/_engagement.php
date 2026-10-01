@@ -105,7 +105,7 @@ foreach ($comments as $c):
     foreach ($rmt_children[(int) $c['id']] ?? [] as $child) $rmt_render_comment($child, true);
 endforeach;
 ?>
-<?php if (!$comments): ?><p class="muted">No comments yet.</p><?php endif; ?>
+<?php if (!$comments): ?><p class="muted">Start the conversation.</p><?php endif; ?>
 <?php if ($me): ?>
   <form method="post" action="<?= e(url('comment')) ?>" style="margin:12px 0 60px"><?= csrf_field() ?>
     <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_'.$targetType.'_'.$targetId)) ?>">

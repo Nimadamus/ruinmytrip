@@ -25,7 +25,7 @@
 
   <?php if (!$posts): ?>
     <div class="empty-cta" style="margin-bottom:24px">
-      <h3>No posts in this category yet.</h3>
+      <h3>Start this category.</h3>
       <p class="muted" style="margin:0">Got a real story, a safety tip, or a budget breakdown worth sharing? Write it up.</p>
       <p style="margin:16px 0 0"><a class="btn btn-accent" href="<?= e(url($me ? 'blog/new' : 'register')) ?>">Write a post</a></p>
     </div>

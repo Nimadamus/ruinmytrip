@@ -1617,3 +1617,22 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
     background-image:image-set(url('../img/hero-santorini-m.webp') type('image/webp'),url('../img/hero-santorini-m.jpg') type('image/jpeg'));
     background-position:center}
 }
+
+/* Home: what you can do, and destination communities (Q2, 2026-10-01). */
+.home-acts{padding-top:28px}
+.home-acts-h{margin:0 0 12px;font-size:clamp(1.3rem,2.6vw,1.7rem)}
+.act-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.act-tile{display:flex;flex-direction:column;gap:4px;height:100%;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:inherit;text-decoration:none}
+.act-tile b{font-size:1.02rem;color:var(--ink)}
+.act-tile span{font-size:.9rem;color:var(--muted)}
+.act-tile:hover{border-color:var(--brand);text-decoration:none}
+.act-main{background:var(--tint);border-color:rgba(15,118,110,.3)}
+.city-tiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.city-tile{position:relative;display:block;aspect-ratio:4/3;border-radius:14px;overflow:hidden;background:var(--ink);color:#fff;text-decoration:none}
+.city-tile img{width:100%;height:100%;object-fit:cover;display:block}
+.city-tile span{position:absolute;inset:auto 0 0 0;padding:28px 12px 10px;background:linear-gradient(180deg,transparent,rgba(9,17,28,.85));display:flex;flex-direction:column}
+.city-tile b{font-size:1.02rem}
+.city-tile small{opacity:.85}
+.city-tile:hover{text-decoration:none;opacity:.95}
+@media (max-width:860px){.act-grid{grid-template-columns:repeat(2,1fr)}.city-tiles{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.act-grid{grid-template-columns:1fr}.act-tile{padding:12px 14px}}

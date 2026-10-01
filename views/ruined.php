@@ -24,8 +24,8 @@
 
   <?php if (!$rows): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
-      <h3>Nothing here yet<?= $dest ? ' for ' . e((string) $dest['name']) : '' ?>.</h3>
-      <p class="muted" style="margin:0">Yours would be the first. That is the one people remember.</p>
+      <h3>What nearly ruined your trip<?= $dest ? ' to ' . e((string) $dest['name']) : '' ?>?</h3>
+      <p class="muted" style="margin:0">Share what you wish you had known. The first warning is the one people remember.</p>
     </div>
   <?php else: ?>
     <p class="hint" style="margin:0 0 10px"><?= (int) $total ?> <?= $total === 1 ? 'warning' : 'warnings' ?> so far.</p>

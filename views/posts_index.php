@@ -105,8 +105,8 @@
 
   <?php if (!$posts): ?>
     <div class="empty-cta" style="margin:14px 0 50px">
-      <h3>Nothing here yet.</h3>
-      <p class="muted" style="margin:0">Be the first to say something. A question counts.</p>
+      <h3>Start the conversation.</h3>
+      <p class="muted" style="margin:0">Ask what you want to know, or share what you learned. A question counts.</p>
     </div>
   <?php endif; ?>
 
