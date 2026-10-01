@@ -73,3 +73,11 @@ Result: no group explicitly permits an unsolicited promotional post. One permits
 - Page post (copy A above, link fb-page-oaxaca-1): NOT LIVE.
 - Instagram carousel p1_1..p1_6, posts p2/p3, story.png (ig-story-oaxaca-1): NOT LIVE.
 - Blocker: Claude extension cannot act on facebook.com tabs ("Couldn't determine which page this action targets"); active FB identity was AI Girls.
+
+## Live placements (2026-10-01, Pacific)
+| When | Placement | Identity verified | Link / tag | Proof |
+|---|---|---|---|---|
+| 12:50:37 | Facebook Page post, Ruin My Trip Travelers (copy A) | Page (facebook.com/me = 61595016830861) | went out WITHOUT the link from the frozen first attempt; link added by edit ~15:40: utm_source=facebook, medium=post, campaign=day-of-the-dead, content=fb-page-oaxaca-1 | facebook.com/permalink.php?story_fbid=122096872743500561&id=61595016830861 |
+| 15:31 | Messenger to Jaime González, addressed "Jaime and Lupita" (one message, no link) | Chip Dimwitty (facebook.com/me = 61565712057060) | none | thread shows "sent 3:31 PM by You" |
+| ~15:45 | Instagram carousel, 6 slides p1_1..p1_6, @ruinmytripcom | header shows ruinmytripcom | caption says link in bio; bio link NOT set (web cannot edit links) | instagram.com/p/Dd-AGYBD951/ |
+| — | Instagram Story | — | ig-story-oaxaca-1 | NOT POSTED: stories cannot be created on Instagram web |
