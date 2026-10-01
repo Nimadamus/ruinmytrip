@@ -339,6 +339,11 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
     <?php endforeach; ?>
   <?php endif; ?>
 
+  <?php if (!$me):
+      $ma = ['dest' => $d, 'occ' => '', 'from' => '', 'to' => '', 'source' => 'travelers', 'return' => '/d/' . $d['slug'] . '/travelers'];
+      include __DIR__ . '/_match_alert.php';
+  endif; ?>
+
   <?php if ($rmt_gaps): ?>
     <?php /* One invitation, naming only what is actually missing, with the action beside each
              thing rather than six paragraphs of absence. Whoever does any of these first is the

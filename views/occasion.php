@@ -1,5 +1,6 @@
 <?php
 /** @var array $o @var array $people @var array $talk @var ?array $me @var bool $saved @var string $dates @var array $links
+ *  @var ?array $myTrip @var array $others
  *
  * An occasion page (app/occasions.php): the window, what is worth knowing (ours, labelled and
  * sourced), who is going (members only, read live), and the seven things a traveler can do here.
@@ -22,6 +23,22 @@ $here = '/e/' . $o['slug'];
       <p style="color:#e8eef5;margin:.2rem 0 0;max-width:60ch"><?= e($city) ?> · <?= e($dates) ?></p>
     </div></div>
   </div>
+
+  <?php if (!$me): ?>
+    <?php $ma = ['dest' => $d, 'occ' => $o['slug'], 'from' => $o['from'], 'to' => $o['to'], 'source' => 'occasion', 'return' => $here,
+                 'heading' => 'Going for ' . $o['short'] . '? Get told when another traveler overlaps your dates.'];
+          include __DIR__ . '/_match_alert.php'; ?>
+  <?php elseif ($myTrip): ?>
+    <section class="card occ-share"><div class="card-body">
+      <h2 style="margin:0 0 6px">You are going. Bring the others.</h2>
+      <p class="hint" style="margin:0 0 10px">Make an "I'm going" card for your <?= e($city) ?> dates and send it to the group chats where the other half of your match already is.</p>
+      <form method="post" action="<?= e(url('im-going')) ?>" class="act-form">
+        <?= csrf_field() ?><input type="hidden" name="trip_id" value="<?= (int) $myTrip['id'] ?>">
+        <label class="hint" style="display:block;margin:0 0 8px"><input type="checkbox" name="show_name" value="1"> Show my name and photo on it</label>
+        <button class="btn btn-accent" data-cta="card_make">Make my card</button>
+      </form>
+    </div></section>
+  <?php endif; ?>
 
   <section class="occ-acts block-tight">
     <ul class="act-grid">
@@ -64,13 +81,37 @@ $here = '/e/' . $o['slug'];
           <?php endforeach; ?>
         </div>
         <p class="hint">Destination and date range only. Nobody can message you until you say yes.</p>
+        <p class="hint">Matched here: anyone in <?= e($city) ?> between <?= e(date('j F', strtotime($o['from']))) ?> and <?= e(date('j F', strtotime($o['to']))) ?>.</p>
       <?php else: ?>
         <div class="callout">
           <b>Be the first traveler heading to <?= e($city) ?> for <?= e((string) $o['short']) ?>.</b>
           Add your dates and you are who everybody planning this finds. The moment somebody posts dates that
-          overlap yours, we tell you.
+          overlap yours, we tell you. Matched here: anyone in <?= e($city) ?> between <?= e(date('j F', strtotime($o['from']))) ?>
+          and <?= e(date('j F', strtotime($o['to']))) ?>.
           <p style="margin:10px 0 0"><a class="btn btn-accent" data-cta="occ_trip" href="<?= e($links['trip']) ?>">Add my trip</a></p>
         </div>
+      <?php endif; ?>
+
+      <?php foreach ((array) ($o['guide'] ?? []) as [$gh, $gparas]): ?>
+        <h2 style="margin:26px 0 8px"><?= e((string) $gh) ?></h2>
+        <?php foreach ($gparas as $gp): ?><p><?= e((string) $gp) ?></p><?php endforeach; ?>
+      <?php endforeach; ?>
+
+      <?php if (!empty($o['warnings'])): ?>
+        <section class="callout occ-warn" style="margin:26px 0 0">
+          <h2 style="margin:0 0 8px;font-size:1.1rem">What travelers wish they knew</h2>
+          <ul style="margin:0;padding-left:18px">
+            <?php foreach ($o['warnings'] as $w): ?><li style="margin:0 0 6px"><?= e((string) $w) ?></li><?php endforeach; ?>
+          </ul>
+          <p style="margin:10px 0 0"><a data-cta="occ_ruined" href="<?= e($links['ruined']) ?>">Been before? Tell people what ruined it for you.</a></p>
+        </section>
+      <?php endif; ?>
+
+      <?php if (!empty($o['faq'])): ?>
+        <h2 style="margin:26px 0 8px">Questions people ask</h2>
+        <?php foreach ($o['faq'] as [$fq, $fa]): ?>
+          <h3 style="margin:14px 0 4px;font-size:1rem"><?= e((string) $fq) ?></h3><p style="margin:0"><?= e((string) $fa) ?></p>
+        <?php endforeach; ?>
       <?php endif; ?>
 
       <h2 style="margin:26px 0 8px">Questions about <?= e($city) ?></h2>
@@ -99,4 +140,21 @@ $here = '/e/' . $o['slug'];
         <?php endif; ?></p>
     </div></section>
   </div>
+
+  <section class="block-tight" style="margin-top:28px">
+    <h2 style="margin:0 0 8px">More in <?= e($city) ?></h2>
+    <p><a href="<?= e($links['city']) ?>">The <?= e($city) ?> community</a> ·
+       <a href="<?= e($links['people']) ?>">Travelers going to <?= e($city) ?></a> ·
+       <a href="<?= e(url('buddies?' . http_build_query(['where' => $city]))) ?>">Travel buddies for <?= e($city) ?></a> ·
+       <a href="<?= e(url('events')) ?>">All events</a></p>
+    <?php if ($others): ?>
+      <h2 style="margin:18px 0 8px">Other trips people plan around</h2>
+      <ul class="plain-list">
+        <?php foreach (array_slice($others, 0, 4) as $x): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('e/' . $x['slug'])) ?>"><?= e((string) $x['name']) ?></a>
+            <span class="hint"> · <?= e((string) $x['d']['name']) ?></span></li>
+        <?php endforeach; ?>
+      </ul>
+    <?php endif; ?>
+  </section>
 </div>

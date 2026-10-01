@@ -359,6 +359,14 @@ function rmt_card_spec(string $kind, string $key): ?array {
             if ((int) ($ac['capacity'] ?? 0) > 0) $pills[] = 'room for ' . (int) $ac['capacity'];
             return ['kicker' => $kicker, 'title' => (string) $ac['title'], 'meta' => $meta, 'pills' => $pills];
 
+        case 'going':
+            /* An "I'm going" card: the line the traveler is sharing, and the question it asks. */
+            $g = function_exists('rmt_going_card') ? rmt_going_card($key) : null;
+            if (!$g) return null;
+            return ['kicker' => "I'm going", 'title' => rmt_going_line($g) . ' Who else is going?',
+                    'meta' => $g['who'] !== '' ? $g['who'] . ' on RuinMyTrip' : 'Travelers matched by city and dates',
+                    'pills' => ['City and dates only', 'Say me too']];
+
         case 'tag':
             $t = q_one('SELECT * FROM tags WHERE name=?', [$key]);
             if (!$t) return null;

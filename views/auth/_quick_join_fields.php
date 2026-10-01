@@ -15,7 +15,7 @@ $qjReturn = (string) ($qjReturn ?? '');
   <p class="qj-or"><span>or with email</span></p>
 <?php endif; ?>
 <label for="email">Email</label>
-<input type="email" id="email" name="email" value="<?= e(input('email')) ?>" required autocomplete="email">
+<input type="email" id="email" name="email" value="<?= e(input('email') !== '' ? (string) input('email') : (string) ($_SESSION['alert_email'] ?? '')) ?>" required autocomplete="email">
 <label for="password">Password <span class="hint">(8+ characters)</span></label>
 <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
 <label class="qj-age"><input type="checkbox" name="age_ok" value="1" required<?= input('age_ok') === '1' ? ' checked' : '' ?>>

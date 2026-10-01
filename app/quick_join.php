@@ -210,5 +210,6 @@ function google_finish_submit(array $a): void {
     unset($_SESSION['g_pending']);
     rmt_track('join_created', ['source' => 'google']);
     rmt_track('join_confirmed', ['source' => 'google']);
+    if (function_exists('rmt_alerts_adopt')) rmt_alerts_adopt((array) q_one('SELECT * FROM users WHERE id = ?', [$uid]));
     rmt_after_google((array) current_user(), (string) $g['return'], true);
 }

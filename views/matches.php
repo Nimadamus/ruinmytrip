@@ -57,6 +57,12 @@
       <p class="hint" style="margin:0">It is on your profile, and it is what everything below is
         matched against. <a href="<?= e(url('trip/' . (int) $newTrip['id'])) ?>">Open the trip</a>
         to add a plan or a photograph.</p>
+      <form method="post" action="<?= e(url('im-going')) ?>" style="margin:10px 0 0">
+        <?= csrf_field() ?><input type="hidden" name="trip_id" value="<?= (int) $newTrip['id'] ?>">
+        <b>Somebody you know is going too?</b> Send them an "I'm going" card.
+        <label class="hint" style="margin:0 8px"><input type="checkbox" name="show_name" value="1"> show my name</label>
+        <button class="btn btn-accent btn-sm" data-cta="card_make">Make my card</button>
+      </form>
     </div>
   <?php endif; ?>
 

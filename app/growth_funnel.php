@@ -343,6 +343,74 @@ function rmt_activation_funnel(int $days = 0): array {
     return $out;
 }
 
+/**
+ * The acquisition loop scoreboard (2026-10-01): the numbers the three ecosystem experiment is judged
+ * on, overall and per ecosystem city. Every count is distinct browsers or real rows, our own checks
+ * excluded. Search impressions and clicks come from Search Console, not from here.
+ */
+const RMT_PHASE_CITIES = ['oaxaca-mexico', 'chiang-mai-thailand', 'lisbon-portugal'];
+
+function rmt_phase_metrics(int $days = 0): array {
+    $since = $days > 0 ? date('Y-m-d H:i:s', time() - $days * 86400) : '1970-01-01 00:00:00';
+    $base = "created_at >= ? AND COALESCE(acq_content, '') <> 'selfcheck'";
+    $ev = static function (string $where, array $args = []) use ($base, $since): int {
+        try { return (int) (q_one("SELECT COUNT(DISTINCT COALESCE(visitor, journey)) c FROM contribution_events WHERE $where AND $base",
+                                  array_merge($args, [$since]))['c'] ?? 0); }
+        catch (Throwable $e) { return 0; }
+    };
+    $rows = static function (string $sql, array $args = []): int {
+        try { return (int) (q_one($sql, $args)['c'] ?? 0); } catch (Throwable $e) { return 0; }
+    };
+    $real = function_exists('rmt_sc_real_user_sql') ? rmt_sc_real_user_sql('u') : "u.status = 'active'";
+    $out = [
+        'landing_visits'      => $ev("event IN ('landing_view','destination_page_view')"),
+        'alert_submissions'   => $rows("SELECT COUNT(*) c FROM match_alerts WHERE created_at >= ?", [$since]),
+        'alerts_confirmed'    => $rows("SELECT COUNT(*) c FROM match_alerts WHERE confirmed_at >= ?", [$since]),
+        'alert_overlap_mails' => $ev("event = 'alert_match'"),
+        'alerts_converted'    => $rows("SELECT COUNT(*) c FROM match_alerts WHERE converted_at >= ?", [$since]),
+        'registrations'       => $rows("SELECT COUNT(*) c FROM users u WHERE u.created_at >= ? AND $real", [$since]),
+        'trips_created'       => $rows("SELECT COUNT(*) c FROM trips t JOIN users u ON u.id = t.user_id WHERE t.created_at >= ? AND t.status = 'published' AND t.date_from IS NOT NULL AND $real", [$since]),
+        'cards_created'       => $rows("SELECT COUNT(*) c FROM going_cards WHERE created_at >= ?", [$since]),
+        'share_clicks'        => $ev("event = 'cta_click' AND detail LIKE 'share\_%' ESCAPE '\'"),
+        'shared_link_visits'  => $ev("event = 'share_visit'"),
+        'signups_from_cards'  => $ev("event = 'join_created' AND acq_campaign = 'im-going'"),
+        'destination_follows' => $ev("event = 'destination_follow_success'"),
+        'questions'           => $ev("event = 'question_posted'"),
+        'reviews'             => $ev("event = 'review_publish_success'"),
+        'posts'               => $ev("event = 'post_created'"),
+        'traveler_overlaps'   => $rows("SELECT COUNT(*) c FROM trips a JOIN trips b ON b.destination_id = a.destination_id AND b.user_id < a.user_id
+                                          AND b.date_from <= a.date_to AND b.date_to >= a.date_from
+                                          JOIN users u ON u.id = a.user_id JOIN users u2 ON u2.id = b.user_id
+                                         WHERE a.status = 'published' AND b.status = 'published' AND a.visibility = 'public' AND b.visibility = 'public'
+                                           AND a.date_from IS NOT NULL AND b.date_from IS NOT NULL AND a.date_to >= ?
+                                           AND $real AND " . str_replace('u.', 'u2.', $real), [date('Y-m-d')]),
+    ];
+    $channels = [];
+    try {
+        foreach (q_all("SELECT detail, COUNT(*) n FROM contribution_events WHERE event = 'cta_click' AND detail LIKE 'share\_%' ESCAPE '\' AND $base GROUP BY detail", [$since]) as $r) {
+            $channels[substr((string) $r['detail'], 6)] = (int) $r['n'];
+        }
+    } catch (Throwable $e) { /* none yet */ }
+    $out['share_channels'] = $channels;
+    $out['return_visitors'] = (int) (array_values(array_filter(rmt_activation_funnel($days), static fn($s) => $s['key'] === 'return'))[0]['count'] ?? 0);
+    $cities = [];
+    foreach (RMT_PHASE_CITIES as $slug) {
+        $d = q_one('SELECT id FROM destinations WHERE slug = ?', [$slug]);
+        if (!$d) continue;
+        $id = (int) $d['id'];
+        $cities[$slug] = [
+            'page_visits'   => $ev("event = 'destination_page_view' AND destination_id = ?", [$id]),
+            'alerts'        => $rows("SELECT COUNT(*) c FROM match_alerts WHERE destination_id = ? AND created_at >= ?", [$id, $since]),
+            'trips'         => $rows("SELECT COUNT(*) c FROM trips t JOIN users u ON u.id = t.user_id WHERE t.destination_id = ? AND t.created_at >= ? AND t.status = 'published' AND $real", [$id, $since]),
+            'follows'       => $ev("event = 'destination_follow_success' AND destination_id = ?", [$id]),
+            'cards'         => $rows("SELECT COUNT(*) c FROM going_cards WHERE destination_id = ? AND created_at >= ?", [$id, $since]),
+            'questions'     => $ev("event = 'question_posted' AND destination_id = ?", [$id]),
+        ];
+    }
+    $out['ecosystems'] = $cities;
+    return $out;
+}
+
 function cron_funnel(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
     $given = (string) input('key');
@@ -360,6 +428,7 @@ function cron_funnel(array $a): void {
         'window_days'        => $days > 0 ? $days : 'all time',
         // Visitor, member, first contribution, returning: the loop in one block (app/growth_scorecard.php).
         'activation'         => rmt_activation_funnel($days),
+        'phase'              => rmt_phase_metrics($days),
         'scorecard'          => rmt_growth_scorecard($days),
         'growth'             => rmt_growth_funnel($days),
         'signup'             => rmt_signup_funnel($days),

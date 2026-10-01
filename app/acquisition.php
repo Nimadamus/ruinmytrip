@@ -300,7 +300,7 @@ const RMT_ACQ_WINDOW_WHY = [
     'oktoberfest'     => 'A tent table is a group activity. Arriving without one is the thing everybody complains about.',
     'day-of-the-dead' => 'The vigils are in cemeteries outside the city, after dark. Almost nobody wants to do that alone.',
     'web-summit'      => 'The conference app matches you with attendees. Nothing matches you for the weekend either side.',
-    'yi-peng'         => 'The mass lantern releases are ticketed and out of town, so getting there costs one other person.',
+    'yi-peng'         => 'The full moon night is Tuesday 24 November. The mass lantern releases are ticketed and out of town, so getting there costs one other person.',
     'miami-art-week'  => 'The fairs are easy. Which days are worth staying for is the question, and it is better with company.',
     'new-year-2027'   => 'New Year in a city you landed in yesterday is the exact problem this site was built for.',
     'rio-carnival'    => 'Blocos have no ticket and no door. Which one, on which morning, with whom, is the whole problem.',
@@ -311,8 +311,10 @@ const RMT_ACQ_WINDOWS = [
     'oktoberfest'    => ['slug' => 'munich-germany',      'from' => '2026-09-19', 'to' => '2026-10-04', 'label' => 'Oktoberfest'],
     // Web Summit 2026: 9 to 12 November, Altice Arena and FIL (websummit.com).
     'web-summit'     => ['slug' => 'lisbon-portugal',     'from' => '2026-11-09', 'to' => '2026-11-12', 'label' => 'Web Summit'],
-    // Yi Peng and Loy Krathong: guides give 23 to 25 November 2026 and disagree on the exact night.
-    'yi-peng'        => ['slug' => 'chiang-mai-thailand', 'from' => '2026-11-23', 'to' => '2026-11-25', 'label' => 'Yi Peng'],
+    // Yi Peng and Loy Krathong: the full moon is Tuesday 24 November 2026 (Wikipedia, checked
+    // 2026-10-01); no official 2026 program yet, so the window is the nights either side of it and
+    // the copy names only the full moon. Same window as the /e/yi-peng-chiang-mai page.
+    'yi-peng'        => ['slug' => 'chiang-mai-thailand', 'from' => '2026-11-22', 'to' => '2026-11-26', 'label' => 'Yi Peng'],
     // Miami Art Week: fairs in the first week of December, the travel window is the whole week.
     'miami-art-week' => ['slug' => 'miami-usa',           'from' => '2026-12-01', 'to' => '2026-12-07', 'label' => 'Art Week'],
     // Day of the Dead: 1 and 2 November are fixed by the calendar, the vigils and the comparsas

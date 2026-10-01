@@ -865,6 +865,8 @@ function profile(array $a): void {
     $followers = $stats['followers'];
     $following = $stats['following'];
     $badges = rmt_user_badges($uid);
+    if (function_exists('rmt_recognitions_maybe_sweep')) rmt_recognitions_maybe_sweep();
+    $recog = function_exists('rmt_recognitions_for') ? rmt_recognitions_for($uid) : [];
     $compliments = rmt_compliments_received($uid);
     $myCompliments = ($me && !$isMe) ? rmt_compliments_sent_by((int)$me['id'], $uid) : [];
 
@@ -911,7 +913,7 @@ function profile(array $a): void {
     $is_blocked = ($me && !$isMe) ? rmt_is_blocked((int)$me['id'], $uid) : false;
     // What they have been saying lately, which on most profiles is the only recent thing there is.
     $talkPosts = rmt_posts_by_user($uid, 10);
-    view('profile', compact('talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','buddyPosts','beenPlaces','photoWall','coverUrl','interests','sharedInterests'), [
+    view('profile', compact('recog', 'talkPosts','u','trips','reviews','guides','collections','followers','following','is_following','me','stats','badges','isMe','compliments','myCompliments','is_blocked','i_blocked_them','wishlist','hostedMeetups','attendingMeetups','upcomingTrips','pastTrips','homeDest','buddyPosts','beenPlaces','photoWall','coverUrl','interests','sharedInterests'), [
         'robots' => rmt_robots_for(rmt_indexable('profile', $u + [
             'review_count' => (int) ($stats['reviews'] ?? 0),
             'guide_count'  => (int) ($stats['guides'] ?? 0),
@@ -5173,6 +5175,8 @@ function verify_email_confirm(array $a): void {
                                  WHERE u.id = ? AND u.status = 'active'", [(int) $row['user_id']]);
     $applied = $confirmed ? rmt_pending_apply($confirmed) : ['going' => false, 'hello' => false, 'trip' => false, 'buddy' => false, 'post' => false];
     $released = rmt_reviews_release_held((int) $row['user_id']);
+    // Match alerts set with this address before the account existed become its trips and follows.
+    if ($confirmed && function_exists('rmt_alerts_adopt')) rmt_alerts_adopt($confirmed);
     /* A first trip that was waiting on this click is the most valuable thing that just happened,
        and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
        the trip you wrote ten minutes ago sits somewhere unmentioned, is how the moment is lost. */

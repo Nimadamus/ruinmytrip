@@ -102,6 +102,15 @@ const RMT_CONTRIB_EVENTS = [
     // The travel map, 2026-09-29: opened, and kept on a profile. Sharing is a cta_click.
     'map_view',
     'map_saved',
+    /* The acquisition loop, 2026-10-01: an alert asked for with no account, confirmed, matched and
+       turned into a member; an "I'm going" card made and opened by somebody else. */
+    'alert_submitted',
+    'alert_confirmed',
+    'alert_match',                 // an alert was emailed about a real overlap
+    'alert_converted',             // ...and became a member's trip and follow
+    'card_created',
+    'share_visit',                 // a going card opened by somebody who did not make it
+    'recognition_earned',
 ];
 
 /** The calls to action cta_click may name. Closed, like everything else here. */
@@ -118,6 +127,9 @@ const RMT_CTA_KEYS = [
     'home_dates', 'nav_join', 'google_signin',
     // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
+    // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.
+    'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
+    'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',
 ];
 
 /** Where an attempt began. Also a closed list: a free-text source is a source nobody can group by. */
@@ -131,6 +143,8 @@ const RMT_CONTRIB_SOURCES = [
     'plan', 'buddies',
     // Sign in with Google, and the occasion pages (2026-10-01).
     'google', 'occasion',
+    // A signed out match alert, and a shared "I'm going" card.
+    'alert', 'share',
     'other',
 ];
 

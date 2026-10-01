@@ -12,6 +12,7 @@
         <?php elseif ($u['role']==='creator'): ?><span class="chip" style="background:#fef3c7;color:#92400e">Creator</span><?php endif; ?>
       </h1>
       <p class="muted" style="margin:.1rem 0">@<?= e($u['username']) ?> <?= $u['home_city']?' · '.e($u['home_city']):'' ?></p>
+      <?php if (!empty($recog)): ?><p class="recog"><?php foreach ($recog as $rg): ?><span><?= e($rg) ?></span><?php endforeach; ?></p><?php endif; ?>
       <?php /* A reader arriving from "Written by RuinMyTrip Editorial" lands here, and what they
                need first is what kind of account this is -- not a traveler with an extraordinary
                number of trips. */ ?>

@@ -47,7 +47,7 @@
                  reader can act on now, so they lead the strip and are labelled as such. Still a
                  city and a date range: this is not a location feature. */ ?>
         <div class="city-people-row" style="margin-bottom:10px">
-          <?php foreach ($hereNow as $hn): ?>
+          <?php foreach (array_slice($hereNow, 0, 6) as $hn): ?>
             <a class="city-face" href="<?= e(url('u/'.$hn['username'])) ?>" title="@<?= e((string) $hn['username']) ?>, here until <?= e(date('j M', strtotime((string) $hn['date_to']))) ?>">
               <img class="avatar" src="<?= e(avatar_url($hn['avatar_url'] ?? null)) ?>" alt="@<?= e((string) $hn['username']) ?>">
             </a>
@@ -119,9 +119,13 @@
     </div>
   <?php endif; ?>
   <?php if (function_exists('rmt_occasion_for_city') && ($cityOcc = rmt_occasion_for_city((string) $d['slug']))): ?>
-    <p class="city-occ"><b><?= e((string) $cityOcc['name']) ?></b>, <?= e(date('j M', strtotime((string) $cityOcc['from']))) ?> to <?= e(date('j M Y', strtotime((string) $cityOcc['to']))) ?>.
+    <p class="city-occ"><b><?= e((string) $cityOcc['name']) ?></b>, <?= e((string) ($cityOcc['when'] ?? (date('j M', strtotime((string) $cityOcc['from'])) . ' to ' . date('j M Y', strtotime((string) $cityOcc['to']))))) ?>.
       <a href="<?= e(url('e/' . $cityOcc['slug'])) ?>">See who is going and add your dates</a></p>
   <?php endif; ?>
+  <?php if (!$me):
+      $ma = ['dest' => $d, 'occ' => '', 'from' => '', 'to' => '', 'source' => 'destination', 'return' => '/d/' . $d['slug']];
+      include __DIR__ . '/_match_alert.php';
+  endif; ?>
   <?php if ($bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint" style="margin:14px 0 0">Seeing more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>

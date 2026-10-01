@@ -295,6 +295,8 @@ function rmt_match_notify(int $actorId, int $goingId, int $destId, string $from,
        control that stops one and not the other would not be a control. */
     $trip = q_one('SELECT open_to_meeting FROM trips WHERE id = ?', [$goingId]);
     if ($trip && $trip['open_to_meeting'] !== null && (int) $trip['open_to_meeting'] === 0) return 0;
+    // People with no account who asked to hear about these days (app/match_alerts.php).
+    if (function_exists('rmt_alerts_on_trip')) rmt_alerts_on_trip($actorId, $destId, $from, $to, $visibility);
     $now = date('Y-m-d H:i:s');
     /* Read once rather than per recipient: the city is the only thing the email says. */
     $destName = (string) (q_one('SELECT name FROM destinations WHERE id = ?', [$destId])['name'] ?? '');
