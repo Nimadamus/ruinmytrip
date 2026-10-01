@@ -122,3 +122,36 @@ function rmt_city_traveler_hub(int $destId, ?array $viewer): array {
                      + count($locals) + count($reviews),
     ];
 }
+
+/**
+ * How much on a city's travelers page was put there by real members: public upcoming trips, open
+ * buddy posts, upcoming public meetups, member reviews, member posts, and locals open to meeting.
+ * House and editorial accounts never count. This decides whether /d/{slug}/travelers is a page
+ * worth a search result (Q1, 2026-10-01): at zero it is a template, so it stays out of the sitemap
+ * and carries noindex,follow until somebody real is on it. The city hub /d/{slug} is unaffected.
+ */
+function rmt_city_member_signal(int $destId): int {
+    $real  = function_exists('rmt_sc_real_user_sql') ? rmt_sc_real_user_sql('u')
+           : "u.status = 'active' AND SUBSTR(u.username, 1, 5) <> 'team_'";
+    $today = date('Y-m-d');
+    $sqls = [
+        ["SELECT COUNT(*) c FROM trips t JOIN users u ON u.id = t.user_id
+           WHERE t.destination_id = ? AND t.status = 'published' AND t.visibility = 'public'
+             AND t.date_to IS NOT NULL AND t.date_to >= ? AND $real", [$destId, $today]],
+        ["SELECT COUNT(*) c FROM buddy_posts b JOIN users u ON u.id = b.user_id
+           WHERE b.destination_id = ? AND b.status = 'open' AND b.date_to >= ? AND $real", [$destId, $today]],
+        ["SELECT COUNT(*) c FROM meetups m JOIN users u ON u.id = m.host_id
+           WHERE m.destination_id = ? AND m.status = 'published' AND m.date_start >= ? AND $real", [$destId, $today]],
+        ["SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id
+           WHERE r.destination_id = ? AND r.status = 'published' AND $real", [$destId]],
+        ["SELECT COUNT(*) c FROM posts p JOIN users u ON u.id = p.user_id
+           WHERE p.destination_id = ? AND p.status = 'published' AND $real", [$destId]],
+        ["SELECT COUNT(*) c FROM profiles p JOIN users u ON u.id = p.user_id
+           WHERE p.home_destination_id = ? AND p.open_to_meeting = 1 AND $real", [$destId]],
+    ];
+    $n = 0;
+    foreach ($sqls as [$sql, $args]) {
+        try { $n += (int) (q_one($sql, $args)['c'] ?? 0); } catch (Throwable $e) { /* a missing table counts as nothing */ }
+    }
+    return $n;
+}

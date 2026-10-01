@@ -106,11 +106,9 @@ function rmt_sitemap_group(string $group): array {
             foreach (rmt_index_destinations() as $d) {
                 if (!$d['verdict']['ok']) continue;
                 $add('/d/' . $d['slug']);
-                // The people page for the city. Submitted for every destination, empty or not:
-                // the search it answers ("travel buddy in X", "who is going to X") is one nobody
-                // is served well on, and a page that recruits the first member is worth more to
-                // this site than a page that lists the tenth museum.
-                $add('/d/' . $d['slug'] . '/travelers');
+                // The people page for the city. It answers "travel buddy in X" and "who is going to
+                // X", but only once a real member is on it (Q1, 2026-10-01): an empty one is a template.
+                if (rmt_city_member_signal((int) $d['id']) > 0) $add('/d/' . $d['slug'] . '/travelers');
             }
             break;
 

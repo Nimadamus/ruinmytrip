@@ -33,6 +33,7 @@ require BASE_PATH . '/app/seo.php';
 require BASE_PATH . '/app/communities.php';   // the list rule reads the community thresholds
 require BASE_PATH . '/app/posts.php';
 require BASE_PATH . '/app/indexability.php';
+require BASE_PATH . '/app/travelers_hub.php';  // the travelers page is submitted only once a member is on it
 require BASE_PATH . '/app/sitemap.php';
 
 function rmt_top_tags(int $n = 10): array { return []; }
@@ -271,6 +272,13 @@ check('the qualifying category page is not submitted', $has('d/paris-france/hote
 check('the thin one is NOT',                       $has('d/paris-france/restaurants'), false);
 check('the enriched place is not submitted',       $has('p/h1'), false);
 check('the city travelers page is listed',         $has('d/paris-france/travelers'), true);
+// Q1 2026-10-01: the travelers page is submitted because a real member (the contributor's review)
+// is on it. A city with nobody on it scores zero and its travelers page stays out.
+check('a city with a member on it has a signal',    rmt_city_member_signal(1) > 0, true);
+check('a city with nobody on it has none',          rmt_city_member_signal(2), 0);
+q_run("UPDATE users SET username='team_x' WHERE id=1");
+check('a labelled team account is not a member',     rmt_city_member_signal(1), 0);
+q_run("UPDATE users SET username='contributor' WHERE id=1");
 check('the bare place is NOT',                     $has('p/bare'), false);
 check('the closed place is NOT',                   $has('p/shut'), false);
 check('the contributor profile is listed',         $has('u/contributor'), true);

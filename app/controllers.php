@@ -551,6 +551,9 @@ function destination_travelers(array $a): void {
         // Written for the search it answers, and it is a search about people. 60-char budget on the
         // first clause so the city survives the truncation.
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',
+        // An empty people page is a template, not a result. Kept live and linked, but out of the
+        // index until a real member is on it (Q1, 2026-10-01). The city hub /d/{slug} stays indexed.
+        'robots' => rmt_city_member_signal((int) $d['id']) > 0 ? 'index, follow' : 'noindex,follow',
         'description' => 'Meet travelers going to ' . $d['name'] . ', ' . $d['country']
             . '. See who is there and when, join a meetup, ask the people who have been, and post your own dates.',
         // Every link posted anywhere points here, so the picture that comes with it names the city
