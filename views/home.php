@@ -221,7 +221,7 @@
     <div>
       <p class="eyebrow">Traveler reviews</p><h2>What nearly ruins the trip</h2>
       <?php if (!$reviews): ?>
-        <p class="muted">No traveler has posted a review yet. Yours would be the first, and it is the one the next person reads.</p>
+        <p class="muted">Visited somewhere recently? Help the next traveler: what was worth it, what it cost, and what nearly ruined it.</p>
       <?php endif; ?>
       <div class="grid" style="gap:14px">
         <?php foreach ($reviews as $r): ?>
