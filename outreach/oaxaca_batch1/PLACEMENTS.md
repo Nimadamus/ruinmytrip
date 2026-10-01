@@ -51,3 +51,18 @@ A small thing that catches people every year: the official Oaxaca program for 20
 * story: location sticker Oaxaca, question sticker "Going for Muertos?", link sticker with the ig-story link.
 
 Engagement: reply only to people who comment or message first. No follow or like sprees, no DMs to strangers.
+
+## Facebook group research (1 October 2026, signed in browser, About pages read directly)
+
+| Group | Size | Activity | Rule on promotion (quoted or summarised from About) | Pages can post | Verdict |
+|---|---|---|---|---|---|
+| Dia de Muertos (Day of the Dead) at Oaxaca, Mexico (facebook.com/groups/dayofthedeadoaxaca) | 1,276 | 7 posts last month | "Please enquire first if you aim to promote any tour or products" | not stated | Best fit. Allowed only after asking the admins (Jaime, Lupita Overland). Needs Nima's OK to message them. |
+| Expats & Locals in Oaxaca (groups/expatslocalsoaxaca) | 2,973 | 114 last month | OK to mention your business "when people ask for something" | not stated | Reply only when someone asks who else is going. No top level post. |
+| Friends of Oaxaca (groups/2779057299015045) | 10,918 | 33 last month | "Posting for advertising ... has a cost, reach to Admin" | not stated | Paid only. Skip. |
+| Oaxaca Travel (groups/594223561205514) | 3,205 | 117 last month | No rules published; group owned by a business Page | not stated | Not explicitly permitted. Skip. |
+| Solo Travellers to Mexico (groups/mexicotraveltips) | 36,765 | 59 last month | "No promotions or spam ... Self-promotion ... aren't allowed" | n/a | Banned. Skip. |
+| Digital Nomads Around The World (groups/digitalnomadsaroundtheglobe) | 41,916 | 1,783 last month | "No promotions or spam" | n/a | Banned. Skip. |
+| Digital Nomads & Expats in CDMX (groups/425648956305026) | 15,963 | 256 last month | No rules published | not stated | Not explicitly permitted, and Mexico City not Oaxaca. Skip. |
+| TripMates Solo Travelers (groups/travelbuddyorg) | 669,884 | 38 last month | Requires signing up on a third party site to "verify" | n/a | Looks spammy. Skip. |
+
+Result: no group explicitly permits an unsolicited promotional post. One permits it after asking the admins.
