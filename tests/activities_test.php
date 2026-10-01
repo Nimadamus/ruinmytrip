@@ -262,7 +262,8 @@ $pdo->exec('DELETE FROM trips WHERE id = 11');
 // --- the loop closing -------------------------------------------------------------------------
 /* PLAN then DO then SAY SO. Only the member's own plans, only after the day, only while the answer
    is still easy, and only until it is answered. */
-$pdo->exec("UPDATE trip_activities SET day = '2026-09-08' WHERE id = 1");
+$pastDay = date('Y-m-d', strtotime('-3 days'));
+$pdo->exec("UPDATE trip_activities SET day = '$pastDay' WHERE id = 1");
 $revTitles = static fn(int $uid): array =>
     array_map(static fn(array $r) => (string) $r['title'], rmt_activities_to_review($uid, 10));
 

@@ -1602,3 +1602,8 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .social-land{display:flex;flex-direction:column;gap:6px;margin:14px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;background:var(--tint)}
 .social-land b{font-size:1.05rem}
 .social-land-acts{display:flex;gap:8px;flex-wrap:wrap}
+/* .chip inherits its colour, and on a destination hero that is white on the pale chip, so the
+   "city" label rendered as an empty pill. The nav's link colour also outranked .btn-primary,
+   leaving the header's Join button navy on teal. */
+.dest-hero .chip{color:var(--brand)}
+.site-nav a.btn-primary,.site-header a.btn-primary{color:#fff}
