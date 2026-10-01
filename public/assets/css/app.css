@@ -1636,3 +1636,11 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .city-tile:hover{text-decoration:none;opacity:.95}
 @media (max-width:860px){.act-grid{grid-template-columns:repeat(2,1fr)}.city-tiles{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:480px){.act-grid{grid-template-columns:1fr}.act-tile{padding:12px 14px}}
+
+/* Quick join (Q3, 2026-10-01). */
+.btn-google{display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#1f1f1f;border:1px solid #c7c7c7;font-weight:600}
+.btn-google:hover{background:#f6f6f6;text-decoration:none}
+.qj-or{display:flex;align-items:center;gap:10px;margin:14px 0 4px;color:var(--muted);font-size:.85rem}
+.qj-or::before,.qj-or::after{content:"";flex:1;border-top:1px solid var(--line)}
+.qj-age{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600}
+.qj-age input{width:18px;height:18px;margin:0}

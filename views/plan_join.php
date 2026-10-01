@@ -38,17 +38,9 @@ $destName = $summary['dest']['name'] ?? ($question['dest']['name'] ?? '');
 
   <?php if ($errors): ?><div class="errors"><ul><?php foreach ($errors as $er): ?><li><?= e($er) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
   <form method="post" action="<?= e(url('plan/join')) ?>"><?= csrf_field() ?>
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" value="<?= e(input('username')) ?>" required pattern="[A-Za-z0-9_]{3,24}" autocomplete="username"
-           title="3 to 24 letters, numbers or underscores">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" value="<?= e(input('email')) ?>" required autocomplete="email">
-    <label for="password">Password <span class="hint">(8+ characters)</span></label>
-    <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password">
-    <label for="birthdate">Date of birth <span class="hint">(16+ to join, never shown)</span></label>
-    <input type="date" id="birthdate" name="birthdate" value="<?= e(input('birthdate')) ?>" required>
-    <p class="hint" style="margin-top:12px">By joining you agree to our <a href="<?= e(url('terms')) ?>">Terms</a>, <a href="<?= e(url('privacy')) ?>">Privacy Policy</a>, and <a href="<?= e(url('guidelines')) ?>">Community Guidelines</a>.
-      We email you one link to confirm the address; your <?= $question ? 'question' : 'trip' ?> goes live when you click it.</p>
+    <?php $qjReturn = ''; include __DIR__ . '/auth/_quick_join_fields.php'; ?>
+    <p class="hint" style="margin-top:4px">With email we send one link to confirm the address; your <?= $question ? 'question' : 'trip' ?> goes live when
+      you click it. With Google it goes live straight away.</p>
     <div style="margin-top:12px"><button class="btn btn-primary btn-block"><?= $question ? 'Create account and post' : 'Create account and post my trip' ?></button></div>
   </form>
   <p class="muted" style="margin-top:14px">Already a member? <a href="<?= e(url('login?return=' . rawurlencode('/plan/join'))) ?>">Sign in</a> and it is posted for you.</p>

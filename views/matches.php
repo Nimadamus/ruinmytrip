@@ -98,9 +98,10 @@
                  things that are real on this city today. Never an invented traveler and never a
                  count that is not a count. */ ?>
         <div class="cc-empty" style="margin-bottom:14px">
-          <p style="margin:0 0 4px"><b>You may be early. Nobody's dates overlap yours in <?= e((string) $c['name']) ?> yet.</b></p>
-          <p class="hint" style="margin:0 0 10px">This page fills in on its own as other travelers
-            post their dates. In the meantime the city itself is not empty.</p>
+          <p style="margin:0 0 4px"><b>You are the first traveler with these dates in <?= e((string) $c['name']) ?>.</b></p>
+          <p class="hint" style="margin:0 0 10px">You are following <?= e((string) $c['name']) ?>, so the moment
+            somebody posts dates that overlap yours we notify you here and by email. Until then, the city's
+            questions and the people who have been are below.</p>
           <?php /* The one moment an invite is genuinely useful rather than a nag: the reader has
                    just been told nobody is there, and the person most likely to be going the same
                    week is somebody they already know. No reward, no credit, nothing sent for them:

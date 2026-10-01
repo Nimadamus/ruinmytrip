@@ -17,7 +17,7 @@ $me = current_user();
 $cityName = $dest['name'] ?? '';
 ?>
 <div class="wrap"><div class="form-card form-wide pf">
-  <p class="eyebrow" style="margin:0 0 6px">Takes a minute</p>
+  <p class="eyebrow" style="margin:0 0 6px"><?= input('welcome') === '1' ? 'You are in. Step one' : 'Takes a minute' ?></p>
   <h1 style="margin:0 0 6px"><?= $cityName !== '' ? 'Going to ' . e($cityName) . '? Post your trip.' : 'Where are you going next?' ?></h1>
   <p class="muted" style="margin:0 0 16px">Say where and when. We show you the travelers who will be there on the same days,
     and tell you when somebody new lands on your dates. Nobody can message you until you say yes.</p>

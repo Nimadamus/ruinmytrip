@@ -16,6 +16,7 @@ require BASE_PATH . '/app/mail.php';
 require BASE_PATH . '/app/tokens.php';
 require BASE_PATH . '/app/ratelimit.php';
 require BASE_PATH . '/app/auth.php';
+require BASE_PATH . '/app/quick_join.php';
 require BASE_PATH . '/app/reviews.php';
 require BASE_PATH . '/app/review_aspects.php';
 require BASE_PATH . '/app/editorial.php';

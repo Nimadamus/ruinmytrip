@@ -5064,7 +5064,7 @@ function register_submit(array $a): void {
              ['title'=>'Join RuinMyTrip']); return;
     }
     rmt_track('join_submit', ['source' => rmt_join_source($return)]);
-    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
+    $r = rmt_register_quick((string) input('email'), (string) input('password'), input('age_ok') === '1', (string) input('username'));
     if ($r['ok']) {
         rmt_track('join_created', ['source' => rmt_join_source($return)]);
         $mailed = (bool) ($r['mail_ok'] ?? false);
@@ -5088,8 +5088,11 @@ function register_submit(array $a): void {
             flash($heading . ' You can write now and save a draft; confirming lets you publish.');
             redirect($return);
         }
-        flash($heading);
-        redirect('/verify-email');
+        /* The first thing a new member is asked is where they are going next (2026-10-01). The
+           confirmation link is in their inbox; a trip they add now is held and goes live on the
+           click, and the verify page is one tap away from the flash. */
+        flash($heading . ' Meanwhile: where are you going next?');
+        redirect('/plan?welcome=1');
     }
     rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'validation']);
     view('auth/register', ['errors'=>$r['errors'], 'return'=>$return], ['title'=>'Join RuinMyTrip']);

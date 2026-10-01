@@ -158,13 +158,15 @@ function send_password_reset_email(array $u): array {
     }
 }
 
-function register_user(string $username, string $email, string $password, string $birthdate): array {
+function register_user(string $username, string $email, string $password, string $birthdate,
+                       bool $ageConfirmed = false, bool $sendMail = true): array {
     $errors = [];
-    $username = trim($username); $email = strtolower(trim($email));
+    $username = trim($username); $email = strtolower(trim($email)); $birthdate = trim($birthdate);
     if (!preg_match('/^[a-zA-Z0-9_]{3,24}$/', $username)) $errors[] = 'Username must be 3 to 24 letters, numbers, or underscores.';
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Enter a valid email address.';
     if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
-    if (age_from($birthdate) < 16) $errors[] = 'You must be at least 16 to join RuinMyTrip.';
+    // A date of birth when one is given; otherwise the 16+ confirmation (app/quick_join.php).
+    if ($birthdate !== '' ? age_from($birthdate) < 16 : !$ageConfirmed) $errors[] = 'You must be at least 16 to join RuinMyTrip.';
     if (!$errors) {
         if (q_one('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'That email is already registered.';
         if (q_one('SELECT id FROM users WHERE username = ?', [$username])) $errors[] = 'That username is taken.';
@@ -180,7 +182,7 @@ function register_user(string $username, string $email, string $password, string
     try {
         $id = q_run('INSERT INTO users (username, email, password_hash, role, birthdate, status, created_at)
                      VALUES (?,?,?,?,?,?,?)',
-                    [$username, $email, $hash, 'user', $birthdate, 'active', date('Y-m-d H:i:s')]);
+                    [$username, $email, $hash, 'user', $birthdate !== '' ? $birthdate : null, 'active', date('Y-m-d H:i:s')]);
     } catch (\PDOException $e) {
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
         if (q_one('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'That email is already registered.';
@@ -194,6 +196,7 @@ function register_user(string $username, string $email, string $password, string
 
     // Send the confirmation link. A mail failure must NOT fail the signup — the account exists
     // and the user can request a fresh link from /verify-email.
+    if (!$sendMail) return ['ok' => true, 'id' => (int)$id, 'mail_ok' => true, 'mail_detail' => 'not needed'];
     $mail = send_verification_email(['id' => (int)$id, 'email' => $email, 'username' => $username]);
     return ['ok' => true, 'id' => (int)$id, 'mail_ok' => $mail[0], 'mail_detail' => $mail[1]];
 }

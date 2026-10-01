@@ -197,6 +197,11 @@ $routes = [
     ['GET',  '#^/login$#',                     'login_form'],
     ['POST', '#^/login$#',                     'login_submit'],
     ['GET',  '#^/register$#',                  'register_form'],
+    // Sign in with Google and the one step after it for a new member (app/quick_join.php).
+    ['GET',  '#^/auth/google$#',               'google_start'],
+    ['GET',  '#^/auth/google/callback$#',      'google_callback'],
+    ['GET',  '#^/join/google$#',               'google_finish_form'],
+    ['POST', '#^/join/google$#',               'google_finish_submit'],
     ['POST', '#^/register$#',                  'register_submit'],
     ['GET',  '#^/logout$#',                    'logout_action'],
     ['GET',  '#^/verify-email$#',              'verify_email'],

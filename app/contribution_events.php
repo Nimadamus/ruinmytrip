@@ -129,6 +129,8 @@ const RMT_CONTRIB_SOURCES = [
     'trip',
     // The trip first form, and the buddy pages that send people to it.
     'plan', 'buddies',
+    // Sign in with Google, and the occasion pages (2026-10-01).
+    'google', 'occasion',
     'other',
 ];
 

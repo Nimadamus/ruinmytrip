@@ -178,6 +178,9 @@ function rmt_plan_first_publish(array $me, array $x): array {
                      AND status = 'published'", [$uid, (int) $d['destination_id'], $d['date_from'], $d['date_to']]);
     $out['trip_id'] = $dupe ? (int) $dupe['id'] : rmt_trip_create_row($uid, $d);
     rmt_plan_first_interests($uid, $x['interests']);
+    /* Posting dates for a city follows it (2026-10-01): the first traveler in a city is told when
+       anything happens there, which is the value they get before anybody else has arrived. */
+    rmt_follow_destination($uid, (int) $d['destination_id'], 'plan');
     if ($x['buddy'] !== null && can_host_meetups($me)) {
         $b = rmt_buddy_validate($x['buddy']);
         if ($b['ok']) {
@@ -359,7 +362,7 @@ function plan_join_submit(array $a): void {
         return;
     }
     rmt_track('join_submit', ['source' => 'plan']);
-    $r = register_user(input('username'), input('email'), input('password'), input('birthdate'));
+    $r = rmt_register_quick((string) input('email'), (string) input('password'), input('age_ok') === '1', (string) input('username'));
     if (!$r['ok']) {
         rmt_track('join_failure', ['source' => 'plan', 'reason' => 'validation']);
         $render($r['errors']);
@@ -440,4 +443,19 @@ function rmt_city_pulse(int $destId, bool $withRecent = true): array {
         // A module on a content page must never take the page down.
     }
     return $cache[$ck] = $out;
+}
+
+/** Follow a city for a member if they do not already. Idempotent; counted once as a follow. */
+function rmt_follow_destination(int $uid, int $destId, string $source = 'plan'): bool {
+    if ($uid < 1 || $destId < 1) return false;
+    if (q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?", [$uid, $destId])) return false;
+    try {
+        db()->prepare("INSERT INTO saves (user_id,target_type,target_id,created_at) VALUES (?,'destination',?,?)")
+           ->execute([$uid, $destId, date('Y-m-d H:i:s')]);
+    } catch (\PDOException $e) {
+        if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
+        return false;
+    }
+    rmt_track('destination_follow_success', ['source' => $source, 'destination_id' => $destId]);
+    return true;
 }
