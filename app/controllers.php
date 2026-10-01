@@ -6047,6 +6047,57 @@ function media_show(array $a): void {
     echo $m['bytes'];
 }
 
+/**
+ * GET /media/w/{480|960}/{key}.webp: a stored photo resized for a phone or a tablet (Q4,
+ * 2026-10-01). A city hero was a 1280 px JPEG of about 400 KB on every phone. The variant is
+ * drawn once with GD, kept in the container's temp dir, and served immutable like the original;
+ * a key's bytes never change, so neither does its resize. Only the two widths the pages ask for
+ * exist, so the route cannot be used to make the server draw arbitrary sizes.
+ */
+function media_variant(array $a): void {
+    $key = (string) ($a['key'] ?? '');
+    $w = (int) ($a['w'] ?? 0);
+    if (!in_array($w, [480, 960], true) || !preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $key)) not_found();
+    $dir = rtrim(sys_get_temp_dir(), '/' . chr(92)) . '/rmt_media_w';
+    $file = $dir . '/' . $w . '_' . substr($key, 0, 32) . '.webp';
+    $bytes = is_file($file) ? (string) @file_get_contents($file) : '';
+    if ($bytes === '') {
+        $m = rmt_storage_get($key);
+        if (!$m) not_found();
+        $src = @imagecreatefromstring($m['bytes']);
+        if (!$src || !function_exists('imagewebp')) { media_show(['key' => $key]); return; }
+        $sw = imagesx($src); $sh = imagesy($src);
+        $tw = min($w, $sw); $th = (int) max(1, round($sh * $tw / $sw));
+        $dst = imagecreatetruecolor($tw, $th);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $tw, $th, $sw, $sh);
+        ob_start(); imagewebp($dst, null, 78); $bytes = (string) ob_get_clean();
+        imagedestroy($src); imagedestroy($dst);
+        if ($bytes === '') { media_show(['key' => $key]); return; }
+        if (is_dir($dir) || @mkdir($dir, 0700, true)) {
+            $tmp = $file . '.' . getmypid() . '.tmp';
+            if (@file_put_contents($tmp, $bytes) !== false) @rename($tmp, $file);
+        }
+    }
+    header('Content-Type: image/webp');
+    header('X-Content-Type-Options: nosniff');
+    header("Content-Security-Policy: default-src 'none'; sandbox");
+    header('Content-Length: ' . strlen($bytes));
+    header('Cache-Control: public, max-age=31536000, immutable');
+    echo $bytes;
+}
+
+/** srcset for a stored photo, or '' when the URL is not one of ours. */
+function rmt_media_srcset(?string $url): string {
+    if (!$url) return '';
+    /* A Wikimedia Commons thumbnail: the same file at the smaller standard thumbnail widths. */
+    if (preg_match('#^(https://upload\.wikimedia\.org/wikipedia/commons/thumb/.+/)1280px-([^/]+)$#', $url, $w)) {
+        return $w[1] . '500px-' . $w[2] . ' 500w, ' . $w[1] . '960px-' . $w[2] . ' 960w, ' . $url . ' 1280w';
+    }
+    if (!preg_match('#/media/([a-f0-9]{32}\.(?:jpg|png|webp))$#', $url, $m)) return '';
+    return url('media/w/480/' . $m[1]) . ' 480w, ' . url('media/w/960/' . $m[1]) . ' 960w, '
+         . abs_url($url) . ' 1280w';
+}
+
 /* ---------- admin diagnostics ---------- */
 /**
  * GET /admin/mail-check — admin-only. Reports whether this container can actually send mail and

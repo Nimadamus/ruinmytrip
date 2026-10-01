@@ -31,8 +31,9 @@
 <?php /* The two faces the stylesheet asks for, fetched in parallel with it rather than after it.
          Without this the browser only learns the fonts exist once the CSS has parsed, which is one
          round trip too late and shows a frame of fallback type on every first visit. */ ?>
-<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(rmt_asset('assets/fonts/inter-latin.woff2')) ?>">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(rmt_asset('assets/fonts/fraunces-latin.woff2')) ?>">
+<?php /* Same URL as the @font-face in app.css, no ?v=: a different URL is a second download. */ ?>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/inter-latin.woff2')) ?>">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/fraunces-latin.woff2')) ?>">
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>

@@ -1607,3 +1607,13 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
    leaving the header's Join button navy on teal. */
 .dest-hero .chip{color:var(--brand)}
 .site-nav a.btn-primary,.site-header a.btn-primary{color:#fff}
+/* The home hero, sized for the screen (Q4, 2026-10-01): 215 KB JPEG to 98 KB WebP on a wide
+   screen, and a 473 px crop of the part a phone actually shows (39 KB) under 700 px. */
+.hero-santorini{background-image:url('../img/hero-santorini.jpg');
+  background-image:image-set(url('../img/hero-santorini.webp') type('image/webp'),url('../img/hero-santorini.jpg') type('image/jpeg'));
+  background-position:80% center}
+@media (max-width:700px){
+  .hero-santorini{background-image:url('../img/hero-santorini-m.jpg');
+    background-image:image-set(url('../img/hero-santorini-m.webp') type('image/webp'),url('../img/hero-santorini-m.jpg') type('image/jpeg'));
+    background-position:center}
+}

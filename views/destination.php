@@ -2,7 +2,8 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url('in/'.rmt_country_slug((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
-    <img src="<?= e(abs_url($d['hero_url'])) ?>" alt="<?= e($d['name'].', '.$d['country']) ?>">
+    <?php $heroSet = rmt_media_srcset($d['hero_url'] ?? null); ?>
+    <img src="<?= e(abs_url($d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="(max-width: 1140px) 100vw, 1100px"<?php endif; ?> fetchpriority="high" alt="<?= e($d['name'].', '.$d['country']) ?>">
     <div class="overlay">
       <div>
         <span class="chip chip-cap"><?= e($d['category']) ?></span>

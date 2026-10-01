@@ -9,7 +9,9 @@
   </div></div></div>
 <?php endif; ?>
 <section class="hero">
-  <div class="hero-bg" style="background-image:url('<?= e(url('assets/img/hero-santorini.jpg')) ?>');background-position:80% center"></div>
+  <?php /* The picture is chosen in CSS (.hero-santorini): WebP where supported, and a narrow crop on a
+     phone, which only ever showed the right hand fifth of the wide image anyway. */ ?>
+  <div class="hero-bg hero-santorini"></div>
   <div class="hero-inner">
     <?php /* The front door said "here is our research on ticket prices", which is what every travel
              page on the internet says and is not what this is. This site's one thing is the people:
