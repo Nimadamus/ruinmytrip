@@ -92,6 +92,13 @@ $here = '/e/' . $o['slug'];
         </div>
       <?php endif; ?>
 
+      <div class="occ-sendit" style="margin:14px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+        <span class="hint">Know someone else going? Send them this page and you both see each other's dates.</span>
+        <?php $shareUrl = url('e/' . $o['slug']); $shareText = 'Going to ' . $o['short'] . ' in ' . $city . '? Add your dates and see who else is going.';
+              $shareCampaign = 'event-share'; $shareLabel = 'Send to my travel group';
+              include __DIR__ . '/_share.php'; ?>
+      </div>
+
       <?php foreach ((array) ($o['guide'] ?? []) as [$gh, $gparas]): ?>
         <h2 style="margin:26px 0 8px"><?= e((string) $gh) ?></h2>
         <?php foreach ($gparas as $gp): ?><p><?= e((string) $gp) ?></p><?php endforeach; ?>
@@ -146,6 +153,8 @@ $here = '/e/' . $o['slug'];
     <p><a href="<?= e($links['city']) ?>">The <?= e($city) ?> community</a> ·
        <a href="<?= e($links['people']) ?>">Travelers going to <?= e($city) ?></a> ·
        <a href="<?= e(url('buddies?' . http_build_query(['where' => $city]))) ?>">Travel buddies for <?= e($city) ?></a> ·
+       <?php $bl = function_exists('rmt_buddy_landing_for_dest') ? rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country']) : null;
+             if ($bl): ?><a href="<?= e(url(rmt_buddy_landing_path((string) $bl['slug']))) ?>">Travel buddies in <?= e((string) $d['country']) ?></a> · <?php endif; ?>
        <a href="<?= e(url('events')) ?>">All events</a></p>
     <?php if ($others): ?>
       <h2 style="margin:18px 0 8px">Other trips people plan around</h2>

@@ -277,7 +277,7 @@ $routes = [
     ['POST', '#^/cron/destinations$#',         'cron_destinations'],
     ['POST', '#^/cron/places$#',               'cron_places'],
     ['GET',  '#^/photo/(?<kind>trip|review|post)/(?<id>\d+)$#', 'photo_show'],
-    ['GET',  '#^/card/(?<kind>post|review|c|u|meetup|tag|city|trip|activity|going)/(?<key>[A-Za-z0-9_\-]+)\.png$#', 'share_card'],
+    ['GET',  '#^/card/(?<kind>post|review|c|u|meetup|tag|city|trip|activity|going|event)/(?<key>[A-Za-z0-9_\-]+)\.png$#', 'share_card'],
     ['GET',  '#^/media/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_show'],
     ['GET',  '#^/media/w/(?<w>480|960)/(?<key>[a-f0-9]{32}\.(?:jpg|png|webp))$#', 'media_variant'],
     ['GET',  '#^/healthz$#',                    'healthz'],

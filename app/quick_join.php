@@ -150,7 +150,8 @@ function google_callback(array $a): void {
 
     $u = q_one('SELECT * FROM users WHERE google_sub = ?', [$sub]);
     if (!$u) {
-        $u = q_one('SELECT * FROM users WHERE email = ?', [$email]);
+        // LOWER on both sides: one verified address is one account, whatever case it was typed in.
+        $u = q_one('SELECT * FROM users WHERE LOWER(email) = ? ORDER BY id LIMIT 1', [$email]);
         if ($u) {
             if (!empty($u['google_sub']) && $u['google_sub'] !== $sub) {
                 flash('That email belongs to an account linked to a different Google account. Sign in with your password.');
@@ -170,6 +171,9 @@ function google_callback(array $a): void {
         if (($u['status'] ?? '') === 'suspended') { flash('This account is suspended.'); redirect('/login'); }
         rmt_login_user_id((int) $u['id']);
         rmt_track('login_completed', ['source' => 'google']);
+        // A match alert set with this address before the account existed becomes a trip now that
+        // Google has confirmed the inbox (idempotent; does nothing when there is no alert).
+        if (function_exists('rmt_alerts_adopt')) rmt_alerts_adopt((array) q_one('SELECT * FROM users WHERE id = ?', [(int) $u['id']]));
         rmt_after_google((array) current_user(), $return, false);
     }
     // A new member: one short step for the username and the 16+ tick, then the account exists.
@@ -197,6 +201,13 @@ function google_finish_submit(array $a): void {
         google_finish_form($a, ['Too many accounts created from this connection. Try again later.']); return;
     }
     rmt_track('join_submit', ['source' => 'google']);
+    // The address got an account while this form sat open (another tab, an email signup): sign in
+    // to that one through the callback's linking rules rather than make a second account.
+    if (q_one('SELECT id FROM users WHERE LOWER(email) = ?', [strtolower((string) $g['email'])])) {
+        unset($_SESSION['g_pending']);
+        flash('That email already has an account. Continue with Google again to sign in to it.');
+        redirect('/login');
+    }
     if (input('age_ok') !== '1') { google_finish_form($a, ['Please confirm you are 16 or older. RuinMyTrip is for travelers 16+.']); return; }
     $r = register_user((string) input('username'), (string) $g['email'], bin2hex(random_bytes(24)), '', true, false);
     if (!$r['ok']) {

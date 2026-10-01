@@ -40,6 +40,7 @@ $pdo->exec("CREATE TABLE buddy_posts (id INTEGER PRIMARY KEY, user_id INT, desti
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, status TEXT, created_at TEXT)");
 $pdo->exec("CREATE TABLE posts (id INTEGER PRIMARY KEY, user_id INT, status TEXT, created_at TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/105_match_alerts.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/106_alert_channel.sqlite.sql'));
 $pdo->exec("INSERT INTO destinations (id,slug,name,country) VALUES (1,'chiang-mai-thailand','Chiang Mai','Thailand'),(2,'lisbon-portugal','Lisbon','Portugal')");
 $old = date('Y-m-d H:i:s', time() - 72 * 3600);
 $pdo->exec("INSERT INTO users (id,username,email,email_verified_at) VALUES (1,'ana','ana@example.com','$old'),(2,'team_x','team@example.com','$old'),
@@ -67,6 +68,15 @@ $a1 = rmt_alert_by_id($s1['id']);
 ok('stored as pending', $a1['status'], 'pending');
 ok('only the hash of the token is stored', $a1['token_hash'] === hash('sha256', $s1['token']) && !str_contains(json_encode($a1), $s1['token']), true);
 ok('the token finds it', (int) rmt_alert_by_token($s1['token'])['id'], $s1['id']);
+ok('no channel known, none stored', $a1['acq_source'], null);
+$_SESSION = [];
+rmt_alert_carry_channel(['acq_source' => 'facebook', 'acq_medium' => 'group', 'acq_campaign' => 'oaxaca', 'acq_content' => 'oaxaca-travelers']);
+ok('the confirm session inherits the post that set the alert', $_SESSION['_acq']['content'] ?? null, 'oaxaca-travelers');
+rmt_alert_carry_channel(['acq_source' => 'reddit', 'acq_medium' => 'comment', 'acq_campaign' => 'x', 'acq_content' => 'y']);
+ok('first touch still wins in that session', $_SESSION['_acq']['source'], 'facebook');
+$_SESSION = [];
+rmt_alert_carry_channel(['acq_source' => null]);
+ok('an alert with no channel leaves the session alone', isset($_SESSION['_acq']), false);
 $s2 = rmt_alert_save(['date_to' => '2026-11-28'] + $v['data']);
 ok('the same address and city is one alert', $s2['id'], $s1['id']);
 ok('the old link stops working', rmt_alert_by_token($s1['token']), null);

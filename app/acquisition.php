@@ -23,6 +23,9 @@ declare(strict_types=1);
 const RMT_ACQ_SOURCES = [
     'reddit', 'facebook', 'instagram', 'tiktok', 'x', 'youtube', 'linkedin', 'pinterest',
     'whatsapp', 'telegram', 'discord', 'search', 'referral', 'email', 'direct', 'other',
+    // Outreach that is neither a platform nor a share (2026-10-01): a creator's link, a newsletter
+    // feature, a QR code on a hostel noticeboard.
+    'creator', 'newsletter', 'qr',
 ];
 
 /** How it was shared, when a link says so. Also closed. */
@@ -212,6 +215,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
     $rows = q_all(
         "SELECT COALESCE(acq_source, 'direct') src,
                 COALESCE(acq_campaign, '') campaign,
+                COALESCE(acq_content, '') content,
                 journey,
                 COUNT(*) events,
                 MAX(CASE WHEN event IN ('landing_view','destination_page_view') THEN 1 ELSE 0 END) landed,
@@ -219,23 +223,29 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signed_up,
                 MAX(CASE WHEN event = 'join_confirmed' THEN 1 ELSE 0 END) confirmed,
                 MAX(CASE WHEN event = 'trip_created' THEN 1 ELSE 0 END) tripped,
+                MAX(CASE WHEN event = 'alert_submitted' THEN 1 ELSE 0 END) alerted,
+                MAX(CASE WHEN event = 'alert_confirmed' THEN 1 ELSE 0 END) alert_on,
+                MAX(CASE WHEN event = 'card_created' THEN 1 ELSE 0 END) carded,
                 MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck,
                 MAX(CASE WHEN event = 'human_interaction' THEN 1 ELSE 0 END) engaged,
                 MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
                                         'comment_created','question_posted','post_created','trip_created',
-                                        'join_submit','join_created','login_completed','trip_connect_requested')
+                                        'join_submit','join_created','login_completed','trip_connect_requested',
+                                        'alert_submitted','alert_confirmed','card_created')
                          THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
-       GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), journey",
+       GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), COALESCE(acq_content, ''), journey",
         [RMT_ACQ_INTERNAL_CONTENT, $since]);
 
     $agg = [];
     foreach ($rows as $r) {
-        $k = $r['src'] . '|' . $r['campaign'];
-        $agg[$k] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'],
+        /* utm_content names the exact place a link was posted (one Facebook group, one thread), so
+           it is part of the key: "which channel produced this signup" means which post. */
+        $k = $r['src'] . '|' . $r['campaign'] . '|' . $r['content'];
+        $agg[$k] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'], 'content' => (string) $r['content'],
                       'sessions' => 0, 'human' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
-                      'confirmed' => 0, 'trips' => 0, 'selfcheck_human' => 0];
+                      'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0];
         $agg[$k]['sessions']++;
 
         /* Human means a tap, key or scroll reached us (`human_interaction`), or the session did
@@ -254,7 +264,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
         }
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
-                  'confirmed' => 'confirmed', 'tripped' => 'trips'] as $col => $key) {
+                  'confirmed' => 'confirmed', 'tripped' => 'trips', 'alerted' => 'alerts', 'alert_on' => 'alerts_on',
+                  'carded' => 'cards'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
         }
     }

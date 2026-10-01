@@ -408,6 +408,26 @@ function rmt_phase_metrics(int $days = 0): array {
         ];
     }
     $out['ecosystems'] = $cities;
+    /* Every alert by the post that produced it (migration 106), with how far it went: set,
+       switched on, turned into an account's trip. This is the per traveler answer to "which
+       channel worked", because the alert row keeps the channel even when the confirm link opens
+       in a browser that never saw the post. */
+    $byChannel = [];
+    try {
+        foreach (q_all("SELECT COALESCE(a.acq_source, 'direct') src, COALESCE(a.acq_campaign, '') campaign, COALESCE(a.acq_content, '') content,
+                               d.slug dest, COUNT(*) alerts,
+                               SUM(CASE WHEN a.status IN ('active', 'converted') THEN 1 ELSE 0 END) confirmed,
+                               SUM(CASE WHEN a.status = 'converted' THEN 1 ELSE 0 END) converted
+                          FROM match_alerts a LEFT JOIN destinations d ON d.id = a.destination_id
+                         WHERE a.created_at >= ?
+                      GROUP BY COALESCE(a.acq_source, 'direct'), COALESCE(a.acq_campaign, ''), COALESCE(a.acq_content, ''), d.slug
+                      ORDER BY alerts DESC", [$since]) as $r) {
+            $byChannel[] = ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'], 'content' => (string) $r['content'],
+                            'dest' => (string) $r['dest'], 'alerts' => (int) $r['alerts'], 'confirmed' => (int) $r['confirmed'],
+                            'converted' => (int) $r['converted']];
+        }
+    } catch (Throwable $e) { /* before migration 106 */ }
+    $out['alerts_by_channel'] = $byChannel;
     return $out;
 }
 

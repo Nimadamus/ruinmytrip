@@ -45,6 +45,8 @@ const RMT_OCCASIONS = [
         'kind' => 'festival', 'name' => 'Yi Peng and Loy Krathong in Chiang Mai 2026', 'short' => 'Yi Peng', 'edition' => '2026',
         'dest' => 'chiang-mai-thailand', 'from' => '2026-11-22', 'to' => '2026-11-26',
         'when' => 'Full moon night: Tuesday 24 November 2026',
+        'card' => 'Full moon: Tuesday 24 November 2026',
+        'meta' => 'Yi Peng in Chiang Mai, 2026: the full moon falls on Tuesday 24 November. What is confirmed so far, what travelers wish they knew, and who else is going on your dates.',
         'lede' => 'Yi Peng is Chiang Mai\'s lantern festival, held together with Loy Krathong on the full moon of the twelfth Thai lunar month. In 2026 that full moon falls on Tuesday 24 November. This page is for the people going: what is confirmed, what is not yet, and who else will be there.',
         'facts' => [
             'Loy Krathong 2026 is on Tuesday 24 November, the full moon of the twelfth Thai lunar month. Yi Peng is the Lanna festival of the same full moon, and in Chiang Mai the two are celebrated together.',
@@ -95,6 +97,8 @@ const RMT_OCCASIONS = [
         'kind' => 'festival', 'name' => 'Day of the Dead in Oaxaca 2026', 'short' => 'Day of the Dead', 'edition' => '2026',
         'dest' => 'oaxaca-mexico', 'from' => '2026-10-31', 'to' => '2026-11-02',
         'when' => 'Cemetery vigils on the nights of 31 October and 1 November 2026',
+        'card' => 'Vigils on 31 October and 1 November 2026',
+        'meta' => 'Day of the Dead in Oaxaca, 2026: cemetery vigils on the nights of 31 October and 1 November. What to book now, what travelers wish they knew, and who else is going.',
         'lede' => 'Día de Muertos is when families welcome back their dead, and Oaxaca is where many travelers go to see it. The days are fixed: 1 November for children who have died, 2 November for adults, and around Oaxaca the cemetery vigils begin on the night of 31 October.',
         'facts' => [
             'Day of the Dead is on 1 and 2 November every year. All Saints\' Day, 1 November, is for children; All Souls\' Day, 2 November, is for adults. Some places begin on 31 October.',
@@ -151,6 +155,8 @@ const RMT_OCCASIONS = [
         'kind' => 'convention', 'name' => 'Web Summit 2026 in Lisbon', 'short' => 'Web Summit', 'edition' => '2026',
         'dest' => 'lisbon-portugal', 'from' => '2026-11-09', 'to' => '2026-11-12',
         'when' => 'Monday 9 to Thursday 12 November 2026',
+        'card' => '9 to 12 November 2026, MEO Arena',
+        'meta' => 'Web Summit 2026 runs 9 to 12 November at the MEO Arena in Lisbon. Getting there from the airport by metro, the day off nobody plans, and who else is going alone.',
         'lede' => 'Web Summit runs from 9 to 12 November 2026 at the MEO Arena in Lisbon\'s Parque das Nações. Thousands of people fly in for four days knowing almost nobody in the city. This page is for the time around the talks: who else is in town, and what is worth knowing.',
         'facts' => [
             'Web Summit 2026 is 9 to 12 November at the MEO Arena, Parque das Nações. Night Summit, the evening program, is part of it; its 2026 venues and times come from Web Summit.',
@@ -361,10 +367,12 @@ function occasion_show(array $a): void {
     view('occasion', ['o' => $o, 'people' => $people, 'talk' => $talk, 'me' => $me, 'saved' => $saved, 'myTrip' => $myTrip,
                       'others' => $others, 'dates' => $dates, 'links' => rmt_occasion_links($o)], [
         'title' => $o['name'] . ': dates, tips and who is going | RuinMyTrip',
-        'description' => $o['short'] . ' in ' . $o['d']['name'] . ': ' . $dates . '. What is confirmed, what travelers wish they knew, '
-                       . 'and the other travelers going on the same days.',
+        'description' => (string) ($o['meta'] ?? ($o['short'] . ' in ' . $o['d']['name'] . ', ' . $dates . '. What is confirmed, what travelers wish they knew, '
+                       . 'and the other travelers going on the same days.')),
         'robots' => $robots,
-        'og_image' => function_exists('rmt_card_url') ? rmt_card_url('city', (string) $o['d']['slug']) : rmt_default_og_image(),
+        // The event's own card: its name, its dates and the question the page answers, which is
+        // what a link dropped into a Facebook group or a group chat has to say in one picture.
+        'og_image' => function_exists('rmt_card_url') ? rmt_card_url('event', $o['slug']) : rmt_default_og_image(),
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Events', 'url' => url('events')],
                           ['name' => $o['short'], 'url' => url('e/' . $o['slug'])]],
         'jsonld' => $ld,

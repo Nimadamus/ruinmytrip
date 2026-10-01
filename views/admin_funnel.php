@@ -210,8 +210,8 @@
       and so is any visit that arrives from a site we can name.</p>
   <?php else: ?>
     <table class="table" style="margin:0 0 18px">
-      <thead><tr><th>Source</th><th>Campaign</th><th style="text-align:right">Human visits</th>
-        <th style="text-align:right">Signed up</th><th style="text-align:right">Confirmed</th>
+      <thead><tr><th>Source</th><th>Campaign</th><th>Where posted</th><th style="text-align:right">Human visits</th>
+        <th style="text-align:right">Alerts</th><th style="text-align:right">Cards</th><th style="text-align:right">Signed up</th><th style="text-align:right">Confirmed</th>
         <th style="text-align:right">Trips</th><th style="text-align:right">Visit to signup</th>
         <th style="text-align:right">Signup to trip</th><th style="text-align:right">Visit to trip</th></tr></thead>
       <tbody>
@@ -219,10 +219,13 @@
           <tr>
             <td><b><?= e((string) $a['source']) ?></b></td>
             <td class="hint"><?= e((string) $a['campaign']) ?></td>
+            <td class="hint"><?= e((string) ($a['content'] ?? '')) ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['human'] ?></b>
               <?php if ((int) $a['sessions'] !== (int) $a['human']): ?>
                 <span class="hint">of <?= (int) $a['sessions'] ?></span>
               <?php endif; ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) ($a['alerts'] ?? 0) ?><?php if ((int) ($a['alerts_on'] ?? 0)): ?> <span class="hint"><?= (int) $a['alerts_on'] ?> on</span><?php endif; ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) ($a['cards'] ?? 0) ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['signed_up'] ?></b></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['confirmed'] ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['trips'] ?></b></td>

@@ -87,11 +87,27 @@ function rmt_alert_save(array $data): array {
         return ['id' => (int) $ex['id'], 'token' => $raw];
     }
     $visitor = function_exists('rmt_visitor_id') ? rmt_visitor_id() : null;
-    $id = (int) q_run('INSERT INTO match_alerts (email, destination_id, occasion, date_from, date_to, flex_days, status, token_hash, visitor, created_at)
-                       VALUES (?,?,?,?,?,?,?,?,?,?)',
+    $acq = function_exists('rmt_acq_current') ? rmt_acq_current() : [];
+    $id = (int) q_run('INSERT INTO match_alerts (email, destination_id, occasion, date_from, date_to, flex_days, status, token_hash, visitor, created_at,
+                                                 acq_source, acq_medium, acq_campaign, acq_content)
+                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                       [$data['email'], (int) $data['destination_id'], $occ, $data['date_from'], $data['date_to'],
-                       (int) $data['flex_days'], 'pending', $hash, $visitor, $now]);
+                       (int) $data['flex_days'], 'pending', $hash, $visitor, $now,
+                       $acq['source'] ?? null, $acq['medium'] ?? null, $acq['campaign'] ?? null, $acq['content'] ?? null]);
     return ['id' => $id, 'token' => $raw];
+}
+
+/**
+ * The confirm link is usually opened in a mail app's browser, a fresh session that knows nothing
+ * about the post that brought this person. Hand it the channel the alert was set from, so the
+ * confirmation and any signup that follows are credited to that post. First touch still wins: a
+ * session that already holds a channel keeps it.
+ */
+function rmt_alert_carry_channel(array $alert): void {
+    if (empty($alert['acq_source']) || !empty($_SESSION['_acq']['source'])) return;
+    $_SESSION['_acq'] = ['source' => (string) $alert['acq_source'], 'medium' => $alert['acq_medium'] ?? null,
+                         'campaign' => $alert['acq_campaign'] ?? null, 'content' => $alert['acq_content'] ?? null];
+    unset($GLOBALS['_rmt_acq_resolved']);
 }
 
 function rmt_alert_by_token(string $raw): ?array {
@@ -342,6 +358,7 @@ function alert_sent(array $a): void {
 /** GET /alerts/confirm/{token}  one button, so a mail scanner opening the link switches nothing on. */
 function alert_confirm_form(array $a): void {
     $alert = rmt_alert_by_token((string) ($a['token'] ?? ''));
+    if ($alert) rmt_alert_carry_channel($alert);
     view('alert_confirm', ['alert' => $alert, 'token' => (string) ($a['token'] ?? ''), 'label' => $alert ? rmt_alert_label($alert) : ''],
          ['title' => 'Switch on your alert | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
 }
@@ -354,6 +371,7 @@ function alert_confirm_submit(array $a): void {
         flash('That link has expired. Set the alert again from the city page.');
         redirect('/');
     }
+    rmt_alert_carry_channel($alert);
     if ($alert['status'] === 'pending') {
         q_run("UPDATE match_alerts SET status = 'active', confirmed_at = ? WHERE id = ?", [date('Y-m-d H:i:s'), (int) $alert['id']]);
         $alert['status'] = 'active';

@@ -367,6 +367,18 @@ function rmt_card_spec(string $kind, string $key): ?array {
                     'meta' => $g['who'] !== '' ? $g['who'] . ' on RuinMyTrip' : 'Travelers matched by city and dates',
                     'pills' => ['City and dates only', 'Say me too']];
 
+        case 'event':
+            /* An event page (/e/{slug}): the event, its dates as the page states them, and the
+               question it exists to answer. A count appears only when real members are on it. */
+            $o = function_exists('rmt_occasion') ? rmt_occasion($key) : null;
+            if (!$o) return null;
+            $n = function_exists('rmt_occasion_people') ? count(rmt_occasion_people($o)) : 0;
+            $when = (string) ($o['card'] ?? $o['when'] ?? rmt_card_date_range((string) $o['from'], (string) $o['to']));
+            return ['kicker' => $o['d']['name'], 'title' => 'Going to ' . $o['short'] . '? See who else is going.',
+                    'meta' => $when,
+                    'pills' => $n > 0 ? [$n . ($n === 1 ? ' traveler going' : ' travelers going'), 'Free match alerts']
+                                      : ['Free match alerts', 'City and dates only']];
+
         case 'tag':
             $t = q_one('SELECT * FROM tags WHERE name=?', [$key]);
             if (!$t) return null;
