@@ -20,8 +20,13 @@ trip + follow on a confirmed account), "I'm going" cards (app/going_cards.php, /
 /e/day-of-the-dead-oaxaca, /e/web-summit-lisbon (indexable via rmt_occasion_quality; old dated slugs 301),
 First traveler / First review of a city on profiles (app/recognitions.php; Founding Traveler unchanged),
 `phase` scoreboard in /cron/funnel. Facts: docs/ECOSYSTEM_FACTS_20261001.md. Channels: docs/CHANNELS_RESEARCH_20261001.md.
-Waiting on Nima: Q7 14 redirects (verified table in the phase 2 doc), tag pages out of sitemap, Google
-consent screen policy, which outreach channels to run.
+Q7 done (f2870b4): 14 /in/{country} 301 to /travel-buddies/{country} (RMT_COUNTRY_MOVED, rmt_country_path
+for every link); other 42 /in untouched. Tags submitted only at 3+ items (rmt_sitemap_tags); sitemap 151 to 145.
+Attribution (f749a0d, migration 106): channel stored on each alert and carried into the confirm session;
+/admin/funnel by source, campaign and where posted; /cron/funnel phase.alerts_by_channel. Event OG cards
+/card/event/{slug}.png. Outreach: docs/OUTREACH_KIT_20261001.md, links via scripts/outreach_link.py.
+Waiting on Nima: Google consent screen User Data Policy tick (then client, env vars, tests), go ahead per
+outreach batch (Facebook Page posts, Reddit account).
 
 ## What the product is
 
