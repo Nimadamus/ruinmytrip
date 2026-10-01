@@ -149,6 +149,13 @@ function rmt_city_member_signal(int $destId): int {
         ["SELECT COUNT(*) c FROM profiles p JOIN users u ON u.id = p.user_id
            WHERE p.home_destination_id = ? AND p.open_to_meeting = 1 AND $real", [$destId]],
     ];
+    /* One round trip when every table is there, which is production; the loop below is the
+       fallback for a schema missing one of them, where each missing table counts as nothing. */
+    try {
+        $parts = []; $all = [];
+        foreach ($sqls as [$sql, $args]) { $parts[] = '(' . $sql . ')'; $all = array_merge($all, $args); }
+        return (int) (q_one('SELECT ' . implode(' + ', $parts) . ' AS c', $all)['c'] ?? 0);
+    } catch (Throwable $e) { /* fall through */ }
     $n = 0;
     foreach ($sqls as [$sql, $args]) {
         try { $n += (int) (q_one($sql, $args)['c'] ?? 0); } catch (Throwable $e) { /* a missing table counts as nothing */ }

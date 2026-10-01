@@ -115,7 +115,8 @@ ok(strpos($home, 'if (current_user()) { feed($a); return; }') < strpos($home, 'l
 $helpers = (string) file_get_contents($root . '/app/helpers.php');
 ok(str_contains($helpers, "rmt_track_once('landing_view'"),
    'any public page counts as an arrival, not just the front door');
-ok(str_contains($helpers, "!str_contains((string) \$__meta['robots'], 'noindex')"),
+ok(str_contains($helpers, "!str_contains(\$robots, 'noindex')")
+   && str_contains($helpers, "rmt_track_landing((string) \$__meta['robots'])"),
    'but only an indexable one, so 404s, admin and the verification pages are not doors');
 ok(str_contains($helpers, 'is_logged_in()'),
    'and only for somebody signed out, because a member opening their feed has not arrived');
