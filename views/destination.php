@@ -118,6 +118,10 @@
       </div>
     </div>
   <?php endif; ?>
+  <?php if (function_exists('rmt_occasion_for_city') && ($cityOcc = rmt_occasion_for_city((string) $d['slug']))): ?>
+    <p class="city-occ"><b><?= e((string) $cityOcc['name']) ?></b>, <?= e(date('j M', strtotime((string) $cityOcc['from']))) ?> to <?= e(date('j M Y', strtotime((string) $cityOcc['to']))) ?>.
+      <a href="<?= e(url('e/' . $cityOcc['slug'])) ?>">See who is going and add your dates</a></p>
+  <?php endif; ?>
   <?php if ($bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint" style="margin:14px 0 0">Seeing more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>

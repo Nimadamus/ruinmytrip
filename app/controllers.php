@@ -5775,6 +5775,7 @@ function admin_funnel(array $a): void {
     view('admin_funnel', [
         'days'      => $days,
         'scorecard' => rmt_growth_scorecard($days),
+        'activation' => function_exists('rmt_activation_funnel') ? rmt_activation_funnel($days) : [],
         /* The social funnel leads the page. The review funnel below it measures somebody writing
            something finished; this measures the loop the product is built around, which is the one
            that has to work first. */

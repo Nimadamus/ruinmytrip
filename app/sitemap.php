@@ -69,6 +69,10 @@ function rmt_sitemap_group(string $group): array {
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
             foreach (array_keys(RMT_BUDDY_LANDING) as $bl) $add('/' . rmt_buddy_landing_path($bl));
+            // Occasion pages, only once a real member is on one (app/occasions.php).
+            if (function_exists('rmt_occasions_upcoming')) {
+                foreach (rmt_occasions_upcoming() as $oc) if (rmt_occasion_indexable($oc)) $add('/e/' . $oc['slug']);
+            }
 
             $has = static fn(string $sql, array $a = []): bool => (int) (q_one($sql, $a)['c'] ?? 0) > 0;
             if ($has("SELECT COUNT(*) c FROM collections WHERE status='published'"))  $add('/collections');

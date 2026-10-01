@@ -20,6 +20,8 @@
       </h2>
       <p class="muted" style="margin:0 0 10px"><?= e((string) $ev['why']) ?></p>
       <p style="margin:0;display:flex;gap:8px;flex-wrap:wrap">
+        <?php $evOcc = function_exists('rmt_occasion_for_city') ? rmt_occasion_for_city((string) $ev['slug']) : null; ?>
+        <?php if ($evOcc): ?><a class="btn btn-accent btn-sm" href="<?= e(url('e/' . $evOcc['slug'])) ?>">Who is going to <?= e((string) $evOcc['short']) ?></a><?php endif; ?>
         <a class="btn btn-primary btn-sm" href="<?= e($ev['trip_link']) ?>">Post your <?= e((string) $ev['city']) ?> dates</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $ev['slug'] . '/travelers')) ?>">See who is going</a>
         <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $ev['slug'])) ?>">The community</a>

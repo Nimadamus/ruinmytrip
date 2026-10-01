@@ -12,6 +12,8 @@ $routes = [
     ['GET',  '#^/$#',                          'home'],
     ['GET',  '#^/explore$#',                   'explore'],
     ['GET',  '#^/events$#',                    'events_index'],
+    // One occasion: a festival, convention, season or sailing, and who is going (app/occasions.php).
+    ['GET',  '#^/e/(?<slug>[a-z0-9\-]+)$#',    'occasion_show'],
     ['POST', '#^/answer$#',                    'visitor_answer_submit'],
     ['GET',  '#^/in/(?<slug>[a-z0-9\-]+)$#',   'country_show'],
     ['GET',  '#^/discover$#',                  'discover'],

@@ -177,6 +177,7 @@ function rmt_plan_first_publish(array $me, array $x): array {
     $dupe = q_one("SELECT id FROM trips WHERE user_id = ? AND destination_id = ? AND date_from = ? AND date_to = ?
                      AND status = 'published'", [$uid, (int) $d['destination_id'], $d['date_from'], $d['date_to']]);
     $out['trip_id'] = $dupe ? (int) $dupe['id'] : rmt_trip_create_row($uid, $d);
+    if (!$dupe && $out['trip_id'] > 0) rmt_track('trip_created', ['source' => 'plan', 'destination_id' => (int) $d['destination_id']]);
     rmt_plan_first_interests($uid, $x['interests']);
     /* Posting dates for a city follows it (2026-10-01): the first traveler in a city is told when
        anything happens there, which is the value they get before anybody else has arrived. */

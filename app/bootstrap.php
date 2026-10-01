@@ -43,6 +43,7 @@ require BASE_PATH . '/app/plans.php';
 require BASE_PATH . '/app/going.php';
 require BASE_PATH . '/app/feed_scope.php';
 require BASE_PATH . '/app/travelers_hub.php';
+require BASE_PATH . '/app/occasions.php';
 require BASE_PATH . '/app/city_watch.php';
 require BASE_PATH . '/app/locals.php';
 require BASE_PATH . '/app/onboarding_pending.php';

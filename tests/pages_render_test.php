@@ -63,7 +63,7 @@ if (!$up) {
 /** Anything PHP prints when a page falls over. A page may not contain any of it. */
 const BROKEN = ['Fatal error', 'Uncaught', 'SQLSTATE', 'Parse error', 'Warning:', 'Deprecated:'];
 
-$routes = ['/', '/map', '/map?c=250-380-702-xk', '/explore', '/travelers', '/going', '/meetups', '/plan', '/plan?buddy=1&d=lisbon-portugal&from=2027-06-05&to=2027-06-12', '/buddies', '/buddies/cruise', '/buddies?where=Paris&from=2027-06-05&to=2027-06-12&flexible=1', '/buddies?where=Thailand&show=here', '/buddies?show=locals&interest=food&myage=1', '/buddies/cruise?ship=Icon+of+the+Seas&line=Royal', '/buddies?where=nowhere-at-all&from=2027-01-01', '/talk', '/discover', '/reviews',
+$routes = ['/', '/map', '/map?c=250-380-702-xk', '/explore', '/travelers', '/going', '/meetups', '/plan', '/plan?buddy=1&d=lisbon-portugal&from=2027-06-05&to=2027-06-12', '/e/yi-peng-2026', '/events', '/buddies', '/buddies/cruise', '/buddies?where=Paris&from=2027-06-05&to=2027-06-12&flexible=1', '/buddies?where=Thailand&show=here', '/buddies?show=locals&interest=food&myage=1', '/buddies/cruise?ship=Icon+of+the+Seas&line=Royal', '/buddies?where=nowhere-at-all&from=2027-01-01', '/talk', '/discover', '/reviews',
            '/guides', '/blog', '/collections', '/communities', '/tags', '/ruined', '/contribute',
            '/leaderboard', '/about', '/safety', '/register', '/login', '/sitemap.xml', '/feed.xml'];
 

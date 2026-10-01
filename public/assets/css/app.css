@@ -1644,3 +1644,9 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .qj-or::before,.qj-or::after{content:"";flex:1;border-top:1px solid var(--line)}
 .qj-age{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600}
 .qj-age input{width:18px;height:18px;margin:0}
+
+/* Occasion pages (2026-10-01): a follow button laid out as one of the action tiles. */
+.act-form{margin:0;height:100%}
+button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
+.occ-acts{padding:18px 0 22px}
+.city-occ{margin:12px 0 0;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent, #f97316);border-radius:12px;background:var(--card)}

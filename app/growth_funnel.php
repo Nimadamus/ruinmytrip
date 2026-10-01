@@ -295,6 +295,54 @@ function rmt_growth_inventory(): array {
  * same thing /admin/funnel shows: this endpoint cannot name a member because the functions behind
  * it never learn a name.
  */
+/**
+ * The activation funnel, one line per stage (2026-10-01):
+ *   landing -> join clicked -> registration started -> registration completed -> trip added ->
+ *   destination followed -> first contribution -> first social interaction -> return visit.
+ *
+ * Each stage counts distinct browsers (the visitor token, which survives signing up) that recorded
+ * any of the stage's events in the window, never our own selfcheck traffic. Stages are counted
+ * independently rather than forced into sequence, so a member who follows a city before adding a
+ * trip still counts at both; the rate printed is against the stage above. Return visit is a browser
+ * that registered and then recorded anything on a later calendar day than its first event.
+ */
+const RMT_ACTIVATION_STAGES = [
+    ['landing',      'Landed on a public page',          ['landing_view']],
+    ['join_click',   'Clicked join, add trip or Google', ['cta_click']],
+    ['reg_started',  'Saw the join form',                ['join_view', 'plan_signup_view']],
+    ['reg_done',     'Created an account',               ['join_created']],
+    ['trip',         'Added a trip',                     ['trip_created']],
+    ['follow',       'Followed a destination',           ['destination_follow_success']],
+    ['contribution', 'First contribution',               ['post_created', 'question_posted', 'review_publish_success', 'buddy_post_created']],
+    ['social',       'First social interaction',         ['comment_created', 'reaction_created', 'message_sent', 'trip_connect_requested', 'trip_connect_accepted']],
+];
+
+function rmt_activation_funnel(int $days = 0): array {
+    $since = $days > 0 ? date('Y-m-d H:i:s', time() - $days * 86400) : '1970-01-01 00:00:00';
+    $base = "created_at >= ? AND visitor IS NOT NULL AND COALESCE(acq_content, '') <> 'selfcheck'";
+    $out = [];
+    $prev = null;
+    foreach (RMT_ACTIVATION_STAGES as [$key, $label, $events]) {
+        $ph = implode(',', array_fill(0, count($events), '?'));
+        try {
+            $n = (int) (q_one("SELECT COUNT(DISTINCT visitor) c FROM contribution_events WHERE event IN ($ph) AND $base",
+                              array_merge($events, [$since]))['c'] ?? 0);
+        } catch (Throwable $e) { $n = 0; }
+        $out[] = ['key' => $key, 'label' => $label, 'count' => $n,
+                  'of_previous_pct' => $prev ? round($n * 100 / $prev, 1) : null];
+        $prev = $n;
+    }
+    try {
+        $ret = (int) (q_one("SELECT COUNT(*) c FROM (
+                                SELECT visitor FROM contribution_events
+                                 WHERE $base AND visitor IN (SELECT visitor FROM contribution_events WHERE event = 'join_created' AND visitor IS NOT NULL)
+                              GROUP BY visitor HAVING COUNT(DISTINCT SUBSTR(created_at, 1, 10)) >= 2) x", [$since])['c'] ?? 0);
+    } catch (Throwable $e) { $ret = 0; }
+    $out[] = ['key' => 'return', 'label' => 'Came back on another day', 'count' => $ret,
+              'of_previous_pct' => $prev ? round($ret * 100 / $prev, 1) : null];
+    return $out;
+}
+
 function cron_funnel(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
     $given = (string) input('key');
@@ -311,6 +359,7 @@ function cron_funnel(array $a): void {
     echo json_encode([
         'window_days'        => $days > 0 ? $days : 'all time',
         // Visitor, member, first contribution, returning: the loop in one block (app/growth_scorecard.php).
+        'activation'         => rmt_activation_funnel($days),
         'scorecard'          => rmt_growth_scorecard($days),
         'growth'             => rmt_growth_funnel($days),
         'signup'             => rmt_signup_funnel($days),

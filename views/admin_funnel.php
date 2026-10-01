@@ -45,6 +45,18 @@
   <?php /* The morning line. Four classes of traffic, never folded together, then the steps past a
            visit. The question somebody has when they open this page is whether yesterday did
            anything, and a number that counts our own checks as travelers does not answer it. */ ?>
+  <?php if (!empty($activation)): ?>
+    <section class="card" style="margin:0 0 18px"><div class="card-body">
+      <h2 style="margin:0 0 8px;font-size:1.05rem">Activation funnel</h2>
+      <table class="table" style="width:100%"><tbody>
+        <?php foreach ($activation as $st): ?>
+          <tr><td><?= e((string) $st['label']) ?></td><td style="text-align:right"><b><?= (int) $st['count'] ?></b></td>
+            <td class="hint" style="text-align:right"><?= $st['of_previous_pct'] !== null ? e((string) $st['of_previous_pct']) . '% of the step above' : '' ?></td></tr>
+        <?php endforeach; ?>
+      </tbody></table>
+      <p class="hint" style="margin:6px 0 0">Distinct browsers per stage, our own checks excluded. Landing includes crawlers that run scripts; the human count is in Today below.</p>
+    </div></section>
+  <?php endif; ?>
   <?php $dy = function_exists('rmt_acq_daily') ? rmt_acq_daily() : null; ?>
   <?php if ($dy): ?>
     <section class="card" style="margin:0 0 18px"><div class="card-body">

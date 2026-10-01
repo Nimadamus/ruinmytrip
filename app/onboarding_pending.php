@@ -122,6 +122,9 @@ function rmt_pending_apply(array $user): array {
             // The id and the slug travel back so the caller can land them ON the trip rather than
             // telling them it exists somewhere and leaving them to find it.
             if ($tid > 0) {
+                // Counted and followed like a trip posted any other way (2026-10-01).
+                if (function_exists('rmt_track')) rmt_track('trip_created', ['source' => 'plan', 'destination_id' => (int) $tv['data']['destination_id']]);
+                if (function_exists('rmt_follow_destination')) rmt_follow_destination($uid, (int) $tv['data']['destination_id'], 'plan');
                 $done['trip'] = true;
                 $done['trip_id'] = $tid;
                 $done['trip_slug'] = function_exists('slugify') ? slugify((string) $tv['data']['title']) : '';
