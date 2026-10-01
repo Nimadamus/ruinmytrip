@@ -259,6 +259,9 @@ function destination(array $a): void {
     if (rmt_visitor_is_returning()) {
         rmt_track_once_for('destination_return_visit', (string) $id, ['source' => 'destination', 'destination_id' => $id]);
     }
+    // Signed out and unfiltered: the same page for everybody for a minute (app/page_cache.php).
+    $pcKey = rmt_page_cache_key('destination');
+    if (rmt_page_cache_serve($pcKey)) return;
     /* The city's trip stories, through the visibility clause like everything else that reads a
        trip. Without it a private trip's title, body and cover were on the city page. */
     [$dTripVis, $dTripVisArgs] = rmt_plan_visibility_sql('t', current_user());
@@ -373,6 +376,8 @@ function destination(array $a): void {
             rmt_activities_in_city($id, $me, date('Y-m-d'), date('Y-m-d', strtotime('+120 days')), 40),
             static fn(array $r) => empty($r['cancelled_at']))), 0, 5)
         : [];
+    $pcRobots = rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount]));
+    rmt_page_cache_begin($pcKey);
     view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
@@ -380,7 +385,7 @@ function destination(array $a): void {
            same robots rule: only the words on the card change. */
         'og_title' => rmt_destination_og_title($d),
         'og_description' => rmt_destination_og_description($d),
-        'robots' => rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount])),
+        'robots' => $pcRobots,
         /* The purpose built card rather than the hero photograph. The card names the city and says
            what the page is for; the photograph is a nice picture of somewhere, which is what every
            other travel link on the page already looks like. */
@@ -395,6 +400,7 @@ function destination(array $a): void {
             // The visible community score on the page is unaffected.
             'geo'=>['@type'=>'GeoCoordinates','latitude'=>$d['lat'],'longitude'=>$d['lng']]]),
     ]);
+    rmt_page_cache_end($pcKey, $pcRobots);
 }
 
 /** GET /d/{slug}/photos — the full gallery; the destination page itself only teases 12. */
@@ -479,6 +485,8 @@ function destination_travelers(array $a): void {
        separately from the city page so one does not swallow the other. */
     rmt_track_once_for('destination_page_view', 'travelers:' . (int) $d['id'],
                        ['source' => 'travelers', 'destination_id' => (int) $d['id']]);
+    $pcKey = rmt_page_cache_key('travelers');
+    if (rmt_page_cache_serve($pcKey)) return;
     $hub = rmt_city_traveler_hub((int) $d['id'], $me);
     $myGoing = $me ? rmt_going_for_user_dest((int) $me['id'], (int) $d['id']) : null;
     /* The three things that turn a city page into a room: who is here today, what it looks like,
@@ -540,6 +548,8 @@ function destination_travelers(array $a): void {
     $cityPopular = rmt_activity_popular_in_city((int) $d['id'], $me,
                                                 $winFrom !== '' ? $winFrom : null,
                                                 $winTo !== '' ? $winTo : null, 8);
+    $pcRobots = rmt_city_member_signal((int) $d['id']) > 0 ? 'index, follow' : 'noindex,follow';
+    rmt_page_cache_begin($pcKey);
     view('destination_travelers', ['d' => $d, 'me' => $me, 'hub' => $hub, 'myGoing' => $myGoing,
                                    'hereNow' => $hereNow, 'cityPhotos' => $cityPhotos,
                                    'openLocals' => $locals, 'cityPlans' => $cityPlans,
@@ -553,7 +563,7 @@ function destination_travelers(array $a): void {
         'title' => 'Travelers in ' . $d['name'] . ': who is going, meetups and travel buddies',
         // An empty people page is a template, not a result. Kept live and linked, but out of the
         // index until a real member is on it (Q1, 2026-10-01). The city hub /d/{slug} stays indexed.
-        'robots' => rmt_city_member_signal((int) $d['id']) > 0 ? 'index, follow' : 'noindex,follow',
+        'robots' => $pcRobots,
         'description' => 'Meet travelers going to ' . $d['name'] . ', ' . $d['country']
             . '. See who is there and when, join a meetup, ask the people who have been, and post your own dates.',
         // Every link posted anywhere points here, so the picture that comes with it names the city
@@ -563,6 +573,7 @@ function destination_travelers(array $a): void {
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])],
                           ['name'=>'Travelers','url'=>url('d/'.$d['slug'].'/travelers')]],
     ]);
+    rmt_page_cache_end($pcKey, $pcRobots);
 }
 
 function destination_places(array $a): void {

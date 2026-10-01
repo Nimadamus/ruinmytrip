@@ -176,6 +176,16 @@ function rmt_default_og_image(): string {
     return url('assets/img/og-default.jpg');
 }
 
+/** The arrival event, shared by view() and the page cache so a cached page counts the same. */
+function rmt_track_landing(string $robots): void {
+    if (function_exists('rmt_track_once')
+        && !str_contains($robots, 'noindex')
+        && !(function_exists('is_logged_in') && is_logged_in())) {
+        // The path, and only the path, so the page that recruited a member can be named later.
+        rmt_track_once('landing_view', ['path' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
+    }
+}
+
 /** Render a view within the layout. */
 function view(string $name, array $data = [], array $meta = []): void {
     extract($data, EXTR_SKIP);
@@ -214,12 +224,7 @@ function view(string $name, array $data = [], array $meta = []): void {
        404s, admin and the verification pages out of the count. Once per session, in rmt_track_once,
        so a visitor who reads three pages is one arrival rather than three. Crawlers are refused
        inside rmt_track itself. */
-    if (function_exists('rmt_track_once')
-        && !str_contains((string) $__meta['robots'], 'noindex')
-        && !(function_exists('is_logged_in') && is_logged_in())) {
-        // The path, and only the path, so the page that recruited a member can be named later.
-        rmt_track_once('landing_view', ['path' => (string) ($_SERVER['REQUEST_URI'] ?? '')]);
-    }
+    rmt_track_landing((string) $__meta['robots']);
 
     $__view = BASE_PATH . '/views/' . $name . '.php';
     require BASE_PATH . '/views/layout/header.php';
