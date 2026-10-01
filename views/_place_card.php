@@ -56,7 +56,7 @@ $meta   = array_filter([
     <?php if (!empty($cardActions)): ?>
       <div style="display:flex;gap:8px;align-items:center;margin-top:9px;flex-wrap:wrap">
         <a class="btn btn-ghost" style="padding:5px 12px;font-size:.85rem"
-           data-review-cta="browse" data-place-id="<?= (int) $card['id'] ?>"
+           rel="nofollow" data-review-cta="browse" data-place-id="<?= (int) $card['id'] ?>"
            href="<?= e(url('review/new?place=' . (int) $card['id'] . '&src=browse')) ?>">
           <?= $count > 0 ? 'Review' : 'Be the first' ?>
         </a>

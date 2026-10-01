@@ -123,7 +123,7 @@
              saving was a ghost beside it, which is the wrong way round for almost everybody who
              lands here. */ ?>
     <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed'): ?>
-      <a class="btn btn-ghost" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+      <a class="btn btn-ghost" rel="nofollow" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
          href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Write a review</a>
     <?php endif; ?>
     <?php if ($me): ?>
@@ -511,7 +511,7 @@
     <div class="empty-cta" style="margin-bottom:50px">
       <h3>Be the first to review <?= e($p['name']) ?>.</h3>
       <p class="muted" style="margin:0">The bad parts are the useful parts. Say what it actually cost and what you wish you had known.</p>
-      <p style="margin:16px 0 0"><a class="btn btn-accent" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
+      <p style="margin:16px 0 0"><a class="btn btn-accent" rel="nofollow" data-review-cta="place" data-place-id="<?= (int) $p['id'] ?>"
        href="<?= e(url('review/new?place='.(int)$p['id'].'&src=place')) ?>">Share your experience</a></p>
     </div>
   <?php endif; ?>

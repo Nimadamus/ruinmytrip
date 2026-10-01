@@ -5,5 +5,17 @@ Disallow: /notifications
 Disallow: /admin
 Disallow: /report
 Disallow: /cron
+# Crawl waste: forms, sign in redirects and filtered duplicates. See docs/CRAWL_BLOCKS_20261001.md
+Disallow: /review/new
+Disallow: /login?
+Disallow: /register?
+Disallow: /p/*/correct
+Disallow: /d/*?
+Disallow: /plan?
+Disallow: /trip/new
+Disallow: /buddies?
+Disallow: /talk?
+Disallow: /ruined?
+Disallow: /reviews?
 
 Sitemap: https://ruinmytrip.com/sitemap.xml
