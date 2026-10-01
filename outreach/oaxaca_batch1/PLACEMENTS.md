@@ -66,3 +66,10 @@ Engagement: reply only to people who comment or message first. No follow or like
 | TripMates Solo Travelers (groups/travelbuddyorg) | 669,884 | 38 last month | Requires signing up on a third party site to "verify" | n/a | Looks spammy. Skip. |
 
 Result: no group explicitly permits an unsolicited promotional post. One permits it after asking the admins.
+
+## State at 2026-10-01 ~14:45 PDT
+- Google sign in LIVE and tested (new signup @Selah via edundecided5, logout, returning login, cancel path).
+- Jaime/Lupita admin message: NOT SENT. Send from Chip Dimwitty to facebook.com/jaime.at.lupita/ (Task 1 text in session; addressed "Hi Jaime and Lupita", names the group, no link).
+- Page post (copy A above, link fb-page-oaxaca-1): NOT LIVE.
+- Instagram carousel p1_1..p1_6, posts p2/p3, story.png (ig-story-oaxaca-1): NOT LIVE.
+- Blocker: Claude extension cannot act on facebook.com tabs ("Couldn't determine which page this action targets"); active FB identity was AI Girls.
