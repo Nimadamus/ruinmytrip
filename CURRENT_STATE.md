@@ -1,6 +1,17 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-09-25.
+Replace stale lines here; do not append history. Last touched 2026-10-01.
+
+## 2026-10-01 audit and build (docs/AUDIT_20261001.md)
+
+Live: robots.txt crawl blocks (docs/CRAWL_BLOCKS_20261001.md); /d/*/travelers indexed and submitted only
+with a real member on it (rmt_city_member_signal); 60 s signed out HTML cache on /d/{slug} and travelers
+(app/page_cache.php, X-RMT-Cache header, RMT_PAGE_CACHE=0 disables); responsive heroes (/media/w/{480|960}/);
+home leads with action tiles and city tiles; empty states are invitations; quick join (email, password,
+16+ tick; migration 104) and Google sign in code (app/quick_join.php) that stays OFF until GOOGLE_CLIENT_ID
+and GOOGLE_CLIENT_SECRET are set on Render (GCP project `ruinmytrip`, consent screen half done, needs the
+User Data Policy accepted); occasions /e/{slug} (app/occasions.php); activation funnel on /admin/funnel.
+Waiting on Nima: Q7 /in/{country} redirects (map in docs/Q7_IN_COUNTRY_MIGRATION_MAP.md).
 
 ## What the product is
 
