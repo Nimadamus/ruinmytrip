@@ -1,6 +1,6 @@
 # RuinMyTrip: where the build is
 
-Replace stale lines here; do not append history. Last touched 2026-10-01.
+Replace stale lines here; do not append history. Last touched 2026-10-02.
 
 ## 2026-10-01 audit and build (docs/AUDIT_20261001.md)
 
@@ -11,6 +11,14 @@ home leads with action tiles and city tiles; empty states are invitations; quick
 16+ tick; migration 104) and Google sign in code (app/quick_join.php) that stays OFF until GOOGLE_CLIENT_ID
 and GOOGLE_CLIENT_SECRET are set on Render (GCP project `ruinmytrip`, consent screen half done, needs the
 User Data Policy accepted); occasions /e/{slug} (app/occasions.php); activation funnel on /admin/funnel.
+
+## 2026-10-02 (a93311a)
+
+/travel-buddies/{country} lists that country's indexable event guides (Mexico, Thailand, Portugal); signed out
+page cache now covers /e and /p, refused for any session holding its own alert or card. GSC read 10-02: 28 d
+2,198 impressions, 6 clicks (all /p); buddy pages indexed but ~0 impressions; /e Oaxaca and Lisbon "Discovered,
+not indexed", Yi Peng unknown. Oaxaca batch 1 funnel: 1 visit, 0 alerts; no reply from Mexico Cassie or Casa Angel.
+Still open: Instagram bio link (mobile only), IG story, Chiang Mai and Lisbon week 1 batches (need Nima's go).
 
 ## 2026-10-01 phase 2: acquisition loop (docs/PHASE2_ACQUISITION_20261001.md)
 
