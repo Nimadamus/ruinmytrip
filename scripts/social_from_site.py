@@ -23,6 +23,7 @@ import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from social_kit import SITE, link, slide, tags  # noqa: E402
+import social_fb  # noqa: E402
 
 CAMPAIGN = 'site_v1'
 OUT = os.path.expanduser('~/rmt_social/site')
@@ -86,10 +87,15 @@ def main():
         os.makedirs(cdir, exist_ok=True)
         for j, s in enumerate(c['slides']):
             slide(s, j, len(c['slides']), c['pillar'], os.path.join(cdir, 'slide%d.png' % (j + 1)))
+        try:
+            social_fb.render(c, os.path.join(cdir, 'facebook.png'))
+        except social_fb.FitError as e:  # no image is better than a clipped one; the copy says so
+            c['review'] = True
+            c['text'] += '\n\n[NO facebook.png: %s. Shorten the text and rebuild before posting.]' % e
         fb = c['text'] + '\n\n' + link(c['path'], 'facebook', 'post', c['id'], CAMPAIGN)
         cap = c['text'] + ' Link in bio. ' + tags(c['pillar'], c['place'])
         open(os.path.join(cdir, 'copy.txt'), 'w', encoding='utf-8').write(
-            ('NEEDS REVIEW before posting\n\n' if c['review'] else '') + 'FACEBOOK\n' + fb + '\n\nINSTAGRAM AND TIKTOK\n' + cap + '\n')
+            ('NEEDS REVIEW before posting\n\n' if c['review'] else '') + 'FACEBOOK (image: facebook.png only, never the slides)\n' + fb + '\n\nINSTAGRAM AND TIKTOK\n' + cap + '\n')
         c.update({'folder': cdir, 'facebook': fb, 'caption': cap})
         made.append(c)
         ledger[c['id']] = today

@@ -2,8 +2,9 @@
 Build a ready to post social batch from docs/social/content_bank.json.
 
 For every post it writes:
-  * slides as 1080x1350 PNGs (an Instagram carousel, a TikTok photo post, and the first slide works
-    as a Facebook image),
+  * slides as 1080x1350 PNGs (an Instagram carousel; tiktok/ holds the 9:16 TikTok set),
+  * facebook.png, the one 1200x630 Facebook feed graphic (social_fb.py). Facebook gets only that
+    image, never the slides: four portrait slides become a cropped 1 + 3 collage in the feed.
   * the Facebook, Instagram and TikTok text, each with its own tracked link,
   * a schedule.csv that a person or the browser automation works through, one row per platform post.
 
@@ -26,6 +27,8 @@ import textwrap
 from urllib.parse import urlencode
 
 from PIL import Image, ImageDraw, ImageFont
+
+import social_fb
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = 'https://ruinmytrip.com'
@@ -122,16 +125,18 @@ def main():
         os.makedirs(tdir, exist_ok=True)
         for j, s in enumerate(p['slides']):
             slide(s, j, len(p['slides']), p['pillar'], os.path.join(tdir, f'slide{j + 1}.png'), h=1920)
+        social_fb.render(p, os.path.join(pdir, 'facebook.png'))
         fb = p['facebook'] + '\n\n' + link(p['link_path'], 'facebook', 'post', p['id'], camp)
         place = p.get('place', '')
         ig = p['caption'] + ' Link in bio.\n\n' + tags(p['pillar'], place)
         tt = p['caption'] + ' Link in bio. ' + tags(p['pillar'], place)
         with open(os.path.join(pdir, 'copy.txt'), 'w', encoding='utf-8') as f:
-            f.write(f'FACEBOOK\n{fb}\n\nINSTAGRAM\n{ig}\n\nTIKTOK\n{tt}\n\n'
+            f.write(f'FACEBOOK (image: facebook.png only, never the slides)\n{fb}\n\nINSTAGRAM\n{ig}\n\nTIKTOK\n{tt}\n\n'
                     f'Instagram and TikTok allow one link, in the bio, so those two are measured per\n'
                     f'platform rather than per post:\n{BIO["instagram"]}\n{BIO["tiktok"]}\n')
-        # Every platform every day, the same slides: Facebook 10:00, Instagram 12:00, TikTok 18:00.
-        rows.append([day.isoformat(), '10:00', 'facebook', p['id'], pdir, fb])
+        # Every platform every day: Facebook 10:00 posts ONLY facebook.png (the file in the folder column),
+        # Instagram 12:00 the slides, TikTok 18:00 the tiktok/ slides.
+        rows.append([day.isoformat(), '10:00', 'facebook', p['id'], os.path.join(pdir, 'facebook.png'), fb])
         rows.append([day.isoformat(), '12:00', 'instagram', p['id'], pdir, ig])
         rows.append([day.isoformat(), '18:00', 'tiktok', p['id'], pdir, tt])
     with open(os.path.join(out, 'schedule.csv'), 'w', newline='', encoding='utf-8') as f:

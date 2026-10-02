@@ -3,6 +3,7 @@ The daily check that something obvious is not broken, once posting has started.
 
 Checks, and never changes anything:
   * every tracked link scheduled for today and the next two days answers 200 and shows its landing banner;
+  * each of those posts has its 1200x630 facebook.png;
   * each of those pages' share preview image loads (what Facebook and WhatsApp will show);
   * the site is up and on the expected migration; the trip form renders;
   * tracking is firing: arrivals and engaged visitors were recorded in the last 24 hours;
@@ -25,6 +26,7 @@ import urllib.request
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from social_kit import SITE, link  # noqa: E402
 from social_from_site import cron_key  # noqa: E402
+import social_fb  # noqa: E402
 
 UA = 'RMT-daily-check-bot/1.0'
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +61,9 @@ def main():
         if i < 0 or i >= len(cal['days']):
             continue
         p = byid[cal['days'][i]]
+        # The Facebook graphic: one 1200x630 file, never the 4:5 slides (they post as a cropped collage).
+        fbimg = os.path.join(os.path.expanduser('~/rmt_social'), cal['start'], '%02d_%s' % (i + 1, p['id']), 'facebook.png')
+        fails.extend('%s %s %s' % (d, p['id'], m) for m in social_fb.check(fbimg))
         u = link(p['link_path'], 'facebook', 'post', p['id'], bank['campaign'])
         code, html, _ = get(u)
         if code != 200:
