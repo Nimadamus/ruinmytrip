@@ -1,6 +1,6 @@
 """The RuinMyTrip scoreboard: ten site numbers per Pacific day plus Google impressions and clicks.
 
-Site numbers come from /cron/funnel (block `kpi`, app/kpi.php); Google numbers from Search Console
+Site numbers come from /cron/kpi (app/kpi.php); Google numbers from Search Console
 with the same service account scripts/gsc_report.py uses. Search Console runs two to three days
 behind, so its recent days are blank rather than zero.
 
@@ -65,7 +65,7 @@ def main():
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
 
-    kpi = json.loads(get('https://ruinmytrip.com/cron/funnel?days=%d&key=%s' % (a.days, cron_key())))['kpi']
+    kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d&key=%s' % (a.days, cron_key())))
     g = gsc_by_day(a.days)
     cols = ['day', 'google_impressions', 'google_clicks'] + SITE_COLS
     rows = []
