@@ -87,6 +87,18 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
     </section>
   <?php endif; ?>
 
+  <?php if (!empty($occasions)): ?>
+    <section class="bl-block" aria-labelledby="bl-occ">
+      <h2 id="bl-occ">Coming up in <?= e($p['name']) ?></h2>
+      <ul class="bl-cities">
+        <?php foreach ($occasions as $oc): ?>
+          <li><a class="bl-city" href="<?= e(url('e/' . $oc['slug'])) ?>"><?= e($oc['name']) ?></a>
+            <span class="muted"><?= e((string) ($oc['when'] ?? (date('j M', strtotime($oc['from'])) . ' to ' . date('j M Y', strtotime($oc['to']))))) ?>. Dates, what travelers wish they knew, and who else is going.</span></li>
+        <?php endforeach; ?>
+      </ul>
+    </section>
+  <?php endif; ?>
+
   <?php if ($meetups): ?>
     <section class="bl-block" aria-labelledby="bl-meet">
       <h2 id="bl-meet">Meetups coming up</h2>

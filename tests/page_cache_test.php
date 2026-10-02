@@ -70,6 +70,19 @@ ok('a query string is never cached', $c4 === '');
 ok('the travelers page caches too', $c5 === 'miss' && $c6 === 'hit');
 ok('and renders clean', !preg_match('/Fatal error|Uncaught|Warning:/', $b6));
 
+[$c7, $b7] = get($base . '/e/day-of-the-dead-oaxaca');
+[$c8, $b8] = get($base . '/e/day-of-the-dead-oaxaca');
+ok('an event guide caches too', $c7 === 'miss' && $c8 === 'hit');
+ok('and keeps its alert form with a real token', str_contains($b8, 'name="_csrf"') && !str_contains($b8, '__RMT_CSRF_TOKEN__'));
+$pdo = new PDO('sqlite:' . $db);
+$place = (string) $pdo->query("SELECT slug FROM places WHERE status = 'active' ORDER BY id LIMIT 1")->fetchColumn();
+if ($place !== '') {
+    [$c9] = get($base . '/p/' . $place);
+    [$c10, $b10] = get($base . '/p/' . $place);
+    ok('a place page caches too', $c9 === 'miss' && $c10 === 'hit');
+    ok('and renders clean', !preg_match('/Fatal error|Uncaught|Warning:/', $b10) && !str_contains($b10, '__RMT_CSRF_TOKEN__'));
+}
+
 proc_terminate($proc);
 foreach (glob($dir . '/*') ?: [] as $f) @unlink($f);
 echo $fails ? "$fails FAIL(S)\n" : "ALL PASS\n";

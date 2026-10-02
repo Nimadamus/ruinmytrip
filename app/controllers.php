@@ -674,6 +674,9 @@ function place_show(array $a): void {
         not_found();
     }
     $id = (int) $p['id'];
+    // Signed out and unfiltered: the same page for everybody for a minute (app/page_cache.php).
+    $pcKey = rmt_page_cache_key('place');
+    if (rmt_page_cache_serve($pcKey)) return;
     $stats = rmt_place_stats($id);
     $breakdown = rmt_place_rating_breakdown($id);
     // One grouped query for every aspect, not one per review. Only the aspects enough people have
@@ -790,6 +793,8 @@ function place_show(array $a): void {
     /* Who is going, and who went and would go again. This is what turns a page about a building
        into a page about somewhere other travelers are actually going. */
     $network = rmt_place_network($id, $me);
+    $pcRobots = rmt_robots_for($placeVerdict);
+    rmt_page_cache_begin($pcKey);
     view('place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
         /* The title claims only what this page can answer, so it needs to know what is on it:
            how many days of hours we hold, and whether there is anything to say about price. */
@@ -797,7 +802,7 @@ function place_show(array $a): void {
                                               'editorial_prices' => (string) ($ed['prices'] ?? '')]),
         'description' => $desc,
         'canonical' => $canonical,
-        'robots' => rmt_robots_for($placeVerdict),
+        'robots' => $pcRobots,
         'og_image' => $cover ? abs_url($cover) : abs_url($p['dest_hero']),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')],
                           ['name'=>$p['dest_name'],'url'=>url('d/'.$p['dest_slug'])],
@@ -805,6 +810,7 @@ function place_show(array $a): void {
                           ['name'=>$p['name'],'url'=>$canonical]],
         'jsonld' => jsonld($ld),
     ]);
+    rmt_page_cache_end($pcKey, $pcRobots);
 }
 
 function profile(array $a): void {

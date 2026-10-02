@@ -1,6 +1,7 @@
 <?php
 /**
- * A 60 second HTML cache for public city pages, signed out readers only (Q5, 2026-10-01).
+ * A 60 second HTML cache for public city, travelers, event guide (/e) and place (/p) pages, signed
+ * out readers only (Q5, 2026-10-01; /e and /p 2026-10-02).
  *
  * A city page runs about thirty queries against a shared Postgres; a signed out reader gets the
  * same page as every other signed out reader for the next minute, so it is built once and kept in
@@ -8,7 +9,7 @@
  *   - any signed in reader (their page is personal: saved, going, follow, held work);
  *   - any query string (filters, utm campaign banners, ?ask= prompts);
  *   - any session carrying something meant for this reader only (a flash, old form input, a
- *     pending submit, an invite) or an invite cookie;
+ *     pending submit, an invite, a match alert or I'm going card of theirs) or an invite cookie;
  *   - anything but GET.
  * The one per session value in the HTML, the CSRF token, is stored as a placeholder and swapped
  * for the reader's own on the way out. Tracking runs in the controller before the cache is asked,
@@ -29,7 +30,7 @@ function rmt_page_cache_key(string $scope): ?string {
     if ((string) ($_SERVER['QUERY_STRING'] ?? '') !== '') return null;
     if (function_exists('is_logged_in') && is_logged_in()) return null;
     if (session_status() === PHP_SESSION_ACTIVE) {
-        foreach (['_flash', '_old', '_submit', 'ref', 'uid'] as $k) {
+        foreach (['_flash', '_old', '_submit', 'ref', 'uid', 'alert_email', 'alert_last', 'my_cards'] as $k) {
             if (!empty($_SESSION[$k])) return null;
         }
     }

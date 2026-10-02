@@ -341,6 +341,9 @@ function occasion_show(array $a): void {
     $me = current_user();
     rmt_track_once_for('destination_page_view', 'occasion:' . $o['slug'],
                        ['source' => 'occasion', 'destination_id' => (int) $o['d']['id']]);
+    // Signed out and unfiltered: the same page for everybody for a minute (app/page_cache.php).
+    $pcKey = function_exists('rmt_page_cache_key') ? rmt_page_cache_key('occasion') : null;
+    if ($pcKey !== null && rmt_page_cache_serve($pcKey)) return;
     $people = rmt_occasion_people($o, $me);
     $talk = function_exists('rmt_posts_recent') ? rmt_posts_recent(6, (int) $o['d']['id']) : [];
     $saved = $me ? (bool) q_one("SELECT 1 FROM saves WHERE user_id=? AND target_type='destination' AND target_id=?",
@@ -364,6 +367,7 @@ function occasion_show(array $a): void {
             static fn(array $f): array => ['@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]],
             $o['faq'])]);
     }
+    if ($pcKey !== null) rmt_page_cache_begin($pcKey);
     view('occasion', ['o' => $o, 'people' => $people, 'talk' => $talk, 'me' => $me, 'saved' => $saved, 'myTrip' => $myTrip,
                       'others' => $others, 'dates' => $dates, 'links' => rmt_occasion_links($o)], [
         'title' => $o['name'] . ': dates, tips and who is going | RuinMyTrip',
@@ -377,4 +381,5 @@ function occasion_show(array $a): void {
                           ['name' => $o['short'], 'url' => url('e/' . $o['slug'])]],
         'jsonld' => $ld,
     ]);
+    if ($pcKey !== null) rmt_page_cache_end($pcKey, $robots);
 }

@@ -154,6 +154,19 @@ function buddy_landing_show(array $a): void {
                           ORDER BY m.date_start LIMIT 6", array_merge($ids, [date('Y-m-d H:i:s')]));
     }
 
+    /* The event guides in this country's cities. The guide already links back here; this is the
+       other direction, so an indexed buddy page hands its visitors (and its authority) to the
+       guide for the dates people are actually travelling for. Only guides that are indexable. */
+    $occasions = [];
+    if ($cities && function_exists('rmt_occasion')) {
+        $citySlugs = array_map(static fn($d) => (string) $d['slug'], $cities);
+        foreach (RMT_OCCASIONS as $oSlug => $oc) {
+            if (!in_array($oc['dest'], $citySlugs, true) || $oc['to'] < date('Y-m-d')) continue;
+            if (($x = rmt_occasion($oSlug)) && rmt_occasion_indexable($x)) $occasions[] = $x;
+        }
+        usort($occasions, static fn(array $x, array $y): int => strcmp($x['from'], $y['from']));
+    }
+
     $postQuery = $p['kind'] === 'cruise' ? ['type' => 'cruise', 'line' => $p['line']] : ['where' => $p['name']];
     $postPath = '/buddies/new?' . http_build_query($postQuery);
     /* Signed out, a trip goes to the trip first form with the buddy box ticked; a cruise still needs
@@ -177,7 +190,7 @@ function buddy_landing_show(array $a): void {
     $meta = ['title' => $p['title'] . ' | RuinMyTrip', 'description' => $p['desc'], 'canonical' => url($path),
              'breadcrumbs' => $crumbs, 'jsonld' => $ld];
     if ($cities && !empty($cities[0]['hero_url'])) $meta['og_image'] = abs_url($cities[0]['hero_url']);
-    view('buddy_landing', compact('p', 'me', 'cards', 'cities', 'meetups', 'postHref', 'related', 'path'), $meta);
+    view('buddy_landing', compact('p', 'me', 'cards', 'cities', 'meetups', 'occasions', 'postHref', 'related', 'path'), $meta);
 }
 
 function buddy_landing_country(array $a): void { buddy_landing_show($a + ['kind' => 'country']); }
