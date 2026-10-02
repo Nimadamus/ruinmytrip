@@ -29,6 +29,8 @@ const RMT_CONTRIB_EVENTS = [
     'contribute_place_selected',   // ...and picked a place from the suggestions
     'review_form_start',           // the write form rendered for a signed-in user
     'review_signup_required',      // the form was asked for by somebody with no account
+    'review_held_for_join',        // a review written signed out, carried to the account step
+    'buddy_search',                // the buddy finder was opened or searched (once per filter set)
     'review_signup_completed',     // ...who then registered
     'review_login_completed',      // ...or signed in to an existing account
     'review_return_after_auth',    // ...and landed back on the form they wanted
@@ -127,6 +129,8 @@ const RMT_CTA_KEYS = [
     'home_dates', 'nav_join', 'google_signin',
     // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
+    // The "Been here?" stars on a place page, and the next step after a first review (2026-10-02).
+    'place_rate', 'after_review',
     // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.
     'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
     'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',
@@ -145,6 +149,8 @@ const RMT_CONTRIB_SOURCES = [
     'google', 'occasion',
     // A signed out match alert, and a shared "I'm going" card.
     'alert', 'share',
+    // The one tap rating on a place page (2026-10-02).
+    'place_rate',
     'other',
 ];
 

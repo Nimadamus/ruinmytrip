@@ -52,6 +52,7 @@ require BASE_PATH . '/app/match_alerts.php';
 require BASE_PATH . '/app/going_cards.php';
 require BASE_PATH . '/app/recognitions.php';
 require BASE_PATH . '/app/growth_scorecard.php';
+require BASE_PATH . '/app/kpi.php';
 require BASE_PATH . '/app/live_activity.php';
 require BASE_PATH . '/app/social_landing.php';
 require BASE_PATH . '/app/communities.php';

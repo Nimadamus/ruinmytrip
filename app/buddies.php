@@ -842,6 +842,9 @@ function buddies_index(array $a): void {
     $me = current_user();
     $f = rmt_buddy_filters($g);
     $res = rmt_buddy_search($f, $me, 60);
+    // Buddy finder usage, once per browser per filter set: a reload is not a second search.
+    rmt_track_once_for('buddy_search', substr(md5(json_encode([$a['type'] ?? '', $g['dest'] ?? '', $g['from'] ?? '', $g['to'] ?? '', $g['show'] ?? ''])), 0, 12),
+                       ['source' => 'buddies', 'destination_id' => (int) ($f['dest']['id'] ?? 0)]);
     $cards = rmt_buddy_card_interests($res['cards']);
     $sailings = $f['type'] === 'cruise' ? rmt_buddy_group_sailings($cards) : [];
     /* While the real list is thin, labeled examples show what the section does. Never stored,

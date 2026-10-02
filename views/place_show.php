@@ -112,6 +112,7 @@
     </div>
   <?php endif; ?>
 
+  <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed') include __DIR__ . '/_rate_place.php'; ?>
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 <?= $saveCount > 0 ? '8px' : '26px' ?>">
     <?php /* Reviewing somewhere that has shut for good is not something to invite, and somebody
              who genuinely went while it was open can still reach the form from their own profile.

@@ -35,6 +35,8 @@
         <?php endif; ?>
         <a class="btn btn-ghost" href="<?= e(url('u/'.$r['username'])) ?>">Your profile</a>
       </p>
+      <p class="hint" style="margin:12px 0 0">Going somewhere next? <a data-cta="after_review"
+         href="<?= e(url('plan?cta=after_review')) ?>">Add your dates</a> and see which travelers will be there at the same time.</p>
     </div>
   <?php endif; ?>
   <?php if ($r['status'] !== 'published'): ?>

@@ -450,6 +450,8 @@ function cron_funnel(array $a): void {
         'activation'         => rmt_activation_funnel($days),
         'phase'              => rmt_phase_metrics($days),
         'scorecard'          => rmt_growth_scorecard($days),
+        // The ten daily numbers, one row per Pacific day (app/kpi.php).
+        'kpi'                => rmt_kpi_daily($days > 0 ? min($days, 60) : 60),
         'growth'             => rmt_growth_funnel($days),
         'signup'             => rmt_signup_funnel($days),
         'inventory'          => rmt_growth_inventory(),

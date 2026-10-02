@@ -356,7 +356,8 @@ function rmt_plan_join_context(array $draft): array {
     if (!empty($draft['review'])) {
         $r = (array) $draft['review'];
         return ['summary' => null, 'overlap' => $none, 'question' => null,
-                'review' => ['subject' => (string) ($r['subject_name'] ?? ''), 'title' => (string) ($r['title'] ?? ''),
+                'review' => ['subject' => (string) ($r['subject_name'] ?? ''),
+                             'title' => trim((string) ($r['title'] ?? '')) !== '' ? (string) $r['title'] : rmt_review_headline_from((string) ($r['body'] ?? '')),
                              'rating' => (int) ($r['rating'] ?? 0), 'dest' => dest_by_id((int) ($r['destination_id'] ?? 0))]];
     }
     if (!empty($draft['post'])) {

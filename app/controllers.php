@@ -3910,6 +3910,9 @@ function review_new_form(array $a): void {
               'subject_type'   => $bound['type'],
               'subject_name'   => $bound['name']];
         if (($ruined = trim((string) input('ruined'))) !== '') $r['what_ruined'] = mb_substr($ruined, 0, 2000);
+        // A tap on one of the "Been here?" stars arrives as ?rating=; the form opens with it chosen.
+        $stars = (int) input('rating');
+        if ($stars >= 1 && $stars <= 5) $r['rating'] = $stars;
         rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'place'),
                                         'place_id' => (int) $bound['id'],
                                         'destination_id' => (int) $bound['destination_id']]);
@@ -5277,6 +5280,10 @@ function verify_email_confirm(array $a): void {
     if ($released) {
         flash($released === 1 ? 'Email confirmed. Your review is live.'
                               : 'Email confirmed. Your ' . $released . ' reviews are live.');
+        if ($released === 1 && ($one = q_one("SELECT id, slug FROM reviews WHERE user_id = ? AND status = 'published'
+                                               ORDER BY updated_at DESC, id DESC LIMIT 1", [(int) $row['user_id']]))) {
+            redirect('/review/' . (int) $one['id'] . '/' . $one['slug'] . '?published=1');
+        }
         redirect('/reviews?mine=1');
     }
     /* Somebody who came in on a campaign about a real window arrived to do one thing, and this is

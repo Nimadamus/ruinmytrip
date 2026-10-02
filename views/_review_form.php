@@ -79,7 +79,7 @@ $bp  = $boundPlace ?? null;
   <?php endfor; ?>
 </select>
 
-<label for="title">Headline</label>
+<label for="title">Headline <span class="muted">(optional)</span></label>
 <input type="text" id="title" name="title" maxlength="140"
        placeholder="Touristy but the view earns it" value="<?= $val('title') ?>">
 

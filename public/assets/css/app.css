@@ -1675,3 +1675,13 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .occ-warn h2{color:inherit}
 .recog{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 0}
 .recog span{font-size:.8rem;border:1px solid var(--line,#d8dee6);border-radius:999px;padding:2px 10px;color:var(--muted,#56637a)}
+
+/* "Been here?" stars on a place page (views/_rate_place.php). Ordered 5 to 1 in the markup and
+   reversed on screen, so hovering a star lights it and every star to its left with one selector. */
+.rate-place{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 14px;padding:10px 14px;
+  border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card)}
+.rate-q{font-weight:600;color:var(--text)}
+.rate-stars{display:inline-flex;flex-direction:row-reverse}
+.rate-stars a{font-size:1.7rem;line-height:1;padding:2px 3px;color:#c9c6bb;text-decoration:none;min-width:34px;text-align:center}
+.rate-stars a:hover,.rate-stars a:hover~a,.rate-stars a:focus-visible,.rate-stars a:focus-visible~a{color:var(--gold)}
+.rate-hint{font-size:.85rem;color:var(--muted)}

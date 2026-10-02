@@ -22,6 +22,15 @@ const RMT_REVIEW_FIELD_MAX  = 2000;
  * Validate and normalise a submitted review.
  * @return array{ok:bool, errors:string[], data:array<string,mixed>}
  */
+/** The first sentence of a review, at most 90 characters, cut at a word. */
+function rmt_review_headline_from(string $body): string {
+    $one = trim((string) preg_split('/(?<=[.!?])\s+|\R/u', trim($body), 2)[0]);
+    if (mb_strlen($one) <= 90) return rtrim($one, ' ,;:');
+    $cut = mb_substr($one, 0, 90);
+    $sp = mb_strrpos($cut, ' ');
+    return rtrim($sp !== false && $sp > 40 ? mb_substr($cut, 0, $sp) : $cut, ' ,;:') . '...';
+}
+
 function rmt_review_validate(array $in, bool $isDraft): array {
     $errors = [];
 
@@ -33,6 +42,9 @@ function rmt_review_validate(array $in, bool $isDraft): array {
     $great    = trim((string) ($in['what_great'] ?? ''));
     $ruined   = trim((string) ($in['what_ruined'] ?? ''));
     $visited  = trim((string) ($in['visited_on'] ?? ''));
+    /* The headline is optional (2026-10-02): left empty, it is the writer's own first sentence,
+       cut at a word. Their words, never ours; one fewer box between a visitor and a review. */
+    if ($title === '' && mb_strlen($body) >= RMT_REVIEW_BODY_MIN) $title = rmt_review_headline_from($body);
 
     $rating = (int) ($in['rating'] ?? 0);
     $safety = ($in['safety_rating'] ?? '') === '' ? null : (int) $in['safety_rating'];
