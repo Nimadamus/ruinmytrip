@@ -81,3 +81,9 @@ Result: no group explicitly permits an unsolicited promotional post. One permits
 | 15:31 | Messenger to Jaime González, addressed "Jaime and Lupita" (one message, no link) | Chip Dimwitty (facebook.com/me = 61565712057060) | none | thread shows "sent 3:31 PM by You" |
 | ~15:45 | Instagram carousel, 6 slides p1_1..p1_6, @ruinmytripcom | header shows ruinmytripcom | caption says link in bio; bio link NOT set (web cannot edit links) | instagram.com/p/Dd-AGYBD951/ |
 | — | Instagram Story | — | ig-story-oaxaca-1 | NOT POSTED: stories cannot be created on Instagram web |
+
+## 2026-10-02 (Pacific)
+* Jaime González (group admin) replied Thu 1 Oct 4:09 PM: "Sure go ahead as far as it is free and it doesn't advertise any trip that may interact with ours feel free to post", and offered to check the link first.
+* Reply to Jaime with the link: NOT SENT. Messenger asked for the end to end encryption PIN; skipping it ("Don't restore messages") changes how the account syncs, so it was left for Nima.
+* Group post (tag fb-group-dayofthedeadoaxaca): NOT POSTED. The Page joined the group but Pages get no composer there; drafting as Chip was interrupted when the browser switched to the AI Girls profile mid-compose (another session uses the same Chrome). Nothing was published. Copy ready: copy D, adapted, thanking Jaime and Lupita.
+
