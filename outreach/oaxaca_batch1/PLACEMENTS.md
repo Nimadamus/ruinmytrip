@@ -85,5 +85,5 @@ Result: no group explicitly permits an unsolicited promotional post. One permits
 ## 2026-10-02 (Pacific)
 * Jaime González (group admin) replied Thu 1 Oct 4:09 PM: "Sure go ahead as far as it is free and it doesn't advertise any trip that may interact with ours feel free to post", and offered to check the link first.
 * Reply to Jaime with the link: NOT SENT. Messenger asked for the end to end encryption PIN; skipping it ("Don't restore messages") changes how the account syncs, so it was left for Nima.
-* Group post (tag fb-group-dayofthedeadoaxaca): NOT POSTED. The Page joined the group but Pages get no composer there; drafting as Chip was interrupted when the browser switched to the AI Girls profile mid-compose (another session uses the same Chrome). Nothing was published. Copy ready: copy D, adapted, thanking Jaime and Lupita.
+* Group post (tag fb-group-dayofthedeadoaxaca): SUBMITTED as Chip 2026-10-02 ~12:00 PDT, PENDING ADMIN APPROVAL (groups/dayofthedeadoaxaca/my_pending_content; link shows as a preview card). Earlier note: first attempt The Page joined the group but Pages get no composer there; drafting as Chip was interrupted when the browser switched to the AI Girls profile mid-compose (another session uses the same Chrome). Nothing was published. Copy ready: copy D, adapted, thanking Jaime and Lupita.
 
