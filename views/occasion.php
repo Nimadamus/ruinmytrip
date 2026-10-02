@@ -61,7 +61,7 @@ $here = '/e/' . $o['slug'];
             <span>Get match alerts and new questions, trips and meetups.</span></a>
         <?php endif; ?>
       </li>
-      <li><a class="act-tile" data-cta="occ_review" href="<?= e($me ? $links['review'] : $join('/review/new?destination=' . (int) $d['id'])) ?>">
+      <li><a class="act-tile" data-cta="occ_review" href="<?= e($links['review']) ?>">
         <b>Write a review</b><span>Been before? Help the next traveler.</span></a></li>
       <li><a class="act-tile" data-cta="occ_ruined" href="<?= e($links['ruined']) ?>">
         <b>Share what ruined my trip</b><span>The fee, the scam, what you wish you had known.</span></a></li>

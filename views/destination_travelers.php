@@ -369,7 +369,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
             <b>Ask a question</b><span class="hint">Somebody who has been will answer</span></a>
         <?php endif; ?>
         <?php if (!empty($rmt_gaps['reviews']) || !empty($rmt_gaps['people'])): ?>
-          <a class="first-in-act" href="<?= e($me ? url('review/new?destination='.(int)$d['id'].'&src=travelers') : $join($here)) ?>">
+          <a class="first-in-act" href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=travelers')) ?>">
             <b>Review somewhere</b><span class="hint">What nearly ruined it counts double</span></a>
         <?php endif; ?>
         <?php if (!empty($rmt_gaps['locals'])): ?>

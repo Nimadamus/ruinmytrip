@@ -12,6 +12,13 @@ home leads with action tiles and city tiles; empty states are invitations; quick
 and GOOGLE_CLIENT_SECRET are set on Render (GCP project `ruinmytrip`, consent screen half done, needs the
 User Data Policy accepted); occasions /e/{slug} (app/occasions.php); activation funnel on /admin/funnel.
 
+## 2026-10-02 growth plan (docs/GROWTH_PLAN_20261002.md)
+
+Nima reset the goal: social travel review site; SEO and signup infrastructure over Facebook posting.
+Write first, join after for reviews: /review/new no longer requires login; a guest review is held in the
+session (review_guest_hold, RMT_PLAN_DRAFT_KEY 'review'), shown on /plan/join, saved via rmt_review_save on
+account creation (held_for_verification, publishes on confirm). Guests get no photo upload or draft button.
+
 ## 2026-10-02 (a93311a)
 
 /travel-buddies/{country} lists that country's indexable event guides (Mexico, Thailand, Portugal); signed out

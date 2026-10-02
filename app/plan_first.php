@@ -197,6 +197,21 @@ function rmt_plan_first_publish(array $me, array $x): array {
 
 /** Hand a held draft to the account that now exists: publish it, or hold it for the confirm click. */
 function rmt_plan_first_hand_over(array $me, array $draft): void {
+    if (!empty($draft['review'])) {
+        $post = (array) $draft['review'];
+        $bound = rmt_place_by_id((int) ($post['place_id'] ?? 0));
+        $res = rmt_review_save($me, $post, $bound, false);
+        if (!$res['ok']) {
+            flash('That review could not be saved: ' . implode(' ', $res['errors']));
+            redirect($bound ? '/review/new?place=' . (int) $bound['id'] : '/review/new');
+        }
+        if ($res['held']) {
+            flash('Your review is saved. It goes live the moment you confirm your email address.');
+            redirect('/verify-email');
+        }
+        flash('Your review is live.');
+        redirect('/review/' . $res['id'] . '/' . $res['slug'] . '?published=1');
+    }
     if (!empty($draft['post'])) {
         if (email_is_verified($me)) {
             $pv = rmt_post_validate(['body' => (string) $draft['post']['body'],
@@ -326,23 +341,31 @@ function plan_join_form(array $a): void {
         unset($_SESSION[RMT_PLAN_DRAFT_KEY]);
         rmt_plan_first_hand_over($me, $draft);
     }
-    $destId = !empty($draft['post']) ? (int) $draft['post']['destination_id'] : (int) ($draft['inputs']['trip']['destination_id'] ?? 0);
-    rmt_track_once('plan_signup_view', ['source' => 'plan', 'destination_id' => $destId ?: null]);
-    rmt_track('join_view', ['source' => 'plan']);
+    $destId = !empty($draft['review']) ? (int) ($draft['review']['destination_id'] ?? 0)
+        : (!empty($draft['post']) ? (int) $draft['post']['destination_id'] : (int) ($draft['inputs']['trip']['destination_id'] ?? 0));
+    rmt_track_once('plan_signup_view', ['source' => !empty($draft['review']) ? 'review' : 'plan', 'destination_id' => $destId ?: null]);
+    rmt_track('join_view', ['source' => !empty($draft['review']) ? 'review' : 'plan']);
     view('plan_join', ['draft' => $draft, 'errors' => []] + rmt_plan_join_context($draft), [
         'title' => 'Almost there | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '',
     ]);
 }
 
-/** @return array{summary:?array, overlap:array, question:?array} */
+/** @return array{summary:?array, overlap:array, question:?array, review:?array} */
 function rmt_plan_join_context(array $draft): array {
+    $none = ['travelers' => 0, 'buddies' => 0, 'locals' => 0];
+    if (!empty($draft['review'])) {
+        $r = (array) $draft['review'];
+        return ['summary' => null, 'overlap' => $none, 'question' => null,
+                'review' => ['subject' => (string) ($r['subject_name'] ?? ''), 'title' => (string) ($r['title'] ?? ''),
+                             'rating' => (int) ($r['rating'] ?? 0), 'dest' => dest_by_id((int) ($r['destination_id'] ?? 0))]];
+    }
     if (!empty($draft['post'])) {
-        return ['summary' => null, 'overlap' => ['travelers' => 0, 'buddies' => 0, 'locals' => 0],
+        return ['summary' => null, 'overlap' => $none, 'review' => null,
                 'question' => ['body' => (string) $draft['post']['body'],
                                'dest' => dest_by_id((int) $draft['post']['destination_id'])]];
     }
     $x = $draft['inputs'];
-    return ['summary' => rmt_plan_first_summary($x), 'question' => null,
+    return ['summary' => rmt_plan_first_summary($x), 'question' => null, 'review' => null,
             'overlap' => rmt_plan_first_overlap((int) $x['trip']['destination_id'],
                                                 (string) $x['trip']['date_from'], (string) $x['trip']['date_to'])];
 }
@@ -372,7 +395,9 @@ function plan_join_submit(array $a): void {
     rmt_track('join_created', ['source' => 'plan']);
     $_SESSION['rmt_mail_ok'] = !empty($r['mail_ok']) ? '1' : '0';
     unset($_SESSION[RMT_PLAN_DRAFT_KEY]);
-    rmt_plan_first_hand_over((array) current_user(), $draft);
+    /* Read by id: current_user() was already asked (and cached as nobody) earlier in this request. */
+    $me = q_one('SELECT * FROM users WHERE id = ?', [(int) ($r['id'] ?? 0)]) ?: (array) current_user();
+    rmt_plan_first_hand_over($me, $draft);
 }
 
 /* ---------- the city's pulse and the team's prompts, for the content page module ---------- */

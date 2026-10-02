@@ -3886,14 +3886,18 @@ function review_new_form(array $a): void {
     // Recorded BEFORE require_login sends an anonymous visitor away, because "wanted the form and
     // had no account" is the single most important step in this funnel and it is invisible after
     // the redirect.
-    if (!is_logged_in()) {
+    /* Write first, join after (2026-10-02). The form used to sit behind require_login, so a visitor
+       who wanted to review a place was sent to a sign in form before typing a word. Now a signed out
+       visitor gets the same form; on submit the review is held in their session and the account
+       step shows it back to them (plan_first.php, same path a trip or a question takes). */
+    $guest = !is_logged_in();
+    if ($guest) {
         rmt_track('review_signup_required', [
             'source' => (string) (input('src') ?: 'place'),
             'place_id' => (int) input('place'),
             'destination_id' => (int) input('destination'),
         ]);
     }
-    require_login();
     // A "Share your experience" link from a destination page should not dump the writer back
     // into an empty type-ahead they have to re-search -- that extra step is exactly the kind of
     // friction that keeps a real review from ever getting written.
@@ -3909,8 +3913,8 @@ function review_new_form(array $a): void {
         rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'place'),
                                         'place_id' => (int) $bound['id'],
                                         'destination_id' => (int) $bound['destination_id']]);
-        view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound, 'aspectValues'=>[]],
-             ['title'=>'Review '.$bound['name'].' | RuinMyTrip']);
+        view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound, 'aspectValues'=>[], 'guest'=>$guest],
+             ['title'=>'Review '.$bound['name'].' | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
         return;
     }
     $preselect = (int) input('destination');
@@ -3920,11 +3924,12 @@ function review_new_form(array $a): void {
     if (($ruined = trim((string) input('ruined'))) !== '') $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[]],
-         ['title'=>'Write a review | RuinMyTrip']);
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[], 'guest'=>$guest],
+         ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
 }
 
 function review_create(array $a): void {
+    if (!is_logged_in()) { review_guest_hold(); return; }
     require_login(); csrf_check(); $me = current_user();
     if (!rmt_submit_ok('review_new', input('_submit'))) {
         flash('That review was already submitted.'); redirect('/'); return;
@@ -3939,42 +3944,72 @@ function review_create(array $a): void {
         view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>null]),
              ['title'=>'Write a review | RuinMyTrip']); return;
     }
-    $isDraft = input('action') === 'draft';
-    // Publishing requires a confirmed email. It used to redirect to the verification page here,
-    // which threw away everything the person had just written -- and it did it to the one group
-    // that matters most, somebody publishing their FIRST review minutes after signing up. Now the
-    // review is saved as their draft and they are told so; confirming the address and pressing
-    // publish is all that is left.
+    rmt_track('review_submit_attempt', ['source' => (string) (input('src') ?: 'place'),
+                                        'place_id' => $bound ? (int) $bound['id'] : 0]);
+    $res = rmt_review_save($me, $_POST, $bound, input('action') === 'draft');
+    if (!$res['ok']) {
+        view('review_new', $opts(['errors'=>$res['errors'], 'r'=>$_POST]),
+             ['title'=>'Write a review | RuinMyTrip']); return;
+    }
+    $id = $res['id']; $slug = $res['slug']; $isDraft = $res['draft']; $holdForVerification = $res['held'];
+
+    // Photo failures must never be silent: the review still publishes (losing written text
+    // because one image failed would be worse), but the user is told exactly what happened.
+    $photoErrors = rmt_attach_review_photos($id, (int)$me['id']);
+
+    $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Your review is live.';
+    if ($holdForVerification) {
+        $msg = 'Saved as a draft, nothing was lost. Confirm your email address and it publishes itself.';
+    }
+    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
+    flash($msg);
+    if ($holdForVerification) redirect('/verify-email');
+    // ?published=1 asks the review page for the "what next" panel. Landing on your own review and
+    // being shown two useful things to do next is the difference between one review and a habit;
+    // a bare redirect back to the page is where a first-time contributor stops.
+    redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug.'?published=1');
+}
+
+/**
+ * Validate and store one review for $me from a posted field set. Shared by the form above and by
+ * the account step that publishes a review written before its author had an account
+ * (rmt_plan_first_hand_over). Photos are the caller's business: a held guest review has none.
+ *
+ * Publishing still needs a confirmed email; an unconfirmed author's review is saved as a draft
+ * marked held_for_verification and rmt_publish_held_reviews() publishes it on the confirm click.
+ *
+ * @return array{ok:bool, errors:list<string>, id:int, slug:string, draft:bool, held:bool}
+ */
+function rmt_review_save(array $me, array $post, ?array $bound, bool $isDraft): array {
+    $uid = (int) $me['id'];
     $holdForVerification = !$isDraft && !email_is_verified($me);
     if ($holdForVerification) {
         $isDraft = true;
         rmt_track('review_verification_required', ['reason' => 'verification']);
     }
-    rmt_track('review_submit_attempt', ['source' => (string) (input('src') ?: 'place'),
-                                        'place_id' => $bound ? (int) $bound['id'] : 0]);
-    $v = rmt_review_validate($_POST, $isDraft);
+    $v = rmt_review_validate($post, $isDraft);
     // Aspect ratings are parsed against the category being submitted, not against whatever the
     // browser happened to render, and a malformed set stops the save alongside any other error.
-    $asp = rmt_review_parse_aspects($_POST, (string) ($_POST['subject_type'] ?? ''));
+    $asp = rmt_review_parse_aspects($post, (string) ($post['subject_type'] ?? ''));
     if (!$v['ok'] || !$asp['ok']) {
         rmt_track('review_publish_failure', ['reason' => 'validation']);
-        view('review_new', $opts(['errors'=>array_merge($v['errors'], $asp['errors']), 'r'=>$_POST]),
-             ['title'=>'Write a review | RuinMyTrip']); return;
+        return ['ok' => false, 'errors' => array_merge($v['errors'], $asp['errors']), 'id' => 0, 'slug' => '',
+                'draft' => $isDraft, 'held' => $holdForVerification];
     }
     $d = $v['data'];
-    $travelerType = rmt_traveler_type_clean($_POST['traveler_type'] ?? null);
+    $travelerType = rmt_traveler_type_clean($post['traveler_type'] ?? null);
     $now = date('Y-m-d H:i:s');
     $status = $isDraft ? 'draft' : 'published';
     // Resolve what was reviewed to a real place row so every review of the same hotel collects on
     // one page. Returns null for destination-level reviews and for drafts with no name yet — the
     // column is nullable and the review renders from subject_name either way.
     $placeId = ($bound ? rmt_place_bound_id((int)$bound['id'], $d['destination_id'], $d['subject_name']) : null)
-        ?? rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], (int)$me['id']);
+        ?? rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], $uid);
     $id = (int) q_run("INSERT INTO reviews
         (user_id,destination_id,place_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
          visited_on,safety_rating,value_rating,traveler_type,verified,status,held_for_verification,created_at,updated_at)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?)",
-        [(int)$me['id'], $d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'],
+        [$uid, $d['destination_id'], $placeId, $d['subject_type'], $d['subject_name'], $d['rating'],
          $d['title'], $d['body'], $d['what_great'], $d['what_ruined'], $d['visited_on'],
          $d['safety_rating'], $d['value_rating'], $travelerType, $status,
          // Marked here so confirming the address can finish the job they already asked for. A
@@ -3991,40 +4026,61 @@ function review_create(array $a): void {
     rmt_sync_tags('review', $id, $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
     // Drafts must not ping anyone; the mention fires when the review later publishes via edit.
     if ($status === 'published') {
-        rmt_notify_mentions('review', $id, (int)$me['id'], [], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
+        rmt_notify_mentions('review', $id, $uid, [], $d['title'], $d['body'], $d['what_great'], $d['what_ruined']);
         /* And the people who saved this city. A review is the thing this site is for, and until now
            saving a city told you when somebody was going there or hosting something, but not when
            somebody had actually written about it. */
         if (!empty($d['destination_id'])) {
-            rmt_city_notify((int) $d['destination_id'], 'city_review', (int) $me['id'], 'review', $id);
+            rmt_city_notify((int) $d['destination_id'], 'city_review', $uid, 'review', $id);
         }
     }
 
-    // Photo failures must never be silent: the review still publishes (losing written text
-    // because one image failed would be worse), but the user is told exactly what happened.
-    $photoErrors = rmt_attach_review_photos($id, (int)$me['id']);
-
     // Badges are evaluated against real activity, never granted by hand.
-    if (!$isDraft) rmt_award_badges((int)$me['id']);
-
-    $msg = $isDraft ? 'Draft saved. Only you can see it.' : 'Your review is live.';
-    if ($holdForVerification) {
-        $msg = 'Saved as a draft, nothing was lost. Confirm your email address and it publishes itself.';
-    }
-    if ($photoErrors) $msg .= ' Some photos were not added: ' . implode(' ', array_unique($photoErrors));
-    flash($msg);
-    // ?published=1 asks the review page for the "what next" panel. Landing on your own review and
-    // being shown two useful things to do next is the difference between one review and a habit;
-    // a bare redirect back to the page is where a first-time contributor stops.
+    if (!$isDraft) rmt_award_badges($uid);
     if (!$isDraft) {
         rmt_track('review_publish_success', ['place_id' => (int) $placeId,
                                              'destination_id' => (int) $d['destination_id']]);
         // A published review ends this attempt; the next one is counted separately.
         rmt_journey_rotate();
+        rmt_seo_announce('/review/'.$id.'/'.$slug);
     }
-    if ($holdForVerification) redirect('/verify-email');
-    if (!$isDraft) rmt_seo_announce('/review/'.$id.'/'.$slug);
-    redirect($isDraft ? '/reviews?mine=1' : '/review/'.$id.'/'.$slug.'?published=1');
+    return ['ok' => true, 'errors' => [], 'id' => $id, 'slug' => $slug, 'draft' => $isDraft, 'held' => $holdForVerification];
+}
+
+/**
+ * POST /review/new from somebody with no account: check it, hold it in their session and send them
+ * to the account step. Nothing is written for a signed out visitor; a review nobody finishes costs
+ * nothing and is visible to nobody.
+ */
+function review_guest_hold(): void {
+    csrf_check();
+    $bound = rmt_place_by_id((int) input('place_id'));
+    $render = static function (array $errors) use ($bound): void {
+        view('review_new', ['dests'=>all_dests(), 'errors'=>$errors, 'r'=>$_POST, 'guest'=>true,
+                            'placeOptions'=>$bound ? [] : rmt_place_suggestions(), 'boundPlace'=>$bound,
+                            'aspectValues'=>rmt_posted_aspect_values($_POST)],
+             ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
+    };
+    if (!rmt_rate_ok('review_guest', rmt_client_ip(), 20, 3600)) {
+        $render(['That was a lot of reviews in an hour. Try again a little later.']); return;
+    }
+    $v = rmt_review_validate($_POST, false);
+    $asp = rmt_review_parse_aspects($_POST, (string) ($_POST['subject_type'] ?? ''));
+    if (!$v['ok'] || !$asp['ok']) {
+        rmt_track('review_publish_failure', ['reason' => 'validation', 'source' => 'guest']);
+        $render(array_merge($v['errors'], $asp['errors'])); return;
+    }
+    // Only what the form posts as text; the session is not a place for anything else.
+    $keep = [];
+    foreach ($_POST as $k => $val) {
+        if (in_array($k, ['_csrf', '_submit', 'action'], true) || !is_string($k)) continue;
+        if (is_string($val)) $keep[$k] = mb_substr($val, 0, 6000);
+        elseif (is_array($val)) $keep[$k] = array_map(static fn($x) => is_string($x) ? mb_substr($x, 0, 200) : '', array_slice($val, 0, 40, true));
+    }
+    $_SESSION[RMT_PLAN_DRAFT_KEY] = ['review' => $keep];
+    rmt_track('review_held_for_join', ['place_id' => $bound ? (int) $bound['id'] : 0,
+                                       'destination_id' => (int) $v['data']['destination_id']]);
+    redirect('/plan/join');
 }
 
 /**
