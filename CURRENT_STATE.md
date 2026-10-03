@@ -19,6 +19,19 @@ Write first, join after for reviews: /review/new no longer requires login; a gue
 session (review_guest_hold, RMT_PLAN_DRAFT_KEY 'review'), shown on /plan/join, saved via rmt_review_save on
 account creation (held_for_verification, publishes on confirm). Guests get no photo upload or draft button.
 
+## 2026-10-02 evening: acquisition engine (Nima GO on plan items 2 to 6)
+
+Live: "Been to X?" stars directly under every place name (views/_rate_place.php, src=place_rate, rating
+prefilled); headline optional (rmt_review_headline_from); one held review lands on its own page after
+confirm, which offers "add your dates" (cta after_review). Measurement: /cron/kpi (app/kpi.php, ten counts
+per Pacific day) + scripts/kpi_snapshot.py joins GSC; hidden task "RMT KPI Daily" 07:10 writes
+C:\Users\BL\rmt_kpi\KPI.md and kpi.csv. Never put kpi back inside /cron/funnel (a 30 day read 500'd and
+restarted the free instance). New events review_held_for_join, buddy_search; utm sources friends,
+producthunt, betalist, hackernews, indiehackers, alternativeto, directory.
+Kits: docs/REVIEW_SEEDING_KIT.md, docs/LAUNCH_LISTINGS.md (assets C:\Users\BL\rmt_launch\assets),
+docs/OUTREACH_CONVERSATIONS_20261002.md. Every platform needs Nima to sign in or create the account;
+Reddit replies are posted by Nima.
+
 ## 2026-10-02 (a93311a)
 
 /travel-buddies/{country} lists that country's indexable event guides (Mexico, Thailand, Portugal); signed out
