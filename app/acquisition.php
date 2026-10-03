@@ -26,6 +26,9 @@ const RMT_ACQ_SOURCES = [
     // Outreach that is neither a platform nor a share (2026-10-01): a creator's link, a newsletter
     // feature, a QR code on a hostel noticeboard.
     'creator', 'newsletter', 'qr',
+    // Asking people we know for reviews, and the launch platforms (2026-10-02), each its own row so
+    // the scoreboard says which one produced members.
+    'friends', 'producthunt', 'betalist', 'hackernews', 'indiehackers', 'alternativeto', 'directory',
 ];
 
 /** How it was shared, when a link says so. Also closed. */

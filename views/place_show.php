@@ -21,6 +21,9 @@
         $openNow === null ? null : ($openNow ? 'Open now' : 'Closed now'),
       ]))) ?></p>
   <h1 style="margin:.2rem 0 .5rem"><?= e($p['name']) ?></h1>
+  <?php /* "Been here?" first (2026-10-02): the one question a visitor who searched this place by
+           name can answer in a tap, and the start of a review. The travelers box follows. */ ?>
+  <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed') include __DIR__ . '/_rate_place.php'; ?>
   <?php /* Directly under the name, because this is the whole reason a search visitor is worth
            having: they came for one building and the thing we have that the other ten results
            do not is the people going to that city. It sat at the bottom of the page, which on a
@@ -112,7 +115,6 @@
     </div>
   <?php endif; ?>
 
-  <?php if (rmt_place_status((string) $p['status']) !== 'permanently_closed') include __DIR__ . '/_rate_place.php'; ?>
   <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 <?= $saveCount > 0 ? '8px' : '26px' ?>">
     <?php /* Reviewing somewhere that has shut for good is not something to invite, and somebody
              who genuinely went while it was open can still reach the form from their own profile.
