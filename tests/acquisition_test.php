@@ -108,6 +108,13 @@ $plant('r2', 'join_confirmed', 'reddit', 'miami');
 $plant('r2', 'trip_created', 'reddit', 'miami');
 // Search: one arrival, nothing after it.
 $plant('s1', 'landing_view', 'search');
+// Quora: one arrival that opened the review form and published a review, one that shared its map.
+$plant('q1', 'landing_view', 'quora', 'launch-review');
+$plant('q1', 'review_form_start', 'quora', 'launch-review');
+$plant('q1', 'review_publish_success', 'quora', 'launch-review');
+$plant('q2', 'map_view', 'quora', 'launch-review');
+$pdo->prepare("INSERT INTO contribution_events (event, journey, visitor, acq_source, acq_campaign, detail, is_authed, created_at)
+               VALUES ('cta_click','q2','vq2','quora','launch-review','map_share',0,?)")->execute([date('Y-m-d H:i:s')]);
 
 $rep = rmt_acq_report(0);
 $by = [];
@@ -128,6 +135,13 @@ ok('visit to trip is a share of human visits', $by['reddit']['visit_to_trip_pct'
 ok('search is reported separately',   $by['search']['sessions'], 1);
 ok('...with nothing after the arrival', $by['search']['signed_up'], 0);
 ok('a rate with a zero denominator is left blank rather than zero', $by['search']['trip_rate_pct'], null);
+ok('quora is a source of its own', $request(['utm_source' => 'quora'])['source'], 'quora');
+ok('a published review is credited to its channel', $by['quora']['reviews'], 1);
+ok('...and the form opening separately',             $by['quora']['review_started'], 1);
+ok('a shared map is credited to its channel',        $by['quora']['map_actions'], 1);
+ok('...and the map view separately',                 $by['quora']['map_views'], 1);
+ok('both are human sessions (they acted)',           $by['quora']['human'], 2);
+ok('review rate is a share of human visits',         $by['quora']['visit_to_review_pct'], 50.0);
 
 echo "
 -- a returned cookie is not a person, a tap is --

@@ -29,6 +29,8 @@ const RMT_ACQ_SOURCES = [
     // Asking people we know for reviews, and the launch platforms (2026-10-02), each its own row so
     // the scoreboard says which one produced members.
     'friends', 'producthunt', 'betalist', 'hackernews', 'indiehackers', 'alternativeto', 'directory',
+    // Answers on Quora (first campaign, 2026-10-11).
+    'quora',
 ];
 
 /** How it was shared, when a link says so. Also closed. */
@@ -229,12 +231,19 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 MAX(CASE WHEN event = 'alert_submitted' THEN 1 ELSE 0 END) alerted,
                 MAX(CASE WHEN event = 'alert_confirmed' THEN 1 ELSE 0 END) alert_on,
                 MAX(CASE WHEN event = 'card_created' THEN 1 ELSE 0 END) carded,
+                MAX(CASE WHEN event = 'review_form_start' THEN 1 ELSE 0 END) review_started,
+                MAX(CASE WHEN event = 'review_publish_success' THEN 1 ELSE 0 END) reviewed,
+                MAX(CASE WHEN event = 'map_view' THEN 1 ELSE 0 END) map_viewed,
+                MAX(CASE WHEN event = 'map_saved' OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save'))
+                         THEN 1 ELSE 0 END) mapped,
                 MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck,
                 MAX(CASE WHEN event = 'human_interaction' THEN 1 ELSE 0 END) engaged,
                 MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
                                         'comment_created','question_posted','post_created','trip_created',
                                         'join_submit','join_created','login_completed','trip_connect_requested',
-                                        'alert_submitted','alert_confirmed','card_created')
+                                        'alert_submitted','alert_confirmed','card_created',
+                                        'review_submit_attempt','review_publish_success','map_saved')
+                           OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save'))
                          THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
@@ -248,7 +257,9 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
         $k = $r['src'] . '|' . $r['campaign'] . '|' . $r['content'];
         $agg[$k] ??= ['source' => (string) $r['src'], 'campaign' => (string) $r['campaign'], 'content' => (string) $r['content'],
                       'sessions' => 0, 'human' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
-                      'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0];
+                      'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0,
+                      // The first campaign's actions (2026-10-11): a review written, a travel map shared or kept.
+                      'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0];
         $agg[$k]['sessions']++;
 
         /* Human means a tap, key or scroll reached us (`human_interaction`), or the session did
@@ -268,7 +279,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
                   'confirmed' => 'confirmed', 'tripped' => 'trips', 'alerted' => 'alerts', 'alert_on' => 'alerts_on',
-                  'carded' => 'cards'] as $col => $key) {
+                  'carded' => 'cards', 'review_started' => 'review_started', 'reviewed' => 'reviews',
+                  'map_viewed' => 'map_views', 'mapped' => 'map_actions'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
         }
     }
@@ -281,6 +293,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
         $row['visit_to_signup_pct'] = $pct($row['signed_up'], $row['human']);
         $row['signup_to_trip_pct']  = $pct($row['trips'], $row['signed_up']);
         $row['visit_to_trip_pct']   = $pct($row['trips'], $row['human']);
+        $row['visit_to_review_pct'] = $pct($row['reviews'], $row['human']);
+        $row['visit_to_map_pct']    = $pct($row['map_actions'], $row['human']);
         // Kept under their old names so nothing that already reads this breaks.
         $row['signup_rate_pct'] = $row['visit_to_signup_pct'];
         $row['trip_rate_pct']   = $row['signup_to_trip_pct'];
