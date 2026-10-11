@@ -82,7 +82,13 @@ function breadcrumb_jsonld(array $crumbs): string {
  *
  * @var array<string,array{0:string,1:string}> slug => [title, description]
  */
-const RMT_DEST_SOCIAL_TITLE_TEST = [
+/* ENDED 2026-10-11 (docs/SEO_RECOVERY_20261011.md). From 9/15 to 9/27, before the September spam
+   update, the nine fell from 2.32 to 0.54 impressions a day while the 76 control pages rose from
+   0.64 to 1.08, with 0 clicks on either side: the Loss pattern this test was written to catch.
+   The nine go back to the control titles. The variant is kept below for the record, unused. */
+const RMT_DEST_SOCIAL_TITLE_TEST = [];
+
+const RMT_DEST_SOCIAL_TITLE_TEST_ENDED = [
     'amsterdam-netherlands' => [
         'Amsterdam Travel Guide + Travelers Going There | RuinMyTrip',
         'Amsterdam travel guide: the tourist tax, real places and honest reviews, plus the travelers going there. Ask them anything and see who is on your dates.',

@@ -228,7 +228,7 @@ ok('a city with no window is offered nothing',    rmt_acq_window_near('somewhere
 ok('an empty slug is offered nothing',            rmt_acq_window_near('', 3650), null);
 /* The nine cities in the destination title experiment are left exactly as they are. */
 require_once BASE_PATH . '/app/seo.php';
-ok('the title experiment is still there', count(RMT_DEST_SOCIAL_TITLE_TEST) > 0, true);
+ok('the title experiment is over', count(RMT_DEST_SOCIAL_TITLE_TEST), 0);
 foreach (array_keys(RMT_DEST_SOCIAL_TITLE_TEST) as $tested) {
     ok("the title test city $tested is untouched", rmt_acq_window_near((string) $tested, 3650), null);
 }
