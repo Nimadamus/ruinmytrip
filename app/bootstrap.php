@@ -48,6 +48,7 @@ require BASE_PATH . '/app/city_watch.php';
 require BASE_PATH . '/app/locals.php';
 require BASE_PATH . '/app/onboarding_pending.php';
 require BASE_PATH . '/app/plan_first.php';
+require BASE_PATH . '/app/place_v2.php';
 require BASE_PATH . '/app/match_alerts.php';
 require BASE_PATH . '/app/going_cards.php';
 require BASE_PATH . '/app/recognitions.php';

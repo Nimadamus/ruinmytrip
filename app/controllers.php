@@ -675,7 +675,8 @@ function place_show(array $a): void {
     }
     $id = (int) $p['id'];
     // Signed out and unfiltered: the same page for everybody for a minute (app/page_cache.php).
-    $pcKey = rmt_page_cache_key('place');
+    // The design is part of the key, so flipping RMT_PLACE_V2 never serves a minute of the other one.
+    $pcKey = rmt_page_cache_key(rmt_place_v2_enabled() ? 'place-v2' : 'place');
     if (rmt_page_cache_serve($pcKey)) return;
     $stats = rmt_place_stats($id);
     $breakdown = rmt_place_rating_breakdown($id);
@@ -794,8 +795,10 @@ function place_show(array $a): void {
        into a page about somewhere other travelers are actually going. */
     $network = rmt_place_network($id, $me);
     $pcRobots = rmt_robots_for($placeVerdict);
+    // A design preview (?design=v2) is never a page of its own in search.
+    if (rmt_place_design_preview()) $pcRobots = 'noindex,follow';
     rmt_page_cache_begin($pcKey);
-    view('place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
+    view(rmt_place_v2_enabled() ? 'place_show_v2' : 'place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
         /* The title claims only what this page can answer, so it needs to know what is on it:
            how many days of hours we hold, and whether there is anything to say about price. */
         'title' => rmt_place_page_title($p + ['hours_count' => count($hours),
