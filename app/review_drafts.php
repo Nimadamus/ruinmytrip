@@ -95,15 +95,30 @@ function rmt_review_draft_clear(): void {
 
 /** The text fields a review form posts, nothing else. Shared by the session copy and this table. */
 function rmt_review_draft_clean(array $post): array {
+    /* Only the fields the review form has (2026-10-11). Keeping every posted key let one request
+       store thousands of junk fields of 6,000 characters each; a held review is now a few KB at
+       most, whatever is posted. */
     $keep = [];
-    foreach ($post as $k => $val) {
-        if (!is_string($k) || in_array($k, ['_csrf', '_submit', 'action'], true)) continue;
-        if (is_string($val)) $keep[$k] = mb_substr($val, 0, 6000);
-        elseif (is_array($val)) $keep[$k] = array_map(static fn($x) => is_string($x) ? mb_substr($x, 0, 200) : '',
-                                                     array_slice($val, 0, 40, true));
+    foreach (RMT_REVIEW_DRAFT_FIELDS as $k => $max) {
+        if (!isset($post[$k]) || !is_string($post[$k])) continue;
+        $keep[$k] = mb_substr($post[$k], 0, $max);
+    }
+    if (isset($post['aspect']) && is_array($post['aspect'])) {
+        $asp = [];
+        foreach (array_slice($post['aspect'], 0, 20, true) as $name => $val) {
+            if (is_string($name) && preg_match('/^[a-z_]{1,32}$/', $name) && is_string($val)) $asp[$name] = mb_substr($val, 0, 2);
+        }
+        if ($asp) $keep['aspect'] = $asp;
     }
     return $keep;
 }
+
+/** The review form's own fields and how long each may be (the validator's limits, rounded up). */
+const RMT_REVIEW_DRAFT_FIELDS = [
+    'place_id' => 12, 'destination_id' => 12, 'subject_type' => 40, 'subject_name' => 200, 'rating' => 2,
+    'title' => 200, 'body' => 12000, 'what_great' => 2000, 'what_ruined' => 2000, 'visited_on' => 10,
+    'traveler_type' => 40, 'src' => 40,
+];
 
 /**
  * The review this visitor has in hand: the session copy when there is one, otherwise the server

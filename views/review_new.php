@@ -9,6 +9,9 @@
   <form method="post" enctype="multipart/form-data" action="<?= e(url('review/new')) ?>"
         data-review-draft="<?= e($draftKey) ?>"><?= csrf_field() ?>
     <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('review_new')) ?>">
+    <?php if ($guest): /* A field people never see and scripts fill in (2026-10-11). Off screen, not display:none, and skipped by keyboard and screen readers. */ ?>
+    <div class="hp-field" aria-hidden="true"><label>Leave this empty <input type="text" name="hp_note" value="" tabindex="-1" autocomplete="off"></label></div>
+    <?php endif; ?>
     <?php include __DIR__ . '/_review_form.php'; ?>
 
     <?php if (!$guest): ?>

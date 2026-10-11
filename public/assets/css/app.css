@@ -1703,3 +1703,4 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .body-count{margin:4px 0 0;font-size:.88rem}
 .body-count.ok{color:var(--brand)}
 .review-saved-note{background:var(--tint,#ecfdf5);border-radius:10px;padding:10px 12px;margin:0 0 14px;font-size:.95rem}
+.hp-field{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}

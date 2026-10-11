@@ -19,6 +19,7 @@ const RMT_STAR_WORDS = [1 => 'Avoid it', 2 => 'Disappointing', 3 => 'It was fine
 const RMT_REVIEW_BODY_MAX   = 12000;
 const RMT_REVIEW_TITLE_MAX  = 140;
 const RMT_REVIEW_FIELD_MAX  = 2000;
+const RMT_REVIEW_MAX_LINKS  = 2;
 
 /**
  * Validate and normalise a submitted review.
@@ -69,6 +70,11 @@ function rmt_review_validate(array $in, bool $isDraft): array {
         if ($rating !== 0 && ($rating < 1 || $rating > 5)) $errors[] = 'Rating must be from 1 to 5.';
     }
 
+    /* Link spam (2026-10-11): a review is somebody's experience, not a list of URLs. Two links is
+       plenty for "their website" and "the booking page"; past that it reads as an advert. */
+    if (preg_match_all('~https?://|www\.~i', trim((string) ($in['title'] ?? '')) . ' ' . $body . ' ' . $great . ' ' . $ruined) > RMT_REVIEW_MAX_LINKS) {
+        $errors[] = 'A review can include at most ' . RMT_REVIEW_MAX_LINKS . ' links.';
+    }
     if (mb_strlen($title)  > RMT_REVIEW_TITLE_MAX) $errors[] = 'Headline is too long.';
     if (mb_strlen($body)   > RMT_REVIEW_BODY_MAX)  $errors[] = 'Review is too long.';
     if (mb_strlen($great)  > RMT_REVIEW_FIELD_MAX) $errors[] = '"What was great?" is too long.';

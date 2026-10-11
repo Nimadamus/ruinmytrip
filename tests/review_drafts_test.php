@@ -80,9 +80,17 @@ ok('and forgets the cookie', rmt_review_draft_token() === '' && rmt_review_draft
 ok('the localStorage key matches the form', rmt_review_draft_js_key($post) === 'new-39-78');
 ok('an unbound review has a zero place in its key', rmt_review_draft_js_key(['destination_id' => '5']) === 'new-0-5');
 
-$big = rmt_review_draft_clean(['body' => str_repeat('x', 9000), 'aspect' => array_fill(0, 90, 'y')]);
-ok('long text is capped', mb_strlen($big['body']) === 6000);
-ok('arrays are capped', count($big['aspect']) === 40);
+$long = rmt_review_draft_clean(['body' => str_repeat('x', 11000)]);
+ok('a long review is kept whole up to the validator limit', mb_strlen($long['body']) === 11000);
+ok('and capped past it', mb_strlen(rmt_review_draft_clean(['body' => str_repeat('x', 13000)])['body']) === 12000);
+$junk = [];
+for ($i = 0; $i < 500; $i++) $junk['junk' . $i] = str_repeat('z', 6000);
+$big = rmt_review_draft_clean($junk + ['body' => 'Real words here.', 'aspect' => array_combine(
+    array_map(static fn($i) => 'a' . chr(97 + $i % 26) . 'x', range(0, 89)), array_fill(0, 90, '5'))]);
+ok('fields the form does not have are dropped', array_keys($big) === ['body', 'aspect']);
+ok('sub ratings are capped at 20', count($big['aspect']) <= 20);
+ok('a junk flood stays small', strlen((string) json_encode($big)) < 2000);
+ok('a bad aspect name is dropped', !isset(rmt_review_draft_clean(['aspect' => ['../x' => '5']])['aspect']));
 
 echo $fails ? "\nreview_drafts_test: $fails FAILED\n" : "\nreview_drafts_test: all passed\n";
 exit($fails ? 1 : 0);

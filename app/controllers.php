@@ -4016,6 +4016,18 @@ function review_create(array $a): void {
  *
  * @return array{ok:bool, errors:list<string>, id:int, slug:string, draft:bool, held:bool}
  */
+/** A review by this member of the same place written in the last 24 hours, published or held for their email. */
+function rmt_review_recent_duplicate(int $uid, ?int $placeId, int $destId, string $subject): ?array {
+    $since = date('Y-m-d H:i:s', time() - 86400);
+    $where = $placeId ? 'place_id = ?' : 'place_id IS NULL AND destination_id = ? AND LOWER(subject_name) = ?';
+    $args = $placeId ? [$placeId] : [$destId, mb_strtolower(trim($subject))];
+    $row = q_one("SELECT id, slug, status, held_for_verification FROM reviews
+                   WHERE user_id = ? AND $where AND created_at >= ?
+                     AND (status = 'published' OR (status = 'draft' AND held_for_verification = 1))
+                ORDER BY id DESC LIMIT 1", array_merge([$uid], $args, [$since]));
+    return $row ?: null;
+}
+
 function rmt_review_save(array $me, array $post, ?array $bound, bool $isDraft): array {
     $uid = (int) $me['id'];
     $holdForVerification = !$isDraft && !email_is_verified($me);
@@ -4041,6 +4053,18 @@ function rmt_review_save(array $me, array $post, ?array $bound, bool $isDraft): 
     // column is nullable and the review renders from subject_name either way.
     $placeId = ($bound ? rmt_place_bound_id((int)$bound['id'], $d['destination_id'], $d['subject_name']) : null)
         ?? rmt_place_resolve($d['destination_id'], $d['subject_type'], $d['subject_name'], $uid);
+    /* The same review twice (2026-10-11): a double tap, a retried request, or the account step
+       handing over a review that already went in. Within a day, a second review by the same member
+       of the same place is the first one, returned as it is, not a new row. A later visit can
+       still be reviewed again. Deliberate drafts are not matched. */
+    if (!$isDraft || $holdForVerification) {
+        $dup = rmt_review_recent_duplicate($uid, $placeId, (int) ($d['destination_id'] ?? 0), (string) $d['subject_name']);
+        if ($dup) {
+            rmt_track('review_publish_failure', ['reason' => 'duplicate']);
+            return ['ok' => true, 'errors' => [], 'id' => (int) $dup['id'], 'slug' => (string) $dup['slug'],
+                    'draft' => $dup['status'] !== 'published', 'held' => (int) $dup['held_for_verification'] === 1, 'duplicate' => true];
+        }
+    }
     $id = (int) q_run("INSERT INTO reviews
         (user_id,destination_id,place_id,subject_type,subject_name,rating,title,body,what_great,what_ruined,
          visited_on,safety_rating,value_rating,traveler_type,verified,status,held_for_verification,created_at,updated_at)
@@ -4097,6 +4121,11 @@ function review_guest_hold(): void {
              ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
     };
     if (!rmt_review_csrf_or_rerender($render, true)) return;
+    if (trim((string) ($_POST['hp_note'] ?? '')) !== '') {
+        // The hidden field was filled in: a script, not a person. Nothing is held or stored.
+        rmt_track('review_publish_failure', ['reason' => 'other', 'source' => 'guest']);
+        $render(['That could not be posted. If you are a person, reload the page and try again.']); return;
+    }
     if (!rmt_rate_ok('review_guest', rmt_client_ip(), 20, 3600)) {
         rmt_track('review_publish_failure', ['reason' => 'rate_limit', 'source' => 'guest']);
         $render(['That was a lot of reviews in an hour. Try again a little later.']); return;
