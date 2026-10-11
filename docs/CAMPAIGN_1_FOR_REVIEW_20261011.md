@@ -1,57 +1,44 @@
-# Campaign 1: first real visitors (FOR REVIEW, NOTHING SENT OR POSTED)
+# Campaign 1: the first three channels (FOR REVIEW, NOTHING SENT OR POSTED)
 
-Prepared 2026-10-11 (Pacific). Starts only after the owner approves, and only once the review flow
-and analytics are confirmed healthy on production (see the deploy log). Builds on
-`FIRST_100_CONTENT_PACK_20261011.md` and the rules table in `FIRST_100_CAMPAIGN_DRAFTS_20261011.md`.
+Prepared 2026-10-11 (Pacific). Starts only on the owner's go. The owner posts and sends everything
+from his own accounts, in his own words. No fake accounts, reviews, engagement or numbers.
 
-Goal for the first two weeks: 10 real reviews from people who really went, 30 travel maps made,
-measured with the site's own verified human count (an estimate) by link tag.
+Before day 1: deploy `feat/campaign-measure-20261011` (6e85094) so the per-channel report counts
+reviews and map shares by link tag (today it only counts signups and trips).
 
-## Week 1: people the owner knows (the only outreach in week 1)
+| | 1. People the owner knows | 2. Short video: "What's your number?" | 3. Quora answers |
+|---|---|---|---|
+| Concept | Ask 10 to 20 friends who travel to rate one place they have really been, and color in their map | The owner taps his real visited countries on the live map; says his count and the one he would go back to | Useful answers to questions about places Google already shows us for, and about visited country maps, with a disclosure line |
+| Audience | Friends and family who travel (warm, will actually write) | Travelers 20 to 40 who share country counts and maps | People planning a visit to Stockholm, Zurich, Paris, Amsterdam, Dublin, Budapest |
+| Content | One personal message each (draft below), one reminder at most | Video 1 in the content pack (20 s, 9:16, his own screen recording and voice) on TikTok and Reels | 2 or 3 answers a week, rewritten by the owner; never the same text twice |
+| Destination URL | `https://ruinmytrip.com/map?utm_source=friends&utm_medium=dm&utm_campaign=launch-review&utm_content=invite` | `https://ruinmytrip.com/map?utm_source=tiktok&utm_medium=bio&utm_campaign=launch-map&utm_content=video1` (instagram for Reels) | The exact place page, e.g. `https://ruinmytrip.com/p/vasa-museum-stockholm?utm_source=quora&utm_medium=post&utm_campaign=launch-review&utm_content=vasa` |
+| Conversion action | A review published (then a map) | A map shared, downloaded or saved | Review form opened or review published by someone who has been; second page viewed |
+| Measurement | Per-channel report: reviews, review_started, map_actions for `friends`; verified humans in `/admin/proof` | map_views and map_actions for `tiktok` / `instagram` against the platform's own view counts | reviews, review_started and human sessions for `quora`, per `utm_content` |
+| Goal, 14 days | 10 real reviews | 30 maps shared or saved | 50 verified visitors, 2 reviews |
+| Stop rule | Never message anyone twice after one reminder | 3 videos under 10 verified visitors in total: stop | 6 answers under 10 verified visitors in total: stop |
 
-Personal messages, one at a time, from the owner's own phone or email, to 10 to 20 friends who
-travel. Never a group blast, never a second message to someone who does not reply after one
-reminder. Draft (the owner should change it into how he actually talks):
+Why these three: all three are allowed by the venue's own rules, need no money, and lead with the
+two things that work for a single stranger today (the map needs no account; a place page answers a
+real question). Show HN and r/SideProject come after there are at least 10 real reviews, so people
+clicking in do not land on empty pages. r/travel, r/solotravel and r/digitalnomad ban this outright.
 
-> Hey [name], I have been building a travel site called RuinMyTrip and I would love your help
-> with one small thing. Think of one place you went on a trip (a restaurant, a hotel, a museum,
-> anything) and give it a quick honest review: a few stars and two or three lines on what was good
-> and what nearly ruined it. No account needed to start. And if you want, color in every country
-> you have been to here, it takes 30 seconds: [map link]. Honest feedback on the site itself is
-> welcome too, especially anything that is confusing or broken.
+The places for Quora and for asking friends: Vasa Museum, Zeughauskeller, Ekstedt, Ratana, Au Pied de
+Cochon, Book of Kells, Hungarian National Museum, Anne Frank House (search impressions and a full
+write up each). Any fact quoted is rechecked live the day it is posted.
 
-Links (one tag per person group so replies can be told apart):
-- Map: `https://ruinmytrip.com/map?utm_source=friends&utm_medium=post&utm_campaign=launch-map&utm_content=invite`
-- A place to review: the place page itself, with `?utm_source=friends&utm_medium=post&utm_campaign=launch-review&utm_content=invite`
+## Friend message (draft; the owner rewrites it in his own voice)
 
-What not to do: ask for 5 stars, ask anyone to review a place they have not been, write a review
-for someone, or reuse a friend's words anywhere without asking.
+> Hey [name], I have been building a travel site called RuinMyTrip and could use your help with one
+> small thing. Think of one place from a trip (a restaurant, a hotel, a museum, anything) and give
+> it an honest review: a few stars and two or three lines on what was good and what nearly ruined
+> it. No account needed to start. And if you want, color in every country you have been to, it
+> takes 30 seconds: [link]. Tell me anything that is confusing or broken.
 
-## Week 2: the first public pieces (owner's own accounts, each approved first)
-
-1. **Video 1, "My number"** (TikTok and Reels): the owner taps his real countries on the live map,
-   says his real count and the one country he would go back to. Script and captions in the content
-   pack. The owner films his own phone screen; nothing is staged.
-2. **Quora answer type 1** ("How do I make a map of the countries I have visited?"): answer
-   written in his words, disclosure line at the end, one tagged link.
-3. **Pinterest**: one pin for the map (the downloaded image of his own map) and one each for two
-   city pages he knows (his own photo, "Opening hours, directions and honest reviews").
-4. **Video 4, "Before you book [city]"** for one city the owner knows well and that already shows
-   in search (Paris, Amsterdam, Stockholm, Zurich, Lisbon). Every fact rechecked live the day it is
-   posted and dated on screen.
-
-Show HN, r/SideProject and Product Hunt wait until there are at least 10 real reviews, so that
-strangers clicking into the site do not land on empty pages.
-
-## What gets measured, daily during the campaign
-
-For each tag: verified humans, maps made (map page with countries chosen), map saves, review form
-opens, reviews published, signups, and return visits within 7 days. Read from `/admin/proof` and
-the KPI snapshot. A piece that brings visitors but no maps or reviews is changed or stopped, not
-repeated.
+Never ask for 5 stars, never ask anyone to review somewhere they have not been, never write a review
+for someone.
 
 ## Needs from the owner
 
-- Approval of the friend message (in his own words) and the list of people.
-- His real numbers and stories for the videos, or a decision to skip a video.
-- Which city he knows well enough for Video 4.
+1. Go for the measurement deploy and for day 1.
+2. The friend list (he sends; nothing goes out from the site).
+3. His real country count and a 20 second screen recording for the video.
