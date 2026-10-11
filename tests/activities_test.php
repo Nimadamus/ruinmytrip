@@ -62,15 +62,21 @@ $pdo->exec("INSERT INTO users (id,username) VALUES (1,'ana'),(2,'ben'),(3,'cleo'
 $pdo->exec('INSERT INTO profiles VALUES (1,NULL,NULL),(2,NULL,NULL),(3,NULL,NULL),(4,NULL,NULL)');
 $pdo->exec('INSERT INTO follows VALUES (3,1)');   // cleo follows ana
 
-$from = '2026-10-03'; $to = '2026-10-10';
+/* Dates are relative to today (2026-10-11): the fixtures used to be fixed October 2026 days, and
+   the first week those days passed every "upcoming" and "not yet happened" case went red. The trip
+   starts 30 days out; ACT_D(n) is n days after that. */
+define('ACT_BASE', strtotime(date('Y-m-d') . ' +30 days'));
+function ACT_D(int $n): string { return date('Y-m-d', ACT_BASE + $n * 86400); }
+define('ACT_D2', ACT_D(2));
+$from = ACT_D(0); $to = ACT_D(7);
 $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,visibility,date_from,date_to) VALUES
   (1,1,7,'Public','p','','published','public','$from','$to'),
   (2,1,7,'Followers','f','','published','followers','$from','$to'),
   (3,1,7,'Private','v','','published','private','$from','$to')");
 
-$now = '2026-09-01 10:00:00';
+$now = date('Y-m-d', strtotime('-40 days')) . ' 10:00:00';
 $ins = static function (int $id, int $trip, int $user, string $title, string $vis = 'trip',
-                        ?string $day = '2026-10-05', string $join = 'no') use ($pdo, $now): void {
+                        ?string $day = ACT_D2, string $join = 'no') use ($pdo, $now): void {
     $pdo->prepare("INSERT INTO trip_activities (id,trip_id,user_id,destination_id,day,title,category,
                      visibility,join_mode,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,'published',?)")
         ->execute([$id, $trip, $user, 7, $day, $title, 'food', $vis, $join, $now]);
@@ -79,7 +85,7 @@ $ins(1, 1, 1, 'Dinner in Alfama');
 $ins(2, 1, 1, 'A private dinner', 'private');
 $ins(3, 2, 1, 'Followers-only plan');
 $ins(4, 3, 1, 'On a private trip');
-$ins(5, 1, 1, 'Benfica vs Porto', 'trip', '2026-10-07', 'open');
+$ins(5, 1, 1, 'Benfica vs Porto', 'trip', ACT_D(4), 'open');
 $ins(6, 1, 1, 'Sintra at some point', 'trip', null);
 
 $pass = 0; $fail = 0;
@@ -102,16 +108,16 @@ ok(!in_array('A private dinner', $titles(rmt_activities_for_trip(1, null)), true
 // --- ordering -------------------------------------------------------------------------------
 $rows = rmt_activities_for_trip(1, $owner);
 $days = rmt_activities_by_day($rows);
-ok($days[0]['day'] === '2026-10-05', 'days come in order');
+ok($days[0]['day'] === ACT_D(2), 'days come in order');
 ok(end($days)['day'] === null, 'and the things with no day come last');
 ok(end($days)['label'] === 'Not fixed to a day', 'said in words rather than left blank');
 
 // --- validation -----------------------------------------------------------------------------
 $trip = q_one('SELECT * FROM trips WHERE id = 1');
-$v = rmt_activity_validate(['title' => 'Dinner', 'day' => '2026-10-05'], $trip);
+$v = rmt_activity_validate(['title' => 'Dinner', 'day' => ACT_D(2)], $trip);
 ok($v['ok'], 'a title and a day inside the trip is enough');
 ok(rmt_activity_validate(['title' => ''], $trip)['ok'] === false, 'a plan with no words is not a plan');
-$v = rmt_activity_validate(['title' => 'Dinner', 'day' => '2026-11-20'], $trip);
+$v = rmt_activity_validate(['title' => 'Dinner', 'day' => ACT_D(48)], $trip);
 ok(!$v['ok'], 'a day outside the trip is refused');
 $v = rmt_activity_validate(['title' => 'Dinner', 'start_time' => '25:00'], $trip);
 ok(!$v['ok'], 'a time that is not a time is refused');
@@ -133,7 +139,7 @@ ok(in_array('Followers-only plan', $titles(rmt_activities_in_city(7, $follower, 
    'a follower sees the followers-only one');
 ok(in_array('Sintra at some point', $city, true), 'a plan with no day counts when the trip overlaps the window');
 
-$narrow = $titles(rmt_activities_in_city(7, null, '2026-10-07', '2026-10-08'));
+$narrow = $titles(rmt_activities_in_city(7, null, ACT_D(4), ACT_D(5)));
 ok(in_array('Benfica vs Porto', $narrow, true), 'a date window keeps what is inside it');
 ok(!in_array('Dinner in Alfama', $narrow, true), 'and drops what is outside it');
 
@@ -162,7 +168,7 @@ ok(!in_array('Dinner in Alfama', $titles(rmt_activities_in_city(7, $stranger, $f
 $pdo->exec('DELETE FROM blocks');
 
 // --- counting honestly ------------------------------------------------------------------------
-$ins(7, 1, 1, 'Dinner in Alfama', 'trip', '2026-10-06');   // the same person, again
+$ins(7, 1, 1, 'Dinner in Alfama', 'trip', ACT_D(3));   // the same person, again
 $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,body,status,visibility,date_from,date_to)
             VALUES (4,4,7,'Dev trip','d','','published','public','$from','$to')");
 $ins(8, 4, 4, 'Dinner in Alfama');
@@ -313,7 +319,7 @@ $pdo->exec("UPDATE trip_activities SET cancelled_at = '$now' WHERE id = 1");
 ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'and nobody is asked how a cancelled plan went');
 $pdo->exec('UPDATE trip_activities SET cancelled_at = NULL WHERE id = 1');
 
-$pdo->exec("UPDATE trip_activities SET day = '2026-07-12' WHERE id = 1");
+$pdo->exec("UPDATE trip_activities SET day = '" . date('Y-m-d', strtotime('-75 days')) . "' WHERE id = 1");
 ok(!in_array('Dinner in Alfama', $revTitles(1), true), 'a plan from two months ago is homework, so it is dropped');
 
 

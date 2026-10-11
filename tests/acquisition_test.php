@@ -159,16 +159,28 @@ echo "
 -- a campaign that names a real window suggests it, and never creates it --
 ";
 $pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT)');
-$pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (42,'munich-germany','Munich')");
-$w = rmt_acq_window('oktoberfest');
-ok('the campaign knows its city',  $w['slug'] ?? null, 'munich-germany');
+/* The window under test is whichever listed window is still open (2026-10-11): the cases used to
+   name Oktoberfest, and the day it closed every one of them went red. Oktoberfest itself now checks
+   the other half of the rule, that a closed window suggests nothing. */
+$open = null;
+foreach (RMT_ACQ_WINDOWS as $k => $cand) {
+    if ($cand['to'] >= gmdate('Y-m-d') && ($open === null || $cand['to'] > RMT_ACQ_WINDOWS[$open]['to'])) $open = $k;
+}
+if ($open === null) { echo "SKIP  every listed window has closed; add next season's before relying on these
+"; exit(0); }
+$ow = RMT_ACQ_WINDOWS[$open];
+$pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (42," . $pdo->quote($ow['slug']) . ",'Open window city'),
+                                                          (43,'munich-germany','Munich')");
+$w = rmt_acq_window($open);
+ok('the campaign knows its city',  $w['slug'] ?? null, $ow['slug']);
 ok('...and its destination id',    $w['id'] ?? null, 42);
-ok('...and the verified window',   ($w['from'] ?? '') . ' to ' . ($w['to'] ?? ''), '2026-09-19 to 2026-10-04');
+ok('...and the verified window',   ($w['from'] ?? '') . ' to ' . ($w['to'] ?? ''), $ow['from'] . ' to ' . $ow['to']);
 ok('a campaign we do not know suggests nothing', rmt_acq_window('some-other-thing'), null);
-/* The Facebook links are tagged oktoberfest_2026. The Munich page has to recognise that as its own
-   campaign, or those visitors get no window line and no prefilled dates. */
-ok('the facebook campaign name finds the same window', rmt_acq_window('oktoberfest_2026')['slug'] ?? null, 'munich-germany');
-ok('...with the same dates', (rmt_acq_window('oktoberfest_2026')['from'] ?? '') . ' ' . (rmt_acq_window('oktoberfest_2026')['to'] ?? ''), '2026-09-19 2026-10-04');
+ok('a window that has closed suggests nothing',  rmt_acq_window('oktoberfest'), null);
+/* The Facebook links are tagged oktoberfest_2026. The name still has to resolve to the same
+   window, so the answer for both is the same (and, since 2026-10-04, closed). */
+ok('the facebook campaign name is an alias of the window', RMT_ACQ_WINDOW_ALIASES['oktoberfest_2026'] ?? null, 'oktoberfest');
+ok('...and gets the same answer', rmt_acq_window('oktoberfest_2026'), rmt_acq_window('oktoberfest'));
 ok('the name survives the slug cleaner', rmt_acq_slug('oktoberfest_2026'), 'oktoberfest_2026');
 ok('and neither does no campaign at all', rmt_acq_window(''), null);
 /* A city this database does not hold cannot be suggested, whatever the campaign says. */
@@ -199,7 +211,7 @@ ok('a closed window suggests nothing',
 $link = rmt_acq_trip_link($w);
 ok('the link opens the trip form', str_contains($link, '/trip/new?'), true);
 ok('...with the city',             str_contains($link, 'destination_id=42'), true);
-ok('...and both dates',            str_contains($link, 'date_from=2026-09-19') && str_contains($link, 'date_to=2026-10-04'), true);
+ok('...and both dates',            str_contains($link, 'date_from=' . $ow['from']) && str_contains($link, 'date_to=' . $ow['to']), true);
 /* The link is a GET to a form. Nothing here writes a trip, and nothing should: the person still
    chooses the dates and submits them. */
 $acqSrc = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');
@@ -207,8 +219,8 @@ ok('nothing here writes a trip', (bool) preg_match('/INSERT INTO trips/i', $acqS
 
 /* A window that is close is offered to everybody on that city, campaign or not. */
 $pdo->exec("INSERT INTO destinations (id,slug,name) VALUES (2,'lisbon-portugal','Lisbon'),(15,'bangkok-thailand','Bangkok')");
-$near = rmt_acq_window_near('munich-germany', 3650);
-ok('a near window is offered without a campaign', $near['slug'] ?? null, 'munich-germany');
+$near = rmt_acq_window_near($ow['slug'], 3650);
+ok('a near window is offered without a campaign', $near['slug'] ?? null, $ow['slug']);
 ok('...with its destination id',                  $near['id'] ?? null, 42);
 ok('a window still far off is not offered',       rmt_acq_window_near('bangkok-thailand', 1), null);
 ok('...and is offered once it is close',          rmt_acq_window_near('bangkok-thailand', 3650)['slug'] ?? null, 'bangkok-thailand');
