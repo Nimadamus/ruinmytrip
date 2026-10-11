@@ -47,6 +47,7 @@ body.v2-nav .site-header{display:none}
   color:var(--v2-ink);letter-spacing:-.015em;text-decoration:none;flex-shrink:0}
 .v2-brand:hover{text-decoration:none;color:var(--v2-ink)}
 .v2-brand b{color:var(--v2-teal);font-weight:600}
+.v2-header .v2-brand{min-height:44px}
 .v2-brand-mark{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;
   background:linear-gradient(135deg,var(--v2-teal),var(--v2-teal-2));color:#fff;font-size:.95rem}
 .v2-search{position:relative;flex:1;max-width:380px;margin:0}
@@ -310,6 +311,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
   .v2-hero-map{padding:12px;border-radius:20px}
   .v2-map-title{font-size:1.12rem}
   .v2-city-grid{grid-template-columns:1fr 1fr;grid-auto-rows:170px;gap:12px}
+  .v2-city-grid>.v2-city:nth-child(8){display:none} /* one wide and six: no city left alone in a row */
   .v2-how{grid-template-columns:1fr;gap:22px}
   .v2-review-row{grid-template-columns:1fr}
   .v2-band-in{flex-direction:column;align-items:flex-start}

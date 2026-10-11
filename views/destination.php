@@ -460,11 +460,15 @@
       <?php /* The conversation used to sit here, under everything this site wrote about the city.
                It is the first thing on the page now, in views/_city_community.php. */ ?>
 
+      <?php /* The redesign (views/destination_v2.php) leaves out empty shells: a heading over
+               "none yet" is a room nobody is in. The current page keeps them. */ ?>
+      <?php if (empty($v2Body) || $trips): ?>
       <div class="section-rule">
         <h2>Trip stories</h2>
         <span class="count"><?= $tripCount ?></span>
       </div>
-      <?php if (!$trips): ?>
+      <?php endif; ?>
+      <?php if (!$trips && empty($v2Body)): ?>
         <p class="muted">No trip stories from <?= e($d['name']) ?> yet. <a href="<?= e(url('trip/new')) ?>">Share the first one.</a></p>
       <?php endif; ?>
       <div class="grid" style="gap:16px">
@@ -545,6 +549,7 @@
         <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Travelers in <?= e($d['name']) ?></a>
       </div></div>
 
+      <?php if (empty($v2Body) || $meetups): ?>
       <div class="card" style="margin-top:18px"><div class="card-body">
         <h3>Meetups here</h3>
         <?php if (!$meetups): ?><p class="muted">Planning something? Create the first meetup. Public places only.</p><?php endif; ?>
@@ -552,12 +557,15 @@
           <?php foreach ($meetups as $m): ?><li style="padding:6px 0"><a href="<?= e(url('meetup/'.$m['id'])) ?>"><?= e($m['title']) ?></a><br><span class="hint"><?= e(date('M j, g:ia', strtotime((string)$m['date_start']))) ?></span></li><?php endforeach; ?>
         </ul>
       </div></div>
+      <?php endif; ?>
 
+      <?php if (empty($v2Body)): /* the redesigned hero already carries both actions */ ?>
       <div style="margin-top:18px;display:grid;gap:8px">
         <a class="btn btn-accent btn-block" data-review-cta="destination" data-destination-id="<?= (int) $d['id'] ?>"
              href="<?= e(url('review/new?destination='.(int)$d['id'].'&src=destination')) ?>">Share your experience</a>
         <a class="btn btn-primary btn-block" href="<?= e(url('trip/new')) ?>">Share a trip here</a>
       </div>
+      <?php endif; ?>
     </aside>
   </div>
 </div>
