@@ -12,6 +12,8 @@ require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/csrf.php';
 require BASE_PATH . '/app/page_cache.php';
 require BASE_PATH . '/app/place_v2.php';
+require BASE_PATH . '/app/design_v2.php';
+rmt_design_init();
 require BASE_PATH . '/app/idempotency.php';
 require BASE_PATH . '/app/mail.php';
 require BASE_PATH . '/app/tokens.php';

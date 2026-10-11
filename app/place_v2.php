@@ -17,7 +17,8 @@ function rmt_place_v2_enabled(): bool {
     $ask = (string) ($_GET['design'] ?? '');
     if ($ask === 'v2') return true;
     if ($ask === 'v1') return false;
-    return getenv('RMT_PLACE_V2') === '1';
+    if ((string) ($_COOKIE[RMT_DESIGN_COOKIE] ?? '') === 'v1') return false;
+    return getenv('RMT_PLACE_V2') === '1' || rmt_design_v2('place');
 }
 
 /** True when this request is a design preview rather than the page itself. */

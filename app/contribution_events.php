@@ -135,6 +135,9 @@ const RMT_CTA_KEYS = [
     'place_rate', 'after_review',
     // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.
     'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
+    // The 2026-10 redesign (app/design_v2.php): rate a place from the menu, the home page, a city.
+    'nav_rate', 'home_rate', 'home_map', 'home_city', 'home_place', 'city_rate', 'city_top_place', 'explore_city',
+    'profile_map',
     'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',
 ];
 

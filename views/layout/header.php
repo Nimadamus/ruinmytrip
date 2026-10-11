@@ -35,14 +35,18 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/inter-latin.woff2')) ?>">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/fraunces-latin.woff2')) ?>">
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
+<?php if (rmt_design_v2_any() || getenv('RMT_CITY_TOP_PLACES') === '1'): /* the redesign's own sheet (app/design_v2.php), all .v2- classes */ ?>
+<link rel="stylesheet" href="<?= e(rmt_asset('assets/css/design-v2.css')) ?>">
+<?php endif; ?>
 <?php foreach ((array) ($__meta['css'] ?? []) as $__css): /* a page's own stylesheet, after the shared one */ ?>
 <link rel="stylesheet" href="<?= e(rmt_asset((string) $__css)) ?>">
 <?php endforeach; ?>
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
 </head>
-<body data-event-url="<?= e(url('event')) ?>"<?php if ($me): ?> data-suggest-users="<?= e(url('suggest/users')) ?>"<?php endif; ?>>
+<body<?php if (rmt_design_v2('nav')): ?> class="v2-nav"<?php endif; ?> data-event-url="<?= e(url('event')) ?>"<?php if ($me): ?> data-suggest-users="<?= e(url('suggest/users')) ?>"<?php endif; ?>>
 <a class="skip" href="#main">Skip to content</a>
+<?php if (rmt_design_v2('nav')): include __DIR__ . '/nav_v2.php'; else: ?>
 <header class="site-header">
   <div class="wrap header-inner">
     <a class="brand" href="<?= e(url()) ?>">
@@ -115,6 +119,7 @@
     </nav>
   </div>
 </header>
+<?php endif; ?>
 <?php if ($f = flash()): ?><div class="flash wrap"><?= e($f) ?></div><?php endif; ?>
 <?php /* Arrived from one of our social posts: say which, and offer what it asked (app/social_landing.php). */
       if (function_exists('rmt_social_landing') && ($rmtSocial = rmt_social_landing())): ?>
