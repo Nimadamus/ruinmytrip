@@ -40,10 +40,11 @@ near window lookup every other city runs, so the city page query budget goes fro
 | Linked from the crawlable city place list (`/d/{city}/places`) | 331 |
 | No internal link at all | 2 |
 
-Internal linking finding: each city's place list shows 24 places, and the full list is only
-reachable through `?all=1`, which robots.txt blocks (`Disallow: /d/*?`). So about three quarters of
-places are reachable only through Nearby and Similar links on other place pages. Not changed here
-(that would be a structural change); recorded for a decision.
+Internal linking: see docs/SEO_DISCOVERY_20261011.md. A full robots-correct crawl found 823 of
+832 indexable places linked from a city, place list or category page (an earlier statement that
+three quarters depended on Nearby and Similar links was wrong). The real issue is depth: 463
+indexable places sit four clicks from the homepage, and 41% of category page links point at
+noindexed thin places.
 
 ## 4. The shortlist: 241 places (`database/sitemap_places.txt`)
 
