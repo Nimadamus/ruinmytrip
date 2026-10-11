@@ -212,7 +212,8 @@
     <table class="table" style="margin:0 0 18px">
       <thead><tr><th>Source</th><th>Campaign</th><th>Where posted</th><th style="text-align:right">Human visits</th>
         <th style="text-align:right">Alerts</th><th style="text-align:right">Cards</th><th style="text-align:right">Signed up</th><th style="text-align:right">Confirmed</th>
-        <th style="text-align:right">Trips</th><th style="text-align:right">Visit to signup</th>
+        <th style="text-align:right">Trips</th><th style="text-align:right">Reviews</th><th style="text-align:right">Maps shared or saved</th>
+        <th style="text-align:right">Came back</th><th style="text-align:right">Suspected bots</th><th style="text-align:right">Visit to signup</th>
         <th style="text-align:right">Signup to trip</th><th style="text-align:right">Visit to trip</th></tr></thead>
       <tbody>
         <?php foreach ($acq as $a): ?>
@@ -229,6 +230,10 @@
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['signed_up'] ?></b></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) $a['confirmed'] ?></td>
             <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) $a['trips'] ?></b></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) ($a['reviews'] ?? 0) ?></b><?php if ((int) ($a['review_started'] ?? 0)): ?> <span class="hint"><?= (int) $a['review_started'] ?> started</span><?php endif; ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><b><?= (int) ($a['map_actions'] ?? 0) ?></b><?php if ((int) ($a['map_views'] ?? 0)): ?> <span class="hint"><?= (int) $a['map_views'] ?> viewed</span><?php endif; ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums"><?= (int) ($a['returning'] ?? 0) ?><?php if ((int) ($a['human_visitors'] ?? 0)): ?> <span class="hint">of <?= (int) $a['human_visitors'] ?></span><?php endif; ?></td>
+            <td style="text-align:right;font-variant-numeric:tabular-nums" class="hint"><?= (int) ($a['suspected_bots'] ?? 0) ?></td>
             <td style="text-align:right"><?= $a['visit_to_signup_pct'] === null ? '' : e((string) $a['visit_to_signup_pct']) . '%' ?></td>
             <td style="text-align:right"><?= $a['signup_to_trip_pct'] === null ? '' : e((string) $a['signup_to_trip_pct']) . '%' ?></td>
             <td style="text-align:right"><?= $a['visit_to_trip_pct'] === null ? '' : e((string) $a['visit_to_trip_pct']) . '%' ?></td>

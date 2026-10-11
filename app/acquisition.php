@@ -223,6 +223,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 COALESCE(acq_content, '') content,
                 journey,
                 COUNT(*) events,
+                MAX(COALESCE(visitor, '')) visitor,
+                MIN(created_at) started,
                 MAX(CASE WHEN event IN ('landing_view','destination_page_view') THEN 1 ELSE 0 END) landed,
                 MAX(CASE WHEN event = 'join_submit'  THEN 1 ELSE 0 END) signup_started,
                 MAX(CASE WHEN event = 'join_created' THEN 1 ELSE 0 END) signed_up,
@@ -251,6 +253,9 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
         [RMT_ACQ_INTERNAL_CONTENT, $since]);
 
     $agg = [];
+    $visits = [];   // browser => Pacific days of its human sessions, any channel
+    $firstIn = [];  // channel key => browser => its first Pacific day through that channel
+    $utc = new DateTimeZone('UTC'); $pt = new DateTimeZone('America/Los_Angeles'); // stored UTC, days are Pacific
     foreach ($rows as $r) {
         /* utm_content names the exact place a link was posted (one Facebook group, one thread), so
            it is part of the key: "which channel produced this signup" means which post. */
@@ -259,7 +264,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                       'sessions' => 0, 'human' => 0, 'landed' => 0, 'signup_started' => 0, 'signed_up' => 0,
                       'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0,
                       // The first campaign's actions (2026-10-11): a review written, a travel map shared or kept.
-                      'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0];
+                      'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0,
+                      'suspected_bots' => 0, 'human_visitors' => 0, 'returning' => 0];
         $agg[$k]['sessions']++;
 
         /* Human means a tap, key or scroll reached us (`human_interaction`), or the session did
@@ -275,6 +281,14 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
             /* Ours, driven at production to check what a campaign visitor sees. Counted here so the
                number can be taken back out rather than quietly left in. */
             if ((int) ($r['selfcheck'] ?? 0) === 1) $agg[$k]['selfcheck_human']++;
+            $v = (string) $r['visitor'];
+            if ($v !== '') {
+                $day = (new DateTimeImmutable(substr((string) $r['started'], 0, 19), $utc))->setTimezone($pt)->format('Y-m-d');
+                $visits[$v][] = $day;
+                if (!isset($firstIn[$k][$v]) || $day < $firstIn[$k][$v]) $firstIn[$k][$v] = $day;
+            }
+        } else {
+            $agg[$k]['suspected_bots']++;
         }
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
@@ -282,6 +296,17 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                   'carded' => 'cards', 'review_started' => 'review_started', 'reviewed' => 'reviews',
                   'map_viewed' => 'map_views', 'mapped' => 'map_actions'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
+        }
+    }
+    /* Returning: a browser a channel brought in as a person that came back as a person on a later
+       Pacific day, by any route. A floor, like every browser count here, because cleared cookies
+       make somebody new again. */
+    foreach ($firstIn as $k => $browsers) {
+        $agg[$k]['human_visitors'] = count($browsers);
+        foreach ($browsers as $v => $first) {
+            foreach ($visits[$v] as $day) {
+                if ($day > $first) { $agg[$k]['returning']++; break; }
+            }
         }
     }
     $out = array_values($agg);

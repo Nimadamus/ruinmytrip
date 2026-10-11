@@ -142,6 +142,32 @@ ok('a shared map is credited to its channel',        $by['quora']['map_actions']
 ok('...and the map view separately',                 $by['quora']['map_views'], 1);
 ok('both are human sessions (they acted)',           $by['quora']['human'], 2);
 ok('review rate is a share of human visits',         $by['quora']['visit_to_review_pct'], 50.0);
+ok('the reddit session that did nothing is a suspected bot', $by['reddit']['suspected_bots'], 1);
+ok('...and humans plus suspected bots are all sessions', $by['reddit']['human'] + $by['reddit']['suspected_bots'], $by['reddit']['sessions']);
+ok('nobody came back yet', $by['quora']['returning'], 0);
+ok('two human browsers came through quora', $by['quora']['human_visitors'], 2);
+
+echo "\n-- coming back: a later Pacific day, as a person, by any route --\n";
+$rv = $pdo->prepare("INSERT INTO contribution_events (event, journey, visitor, acq_source, acq_campaign, is_authed, created_at)
+                     VALUES (?,?,?,?,?,0,?)");
+$twoDaysAgo = date('Y-m-d H:i:s', time() - 2 * 86400);
+// A friend arrives two days ago by the invite link and scrolls, then comes back today directly.
+$rv->execute(['landing_view',      'f1a', 'vfriend', 'friends', 'launch-review', $twoDaysAgo]);
+$rv->execute(['human_interaction', 'f1a', 'vfriend', 'friends', 'launch-review', $twoDaysAgo]);
+$rv->execute(['landing_view',      'f1b', 'vfriend', null, null, date('Y-m-d H:i:s')]);
+$rv->execute(['human_interaction', 'f1b', 'vfriend', null, null, date('Y-m-d H:i:s')]);
+// Another friend visits twice the same day: not a return.
+$rv->execute(['human_interaction', 'f2a', 'vfriend2', 'friends', 'launch-review', $twoDaysAgo]);
+$rv->execute(['human_interaction', 'f2b', 'vfriend2', 'friends', 'launch-review', $twoDaysAgo]);
+// A cookied crawler revisiting a day later does not count: neither visit was a person.
+$rv->execute(['landing_view', 'f3a', 'vcrawl', 'friends', 'launch-review', $twoDaysAgo]);
+$rv->execute(['landing_view', 'f3b', 'vcrawl', 'friends', 'launch-review', date('Y-m-d H:i:s')]);
+$fr = null;
+foreach (rmt_acq_report(0) as $row) if ($row['source'] === 'friends') $fr = $row;
+ok('the friend who came back days later is returning', $fr['returning'] ?? null, 1);
+ok('two human browsers came by the invite', $fr['human_visitors'] ?? null, 2);
+ok('the crawler sessions are suspected bots', $fr['suspected_bots'] ?? null, 2);
+$pdo->exec("DELETE FROM contribution_events WHERE visitor IN ('vfriend','vfriend2','vcrawl')");
 
 echo "
 -- a returned cookie is not a person, a tap is --
