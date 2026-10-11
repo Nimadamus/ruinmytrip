@@ -812,6 +812,7 @@ function place_show(array $a): void {
                           ['name'=>'Places','url'=>url('d/'.$p['dest_slug'].'/places')],
                           ['name'=>$p['name'],'url'=>$canonical]],
         'jsonld' => jsonld($ld),
+        'css' => rmt_place_v2_enabled() ? ['assets/css/place-v2.css'] : [],
     ]);
     rmt_page_cache_end($pcKey, $pcRobots);
 }

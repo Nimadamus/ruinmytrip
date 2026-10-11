@@ -35,6 +35,9 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/inter-latin.woff2')) ?>">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="<?= e(url('assets/fonts/fraunces-latin.woff2')) ?>">
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/app.css')) ?>">
+<?php foreach ((array) ($__meta['css'] ?? []) as $__css): /* a page's own stylesheet, after the shared one */ ?>
+<link rel="stylesheet" href="<?= e(rmt_asset((string) $__css)) ?>">
+<?php endforeach; ?>
 <?= $__meta['jsonld'] ?? '' ?>
 <?php if (!empty($__meta['breadcrumbs'])) echo breadcrumb_jsonld($__meta['breadcrumbs']); ?>
 </head>
