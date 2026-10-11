@@ -8,7 +8,7 @@
     <h2 class="v2-h2" id="v2-top-h">Top places in <?= e($d['name']) ?></h2>
     <a class="v2-link" href="<?= e(url('d/' . $d['slug'] . '/places')) ?>">All places →</a>
   </div>
-  <div class="v2-place-grid">
+  <div class="v2-place-grid" data-n="<?= count($cityTop) ?>">
     <?php foreach ($cityTop as $tp): $tpN = (int) $tp['traveler_reviews']; ?>
       <article class="v2-place">
         <a class="v2-place-main" href="<?= e(url('p/' . $tp['slug'])) ?>" data-cta="city_top_place">

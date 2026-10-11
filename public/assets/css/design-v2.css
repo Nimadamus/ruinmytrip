@@ -262,6 +262,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-city-name{font-family:var(--display);font-weight:600;letter-spacing:-.025em;font-size:clamp(2.4rem,6vw,4.4rem);line-height:1;margin:0 0 12px;color:#fff}
 .v2-city-name span{font-weight:400;opacity:.8;font-size:.55em}
 .v2-city-sum{max-width:44em;color:#e7eef3;font-size:1.06rem;margin:0 0 20px}
+.v2-city-hero .v2-crumbs,.v2-city-name,.v2-city-sum{text-shadow:0 1px 2px rgba(0,0,0,.55),0 2px 18px rgba(0,0,0,.45)}
 .v2-city-acts{display:flex;gap:10px;flex-wrap:wrap}
 .v2-city-body{padding-top:22px}
 .v2-city-chips{margin-bottom:6px}
@@ -290,7 +291,10 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-initial-lg{width:96px;height:96px;font-size:2.4rem;font-family:var(--display);border:4px solid #fff;box-shadow:var(--v2-shadow)}
 .v2-pf-cut>.card:nth-child(n+13){display:none}
 .v2-pf-short>.card:nth-child(n+5),.v2-pf-six>*:nth-child(n+7){display:none}
-.v2-profile .profile-head{position:relative;z-index:2}
+.v2-profile .profile-head{position:relative;z-index:2;align-items:flex-start}
+.v2-profile .profile-head .avatar-lg{margin-top:-48px;flex-shrink:0}
+.v2-place-grid[data-n="4"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.v2-place-grid[data-n="1"]{grid-template-columns:minmax(0,1fr)}
 .v2-initial-lg{position:relative;z-index:2}
 .v2-pf-list .card-body>p:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 @media (max-width:640px){.v2-pf-cut>.card:nth-child(n+7){display:none}}
@@ -337,9 +341,9 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
   .v2-city-hero-in{padding-bottom:26px}
   .v2-city-acts .v2-btn{flex:1 1 auto}
   .v2-city-acts .v2-btn-accent{flex-basis:100%}
-  .v2-place-grid{grid-template-columns:minmax(0,1fr)}
+  .v2-place-grid,.v2-place-grid[data-n]{grid-template-columns:minmax(0,1fr)}
   .v2-place-grid>.v2-place:nth-child(n+9){display:none}
-  .v2-dest-cat{display:none}
+  .v2-dest-cat:not(.v2-dest-cat-only){display:none}
   .v2-city-grid{grid-auto-rows:150px}
   .v2-city-lg{grid-row:span 1}
   .v2-city-hero::after{background:linear-gradient(180deg,rgba(9,16,28,.55) 0%,rgba(9,16,28,.45) 40%,rgba(9,16,28,.9) 100%)}

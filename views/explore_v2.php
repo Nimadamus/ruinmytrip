@@ -60,7 +60,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
             <span class="v2-dest-meta">
               <?php if ($dPlaces > 0): ?><span><?= $dPlaces ?> places</span><?php endif; ?>
               <?php if ($dRev > 0): ?><span>★ <?= number_format((float) $d['avg_rating'], 1) ?> · <?= $dRev ?> <?= $dRev === 1 ? 'review' : 'reviews' ?></span><?php endif; ?>
-              <span class="v2-dest-cat"><?= e(ucfirst((string) $d['category'])) ?></span>
+              <span class="v2-dest-cat<?= $dPlaces === 0 && $dRev === 0 ? ' v2-dest-cat-only' : '' ?>"><?= e(ucfirst((string) $d['category'])) ?></span>
             </span>
           </span>
         </a>
