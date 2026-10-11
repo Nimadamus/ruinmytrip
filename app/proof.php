@@ -376,7 +376,7 @@ function rmt_proof(int $days = 14, ?string $now = null): array {
 /** GET /cron/proof?key=...&days=14  JSON, same key and same 404 as /cron/kpi. */
 function cron_proof(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: application/json; charset=utf-8');
     header('X-Robots-Tag: noindex');

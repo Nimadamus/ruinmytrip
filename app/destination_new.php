@@ -194,7 +194,7 @@ function rmt_dest_drafts(): array {
  */
 function cron_destinations(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
 
     header('Content-Type: text/plain; charset=utf-8');

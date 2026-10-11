@@ -433,7 +433,7 @@ function rmt_phase_metrics(int $days = 0): array {
 
 function cron_funnel(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
 
     header('Content-Type: application/json; charset=utf-8');

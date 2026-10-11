@@ -3145,7 +3145,7 @@ function push_unsubscribe(array $a): void {
 /** GET /cron/push?key= — sweep anything the request-time flush did not reach (GET-created rows, retries). */
 function cron_push(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Robots-Tag: noindex');
@@ -6983,7 +6983,7 @@ function community_create(array $a): void {
  */
 function cron_indexnow(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: text/plain; charset=utf-8');
     header('X-Robots-Tag: noindex');

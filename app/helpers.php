@@ -123,6 +123,16 @@ function is_post(): bool { return ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POS
 
 function input(string $k, $default = ''): string { return trim((string)($_POST[$k] ?? $_GET[$k] ?? $default)); }
 
+/**
+ * The cron key a request presented. The X-Cron-Key header first (2026-10-11): a key in the query
+ * string is written into every access log line the host keeps. ?key= still works so nothing that
+ * calls the cron routes breaks while callers move to the header.
+ */
+function rmt_cron_key_given(): string {
+    $h = trim((string) ($_SERVER['HTTP_X_CRON_KEY'] ?? ''));
+    return $h !== '' ? $h : input('key');
+}
+
 /** Human "3 days ago" style. */
 function ago(string $ts): string {
     $t = strtotime($ts); if (!$t) return '';

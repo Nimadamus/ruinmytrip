@@ -78,7 +78,7 @@ function rmt_social_question(array $post): string {
  */
 function cron_social(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: application/json; charset=utf-8');
     header('X-Robots-Tag: noindex');
