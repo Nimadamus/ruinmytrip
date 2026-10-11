@@ -4,7 +4,7 @@
  * Losing four hundred words to an accidental refresh, a session timeout or a back button is the
  * kind of thing somebody does not come back from -- they do not write it again, they stop writing.
  * This saves what is in the form to localStorage as it is typed, restores it on the next visit to
- * the same form, and clears it once the review is actually submitted.
+ * the same form, and clears it once the server has the review (the next page says so).
  *
  * Deliberately small:
  *
@@ -113,8 +113,10 @@
     timer = setTimeout(save, SAVE_DEBOUNCE_MS);
   });
 
-  // Submitting is the one moment we know the text is safe somewhere else.
-  form.addEventListener('submit', clear);
+  // Pressing publish is NOT the moment the text is safe: the request can still fail (an expired
+  // page, a dropped connection, a validation message). So the copy is saved once more, in full, and
+  // kept. The page after a successful save clears it (views/layout/footer.php, 2026-10-11).
+  form.addEventListener('submit', function () { if (timer) clearTimeout(timer); save(); });
 
   restore();
 })();

@@ -202,9 +202,16 @@ function rmt_plan_first_hand_over(array $me, array $draft): void {
         $bound = rmt_place_by_id((int) ($post['place_id'] ?? 0));
         $res = rmt_review_save($me, $post, $bound, false);
         if (!$res['ok']) {
-            flash('That review could not be saved: ' . implode(' ', $res['errors']));
-            redirect($bound ? '/review/new?place=' . (int) $bound['id'] : '/review/new');
+            /* Never drop it here. The account exists now, so the form reopens as a member with
+               the review back in it (the session slot and the server copy both stay), and the
+               reason is said in plain words. */
+            $_SESSION[RMT_PLAN_DRAFT_KEY] = ['review' => $post];
+            rmt_track('review_publish_failure', ['reason' => 'validation', 'source' => 'member']);
+            flash('Your account is ready, but the review needs one fix before it can go up: ' . implode(' ', $res['errors']));
+            redirect($bound ? '/review/new?place=' . (int) $bound['id'] . '&restore=1' : '/review/new?restore=1');
         }
+        unset($_SESSION[RMT_PLAN_DRAFT_KEY]);
+        rmt_review_draft_clear();
         if ($res['held']) {
             flash('Your review is saved. It goes live the moment you confirm your email address.');
             redirect('/verify-email');
@@ -334,6 +341,8 @@ function plan_ask_submit(array $a): void {
 /** GET /plan/join  the account step, with the trip or question held and shown back. */
 function plan_join_form(array $a): void {
     $draft = $_SESSION[RMT_PLAN_DRAFT_KEY] ?? null;
+    // The session can be gone while the review is not: the server copy brings it back.
+    if (!is_array($draft) && ($held = rmt_review_draft_current())) $draft = ['review' => $held];
     if (!is_array($draft)) redirect('/plan');
     $me = current_user();
     if ($me) {
@@ -373,9 +382,16 @@ function rmt_plan_join_context(array $draft): array {
 
 /** POST /plan/join  create the account and hand the draft to it. */
 function plan_join_submit(array $a): void {
-    csrf_check();
     $draft = $_SESSION[RMT_PLAN_DRAFT_KEY] ?? null;
+    if (!is_array($draft) && ($held = rmt_review_draft_current())) $draft = ['review' => $held];
     if (!is_array($draft)) redirect('/plan');
+    if (!csrf_valid()) {
+        // Same rule as the review form: an expired token re-shows the step, the work stays held.
+        rmt_track('join_failure', ['source' => 'plan', 'reason' => 'csrf']);
+        view('plan_join', ['draft' => $draft, 'errors' => ['That page was open a while, so its security check expired. Your review is still saved: create the account again.']]
+             + rmt_plan_join_context($draft), ['title' => 'Almost there | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
+        return;
+    }
     if (is_logged_in()) { unset($_SESSION[RMT_PLAN_DRAFT_KEY]); rmt_plan_first_hand_over(current_user(), $draft); }
     $render = static function (array $errors) use ($draft): void {
         view('plan_join', ['draft' => $draft, 'errors' => $errors] + rmt_plan_join_context($draft),

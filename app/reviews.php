@@ -14,6 +14,8 @@ const RMT_REVIEW_CATEGORIES = ['destination', 'hotel', 'restaurant', 'attraction
 const RMT_REVIEW_STATUSES   = ['draft', 'published', 'hidden', 'removed'];
 
 const RMT_REVIEW_BODY_MIN   = 40;
+/** The word beside the stars on the review form (views/_review_form.php). */
+const RMT_STAR_WORDS = [1 => 'Avoid it', 2 => 'Disappointing', 3 => 'It was fine', 4 => 'Good', 5 => 'Loved it'];
 const RMT_REVIEW_BODY_MAX   = 12000;
 const RMT_REVIEW_TITLE_MAX  = 140;
 const RMT_REVIEW_FIELD_MAX  = 2000;

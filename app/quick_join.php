@@ -118,11 +118,23 @@ function rmt_google_claims_problem(array $claims, string $nonce, string $clientI
 /** Where a member goes after Google: their held trip or question first, then where they were headed. */
 function rmt_after_google(array $me, string $return, bool $isNew): void {
     $draft = $_SESSION[RMT_PLAN_DRAFT_KEY] ?? null;
+    if (!is_array($draft) && function_exists('rmt_review_draft_current') && ($held = rmt_review_draft_current())) $draft = ['review' => $held];
     if (is_array($draft)) { unset($_SESSION[RMT_PLAN_DRAFT_KEY]); rmt_plan_first_hand_over($me, $draft); }
     if ($return !== '' && $return !== '/feed' && $return !== '/') redirect($return);
     if ($isNew) redirect('/plan?welcome=1');
     flash('Welcome back.');
     redirect('/feed');
+}
+
+/**
+ * Where a Google attempt that did not finish sends somebody. With a review (or trip, or question)
+ * held for them, back to that step, where it is still shown, rather than a blank join page that
+ * reads as if their work was dropped.
+ */
+function rmt_google_fallback_path(): string {
+    $held = is_array($_SESSION[RMT_PLAN_DRAFT_KEY] ?? null)
+         || (function_exists('rmt_review_draft_get') && rmt_review_draft_get() !== null);
+    return $held ? '/plan/join' : '/register';
 }
 
 /** GET /auth/google/callback */
@@ -134,7 +146,7 @@ function google_callback(array $a): void {
     if (!rmt_google_enabled() || !$okState || input('code') === '') {
         rmt_track('join_failure', ['source' => 'google', 'reason' => $okState ? 'cancelled' : 'state']);
         flash('Google sign in did not finish. Try again, or join with your email.');
-        redirect('/register');
+        redirect(rmt_google_fallback_path());
     }
     $why = null;
     $c = rmt_google_claims((string) input('code'), $why);
@@ -142,7 +154,7 @@ function google_callback(array $a): void {
     if (!$c) {
         rmt_track('join_failure', ['source' => 'google', 'reason' => 'google_' . $why]);
         flash('Google could not confirm that account. Try again, or join with your email.');
-        redirect('/register');
+        redirect(rmt_google_fallback_path());
     }
     $sub = (string) $c['sub'];
     $email = strtolower((string) $c['email']);

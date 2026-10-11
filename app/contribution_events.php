@@ -153,13 +153,18 @@ const RMT_CONTRIB_SOURCES = [
     'alert', 'share',
     // The one tap rating on a place page (2026-10-02).
     'place_rate',
+    // Who pressed publish (2026-10-11): a visitor with no account, or a member.
+    'guest', 'member',
     'other',
 ];
 
 /**
  * Why a publish did not happen. Operational reasons only -- never the content that failed.
  */
-const RMT_CONTRIB_REASONS = ['validation', 'auth', 'verification', 'rate_limit', 'permission', 'duplicate', 'server', 'other'];
+const RMT_CONTRIB_REASONS = ['validation', 'auth', 'verification', 'rate_limit', 'permission', 'duplicate', 'server', 'other',
+    // A form whose security token had expired, or a browser that never sent the session cookie back
+    // (2026-10-11). Both used to be a bare 403 that recorded nothing and threw the text away.
+    'csrf', 'no_cookie'];
 
 /**
  * Is this request a crawler?

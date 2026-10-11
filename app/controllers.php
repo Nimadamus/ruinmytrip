@@ -3905,10 +3905,17 @@ function review_new_form(array $a): void {
     // exact name are filled in and locked, so the one thing that decides which page the review lands
     // on is not left to the writer re-spelling a name in a free-text box.
     $bound = rmt_place_by_id((int) input('place'));
+    /* A review this visitor already wrote and the site is holding (session or the server copy,
+       app/review_drafts.php) opens back up in the form instead of a blank one. Only for the same
+       place, or for the unbound form when the held review had no place either. */
+    $held = rmt_review_draft_current();
+    if ($held && (int) ($held['place_id'] ?? 0) !== (int) ($bound['id'] ?? 0)) $held = null;
+    if ($held) rmt_track('review_draft_restored', ['source' => 'review', 'place_id' => (int) ($bound['id'] ?? 0)]);
     if ($bound) {
         $r = ['destination_id' => (int) $bound['destination_id'],
               'subject_type'   => $bound['type'],
               'subject_name'   => $bound['name']];
+        if ($held) $r = array_merge($held, $r);
         if (($ruined = trim((string) input('ruined'))) !== '') $r['what_ruined'] = mb_substr($ruined, 0, 2000);
         // A tap on one of the "Been here?" stars arrives as ?rating=; the form opens with it chosen.
         $stars = (int) input('rating');
@@ -3916,7 +3923,8 @@ function review_new_form(array $a): void {
         rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'place'),
                                         'place_id' => (int) $bound['id'],
                                         'destination_id' => (int) $bound['destination_id']]);
-        view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound, 'aspectValues'=>[], 'guest'=>$guest],
+        view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>[], 'boundPlace'=>$bound,
+                            'aspectValues'=>$held ? rmt_posted_aspect_values($held) : [], 'guest'=>$guest, 'restored'=>(bool) $held],
              ['title'=>'Review '.$bound['name'].' | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
         return;
     }
@@ -3925,36 +3933,61 @@ function review_new_form(array $a): void {
     // The front-door question ("What ruined your trip?") arrives here as ?ruined=; it opens the
     // form with the sentence already in the box, which is the whole point of asking for it first.
     if (($ruined = trim((string) input('ruined'))) !== '') $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
+    if ($held) $r = array_merge($held, $r ?? []);
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'aspectValues'=>[], 'guest'=>$guest],
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null,
+                        'aspectValues'=>$held ? rmt_posted_aspect_values($held) : [], 'guest'=>$guest, 'restored'=>(bool) $held],
          ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
 }
 
+/**
+ * The review form's token check, without throwing the review away.
+ *
+ * csrf_check() answers a stale token with a bare 403 and nothing else: the writer's text is gone
+ * and nothing is recorded, which is exactly what the Zurich visitor on 2026-10-10 may have hit
+ * (four minutes on the form, then a fresh form). Re-showing the form with what was posted and a
+ * new token changes nothing on the server, so it is safe: the attack a token stops is a write, and
+ * no write happens until the second, valid submit.
+ */
+function rmt_review_csrf_or_rerender(callable $render, bool $guest): bool {
+    if (csrf_valid()) return true;
+    $noCookie = !isset($_COOKIE[session_name()]);
+    rmt_track('review_publish_failure', ['reason' => $noCookie ? 'no_cookie' : 'csrf', 'source' => $guest ? 'guest' : 'member']);
+    $render([$noCookie
+        ? 'Your browser did not send back our cookie, so we could not post this yet. Your review is still here: allow cookies for ruinmytrip.com and press Post review again.'
+        : 'Your page sat open long enough for its security check to expire. Nothing you wrote was lost: press Post review again.']);
+    return false;
+}
+
 function review_create(array $a): void {
+    rmt_track('review_submit_attempt', ['source' => (string) (input('src') ?: 'place'),
+                                        'place_id' => (int) input('place_id')]);
     if (!is_logged_in()) { review_guest_hold(); return; }
-    require_login(); csrf_check(); $me = current_user();
-    if (!rmt_submit_ok('review_new', input('_submit'))) {
-        flash('That review was already submitted.'); redirect('/'); return;
-    }
+    require_login(); $me = current_user();
     // Re-renders below must keep the place binding, or a writer who tripped one validation error
     // would be handed back the unbound form and lose the page they started from.
     $bound = rmt_place_by_id((int) input('place_id'));
     $opts  = static fn(array $extra) => $extra + ['dests'=>all_dests(), 'placeOptions'=>$bound ? [] : rmt_place_suggestions(),
                                                  'boundPlace'=>$bound, 'aspectValues'=>rmt_posted_aspect_values($_POST)];
+    if (!rmt_review_csrf_or_rerender(static function (array $errors) use ($opts): void {
+            view('review_new', $opts(['errors'=>$errors, 'r'=>$_POST]), ['title'=>'Write a review | RuinMyTrip']);
+        }, false)) return;
+    if (!rmt_submit_ok('review_new', input('_submit'))) {
+        flash('That review was already submitted.'); redirect('/'); return;
+    }
     if (!rmt_rate_ok('review_create', (string)$me['id'], 20, 3600)) {
         rmt_track('review_publish_failure', ['reason' => 'rate_limit']);
-        view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>null]),
+        view('review_new', $opts(['errors'=>['You are posting very fast. Try again later.'], 'r'=>$_POST]),
              ['title'=>'Write a review | RuinMyTrip']); return;
     }
-    rmt_track('review_submit_attempt', ['source' => (string) (input('src') ?: 'place'),
-                                        'place_id' => $bound ? (int) $bound['id'] : 0]);
     $res = rmt_review_save($me, $_POST, $bound, input('action') === 'draft');
     if (!$res['ok']) {
         view('review_new', $opts(['errors'=>$res['errors'], 'r'=>$_POST]),
              ['title'=>'Write a review | RuinMyTrip']); return;
     }
     $id = $res['id']; $slug = $res['slug']; $isDraft = $res['draft']; $holdForVerification = $res['held'];
+    rmt_review_draft_js_clear_next($_POST);   // saved on the server; the browser's copy can go
 
     // Photo failures must never be silent: the review still publishes (losing written text
     // because one image failed would be worse), but the user is told exactly what happened.
@@ -4056,7 +4089,6 @@ function rmt_review_save(array $me, array $post, ?array $bound, bool $isDraft): 
  * nothing and is visible to nobody.
  */
 function review_guest_hold(): void {
-    csrf_check();
     $bound = rmt_place_by_id((int) input('place_id'));
     $render = static function (array $errors) use ($bound): void {
         view('review_new', ['dests'=>all_dests(), 'errors'=>$errors, 'r'=>$_POST, 'guest'=>true,
@@ -4064,7 +4096,9 @@ function review_guest_hold(): void {
                             'aspectValues'=>rmt_posted_aspect_values($_POST)],
              ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
     };
+    if (!rmt_review_csrf_or_rerender($render, true)) return;
     if (!rmt_rate_ok('review_guest', rmt_client_ip(), 20, 3600)) {
+        rmt_track('review_publish_failure', ['reason' => 'rate_limit', 'source' => 'guest']);
         $render(['That was a lot of reviews in an hour. Try again a little later.']); return;
     }
     $v = rmt_review_validate($_POST, false);
@@ -4073,14 +4107,14 @@ function review_guest_hold(): void {
         rmt_track('review_publish_failure', ['reason' => 'validation', 'source' => 'guest']);
         $render(array_merge($v['errors'], $asp['errors'])); return;
     }
-    // Only what the form posts as text; the session is not a place for anything else.
-    $keep = [];
-    foreach ($_POST as $k => $val) {
-        if (in_array($k, ['_csrf', '_submit', 'action'], true) || !is_string($k)) continue;
-        if (is_string($val)) $keep[$k] = mb_substr($val, 0, 6000);
-        elseif (is_array($val)) $keep[$k] = array_map(static fn($x) => is_string($x) ? mb_substr($x, 0, 200) : '', array_slice($val, 0, 40, true));
-    }
+    // Only what the form posts as text. Held twice: in the session (the fast path) and on the
+    // server against an HttpOnly cookie (app/review_drafts.php), so a lapsed session, a closed tab
+    // or a confirmation opened in another browser cannot lose it.
+    $keep = rmt_review_draft_clean($_POST);
     $_SESSION[RMT_PLAN_DRAFT_KEY] = ['review' => $keep];
+    rmt_review_draft_put($keep);
+    // The server has it now, so the browser's own copy (review-draft.js) can go.
+    rmt_review_draft_js_clear_next($keep);
     rmt_track('review_held_for_join', ['place_id' => $bound ? (int) $bound['id'] : 0,
                                        'destination_id' => (int) $v['data']['destination_id']]);
     redirect('/plan/join');

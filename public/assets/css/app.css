@@ -1685,3 +1685,21 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .rate-stars a{font-size:1.7rem;line-height:1;padding:2px 3px;color:#c9c6bb;text-decoration:none;min-width:34px;text-align:center}
 .rate-stars a:hover,.rate-stars a:hover~a,.rate-stars a:focus-visible,.rate-stars a:focus-visible~a{color:var(--gold)}
 .rate-hint{font-size:.85rem;color:var(--muted)}
+
+/* Review form, quick version (2026-10-11): tappable stars and a live character count. The stars are
+   radio buttons in reverse order, so "checked and every label after it" lights the right ones. */
+.star-rate{border:0;padding:0;margin:4px 0 6px}
+.star-rate legend{font-weight:600;margin-bottom:6px;padding:0}
+.star-rate-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.star-rate .stars{display:inline-flex;flex-direction:row-reverse;gap:4px}
+.star-rate .stars label{font-size:2.3rem;line-height:1;color:#cbd5e1;cursor:pointer;padding:2px;min-width:44px;
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;transition:color .12s,transform .12s;margin:0}
+.star-rate .stars input:checked ~ label,
+.star-rate .stars label:hover,
+.star-rate .stars label:hover ~ label{color:var(--gold)}
+.star-rate .stars label:active{transform:scale(.92)}
+.star-rate .stars input:focus-visible + label{outline:3px solid var(--brand-2);outline-offset:2px}
+.star-rate-word{font-weight:600;color:var(--ink,#1f2937)}
+.body-count{margin:4px 0 0;font-size:.88rem}
+.body-count.ok{color:var(--brand)}
+.review-saved-note{background:var(--tint,#ecfdf5);border-radius:10px;padding:10px 12px;margin:0 0 14px;font-size:.95rem}

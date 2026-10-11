@@ -112,6 +112,13 @@
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/contribute-track.js')) ?>" defer></script>
+<?php /* A review the server now holds (app/review_drafts.php): the browser's own copy goes, here,
+         on the page after the save, never at the moment of pressing publish. */
+$rmtClear = (string) ($_SESSION['rmt_clear_draft'] ?? '');
+if ($rmtClear !== '') { unset($_SESSION['rmt_clear_draft']); }
+if (preg_match('/^new-\d+-\d+$/', $rmtClear)): ?>
+<script>try { window.localStorage.removeItem('rmt.draft.<?= $rmtClear ?>'); } catch (e) {}</script>
+<?php endif; ?>
 <script src="<?= e(rmt_asset('assets/js/review-draft.js')) ?>" defer></script>
 </body>
 </html>
