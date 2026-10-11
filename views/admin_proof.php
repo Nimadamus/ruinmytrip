@@ -3,6 +3,7 @@ $t = $p['totals'];
 $fmt = static fn($v) => $v === null ? 'n/a' : (is_float($v) ? number_format($v, 1) . '%' : number_format((int) $v));
 $labels = ['verified_humans' => 'Verified humans', 'suspected_bots' => 'Suspected bots', 'unverified' => 'Unverified',
            'returning_humans' => 'Returning', 'search_humans' => 'From search', 'referral_humans' => 'From referrals',
+           'map_users' => 'Used the map', 'map_saves' => 'Maps saved', 'active_members' => 'Active members',
            'review_opened' => 'Review opened', 'review_submitted' => 'Review submitted', 'review_held' => 'Guest review held',
            'reviews_published' => 'Reviews published', 'signups' => 'Signups', 'confirmed' => 'Confirmed',
            'trips' => 'Trips', 'buddy_posts' => 'Buddy posts', 'messages' => 'Messages', 'alerts_confirmed' => 'Alerts confirmed'];
@@ -13,6 +14,8 @@ $labels = ['verified_humans' => 'Verified humans', 'suspected_bots' => 'Suspecte
   <p class="hint" style="margin:0 0 6px">Every browser in the window is a verified human, a suspected bot or unverified, with the reason kept.
     Days are Pacific. Product numbers come from their own tables and leave house accounts out. Read
     <code>app/proof.php</code> and <code>docs/METRICS.md</code> for every rule.</p>
+  <p class="hint" style="margin:0 0 6px"><b>These are estimates.</b> A browser is called human or bot from what it did, not from who it is: a patient bot can pass as human and a real person can land in a burst. The reasons below say why each call was made.</p>
+  <?php if (!empty($p['truncated'])): ?><p class="hint" style="color:#b42318">Stopped after <?= number_format((int) $p['events_read']) ?> events; the window is larger than this page reads. Use a shorter window.</p><?php endif; ?>
   <p class="hint" style="margin:0 0 18px">
     <?php foreach ([1 => 'Today', 7 => '7 days', 14 => '14 days', 31 => '31 days'] as $d => $lbl): ?>
       <a href="<?= e(url('admin/proof') . '?days=' . $d) ?>"<?= $d === $daysAsked ? ' style="font-weight:700"' : '' ?>><?= e($lbl) ?></a>
@@ -30,6 +33,8 @@ $labels = ['verified_humans' => 'Verified humans', 'suspected_bots' => 'Suspecte
           <th>Reviews submitted / opened</th><td><?= $fmt($t['review_submitted']) ?> / <?= $fmt($t['review_opened']) ?></td></tr>
       <tr><th>Returning humans</th><td><?= $fmt($t['returning_humans']) ?></td>
           <th>Reviews published</th><td><?= $fmt($t['reviews_published']) ?></td></tr>
+      <tr><th>Used the travel map</th><td><?= $fmt($t['map_users']) ?></td>
+          <th>Active members</th><td><?= $fmt($t['active_members']) ?></td></tr>
     </table>
   </div></div>
 
@@ -62,9 +67,9 @@ $labels = ['verified_humans' => 'Verified humans', 'suspected_bots' => 'Suspecte
 
   <h2 style="font-size:1.1rem">Verified humans by channel</h2>
   <table class="table" style="margin-bottom:22px">
-    <thead><tr><th>Channel</th><th>Humans</th><th>Joined</th><th>Submitted a review</th></tr></thead>
+    <thead><tr><th>Channel</th><th>Humans</th><th>Joined</th><th>Submitted a review</th><th>Used the map</th></tr></thead>
     <?php foreach ($p['channels'] as $ch => $c): ?>
-      <tr><td><?= e((string) $ch) ?></td><td><?= (int) $c['humans'] ?></td><td><?= (int) $c['joined'] ?></td><td><?= (int) $c['reviewed'] ?></td></tr>
+      <tr><td><?= e((string) $ch) ?></td><td><?= (int) $c['humans'] ?></td><td><?= (int) $c['joined'] ?></td><td><?= (int) $c['reviewed'] ?></td><td><?= (int) ($c['used_map'] ?? 0) ?></td></tr>
     <?php endforeach; ?>
   </table>
 

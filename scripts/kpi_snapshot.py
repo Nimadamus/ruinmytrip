@@ -30,8 +30,8 @@ SITE_COLS = ['visitors', 'returning', 'review_starts', 'review_held', 'reviews',
 # humans, suspected bots and unverified, every count defined in docs/METRICS.md. /cron/kpi is the
 # fallback until that endpoint is deployed; its 'visitors' counts headless browsers that scroll.
 PROOF_COLS = ['verified_humans', 'suspected_bots', 'unverified', 'returning_humans', 'search_humans',
-              'referral_humans', 'review_opened', 'review_submitted', 'review_held', 'reviews_published',
-              'signups', 'confirmed', 'trips', 'buddy_posts', 'messages', 'alerts_confirmed']
+              'referral_humans', 'map_users', 'map_saves', 'review_opened', 'review_submitted', 'review_held', 'reviews_published',
+              'signups', 'confirmed', 'active_members', 'trips', 'buddy_posts', 'messages', 'alerts_confirmed']
 
 
 def get(url, headers=None):
