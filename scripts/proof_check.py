@@ -16,8 +16,8 @@ import kpi_snapshot as k  # noqa: E402
 
 ap = argparse.ArgumentParser(); ap.add_argument('--days', type=int, default=14); a = ap.parse_args()
 key = k.cron_key()
-proof = json.loads(k.get('https://ruinmytrip.com/cron/proof?days=%d&key=%s' % (a.days, key)))
-kpi = json.loads(k.get('https://ruinmytrip.com/cron/kpi?days=%d&key=%s' % (a.days, key)))
+proof = json.loads(k.get('https://ruinmytrip.com/cron/proof?days=%d' % a.days, {'X-Cron-Key': key}))
+kpi = json.loads(k.get('https://ruinmytrip.com/cron/kpi?days=%d' % a.days, {'X-Cron-Key': key}))
 fails = []
 
 

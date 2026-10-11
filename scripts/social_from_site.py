@@ -72,7 +72,7 @@ def candidates(feed):
 
 
 def main():
-    req = urllib.request.Request(SITE + '/cron/social?key=' + cron_key(), headers={'User-Agent': 'RMT-social-feed-bot/1.0'})
+    req = urllib.request.Request(SITE + '/cron/social', headers={'User-Agent': 'RMT-social-feed-bot/1.0', 'X-Cron-Key': cron_key()})
     feed = json.load(urllib.request.urlopen(req, timeout=60))
     today = dt.date.today().isoformat()
     os.makedirs(OUT, exist_ok=True)

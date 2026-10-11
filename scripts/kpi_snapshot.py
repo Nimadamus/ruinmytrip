@@ -74,9 +74,9 @@ def main():
     key = cron_key()
     site_cols, source = PROOF_COLS, 'proof'
     try:
-        kpi = json.loads(get('https://ruinmytrip.com/cron/proof?days=%d&key=%s' % (min(a.days, 31), key)))
+        kpi = json.loads(get('https://ruinmytrip.com/cron/proof?days=%d' % min(a.days, 31), {'X-Cron-Key': key}))
     except Exception:  # not deployed yet: the legacy numbers, labelled as such below
-        kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d&key=%s' % (a.days, key)))
+        kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d' % a.days, {'X-Cron-Key': key}))
         site_cols, source = SITE_COLS, 'kpi (legacy: visitors include bots)'
     g = gsc_by_day(a.days)
     cols = ['day', 'google_impressions', 'google_clicks'] + site_cols
