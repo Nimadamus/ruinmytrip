@@ -29,7 +29,9 @@ const RMT_SHAPE_HUMAN_EVENTS = [
     'destination_follow_click', 'destination_follow_success', 'ask_question_click', 'question_posted',
     'post_created', 'comment_created', 'reaction_created', 'join_submit', 'join_created',
     'login_completed', 'trip_create_started', 'trip_created', 'profile_edit_started', 'profile_completed',
-    'review_cta_click', 'review_form_start', 'review_submit_attempt', 'review_publish_success',
+    /* review_form_start is NOT here (2026-10-11): it is recorded when the form is fetched, and
+       crawlers fetch it. Pressing publish is the act; opening the page is not. */
+    'review_cta_click', 'review_submit_attempt', 'review_publish_success', 'human_verified',
     'contribute_search', 'contribute_place_selected', 'place_suggested', 'message_sent',
     'trip_connect_requested', 'trip_connect_accepted', 'overlapping_traveler_viewed',
 ];

@@ -26,6 +26,12 @@ import gsc_report  # noqa: E402
 SERVICE = 'srv-d9co4n0k1i2s73cg0nfg'
 SITE_COLS = ['visitors', 'returning', 'review_starts', 'review_held', 'reviews', 'accounts', 'trips',
              'buddy_searches', 'buddy_posts', 'messages']
+# From 2026-10-11 the scoreboard reads /cron/proof (app/proof.php): browsers split into verified
+# humans, suspected bots and unverified, every count defined in docs/METRICS.md. /cron/kpi is the
+# fallback until that endpoint is deployed; its 'visitors' counts headless browsers that scroll.
+PROOF_COLS = ['verified_humans', 'suspected_bots', 'unverified', 'returning_humans', 'search_humans',
+              'referral_humans', 'review_opened', 'review_submitted', 'review_held', 'reviews_published',
+              'signups', 'confirmed', 'trips', 'buddy_posts', 'messages', 'alerts_confirmed']
 
 
 def get(url, headers=None):
@@ -65,13 +71,19 @@ def main():
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
 
-    kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d&key=%s' % (a.days, cron_key())))
+    key = cron_key()
+    site_cols, source = PROOF_COLS, 'proof'
+    try:
+        kpi = json.loads(get('https://ruinmytrip.com/cron/proof?days=%d&key=%s' % (min(a.days, 31), key)))
+    except Exception:  # not deployed yet: the legacy numbers, labelled as such below
+        kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d&key=%s' % (a.days, key)))
+        site_cols, source = SITE_COLS, 'kpi (legacy: visitors include bots)'
     g = gsc_by_day(a.days)
-    cols = ['day', 'google_impressions', 'google_clicks'] + SITE_COLS
+    cols = ['day', 'google_impressions', 'google_clicks'] + site_cols
     rows = []
     for d in kpi['days']:
         imp, clk = g.get(d['day'], ('', ''))
-        rows.append([d['day'], imp, clk] + [d[c] for c in SITE_COLS])
+        rows.append([d['day'], imp, clk] + [d[c] for c in site_cols])
 
     with open(os.path.join(a.out, 'kpi.csv'), 'w', newline='') as f:
         w = csv.writer(f)
@@ -81,8 +93,8 @@ def main():
     def tot(i):
         return sum(r[i] for r in rows if r[i] != '')
     lines = ['# RuinMyTrip scoreboard', '',
-             'Generated %s Pacific by scripts/kpi_snapshot.py. Days are Pacific. Google runs 2 to 3 days behind (blank = not reported yet).'
-             % datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), '',
+             'Generated %s Pacific by scripts/kpi_snapshot.py from /cron/%s. Days are Pacific. Google runs 2 to 3 days behind (blank = not reported yet). Definitions: docs/METRICS.md.'
+             % (datetime.datetime.now().strftime('%Y-%m-%d %H:%M'), source), '',
              '| ' + ' | '.join(cols) + ' |', '|' + '---|' * len(cols)]
     lines += ['| ' + ' | '.join(str(x) for x in r) + ' |' for r in rows]
     lines += ['| **total** | ' + ' | '.join(str(tot(i)) for i in range(1, len(cols))) + ' |']
