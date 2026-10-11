@@ -245,6 +245,7 @@ $routes = [
     ['POST', '#^/admin/destination/draft/(?<id>\d+)/publish$#', 'admin_destination_publish'],
     ['GET',  '#^/admin/suggestions$#',          'admin_suggestions'],
     ['GET',  '#^/admin/funnel$#',               'admin_funnel'],
+    ['GET',  '#^/admin/proof$#',                'admin_proof'],
     ['GET',  '#^/admin/seo$#',                 'admin_seo'],
     ['GET',  '#^/admin/feedback$#',            'admin_feedback'],
     ['POST', '#^/admin/feedback/resolve$#',    'admin_feedback_resolve'],
@@ -271,6 +272,7 @@ $routes = [
     ['GET',  '#^/cron/indexnow$#',             'cron_indexnow'],
     ['GET',  '#^/cron/funnel$#',               'cron_funnel'],
     ['GET',  '#^/cron/kpi$#',                  'cron_kpi'],
+    ['GET',  '#^/cron/proof$#',                'cron_proof'],
     // What the site has that is worth a social post (app/social_landing.php), for scripts/social_from_site.py.
     ['GET',  '#^/cron/social$#',               'cron_social'],
     ['GET',  '#^/cron/places$#',               'cron_places'],

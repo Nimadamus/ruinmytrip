@@ -129,7 +129,7 @@ function rmt_kpi_daily(int $days = 14): array {
 /** GET /cron/kpi?key=...&days=14  the daily rows alone, same key and same 404 as /cron/funnel. */
 function cron_kpi(array $a): void {
     $key = (string) (getenv('CRON_KEY') ?: '');
-    $given = (string) input('key');
+    $given = rmt_cron_key_given();
     if ($key === '' || $given === '' || !hash_equals($key, $given)) not_found();
     header('Content-Type: application/json; charset=utf-8');
     header('X-Robots-Tag: noindex');

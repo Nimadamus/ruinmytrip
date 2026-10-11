@@ -14,6 +14,11 @@ declare(strict_types=1);
 
 /** Client IP, honouring Render's proxy header but never trusting it blindly for auth. */
 function rmt_client_ip(): string {
+    /* Cloudflare sits in front of the site and sets CF-Connecting-IP itself (2026-10-11). The first
+       X-Forwarded-For entry is whatever the client chose to send, so a rate limit keyed on it could
+       be dodged by sending a new fake address with every request. */
+    $cf = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? '';
+    if ($cf !== '' && filter_var($cf, FILTER_VALIDATE_IP)) return $cf;
     $fwd = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
     if ($fwd !== '') {
         $first = trim(explode(',', $fwd)[0]);

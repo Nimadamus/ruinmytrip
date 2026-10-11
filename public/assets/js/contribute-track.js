@@ -95,6 +95,31 @@
     kinds.forEach(function (k) { window.addEventListener(k, once, { capture: true, passive: true }); });
   })();
 
+  /* The stricter bit (2026-10-11): human_interaction above fires on scroll, and headless browsers
+     scroll; on 2026-10-09 fifteen of them "interacted" with /review/new inside two minutes. This one
+     needs a TRUSTED tap, click or key (not scroll, not a synthetic event), at least 1.5 s after the
+     page loaded, from a browser that does not announce automation. A browser that does announce it
+     (navigator.webdriver) is reported once as automation_detected instead. Still one row per tab
+     session, still no coordinates, no timing, no target: the dashboard (app/proof.php) only needs
+     to know which bucket a browser belongs in. */
+  (function () {
+    var KEY = 'rmt_hv';
+    try { if (sessionStorage.getItem(KEY)) return; } catch (e) { /* storage refused: still count */ }
+    function mark() { try { sessionStorage.setItem(KEY, '1'); } catch (e) { /* ignore */ } }
+    if (navigator.webdriver) { mark(); send('automation_detected', { path: location.pathname }); return; }
+    var t0 = (window.performance && performance.now) ? performance.now() : 0;
+    var kinds = ['pointerdown', 'keydown', 'touchstart'];
+    function verify(ev) {
+      if (!ev || ev.isTrusted !== true) return;
+      var now = (window.performance && performance.now) ? performance.now() : 2000;
+      if (now - t0 < 1500) return;
+      kinds.forEach(function (k) { window.removeEventListener(k, verify, true); });
+      mark();
+      send('human_verified', { path: location.pathname });
+    }
+    kinds.forEach(function (k) { window.addEventListener(k, verify, { capture: true, passive: true }); });
+  })();
+
   // Exposed so the draft script can report a restore without duplicating the beacon plumbing.
   window.rmtTrack = send;
 })();

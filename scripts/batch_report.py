@@ -10,7 +10,7 @@ import json, os, re, sys, urllib.request
 camp = sys.argv[1] if len(sys.argv) > 1 else 'day-of-the-dead'
 days = sys.argv[2] if len(sys.argv) > 2 else '14'
 k = re.search(r'CRON_KEY\W+([A-Za-z0-9]{20,})', open(os.path.expanduser('~/CREDENTIALS.md'), encoding='utf-8').read()).group(1)
-d = json.load(urllib.request.urlopen(f'https://ruinmytrip.com/cron/funnel?key={k}&days={days}', timeout=90))
+d = json.load(urllib.request.urlopen(urllib.request.Request(f'https://ruinmytrip.com/cron/funnel?days={days}', headers={'X-Cron-Key': k}), timeout=90))
 alerts = {(a['source'], a['content']): a for a in d.get('phase', {}).get('alerts_by_channel', []) if a['campaign'] == camp}
 rows = [r for r in d.get('acquisition', []) if r.get('campaign') == camp]
 def neck(v, a):

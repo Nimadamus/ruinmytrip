@@ -32,8 +32,8 @@ UA = 'RMT-daily-check-bot/1.0'
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def get(url, ua=UA):
-    req = urllib.request.Request(url, headers={'User-Agent': ua})
+def get(url, ua=UA, key=None):
+    req = urllib.request.Request(url, headers={'User-Agent': ua, **({'X-Cron-Key': key} if key else {})})
     try:
         with urllib.request.urlopen(req, timeout=60) as r:
             return r.status, r.read().decode('utf-8', 'replace'), r.headers.get('Content-Type', '')
@@ -90,7 +90,7 @@ def main():
         fails.append('trip form did not render (%s)' % code)
 
     # 3. Tracking, from the funnel.
-    code, body, _ = get(SITE + '/cron/funnel?days=1&key=' + cron_key())
+    code, body, _ = get(SITE + '/cron/funnel?days=1', key=cron_key())
     if code != 200:
         fails.append('funnel endpoint %s' % code)
     else:

@@ -68,32 +68,64 @@ $bp  = $boundPlace ?? null;
 <p class="hint" id="place-hint" style="margin:4px 0 0"></p>
 <?php endif; ?>
 
-<label for="visited_on">When was your trip?</label>
-<input type="date" id="visited_on" name="visited_on" max="<?= date('Y-m-d') ?>" value="<?= $val('visited_on') ?>">
-
-<label for="rating">Overall rating</label>
-<select id="rating" name="rating">
-  <option value="">Rate it</option>
-  <?php for ($i = 5; $i >= 1; $i--): ?>
-    <option value="<?= $i ?>"<?= $sel('rating', $i) ?>><?= str_repeat('★', $i) . str_repeat('☆', 5 - $i) ?> (<?= $i ?>)</option>
-  <?php endfor; ?>
-</select>
-
-<label for="title">Headline <span class="muted">(optional)</span></label>
+<?php
+/* The quick form (2026-10-11). A new review asks for two things up front: how many stars and a few
+   honest sentences. Everything else is optional and sits in "Add more detail", which opens by
+   itself when any of it already has a value (a restored draft, a validation re-render, or the
+   front door's "what ruined it" sentence). The edit form keeps every field on show, labelled. */
+$quick = !isset($quickForm) || $quickForm;
+$ratingNow = (int) ($r['rating'] ?? 0);
+$bodyMin = defined('RMT_REVIEW_BODY_MIN') ? RMT_REVIEW_BODY_MIN : 40;
+$opt = '<span class="muted" style="font-weight:400">(optional)</span>';
+$extraFields = static function () use ($val, $opt): void { ?>
+<label for="title">Headline <?= $opt ?></label>
 <input type="text" id="title" name="title" maxlength="140"
        placeholder="Touristy but the view earns it" value="<?= $val('title') ?>">
-
-<label for="body">Your review</label>
-<textarea id="body" name="body" rows="8"
-          placeholder="What was it actually like? Be specific: what you did, what it cost, what you would tell a friend."><?= $val('body') ?></textarea>
-
-<label for="what_great">What was great?</label>
+<label for="visited_on">When were you there? <?= $opt ?></label>
+<input type="date" id="visited_on" name="visited_on" max="<?= date('Y-m-d') ?>" value="<?= $val('visited_on') ?>">
+<label for="what_great">What was great? <?= $opt ?></label>
 <textarea id="what_great" name="what_great" rows="3" maxlength="2000"
           placeholder="The part worth the trip."><?= $val('what_great') ?></textarea>
-
-<label for="what_ruined">What nearly ruined the trip?</label>
+<label for="what_ruined">What nearly ruined the trip? <?= $opt ?></label>
 <textarea id="what_ruined" name="what_ruined" rows="3" maxlength="2000"
           placeholder="The thing you wish someone had warned you about."><?= $val('what_ruined') ?></textarea>
+<?php }; ?>
+
+<fieldset class="star-rate">
+  <legend>Your rating</legend>
+  <div class="star-rate-row">
+    <span class="stars" role="radiogroup" aria-label="Rating, 1 to 5 stars">
+      <?php for ($i = 5; $i >= 1; $i--): ?>
+        <input type="radio" class="sr-only" id="rate-<?= $i ?>" name="rating" value="<?= $i ?>"<?= $ratingNow === $i ? ' checked' : '' ?>>
+        <label for="rate-<?= $i ?>" title="<?= $i ?> of 5"><span aria-hidden="true">★</span><span class="sr-only"><?= $i ?> star<?= $i > 1 ? 's' : '' ?></span></label>
+      <?php endfor; ?>
+    </span>
+    <span class="star-rate-word" id="star-word" aria-live="polite"><?= $ratingNow ? e(RMT_STAR_WORDS[$ratingNow] ?? '') : 'Tap a star' ?></span>
+  </div>
+</fieldset>
+
+<?php if (!$quick): ?>
+<label for="title">Headline <?= $opt ?></label>
+<input type="text" id="title" name="title" maxlength="140"
+       placeholder="Touristy but the view earns it" value="<?= $val('title') ?>">
+<?php endif; ?>
+
+<label for="body">Your review</label>
+<textarea id="body" name="body" rows="<?= $quick ? 5 : 8 ?>" minlength="<?= (int) $bodyMin ?>" maxlength="<?= (int) (defined('RMT_REVIEW_BODY_MAX') ? RMT_REVIEW_BODY_MAX : 10000) ?>"
+          aria-describedby="body-count"
+          placeholder="What was it actually like? What it cost, what surprised you, what you would tell a friend."><?= $val('body') ?></textarea>
+<p class="hint body-count" id="body-count" data-min="<?= (int) $bodyMin ?>"><?= (int) $bodyMin ?> characters minimum</p>
+
+<?php if (!$quick): ?>
+<label for="visited_on">When were you there? <?= $opt ?></label>
+<input type="date" id="visited_on" name="visited_on" max="<?= date('Y-m-d') ?>" value="<?= $val('visited_on') ?>">
+<label for="what_great">What was great? <?= $opt ?></label>
+<textarea id="what_great" name="what_great" rows="3" maxlength="2000"
+          placeholder="The part worth the trip."><?= $val('what_great') ?></textarea>
+<label for="what_ruined">What nearly ruined the trip? <?= $opt ?></label>
+<textarea id="what_ruined" name="what_ruined" rows="3" maxlength="2000"
+          placeholder="The thing you wish someone had warned you about."><?= $val('what_ruined') ?></textarea>
+<?php endif; ?>
 
 <?php
 /* Optional detail: traveler type and the subratings that apply to what is being reviewed.
@@ -110,13 +142,16 @@ $bp  = $boundPlace ?? null;
 $aspectValues = $aspectValues ?? [];
 $currentCat = (string) ($r['subject_type'] ?? ($bp['type'] ?? 'destination'));
 if (!isset(RMT_ASPECTS_BY_CATEGORY[$currentCat])) $currentCat = 'destination';
-$anyDetail = $aspectValues || !empty($r['traveler_type']);
+$anyDetail = $aspectValues || !empty($r['traveler_type'])
+          || ($quick && (trim((string) ($r['title'] ?? '')) !== '' || !empty($r['visited_on'])
+                          || trim((string) ($r['what_great'] ?? '')) !== '' || trim((string) ($r['what_ruined'] ?? '')) !== ''));
 ?>
 <details class="card" id="review-detail" style="margin:6px 0 18px"<?= $anyDetail ? ' open' : '' ?>>
   <summary style="cursor:pointer;padding:12px 14px;font-weight:600">
-    Add more detail <span class="muted" style="font-weight:400">(optional)</span>
+    Add more detail <span class="muted" style="font-weight:400">(optional<?= $quick ? ': headline, dates, the best and worst part' : '' ?>)</span>
   </summary>
   <div class="card-body" style="padding-top:0">
+    <?php if ($quick) $extraFields(); ?>
 
     <label for="traveler_type">Who were you travelling with? <span class="muted">(optional)</span></label>
     <select id="traveler_type" name="traveler_type">
@@ -236,5 +271,26 @@ $anyDetail = $aspectValues || !empty($r['traveler_type']);
   sel.addEventListener('change', window.rmtSyncPlaces);
   name.addEventListener('input', describe);
   window.rmtSyncPlaces();
+})();
+</script>
+
+<script>
+// The live count under the review box and the word beside the stars. Progressive enhancement only:
+// the server enforces the same minimum and the stars are plain radio buttons without it.
+(function () {
+  var box = document.getElementById('body'), out = document.getElementById('body-count');
+  if (box && out) {
+    var min = parseInt(out.getAttribute('data-min'), 10) || 40;
+    var paint = function () {
+      var n = box.value.trim().length;
+      out.textContent = n >= min ? n + ' characters. Good to go.' : n + ' of ' + min + ' characters minimum';
+      out.classList.toggle('ok', n >= min);
+    };
+    box.addEventListener('input', paint); paint();
+  }
+  var words = <?= json_encode(RMT_STAR_WORDS) ?>, word = document.getElementById('star-word');
+  document.querySelectorAll('.star-rate input[name="rating"]').forEach(function (r) {
+    r.addEventListener('change', function () { if (word) word.textContent = words[r.value] || ''; });
+  });
 })();
 </script>

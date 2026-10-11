@@ -50,7 +50,8 @@ $what = $review ? 'review' : ($question ? 'question' : 'trip');
   <form method="post" action="<?= e(url('plan/join')) ?>"><?= csrf_field() ?>
     <?php $qjReturn = ''; include __DIR__ . '/auth/_quick_join_fields.php'; ?>
     <p class="hint" style="margin-top:4px">With email we send one link to confirm the address; your <?= $what ?> goes live when
-      you click it. With Google it goes live straight away.</p>
+      you click it.<?= function_exists('rmt_google_enabled') && rmt_google_enabled() ? ' With Google it goes live straight away.' : '' ?>
+      <?= $review ? ' Your review is saved on our side until then, even if you close this page.' : '' ?></p>
     <div style="margin-top:12px"><button class="btn btn-primary btn-block"><?= $review ? 'Create account and publish' : ($question ? 'Create account and post' : 'Create account and post my trip') ?></button></div>
   </form>
   <p class="muted" style="margin-top:14px">Already a member? <a href="<?= e(url('login?return=' . rawurlencode('/plan/join'))) ?>">Sign in</a> and it is posted for you.</p>
