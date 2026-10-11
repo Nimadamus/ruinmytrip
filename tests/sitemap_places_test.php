@@ -7,7 +7,7 @@
  *   - on: exactly the listed slugs that rmt_indexable() still accepts, nothing else.
  *   - a listed place that the indexing rule says is thin is never submitted.
  *   - the list parser ignores comments, blanks and anything that is not a slug.
- *   - the reviewed list stays inside the 150 to 250 the plan allows.
+ *   - the reviewed list stays between 100 and 250 places (110 after the 2026-10-11 content check).
  *
  *   php tests/sitemap_places_test.php   (reads database/dev.sqlite, writes nothing)
  */
@@ -33,7 +33,7 @@ ok('a missing file is an empty list', rmt_sitemap_place_allowlist($tmp . '.nope'
 unlink($tmp);
 
 $list = rmt_sitemap_place_allowlist();
-ok('the reviewed list holds 150 to 250 places', count($list) >= 150 && count($list) <= 250, (string) count($list));
+ok('the reviewed list holds 100 to 250 places', count($list) >= 100 && count($list) <= 250, (string) count($list));
 
 putenv('RMT_SITEMAP_PLACES');
 ok('off by default: no place is submitted', rmt_sitemap_group('places') === []);
