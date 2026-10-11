@@ -138,6 +138,15 @@ def run(p, dev, ctxargs):
     check(tag('J6 a failed account step keeps the review on the page'), 'tourist trap' in page.content())
     ctx.close()
 
+    # J9 a script that fills the hidden field gets nothing held
+    ctx = b.new_context(**ctxargs); page = ctx.new_page()
+    open_form(page)
+    page.evaluate("document.querySelector('input[name=hp_note]').value = 'http://spam.example'")
+    write_and_post(page)
+    check(tag('J9 a filled hidden field is refused'), 'could not be posted' in page.content() and not page.url.endswith('/plan/join'), page.url)
+    check(tag('J9 and nothing is held on the server'), not any(c['name'] == 'rmt_rdraft' for c in ctx.cookies()))
+    ctx.close()
+
     # J7 an existing member signs in from the join step
     ctx = b.new_context(**ctxargs); page = ctx.new_page()
     before = db("SELECT COUNT(*) FROM reviews WHERE user_id = 1")[0][0]
@@ -147,7 +156,10 @@ def run(p, dev, ctxargs):
     page.locator('form[action$="login"] button[type=submit], form[action*="login"] button').first.click()
     page.wait_for_load_state('networkidle')
     after = db("SELECT COUNT(*) FROM reviews WHERE user_id = 1")[0][0]
-    check(tag('J7 signing in saves the review to the account'), after == before + 1, (before, after, page.url))
+    # The same member reviewing the same place twice in 24 hours gets the first review back (the
+    # duplicate guard), so a rerun within a day lands on the earlier review instead of a new row.
+    dup = before > 0 and db("SELECT COUNT(*) FROM reviews WHERE user_id = 1 AND place_id = ? AND created_at >= datetime('now','-1 day')", (PLACE_ID,))[0][0] > 0
+    check(tag('J7 signing in saves the review to the account (or returns the one from today)'), after == before + 1 or (dup and after == before), (before, after, page.url))
     check(tag('J7 it lands on the published review'), '/review/' in page.url, page.url)
     ctx.close()
     b.close()
