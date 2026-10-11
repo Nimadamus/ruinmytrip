@@ -43,3 +43,21 @@ becomes empty, so the nine pages return to the control title and description. Th
 - Undo: `git revert` of the one commit, or put the array back.
 - Ship it alone, not in the same deploy as any other SEO change, so its effect can be read cleanly.
 - Measure: the same table above for the 28 days after deploy, test group against control.
+
+## Baseline recorded before the reversal deploy (2026-10-11)
+
+Search Console, 28 days 2026-09-12 to 2026-10-09 (latest day with data), city pages `/d/{slug}`:
+
+| Group | Impressions | Clicks | Avg position |
+|---|---|---|---|
+| Test (9 pages) | 9 | 0 | 6.1 |
+| Control (76 pages) | 22 | 0 | 21.1 |
+| Whole site | 1,902 | 9 | |
+
+Test pages with impressions: amsterdam-netherlands 2 (pos 8), berlin-germany 1 (4), milan-italy 2
+(5.5), oaxaca-mexico 2 (8.5), zanzibar-tanzania 2 (3.5). The other four had none.
+
+These volumes are too small to show an effect of the reversal either way in a few weeks. Any later
+change on these pages is read against the control group and the September 2026 spam update
+recovery, and is not attributed to the reversal without a difference that holds over at least 28
+days.
