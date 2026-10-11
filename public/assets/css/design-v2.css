@@ -211,6 +211,10 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-band-in{display:flex;align-items:center;justify-content:space-between;gap:28px}
 .v2-band p{margin:6px 0 0;max-width:40em}
 .v2-band-acts{display:flex;gap:10px;flex-wrap:wrap;flex-shrink:0}
+.v2-band-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.12);font-size:.88rem}
+.v2-band-links a{color:#9fe3d6;font-weight:600}
+.v2-band-links span{color:#8fa3b8}
+.v2-band-links a:hover{color:#fff}
 
 /* ------------------------------------------------------------ explore */
 .v2-explore{padding-bottom:40px}

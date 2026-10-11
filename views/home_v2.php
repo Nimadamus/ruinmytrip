@@ -135,7 +135,7 @@
     <div class="v2-sec-head"><h2 class="v2-h2">Latest from travelers</h2><a class="v2-link" href="<?= e(url('reviews')) ?>">All reviews →</a></div>
     <div class="v2-review-row">
       <?php foreach (array_slice($v2Reviews, 0, 3) as $rv): ?>
-        <a class="v2-review" href="<?= e(url('review/' . (int) $rv['id'])) ?>">
+        <a class="v2-review" href="<?= e(url('review/' . (int) $rv['id'] . '/' . ($rv['slug'] ?: rmt_review_slug($rv)))) ?>">
           <span class="v2-review-stars" aria-label="<?= (int) $rv['rating'] ?> of 5"><?= str_repeat('★', (int) $rv['rating']) ?><span class="v2-dim"><?= str_repeat('★', 5 - (int) $rv['rating']) ?></span></span>
           <b><?= e((string) $rv['title']) ?></b>
           <small>@<?= e((string) ($rv['username'] ?? $rv['author']['username'] ?? 'traveler')) ?></small>
@@ -156,6 +156,16 @@
       <a class="v2-btn v2-btn-accent" data-cta="home_plan" href="<?= e(url('plan?cta=home_plan')) ?>">Add my dates</a>
       <a class="v2-btn v2-btn-glass" data-cta="home_buddy" href="<?= e(url('buddies')) ?>">Travel buddies</a>
     </div>
+  </div>
+  <?php /* The travel buddy pages the current home page links, kept so none of them loses its link. */ ?>
+  <div class="wrap v2-band-links">
+    <span>Popular:</span>
+    <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
+    <a href="<?= e(url('buddies/backpacking')) ?>">Backpacking</a>
+    <a href="<?= e(url('buddies/road-trip')) ?>">Road trips</a>
+    <?php foreach (['greece', 'thailand', 'japan', 'italy', 'bali', 'mexico', 'royal-caribbean', 'carnival', 'norwegian'] as $bl): if (!($lp = rmt_buddy_landing($bl))) continue; ?>
+      <a href="<?= e(url(rmt_buddy_landing_path($bl))) ?>"><?= e($lp['kind'] === 'cruise' ? $lp['line'] . ' cruises' : $lp['name']) ?></a>
+    <?php endforeach; ?>
   </div>
 </section>
 <script src="<?= e(rmt_asset('assets/js/travel-map.js')) ?>" defer></script>

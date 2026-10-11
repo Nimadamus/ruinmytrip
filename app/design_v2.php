@@ -73,8 +73,8 @@ function rmt_design_initial(string $name): string {
 }
 
 /**
- * The strongest places in a city: indexable under the site's own rule, then the ones with the most
- * to read (traveler reviews, our own write-up, hours, photos). Used by the city page's "Top places"
+ * The strongest places in a city: indexable under the site's own rule and with something to read
+ * (traveler reviews or our own write up), most first. Used by the city page's "Top places"
  * block, which links them straight from the city (SEO discovery option B).
  *
  * @return list<array<string,mixed>>
@@ -98,6 +98,9 @@ function rmt_city_top_places(int $destId, int $limit = 12): array {
     foreach ($rows as $r) {
         $v = rmt_indexable('place', $r);
         if (empty($v['ok'])) continue;
+        // Only places with something to read: travelers' reviews or our own write up. An address
+        // and opening hours alone is a page we would rather not spend a city's strongest links on.
+        if ((int) $r['traveler_reviews'] === 0 && (int) $r['has_editorial'] === 0) continue;
         $r['score'] = 6 * (int) $r['traveler_reviews'] + 4 * (int) $r['has_editorial']
                     + 2 * min(1, (int) $r['hours_count']) + min(2, (int) $r['photo_count'])
                     + ((string) $r['website_url'] !== '' ? 1 : 0);
@@ -129,8 +132,11 @@ function rmt_design_type_glyph(string $type): string {
  * strongest places in the featured cities.
  */
 const RMT_HOME_V2_PLACES = [
-    'le-rapido-paris', 'zeughauskeller-zurich', 'nini-s-coffeebar-amsterdam', 'ekstedt-stockholm',
-    'vasa-museum-stockholm', 'ratana-milan', 'au-pied-de-cochon-paris', 'stade-roland-garros-paris',
+    // Search impressions and a full write up of our own (docs/seo/SITEMAP_LIST_VERIFICATION_20261011.md):
+    // the home page's strongest links go to pages with something to read, never to thin ones.
+    'vasa-museum-stockholm', 'zeughauskeller-zurich', 'ekstedt-stockholm', 'ratana-milan',
+    'au-pied-de-cochon-paris', 'book-of-kells-experience-at-trinity-college-dublin',
+    'hungarian-national-museum-budapest', 'anne-frank-house-amsterdam',
 ];
 
 /** @return list<array<string,mixed>> */
