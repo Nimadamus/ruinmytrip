@@ -35,7 +35,10 @@ function rmt_page_cache_key(string $scope): ?string {
         }
     }
     if (defined('RMT_INVITE_COOKIE') && !empty($_COOKIE[RMT_INVITE_COOKIE])) return null;
-    return sha1($scope . '|' . (string) ($_SERVER['REQUEST_URI'] ?? ''));
+    // The redesign switches are part of the key (app/design_v2.php), so a cached page is never
+    // served in the other design to a previewing browser or for a minute after a switch flips.
+    $design = function_exists('rmt_design_sig') ? rmt_design_sig() : '';
+    return sha1($scope . '|' . ($design !== '' ? $design . '|' : '') . (string) ($_SERVER['REQUEST_URI'] ?? ''));
 }
 
 /** Serve a fresh cached copy if there is one. True when the response has been sent. */

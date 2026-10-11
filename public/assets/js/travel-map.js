@@ -11,6 +11,7 @@
   if (!root) return;
   var box = root.querySelector('[data-tm-map]');
   var readOnly = root.getAttribute('data-tm-readonly') === '1';
+  var embed = root.hasAttribute('data-tm-embed');
   var base = root.getAttribute('data-tm-base');
   var cardBase = root.getAttribute('data-tm-card');
   var picked = {};
@@ -39,7 +40,13 @@
     }
     if (readOnly) return;
     var url = base + (k ? '?c=' + k : '');
-    try { history.replaceState(null, '', url); } catch (e) {}
+    // Embedded on another page (the redesigned home page): the address bar stays that page's, and
+    // the "keep going" link carries the countries over to the full map.
+    if (embed) {
+      root.querySelectorAll('[data-tm-open]').forEach(function (a) { a.href = url; });
+    } else {
+      try { history.replaceState(null, '', url); } catch (e) {}
+    }
     var f = root.querySelector('[data-tm-field]'); if (f) f.value = k;
     var r = root.querySelector('[data-tm-return]'); if (r) r.value = '/map' + (k ? '?c=' + k : '');
     var d = root.querySelector('[data-tm-download]'); if (d) d.href = cardBase + '/' + (k || 'none') + '.png';
@@ -132,8 +139,23 @@
     }
   });
 
-  fetch(root.getAttribute('data-tm-geo'))
-    .then(function (r) { return r.json(); })
-    .then(draw)
-    .catch(function () { box.innerHTML = '<p class="muted tm-loading">The map did not load. Refresh to try again.</p>'; });
+  var started = false;
+  function load() {
+    if (started) return;
+    started = true;
+    fetch(root.getAttribute('data-tm-geo'))
+      .then(function (r) { return r.json(); })
+      .then(draw)
+      .catch(function () { box.innerHTML = '<p class="muted tm-loading">The map did not load. Refresh to try again.</p>'; });
+  }
+  if (!embed) {
+    load();
+  } else {
+    /* On the home page the map is not what the first paint waits for: it loads once the page has,
+       or straight away when somebody reaches for it. */
+    box.addEventListener('pointerenter', load, { once: true });
+    box.addEventListener('touchstart', load, { once: true, passive: true });
+    var later = function () { setTimeout(load, 600); };
+    if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
+  }
 })();

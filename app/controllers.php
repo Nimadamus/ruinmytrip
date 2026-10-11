@@ -136,7 +136,27 @@ function home(array $a): void {
                             . implode(',', array_fill(0, count($featuredSlugs), '?')) . ')', $featuredSlugs);
     usort($featuredCities, static fn(array $x, array $y): int =>
         array_search($x['slug'], $featuredSlugs, true) <=> array_search($y['slug'], $featuredSlugs, true));
-    view('home', compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities'), [
+    $homeView = 'home';
+    if (rmt_design_v2('home')) {
+        /* The redesigned front door (app/design_v2.php): the travel map and one tap ratings of
+           places search already sends people to, then cities with photographs. Every number on it
+           is a count of rows. */
+        $homeView = 'home_v2';
+        $v2Places = rmt_home_v2_places(6);
+        $placeCounts = [];
+        foreach (q_all("SELECT destination_id, COUNT(*) n FROM places WHERE status = 'active' GROUP BY destination_id") as $pc) {
+            $placeCounts[(int) $pc['destination_id']] = (int) $pc['n'];
+        }
+        $v2Cities = q_all('SELECT id, slug, name, country, hero_url FROM destinations WHERE slug IN ('
+                          . implode(',', array_fill(0, count($featuredSlugs), '?')) . ')', $featuredSlugs);
+        usort($v2Cities, static fn(array $x, array $y): int =>
+            array_search($x['slug'], $featuredSlugs, true) <=> array_search($y['slug'], $featuredSlugs, true));
+        foreach ($v2Cities as &$vc) $vc['places'] = $placeCounts[(int) $vc['id']] ?? 0;
+        unset($vc);
+        $v2CityCount = $stat_destinations;
+        $v2Reviews = $reviews;
+    }
+    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews') : []), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.
@@ -235,7 +255,18 @@ function explore(array $a): void {
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $countries = q_all('SELECT country, COUNT(*) n FROM destinations WHERE country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY country');
     $topTags = rmt_top_tags(14);
-    view('explore', compact('dests','cats','qs','cat','sort','topTags','countries'), [
+    $exploreView = 'explore';
+    if (rmt_design_v2('explore')) {
+        // The redesigned list shows each city's real place count (app/design_v2.php).
+        $exploreView = 'explore_v2';
+        $pcs = [];
+        foreach (q_all("SELECT destination_id, COUNT(*) n FROM places WHERE status = 'active' GROUP BY destination_id") as $pc) {
+            $pcs[(int) $pc['destination_id']] = (int) $pc['n'];
+        }
+        foreach ($dests as &$dx) $dx['places'] = $pcs[(int) $dx['id']] ?? 0;
+        unset($dx);
+    }
+    view($exploreView, compact('dests','cats','qs','cat','sort','topTags','countries'), [
         'title' => 'Explore destinations and the travelers going there | RuinMyTrip',
         'description' => 'Browse cities on RuinMyTrip and find the travelers heading there. Post your dates and see who is going when you are.',
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Explore','url'=>url('explore')]],
@@ -389,7 +420,10 @@ function destination(array $a): void {
         : [];
     $pcRobots = rmt_robots_for(rmt_indexable('destination', $d + ['place_count' => (int) $placeCount]));
     rmt_page_cache_begin($pcKey);
-    view('destination', compact('cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
+    /* The strongest indexable places, linked straight from the city (app/design_v2.php). Off unless
+       RMT_CITY_TOP_PLACES=1 or the city redesign is on: it changes internal linking on 85 pages. */
+    $cityTop = rmt_city_top_places_enabled() ? rmt_city_top_places($id, 12) : [];
+    view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,
@@ -675,7 +709,8 @@ function place_show(array $a): void {
     }
     $id = (int) $p['id'];
     // Signed out and unfiltered: the same page for everybody for a minute (app/page_cache.php).
-    $pcKey = rmt_page_cache_key('place');
+    // The design is part of the key, so flipping RMT_PLACE_V2 never serves a minute of the other one.
+    $pcKey = rmt_page_cache_key(rmt_place_v2_enabled() ? 'place-v2' : 'place');
     if (rmt_page_cache_serve($pcKey)) return;
     $stats = rmt_place_stats($id);
     $breakdown = rmt_place_rating_breakdown($id);
@@ -794,8 +829,10 @@ function place_show(array $a): void {
        into a page about somewhere other travelers are actually going. */
     $network = rmt_place_network($id, $me);
     $pcRobots = rmt_robots_for($placeVerdict);
+    // A design preview (?design=v2) is never a page of its own in search.
+    if (rmt_place_design_preview()) $pcRobots = 'noindex,follow';
     rmt_page_cache_begin($pcKey);
-    view('place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
+    view(rmt_place_v2_enabled() ? 'place_show_v2' : 'place_show', compact('network','p','stats','breakdown','aspectAverages','reviews','editorial','photos','photoCount','me','typeLabel','ed','nearby','nearbyGeo','similar','myLists','placeArea','inGuides','saved','saveCount','hours','hoursByDay','openNow','address','coords','category','priceLabel','cover','talk'), [
         /* The title claims only what this page can answer, so it needs to know what is on it:
            how many days of hours we hold, and whether there is anything to say about price. */
         'title' => rmt_place_page_title($p + ['hours_count' => count($hours),
@@ -809,6 +846,7 @@ function place_show(array $a): void {
                           ['name'=>'Places','url'=>url('d/'.$p['dest_slug'].'/places')],
                           ['name'=>$p['name'],'url'=>$canonical]],
         'jsonld' => jsonld($ld),
+        'css' => rmt_place_v2_enabled() ? ['assets/css/place-v2.css'] : [],
     ]);
     rmt_page_cache_end($pcKey, $pcRobots);
 }

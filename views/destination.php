@@ -1,5 +1,6 @@
 <?php /** @var array $d @var array $trips @var array $reviews @var array $editorial @var array $tips @var array $meetups @var array $going @var array $avg @var array $avgByCategory @var ?array $me @var bool $saved @var int $wantCount @var array $photos @var int $photoCount @var array $discovery @var array $talk */ // reviews/editorial rows also carry 'useful_count' ?>
 <div class="wrap">
+  <?php if (empty($v2Body)): /* views/destination_v2.php draws its own hero and includes the rest */ ?>
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url(rmt_country_path((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
   <div class="dest-hero">
     <?php $heroSet = rmt_media_srcset($d['hero_url'] ?? null); ?>
@@ -31,6 +32,8 @@
     </div>
   </div>
   <?= rmt_photo_credit_html($d) ?>
+  <?php if (!empty($cityTop)) include __DIR__ . '/_city_top_places.php'; ?>
+  <?php endif; ?>
 
   <?php /* The people, directly under the hero. This page had a "Who's going" card, and it was in
            the sidebar below the guides, which is to say below everything the site wrote about the

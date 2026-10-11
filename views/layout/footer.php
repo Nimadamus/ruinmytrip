@@ -73,6 +73,7 @@
          worth a permanent thumb-reach target, and the middle one is the only thing we actually want
          people to do. Server rendered like everything else, so it costs nothing in speed or SEO. */ ?>
 <?php $rmt_me = current_user(); $rmt_path = parse_url(rmt_current_url(), PHP_URL_PATH) ?: '/'; ?>
+<?php if (rmt_design_v2('nav')): include __DIR__ . '/tabbar_v2.php'; else: ?>
 <nav class="tabbar" aria-label="Primary mobile">
   <a href="<?= e(url()) ?>" class="<?= $rmt_path === '/' ? 'on' : '' ?>" aria-label="Home">
     <span aria-hidden="true">&#8962;</span><span class="tabbar-l">Home</span></a>
@@ -108,6 +109,7 @@
     <a href="<?= e(url('register')) ?>" aria-label="Join"><span aria-hidden="true">&#9734;</span><span class="tabbar-l">Join</span></a>
   <?php endif; ?>
 </nav>
+<?php endif; ?>
 
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>

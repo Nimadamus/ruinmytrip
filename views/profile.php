@@ -1,10 +1,20 @@
 <?php /** @var array $u @var array $trips @var array $reviews @var array $guides @var array $collections @var int $followers @var int $following @var bool $is_following @var ?array $me @var array $stats @var array $badges @var bool $isMe @var array $compliments @var array $myCompliments @var bool $is_blocked @var bool $i_blocked_them @var array $wishlist @var array $hostedMeetups @var array $attendingMeetups @var array $upcomingTrips @var array $pastTrips @var ?array $homeDest @var array $photoWall */ ?>
-<div class="wrap">
-  <?php $rmt_cover = $coverUrl ?? (string) ($u['cover_url'] ?? ''); ?>
-  <div class="profile-cover<?= $rmt_cover !== '' ? ' has-image' : '' ?>"
-       style="<?= $rmt_cover !== '' ? 'background-image:url(\''.e($rmt_cover).'\')' : '' ?>"></div>
+<?php $pv2 = rmt_design_v2('profile'); /* the redesign (app/design_v2.php) */ ?>
+<div class="wrap<?= $pv2 ? ' v2-profile' : '' ?>">
+  <?php $rmt_cover = $coverUrl ?? (string) ($u['cover_url'] ?? '');
+        /* Redesign: with no cover photo of their own, the cover is the member's travel map. */
+        $pv2Codes = $pv2 ? rmt_map_for_user((int) $u['id']) : [];
+        $pv2MapCover = $pv2 && $rmt_cover === '' && $pv2Codes;
+        if ($pv2MapCover) $rmt_cover = rmt_map_card_url($pv2Codes); ?>
+  <div class="profile-cover<?= $rmt_cover !== '' ? ' has-image' : '' ?><?= $pv2MapCover ? ' v2-cover-map' : '' ?>"
+       style="<?= $rmt_cover !== '' ? 'background-image:url(\''.e($rmt_cover).'\')' : '' ?>"><?php
+    if ($pv2 && !$pv2Codes && $isMe): ?><a class="v2-cover-cta" data-cta="profile_map" href="<?= e(url('map')) ?>">Make your travel map your cover</a><?php endif; ?></div>
   <div class="profile-head">
+    <?php if ($pv2 && trim((string) ($u['avatar_url'] ?? '')) === ''): ?>
+      <span class="avatar-lg v2-initial-lg" aria-hidden="true"><?= e(rmt_design_initial((string) ($u['display_name'] ?: $u['username']))) ?></span>
+    <?php else: ?>
     <img class="avatar-lg" src="<?= e(avatar_url($u['avatar_url'])) ?>" alt="<?= e($u['username']) ?>">
+    <?php endif; ?>
     <div style="flex:1;min-width:220px">
       <h1 style="margin:0"><?= e($u['display_name'] ?: $u['username']) ?>
         <?php if (rmt_is_editorial($u)): ?><?= rmt_editorial_badge() ?>
@@ -347,6 +357,7 @@
   <?php /* Reviews first. This is a travel review site, a reviewer's reviews are the answer to
            "who is this traveler", and they were below trips, guides and collections. */ ?>
   <?php if ($reviews): ?><h2 style="margin-top:30px"><?= rmt_is_editorial($u) ? 'Editorial reviews' : 'Traveler reviews' ?> <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($reviews) ?>)</span></h2>
+  <?php if ($pv2): ?><div class="v2-pf-list<?= count($reviews) > 12 ? ' v2-pf-cut' : '' ?>" id="v2-pf-reviews"><?php endif; ?>
   <?php foreach ($reviews as $r): ?><div class="card" style="margin-bottom:12px"><div class="card-body">
     <span class="stars"><?= stars((int)$r['rating']) ?></span>
     <?php /* Labelled on the card, not only in the page header. A reader scrolling a list of 185
@@ -355,10 +366,15 @@
     <b><a href="<?= e(url('review/'.(int)$r['id'].'/'.($r['slug'] ?: rmt_review_slug($r)))) ?>"><?= e($r['title'] ?: $r['subject_name']) ?></a></b>
     <p class="muted" style="margin:.2rem 0 0"><?= e($r['subject_name']) ?> · <span style="text-transform:capitalize"><?= e($r['subject_type']) ?></span><?php if ($r['visited_on']): ?> · visited <?= e(date('M Y', strtotime((string)$r['visited_on']))) ?><?php endif; ?></p>
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
-  </div></div><?php endforeach; ?><?php endif; ?>
+  </div></div><?php endforeach; ?>
+  <?php if ($pv2): ?></div><?php if (count($reviews) > 12): ?>
+    <p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-reviews').classList.remove('v2-pf-cut');this.parentNode.remove()">Show all <?= count($reviews) ?> reviews</button></p>
+  <?php endif; endif; ?>
+  <?php endif; ?>
 
   <?php if ($talkPosts): ?>
     <h2 style="margin-top:30px">Talk <span class="muted" style="font-weight:400;font-size:1rem">(<?= count($talkPosts) ?>)</span></h2>
+    <?php if ($pv2): ?><div class="v2-pf-list v2-pf-short" id="v2-pf-talk"><?php endif; ?>
     <?php foreach ($talkPosts as $tp): ?>
       <div class="card" style="margin-bottom:10px"><div class="card-body" style="padding:12px 16px">
         <span class="hint"><?= e(ago((string) $tp['created_at'])) ?>
@@ -371,6 +387,7 @@
           <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Open' ?></a></p>
       </div></div>
     <?php endforeach; ?>
+    <?php if ($pv2): ?></div><?php if (count($talkPosts) > 4): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-talk').classList.remove('v2-pf-short');this.parentNode.remove()">Show all <?= count($talkPosts) ?> posts</button></p><?php endif; endif; ?>
   <?php endif; ?>
 
   <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
@@ -405,9 +422,9 @@
   <?php endif; ?>
 
   <?php if ($guides): ?><h2 style="margin-top:30px">Guides</h2>
-  <div class="grid g-3"><?php foreach ($guides as $g): ?>
+  <div class="grid g-3<?= $pv2 && count($guides) > 6 ? ' v2-pf-six' : '' ?>" id="v2-pf-guides"><?php foreach ($guides as $g): ?>
     <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($g['title']) ?></h3></div></a></article>
-  <?php endforeach; ?></div><?php endif; ?>
+  <?php endforeach; ?></div><?php if ($pv2 && count($guides) > 6): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-guides').classList.remove('v2-pf-six');this.parentNode.remove()">Show all <?= count($guides) ?> guides</button></p><?php endif; ?><?php endif; ?>
 
   <?php if ($collections): ?><h2 style="margin-top:30px">Collections</h2>
   <div class="grid g-3"><?php foreach ($collections as $c): ?>
