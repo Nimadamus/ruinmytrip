@@ -242,7 +242,7 @@ function rmt_reviews_ruined_count(?int $destId = null, bool $membersOnly = false
  */
 function rmt_reviews_release_held(int $userId): int {
     if ($userId <= 0) return 0;
-    $rows = q_all("SELECT id, slug FROM reviews
+    $rows = q_all("SELECT * FROM reviews
                     WHERE user_id = ? AND status = 'draft' AND held_for_verification = 1", [$userId]);
     if (!$rows) return 0;
     $now = date('Y-m-d H:i:s');
@@ -253,7 +253,14 @@ function rmt_reviews_release_held(int $userId): int {
         $up->execute([$now, (int) $r['id']]);
         if ($up->rowCount() < 1) continue;
         $n++;
-        // Same two things a normal publish does, in the same order.
+        /* Same things a normal publish does, in the same order, including the one event that says
+           a review went live. A guest's review almost always arrives this way (new account, address
+           not yet confirmed), and without it the review was saved and never counted as published. */
+        if (function_exists('rmt_track')) {
+            rmt_track('review_publish_success', ['place_id' => (int) ($r['place_id'] ?? 0),
+                                                 'destination_id' => (int) ($r['destination_id'] ?? 0),
+                                                 'source' => 'guest']);
+        }
         if (function_exists('rmt_seo_announce')) rmt_seo_announce('/review/' . (int) $r['id'] . '/' . $r['slug']);
     }
     if ($n && function_exists('rmt_award_badges')) rmt_award_badges($userId);

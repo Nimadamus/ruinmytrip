@@ -27,6 +27,11 @@ require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/reviews.php';
 
+/* The analytics call, recorded instead of written: each review that goes live must be counted as a
+   published review exactly once (review_publish_success), or a guest's review never shows up. */
+$GLOBALS['tracked'] = [];
+function rmt_track(string $event, array $ctx = []): bool { $GLOBALS['tracked'][] = $event; return true; }
+
 $fails = 0;
 function ok(string $name, bool $cond, string $detail = ''): void {
     global $fails;
@@ -47,6 +52,8 @@ $pdo->exec("INSERT INTO reviews (id,user_id,slug,status,held_for_verification) V
 
 $n = rmt_reviews_release_held(7);
 ok('both held reviews go live', $n === 2, "released $n");
+ok('each one is counted as a published review', count(array_keys($GLOBALS['tracked'], 'review_publish_success', true)) === 2,
+   json_encode($GLOBALS['tracked']));
 
 $status = static fn(int $id): string =>
     (string) (q_one('SELECT status FROM reviews WHERE id = ?', [$id])['status'] ?? '');
@@ -59,6 +66,7 @@ ok("another member's held review is untouched", $status(5) === 'draft');
 $flag = (int) (q_one('SELECT held_for_verification f FROM reviews WHERE id = 1', [])['f'] ?? -1);
 ok('the flag is cleared as it publishes', $flag === 0);
 ok('confirming a second time publishes nothing', rmt_reviews_release_held(7) === 0);
+ok('and counts nothing a second time', count(array_keys($GLOBALS['tracked'], 'review_publish_success', true)) === 2);
 ok('a bad user id does nothing', rmt_reviews_release_held(0) === 0);
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";

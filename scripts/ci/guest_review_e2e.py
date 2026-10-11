@@ -10,15 +10,20 @@ Every way a visitor's review used to be lost, replayed against a local server:
   J6  account step fails (password too short): the review is still on the page
   J7  an existing member signs in from the join step: the review is saved to their account
   J8  the browser's own copy (localStorage) is cleared only after the server has the review
+  J9  a script that fills the hidden field gets nothing held
+  J10 confirming the email address publishes the held review
+  Analytics: form opens, publish presses, failures and successes are separate counts; a headless
+  browser is flagged as automation; a crawler records nothing.
 
 usage: python scripts/ci/guest_review_e2e.py BASE DB_PATH [shots_dir]
 Exits non-zero on any failure. Writes nothing outside the dev database it is pointed at.
 """
-import sys, sqlite3, time, json, random, string
+import os, sys, sqlite3, time, json, random, string, urllib.request
 from playwright.sync_api import sync_playwright
 
 BASE, DB = sys.argv[1].rstrip('/'), sys.argv[2]
 SHOTS = sys.argv[3] if len(sys.argv) > 3 else None
+DESIGN = os.environ.get('E2E_DESIGN', '')   # 'v2' runs every journey in the redesign (app/design_v2.php)
 PLACE_SLUG, PLACE_ID = 'a-brasileira-lisbon', 39
 BODY = 'Great coffee and a proper pastel de nata, but the terrace is a tourist trap at noon and costs double.'
 fails = []
@@ -43,6 +48,16 @@ def shot(page, name):
         page.screenshot(path=f'{SHOTS}/{name}.png', full_page=True)
 
 
+def verify_token(uid):
+    # The confirmation link the email would carry, minted by the app itself against the same dev
+    # database (local mail is off). Prints the raw token and nothing else.
+    import subprocess
+    php = os.environ.get('PHP', r'C:\Users\BL\tools\php83\php.exe')
+    code = 'require "app/bootstrap.php"; echo rmt_token_issue(%d, "verify");' % uid
+    env = dict(os.environ, RMT_SQLITE=os.path.abspath(DB))
+    return subprocess.run([php, '-c', 'php.local.ini', '-r', code], capture_output=True, text=True, env=env).stdout.strip()
+
+
 def open_form(page):
     page.goto(f'{BASE}/p/{PLACE_SLUG}')
     page.locator('.rate-stars a').first.click()          # the first star in DOM order is 5 stars
@@ -57,6 +72,14 @@ def write_and_post(page, body=BODY):
 
 def run(p, dev, ctxargs):
     b = p.chromium.launch(headless=True)
+    if DESIGN:
+        # Every journey again in the redesign, through its preview cookie.
+        _new = b.new_context
+        def _ctx(**kw):
+            c = _new(**kw)
+            c.add_cookies([{'name': 'rmt_design', 'value': DESIGN, 'url': BASE}])
+            return c
+        b.new_context = _ctx
     tag = lambda s: f'[{dev}] {s}'
     stamp = ''.join(random.choices(string.ascii_lowercase, k=6))
 
@@ -90,6 +113,14 @@ def run(p, dev, ctxargs):
     check(tag('J1 the account was made and the review saved to it'), len(rows) == 1 and 'pastel de nata' in rows[0][2], rows)
     check(tag('J1 it waits for the email to be confirmed'), bool(rows) and rows[0][1] == 1, rows)
     check(tag('J1 the server copy is deleted once saved'), not any(c['name'] == 'rmt_rdraft' and c['value'] for c in ctx.cookies()))
+    # J10 confirming the address publishes it, and that is when it counts as a published review.
+    uid = db("SELECT id FROM users WHERE email = ?", (email,))[0][0]
+    token = verify_token(uid)
+    page.goto(f'{BASE}/verify-email?token={token}')
+    page.click('form[action$="verify-email/confirm"] button'); page.wait_for_load_state('networkidle')
+    rows = db("SELECT r.status, r.held_for_verification FROM reviews r WHERE r.user_id = ?", (uid,))
+    check(tag('J10 confirming the email publishes the held review'), rows == [('published', 0)], rows)
+    check(tag('J10 it lands on the live review'), '/review/' in page.url, page.url)
     check(tag('J1 no script errors'), not errors, errors)
     ctx.close()
 
@@ -165,9 +196,49 @@ def run(p, dev, ctxargs):
     b.close()
 
 
+def counts():
+    return dict(db("SELECT event, COUNT(*) FROM contribution_events WHERE id > ? GROUP BY event", (EV0,)))
+
+
 with sync_playwright() as p:
+    # The desktop browser announces itself as HeadlessChrome, which the site treats as a bot: its
+    # journeys must work and must leave no trace in the analytics at all.
+    mark0 = db("SELECT COALESCE(MAX(id), 0) FROM contribution_events")[0][0]
     run(p, 'desktop', dict(viewport={'width': 1366, 'height': 900}))
+    check('analytics: a browser that says it is headless records nothing',
+          db("SELECT COUNT(*) FROM contribution_events WHERE id > ?", (mark0,))[0][0] == 0)
+    # The phone run carries an ordinary Safari user agent, so it is counted like a visitor; the
+    # analytics checks below read only what it recorded.
+    EV0 = db("SELECT COALESCE(MAX(id), 0) FROM contribution_events")[0][0]
+    RV0 = db("SELECT COALESCE(MAX(id), 0) FROM reviews")[0][0]
     run(p, 'mobile', dict(**p.devices['iPhone 13']))
+
+# Analytics: what the journeys above recorded, read straight from the event table.
+ev = counts()
+new_reviews = db("SELECT COUNT(*) FROM reviews WHERE id > ?", (RV0,))[0][0]
+print('  events recorded:', json.dumps({k: v for k, v in sorted(ev.items()) if k.startswith(('review_', 'human_', 'automation_'))}))
+print('  reviews saved:', new_reviews)
+published = db("SELECT COUNT(*) FROM reviews WHERE id > ? AND status = 'published'", (RV0,))[0][0]
+print('  of which published:', published)
+check('analytics: every review that went live has exactly one review_publish_success', ev.get('review_publish_success', 0) == published,
+      (ev.get('review_publish_success', 0), published))
+check('analytics: a review waiting for email confirmation is not counted as published',
+      ev.get('review_verification_required', 0) >= new_reviews - published, (ev.get('review_verification_required', 0), new_reviews, published))
+check('analytics: opening the form is counted apart from posting', ev.get('review_form_start', 0) > ev.get('review_publish_success', 0),
+      (ev.get('review_form_start', 0), ev.get('review_publish_success', 0)))
+check('analytics: every publish press is an attempt; successes are a subset', ev.get('review_submit_attempt', 0) >= ev.get('review_publish_success', 0),
+      (ev.get('review_submit_attempt', 0), ev.get('review_publish_success', 0)))
+check('analytics: refused presses are recorded with a reason', ev.get('review_publish_failure', 0) > 0, ev.get('review_publish_failure', 0))
+check('analytics: an automated browser with a normal user agent is flagged as automation, never a verified human',
+      ev.get('automation_detected', 0) > 0 and ev.get('human_verified', 0) == 0,
+      (ev.get('automation_detected', 0), ev.get('human_verified', 0)))
+# A crawler opening the same pages records nothing at all.
+mark = db("SELECT COALESCE(MAX(id), 0) FROM contribution_events")[0][0]
+for path in (f'/p/{PLACE_SLUG}', f'/review/new?place={PLACE_ID}&rating=5&src=place_rate', '/'):
+    urllib.request.urlopen(urllib.request.Request(BASE + path, headers={
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'})).read()
+check('analytics: a crawler opening the same pages records no events',
+      db("SELECT COUNT(*) FROM contribution_events WHERE id > ?", (mark,))[0][0] == 0)
 
 print('\nguest_review_e2e: ' + ('all passed' if not fails else f'{len(fails)} FAILED'))
 sys.exit(1 if fails else 0)
