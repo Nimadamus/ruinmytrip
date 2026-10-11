@@ -37,11 +37,13 @@ $group = ['amsterdam-netherlands', 'lisbon-portugal', 'berlin-germany', 'marrake
           'zanzibar-tanzania', 'hoi-an-vietnam', 'oaxaca-mexico', 'banff-canada', 'milan-italy'];
 
 echo "-- the test group is exactly the nine pages that were approved --\n";
-ok('nine pages, no more', count(RMT_DEST_SOCIAL_TITLE_TEST), 9);
-foreach ($group as $slug) {
-    ok("$slug is in the test", isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug]), true);
+/* Ended 2026-10-11 (docs/SEO_RECOVERY_20261011.md): no page carries the variant, the nine are on record. */
+ok('no page is in the test any more', count(RMT_DEST_SOCIAL_TITLE_TEST), 0);
+ok('the nine variants are kept for the record', array_keys(RMT_DEST_SOCIAL_TITLE_TEST_ENDED), $group);
+foreach ([['amsterdam-netherlands', 'Amsterdam'], ['zanzibar-tanzania', 'Zanzibar']] as [$slug, $name]) {
+    ok("$slug is back on the control title", rmt_destination_page_title(['slug' => $slug, 'name' => $name]),
+       $name . ' 2026: costs, tickets, taxes and what nearly ruins it | RuinMyTrip');
 }
-ok('and nothing else is', array_diff(array_keys(RMT_DEST_SOCIAL_TITLE_TEST), $group), []);
 
 echo "\n-- the control group is untouched --\n";
 /* A city outside the group must still get the title it had before, character for character. */
@@ -54,7 +56,7 @@ ok('and keeps its own summary as the description',
    rmt_destination_page_description(['slug' => 'bangkok-thailand', 'summary' => 'A summary.']), 'A summary.');
 
 echo "\n-- a title has to survive a search result --\n";
-foreach (RMT_DEST_SOCIAL_TITLE_TEST as $slug => [$title, $desc]) {
+foreach (RMT_DEST_SOCIAL_TITLE_TEST_ENDED as $slug => [$title, $desc]) {
     ok("$slug title fits in 60", mb_strlen($title) <= 60, true);
     ok("$slug description fits in 155", mb_strlen($desc) <= 155, true);
 }
@@ -66,7 +68,7 @@ $cityOf = ['amsterdam-netherlands' => 'Amsterdam', 'lisbon-portugal' => 'Lisbon'
            'berlin-germany' => 'Berlin', 'marrakech-morocco' => 'Marrakech',
            'zanzibar-tanzania' => 'Zanzibar', 'hoi-an-vietnam' => 'Hoi An',
            'oaxaca-mexico' => 'Oaxaca', 'banff-canada' => 'Banff', 'milan-italy' => 'Milan'];
-foreach (RMT_DEST_SOCIAL_TITLE_TEST as $slug => [$title, $desc]) {
+foreach (RMT_DEST_SOCIAL_TITLE_TEST_ENDED as $slug => [$title, $desc]) {
     $city = $cityOf[$slug];
     ok("$slug keeps the city in the title", str_contains($title, $city), true);
     ok("$slug keeps the topic word", stripos($title, 'travel guide') !== false, true);
