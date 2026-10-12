@@ -159,17 +159,17 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-map-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 4px 0}
 .v2-map-hint{color:#a9bccb;font-size:.85rem;line-height:1.35}
 /* map first hero (2026-10-11): the map is the centerpiece, search and rating follow it */
-.v2-hero-mapfirst .wrap{padding-top:56px;padding-bottom:64px}
-.v2-hero-top{text-align:center;max-width:760px;margin:0 auto 26px}
-.v2-hero-top .v2-h1{font-size:clamp(2.6rem,5.4vw,4.2rem)}
+.v2-hero-mapfirst .wrap{padding-top:40px;padding-bottom:56px}
+.v2-hero-top{text-align:center;max-width:760px;margin:0 auto 22px}
+.v2-hero-top .v2-h1{font-size:clamp(2.6rem,4.6vw,3.6rem)}
 .v2-hero-top .v2-lede{margin:12px auto 0}
-.v2-hero-map-xl{max-width:1080px;margin:0 auto;padding:20px}
+.v2-hero-map-xl{max-width:860px;margin:0 auto;padding:18px}
 .v2-hero-map-xl .v2-map-head{align-items:center;margin:0 6px 14px}
 .v2-hero-map-xl .v2-map-title{margin:0;font-size:1.25rem}
 .v2-hero-map-xl .v2-map-count{margin:0;font-size:1rem;padding:6px 14px;transition:transform .2s}
 .v2-hero-map-xl .v2-map-foot{margin:14px 6px 0}
 .v2-hero-map-xl .v2-map-hint{font-size:.95rem}
-.v2-hero-next{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;max-width:1080px;margin:26px auto 0}
+.v2-hero-next{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;max-width:860px;margin:24px auto 0}
 .v2-hero-next .v2-hero-search{flex:1 1 420px;max-width:560px}
 .v2-hero-mapfirst .v2-hero-proof{text-align:center}
 @media (max-width:640px){

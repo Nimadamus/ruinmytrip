@@ -15,7 +15,7 @@
     <div class="v2-hero-top">
       <p class="v2-kicker">Free travel map · no account</p>
       <h1 class="v2-h1">Where have you been?</h1>
-      <p class="v2-lede">Tap every country you have visited and watch the count climb. Your map turns into a picture and a link you can share.</p>
+      <p class="v2-lede">Tap every country you have visited. Your map becomes a picture and a link you can share.</p>
     </div>
 
     <div class="v2-hero-map v2-hero-map-xl tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
@@ -29,7 +29,7 @@
         <p class="tm-loading">Tap the countries you have been to</p>
       </div>
       <div class="v2-map-foot">
-        <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in. Nothing to sign up for.</span>
+        <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in. No sign up.</span>
         <a class="v2-btn v2-btn-accent v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
       </div>
     </div>
@@ -38,7 +38,7 @@
       <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
             data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
         <span class="v2-search-ico" aria-hidden="true">⌕</span>
-        <input type="search" name="q" placeholder="Where are you going next?" aria-label="Search a place or city">
+        <input type="search" name="q" placeholder="Search a city or place" aria-label="Search a place or city">
         <button class="v2-btn v2-btn-primary" type="submit">Search</button>
       </form>
       <a class="v2-btn v2-btn-glass" data-cta="home_rate" href="#rate">Rate a place you have been</a>
