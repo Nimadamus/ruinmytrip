@@ -126,6 +126,7 @@ const RMT_CTA_KEYS = [
     'social_answer', 'social_plan',
     // The travel map (app/travel_map.php).
     'map_share', 'map_download', 'map_save', 'map_make',
+    'map_tap', // the first country tapped on a map in a visit (assets/js/travel-map.js), once per page
     // The home page action tiles and the empty board (2026-10-01), the header Join button, Google sign in.
     'home_act_trip', 'home_act_find', 'home_act_ask', 'home_act_review', 'home_act_ruined', 'home_act_follow',
     'home_dates', 'nav_join', 'google_signin',
@@ -137,6 +138,7 @@ const RMT_CTA_KEYS = [
     'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
     // The 2026-10 redesign (app/design_v2.php): rate a place from the menu, the home page, a city.
     'nav_rate', 'home_rate', 'home_map', 'home_city', 'home_place', 'city_rate', 'city_top_place', 'explore_city',
+    'home_explore', 'home_share', 'home_talk', 'home_join',
     'profile_map',
     'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',
 ];

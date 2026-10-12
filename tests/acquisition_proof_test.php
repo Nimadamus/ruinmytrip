@@ -54,7 +54,11 @@ $add('a2', 'vA', 'human_verified', 86400 - 5, null);
 // Another friend: lands on the map, taps, shares the map.
 $add('b1', 'vB', 'map_view', 3600, 'friends', null, '/map');
 $add('b1', 'vB', 'human_verified', 3590);
+$add('b1', 'vB', 'cta_click', 3585, 'friends', 'map_tap');
 $add('b1', 'vB', 'cta_click', 3580, 'friends', 'map_share');
+$add('b1', 'vB', 'cta_click', 3570, 'friends', 'map_download');
+// The crawler also claims a map tap: never counted, it is not a person.
+$add('c1', 'vC', 'cta_click', 7180, 'friends', 'map_tap');
 // A crawler with the invite link that sends human_interaction and opens the review form first.
 $add('c1', 'vC', 'review_form_start', 7200, 'friends', null, '/review/new');
 $add('c1', 'vC', 'human_interaction', 7190);
@@ -84,6 +88,11 @@ ok('the crawler opening the form is not a review start', $fr['review_started'] ?
 ok('the published review is counted', $fr['reviews'] ?? null, 1);
 ok('the map share is counted', $fr['map_actions'] ?? null, 1);
 ok('the map view is counted for the person', $fr['map_views'] ?? null, 1);
+ok('one person tapped the map (the crawler tap is not counted)', $fr['map_taps'] ?? null, 1);
+ok('one share', $fr['map_shares'] ?? null, 1);
+ok('one download', $fr['map_downloads'] ?? null, 1);
+ok('no saves', $fr['map_saves'] ?? null, 0);
+ok('the published review is a first contribution', $fr['contributions'] ?? null, 1);
 ok('the friend who came back days later is returning', $fr['returning'] ?? null, 1);
 ok('two human browsers came by the invite', $fr['human_visitors'] ?? null, 2);
 ok('review rate is a share of people', $fr['visit_to_review_pct'] ?? null, 50.0);

@@ -52,9 +52,25 @@
     var d = root.querySelector('[data-tm-download]'); if (d) d.href = cardBase + '/' + (k || 'none') + '.png';
   }
 
+  /* One row the first time a country is tapped on this page (cta_click, detail map_tap), so the
+     campaign report can tell a person who used the map from one who only opened it. Nothing about
+     which country. Dropped silently if anything is missing. */
+  var tapSent = false;
+  function tapOnce() {
+    if (tapSent) return; tapSent = true;
+    try {
+      var m = document.querySelector('meta[name="csrf-token"]');
+      if (!m || !navigator.sendBeacon) return;
+      var fd = new FormData();
+      fd.append('_csrf', m.getAttribute('content') || '');
+      fd.append('event', 'cta_click'); fd.append('detail', 'map_tap'); fd.append('path', location.pathname);
+      navigator.sendBeacon((document.body && document.body.getAttribute('data-event-url')) || '/event', fd);
+    } catch (e) { /* never worth breaking the map */ }
+  }
+
   function toggle(id) {
     if (readOnly || !byId[id]) return;
-    if (picked[id]) delete picked[id]; else picked[id] = true;
+    if (picked[id]) delete picked[id]; else { picked[id] = true; tapOnce(); }
     status('');
     refresh();
   }

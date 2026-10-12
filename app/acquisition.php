@@ -266,6 +266,12 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 MAX(CASE WHEN event = 'map_view' THEN 1 ELSE 0 END) map_viewed,
                 MAX(CASE WHEN event = 'map_saved' OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save'))
                          THEN 1 ELSE 0 END) mapped,
+                MAX(CASE WHEN event = 'cta_click' AND detail = 'map_tap' THEN 1 ELSE 0 END) map_tapped,
+                MAX(CASE WHEN event = 'cta_click' AND detail = 'map_share' THEN 1 ELSE 0 END) map_shared,
+                MAX(CASE WHEN event = 'cta_click' AND detail = 'map_download' THEN 1 ELSE 0 END) map_downloaded,
+                MAX(CASE WHEN event = 'map_saved' OR (event = 'cta_click' AND detail = 'map_save') THEN 1 ELSE 0 END) map_kept,
+                MAX(CASE WHEN event IN ('review_publish_success','post_created','question_posted','comment_created',
+                                        'trip_created','buddy_post_created') THEN 1 ELSE 0 END) contributed,
                 MAX(CASE WHEN acq_content = ? THEN 1 ELSE 0 END) selfcheck,
                 MAX(CASE WHEN event = 'human_interaction' THEN 1 ELSE 0 END) engaged,
                 MAX(CASE WHEN event IN ('destination_follow_click','ask_question_click','reaction_created',
@@ -273,7 +279,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                                         'join_submit','join_created','login_completed','trip_connect_requested',
                                         'alert_submitted','alert_confirmed','card_created',
                                         'review_submit_attempt','review_publish_success','map_saved')
-                           OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save'))
+                           OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save','map_tap'))
                          THEN 1 ELSE 0 END) acted
            FROM contribution_events
           WHERE created_at >= ? AND journey IS NOT NULL AND journey <> ''
@@ -294,6 +300,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                       'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0,
                       // The first campaign's actions (2026-10-11): a review written, a travel map shared or kept.
                       'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0,
+                      // 2026-10-11 launch: each map step on its own, and a first contribution of any kind.
+                      'map_taps' => 0, 'map_shares' => 0, 'map_downloads' => 0, 'map_saves' => 0, 'contributions' => 0,
                       'suspected_bots' => 0, 'unverified' => 0, 'human_visitors' => 0, 'returning' => 0];
         $agg[$k]['sessions']++;
 
@@ -332,13 +340,15 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
                   'confirmed' => 'confirmed', 'tripped' => 'trips', 'alerted' => 'alerts', 'alert_on' => 'alerts_on',
-                  'carded' => 'cards', 'reviewed' => 'reviews'] as $col => $key) {
+                  'carded' => 'cards', 'reviewed' => 'reviews', 'contributed' => 'contributions'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
         }
         // Opening a form or the map is something crawlers do all day: counted for people only.
         if ($human) {
-            foreach (['review_started' => 'review_started', 'map_viewed' => 'map_views', 'mapped' => 'map_actions'] as $col => $key) {
-                if ((int) $r[$col] === 1) $agg[$k][$key]++;
+            foreach (['review_started' => 'review_started', 'map_viewed' => 'map_views', 'mapped' => 'map_actions',
+                      'map_tapped' => 'map_taps', 'map_shared' => 'map_shares', 'map_downloaded' => 'map_downloads',
+                      'map_kept' => 'map_saves'] as $col => $key) {
+                if ((int) ($r[$col] ?? 0) === 1) $agg[$k][$key]++;
             }
         }
     }
