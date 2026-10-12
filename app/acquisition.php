@@ -203,6 +203,32 @@ function rmt_acq_current(): array {
 }
 
 /**
+ * Every browser's class from app/proof.php (human, bot or unverified), over all of its events, read
+ * once per request. Null when the proof module is not loaded (unit tests of this file alone).
+ *
+ * @return array<string,string>|null
+ */
+function rmt_acq_verdicts(): ?array {
+    static $memo = false;
+    if ($memo !== false) return $memo;
+    if (!function_exists('rmt_proof_fold') || !function_exists('rmt_proof_stream')) return $memo = null;
+    $by = []; $keys = []; $srcs = []; $n = 0;
+    $noDay = static fn(string $utc): int => -1;
+    try {
+        foreach (rmt_proof_stream('0000-01-01 00:00:00', '9999-12-31 00:00:00') as $r) {
+            rmt_proof_fold($by, $keys, $srcs, $r, $noDay);
+            if (++$n >= RMT_PROOF_MAX_EVENTS) break;
+        }
+    } catch (Throwable $e) {
+        return $memo = null;
+    }
+    unset($keys, $srcs);
+    $memo = [];
+    foreach (rmt_proof_verdicts($by) as $v => [$class]) $memo[$v] = $class;
+    return $memo;
+}
+
+/**
  * Visits, signups, confirmations and trips, by the channel that brought them.
  *
  * The table this reads holds no identity, so this cannot follow a person; it counts sessions that
@@ -252,6 +278,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
        GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), COALESCE(acq_content, ''), journey",
         [RMT_ACQ_INTERNAL_CONTENT, $since]);
 
+    $verdicts = rmt_acq_verdicts();
     $agg = [];
     $visits = [];   // browser => Pacific days of its human sessions, any channel
     $firstIn = [];  // channel key => browser => its first Pacific day through that channel
@@ -265,7 +292,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                       'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0,
                       // The first campaign's actions (2026-10-11): a review written, a travel map shared or kept.
                       'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0,
-                      'suspected_bots' => 0, 'human_visitors' => 0, 'returning' => 0];
+                      'suspected_bots' => 0, 'unverified' => 0, 'human_visitors' => 0, 'returning' => 0];
         $agg[$k]['sessions']++;
 
         /* Human means a tap, key or scroll reached us (`human_interaction`), or the session did
@@ -275,7 +302,15 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
            seconds, 7,112 of 7,113 were a browser never seen before, and search showed 892 humans in
            a day against a handful of Search Console clicks. `trip_create_started` left the list for
            the same reason: 119 sessions fired it and none of them typed anything. */
-        $human = ((int) $r['engaged'] === 1) || ((int) $r['acted'] === 1);
+        /* Since 2026-10-11 the browser's verdict from app/proof.php decides, so this table and
+           /admin/proof agree on who is a person: 2,568 "human" direct sessions on the old rule
+           against 39 verified humans there, because crawlers send human_interaction too. Our own
+           selfchecks are not in the proof stream and keep the old rule, as do tests without it. */
+        $vis = (string) $r['visitor'];
+        $cls = ($verdicts !== null && (int) ($r['selfcheck'] ?? 0) !== 1)
+            ? ($vis !== '' ? ($verdicts[$vis] ?? 'unverified') : 'unverified')
+            : ((((int) $r['engaged'] === 1) || ((int) $r['acted'] === 1)) ? 'human' : 'bot');
+        $human = $cls === 'human';
         if ($human) {
             $agg[$k]['human']++;
             /* Ours, driven at production to check what a campaign visitor sees. Counted here so the
@@ -287,15 +322,22 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 $visits[$v][] = $day;
                 if (!isset($firstIn[$k][$v]) || $day < $firstIn[$k][$v]) $firstIn[$k][$v] = $day;
             }
-        } else {
+        } elseif ($cls === 'bot') {
             $agg[$k]['suspected_bots']++;
+        } else {
+            $agg[$k]['unverified']++;
         }
 
         foreach (['landed' => 'landed', 'signup_started' => 'signup_started', 'signed_up' => 'signed_up',
                   'confirmed' => 'confirmed', 'tripped' => 'trips', 'alerted' => 'alerts', 'alert_on' => 'alerts_on',
-                  'carded' => 'cards', 'review_started' => 'review_started', 'reviewed' => 'reviews',
-                  'map_viewed' => 'map_views', 'mapped' => 'map_actions'] as $col => $key) {
+                  'carded' => 'cards', 'reviewed' => 'reviews'] as $col => $key) {
             if ((int) $r[$col] === 1) $agg[$k][$key]++;
+        }
+        // Opening a form or the map is something crawlers do all day: counted for people only.
+        if ($human) {
+            foreach (['review_started' => 'review_started', 'map_viewed' => 'map_views', 'mapped' => 'map_actions'] as $col => $key) {
+                if ((int) $r[$col] === 1) $agg[$k][$key]++;
+            }
         }
     }
     /* Returning: a browser a channel brought in as a person that came back as a person on a later
