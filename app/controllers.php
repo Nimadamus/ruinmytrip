@@ -7757,7 +7757,12 @@ function travel_map_page(array $a): void {
         $codes = $me ? rmt_map_for_user((int) $me['id']) : [];
     }
     $saved = $me ? rmt_map_for_user((int) $me['id']) : [];
-    try { rmt_track('map_view', ['source' => $owner ? 'profile' : 'browse']); } catch (Throwable $e) {}
+    /* A link from "Share my map" (2026-10-12). It used to open for the friend as "I've been to N
+       countries" with the sharer's countries already in, theirs to edit, so the one moment a
+       stranger meets the map it was somebody else's map wearing their name. It is now shown as the
+       sharer's, read only, with "make your own" as the next step. */
+    $shared = !$owner && $fromUrl && input('from') === 'share' && $codes;
+    try { rmt_track('map_view', ['source' => $owner ? 'profile' : ($shared ? 'share' : 'browse')]); } catch (Throwable $e) {}
     $isOwnerView = $owner && $me && (int) $me['id'] === (int) $owner['id'];
     $n = count($codes);
     $who = $owner ? ((string) ($owner['display_name'] ?: '@' . $owner['username'])) : null;
@@ -7767,7 +7772,7 @@ function travel_map_page(array $a): void {
                               : 'Travel map: color in every country you have been to | RuinMyTrip');
     view('travel_map', [
         'codes' => $codes, 'saved' => $saved, 'owner' => $owner, 'isOwnerView' => $isOwnerView,
-        'who' => $who, 'me' => $me, 'names' => rmt_map_names(),
+        'who' => $who, 'me' => $me, 'names' => rmt_map_names(), 'shared' => (bool) $shared,
     ], [
         'title' => $title,
         'description' => $n > 0

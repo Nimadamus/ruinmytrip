@@ -146,7 +146,9 @@
   var share = root.querySelector('[data-tm-share]');
   if (share) share.addEventListener('click', function () {
     var n = codes().length;
-    var url = base + (n ? '?c=' + key() : '');
+    // from=share: whoever opens it sees it as somebody else's map, with "make your own", rather
+    // than as their own map already coloured in with another person's countries.
+    var url = base + (n ? '?c=' + key() + '&from=share' : '');
     var text = n ? "I've been to " + label(n) + '. Where have you been?' : 'Make your travel map';
     if (navigator.share) {
       navigator.share({ title: 'My travel map', text: text, url: url }).catch(function () {});

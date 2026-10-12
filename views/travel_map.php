@@ -7,8 +7,10 @@
  * @var ?string $who
  * @var ?array $me
  * @var array<string,string> $names
+ * @var bool $shared         opened from somebody's "Share my map" link
  */
-$readOnly = $owner && !$isOwnerView;
+$shared = !empty($shared);
+$readOnly = ($owner && !$isOwnerView) || $shared;
 $n = count($codes);
 $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
 ?>
@@ -19,6 +21,10 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
     <?php if ($owner): ?>
       <p class="tm-kicker"><a href="<?= e(url('u/' . $owner['username'])) ?>"><?= e((string) $who) ?></a>'s travel map</p>
       <h1><span data-tm-count><?= e(rmt_map_count_label($n)) ?></span></h1>
+    <?php elseif ($shared): ?>
+      <p class="tm-kicker">A shared travel map</p>
+      <h1>They have been to <span data-tm-count><?= e(rmt_map_count_label($n)) ?></span></h1>
+      <p class="muted tm-sub">Somebody shared the countries they have been to. Make your own in a minute and send it back, no account needed.</p>
     <?php else: ?>
       <p class="tm-kicker">Travel map</p>
       <h1 data-tm-title><?= $n > 0 ? "I've been to <span data-tm-count>" . e(rmt_map_count_label($n)) . '</span>' : 'Where have you been?' ?></h1>
