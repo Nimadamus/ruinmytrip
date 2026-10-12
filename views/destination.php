@@ -21,7 +21,16 @@
           </form>
           </div>
         <?php else: ?>
-          <a class="btn btn-ghost btn-sm" href="<?= e(url('register?return=' . rawurlencode('/d/' . $d['slug']))) ?>">Join to mark been</a>
+          <?php /* Signed out, "I've been" used to be "Join to mark been": an account before anything
+                   happened, and nobody in the first month pressed it. It now opens the travel map with
+                   this country already coloured in, which needs no account and is worth sharing; saving
+                   it is where joining comes in. nofollow: /map?c= is canonical to /map. */
+                $beenCode = rmt_map_country_code($d['country'] ?? null); ?>
+          <?php if ($beenCode !== null): ?>
+            <a class="btn btn-ghost btn-sm" rel="nofollow" data-cta="dest_been_map" href="<?= e(url('map?c=' . $beenCode)) ?>">I've been: color in <?= e($d['country']) ?></a>
+          <?php else: ?>
+            <a class="btn btn-ghost btn-sm" href="<?= e(url('register?return=' . rawurlencode('/d/' . $d['slug']))) ?>">Join to mark been</a>
+          <?php endif; ?>
         <?php endif; ?>
         <?php /* Following the city used to be a small ghost button up here, next to "I've been",
                  reading "want to visit" and competing with a photograph for attention. It is the

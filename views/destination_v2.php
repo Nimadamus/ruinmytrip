@@ -19,6 +19,10 @@ $heroSet = rmt_media_srcset($d['hero_url'] ?? null);
       <a class="v2-btn v2-btn-accent" data-cta="city_rate" href="<?= e(url('review/new?destination=' . (int) $d['id'] . '&src=destination')) ?>">Rate a place in <?= e($d['name']) ?></a>
       <a class="v2-btn v2-btn-glass" data-cta="cta_dates" href="<?= e($me ? url('trip/new?destination_id=' . (int) $d['id']) : url('plan?cta=cta_dates&d=' . rawurlencode($d['slug']))) ?>">Post your dates</a>
       <a class="v2-btn v2-btn-glass" data-cta="cta_travelers" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">Who is going</a>
+      <?php $beenCode = rmt_map_country_code($d['country'] ?? null);
+            if (!$me && $beenCode !== null): /* see views/destination.php: no account, the map opens with this country in */ ?>
+        <a class="v2-btn v2-btn-glass" rel="nofollow" data-cta="dest_been_map" href="<?= e(url('map?c=' . $beenCode)) ?>">Been to <?= e($d['country']) ?>? Color it in</a>
+      <?php endif; ?>
     </div>
   </div>
 </section>

@@ -36,6 +36,21 @@ function rmt_map_names(): array {
     return $names;
 }
 
+/** The map code for a destination's country, or null. Three of our country names are spelt
+ *  differently on the map; anything else not on it gets no button rather than a wrong one. */
+function rmt_map_country_code(?string $country): ?string {
+    static $byName = null;
+    if ($byName === null) {
+        $byName = [];
+        foreach (rmt_map_names() as $code => $name) $byName[strtolower($name)] = (string) $code;
+        $alias = ['united states' => 'united states of america', 'usa' => 'united states of america',
+                  'czechia' => 'czech republic', 'türkiye' => 'turkey'];
+        foreach ($alias as $from => $to) if (isset($byName[$to])) $byName[$from] = $byName[$to];
+    }
+    $k = strtolower(trim((string) $country));
+    return $k !== '' ? ($byName[$k] ?? null) : null;
+}
+
 /**
  * Read a list of countries from a URL key or a form: "250-380", "250,380" or an array. Anything
  * that is not a country on the map is dropped rather than refused, so a mangled link still shows

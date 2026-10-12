@@ -72,5 +72,15 @@ if (rmt_card_available()) {
     echo "  (GD or the font is missing here; card not drawn)\n";
 }
 
+echo "-- a city page's country, for its \"I've been\" button --\n";
+ok('Portugal', rmt_map_country_code('Portugal'), '620');
+ok('case and spaces do not matter', rmt_map_country_code('  portugal '), '620');
+ok('United States is the map\'s United States of America', rmt_map_country_code('United States'), '840');
+ok('Czechia is the map\'s Czech Republic', rmt_map_country_code('Czechia'), '203');
+ok('Türkiye is the map\'s Turkey', rmt_map_country_code('Türkiye'), '792');
+ok('an unknown country gets no button', rmt_map_country_code('Atlantis'), null);
+ok('no country gets no button', rmt_map_country_code(null), null);
+ok('the code it gives is one the map reads back', rmt_map_codes(rmt_map_country_code('Mexico')), [rmt_map_country_code('Mexico')]);
+
 echo "\n", $fail ? "FAIL: $fail case(s) failed, $pass passed\n" : "ALL TRAVEL MAP TESTS PASS ($pass)\n";
 exit($fail ? 1 : 0);

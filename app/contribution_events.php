@@ -140,6 +140,7 @@ const RMT_CTA_KEYS = [
     'nav_rate', 'home_rate', 'home_map', 'home_city', 'home_place', 'city_rate', 'city_top_place', 'explore_city',
     'home_explore', 'home_share', 'home_talk', 'home_join',
     'profile_map',
+    'dest_been_map', // "I've been" on a city page, signed out: opens the travel map with that country in (2026-10-12)
     'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',
 ];
 
