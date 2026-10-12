@@ -5241,7 +5241,7 @@ function register_form(array $a): void {
 function register_submit(array $a): void {
     csrf_check();
     $return = rmt_safe_return_path((string) input('return'));
-    if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
+    if (!rmt_join_rate_ok()) {
         rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'rate_limit']);
         view('auth/register', ['errors'=>['Too many accounts created from this connection. Try again later.'], 'return'=>$return],
              ['title'=>'Join RuinMyTrip']); return;
@@ -5249,6 +5249,7 @@ function register_submit(array $a): void {
     rmt_track('join_submit', ['source' => rmt_join_source($return)]);
     $r = rmt_register_quick((string) input('email'), (string) input('password'), input('age_ok') === '1', (string) input('username'));
     if ($r['ok']) {
+        rmt_join_rate_record();
         rmt_track('join_created', ['source' => rmt_join_source($return)]);
         $mailed = (bool) ($r['mail_ok'] ?? false);
         // Somebody who came here to write a review goes back to writing it. Publishing still needs

@@ -224,11 +224,18 @@ textarea{min-height:140px;resize:vertical}
 .tag-list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 
 /* footer */
-.site-footer{background:var(--ink);color:#c7d2df;margin-top:60px;padding:48px 0 20px}
+.site-footer{background:#0d1826;color:#c7d2df;margin-top:60px;padding:48px 0 20px}
 .site-footer h4{color:#fff;font-size:.95rem;margin-bottom:12px}
 .site-footer a{color:#c7d2df;display:block;padding:3px 0;font-size:.92rem}
 .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:32px}
 .footer-base{border-top:1px solid rgba(255,255,255,.1);margin-top:28px;padding-top:18px;font-size:.85rem}
+/* The footer is always dark, in both themes (it used to follow --ink, which turns light in the dark
+   palette and left pale text on a pale footer), so its quieter text and the brand are set for that
+   background: muted grey and the light teal both measured under 4.5:1 (axe, 2026-10-11). */
+.site-footer .muted,.site-footer p,.footer-base{color:#9fb0c2}
+.site-footer .brand span{color:#5eead4}
+/* A link inside a sentence is told apart by more than its colour. */
+.callout a,.hint a,p.muted a{text-decoration:underline;text-underline-offset:2px}
 .footer-base a{display:inline;color:var(--brand-2)}
 
 .inline-form{display:inline}
@@ -849,7 +856,7 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
    Photographs and the dark bands are unchanged: they were already dark surfaces with white type on
    them, which is why the design was built with them in the first place. */
 @media (prefers-color-scheme: dark){
-  :root{
+  :root:not(.rmt-light){
     --ink:#f1f6f8; --ink-2:#c6d4dd; --paper:#0e1418; --card:#161f26;
     --brand:#19b8a6; --brand-2:#3ad6c2; --brand-deep:#0e7d72; --accent:#ff7a33; --gold:#f5cf4a;
     --line:#26323b; --line-soft:#1d262d; --muted:#93a6b2; --text:#e4ebef;
@@ -860,26 +867,26 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
     --shadow-xl:0 2px 6px rgba(0,0,0,.5),0 40px 80px -32px rgba(0,0,0,.8);
   }
   /* The few places that named a light colour directly rather than through a token. */
-  .site-header{background:rgba(14,20,24,.82);border-bottom-color:rgba(255,255,255,.08)}
-  .card-media{background:linear-gradient(135deg,#1d262d,#223038)}
-  .btn-ghost{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
-  .btn-ghost:hover{background:var(--surface-3);border-color:#37454f}
-  .avatar{box-shadow:0 0 0 1px rgba(255,255,255,.12)}
-  .nav-badge{box-shadow:0 0 0 2px var(--paper)}
-  .flash{background:#10312f;border-color:#1d5f57;color:#b9eee6}
-  .callout.warn{--tint-warn:#2a1f14;border-color:#7a4a1d}
-  .skeleton{background:linear-gradient(90deg,#1c262d 25%,#232f38 37%,#1c262d 63%)}
-  .thread-context{background:var(--tint);border-color:#1d5f57}
-  .note-new{background:var(--tint);border-color:#1d5f57}
-  .act:hover{background:var(--surface-3)}
-  .act.on{color:#ff8a80}
-  .act.on:hover{background:#2c1b1a}
-  .more-menu-danger{color:#ff8a80}
-  .more-menu-danger:hover{background:#2c1b1a}
-  .more-menu-panel a:hover,.nav-more-panel a:hover{background:var(--surface-3)}
-  .feed-scope.on{background:var(--card)}
-  .pick:has(input:checked) .pick-sub{color:#bfe7e1}
-  img{opacity:.94}
+  html:not(.rmt-light) .site-header{background:rgba(14,20,24,.82);border-bottom-color:rgba(255,255,255,.08)}
+  html:not(.rmt-light) .card-media{background:linear-gradient(135deg,#1d262d,#223038)}
+  html:not(.rmt-light) .btn-ghost{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+  html:not(.rmt-light) .btn-ghost:hover{background:var(--surface-3);border-color:#37454f}
+  html:not(.rmt-light) .avatar{box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+  html:not(.rmt-light) .nav-badge{box-shadow:0 0 0 2px var(--paper)}
+  html:not(.rmt-light) .flash{background:#10312f;border-color:#1d5f57;color:#b9eee6}
+  html:not(.rmt-light) .callout.warn{--tint-warn:#2a1f14;border-color:#7a4a1d}
+  html:not(.rmt-light) .skeleton{background:linear-gradient(90deg,#1c262d 25%,#232f38 37%,#1c262d 63%)}
+  html:not(.rmt-light) .thread-context{background:var(--tint);border-color:#1d5f57}
+  html:not(.rmt-light) .note-new{background:var(--tint);border-color:#1d5f57}
+  html:not(.rmt-light) .act:hover{background:var(--surface-3)}
+  html:not(.rmt-light) .act.on{color:#ff8a80}
+  html:not(.rmt-light) .act.on:hover{background:#2c1b1a}
+  html:not(.rmt-light) .more-menu-danger{color:#ff8a80}
+  html:not(.rmt-light) .more-menu-danger:hover{background:#2c1b1a}
+  html:not(.rmt-light) .more-menu-panel a:hover,html:not(.rmt-light) .nav-more-panel a:hover{background:var(--surface-3)}
+  html:not(.rmt-light) .feed-scope.on{background:var(--card)}
+  html:not(.rmt-light) .pick:has(input:checked) .pick-sub{color:#bfe7e1}
+  html:not(.rmt-light) img{opacity:.94}
 }
 
 /* The people strip under a city hero: faces first, then what they add up to. */

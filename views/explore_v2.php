@@ -26,7 +26,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
     </div>
     <?php if ($cat !== ''): ?><input type="hidden" name="category" value="<?= e($cat) ?>"><?php endif; ?>
     <label class="v2-ex-sort"><span class="sr-only">Sort</span>
-      <select name="sort" onchange="this.form.submit()">
+      <select name="sort" aria-label="Sort by" onchange="this.form.submit()">
         <option value="name" <?= $sort === 'name' ? 'selected' : '' ?>>A to Z</option>
         <option value="rating" <?= $sort === 'rating' ? 'selected' : '' ?>>Highest rated</option>
         <option value="popular" <?= $sort === 'popular' ? 'selected' : '' ?>>Most wanted</option>

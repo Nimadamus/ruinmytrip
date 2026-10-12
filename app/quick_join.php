@@ -209,7 +209,7 @@ function google_finish_submit(array $a): void {
     csrf_check();
     $g = $_SESSION['g_pending'] ?? null;
     if (!is_array($g) || time() - (int) $g['at'] > 1800) redirect('/register');
-    if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
+    if (!rmt_join_rate_ok()) {
         google_finish_form($a, ['Too many accounts created from this connection. Try again later.']); return;
     }
     rmt_track('join_submit', ['source' => 'google']);
@@ -227,6 +227,7 @@ function google_finish_submit(array $a): void {
         google_finish_form($a, $r['errors']); return;
     }
     $uid = (int) $r['id'];
+    rmt_join_rate_record();
     q_run('UPDATE users SET google_sub = ?, email_verified_at = ? WHERE id = ?', [(string) $g['sub'], date('Y-m-d H:i:s'), $uid]);
     rmt_mark_age_confirmed($uid);
     if ($g['name'] !== '') q_run('UPDATE profiles SET display_name = ? WHERE user_id = ?', [mb_substr($g['name'], 0, 60), $uid]);

@@ -397,7 +397,7 @@ function plan_join_submit(array $a): void {
         view('plan_join', ['draft' => $draft, 'errors' => $errors] + rmt_plan_join_context($draft),
              ['title' => 'Almost there | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
     };
-    if (!rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600)) {
+    if (!rmt_join_rate_ok()) {
         rmt_track('join_failure', ['source' => 'plan', 'reason' => 'rate_limit']);
         $render(['Too many accounts created from this connection. Try again later.']);
         return;
@@ -409,6 +409,7 @@ function plan_join_submit(array $a): void {
         $render($r['errors']);
         return;
     }
+    rmt_join_rate_record();
     rmt_track('join_created', ['source' => 'plan']);
     $_SESSION['rmt_mail_ok'] = !empty($r['mail_ok']) ? '1' : '0';
     unset($_SESSION[RMT_PLAN_DRAFT_KEY]);

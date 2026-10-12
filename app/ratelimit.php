@@ -65,3 +65,25 @@ function rmt_rate_retry_after(int $windowSeconds): int {
     $windowStart = intdiv(time(), $windowSeconds) * $windowSeconds;
     return max(1, ($windowStart + $windowSeconds) - time());
 }
+
+/**
+ * The join limit: five accounts an hour from one connection, counting accounts actually made.
+ *
+ * It used to count every press of Create account, so a traveler who mistyped an email and then a
+ * password twice was shut out for the hour and told "Too many accounts created" with none made
+ * (reproduced in the member journey check, 2026-10-11). Phones on one carrier often share an
+ * address, which made that worse. Presses are still capped, at a level no person reaches, so a
+ * script cannot hammer the form either.
+ */
+function rmt_join_rate_ok(): bool {
+    $ip = rmt_client_ip();
+    if (!rmt_rate_ok('register_try', $ip, 30, 3600)) return false;
+    $windowStart = intdiv(time(), 3600) * 3600;
+    $row = q_one('SELECT hits FROM rate_limits WHERE bucket = ? AND window_start = ?', ['register_ip:' . strtolower($ip), $windowStart]);
+    return (int) ($row['hits'] ?? 0) < 5;
+}
+
+/** Count one account made from this connection toward rmt_join_rate_ok(). */
+function rmt_join_rate_record(): void {
+    rmt_rate_ok('register_ip', rmt_client_ip(), 5, 3600);
+}

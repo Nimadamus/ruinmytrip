@@ -1,5 +1,5 @@
 <?php /** @var array $__meta */ $me = current_user(); ?><!doctype html>
-<html lang="en">
+<html lang="en"<?php if (rmt_design_v2_any()): /* the redesign is drawn for a light page only, so the dark palette in app.css stands down */ ?> class="rmt-light"<?php endif; ?>>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
