@@ -88,3 +88,6 @@
    usually wants where it is and when it opens before anything else. */
 @media (max-width:899px){.pv2-grid{display:flex;flex-direction:column;gap:0}.pv2-main,.pv2-side{display:contents}
   .pv2-rate{order:1}.pv2-side > *{order:2}.pv2-main > *:not(.pv2-rate){order:3}}
+
+/* The deep teal is for a light card; on the dark card it measured 3:1, so the lighter brand teal is used there. */
+@media (prefers-color-scheme: dark){html:not(.rmt-light) .pv2-act{color:var(--brand-2)}}

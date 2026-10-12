@@ -18,10 +18,11 @@ declare(strict_types=1);
  * zero clicks, so a returned cookie is not evidence of a person.
  */
 
-/** Real members only: not our editorial account, not the labelled team accounts. */
+/** Real members only: not our editorial account, not the labelled team accounts, not the QA members
+    (a "+rmtqa" email alias, used for the approved live signup checks from 2026-10-12). */
 function rmt_sc_real_user_sql(string $alias = 'u'): string {
     return "$alias.status = 'active' AND $alias.role <> '" . (defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial')
-         . "' AND SUBSTR($alias.username, 1, 5) <> 'team_'";
+         . "' AND SUBSTR($alias.username, 1, 5) <> 'team_' AND $alias.email NOT LIKE '%+rmtqa%'";
 }
 
 /** Distinct journeys that recorded an event since a time, excluding our own checks. */

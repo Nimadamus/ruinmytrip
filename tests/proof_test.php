@@ -88,7 +88,7 @@ $pdo = db();
 $pdo->exec("CREATE TABLE contribution_events (id INTEGER PRIMARY KEY AUTOINCREMENT, event TEXT, source TEXT, journey TEXT,
             visitor TEXT, cookied INTEGER, place_id INTEGER, destination_id INTEGER, is_authed INTEGER, reason TEXT,
             acq_source TEXT, acq_medium TEXT, acq_campaign TEXT, acq_content TEXT, path TEXT, detail TEXT, created_at TEXT)");
-$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT, created_at TEXT, email_verified_at TEXT)");
+$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT, created_at TEXT, email_verified_at TEXT, email TEXT)");
 $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, status TEXT, created_at TEXT)");
 foreach (['trips' => 'user_id', 'buddy_posts' => 'user_id'] as $tb => $col) $pdo->exec("CREATE TABLE $tb (id INTEGER PRIMARY KEY, $col INT, created_at TEXT)");
 $pdo->exec("CREATE TABLE messages (id INTEGER PRIMARY KEY, sender_id INT, created_at TEXT)");
@@ -96,9 +96,10 @@ $pdo->exec("CREATE TABLE match_alerts (id INTEGER PRIMARY KEY, confirmed_at TEXT
 $ins = $pdo->prepare('INSERT INTO contribution_events (visitor, event, path, created_at, cookied, acq_source, acq_content) VALUES (?,?,?,?,?,?,?)');
 foreach ($rows as $r) $ins->execute([$r['visitor'], $r['event'], $r['path'], $r['created_at'], $r['cookied'], $r['acq_source'], '']);
 $ins->execute(['ourcheck', 'human_verified', '/p/a', '2026-10-09 17:00:00', 1, 'search', 'selfcheck']);
-$pdo->exec("INSERT INTO users VALUES (1,'writer1','user','active','2026-10-09 13:04:00','2026-10-09 13:10:00'),
-                                     (2,'team_house','user','active','2026-10-09 13:05:00',NULL),
-                                     (3,'unconfirmed','user','active','2026-10-09 18:00:00',NULL)");
+$pdo->exec("INSERT INTO users VALUES (1,'writer1','user','active','2026-10-09 13:04:00','2026-10-09 13:10:00','w@example.com'),
+                                     (2,'team_house','user','active','2026-10-09 13:05:00',NULL,'h@example.com'),
+                                     (3,'unconfirmed','user','active','2026-10-09 18:00:00',NULL,'u@example.com'),
+                                     (4,'qa_member','user','active','2026-10-09 19:00:00','2026-10-09 19:01:00','qa+rmtqa1@example.com')");
 $pdo->exec("INSERT INTO reviews VALUES (1,1,'published','2026-10-09 13:04:30'), (2,2,'published','2026-10-09 13:06:00')");
 
 $p = rmt_proof(3, '2026-10-10 20:00:00');
