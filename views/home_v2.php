@@ -3,8 +3,9 @@
  * The redesigned home page (app/design_v2.php, surface "home"). Same controller, title,
  * description and structured data as views/home.php; only the body differs.
  *
- * The travel map is the hero: it is useful to one stranger with no community at all. Then search,
- * and a one tap rating of a place search already sends people to. Every count is a count of rows; an empty one is not shown.
+ * The travel map is the hero, as the way in: it is useful to one stranger with no community at all.
+ * Right under it, what the community is for (review, discover, meet), then places to rate, cities,
+ * and the questions travelers are asking. Every count is a count of rows; an empty one is not shown.
  *
  * @var list<array> $v2Places @var list<array> $v2Cities @var int $v2CityCount @var int $stat_places
  * @var int $stat_community_reviews @var list<array> $v2Reviews @var list<array> $goingSoon
@@ -13,38 +14,51 @@
 <section class="v2-hero v2-hero-mapfirst">
   <div class="wrap">
     <div class="v2-hero-top">
-      <p class="v2-kicker">Free travel map · no account</p>
+      <p class="v2-kicker">The honest travel community</p>
       <h1 class="v2-h1">Where have you been?</h1>
-      <p class="v2-lede">Tap every country you have visited. Your map becomes a picture and a link you can share.</p>
+      <p class="v2-lede">Start with your travel map. Then review the places you went, plan the next trip with advice from people who have been, and meet travelers on your dates.</p>
     </div>
 
     <div class="v2-hero-map v2-hero-map-xl tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
          data-tm-geo="<?= e(rmt_asset('assets/data/world-map.json')) ?>" data-tm-base="<?= e(url('map')) ?>"
          data-tm-card="<?= e(url('card/map')) ?>">
       <div class="v2-map-head">
-        <p class="v2-map-title">Your travel map</p>
+        <p class="v2-map-title">Your travel map <span class="v2-map-free">free, no account</span></p>
         <span class="v2-map-count" data-tm-count>0 countries</span>
       </div>
       <div class="tm-map" data-tm-map aria-label="World map: tap the countries you have been to">
         <p class="tm-loading">Tap the countries you have been to</p>
       </div>
       <div class="v2-map-foot">
-        <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in. No sign up.</span>
+        <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in.</span>
         <a class="v2-btn v2-btn-accent v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
       </div>
     </div>
 
-    <div class="v2-hero-next">
-      <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
-            data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
-        <span class="v2-search-ico" aria-hidden="true">⌕</span>
-        <input type="search" name="q" placeholder="Search a city or place" aria-label="Search a place or city">
-        <button class="v2-btn v2-btn-primary" type="submit">Search</button>
-      </form>
-      <a class="v2-btn v2-btn-glass" data-cta="home_rate" href="#rate">Rate a place you have been</a>
-    </div>
-    <?php if ($stat_places > 0): ?>
-      <p class="v2-hero-proof"><b><?= number_format($stat_places) ?></b> places in <b><?= (int) $v2CityCount ?></b> cities, with hours, addresses and directions<?php if ($stat_community_reviews > 0): ?> · <b><?= number_format($stat_community_reviews) ?></b> traveler <?= $stat_community_reviews === 1 ? 'review' : 'reviews' ?><?php endif; ?></p>
+    <?php /* What the map is the front door to: the community the site is for. Real counts only. */ ?>
+    <nav class="v2-pillars" aria-label="What you can do on RuinMyTrip">
+      <a class="v2-pillar" href="<?= e(url('review/new?src=home')) ?>" data-cta="home_rate">
+        <span class="v2-pillar-ico" aria-hidden="true">★</span>
+        <span class="v2-pillar-txt"><b>Review where you went</b><small>Stars and a few honest lines. What was good, what nearly ruined it.</small></span>
+      </a>
+      <a class="v2-pillar" href="<?= e(url('explore')) ?>" data-cta="home_explore">
+        <span class="v2-pillar-ico" aria-hidden="true">⚲</span>
+        <span class="v2-pillar-txt"><b>Discover your next city</b><small><?php if ($stat_places > 0): ?><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities, with hours, prices and directions.<?php else: ?>Places with hours, prices and directions.<?php endif; ?></small></span>
+      </a>
+      <a class="v2-pillar" href="<?= e(url('plan?cta=home_plan')) ?>" data-cta="home_plan">
+        <span class="v2-pillar-ico" aria-hidden="true">☺</span>
+        <span class="v2-pillar-txt"><b>Meet travelers on your dates</b><small>Post where and when. We tell you when someone overlaps.</small></span>
+      </a>
+    </nav>
+
+    <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
+          data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
+      <span class="v2-search-ico" aria-hidden="true">⌕</span>
+      <input type="search" name="q" placeholder="Search a city or place" aria-label="Search a place or city">
+      <button class="v2-btn v2-btn-primary" type="submit">Search</button>
+    </form>
+    <?php if (!current_user()): ?>
+      <p class="v2-hero-join">A free account keeps your map, reviews and trips together. <a href="<?= e(url('register?src=home_hero')) ?>" data-cta="home_join">Join free</a></p>
     <?php endif; ?>
   </div>
 </section>
@@ -112,8 +126,33 @@
     <?php if ($v2More): ?>
       <div class="v2-chips v2-chips-wrap v2-home-chips"><?php foreach ($v2More as $c): ?><a class="v2-chip v2-chip-sm" href="<?= e(url('d/' . $c['slug'])) ?>" data-cta="home_city"><?= e((string) $c['name']) ?></a><?php endforeach; ?></div>
     <?php endif; ?>
+  </div>
+</section>
+
+<?php if (!empty($v2Talk) || !empty($liveCities)): ?>
+<section class="v2-section">
+  <div class="wrap">
+    <div class="v2-sec-head">
+      <div>
+        <h2 class="v2-h2">Travelers are asking</h2>
+        <p class="v2-sub">Questions about real trips. Answer one from experience, or ask your own.</p>
+      </div>
+      <a class="v2-link" href="<?= e(url('talk')) ?>" data-cta="home_talk">All questions →</a>
+    </div>
+    <?php if (!empty($v2Talk)): ?>
+    <div class="v2-ask-grid">
+      <?php foreach ($v2Talk as $tp): $tn = (int) ($tp['reply_count'] ?? 0);
+          $tx = trim((string) preg_replace('/\s+/u', ' ', (string) $tp['body'])); ?>
+        <a class="v2-ask" href="<?= e(url('post/' . (int) $tp['id'])) ?>" data-cta="home_talk">
+          <span class="v2-ask-meta"><?= !empty($tp['dest_name']) ? e((string) $tp['dest_name']) : 'Travel talk' ?> · <?= e(ago((string) $tp['created_at'])) ?></span>
+          <span class="v2-ask-q"><?= e(mb_strimwidth($tx, 0, 150, '…')) ?></span>
+          <span class="v2-ask-foot"><?= $tn ? $tn . ' ' . ($tn === 1 ? 'answer' : 'answers') : 'Be the first to answer' ?> →</span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
     <?php if (!empty($liveCities)): ?>
-      <h3 class="v2-home-chips-h"><?= !empty($goingSoon) ? 'Who is going, by city' : 'Cities with something happening' ?></h3>
+      <h3 class="v2-home-chips-h v2-home-chips-h-gap"><?= !empty($goingSoon) ? 'Who is going, by city' : 'Cities with something happening' ?></h3>
       <div class="v2-chips v2-chips-wrap v2-home-chips v2-home-live">
         <?php foreach ($liveCities as $c):
             $going = (int) $c['going_count']; $meets = (int) $c['meetup_count']; $talk = (int) $c['talk_count'];
@@ -125,8 +164,12 @@
     <?php endif; ?>
   </div>
 </section>
+<?php endif; ?>
 
-<section class="v2-section">
+<section class="v2-section v2-section-tint">
+  <div class="wrap">
+    <div class="v2-sec-head"><div><h2 class="v2-h2">What RuinMyTrip is for</h2><p class="v2-sub">Honest travel, before, during and after the trip.</p></div></div>
+  </div>
   <div class="wrap v2-how">
     <div class="v2-how-item">
       <span class="v2-how-ico" aria-hidden="true">★</span>
