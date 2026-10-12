@@ -63,7 +63,8 @@
       <?php foreach ($v2Places as $pl): $plId = (int) $pl['id']; $plN = (int) $pl['traveler_reviews']; ?>
         <article class="v2-rate-card">
           <a class="v2-rate-media" href="<?= e(url('p/' . $pl['slug'])) ?>" data-cta="home_place" tabindex="-1" aria-hidden="true"
-             style="background-image:url('<?= e(abs_url((string) $pl['hero_url'])) ?>')">
+             style="background-image:url('<?php $plSet = function_exists('rmt_media_srcset') ? rmt_media_srcset((string) $pl['hero_url']) : ''; /* the 480px copy: the card is never wider */
+                echo e($plSet !== '' ? (string) strtok($plSet, ' ') : abs_url((string) $pl['hero_url'])); ?>')">
             <span class="v2-rate-glyph"><?= rmt_design_type_glyph((string) $pl['type']) ?></span>
           </a>
           <div class="v2-rate-body">
@@ -96,7 +97,8 @@
     <div class="v2-city-grid">
       <?php foreach ($v2Cities as $i => $c): ?>
         <a class="v2-city<?= $i === 0 ? ' v2-city-lg' : '' ?>" href="<?= e(url('d/' . $c['slug'])) ?>" data-cta="home_city">
-          <img loading="lazy" src="<?= e(abs_url((string) $c['hero_url'])) ?>" alt="">
+          <?php $cSet = function_exists('rmt_media_srcset') ? rmt_media_srcset((string) $c['hero_url']) : ''; ?>
+          <img loading="lazy" src="<?= e(abs_url((string) $c['hero_url'])) ?>"<?php if ($cSet !== ''): ?> srcset="<?= e($cSet) ?>" sizes="<?= $i === 0 ? '(max-width: 900px) 100vw, 50vw' : '(max-width: 900px) 50vw, 25vw' ?>"<?php endif; ?> alt="">
           <span class="v2-city-txt">
             <b><?= e((string) $c['name']) ?></b>
             <small><?= e((string) $c['country']) ?><?php if ((int) $c['places'] > 0): ?> · <?= (int) $c['places'] ?> places<?php endif; ?></small>
