@@ -43,19 +43,19 @@
       </a>
       <a class="v2-pillar" href="<?= e(url('talk')) ?>" data-cta="home_share">
         <span class="v2-pillar-ico" aria-hidden="true">✎</span>
-        <span class="v2-pillar-txt"><b>Share</b><small>What really happened on your trip</small></span>
+        <span class="v2-pillar-txt"><b>Share</b><small>What really happened</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('review/new?src=home')) ?>" data-cta="home_rate">
         <span class="v2-pillar-ico" aria-hidden="true">★</span>
-        <span class="v2-pillar-txt"><b>Review</b><small>Stars and a few honest lines</small></span>
+        <span class="v2-pillar-txt"><b>Review</b><small>Honest stars and notes</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('plan?cta=home_plan')) ?>" data-cta="home_plan">
         <span class="v2-pillar-ico" aria-hidden="true">✈</span>
-        <span class="v2-pillar-txt"><b>Plan</b><small>Your dates, your next city</small></span>
+        <span class="v2-pillar-txt"><b>Plan</b><small>Dates and next city</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('travelers')) ?>" data-cta="home_buddy">
         <span class="v2-pillar-ico" aria-hidden="true">☺</span>
-        <span class="v2-pillar-txt"><b>Connect</b><small>Travelers on the same dates</small></span>
+        <span class="v2-pillar-txt"><b>Connect</b><small>Travelers on your dates</small></span>
       </a>
     </nav>
 
