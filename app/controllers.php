@@ -153,6 +153,19 @@ function home(array $a): void {
             array_search($x['slug'], $featuredSlugs, true) <=> array_search($y['slug'], $featuredSlugs, true));
         foreach ($v2Cities as &$vc) $vc['places'] = $placeCounts[(int) $vc['id']] ?? 0;
         unset($vc);
+        /* The photo grid leads with the cities a visitor can actually use: a city with a handful of
+           places reads as empty once it is clicked. Kept in featured order among equals. */
+        arsort($placeCounts);
+        $fullIds = array_slice(array_keys(array_filter($placeCounts, static fn(int $n): bool => $n >= 20)), 0, 12);
+        if ($fullIds) {
+            $full = q_all("SELECT id, slug, name, country, hero_url FROM destinations
+                            WHERE hero_url IS NOT NULL AND hero_url <> '' AND id IN ("
+                          . implode(',', array_fill(0, count($fullIds), '?')) . ')', $fullIds);
+            foreach ($full as &$vc) $vc['places'] = $placeCounts[(int) $vc['id']];
+            unset($vc);
+            usort($full, static fn(array $x, array $y): int => $y['places'] <=> $x['places']);
+            if (count($full) >= 6) $v2Cities = array_slice($full, 0, 8);
+        }
         $v2CityCount = $stat_destinations;
         $v2Reviews = $reviews;
     }

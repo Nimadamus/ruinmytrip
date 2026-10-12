@@ -381,7 +381,11 @@
           <?php if (!empty($tp['dest_name'])): ?> · <a href="<?= e(url('d/'.$tp['dest_slug'])) ?>"><?= e((string) $tp['dest_name']) ?></a><?php endif; ?>
           <?php if (!empty($tp['community_slug'])): ?> · <a href="<?= e(url('c/'.$tp['community_slug'])) ?>"><?= e((string) $tp['community_title']) ?></a><?php endif; ?>
         </span>
+        <?php if ($pv2): /* one paragraph: pre-wrap plus nl2br doubled every line break into tall gaps */ ?>
+        <p style="margin:.35rem 0 .3rem"><?= e(mb_strimwidth(trim((string) preg_replace('/\s+/u', ' ', (string) $tp['body'])), 0, 240, '…')) ?></p>
+        <?php else: ?>
         <p style="margin:.35rem 0 .3rem;white-space:pre-wrap"><?= nl2br(e(mb_strimwidth((string) $tp['body'], 0, 300, '…'))) ?></p>
+        <?php endif; ?>
         <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
           <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
           <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Open' ?></a></p>

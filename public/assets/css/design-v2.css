@@ -241,7 +241,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-dest:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
 .v2-dest-link{display:block;color:var(--v2-ink)}
 .v2-dest-link:hover{text-decoration:none}
-.v2-dest-img{display:block;aspect-ratio:4/3;overflow:hidden;background:#dfe7e3}
+.v2-dest-img{display:block;aspect-ratio:4/3;overflow:hidden;background:linear-gradient(135deg,#16807a,#0c4d4a)}
 .v2-dest-img img{width:100%;height:100%;object-fit:cover;display:block}
 .v2-dest-body{display:block;padding:12px 14px 40px}
 .v2-dest-name{display:block;font-family:var(--display);font-weight:600;font-size:1.2rem;line-height:1.2}
@@ -326,7 +326,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
   .v2-hero-acts .v2-btn{flex:1}
   .v2-map-foot{flex-direction:column;align-items:stretch;text-align:center}
   .v2-sec-head{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:16px}
-  .v2-rate-grid{grid-template-columns:1fr;gap:12px}
+  .v2-rate-grid{grid-template-columns:1fr;gap:12px}.v2-rate-grid>:nth-child(n+4){display:none}
   .v2-rate-media{flex-basis:92px}
   .v2-rate-body{padding:13px 14px}
   .v2-stars a{min-width:40px;min-height:40px;font-size:1.7rem}

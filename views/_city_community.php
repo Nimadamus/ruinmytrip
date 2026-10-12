@@ -73,8 +73,10 @@ $stats = array_values(array_filter([
                below the fold, and the only "post a trip" control was inside the collapsed menu, so a
                signed in visitor on a phone could not see one at all. Neither is a new feature and
                neither claims anybody is there; the pages they open say honestly when they are empty. */ ?>
+      <?php if (!rmt_design_v2('city')): /* the redesigned city hero already carries both */ ?>
       <a class="btn btn-ghost cc-travelers" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">See who is going</a>
       <a class="btn btn-ghost cc-post-dates" href="<?= e(url('trip/new?destination_id=' . (int) $d['id'])) ?>">Post your dates</a>
+      <?php endif; ?>
     </div>
   </div>
 

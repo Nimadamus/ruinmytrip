@@ -53,12 +53,12 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
     <?php foreach ($dests as $d): $dPlaces = (int) ($d['places'] ?? 0); $dRev = (int) $d['reviews']; ?>
       <article class="v2-dest">
         <a class="v2-dest-link" href="<?= e(url('d/' . $d['slug'])) ?>" data-cta="explore_city">
-          <span class="v2-dest-img"><img loading="lazy" src="<?= e($d['hero_url']) ?>" alt=""></span>
+          <span class="v2-dest-img"><img loading="lazy" src="<?= e($d['hero_url']) ?>" alt="" onerror="this.remove()"></span>
           <span class="v2-dest-body">
             <b class="v2-dest-name"><?= e($d['name']) ?></b>
             <span class="v2-dest-country"><?= e($d['country']) ?></span>
             <span class="v2-dest-meta">
-              <?php if ($dPlaces > 0): ?><span><?= $dPlaces ?> places</span><?php endif; ?>
+              <?php if ($dPlaces > 0): ?><span><?= $dPlaces ?> <?= $dPlaces === 1 ? 'place' : 'places' ?></span><?php endif; ?>
               <?php if ($dRev > 0): ?><span>★ <?= number_format((float) $d['avg_rating'], 1) ?> · <?= $dRev ?> <?= $dRev === 1 ? 'review' : 'reviews' ?></span><?php endif; ?>
               <span class="v2-dest-cat<?= $dPlaces === 0 && $dRev === 0 ? ' v2-dest-cat-only' : '' ?>"><?= e(ucfirst((string) $d['category'])) ?></span>
             </span>
