@@ -7726,6 +7726,22 @@ function hide_action(array $a): void {
 /** /map, or /u/{name}/map: pick countries, share the link, keep it on a profile. */
 function travel_map_page(array $a): void {
     $me = current_user();
+    /* A map somebody asked to keep before they had an account (travel_map_save below, signed out)
+       is saved the first time they reach the map signed in, which is where joining returns them.
+       It only ever comes from their own session, set by a form that passed the CSRF check. */
+    if ($me && isset($_SESSION['rmt_map_pending'])) {
+        $pending = rmt_map_codes((string) $_SESSION['rmt_map_pending']);
+        unset($_SESSION['rmt_map_pending']);
+        if ($pending) {
+            // Added to what they already had, never replacing it: somebody who signs in to an
+            // existing account rather than joining keeps the countries they saved before.
+            $pending = rmt_map_codes(array_merge(rmt_map_for_user((int) $me['id']), $pending));
+            rmt_map_save((int) $me['id'], $pending);
+            try { rmt_track('map_saved', ['source' => 'map_join']); } catch (Throwable $e) {}
+            flash('Saved. Your map is on your profile: ' . rmt_map_count_label(count($pending)) . '.');
+            redirect('/u/' . rawurlencode((string) $me['username']) . '/map');
+        }
+    }
     $owner = null;
     if (!empty($a['username'])) {
         $owner = q_one("SELECT u.id, u.username, u.status, p.display_name FROM users u
@@ -7765,7 +7781,16 @@ function travel_map_page(array $a): void {
 
 /** POST /map/save: keep the map on the member's profile. Signed out goes to Join and comes back. */
 function travel_map_save(array $a): void {
-    require_login(); csrf_check();
+    csrf_check();
+    /* Signed out, "Keep it on a free profile" used to send the reader to join and back to the map
+       with nothing kept: they pressed keep, made an account, and had to find and press save again
+       (2026-10-12, found by the staging check). The countries now wait in their session and are
+       saved when they arrive back signed in (travel_map_page above). */
+    if (!is_logged_in()) {
+        $codes = rmt_map_codes(input('c'));
+        if ($codes) $_SESSION['rmt_map_pending'] = rmt_map_key($codes);
+        redirect('/register?return=' . rawurlencode('/map' . ($codes ? '?c=' . rmt_map_key($codes) : '')));
+    }
     $me = current_user();
     if (!rmt_rate_ok('map_save', (string) $me['id'], 60, 3600)) {
         flash('You are doing that very fast. Try again shortly.');

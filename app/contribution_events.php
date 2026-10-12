@@ -153,6 +153,8 @@ const RMT_CONTRIB_SOURCES = [
     'trip',
     // The trip first form, and the buddy pages that send people to it.
     'plan', 'buddies',
+    // A travel map kept by "Keep it on a free profile" before the account existed, saved on joining (2026-10-12).
+    'map_join',
     // Sign in with Google, and the occasion pages (2026-10-01).
     'google', 'occasion',
     // A signed out match alert, and a shared "I'm going" card.
