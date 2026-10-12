@@ -175,8 +175,8 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-home-chips{margin:18px 0 0;padding:0}
 .v2-home-chips-h-gap{margin-top:30px}
 .v2-map-free{font-family:var(--sans);font-size:.78rem;font-weight:600;color:#9fb4c4;margin-left:8px;letter-spacing:.02em}
-.v2-pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:860px;margin:18px auto 0}
-.v2-pillar{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.07);
+.v2-pillars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;max-width:960px;margin:18px auto 0}
+.v2-pillar{display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:14px;border-radius:16px;background:rgba(255,255,255,.07);
   border:1px solid rgba(255,255,255,.13);color:#fff;text-decoration:none;transition:background .15s,border-color .15s}
 .v2-pillar:hover{background:rgba(255,255,255,.12);border-color:rgba(94,234,212,.5);text-decoration:none;color:#fff}
 .v2-pillar-ico{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:rgba(94,234,212,.16);color:#5eead4;font-size:1.05rem}
@@ -192,11 +192,12 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-ask:hover{border-color:#9fd3c7;text-decoration:none;color:var(--v2-ink);transform:translateY(-1px)}
 .v2-ask-meta{font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v2-teal)}
 .v2-ask-q{font-size:.95rem;line-height:1.45;flex:1}
-.v2-ask-foot{font-size:.85rem;font-weight:650;color:var(--v2-muted)}
+.v2-ask-foot{font-size:.82rem;font-weight:600;color:var(--v2-muted)}
+.v2-ask-ours .v2-ask-meta{color:#9a5b1c}
 body:has(.v2-band) .site-footer{margin-top:0}
 .v2-nav .footer-grid{grid-template-columns:1.3fr repeat(4,minmax(0,1fr))}
 @media (max-width:1000px){.v2-ask-grid{grid-template-columns:1fr 1fr}.v2-nav .footer-grid{grid-template-columns:1fr 1fr}}
-@media (max-width:900px){.v2-pillars{grid-template-columns:1fr}}
+@media (max-width:900px){.v2-pillars{grid-template-columns:1fr 1fr}.v2-pillar{flex-direction:row;align-items:center}.v2-pillars>.v2-pillar:first-child{grid-column:1/-1}}
 .v2-home-chips-h{margin:26px 0 0;font-size:1rem;font-weight:700;color:var(--v2-ink)}
 @media (max-width:640px){
   .v2-hero-mapfirst .wrap{padding-top:26px;padding-bottom:36px}

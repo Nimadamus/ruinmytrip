@@ -168,9 +168,8 @@ function home(array $a): void {
         }
         $v2CityCount = $stat_destinations;
         $v2Reviews = $reviews;
-        $v2Talk = function_exists('rmt_posts_recent') ? rmt_posts_recent(4) : [];
     }
-    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews','v2Talk') : []), [
+    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews') : []), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.

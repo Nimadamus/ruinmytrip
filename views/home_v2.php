@@ -16,7 +16,7 @@
     <div class="v2-hero-top">
       <p class="v2-kicker">The honest travel community</p>
       <h1 class="v2-h1">Where have you been?</h1>
-      <p class="v2-lede">Start with your travel map. Then review the places you went, plan the next trip with advice from people who have been, and meet travelers on your dates.</p>
+      <p class="v2-lede">Start with your travel map. Then discover where to go next, share what really happened, review the places you went and meet travelers on your dates.</p>
     </div>
 
     <div class="v2-hero-map v2-hero-map-xl tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
@@ -37,17 +37,25 @@
 
     <?php /* What the map is the front door to: the community the site is for. Real counts only. */ ?>
     <nav class="v2-pillars" aria-label="What you can do on RuinMyTrip">
-      <a class="v2-pillar" href="<?= e(url('review/new?src=home')) ?>" data-cta="home_rate">
-        <span class="v2-pillar-ico" aria-hidden="true">★</span>
-        <span class="v2-pillar-txt"><b>Review where you went</b><small>Stars and a few honest lines. What was good, what nearly ruined it.</small></span>
-      </a>
       <a class="v2-pillar" href="<?= e(url('explore')) ?>" data-cta="home_explore">
         <span class="v2-pillar-ico" aria-hidden="true">⚲</span>
-        <span class="v2-pillar-txt"><b>Discover your next city</b><small><?php if ($stat_places > 0): ?><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities, with hours, prices and directions.<?php else: ?>Places with hours, prices and directions.<?php endif; ?></small></span>
+        <span class="v2-pillar-txt"><b>Discover</b><small><?php if ($stat_places > 0): ?><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities<?php else: ?>Places worth the trip<?php endif; ?></small></span>
+      </a>
+      <a class="v2-pillar" href="<?= e(url('talk')) ?>" data-cta="home_share">
+        <span class="v2-pillar-ico" aria-hidden="true">✎</span>
+        <span class="v2-pillar-txt"><b>Share</b><small>What really happened on your trip</small></span>
+      </a>
+      <a class="v2-pillar" href="<?= e(url('review/new?src=home')) ?>" data-cta="home_rate">
+        <span class="v2-pillar-ico" aria-hidden="true">★</span>
+        <span class="v2-pillar-txt"><b>Review</b><small>Stars and a few honest lines</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('plan?cta=home_plan')) ?>" data-cta="home_plan">
+        <span class="v2-pillar-ico" aria-hidden="true">✈</span>
+        <span class="v2-pillar-txt"><b>Plan</b><small>Your dates, your next city</small></span>
+      </a>
+      <a class="v2-pillar" href="<?= e(url('travelers')) ?>" data-cta="home_buddy">
         <span class="v2-pillar-ico" aria-hidden="true">☺</span>
-        <span class="v2-pillar-txt"><b>Meet travelers on your dates</b><small>Post where and when. We tell you when someone overlaps.</small></span>
+        <span class="v2-pillar-txt"><b>Connect</b><small>Travelers on the same dates</small></span>
       </a>
     </nav>
 
@@ -129,24 +137,23 @@
   </div>
 </section>
 
-<?php if (!empty($v2Talk) || !empty($liveCities)): ?>
+<?php if (!empty($live) || !empty($liveCities)): ?>
 <section class="v2-section">
   <div class="wrap">
     <div class="v2-sec-head">
       <div>
-        <h2 class="v2-h2">Travelers are asking</h2>
-        <p class="v2-sub">Questions about real trips. Answer one from experience, or ask your own.</p>
+        <h2 class="v2-h2">From the community</h2>
+        <p class="v2-sub">Questions to answer from experience and lessons from real trips. Anything written by our team says so.</p>
       </div>
       <a class="v2-link" href="<?= e(url('talk')) ?>" data-cta="home_talk">All questions →</a>
     </div>
-    <?php if (!empty($v2Talk)): ?>
+    <?php if (!empty($live)): ?>
     <div class="v2-ask-grid">
-      <?php foreach ($v2Talk as $tp): $tn = (int) ($tp['reply_count'] ?? 0);
-          $tx = trim((string) preg_replace('/\s+/u', ' ', (string) $tp['body'])); ?>
-        <a class="v2-ask" href="<?= e(url('post/' . (int) $tp['id'])) ?>" data-cta="home_talk">
-          <span class="v2-ask-meta"><?= !empty($tp['dest_name']) ? e((string) $tp['dest_name']) : 'Travel talk' ?> · <?= e(ago((string) $tp['created_at'])) ?></span>
-          <span class="v2-ask-q"><?= e(mb_strimwidth($tx, 0, 150, '…')) ?></span>
-          <span class="v2-ask-foot"><?= $tn ? $tn . ' ' . ($tn === 1 ? 'answer' : 'answers') : 'Be the first to answer' ?> →</span>
+      <?php foreach ($live as $it): ?>
+        <a class="v2-ask<?= !empty($it['editorial']) ? ' v2-ask-ours' : '' ?>" href="<?= e((string) $it['href']) ?>" data-cta="home_talk">
+          <span class="v2-ask-meta"><?= e((string) $it['label']) ?></span>
+          <span class="v2-ask-q"><?= e(mb_strimwidth((string) $it['title'], 0, 150, '…')) ?></span>
+          <span class="v2-ask-foot"><?php if ((string) $it['meta'] !== ''): ?><?= e((string) $it['meta']) ?> · <?php endif; ?><?= e((string) $it['who']) ?></span>
         </a>
       <?php endforeach; ?>
     </div>
