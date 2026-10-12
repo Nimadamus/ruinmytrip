@@ -104,6 +104,23 @@
         </a>
       <?php endforeach; ?>
     </div>
+    <?php /* The city and travelers pages the current home page links, so none of them loses its home link. */
+      $v2Shown = array_column($v2Cities, 'slug');
+      $v2More = array_values(array_filter($featuredCities ?? [], static fn(array $c): bool => !in_array($c['slug'], $v2Shown, true))); ?>
+    <?php if ($v2More): ?>
+      <div class="v2-chips v2-chips-wrap v2-home-chips"><?php foreach ($v2More as $c): ?><a class="v2-chip v2-chip-sm" href="<?= e(url('d/' . $c['slug'])) ?>" data-cta="home_city"><?= e((string) $c['name']) ?></a><?php endforeach; ?></div>
+    <?php endif; ?>
+    <?php if (!empty($liveCities)): ?>
+      <h3 class="v2-home-chips-h"><?= !empty($goingSoon) ? 'Who is going, by city' : 'Cities with something happening' ?></h3>
+      <div class="v2-chips v2-chips-wrap v2-home-chips">
+        <?php foreach ($liveCities as $c):
+            $going = (int) $c['going_count']; $meets = (int) $c['meetup_count']; $talk = (int) $c['talk_count'];
+            $hint = $going ? $going . ' going' : ($meets ? $meets . ($meets === 1 ? ' meetup' : ' meetups') : ($talk ? $talk . ($talk === 1 ? ' question' : ' questions') : '')); ?>
+          <a class="v2-chip v2-chip-sm" href="<?= e(url('d/' . $c['slug'] . '/travelers')) ?>"><?= e((string) $c['name']) ?><?php if ($hint !== ''): ?> <span><?= e($hint) ?></span><?php endif; ?></a>
+        <?php endforeach; ?>
+        <a class="v2-chip v2-chip-sm" href="<?= e(url('travelers')) ?>">Every city →</a>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 
@@ -158,6 +175,7 @@
   <?php /* The travel buddy pages the current home page links, kept so none of them loses its link. */ ?>
   <div class="wrap v2-band-links">
     <span>Popular:</span>
+    <a href="<?= e(url('trip/new')) ?>">Share a trip story</a>
     <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
     <a href="<?= e(url('buddies/backpacking')) ?>">Backpacking</a>
     <a href="<?= e(url('buddies/road-trip')) ?>">Road trips</a>

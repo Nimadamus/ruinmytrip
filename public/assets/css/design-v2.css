@@ -172,6 +172,8 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-hero-next{display:flex;gap:12px;justify-content:center;align-items:center;flex-wrap:wrap;max-width:860px;margin:24px auto 0}
 .v2-hero-next .v2-hero-search{flex:1 1 420px;max-width:560px}
 .v2-hero-mapfirst .v2-hero-proof{text-align:center}
+.v2-home-chips{margin:18px 0 0;padding:0}
+.v2-home-chips-h{margin:26px 0 0;font-size:1rem;font-weight:700;color:var(--v2-ink)}
 @media (max-width:640px){
   .v2-hero-mapfirst .wrap{padding-top:26px;padding-bottom:36px}
   .v2-hero-top{margin-bottom:16px}
