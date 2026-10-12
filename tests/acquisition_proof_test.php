@@ -64,7 +64,7 @@ $add('d1', 'vD', 'landing_view', 5000, 'friends', null, '/map');
 $add('e1', 'vE', 'landing_view', 4000, 'friends', null, '/map', 'selfcheck');
 $add('e1', 'vE', 'human_interaction', 3990, 'friends', null, null, 'selfcheck');
 
-$v = rmt_acq_verdicts();
+$v = rmt_acq_verdicts(gmdate("Y-m-d H:i:s", time() - 30 * 86400));
 ok('the proof verdicts are used when the module is loaded', is_array($v), true);
 ok('the tapping friend is a verified human', $v['vA'] ?? null, 'human');
 ok('the form-first crawler is a suspected bot', $v['vC'] ?? null, 'bot');

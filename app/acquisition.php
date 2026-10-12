@@ -203,29 +203,31 @@ function rmt_acq_current(): array {
 }
 
 /**
- * Every browser's class from app/proof.php (human, bot or unverified), over all of its events, read
- * once per request. Null when the proof module is not loaded (unit tests of this file alone).
+ * Every browser's class from app/proof.php (human, bot or unverified), judged on its events since
+ * the report's own start, read once per window per request (an all time read held 230MB on
+ * production). Null when the proof module is not loaded (unit tests of this file alone).
  *
  * @return array<string,string>|null
  */
-function rmt_acq_verdicts(): ?array {
-    static $memo = false;
-    if ($memo !== false) return $memo;
-    if (!function_exists('rmt_proof_fold') || !function_exists('rmt_proof_stream')) return $memo = null;
+function rmt_acq_verdicts(string $since = '0000-01-01 00:00:00'): ?array {
+    static $memo = [];
+    if (array_key_exists($since, $memo)) return $memo[$since];
+    if (!function_exists('rmt_proof_fold') || !function_exists('rmt_proof_stream')) return $memo[$since] = null;
     $by = []; $keys = []; $srcs = []; $n = 0;
     $noDay = static fn(string $utc): int => -1;
     try {
-        foreach (rmt_proof_stream('0000-01-01 00:00:00', '9999-12-31 00:00:00') as $r) {
+        foreach (rmt_proof_stream($since, '9999-12-31 00:00:00') as $r) {
             rmt_proof_fold($by, $keys, $srcs, $r, $noDay);
             if (++$n >= RMT_PROOF_MAX_EVENTS) break;
         }
     } catch (Throwable $e) {
-        return $memo = null;
+        return $memo[$since] = null;
     }
     unset($keys, $srcs);
-    $memo = [];
-    foreach (rmt_proof_verdicts($by) as $v => [$class]) $memo[$v] = $class;
-    return $memo;
+    $out = [];
+    foreach (rmt_proof_verdicts($by) as $v => [$class]) $out[$v] = $class;
+    unset($by);
+    return $memo[$since] = $out;
 }
 
 /**
@@ -278,7 +280,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
        GROUP BY COALESCE(acq_source, 'direct'), COALESCE(acq_campaign, ''), COALESCE(acq_content, ''), journey",
         [RMT_ACQ_INTERNAL_CONTENT, $since]);
 
-    $verdicts = rmt_acq_verdicts();
+    $verdicts = rmt_acq_verdicts($since);
     $agg = [];
     $visits = [];   // browser => Pacific days of its human sessions, any channel
     $firstIn = [];  // channel key => browser => its first Pacific day through that channel
