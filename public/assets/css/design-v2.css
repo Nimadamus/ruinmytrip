@@ -213,6 +213,9 @@ body:has(.v2-band) .site-footer{margin-top:0}
   .v2-map-free{display:none}
   .v2-ask-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-right:-16px;padding-right:16px}
   .v2-ask-grid::-webkit-scrollbar{display:none}
+  .v2-how-item{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:14px}
+  .v2-how-ico{grid-row:span 2;width:44px;height:44px;border-radius:13px;font-size:1.15rem}
+  .v2-how-item h3{margin:0 0 4px;font-size:1.12rem}
   .v2-ask{flex:0 0 82%;scroll-snap-align:start} /* swipe through the questions, the next card peeks */
   .v2-chips.v2-home-live{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px} /* one swipeable row, not seven lines of chips */
 }
