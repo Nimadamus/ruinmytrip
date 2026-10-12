@@ -163,7 +163,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-hero-top{text-align:center;max-width:780px;margin:0 auto 18px}
 .v2-hero-top .v2-h1{font-size:clamp(2.6rem,4.6vw,3.6rem)}
 .v2-hero-top .v2-lede{margin:12px auto 0}
-.v2-hero-map-xl{max-width:780px;margin:0 auto;padding:16px}
+.v2-hero-map-xl{max-width:700px;margin:0 auto;padding:14px}
 .v2-hero-map-xl .v2-map-head{align-items:center;margin:0 6px 14px}
 .v2-hero-map-xl .v2-map-title{margin:0;font-size:1.25rem}
 .v2-hero-map-xl .v2-map-count{margin:0;font-size:1rem;padding:6px 14px;transition:transform .2s}
