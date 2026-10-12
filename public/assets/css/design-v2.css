@@ -185,6 +185,7 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
   .v2-hero-map-xl .v2-map-count{font-size:.9rem;padding:5px 12px}
   .v2-hero-next{flex-direction:column;align-items:stretch;margin-top:18px}
   .v2-hero-next .v2-hero-search{flex:none;max-width:none}
+  .v2-home-live{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px} /* one swipeable row, not seven lines of chips */
 }
 .tm-tip{position:fixed;pointer-events:none;background:#0f1b2d;color:#fff;padding:4px 8px;border-radius:6px;font-size:.85rem;z-index:95}
 

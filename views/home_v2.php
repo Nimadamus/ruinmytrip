@@ -114,7 +114,7 @@
     <?php endif; ?>
     <?php if (!empty($liveCities)): ?>
       <h3 class="v2-home-chips-h"><?= !empty($goingSoon) ? 'Who is going, by city' : 'Cities with something happening' ?></h3>
-      <div class="v2-chips v2-chips-wrap v2-home-chips">
+      <div class="v2-chips v2-chips-wrap v2-home-chips v2-home-live">
         <?php foreach ($liveCities as $c):
             $going = (int) $c['going_count']; $meets = (int) $c['meetup_count']; $talk = (int) $c['talk_count'];
             $hint = $going ? $going . ' going' : ($meets ? $meets . ($meets === 1 ? ' meetup' : ' meetups') : ($talk ? $talk . ($talk === 1 ? ' question' : ' questions') : '')); ?>
