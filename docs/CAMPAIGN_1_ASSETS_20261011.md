@@ -3,7 +3,7 @@
 Prepared 2026-10-11 (Pacific). The owner posts and sends everything from his own accounts. Plan and
 stop rules: `CAMPAIGN_1_FOR_REVIEW_20261011.md`. Measurement is live (see the end).
 
-## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\video_final\`), final 2026-10-11 20:00 PDT
+## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\video_v2\`), v2 2026-10-11 20:25 PDT: hook first, a real place page frame, stronger close; audio still to add
 
 | File | Use |
 |---|---|
