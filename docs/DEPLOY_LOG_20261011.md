@@ -31,3 +31,4 @@ Still off: redesign surfaces other than place (home, nav, explore, city, profile
 | 10 | 19:48 to 20:02 | d603cd1, 0026532, 5e2f0cc, 9240274 | | Home preview: whole map card above the fold, every city and travelers link kept, small image copies (2.3 MB to 0.44 MB on phones), chips swipe on phones | home SEO head identical public vs preview; 26 page invariants 0 changes; 44 place pages 0 changes; sitemap index 4 |
 
 Still off: home, nav, explore, city and profile redesign; the curated sitemap. Nothing posted or sent.
+| 11 | 20:14 to 20:22 | 3b02756, 18b209c, bbd43b4 | | Home preview v3: community pillars under the map, "Travelers are asking", nine city tiles, quiet join line, footer columns, phone swipe rows | home SEO head identical public vs preview; preview phone LCP 1.08 s vs public 1.15 s |

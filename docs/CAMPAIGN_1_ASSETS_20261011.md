@@ -51,22 +51,22 @@ on the days a video is posted alongside the tagged numbers.
 
 Pick one per post.
 
-1. How many countries have you been to? Tap them in and watch the count climb. Free map, no sign up, link in bio.
-   #travel #travelmap #countriesvisited #travelchallenge #bucketlist
-2. Building a travel map one tap at a time. Comment your number, no judging.
-   #travelmap #traveltok #wanderlust #travelgoals
-3. The quickest way to see how much of the world you have actually seen: ruinmytrip.com/map
-   #travel #countriesvisited #traveltips #solotravel
+1. Passport stamps fade. This doesn't. Tap every country you've been to and keep the map. Free, link in bio.
+   #travelmap #countriesvisited #travelstats
+2. Say your country count out loud, then check it on the map. Did it match? ruinmytrip.com/map
+   #travelmap #traveltok #countriesvisited
+3. For everyone still arguing about whether a layover counts. (It doesn't.) Free travel map, link in bio.
+   #travelmap #travelhumor #countriesvisited
 
 On screen text is already in the video. If the owner pins a comment with a number, it is his real
 number from his own map.
 
 ## Instagram feed caption
 
-What's your number? Tap every country you have been to on ruinmytrip.com/map and it turns your trips
-into a map you can share. Free, no account. Link in bio. Tell us your number below.
+Every trip, one map. Tap the countries you've been to on ruinmytrip.com/map, then tell the next
+traveler how the places really were. Free, no account to start. Link in bio.
 
-#travelmap #countriesvisited #travelgram #wanderlust #travelchallenge #bucketlist
+#travelmap #countriesvisited #travelstats #honesttravel
 
 ## Personal invitations (the owner rewrites each in his own voice; one reminder at most)
 
