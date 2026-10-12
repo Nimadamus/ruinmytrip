@@ -211,8 +211,10 @@ body:has(.v2-band) .site-footer{margin-top:0}
   .v2-hero-next .v2-hero-search{flex:none;max-width:none}
   .v2-pillar{padding:12px 14px}
   .v2-map-free{display:none}
-  .v2-ask-grid{grid-template-columns:1fr}
-  .v2-home-live{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px} /* one swipeable row, not seven lines of chips */
+  .v2-ask-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-right:-16px;padding-right:16px}
+  .v2-ask-grid::-webkit-scrollbar{display:none}
+  .v2-ask{flex:0 0 82%;scroll-snap-align:start} /* swipe through the questions, the next card peeks */
+  .v2-chips.v2-home-live{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px} /* one swipeable row, not seven lines of chips */
 }
 .tm-tip{position:fixed;pointer-events:none;background:#0f1b2d;color:#fff;padding:4px 8px;border-radius:6px;font-size:.85rem;z-index:95}
 
