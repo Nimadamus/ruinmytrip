@@ -18,8 +18,8 @@
 .v2-btn-block{display:flex;width:100%}
 .v2-btn-primary{background:var(--v2-teal);color:#fff;box-shadow:0 6px 18px -8px rgba(15,118,110,.7)}
 .v2-btn-primary:hover{background:#0d8a80;color:#fff}
-.v2-btn-accent{background:var(--v2-orange);color:#fff;box-shadow:0 8px 22px -8px rgba(232,89,12,.75)}
-.v2-btn-accent:hover{background:var(--v2-orange-2);color:#fff}
+.v2-btn-accent{background:#c2410c;color:#fff;box-shadow:0 8px 22px -8px rgba(232,89,12,.75)}
+.v2-btn-accent:hover{background:#9a3412;color:#fff} /* white text stays above 4.5:1 */
 .v2-btn-ghost{background:#fff;color:var(--v2-ink);border-color:var(--v2-line)}
 .v2-btn-ghost:hover{border-color:#cfd6d2;color:var(--v2-ink)}
 .v2-btn-glass{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.35);backdrop-filter:blur(6px)}
@@ -195,6 +195,8 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-ask-foot{font-size:.82rem;font-weight:600;color:var(--v2-muted)}
 .v2-ask-ours .v2-ask-meta{color:#9a5b1c}
 body:has(.v2-band) .site-footer{margin-top:0}
+.v2-nav .site-footer .muted,.v2-nav .site-footer p,.v2-nav .footer-base{color:#9fb0c2}
+.v2-nav .site-footer .brand span{color:#5eead4}
 .v2-nav .footer-grid{grid-template-columns:1.3fr repeat(4,minmax(0,1fr))}
 @media (max-width:1000px){.v2-ask-grid{grid-template-columns:1fr 1fr}.v2-nav .footer-grid{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){.v2-pillars{grid-template-columns:1fr 1fr}.v2-pillar{flex-direction:row;align-items:center}.v2-pillars>.v2-pillar:first-child{grid-column:1/-1}}
@@ -294,7 +296,7 @@ body:has(.v2-band) .site-footer{margin-top:0}
   border:1px solid var(--v2-line);color:#2a3a50;font-weight:650;font-size:.9rem;text-decoration:none;white-space:nowrap}
 .v2-chip:hover{border-color:#c5d1cc;text-decoration:none;color:var(--v2-ink)}
 .v2-chip.on{background:var(--v2-ink);border-color:var(--v2-ink);color:#fff}
-.v2-chip span{font-weight:600;opacity:.6}
+.v2-chip span{font-weight:600;color:var(--v2-muted)}
 .v2-chip-sm{min-height:36px;padding:0 13px;font-size:.85rem}
 .v2-dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .v2-dest-grid:not(.all)>.v2-dest:nth-child(n+25){display:none}

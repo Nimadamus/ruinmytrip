@@ -81,6 +81,9 @@
     var svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 ' + geo.w + ' ' + geo.h);
     svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'World map. The countries you have been to are colored in.');
+    var mapBox = root.querySelector('[data-tm-map]');
+    if (mapBox && mapBox.hasAttribute('aria-label') && !mapBox.hasAttribute('role')) mapBox.setAttribute('role', 'group'); // a label needs a role
     var tip = document.createElement('div'); tip.className = 'tm-tip'; tip.hidden = true; document.body.appendChild(tip);
     var dots = [];
     geo.countries.forEach(function (c) {
