@@ -23,3 +23,11 @@ service holds it) and ~/CREDENTIALS.md. No Windows environment variable, no othe
 repos or task folders, no GitHub workflow.
 
 Still off: redesign surfaces other than place (home, nav, explore, city, profile), the curated sitemap. Campaign 1 assets ready, nothing posted.
+
+| # | PDT | Deploy | Commit | Change | Verified |
+|---|---|---|---|---|---|
+| 8 | 19:34 | dep-db64dptckfvc73c3fed0 | f0c0ed2 | Live profile fix: talk excerpts no longer double every line break (pre-wrap under nl2br) | 5 profiles: title, description, canonical, robots, JSON-LD, H1 and full page text unchanged; /u/ruinmytrip talk cards 40% shorter on desktop (2074 to 1254 px), 24% on phone; no horizontal scroll, no errors |
+| 9 | 19:39 | dep-db64g9rbc2fs73ap9310 | e284983 | Home redesign preview: the travel map is the hero; profile ellipsis tidy | public pages unchanged |
+| 10 | 19:48 to 20:02 | d603cd1, 0026532, 5e2f0cc, 9240274 | | Home preview: whole map card above the fold, every city and travelers link kept, small image copies (2.3 MB to 0.44 MB on phones), chips swipe on phones | home SEO head identical public vs preview; 26 page invariants 0 changes; 44 place pages 0 changes; sitemap index 4 |
+
+Still off: home, nav, explore, city and profile redesign; the curated sitemap. Nothing posted or sent.

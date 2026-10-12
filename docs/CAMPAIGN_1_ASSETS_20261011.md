@@ -3,19 +3,31 @@
 Prepared 2026-10-11 (Pacific). The owner posts and sends everything from his own accounts. Plan and
 stop rules: `CAMPAIGN_1_FOR_REVIEW_20261011.md`. Measurement is live (see the end).
 
-## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\`)
+## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\video_final\`), final 2026-10-11 20:00 PDT
 
 | File | Use |
 |---|---|
-| `video_demo/whats_your_number_1080x1920.mp4` | TikTok and Reels, 19.9 s, silent (add a sound in the app) |
-| `video_demo/cover_1080x1920.png` | Cover frame for both |
-| `video_demo/instagram_feed_1080x1350.png` | Instagram feed post |
-| `video_demo/map_card.png` | The map image the site itself makes (1200x630) |
-| `build/build_video.py`, `build/build_still.py` | Rebuild everything in about a minute |
+| `whats_your_number_1080x1920.mp4` | TikTok and Reels, 19.9 s, silent (add a sound in the app) |
+| `cover_1080x1920.png` | Cover frame for both |
+| `instagram_feed_1080x1350.png` | Instagram feed post |
+| `map_card.png` | The map image the site itself makes (1200x630) |
+| `build/build_video.py`, `build/build_still.py` | Rebuild everything in about a minute (absolute output folder) |
 
-The demo shows 15 sample countries and never says whose they are. Before posting, rebuild with the
-owner's real countries so the "I've been to N countries" on screen is true:
-`python build/build_video.py video_mine 840 250 ...` (ISO numeric ids), then `python build/build_still.py video_mine`.
+What the assets claim, and why each claim is true:
+- No country count is presented as anybody's. The taps are labelled "Example taps"; the counter
+  climbing is the real /map page reacting to them. The share image is shown without its
+  "I've been to N countries" line.
+- The one number used is the platform's own: "1,393 places in 85 cities" (active places and
+  destinations, counted from the live database and printed on the home page). The builders read it
+  at build time and leave it out if it cannot be read.
+- Everything on screen is recorded from production /map at phone size: tapping colors a country,
+  the heading and counter update, Share my map and Download image exist, no account is needed. One
+  real element is hidden for a cleaner frame: the "Keep it on a free profile" button under them.
+
+Landing flow behind every link (walked on a phone 2026-10-11): /map opens map first; taps color
+countries and the address becomes the shareable map (`/map?c=...`); then Share my map, Download
+image, "Keep it on a free profile" (the sign up), then "Where are you going next?" (add dates, find a
+buddy). The visit keeps its campaign label after the address changes.
 
 ## Tracking links
 
@@ -37,16 +49,24 @@ on the days a video is posted alongside the tagged numbers.
 
 ## TikTok and Reels captions
 
-1. What's your number? Tap every country you've been to and watch it count. Free, no sign up. Link in bio. #travel #travelmap #countriesvisited
-2. I built a travel map you can fill in in 30 seconds. How many have you done? Link in bio.
-3. Be honest: how many countries? Mine's on screen. Yours goes in the comments.
+Pick one per post.
 
-On screen text is already in the video. Pin a comment with the number you show.
+1. How many countries have you been to? Tap them in and watch the count climb. Free map, no sign up, link in bio.
+   #travel #travelmap #countriesvisited #travelchallenge #bucketlist
+2. Building a travel map one tap at a time. Comment your number, no judging.
+   #travelmap #traveltok #wanderlust #travelgoals
+3. The quickest way to see how much of the world you have actually seen: ruinmytrip.com/map
+   #travel #countriesvisited #traveltips #solotravel
+
+On screen text is already in the video. If the owner pins a comment with a number, it is his real
+number from his own map.
 
 ## Instagram feed caption
 
-What's your number? Tap every country you've been to on ruinmytrip.com/map and it makes this image for
-you. Free, no account. Link in bio. Drop your number below.
+What's your number? Tap every country you have been to on ruinmytrip.com/map and it turns your trips
+into a map you can share. Free, no account. Link in bio. Tell us your number below.
+
+#travelmap #countriesvisited #travelgram #wanderlust #travelchallenge #bucketlist
 
 ## Personal invitations (the owner rewrites each in his own voice; one reminder at most)
 
