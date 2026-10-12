@@ -385,7 +385,7 @@
         <p style="margin:.35rem 0 .3rem"><?= e(mb_strimwidth(trim((string) preg_replace('/\s+/u', ' ', (string) $tp['body'])), 0, 240, '…')) ?></p>
         <?php else: ?>
         <?php /* nl2br alone (pre-wrap on top doubled every break); a run of blank lines shows as one */ ?>
-        <p style="margin:.35rem 0 .3rem"><?= nl2br(e(mb_strimwidth(trim((string) preg_replace(['/\r\n?/', '/\n[ \t]*(?:\n[ \t]*)+/'], ["\n", "\n\n"], (string) $tp['body'])), 0, 300, '…'))) ?></p>
+        <p style="margin:.35rem 0 .3rem"><?= nl2br(e((string) preg_replace('/\s+…$/u', ' …', mb_strimwidth(trim((string) preg_replace(['/\r\n?/', '/\n[ \t]*(?:\n[ \t]*)+/'], ["\n", "\n\n"], (string) $tp['body'])), 0, 300, '…')))) ?></p>
         <?php endif; ?>
         <p class="hint" style="margin:0"><a href="<?= e(url('post/'.(int) $tp['id'])) ?>">
           <?php $rn = (int) ($tp['reply_count'] ?? 0); ?>
