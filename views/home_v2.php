@@ -3,51 +3,49 @@
  * The redesigned home page (app/design_v2.php, surface "home"). Same controller, title,
  * description and structured data as views/home.php; only the body differs.
  *
- * Leads with what one stranger can use today: the travel map, and a one tap rating of a place
- * search already sends people to. Every count is a count of rows; an empty one is not shown.
+ * The travel map is the hero: it is useful to one stranger with no community at all. Then search,
+ * and a one tap rating of a place search already sends people to. Every count is a count of rows; an empty one is not shown.
  *
  * @var list<array> $v2Places @var list<array> $v2Cities @var int $v2CityCount @var int $stat_places
  * @var int $stat_community_reviews @var list<array> $v2Reviews @var list<array> $goingSoon
  */
 ?>
-<section class="v2-hero">
-  <div class="wrap v2-hero-grid">
-    <div class="v2-hero-copy">
-      <p class="v2-kicker">Real trips, honest reviews</p>
-      <h1 class="v2-h1">Honest travel, from people who went.</h1>
-      <p class="v2-lede">Rate the places you have been, color in your travel map, and see who is heading where you are going.</p>
-      <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
-            data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
-        <span class="v2-search-ico" aria-hidden="true">⌕</span>
-        <input type="search" name="q" placeholder="Where are you going?" aria-label="Search a place or city">
-        <button class="v2-btn v2-btn-primary" type="submit">Search</button>
-      </form>
-      <div class="v2-hero-acts">
-        <a class="v2-btn v2-btn-accent" data-cta="home_map" href="<?= e(url('map')) ?>">Color in my map</a>
-        <a class="v2-btn v2-btn-glass" data-cta="home_rate" href="#rate">Rate a place</a>
-      </div>
-      <?php if ($stat_places > 0): ?>
-        <p class="v2-hero-proof"><b><?= number_format($stat_places) ?></b> places in <b><?= (int) $v2CityCount ?></b> cities, with hours, addresses and directions<?php if ($stat_community_reviews > 0): ?> · <b><?= number_format($stat_community_reviews) ?></b> traveler <?= $stat_community_reviews === 1 ? 'review' : 'reviews' ?><?php endif; ?></p>
-      <?php endif; ?>
+<section class="v2-hero v2-hero-mapfirst">
+  <div class="wrap">
+    <div class="v2-hero-top">
+      <p class="v2-kicker">Free travel map · no account</p>
+      <h1 class="v2-h1">Where have you been?</h1>
+      <p class="v2-lede">Tap every country you have visited and watch the count climb. Your map turns into a picture and a link you can share.</p>
     </div>
 
-    <div class="v2-hero-map tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
+    <div class="v2-hero-map v2-hero-map-xl tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
          data-tm-geo="<?= e(rmt_asset('assets/data/world-map.json')) ?>" data-tm-base="<?= e(url('map')) ?>"
          data-tm-card="<?= e(url('card/map')) ?>">
       <div class="v2-map-head">
-        <div>
-          <p class="v2-map-kicker">Your travel map</p>
-          <p class="v2-map-title">Where have you been? <span class="v2-map-count" data-tm-count>0 countries</span></p>
-        </div>
+        <p class="v2-map-title">Your travel map</p>
+        <span class="v2-map-count" data-tm-count>0 countries</span>
       </div>
       <div class="tm-map" data-tm-map aria-label="World map: tap the countries you have been to">
         <p class="tm-loading">Tap the countries you have been to</p>
       </div>
       <div class="v2-map-foot">
-        <span class="v2-map-hint" data-tm-status aria-live="polite">No account needed. Your map is a link you can share.</span>
-        <a class="v2-btn v2-btn-primary v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share</a>
+        <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in. Nothing to sign up for.</span>
+        <a class="v2-btn v2-btn-accent v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
       </div>
     </div>
+
+    <div class="v2-hero-next">
+      <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
+            data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
+        <span class="v2-search-ico" aria-hidden="true">⌕</span>
+        <input type="search" name="q" placeholder="Where are you going next?" aria-label="Search a place or city">
+        <button class="v2-btn v2-btn-primary" type="submit">Search</button>
+      </form>
+      <a class="v2-btn v2-btn-glass" data-cta="home_rate" href="#rate">Rate a place you have been</a>
+    </div>
+    <?php if ($stat_places > 0): ?>
+      <p class="v2-hero-proof"><b><?= number_format($stat_places) ?></b> places in <b><?= (int) $v2CityCount ?></b> cities, with hours, addresses and directions<?php if ($stat_community_reviews > 0): ?> · <b><?= number_format($stat_community_reviews) ?></b> traveler <?= $stat_community_reviews === 1 ? 'review' : 'reviews' ?><?php endif; ?></p>
+    <?php endif; ?>
   </div>
 </section>
 
