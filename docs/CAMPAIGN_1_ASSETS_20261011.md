@@ -3,31 +3,31 @@
 Prepared 2026-10-11 (Pacific). The owner posts and sends everything from his own accounts. Plan and
 stop rules: `CAMPAIGN_1_FOR_REVIEW_20261011.md`. Measurement is live (see the end).
 
-## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\video_v2\`), v2 2026-10-11 20:25 PDT: hook first, a real place page frame, stronger close; audio still to add
+## Files (on the owner's PC, `C:\Users\BL\rmt_campaign1\video_v3\`), final 2026-10-11 21:30 PDT
 
 | File | Use |
 |---|---|
-| `whats_your_number_1080x1920.mp4` | TikTok and Reels, 19.9 s, silent (add a sound in the app) |
-| `cover_1080x1920.png` | Cover frame for both |
-| `instagram_feed_1080x1350.png` | Instagram feed post |
-| `map_card.png` | The map image the site itself makes (1200x630) |
-| `build/build_video.py`, `build/build_still.py` | Rebuild everything in about a minute (absolute output folder) |
+| `ruinmytrip_campaign1_1080x1920.mp4` | TikTok and Instagram Reels. 21.0 s, 1080x1920, 30 fps, H.264 High, yuv420p, no audio track |
+| `cover_1080x1920.jpg` | Cover for both |
+| `instagram_feed_1080x1350.jpg` | Instagram feed post |
+| `build/build_video_v3.py`, `build/build_still_v3.py` | Rebuild from the live site in about 3 minutes |
 
-What the assets claim, and why each claim is true:
-- No country count is presented as anybody's. The taps are labelled "Example taps"; the counter
-  climbing is the real /map page reacting to them. The share image is shown without its
-  "I've been to N countries" line.
-- The one number used is the platform's own: "1,393 places in 85 cities" (active places and
-  destinations, counted from the live database and printed on the home page). The builders read it
-  at build time and leave it out if it cannot be read.
-- Everything on screen is recorded from production /map at phone size: tapping colors a country,
-  the heading and counter update, Share my map and Download image exist, no account is needed. One
-  real element is hidden for a cleaner frame: the "Keep it on a free profile" button under them.
+The video is animated for sound off: kinetic captions, a live country counter, tap ripples, real
+scrolling and a pulsing call to action. Scenes, all recorded from production at phone size:
+1. Hook: a finished example map and "Can you name every country you've been to?"
+2. Tapping 15 countries on /map, labelled "Example taps", the counter climbing with each tap.
+3. The share image the site makes ("Share it in one tap").
+4. Lisbon's city page scrolled from its photo to "Going to Lisbon? Get told when another traveler
+   overlaps your dates" (plan the next trip, 1,393 places in 85 cities; meet travelers on your dates).
+5. The review form for the Vasa Museum, stars tapped one to five ("Review where you went").
+6. Close: "What's your number? Make your free travel map. Then help the next traveler." and the URL.
 
-Landing flow behind every link (walked on a phone 2026-10-11): /map opens map first; taps color
-countries and the address becomes the shareable map (`/map?c=...`); then Share my map, Download
-image, "Keep it on a free profile" (the sign up), then "Where are you going next?" (add dates, find a
-buddy). The visit keeps its campaign label after the address changes.
+Accuracy: no country count is anybody's; every screen is the live site unedited (the map page's
+sign up button is shown, nothing hidden); the museum's opening hours scene is gone; the only
+statistic is read live from the home page. The review form is shown, never submitted.
+
+Music: add it in the app from the business music library (TikTok Commercial Music Library; Instagram
+music offered to business accounts), so the licence covers promotion. No narration.
 
 ## Tracking links
 
@@ -47,26 +47,24 @@ Every link lands on a live page. The report counts them by source, campaign and 
 People who type `ruinmytrip.com/map` from the video arrive untagged (direct). Watch direct map views
 on the days a video is posted alongside the tagged numbers.
 
-## TikTok and Reels captions
+## Captions, one hook per platform (final)
 
-Pick one per post.
+**TikTok** (search and comments drive it; a challenge works)
+> The layover doesn't count. Everything else does. Tap every country you've been to and watch the
+> number climb. Free map, link in bio. Drop your number.
+> #countrycount #travelmap #layoverdoesntcount
 
-1. Passport stamps fade. This doesn't. Tap every country you've been to and keep the map. Free, link in bio.
-   #travelmap #countriesvisited #travelstats
-2. Say your country count out loud, then check it on the map. Did it match? ruinmytrip.com/map
-   #travelmap #traveltok #countriesvisited
-3. For everyone still arguing about whether a layover counts. (It doesn't.) Free travel map, link in bio.
-   #travelmap #travelhumor #countriesvisited
+**Instagram Reels** (saves and shares drive it; promise something useful)
+> Name every country you've been to, out loud. Now check the map. Did you forget one? Free, no
+> account to start. Link in bio.
+> #countriesvisited #travelreels #honesttravel
 
-On screen text is already in the video. If the owner pins a comment with a number, it is his real
-number from his own map.
+**Instagram feed** (the still; read slowly, so it carries the community purpose)
+> Passport stamps fade. A map doesn't. Color in every country you've been to, then tell the next
+> traveler what each place was really like. Free at ruinmytrip.com/map, link in bio.
+> #travelmap #placereviews #travelcommunity
 
-## Instagram feed caption
-
-Every trip, one map. Tap the countries you've been to on ruinmytrip.com/map, then tell the next
-traveler how the places really were. Free, no account to start. Link in bio.
-
-#travelmap #countriesvisited #travelstats #honesttravel
+Each platform has its own hook and its own three tags; none of the tag sets repeat.
 
 ## Personal invitations (the owner rewrites each in his own voice; one reminder at most)
 
