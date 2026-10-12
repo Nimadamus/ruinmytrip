@@ -297,6 +297,7 @@ body:has(.v2-band) .site-footer{margin-top:0}
 .v2-chip:hover{border-color:#c5d1cc;text-decoration:none;color:var(--v2-ink)}
 .v2-chip.on{background:var(--v2-ink);border-color:var(--v2-ink);color:#fff}
 .v2-chip span{font-weight:600;color:var(--v2-muted)}
+.v2-chip.on span{color:#c9d4e0}
 .v2-chip-sm{min-height:36px;padding:0 13px;font-size:.85rem}
 .v2-dest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
 .v2-dest-grid:not(.all)>.v2-dest:nth-child(n+25){display:none}
@@ -344,7 +345,7 @@ body:has(.v2-band) .site-footer{margin-top:0}
 .v2-place-txt small{display:block;color:var(--v2-muted);font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .v2-place-txt .v2-place-score{color:var(--v2-teal);font-weight:650}
 .v2-place-rate{margin-right:12px;flex-shrink:0;min-height:36px;padding:0 14px;border-radius:999px;display:inline-flex;align-items:center;
-  font-weight:700;font-size:.82rem;color:var(--v2-orange);background:#fff4ec;border:1px solid #fde0cc}
+  font-weight:700;font-size:.82rem;color:#c2410c;background:#fff4ec;border:1px solid #fde0cc}
 .v2-place-rate:hover{background:var(--v2-orange);color:#fff;text-decoration:none}
 
 /* ------------------------------------------------------------ profile */

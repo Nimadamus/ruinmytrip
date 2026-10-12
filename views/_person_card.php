@@ -19,7 +19,7 @@ $meNow = current_user();
 if ($pUser === '') return;
 ?>
 <div class="person">
-  <a class="person-face" href="<?= e(url('u/'.$pUser)) ?>">
+  <a class="person-face" href="<?= e(url('u/'.$pUser)) ?>" aria-label="<?= e($pName) ?>">
     <img class="avatar" src="<?= e(avatar_url($person['avatar_url'] ?? null)) ?>" alt=""></a>
   <div class="person-who">
     <a href="<?= e(url('u/'.$pUser)) ?>"><b><?= e($pName) ?></b></a>

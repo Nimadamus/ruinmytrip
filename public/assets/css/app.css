@@ -281,6 +281,7 @@ textarea{min-height:140px;resize:vertical}
    empty black pill inside every card. The type-qualified selector wins it back. */
 a.ed-badge:hover{background:var(--brand)}
 .ed-panel{border-left:4px solid var(--ink);background:#fbfcfe}
+.ed-ruin{color:#b42318}
 .ed-note{font-size:.85rem;color:var(--muted);margin:.5rem 0 0;line-height:1.5}
 .section-rule{display:flex;align-items:center;gap:12px;margin:34px 0 14px}
 /* Size deliberately omitted: a section heading is one size on this site, whatever rule it sits under. */
@@ -884,6 +885,8 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
   /* The phone tab bar and the editorial badges named light colours directly, which left pale labels
      on a white bar and white badges on a pale fill in this palette (axe, 2026-10-12). */
   html:not(.rmt-light) .tabbar{background:rgba(14,20,24,.97)}
+  html:not(.rmt-light) .ed-panel{background:var(--card)}
+  html:not(.rmt-light) .ed-ruin{color:#f97066}
   html:not(.rmt-light) .ed-badge{background:#0d1826}
   html:not(.rmt-light) .more-menu-danger{color:#ff8a80}
   html:not(.rmt-light) .more-menu-danger:hover{background:#2c1b1a}
@@ -1660,6 +1663,7 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .act-form{margin:0;height:100%}
 button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .occ-acts{padding:18px 0 22px}
+.city-occ a{text-decoration:underline}
 .city-occ{margin:12px 0 0;padding:10px 14px;border:1px solid var(--line);border-left:4px solid var(--accent, #f97316);border-radius:12px;background:var(--card)}
 
 /* Match alerts and "I'm going" cards (2026-10-01). */

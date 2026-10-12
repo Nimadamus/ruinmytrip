@@ -98,7 +98,7 @@
         <ul class="city-plans" style="margin-top:12px">
           <?php foreach ($cityPlans as $cp): ?>
             <li>
-              <a class="city-plan-who" href="<?= e(url('u/'.$cp['username'])) ?>">
+              <a class="city-plan-who" href="<?= e(url('u/'.$cp['username'])) ?>" aria-label="@<?= e((string) $cp['username']) ?>">
                 <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url($cp['avatar_url'] ?? null)) ?>" alt=""></a>
               <span>
                 <a href="<?= e(url('activity/'.(int) $cp['id'])) ?>"><b><?= e((string) $cp['title']) ?></b></a>
@@ -229,7 +229,7 @@
           <p class="muted" style="margin:0">By <?= e(rmt_editorial_name()) ?></p>
           <p style="margin:.7rem 0 0"><?= e(mb_strimwidth((string)$ed['body'], 0, 420, '…')) ?></p>
           <?php if ($ed['what_ruined']): ?>
-            <p style="margin:.7rem 0 0;font-size:.95rem"><b style="color:#b42318">What nearly ruins it:</b> <?= e(mb_strimwidth((string)$ed['what_ruined'], 0, 180, '…')) ?></p>
+            <p style="margin:.7rem 0 0;font-size:.95rem"><b class="ed-ruin">What nearly ruins it:</b> <?= e(mb_strimwidth((string)$ed['what_ruined'], 0, 180, '…')) ?></p>
           <?php endif; ?>
           <p style="margin:.9rem 0 0"><a class="btn btn-ghost btn-sm" href="<?= e(url('review/'.(int)$ed['id'].'/'.($ed['slug'] ?: rmt_review_slug($ed)))) ?>">Read the full editorial review</a></p>
           <p class="ed-note"><?= rmt_editorial_disclosure() ?></p>

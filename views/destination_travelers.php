@@ -120,7 +120,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
     <ul class="city-plans">
       <?php foreach (array_slice($cityPlans, 0, 12) as $pl): ?>
         <li>
-          <a class="city-plan-who" href="<?= e(url('u/'.$pl['username'])) ?>">
+          <a class="city-plan-who" href="<?= e(url('u/'.$pl['username'])) ?>" aria-label="@<?= e((string) $pl['username']) ?>">
             <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url($pl['avatar_url'] ?? null)) ?>" alt=""></a>
           <span>
             <a href="<?= e(url('activity/'.(int) $pl['id'])) ?>"><b><?= e((string) $pl['title']) ?></b></a>

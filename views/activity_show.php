@@ -134,7 +134,7 @@ $backTo = '/activity/' . (int) $act['id'];
       <h2 class="find-h"><?= count($requests) ?> <?= count($requests) === 1 ? 'person wants' : 'people want' ?> to join</h2>
       <?php foreach ($requests as $r): ?>
         <div class="person">
-          <a class="person-face" href="<?= e(url('u/'.$r['username'])) ?>">
+          <a class="person-face" href="<?= e(url('u/'.$r['username'])) ?>" aria-label="@<?= e((string) $r['username']) ?>">
             <img class="avatar" src="<?= e(avatar_url($r['avatar_url'] ?? null)) ?>" alt=""></a>
           <div class="person-who">
             <a href="<?= e(url('u/'.$r['username'])) ?>"><b>@<?= e((string) $r['username']) ?></b></a>
