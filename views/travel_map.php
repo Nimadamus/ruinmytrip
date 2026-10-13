@@ -64,10 +64,19 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
     <div class="tag-row" data-tm-chips><?php foreach ($codes as $c): ?><span class="chip"><?= e($names[$c] ?? $c) ?></span><?php endforeach; ?></div>
   </section>
 
+  <?php if (!$readOnly): $tmReview = rmt_map_review_pick($codes); ?>
+  <section class="card tm-review" data-tm-review data-tm-cities="<?= e(json_encode(rmt_map_review_cities())) ?>"
+           data-tm-review-base="<?= e(url('review/new')) ?>"<?= $tmReview ? '' : ' hidden' ?>><div class="card-body">
+    <h2 class="tm-h2" style="margin:0 0 6px">Been to one of these cities?</h2>
+    <p class="muted" style="margin:0 0 12px">Tell the next traveler what nearly ruined it and what was worth it. You write first and join when you post.</p>
+    <div class="tag-row" data-tm-review-list><?php foreach ($tmReview as [$rid, $rname]): ?><a class="chip tm-city" rel="nofollow" data-cta="map_review" href="<?= e(url('review/new?destination=' . $rid . '&src=map')) ?>">Review <?= e($rname) ?></a><?php endforeach; ?></div>
+  </div></section>
+  <?php endif; ?>
+
   <section class="card tm-next"><div class="card-body">
     <p style="margin:0 0 6px"><b>Where are you going next?</b></p>
     <p class="muted" style="margin:0 0 12px">Add your dates and see who else is going there the same week. Travelers with overlapping dates find each other here.</p>
-    <a class="btn btn-primary btn-sm" href="<?= e(url('plan')) ?>" data-cta="map_make">Add my next trip</a>
+    <a class="btn btn-primary btn-sm" href="<?= e(url('plan')) ?>" data-cta="map_plan">Add my next trip</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('buddies')) ?>">Find a travel buddy</a>
   </div></section>
 </div>
@@ -82,6 +91,7 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
 .tm-map[data-readonly] path{cursor:default}.tm-loading{color:#aab8c8;padding:40px;text-align:center;margin:0}
 .tm-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.tm-save{margin:0}
 .tm-note{min-height:1.2em;margin:8px 0 0}.tm-h2{font-size:1.1rem;margin:22px 0 8px}.tm-next{margin:26px 0}
+.tm-review{margin:22px 0 0}.tm-review .tm-city{text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
 .tm-tip{position:fixed;pointer-events:none;background:#0f1b2d;color:#fff;padding:4px 8px;border-radius:6px;font-size:.85rem;z-index:50}
 </style>
 <script src="<?= e(rmt_asset('assets/js/travel-map.js')) ?>" defer></script>

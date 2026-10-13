@@ -126,6 +126,8 @@ const RMT_CTA_KEYS = [
     'social_answer', 'social_plan',
     // The travel map (app/travel_map.php).
     'map_share', 'map_download', 'map_save', 'map_make',
+    'map_review', // "Review <city>" under the map, for a country coloured in (2026-10-12)
+    'map_plan',   // "Add my next trip" under the map (was counted as map_make until 2026-10-12)
     'map_tap', // the first country tapped on a map in a visit (assets/js/travel-map.js), once per page
     // The home page action tiles and the empty board (2026-10-01), the header Join button, Google sign in.
     'home_act_trip', 'home_act_find', 'home_act_ask', 'home_act_review', 'home_act_ruined', 'home_act_follow',
@@ -155,6 +157,8 @@ const RMT_CONTRIB_SOURCES = [
     'plan', 'buddies',
     // A travel map kept by "Keep it on a free profile" before the account existed, saved on joining (2026-10-12).
     'map_join',
+    // A review started from "Been to one of these cities?" under the travel map (2026-10-12).
+    'map',
     // Sign in with Google, and the occasion pages (2026-10-01).
     'google', 'occasion',
     // A signed out match alert, and a shared "I'm going" card.

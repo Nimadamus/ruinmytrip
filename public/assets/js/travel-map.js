@@ -39,6 +39,7 @@
       });
     }
     if (readOnly) return;
+    review(list);
     var url = base + (k ? '?c=' + k : '');
     // Embedded on another page (the redesigned home page): the address bar stays that page's, and
     // the "keep going" link carries the countries over to the full map.
@@ -50,6 +51,25 @@
     var f = root.querySelector('[data-tm-field]'); if (f) f.value = k;
     var r = root.querySelector('[data-tm-return]'); if (r) r.value = '/map' + (k ? '?c=' + k : '');
     var d = root.querySelector('[data-tm-download]'); if (d) d.href = cardBase + '/' + (k || 'none') + '.png';
+  }
+
+  /* "Been to one of these cities?": the cities with a page here in the countries coloured in,
+     each a link to start a review of it. Built from data the page already carries. */
+  function review(list) {
+    var box = root.querySelector('[data-tm-review]'); if (!box) return;
+    var all, out = [];
+    try { all = JSON.parse(box.getAttribute('data-tm-cities') || '{}'); } catch (e) { return; }
+    list.forEach(function (c) { (all[c] || []).forEach(function (x) { out.push(x); }); });
+    out.sort(function (a, b) { return a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : 0; });
+    var ul = box.querySelector('[data-tm-review-list]'), rb = box.getAttribute('data-tm-review-base');
+    ul.textContent = '';
+    out.slice(0, 12).forEach(function (x) {
+      var a = document.createElement('a');
+      a.className = 'chip tm-city'; a.rel = 'nofollow'; a.setAttribute('data-cta', 'map_review');
+      a.href = rb + '?destination=' + encodeURIComponent(x[0]) + '&src=map'; a.textContent = 'Review ' + x[1];
+      ul.appendChild(a);
+    });
+    box.hidden = !out.length;
   }
 
   /* One row the first time a country is tapped on this page (cta_click, detail map_tap), so the

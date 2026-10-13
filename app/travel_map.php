@@ -52,6 +52,34 @@ function rmt_map_country_code(?string $country): ?string {
 }
 
 /**
+ * The cities with a page here, by map country, for "Been to one of these cities?" under the map
+ * (2026-10-12): the map is the one thing a stranger makes with no account, and a review is the
+ * thing the site is short of, so the countries somebody colours in lead to the cities they can
+ * review. Names and ids only; nothing about who is looking.
+ *
+ * @return array<string, list<array{0:int,1:string}>>
+ */
+function rmt_map_review_cities(): array {
+    static $out = null;
+    if ($out !== null) return $out;
+    $out = [];
+    foreach (q_all('SELECT id, name, country FROM destinations ORDER BY name') as $d) {
+        $code = rmt_map_country_code((string) $d['country']);
+        if ($code !== null) $out[$code][] = [(int) $d['id'], (string) $d['name']];
+    }
+    return $out;
+}
+
+/** The cities for one map, in name order, at most $max. @return list<array{0:int,1:string}> */
+function rmt_map_review_pick(array $codes, int $max = 12): array {
+    $all = rmt_map_review_cities();
+    $out = [];
+    foreach ($codes as $c) foreach ($all[(string) $c] ?? [] as $x) $out[] = $x;
+    usort($out, fn($a, $b) => strcmp($a[1], $b[1]));
+    return array_slice($out, 0, $max);
+}
+
+/**
  * Read a list of countries from a URL key or a form: "250-380", "250,380" or an array. Anything
  * that is not a country on the map is dropped rather than refused, so a mangled link still shows
  * the countries it does name. Sorted, so one set of countries is one key and one cached card.

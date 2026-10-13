@@ -82,5 +82,17 @@ ok('an unknown country gets no button', rmt_map_country_code('Atlantis'), null);
 ok('no country gets no button', rmt_map_country_code(null), null);
 ok('the code it gives is one the map reads back', rmt_map_codes(rmt_map_country_code('Mexico')), [rmt_map_country_code('Mexico')]);
 
+echo "-- the cities to review under the map --\n";
+$pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, name TEXT, country TEXT)");
+$pdo->exec("INSERT INTO destinations (id, name, country) VALUES (1, 'Porto', 'Portugal'), (2, 'Lisbon', 'Portugal'), (3, 'Oaxaca', 'Mexico'), (4, 'Nowhere', 'Atlantis'), (5, 'Miami', 'United States')");
+$rc = rmt_map_review_cities();
+ok('cities are grouped by map country, in name order', $rc['620'] ?? null, [[2, 'Lisbon'], [1, 'Porto']]);
+ok('a city whose country is not on the map is left out', in_array('Nowhere', array_merge(...array_map(fn($l) => array_column($l, 1), array_values($rc))), true), false);
+ok('an alias country still finds its cities', $rc['840'] ?? null, [[5, 'Miami']]);
+ok('one map picks its cities across countries, by name', rmt_map_review_pick(['620', '484']), [[2, 'Lisbon'], [3, 'Oaxaca'], [1, 'Porto']]);
+ok('the pick is capped', count(rmt_map_review_pick(['620', '484'], 2)), 2);
+ok('no countries, no cities', rmt_map_review_pick([]), []);
+ok('a country with no city page gives nothing', rmt_map_review_pick(['392']), []);
+
 echo "\n", $fail ? "FAIL: $fail case(s) failed, $pass passed\n" : "ALL TRAVEL MAP TESTS PASS ($pass)\n";
 exit($fail ? 1 : 0);
