@@ -53,6 +53,9 @@ if (!$files) fail("no editorial content found in {$dir}");
 $items = $placeItems = [];
 foreach ($files as $f) {
     $json = json_decode((string) file_get_contents($f), true);
+    // questions.json belongs to scripts/publish_questions.php; failing on it here stopped every
+    // editorial file from publishing at boot, because the load runs before any write.
+    if (is_array($json) && isset($json['questions']) && !isset($json['destinations']) && !isset($json['places']) && !isset($json['posts'])) continue;
     if (!is_array($json) || (!isset($json['destinations']) && !isset($json['places']) && !isset($json['posts']))) {
         fail("malformed JSON (needs a 'destinations', 'places' or 'posts' key): {$f}");
     }
