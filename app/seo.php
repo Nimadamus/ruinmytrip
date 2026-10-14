@@ -348,8 +348,12 @@ function rmt_indexnow_submit(array $urls): bool {
  */
 function rmt_seo_announce(string $path): void {
     $url = str_starts_with($path, 'http') ? $path : url(ltrim($path, '/'));
+    // ON CONFLICT DO NOTHING, not a caught duplicate error: on Postgres a failed statement aborts
+    // the caller's whole transaction (publish_editorial.php runs in one), so every later write
+    // failed. Plain execute() too, since q_run()'s lastInsertId() can fail the same way.
     try {
-        q_run('INSERT INTO seo_ping_queue (url, created_at) VALUES (?,?)', [$url, date('Y-m-d H:i:s')]);
+        db()->prepare('INSERT INTO seo_ping_queue (url, created_at) VALUES (?,?) ON CONFLICT (url) DO NOTHING')
+            ->execute([$url, date('Y-m-d H:i:s')]);
     } catch (\PDOException $e) {
         // A duplicate means it is already queued, which is the correct state. Anything else is
         // not worth failing a publish over.
