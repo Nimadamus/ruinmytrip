@@ -46,3 +46,29 @@ Pages on page one of Google with 0 clicks in four weeks: `/p/le-rapido-paris` (6
 2026, position 7.5), `/blog/tokyo-skytree-tickets-2026` (position 5.4). A test would change only the
 meta description of these three pages and compare four weeks of clicks before and after. It touches no
 URLs, titles, canonicals, sitemaps or the 21 September city page decision.
+
+## Where visitors drop out of the review path (2026-10-18, 30 days, people only)
+
+- 52 verified humans, 4 came back another day, 1 opened a review form, 0 submitted, 0 published, 1 signup.
+- The 37 engaged real visits recorded since 2026-09-26 (our automated checks removed): median stay 6 seconds,
+  2 stayed 30 seconds or more, 1 viewed a second page, 0 reached a review form.
+- So people leave on the landing page, before any review entry point. Nobody has yet reached the form
+  and quit inside it, so the form itself has no real drop data to act on. The blog stars (live 17 Oct
+  23:39 PDT) have had 1 real search visitor since, who stayed 4 seconds.
+- By source: Facebook groups bring the visitors who stay longest (Oaxaca group: 6 humans, most of all
+  tagged links); Page posts and search bring single page, few second visits.
+- Implication: the ask has to happen before the click. Outreach that asks one specific question ("how
+  was the bill in Phuket?") to people who were just there sends readers who arrive ready to answer. Sending
+  more general traffic will not move reviews.
+
+## Strongest next communities (Nima approves each community and text before anything is posted)
+
+| Destination | Community type | Page | Why now |
+|---|---|---|---|
+| Oaxaca | Day of the Dead and Oaxaca travel groups | `/e/day-of-the-dead-oaxaca` | Ready for 3 Nov; best measured channel so far |
+| Tokyo | Japan trip planning groups (Facebook); Reddit only as a reply where asked | `/blog/tokyo-skytree-tickets-2026` | Ranks 5.4 on Google with 0 clicks |
+| Porto | Portugal travel groups | `/blog/porto-tourist-tax-2026` | Ranks 7.4; tax questions recur |
+| Milan | Italy travel groups | `/blog/milan-tourist-tax-2026` | Query "city tax milano 2026", rank 7.5 |
+| Phuket | Thailand travel groups | `/blog/phuket-hotel-tax-2026` | Page post today; groups reach people the Page cannot |
+
+Each group: read its rules on links first, one group per day, own text per group, tagged `utm_content=<group-name>`.
