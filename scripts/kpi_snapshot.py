@@ -64,6 +64,20 @@ def gsc_by_day(days):
     return {r['keys'][0]: (int(r.get('impressions', 0)), int(r.get('clicks', 0))) for r in rows}
 
 
+def campaign_lines(key, days):
+    """Tagged links (utm_campaign set), people only: one row per source, campaign and label from /cron/funnel."""
+    try:
+        acq = json.loads(get('https://ruinmytrip.com/cron/funnel?days=%d' % days, {'X-Cron-Key': key})).get('acquisition') or []
+    except Exception as e:
+        return ['', '## Tagged links', '', 'Not read: %s' % type(e).__name__]
+    rows = [r for r in acq if r.get('campaign') and r['campaign'] != 'live-check' and r.get('content') != 'selfcheck']
+    out = ['', '## Tagged links, last %d days (verified humans only; our own checks left out)' % days, '',
+           '| source | campaign | label | humans | review forms opened | reviews | signups |', '|---|---|---|---|---|---|---|']
+    out += ['| %s | %s | %s | %s | %s | %s | %s |' % (r['source'], r['campaign'], r.get('content') or '', r['human_visitors'],
+                                                    r['review_started'], r['reviews'], r['signed_up']) for r in rows]
+    return out if rows else out + ['| none yet | | | 0 | 0 | 0 | 0 |']
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--days', type=int, default=14)
@@ -98,6 +112,7 @@ def main():
              '| ' + ' | '.join(cols) + ' |', '|' + '---|' * len(cols)]
     lines += ['| ' + ' | '.join(str(x) for x in r) + ' |' for r in rows]
     lines += ['| **total** | ' + ' | '.join(str(tot(i)) for i in range(1, len(cols))) + ' |']
+    lines += campaign_lines(key, min(a.days, 31))
     open(os.path.join(a.out, 'KPI.md'), 'w', encoding='utf-8').write('\n'.join(lines) + '\n')
     print('\n'.join(lines[4:]))
 
