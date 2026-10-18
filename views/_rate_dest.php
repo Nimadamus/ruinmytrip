@@ -7,10 +7,11 @@
  * Same look as the place stars (views/_rate_place.php).
  */
 $rateSrc  = $rateSrc ?? 'blog_rate';
+$rateQ    = $rateQ ?? ('Been to ' . $rateDest['name'] . '?');
 $rateBase = 'review/new?destination=' . (int) $rateDest['id'] . '&about=destination&src=' . rawurlencode($rateSrc) . '&rating=';
 ?>
 <div class="rate-place">
-  <span class="rate-q">Been to <?= e((string) $rateDest['name']) ?>?</span>
+  <span class="rate-q"><?= e((string) $rateQ) ?></span>
   <span class="rate-stars" role="group" aria-label="Rate <?= e((string) $rateDest['name']) ?>">
     <?php for ($i = 5; $i >= 1; $i--): ?>
       <a rel="nofollow" data-review-cta="<?= e($rateSrc) ?>" data-destination-id="<?= (int) $rateDest['id'] ?>"

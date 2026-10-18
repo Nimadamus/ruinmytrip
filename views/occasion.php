@@ -13,6 +13,13 @@ $join = static fn(string $path): string => url('register?return=' . rawurlencode
 $here = '/e/' . $o['slug'];
 ?>
 <div class="wrap">
+  <?php /* Arrived from a post that asked them (rmt_outreach_arrival): the question before the photo. */ ?>
+  <?php if (rmt_outreach_arrival()): ?>
+    <div style="margin-top:16px">
+    <?php $rateDest = $d; $rateSrc = 'outreach_rate'; $rateQ = 'Were you at ' . $o['short'] . ' in ' . $city . '? How was it?';
+          include __DIR__ . '/_rate_dest.php'; ?>
+    </div>
+  <?php endif; ?>
   <div class="dest-hero">
     <?php if (!empty($d['hero_url'])): ?>
       <img src="<?= e(abs_url((string) $d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="(max-width: 1140px) 100vw, 1100px"<?php endif; ?> fetchpriority="high" alt="<?= e($city . ', ' . $d['country']) ?>">
