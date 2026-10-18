@@ -55,8 +55,8 @@ URLs, titles, canonicals, sitemaps or the 21 September city page decision.
 - So people leave on the landing page, before any review entry point. Nobody has yet reached the form
   and quit inside it, so the form itself has no real drop data to act on. The blog stars (live 17 Oct
   23:39 PDT) have had 1 real search visitor since, who stayed 4 seconds.
-- By source: Facebook groups bring the visitors who stay longest (Oaxaca group: 6 humans, most of all
-  tagged links); Page posts and search bring single page, few second visits.
+- By source: the Oaxaca group post brought 6 humans, the most of any tagged link; each Page post brought
+  0 or 1. No source has yet produced a review form opened by a person.
 - Implication: the ask has to happen before the click. Outreach that asks one specific question ("how
   was the bill in Phuket?") to people who were just there sends readers who arrive ready to answer. Sending
   more general traffic will not move reviews.
