@@ -72,10 +72,11 @@ def campaign_lines(key, days):
         return ['', '## Tagged links', '', 'Not read: %s' % type(e).__name__]
     rows = [r for r in acq if r.get('campaign') and r['campaign'] != 'live-check' and r.get('content') != 'selfcheck']
     out = ['', '## Tagged links, last %d days (verified humans only; our own checks left out)' % days, '',
-           '| source | campaign | label | humans | review forms opened | reviews | signups |', '|---|---|---|---|---|---|---|']
-    out += ['| %s | %s | %s | %s | %s | %s | %s |' % (r['source'], r['campaign'], r.get('content') or '', r['human_visitors'],
-                                                    r['review_started'], r['reviews'], r['signed_up']) for r in rows]
-    return out if rows else out + ['| none yet | | | 0 | 0 | 0 | 0 |']
+           '| source | campaign | label | humans | review forms opened | reviews sent | reviews published | signups | came back |', '|---|---|---|---|---|---|---|---|---|']
+    out += ['| %s | %s | %s | %s | %s | %s | %s | %s | %s |' % (r['source'], r['campaign'], r.get('content') or '', r['human_visitors'],
+                                                              r['review_started'], r.get('review_submitted', ''), r['reviews'],
+                                                              r['signed_up'], r['returning']) for r in rows]
+    return out if rows else out + ['| none yet | | | 0 | 0 | 0 | 0 | 0 | 0 |']
 
 
 def main():

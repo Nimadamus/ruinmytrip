@@ -95,6 +95,16 @@ const RMT_ACQ_HOSTS = [
     'startpage.com' => 'search', 'yandex.com' => 'search', 'baidu.com' => 'search',
 ];
 
+/**
+ * This request arrived from a link we posted that asked a question (a group, a post, a DM, a bio).
+ * Those readers came to answer, so the page puts the ask first (2026-10-18: 37 real visits, median
+ * 6 seconds, none reached a review form). Read from this request only: a tagged URL has a query
+ * string, so it is never served from the page cache, and the next page is the ordinary one.
+ */
+function rmt_outreach_arrival(): bool {
+    return in_array(rmt_acq_slug((string) input('utm_medium')), ['post', 'comment', 'reply', 'bio', 'story', 'group', 'dm', 'email'], true);
+}
+
 /** Letters, digits, dash and underscore, lowercased and capped. A label, never a sentence. */
 function rmt_acq_slug(?string $v, int $max = 40): ?string {
     $v = strtolower(trim((string) $v));
@@ -263,6 +273,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                 MAX(CASE WHEN event = 'card_created' THEN 1 ELSE 0 END) carded,
                 MAX(CASE WHEN event = 'review_form_start' THEN 1 ELSE 0 END) review_started,
                 MAX(CASE WHEN event = 'review_publish_success' THEN 1 ELSE 0 END) reviewed,
+                MAX(CASE WHEN event IN ('review_submit_attempt','review_held_for_join') THEN 1 ELSE 0 END) review_sent,
                 MAX(CASE WHEN event = 'map_view' THEN 1 ELSE 0 END) map_viewed,
                 MAX(CASE WHEN event = 'map_saved' OR (event = 'cta_click' AND detail IN ('map_share','map_download','map_save'))
                          THEN 1 ELSE 0 END) mapped,
@@ -300,6 +311,8 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
                       'confirmed' => 0, 'trips' => 0, 'alerts' => 0, 'alerts_on' => 0, 'cards' => 0, 'selfcheck_human' => 0,
                       // The first campaign's actions (2026-10-11): a review written, a travel map shared or kept.
                       'review_started' => 0, 'reviews' => 0, 'map_views' => 0, 'map_actions' => 0,
+                      // 2026-10-18: pressed send on a review, so a drop between the form and publishing shows.
+                      'review_submitted' => 0,
                       // 2026-10-11 launch: each map step on its own, and a first contribution of any kind.
                       'map_taps' => 0, 'map_shares' => 0, 'map_downloads' => 0, 'map_saves' => 0, 'contributions' => 0,
                       'suspected_bots' => 0, 'unverified' => 0, 'human_visitors' => 0, 'returning' => 0];
@@ -345,7 +358,7 @@ function rmt_acq_report(int $days = 30, ?string $sinceOverride = null): array {
         }
         // Opening a form or the map is something crawlers do all day: counted for people only.
         if ($human) {
-            foreach (['review_started' => 'review_started', 'map_viewed' => 'map_views', 'mapped' => 'map_actions',
+            foreach (['review_started' => 'review_started', 'review_sent' => 'review_submitted', 'map_viewed' => 'map_views', 'mapped' => 'map_actions',
                       'map_tapped' => 'map_taps', 'map_shared' => 'map_shares', 'map_downloaded' => 'map_downloads',
                       'map_kept' => 'map_saves'] as $col => $key) {
                 if ((int) ($r[$col] ?? 0) === 1) $agg[$k][$key]++;

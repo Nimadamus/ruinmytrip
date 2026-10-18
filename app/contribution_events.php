@@ -138,6 +138,8 @@ const RMT_CTA_KEYS = [
     'place_rate', 'after_review',
     // The "Been to <city>?" stars under a blog post's byline (2026-10-17).
     'blog_rate',
+    // The same city stars put first for a reader who arrived from a post that asked them (2026-10-18).
+    'outreach_rate',
     // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.
     'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
     // The 2026-10 redesign (app/design_v2.php): rate a place from the menu, the home page, a city.
@@ -169,6 +171,8 @@ const RMT_CONTRIB_SOURCES = [
     'place_rate',
     // The one tap rating of a city from a blog post (2026-10-17).
     'blog_rate',
+    // The same, put first for a reader who arrived from a post that asked them (2026-10-18).
+    'outreach_rate',
     // Who pressed publish (2026-10-11): a visitor with no account, or a member.
     'guest', 'member',
     'other',
