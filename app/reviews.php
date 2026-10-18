@@ -54,6 +54,11 @@ function rmt_review_validate(array $in, bool $isDraft): array {
     $value  = ($in['value_rating']  ?? '') === '' ? null : (int) $in['value_rating'];
 
     if (!in_array($category, RMT_REVIEW_CATEGORIES, true)) $errors[] = 'Choose what you are reviewing.';
+    // A review of the city itself is named after the city: asking for its name again is one more box.
+    if ($category === 'destination' && $subject === '' && $destId > 0
+        && ($dRow = q_one('SELECT name FROM destinations WHERE id = ?', [$destId]))) {
+        $subject = (string) $dRow['name'];
+    }
 
     if ($destId > 0 && !dest_by_id($destId)) $errors[] = 'That destination does not exist.';
 

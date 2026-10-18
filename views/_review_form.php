@@ -25,6 +25,15 @@ $bp  = $boundPlace ?? null;
 <input type="hidden" name="destination_id" value="<?= (int) $bp['destination_id'] ?>">
 <input type="hidden" name="subject_type" value="<?= e($bp['type']) ?>">
 <input type="hidden" name="subject_name" value="<?= e($bp['name']) ?>">
+<?php elseif (!empty($boundDest) && ($r['subject_type'] ?? '') === 'destination'): /* The city itself, from its
+   "Been to X?" stars (2026-10-17): stated, like a place, so the stars and the box are on a phone's
+   first screen instead of under three boxes that are already filled in. */ ?>
+<p class="muted" style="margin:0 0 14px;font-size:.92rem">You are reviewing
+  <strong style="color:var(--text)"><?= e((string) $boundDest['name']) ?><?= !empty($boundDest['country']) ? ', ' . e((string) $boundDest['country']) : '' ?></strong>
+  as a whole &middot; <a href="<?= e(url('review/new?destination=' . (int) $boundDest['id'])) ?>">a place there instead</a></p>
+<input type="hidden" name="destination_id" value="<?= (int) $boundDest['id'] ?>">
+<input type="hidden" name="subject_type" value="destination">
+<input type="hidden" name="subject_name" value="<?= e((string) $boundDest['name']) ?>">
 <?php else: ?>
 <label for="destination_id">Destination</label>
 <?php /* datalist gives type-ahead search over destinations with no JS and no extra request. */ ?>

@@ -1891,7 +1891,7 @@ function blog_show(array $a): void {
        adding a column that would then need backfilling for 143 posts. */
     $blogDest = null;
     if (preg_match('#/d/([a-z0-9\-]+)#', (string) ($p['body'] ?? ''), $bm)) {
-        $blogDest = q_one('SELECT slug, name FROM destinations WHERE slug = ?', [$bm[1]]);
+        $blogDest = q_one('SELECT id, slug, name FROM destinations WHERE slug = ?', [$bm[1]]);
     }
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest'), [
         'title' => $p['title'].' | RuinMyTrip',
@@ -3980,14 +3980,24 @@ function review_new_form(array $a): void {
         return;
     }
     $preselect = (int) input('destination');
-    $r = ($preselect && dest_by_id($preselect)) ? ['destination_id' => $preselect] : null;
+    $preDest = $preselect ? dest_by_id($preselect) : null;
+    $r = $preDest ? ['destination_id' => $preselect] : null;
+    /* "Been to Phuket?" stars on a blog post (2026-10-17) review the city itself: what is being
+       reviewed is already known, so it is filled in, and the star they tapped is chosen. */
+    $boundDest = null;
+    if ($preDest && input('about') === 'destination') {
+        $r += ['subject_type' => 'destination', 'subject_name' => (string) $preDest['name']];
+        $boundDest = $preDest;
+    }
+    $stars = (int) input('rating');
+    if ($stars >= 1 && $stars <= 5) $r = ($r ?? []) + ['rating' => $stars];
     // The front-door question ("What ruined your trip?") arrives here as ?ruined=; it opens the
     // form with the sentence already in the box, which is the whole point of asking for it first.
     if (($ruined = trim((string) input('ruined'))) !== '') $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
     if ($held) $r = array_merge($held, $r ?? []);
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
-    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null,
+    view('review_new', ['dests'=>all_dests(), 'errors'=>[], 'r'=>$r, 'placeOptions'=>rmt_place_suggestions(), 'boundPlace'=>null, 'boundDest'=>$boundDest,
                         'aspectValues'=>$held ? rmt_posted_aspect_values($held) : [], 'guest'=>$guest, 'restored'=>(bool) $held],
          ['title'=>'Write a review | RuinMyTrip', 'robots'=>'noindex,follow', 'canonical'=>'']);
 }

@@ -1,8 +1,14 @@
 <?php /** @var array $dests @var array $errors @var ?array $r @var bool $guest @var bool $restored */ $guest = !empty($guest); ?>
 <div class="wrap"><div class="form-card form-wide">
+  <?php if (!empty($boundDest)): /* From a city's "Been to X?" stars (2026-10-17): the question, then
+     straight to the stars and the box, which have to be on a phone's first screen. */ ?>
+  <h1>How was <?= e((string) $boundDest['name']) ?>?</h1>
+  <?php if ($guest): ?><p class="hint">No account needed to start. After you post, one quick step makes your free account. Nothing you type is lost.</p><?php endif; ?>
+  <?php else: ?>
   <h1>Write a review</h1>
   <p class="muted">Be specific and fair. Real experiences help other travelers.</p>
   <?php if ($guest): ?><p class="hint" style="margin-top:-4px">No account needed to start. Stars and a few sentences is all it takes; after you post, one quick step makes your free account. Nothing you type is lost.</p><?php endif; ?>
+  <?php endif; ?>
   <?php if (!empty($restored)): ?><p class="review-saved-note" role="status">We kept the review you wrote. Check it and post it.</p><?php endif; ?>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
   <?php $draftKey = 'new-' . (int) ($boundPlace['id'] ?? 0) . '-' . (int) ($r['destination_id'] ?? 0); ?>

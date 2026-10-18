@@ -6,6 +6,11 @@
   <?php if ($isEd): ?><?= rmt_editorial_badge() ?><?php endif; ?>
   <h1><?= e($p['title']) ?></h1>
   <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>
+  <?php /* On the first screen (2026-10-17): under the summary it started 1.2 screens down on a laptop
+           and 1.8 on a phone, past where a 2 to 10 second visit ever scrolls. */ ?>
+  <?php if (!empty($blogDest)): ?>
+    <?php $rateDest = $blogDest; $rateSrc = 'blog_rate'; include __DIR__ . '/_rate_dest.php'; ?>
+  <?php endif; ?>
   <?php if ($isEd): ?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif; ?>
   <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e(abs_url($p['cover_url'])) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($p['summary']) ?></p>
