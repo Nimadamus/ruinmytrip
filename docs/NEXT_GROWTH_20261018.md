@@ -72,3 +72,29 @@ URLs, titles, canonicals, sitemaps or the 21 September city page decision.
 | Phuket | Thailand travel groups | `/blog/phuket-hotel-tax-2026` | Page post today; groups reach people the Page cannot |
 
 Each group: read its rules on links first, one group per day, own text per group, tagged `utm_content=<group-name>`.
+
+## Milan and Phuket group questions (drafts; texts differ from the Page post and the Instagram caption)
+
+Milan, in an Italy travel group:
+> Stayed in Milan this year? Did the city tax show up in your booking total, or did the hotel ask for it
+> at the desk? I'm gathering what travelers actually ran into: (link)
+`https://ruinmytrip.com/blog/milan-tourist-tax-2026?utm_source=facebook&utm_medium=group&utm_campaign=tax-milan&utm_content=<group-name>`
+
+Phuket, in a Thailand travel group:
+> Back from Phuket? Was there anything on the final bill you didn't expect, or was it all as booked?
+> Real answers help the next person planning: (link)
+`https://ruinmytrip.com/blog/phuket-hotel-tax-2026?utm_source=facebook&utm_medium=group&utm_campaign=tax-phuket&utm_content=<group-name>`
+
+## What a group reader sees (branch feat/outreach-ask-20261018, tested locally, NOT deployed)
+
+A link with `utm_medium` group, post, comment, reply, bio, story, dm or email puts the city question
+first: above the title on a blog post ("Been to Phuket this year? How was it?") and above the photo on an
+event page ("Were you at Day of the Dead in Oaxaca? How was it?"). A star opens "How was <city>?" with
+the rating chosen. Untagged pages, which are what Google sees, are unchanged; tagged URLs already
+skip the page cache. Test: `scripts/ci/outreach_ask_e2e.py` (laptop and iPhone 13) and the 141 suite
+gate pass. Deploy needs Nima's yes.
+
+## Journey per tagged link (people only, `~/rmt_kpi/KPI.md`, daily 07:10)
+
+humans (arrived and interacted) > review forms opened > reviews sent > reviews published > signups > came back.
+"Reviews sent" per link is live since 2026-10-18 10:11 PDT.
