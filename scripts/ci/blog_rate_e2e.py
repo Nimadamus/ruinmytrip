@@ -56,6 +56,7 @@ def run(p, dev, ctxargs):
     b = p.chromium.launch(headless=True)
     ctx = b.new_context(**dict(ctxargs, user_agent=UA)); page = ctx.new_page()
     errors = []; page.on('pageerror', lambda e: errors.append(str(e)))
+    ev0 = g.db("SELECT COALESCE(MAX(id), 0) FROM contribution_events")[0][0]
     page.goto(f'{BASE}/blog/{slug}')
     stars = page.locator('.rate-stars a[data-review-cta=blog_rate]')
     g.check(tag('B1 the post shows five city stars'), stars.count() == 5)
@@ -68,6 +69,11 @@ def run(p, dev, ctxargs):
     stars.nth(1).click()                                   # DOM order 5,4,3,2,1: second is 4 stars
     page.wait_for_url('**/review/new**')
     g.check(tag('B2 four stars chosen'), page.is_checked('#rate-4'))
+    page.wait_for_timeout(500)                             # the click beacon
+    ev = dict(g.db("SELECT event, COUNT(*) FROM contribution_events WHERE id > ? AND source = 'blog_rate' "
+                   "GROUP BY event", (ev0,)))
+    g.check(tag('A1 the star tap is counted as blog_rate'), ev.get('review_cta_click', 0) >= 1, ev)
+    g.check(tag('A1 the form open is counted as blog_rate'), ev.get('review_form_start', 0) == 1, ev)
     hid = lambda n: page.get_attribute('form input[type=hidden][name=%s]' % n, 'value')
     g.check(tag('B2 the city is chosen'), hid('destination_id') == str(dest_id), hid('destination_id'))
     g.check(tag('B2 reviewing the destination'), hid('subject_type') == 'destination')

@@ -136,6 +136,8 @@ const RMT_CTA_KEYS = [
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
     // The "Been here?" stars on a place page, and the next step after a first review (2026-10-02).
     'place_rate', 'after_review',
+    // The "Been to <city>?" stars under a blog post's byline (2026-10-17).
+    'blog_rate',
     // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.
     'alert_join', 'alert_share', 'going_too', 'going_find', 'card_make',
     // The 2026-10 redesign (app/design_v2.php): rate a place from the menu, the home page, a city.
@@ -165,6 +167,8 @@ const RMT_CONTRIB_SOURCES = [
     'alert', 'share',
     // The one tap rating on a place page (2026-10-02).
     'place_rate',
+    // The one tap rating of a city from a blog post (2026-10-17).
+    'blog_rate',
     // Who pressed publish (2026-10-11): a visitor with no account, or a member.
     'guest', 'member',
     'other',
