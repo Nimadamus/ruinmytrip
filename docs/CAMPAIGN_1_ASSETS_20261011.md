@@ -68,6 +68,15 @@ Each platform has its own hook and its own three tags; none of the tag sets repe
 
 ## Personal invitations (the owner rewrites each in his own voice; one reminder at most)
 
+**Simplest version, 2026-10-18 (use this one first)**
+> Hey [name], you went to [city] this year, right? I'm building a travel site where real travelers
+> say how a trip actually went. Would you tell me how [city] was? Tap some stars and write a couple of
+> lines, good or bad: [city link]. No account needed to start. The honest parts help most.
+
+City links: `C:\Users\BL\rmt_campaign1\FRIEND_LINKS.md` (all 85 live cities, tagged
+friends / dm / launch-review / city-<name>). Each opens "How was <city>?" with the city filled in.
+Send one message per friend, only about a city they really visited.
+
 **Text or WhatsApp, short**
 > Hey [name], I built a travel site and I'd love your honest take. Tap every country you've been to
 > here, takes 30 seconds, no account: [friends invite link]. Tell me if anything is confusing.
