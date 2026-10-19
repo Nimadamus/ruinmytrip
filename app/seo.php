@@ -348,11 +348,22 @@ function rmt_indexnow_submit(array $urls): bool {
  */
 function rmt_seo_announce(string $path): void {
     $url = str_starts_with($path, 'http') ? $path : url(ltrim($path, '/'));
+    // Inside a transaction (publish_editorial.php runs one), a duplicate url is a real server side
+    // error on Postgres that aborts the whole transaction even though it is caught here, so every
+    // later statement failed with 25P02 and the editorial publish rolled back on each deploy. A
+    // savepoint confines the failure to this one insert. SQLite and Postgres both support it.
+    $pdo = db();
+    $sp = $pdo->inTransaction();
     try {
+        if ($sp) $pdo->exec('SAVEPOINT rmt_seo_announce');
         q_run('INSERT INTO seo_ping_queue (url, created_at) VALUES (?,?)', [$url, date('Y-m-d H:i:s')]);
+        if ($sp) $pdo->exec('RELEASE SAVEPOINT rmt_seo_announce');
     } catch (\PDOException $e) {
         // A duplicate means it is already queued, which is the correct state. Anything else is
         // not worth failing a publish over.
+        if ($sp) {
+            try { $pdo->exec('ROLLBACK TO SAVEPOINT rmt_seo_announce'); } catch (\PDOException $e2) {}
+        }
     }
 }
 
