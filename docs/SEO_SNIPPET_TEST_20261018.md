@@ -25,6 +25,9 @@ Raw numbers: docs/seo_snippet_baseline_20261018.json.
   - before: Tokyo Skytree Tembo Deck tickets start at 1,800 yen for an adult online in 2026, with a 500 yen per ticket service fee added at the fourth floor counter.
   - after: Tokyo Skytree 2026: Tembo Deck from 1,800 yen online, both decks from 3,000 yen, children 6 to 14 from 900 yen. At the counter you pay 500 yen more.
 
+Deployed 2026-10-18 8:23 PM PDT (cc82eb4, start date in meta_tests.json). Baseline is the saved 2026-09-19 to
+2026-10-16 window; Search Console had no later days yet. Measure days 2026-10-26 to 2026-11-22 on 2026-11-25.
+
 ## Four week procedure
 1. Day 0 (deploy day, after Nima's go): re-run `python scripts/gsc_snippet_test.py <D-28> <D-1>` so the
    baseline ends the day before the change; set "start" in meta_tests.json to day 0. Confirm live that
