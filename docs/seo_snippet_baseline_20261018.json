@@ -1,0 +1,52 @@
+{
+ "window": [
+  "2026-09-19",
+  "2026-10-16"
+ ],
+ "test": {
+  "/p/le-rapido-paris": {
+   "clicks": 0,
+   "impressions": 86,
+   "ctr": 0.0,
+   "position": 9.5
+  },
+  "/blog/milan-tourist-tax-2026": {
+   "clicks": 0,
+   "impressions": 77,
+   "ctr": 0.0,
+   "position": 9.5
+  },
+  "/blog/tokyo-skytree-tickets-2026": {
+   "clicks": 0,
+   "impressions": 19,
+   "ctr": 0.0,
+   "position": 5.4
+  }
+ },
+ "control": {
+  "/blog/san-francisco-hotel-tax-2026": {
+   "clicks": 0,
+   "impressions": 27,
+   "ctr": 0.0,
+   "position": 7.0
+  },
+  "/blog/porto-tourist-tax-2026": {
+   "clicks": 0,
+   "impressions": 12,
+   "ctr": 0.0,
+   "position": 7.4
+  },
+  "/blog/gold-museum-san-jose-tickets-2026": {
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0.0,
+   "position": 6.5
+  },
+  "/blog/tourist-taxes-2026": {
+   "clicks": 0,
+   "impressions": 12,
+   "ctr": 0.0,
+   "position": 5.7
+  }
+ }
+}
