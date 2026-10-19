@@ -63,7 +63,7 @@ FIX_BLOG = {
         ('a Tuesday to Monday trip', 'a Tuesday to Sunday trip'),
         ('Untitled and NADA are open before Art Basel starts', 'Untitled and NADA are open before Art Basel starts (NADA closes on Saturday 5 December)'),
         ('Art Basel, Untitled and SCOPE are on the island.', 'Art Basel, Untitled and InScope are on the island.'),
-        ('NADA sits on its northern edge.', 'NADA sits a few blocks south of it, at Ice Palace Studios on North Miami Avenue.'),
+        ('NADA sits on its northern edge.', 'NADA is close by, at Ice Palace Studios, 1400 North Miami Avenue.'),
         ('Create your Miami trip for 1 to 7 December', 'Create your Miami trip for 1 to 6 December'),
         ('Untitled Art, NADA Miami and SCOPE Miami Beach dates', 'Untitled Art, NADA Miami and InScope dates'),
     ],
