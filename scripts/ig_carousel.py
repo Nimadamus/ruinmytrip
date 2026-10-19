@@ -35,7 +35,7 @@ def cover(img, w, h, focus=0.5):
 
 
 def wrap(d, text, f, width):
-    words, lines, cur = text.split(), [], ''
+    words, lines, cur = text.split(' '), [], ''
     for wd in words:
         t = (cur + ' ' + wd).strip()
         if d.textlength(t, font=f) <= width:
