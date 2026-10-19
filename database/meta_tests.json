@@ -3,15 +3,15 @@
   "tests": {
     "/p/le-rapido-paris": {
       "description": "Le Rapido is a cafe at 25 Avenue Ledru-Rollin in Paris 12e. Check today's opening hours, get directions or call, and read what travelers say about it.",
-      "start": null
+      "start": "2026-10-18"
     },
     "/blog/milan-tourist-tax-2026": {
       "description": "Milan city tax 2026 per person per night: 3 euro in one star hotels up to 12 euro in five star, 9.50 euro in rentals, from 1 April. Worked costs inside.",
-      "start": null
+      "start": "2026-10-18"
     },
     "/blog/tokyo-skytree-tickets-2026": {
       "description": "Tokyo Skytree 2026: Tembo Deck from 1,800 yen online, both decks from 3,000 yen, children 6 to 14 from 900 yen. At the counter you pay 500 yen more.",
-      "start": null
+      "start": "2026-10-18"
     }
   }
 }
