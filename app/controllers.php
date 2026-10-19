@@ -805,7 +805,7 @@ function place_show(array $a): void {
 
     // Description priority: the hand-written one, then the editorial opener, then the honest
     // "nothing here yet" line. Never a generated template sentence dressed up as a summary.
-    $desc = $ed['meta_description'] ?? null;
+    $desc = rmt_meta_test('/p/'.$p['slug']) ?? $ed['meta_description'] ?? null;
     if (!$desc && $ed && !empty($ed['what_it_is'])) $desc = mb_strimwidth(strip_tags((string)$ed['what_it_is']), 0, 155, '…');
     if (!$desc) {
         if ($stats['c'] > 0) {
@@ -1895,7 +1895,7 @@ function blog_show(array $a): void {
     }
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest'), [
         'title' => $p['title'].' | RuinMyTrip',
-        'description' => $p['summary'],
+        'description' => rmt_meta_test('/blog/'.$p['slug']) ?? $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : rmt_default_og_image(),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')],['name'=>$p['title'],'url'=>url('blog/'.$p['slug'])]],
         'jsonld' => jsonld($ld),
