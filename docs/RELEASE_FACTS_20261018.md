@@ -7,11 +7,11 @@ phuket-elephant-sanctuary-tickets-2026 and miami-art-week-2026, and the Zeughaus
 Every new figure was read on the official source on 2026-10-18 (list in scripts/editorial_fix_20261018.py).
 
 Steps, only after Nima says go:
-1. `python ~/tools/rmt_ops/prod_check.py snap` (SEO invariants before).
+1. `python ~/tools/rmt_ops/prod_check.py snap before.json` (SEO invariants before).
 2. `git checkout main && git pull --ff-only && git merge --no-ff fix/facts-20261018` then `git push origin main`
    (pre push gate, 141 suites).
 3. `python ~/tools/rmt_ops/wait_deploy.py <sha>`; the container entrypoint upserts the editorial JSON.
-4. `python ~/tools/rmt_ops/prod_check.py diff`: expected changes are the five descriptions above only.
+4. `python ~/tools/rmt_ops/prod_check.py snap after.json` then `prod_check.py diff before.json after.json`: among its fixed pages only the Zeughauskeller description may change.
 5. `python ~/tools/rmt_ops/prod_smoke.py <outdir>`: PROBLEMS must be none.
 6. Spot check live: /blog/miami-art-week-2026 shows "InScope", /p/zeughauskeller-zurich shows "1487",
    /blog/san-francisco-2026 shows "24.4 million".
