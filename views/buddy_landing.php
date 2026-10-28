@@ -1,5 +1,5 @@
 <?php /** @var array $p @var ?array $me @var array $cards @var array $cities @var array $meetups
-        @var string $postHref @var array $related @var string $path */
+        @var string $postHref @var array $related @var string $path @var ?array $acts */
 $isCruise = $p['kind'] === 'cruise';
 $bcBack = '/' . $path;
 $n = count($cards);
@@ -12,10 +12,14 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
   <p class="eyebrow"><?= $isCruise ? 'Cruise buddies' : 'Travel buddies' ?></p>
   <h1><?= $isCruise ? e($p['line']) . ' cruise buddies' : 'Travel buddies in ' . e($p['name']) ?></h1>
   <p class="buddy-lede"><?= e($p['lede']) ?></p>
+  <?php if (!empty($acts)): ?>
+    <?php $onDark = true; include __DIR__ . '/_landing_acts.php'; ?>
+  <?php else: ?>
   <div class="buddy-cta">
     <a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a>
     <a class="btn btn-ghost-light" href="<?= e(url('travelers')) ?>">Browse all travelers</a>
   </div>
+  <?php endif; ?>
   <?php if ($isCruise): ?>
     <form class="buddy-search" method="get" action="<?= e(url('buddies/cruise')) ?>" role="search">
       <input type="hidden" name="line" value="<?= e($p['line']) ?>">
@@ -52,7 +56,11 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
       <div class="empty-cta">
         <h3><?= $isCruise ? 'Sailing with ' . e($p['name']) . '? Add your sailing.' : 'Going to ' . e($p['name']) . '? Add your trip.' ?></h3>
         <p class="muted">Post <?= $isCruise ? 'your ship and sail date' : 'where you are going and when' ?>, and you will be told when somebody lines up with you. Anyone searching <?= e($p['name']) ?> will find you here.</p>
+        <?php if (!empty($acts)): ?>
+          <?php $onDark = false; include __DIR__ . '/_landing_acts.php'; ?>
+        <?php else: ?>
         <p><a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a></p>
+        <?php endif; ?>
       </div>
     <?php endif; ?>
   </section>
@@ -122,8 +130,12 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
   <section class="bl-block empty-cta">
     <h2><?= $isCruise ? 'On a ' . e($p['name']) . ' cruise soon?' : 'Going to ' . e($p['name']) . '?' ?></h2>
     <p class="muted">It takes a minute, it is free, and nobody can message you until you say yes.</p>
+    <?php if (!empty($acts)): ?>
+      <?php $onDark = false; include __DIR__ . '/_landing_acts.php'; ?>
+    <?php else: ?>
     <p><a class="btn btn-accent" href="<?= e($postHref) ?>"><?= $isCruise ? 'Post your sailing' : 'Post your trip' ?></a>
       <a class="btn btn-ghost" href="<?= e(url('buddies')) ?>">Find a travel buddy anywhere</a></p>
+    <?php endif; ?>
   </section>
 
   <nav class="bl-block" aria-labelledby="bl-more">

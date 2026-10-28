@@ -1432,6 +1432,11 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .buddy-hero h1{color:#fff;font-size:clamp(1.9rem,4.6vw,3.1rem);letter-spacing:-.02em;max-width:20ch;margin:0 0 10px}
 .buddy-lede{color:#e3edf2;font-size:clamp(1rem,1.8vw,1.18rem);max-width:60ch;margin:0}
 .buddy-cta{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 22px}
+.buddy-acts .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;text-align:center}
+@media (max-width:560px){
+  .buddy-acts{flex-direction:column;align-items:stretch}
+  .buddy-acts .btn{width:100%}
+}
 .btn-ghost-light{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35)}
 .btn-ghost-light:hover{background:rgba(255,255,255,.18)}
 .buddy-search{background:var(--card);color:var(--text);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:14px}

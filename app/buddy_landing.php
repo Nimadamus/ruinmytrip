@@ -17,6 +17,48 @@ function rmt_buddy_landing(string $slug): ?array {
     return $p ? $p + ['slug' => $slug] : null;
 }
 
+/**
+ * The city a visitor should land in when they tap a button on one of the five country pages
+ * we are sending people to. Other landing pages are unchanged.
+ *
+ * @return array<string,string> country slug => destination slug
+ */
+function rmt_buddy_landing_hubs(): array {
+    return [
+        'iceland' => 'reykjavik-iceland',
+        'japan'   => 'tokyo-japan',
+        'greece'  => 'athens-greece',
+        'italy'   => 'rome-italy',
+        'mexico'  => 'mexico-city-mexico',
+    ];
+}
+
+/**
+ * The five actions on those pages. Null for every other landing, so a cruise page and the
+ * other countries keep the buttons they already had.
+ *
+ * @param array{id:int|string,slug:string,name:string}|null $dest
+ * @param array{username?:string}|null $me
+ * @return array{city:string,country:string,trip:string,review:string,buddies:string,join:string,profile:string}|null
+ */
+function rmt_buddy_landing_cta(string $slug, string $country, ?array $dest, ?array $me): ?array {
+    if (!isset(rmt_buddy_landing_hubs()[$slug]) || !$dest || (int) $dest['id'] < 1 || (string) $dest['slug'] === '') {
+        return null;
+    }
+    $signedIn = $me && (string) ($me['username'] ?? '') !== '';
+    return [
+        'city'     => (string) $dest['name'],
+        'country'  => $country,
+        'trip'     => url('plan?d=' . rawurlencode((string) $dest['slug']) . '&buddy=1&cta=buddy_landing'),
+        'review'   => url('review/new?destination=' . (int) $dest['id'] . '&about=destination'),
+        'buddies'  => url('buddies?' . http_build_query(['where' => $country])),
+        'join'     => url('register?return=' . rawurlencode('/travel-buddies/' . $slug)),
+        'profile'  => $signedIn
+            ? url('u/' . rawurlencode((string) $me['username']) . '/edit')
+            : url('register?return=' . rawurlencode('/welcome')),
+    ];
+}
+
 /** Site path of a landing page, without the leading slash. */
 function rmt_buddy_landing_path(string $slug): string {
     $p = RMT_BUDDY_LANDING[$slug] ?? null;
@@ -170,9 +212,14 @@ function buddy_landing_show(array $a): void {
     $postQuery = $p['kind'] === 'cruise' ? ['type' => 'cruise', 'line' => $p['line']] : ['where' => $p['name']];
     $postPath = '/buddies/new?' . http_build_query($postQuery);
     /* Signed out, a trip goes to the trip first form with the buddy box ticked; a cruise still needs
-       its own form and an account first. */
-    $postHref = $me ? url(ltrim($postPath, '/'))
-        : ($p['kind'] === 'cruise' ? url('register?return=' . rawurlencode($postPath)) : url('plan?buddy=1&cta=buddy_landing'));
+       its own form and an account first. The five country pages below fill the city in. */
+    $hubDest = null;
+    if (isset(rmt_buddy_landing_hubs()[$slug])) {
+        $hubDest = q_one('SELECT id, slug, name FROM destinations WHERE slug = ?', [rmt_buddy_landing_hubs()[$slug]]);
+    }
+    $acts = rmt_buddy_landing_cta($slug, (string) $p['name'], $hubDest ?: null, $me);
+    $postHref = $acts['trip'] ?? ($me ? url(ltrim($postPath, '/'))
+        : ($p['kind'] === 'cruise' ? url('register?return=' . rawurlencode($postPath)) : url('plan?buddy=1&cta=buddy_landing')));
 
     $path = rmt_buddy_landing_path($slug);
     $hub = $p['kind'] === 'cruise' ? ['name' => 'Cruise buddies', 'url' => url('buddies/cruise')]
@@ -190,7 +237,7 @@ function buddy_landing_show(array $a): void {
     $meta = ['title' => $p['title'] . ' | RuinMyTrip', 'description' => $p['desc'], 'canonical' => url($path),
              'breadcrumbs' => $crumbs, 'jsonld' => $ld];
     if ($cities && !empty($cities[0]['hero_url'])) $meta['og_image'] = abs_url($cities[0]['hero_url']);
-    view('buddy_landing', compact('p', 'me', 'cards', 'cities', 'meetups', 'occasions', 'postHref', 'related', 'path'), $meta);
+    view('buddy_landing', compact('p', 'me', 'cards', 'cities', 'meetups', 'occasions', 'postHref', 'related', 'path', 'hub', 'acts'), $meta);
 }
 
 function buddy_landing_country(array $a): void { buddy_landing_show($a + ['kind' => 'country']); }
