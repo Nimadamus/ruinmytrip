@@ -2694,9 +2694,19 @@ function welcome_form(array $a): void {
     }
     $me = $me + (q_one('SELECT home_city, travel_style, display_name, bio, avatar_url FROM profiles
                          WHERE user_id = ?', [(int) $me['id']]) ?: []);
-    view('welcome', compact('dests','saved','me','communities','suggested','popular'), [
+    /* Said on the screen, because "people can find you" is not true while nobody has posted. */
+    $upcomingTrips = 0;
+    try {
+        $role = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+        $upcomingTrips = (int) (q_one("SELECT COUNT(*) c FROM trips t JOIN users u ON u.id = t.user_id
+                                        WHERE u.status = 'active' AND u.role <> ?
+                                          AND t.status = 'published' AND COALESCE(t.visibility, 'public') = 'public'
+                                          AND t.date_from IS NOT NULL AND t.date_to >= ?",
+                                      [$role, date('Y-m-d')])['c'] ?? 0);
+    } catch (Throwable $e) { /* a missing column must not block the welcome screen */ }
+    view('welcome', compact('dests','saved','me','communities','suggested','popular','upcomingTrips'), [
         'title' => 'Start your traveler profile | RuinMyTrip',
-        'description' => 'Pick places you want to visit and optionally share an upcoming trip. Destination and dates only.',
+        'description' => 'Add your name, one sentence, and your home city. A trip is optional: city and dates only.',
     ]);
 }
 
@@ -2714,13 +2724,30 @@ function welcome_submit(array $a): void {
         'bio' => $me['bio'] ?? null,
         'avatar_url' => $me['avatar_url'] ?? null,
     ]);
-    if ($ident['ok'] && (trim((string) ($_POST['home_city'] ?? '')) !== ''
+    $postedName = trim((string) ($_POST['display_name'] ?? ''));
+    $postedBio = trim((string) ($_POST['bio'] ?? ''));
+    if ($ident['ok'] && ($postedName !== '' || $postedBio !== ''
+                         || trim((string) ($_POST['home_city'] ?? '')) !== ''
                          || (string) ($_POST['travel_style'] ?? '') !== '')) {
         rmt_profile_ensure($uid);
-        db()->prepare('UPDATE profiles SET home_city = ?, home_destination_id = ?, travel_style = ?
+        db()->prepare('UPDATE profiles SET display_name = CASE WHEN ? <> \'\' THEN ? ELSE display_name END,
+                                          bio = CASE WHEN ? <> \'\' THEN ? ELSE bio END,
+                                          home_city = COALESCE(?, home_city),
+                                          home_destination_id = COALESCE(?, home_destination_id),
+                                          travel_style = COALESCE(?, travel_style)
                         WHERE user_id = ?')
-            ->execute([$ident['data']['home_city'], $ident['data']['home_destination_id'] ?? null,
-                       $ident['data']['travel_style'] ?? null, $uid]);
+            ->execute([
+                $postedName, $postedName, $postedBio, $postedBio,
+                $ident['data']['home_city'], $ident['data']['home_destination_id'] ?? null,
+                $ident['data']['travel_style'] ?? null, $uid,
+            ]);
+        $done = q_one('SELECT display_name, bio, home_city FROM profiles WHERE user_id = ?', [$uid]) ?: [];
+        if (trim((string) ($done['display_name'] ?? '')) !== ''
+            && mb_strlen(trim((string) ($done['bio'] ?? ''))) >= 20
+            && trim((string) ($done['home_city'] ?? '')) !== ''
+            && function_exists('rmt_track_once')) {
+            rmt_track_once('profile_completed', ['source' => 'profile']);
+        }
     }
 
     /* Optional, and only written when somebody ticked something: skipping the step must never

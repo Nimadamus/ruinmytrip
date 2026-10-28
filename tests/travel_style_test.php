@@ -105,6 +105,10 @@ ok('every function that writes a profile ensures the row first'
 $welcome = (string) file_get_contents(BASE_PATH . '/views/welcome.php');
 ok('the welcome screen asks where they live', str_contains($welcome, 'name="home_city"'));
 ok('and how they travel', str_contains($welcome, 'name="travel_style"'));
+ok('the profile comes before the trip', strpos($welcome, 'name="display_name"') < strpos($welcome, 'name="destination_id"'));
+ok('a short sentence is the bar the page shows', str_contains($welcome, 'id="profile-meter"') && str_contains($welcome, 'about twenty characters'));
+ok('the first listing is still said out loud', str_contains($welcome, 'Nobody has posted dates yet'));
+ok('welcome buttons are tall enough to tap', str_contains((string) file_get_contents(BASE_PATH . '/public/assets/css/app.css'), '.onboard-actions .btn{min-height:44px'));
 
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

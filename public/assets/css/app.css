@@ -714,6 +714,34 @@ section.block{padding:64px 0}
 .onboard-step .hint{margin:0 0 14px;display:block}
 .onboard-more{margin-top:14px}
 .onboard-more>summary{cursor:pointer;font-size:.9rem;font-weight:600;color:var(--brand)}
+.onboard-wrap{max-width:720px}
+.onboard-lead{max-width:58ch}
+.onboard-meter{font-weight:700;margin:10px 0 0;color:var(--muted)}
+.onboard-meter.ready{color:var(--brand)}
+.onboard-now{border-color:var(--brand)}
+.onboard-need{list-style:none;padding:0;margin:0 0 4px;display:flex;flex-wrap:wrap;gap:8px}
+.onboard-need li{border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:.85rem;
+  color:var(--muted);min-height:36px;display:inline-flex;align-items:center}
+.onboard-need li.done{background:var(--brand);border-color:var(--brand);color:#fff}
+.onboard input[type=text],.onboard input[type=date],.onboard select{min-height:44px;font-size:16px}
+.onboard textarea{font-size:16px}
+.onboard #bio{min-height:96px}
+.onboard-pair{gap:12px;margin-top:10px}
+.onboard-else{margin-top:14px}
+.onboard-extra{margin:18px 0;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:4px 18px 12px;box-shadow:var(--shadow)}
+.onboard-extra>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;color:var(--brand)}
+.onboard-inner{box-shadow:none;margin:12px 0;padding:14px 0 4px;border:0;border-top:1px solid var(--line);border-radius:0}
+.onboard-actions{margin:22px 0 8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.onboard-actions .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+@media (max-width:560px){
+  .onboard-actions{flex-direction:column;align-items:stretch}
+  .onboard-actions .btn{width:100%}
+  .onboard-need{flex-direction:column}
+  .onboard-need li{width:100%}
+  .onboard-step{padding:16px}
+  .onboard-extra{padding:4px 14px 12px}
+}
 
 /* A city is picked by pressing a tile, not by hitting a checkbox the size of a full stop. */
 .pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
