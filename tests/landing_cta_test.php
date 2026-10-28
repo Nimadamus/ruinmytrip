@@ -32,8 +32,9 @@ $want = [
 ];
 foreach ($want as $slug => [$citySlug, $id, $city, $country]) {
     $cta = rmt_buddy_landing_cta($slug, $country, ['id' => $id, 'slug' => $citySlug, 'name' => $city], null);
-    ok("$slug trip opens that city with the buddy box", $cta !== null
-        && str_contains($cta['trip'], 'plan?d=' . $citySlug . '&buddy=1&cta=buddy_landing'));
+    ok("$slug trip opens that city without the buddy essay", $cta !== null
+        && str_contains($cta['trip'], 'plan?d=' . $citySlug . '&cta=buddy_landing')
+        && !str_contains($cta['trip'], 'buddy=1'));
     ok("$slug review is that city", str_contains((string) ($cta['review'] ?? ''), "review/new?destination=$id&about=destination"));
     ok("$slug buddies keep the country", str_contains((string) ($cta['buddies'] ?? ''), 'buddies?' . http_build_query(['where' => $country])));
     ok("$slug account returns to the same page", str_contains((string) ($cta['join'] ?? ''), rawurlencode('/travel-buddies/' . $slug)));

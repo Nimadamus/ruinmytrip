@@ -49,7 +49,9 @@ function rmt_buddy_landing_cta(string $slug, string $country, ?array $dest, ?arr
     return [
         'city'     => (string) $dest['name'],
         'country'  => $country,
-        'trip'     => url('plan?d=' . rawurlencode((string) $dest['slug']) . '&buddy=1&cta=buddy_landing'),
+        /* City filled in, buddy box left off. Checking it asks for a 20 character note and the
+           safety box before the account step, and that is what was stopping a short trip post. */
+        'trip'     => url('plan?d=' . rawurlencode((string) $dest['slug']) . '&cta=buddy_landing'),
         'review'   => url('review/new?destination=' . (int) $dest['id'] . '&about=destination'),
         'buddies'  => url('buddies?' . http_build_query(['where' => $country])),
         'join'     => url('register?return=' . rawurlencode('/travel-buddies/' . $slug)),
