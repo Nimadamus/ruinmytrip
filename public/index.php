@@ -273,6 +273,7 @@ $routes = [
     ['GET',  '#^/cron/funnel$#',               'cron_funnel'],
     ['GET',  '#^/cron/kpi$#',                  'cron_kpi'],
     ['GET',  '#^/cron/proof$#',                'cron_proof'],
+    ['GET',  '#^/cron/acquire$#',              'cron_acquire'],
     // What the site has that is worth a social post (app/social_landing.php), for scripts/social_from_site.py.
     ['GET',  '#^/cron/social$#',               'cron_social'],
     ['GET',  '#^/cron/places$#',               'cron_places'],

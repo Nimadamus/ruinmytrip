@@ -127,7 +127,10 @@ function rmt_proof_fold(array &$by, array &$keys, array &$srcs, array $r, callab
     if ($ev === 'join_created') $f |= RMT_PF_JOINED;
     if ($ev === 'review_submit_attempt') { $f |= RMT_PF_REVIEWED; $b[RMT_PS_SUBMITTED] |= $bit; }
     if ($ev === 'review_form_start') $b[RMT_PS_OPENED] |= $bit;
-    if (in_array($ev, RMT_PROOF_MAP_EVENTS, true)) { $f |= RMT_PF_MAP; $b[RMT_PS_MAPDAYS] |= $bit; }
+    if (in_array($ev, RMT_PROOF_MAP_EVENTS, true)
+        || ($ev === 'cta_click' && (string) ($r['detail'] ?? '') === 'map_tap')) {
+        $f |= RMT_PF_MAP; $b[RMT_PS_MAPDAYS] |= $bit;
+    }
     $ck = $r['cookied'] ?? null;
     if ($ck !== null && $ck !== '') { $f |= RMT_PF_COOKIE_KNOWN; if ((int) $ck === 1) $f |= RMT_PF_COOKIE_BACK; }
     $b[RMT_PS_FLAGS] |= $f;
@@ -196,7 +199,7 @@ function rmt_proof_stream(string $from, string $to, int $chunk = 20000): Generat
     $notSelf = "COALESCE(acq_content, '') <> 'selfcheck'";
     $last = 0;
     while (true) {
-        $rows = rmt_kpi_rows("SELECT id, visitor, event, path, created_at, cookied, acq_source FROM contribution_events
+        $rows = rmt_kpi_rows("SELECT id, visitor, event, path, detail, created_at, cookied, acq_source FROM contribution_events
                                WHERE created_at >= ? AND created_at < ? AND id > ? AND visitor IS NOT NULL AND visitor <> ''
                                  AND $notSelf ORDER BY id LIMIT $chunk", [$from, $to, $last]);
         if (!$rows) return;

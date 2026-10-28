@@ -120,5 +120,14 @@ ok('the signup rate is over verified humans', $p['rates']['signup_rate_pct'] ===
 ok('every metric has a definition', !array_diff(array_keys($p['totals']), array_keys(RMT_PROOF_DEFINITIONS)));
 ok('reasons are reported', ($p['reasons']['bot']['form_first'] ?? 0) === 15 && ($p['reasons']['human']['trusted_input'] ?? 0) === 1);
 
+// A country colored in on the homepage is a cta_click named map_tap, not a visit to /map.
+$tap = $pdo->prepare('INSERT INTO contribution_events (visitor, event, path, created_at, cookied, acq_source, acq_content, detail) VALUES (?,?,?,?,?,?,?,?)');
+$tap->execute(['mapper', 'human_verified', '/', '2026-10-09 12:30:00', 1, 'direct', '', null]);
+$tap->execute(['mapper', 'cta_click', '/', '2026-10-09 12:30:08', 1, 'direct', '', 'map_tap']);
+$p2 = rmt_proof(3, '2026-10-10 20:00:00');
+$day2 = []; foreach ($p2['days'] as $d) $day2[$d['day']] = $d;
+ok('a homepage map tap counts as using the map', ($day2['2026-10-09']['map_users'] ?? 0) === 1, (string) ($day2['2026-10-09']['map_users'] ?? 0));
+ok('and that person is in the direct channel map count', ($p2['channels']['direct']['used_map'] ?? 0) === 1, json_encode($p2['channels']['direct'] ?? []));
+
 echo $fails ? "\nproof_test: $fails FAILED\n" : "\nproof_test: all passed\n";
 exit($fails ? 1 : 0);
