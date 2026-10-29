@@ -849,7 +849,7 @@ function place_show(array $a): void {
         /* The title claims only what this page can answer, so it needs to know what is on it:
            how many days of hours we hold, and whether there is anything to say about price. */
         'title' => rmt_place_page_title($p + ['hours_count' => count($hours),
-                                              'editorial_prices' => (string) ($ed['prices'] ?? '')]),
+                                              'editorial_prices' => rmt_place_title_price_text($ed, '/p/' . (string) $p['slug'])]),
         'description' => $desc,
         'canonical' => $canonical,
         'robots' => $pcRobots,
