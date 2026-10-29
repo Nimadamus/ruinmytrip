@@ -67,7 +67,7 @@ def gsc_by_day(days):
 def campaign_lines(key, days):
     """Tagged links (utm_campaign set), people only: one row per source, campaign and label from /cron/funnel."""
     try:
-        acq = json.loads(get('https://ruinmytrip.com/cron/funnel?days=%d' % days, {'X-Cron-Key': key})).get('acquisition') or []
+        acq = json.loads(get('https://ruinmytrip.com/cron/funnel?only=acquisition&days=%d' % days, {'X-Cron-Key': key})).get('acquisition') or []
     except Exception as e:
         return ['', '## Tagged links', '', 'Not read: %s' % type(e).__name__]
     rows = [r for r in acq if r.get('campaign') and r['campaign'] != 'live-check' and r.get('content') != 'selfcheck']

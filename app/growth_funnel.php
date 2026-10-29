@@ -444,26 +444,33 @@ function cron_funnel(array $a): void {
        without an account rather than only by an administrator. Nothing here is a person: every
        value is a count, a rate or a city name, and the one identifier involved is a random token
        that recognises a browser and is never printed. */
-    echo json_encode([
-        'window_days'        => $days > 0 ? $days : 'all time',
+    /* Each block is computed only when asked for. ?only=acquisition (comma separated) is what the
+       morning scoreboard reads: all fifteen blocks over 30 days ran past two minutes and the
+       request timed out, so the tagged links table said "Not read" every day (2026-10-29). */
+    $blocks = [
         // Visitor, member, first contribution, returning: the loop in one block (app/growth_scorecard.php).
-        'activation'         => rmt_activation_funnel($days),
-        'phase'              => rmt_phase_metrics($days),
-        'scorecard'          => rmt_growth_scorecard($days),
-        'growth'             => rmt_growth_funnel($days),
-        'signup'             => rmt_signup_funnel($days),
-        'inventory'          => rmt_growth_inventory(),
-        'overlap'            => rmt_growth_overlap(),
-        'social'             => rmt_social_funnel($days),
-        'stages'             => rmt_funnel_stages($days),
-        'top_communities'    => rmt_top_communities($days),
-        'signup_attribution' => rmt_signup_attribution($days),
-        'sources'            => rmt_funnel_sources($days),
-        'traffic'            => rmt_traffic_shape($days),
-        'acquisition'        => rmt_acq_report($days),
-        'command_center'     => rmt_acq_command_center($days > 0 ? $days : 3650),
-        'daily'              => rmt_acq_daily(),
+        'activation'         => static fn() => rmt_activation_funnel($days),
+        'phase'              => static fn() => rmt_phase_metrics($days),
+        'scorecard'          => static fn() => rmt_growth_scorecard($days),
+        'growth'             => static fn() => rmt_growth_funnel($days),
+        'signup'             => static fn() => rmt_signup_funnel($days),
+        'inventory'          => static fn() => rmt_growth_inventory(),
+        'overlap'            => static fn() => rmt_growth_overlap(),
+        'social'             => static fn() => rmt_social_funnel($days),
+        'stages'             => static fn() => rmt_funnel_stages($days),
+        'top_communities'    => static fn() => rmt_top_communities($days),
+        'signup_attribution' => static fn() => rmt_signup_attribution($days),
+        'sources'            => static fn() => rmt_funnel_sources($days),
+        'traffic'            => static fn() => rmt_traffic_shape($days),
+        'acquisition'        => static fn() => rmt_acq_report($days),
+        'command_center'     => static fn() => rmt_acq_command_center($days > 0 ? $days : 3650),
+        'daily'              => static fn() => rmt_acq_daily(),
         // Each engaged visit as the steps it took, so the stopping point is visible (app/acquisition.php).
-        'engaged_visits'     => rmt_acq_engaged_visits($days > 0 ? $days : 7),
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
+        'engaged_visits'     => static fn() => rmt_acq_engaged_visits($days > 0 ? $days : 7),
+    ];
+    $only = array_filter(array_map('trim', explode(',', (string) input('only'))));
+    if ($only) $blocks = array_intersect_key($blocks, array_flip($only));
+    $outJson = ['window_days' => $days > 0 ? $days : 'all time'];
+    foreach ($blocks as $name => $fn) $outJson[$name] = $fn();
+    echo json_encode($outJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }
