@@ -146,6 +146,10 @@ function rmt_pending_apply(array $user): array {
                 $done['buddy_id'] = $bid;
             }
         }
+    } elseif (!empty($held['buddy']) && is_array($held['buddy']) && function_exists('rmt_age_unknown') && rmt_age_unknown($user)) {
+        // Not dropped: held until the 18+ step (app/age_gate.php), which publishes it.
+        rmt_age_hold_buddy($uid, $held['buddy']);
+        $done['buddy_needs_age'] = true;
     }
     /* A question typed into a city page before there was an account. Same validator and writer
        as the composer, so it is exactly the post they would have made signed in. */

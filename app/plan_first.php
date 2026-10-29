@@ -191,6 +191,10 @@ function rmt_plan_first_publish(array $me, array $x): array {
                 rmt_track('buddy_post_created', ['source' => 'plan', 'destination_id' => $b['data']['destination_id']]);
             }
         }
+    } elseif ($x['buddy'] !== null && rmt_age_unknown($me)) {
+        // Not dropped: held until the 18+ step (app/age_gate.php), which publishes it.
+        rmt_age_hold_buddy($uid, (array) $x['buddy']);
+        $out['buddy_needs_age'] = true;
     }
     return $out;
 }
@@ -245,6 +249,10 @@ function rmt_plan_first_hand_over(array $me, array $draft): void {
     if (email_is_verified($me)) {
         $r = rmt_plan_first_publish($me, $x);
         if ($r['trip_id'] > 0) {
+            if (!empty($r['buddy_needs_age'])) {
+                flash('Your trip is live. One question before it is listed for travel buddies.');
+                redirect('/account/age?return=' . rawurlencode('/matches?new=' . $r['trip_id']));
+            }
             flash('Your trip is live. Here is who else will be there.');
             redirect('/matches?new=' . $r['trip_id']);
         }

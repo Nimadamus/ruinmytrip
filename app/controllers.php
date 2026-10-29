@@ -2371,8 +2371,7 @@ function meetup_show(array $a): void {
 function meetup_new_form(array $a): void {
     require_login();
     if (!can_host_meetups(current_user())) {
-        flash('You must be 18+ to host a meetup.');
-        redirect('/meetups');
+        rmt_adult_gate(current_user(), '/meetup/new', 'You must be 18+ to host a meetup.', '/meetups');
     }
     /* Arriving from a trip match, where the city and the days are already known. Making somebody
        retype what the page they came from just told them is how a good idea dies between screens. */
@@ -2392,7 +2391,7 @@ function meetup_new_form(array $a): void {
 
 function meetup_create(array $a): void {
     require_verified_email(); csrf_check(); $me = current_user();
-    if (!can_host_meetups($me)) { flash('You must be 18+ to host a meetup.'); redirect('/meetups'); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, '/meetup/new', 'You must be 18+ to host a meetup.', '/meetups');
 
     $opts = ['title' => 'Host a meetup | RuinMyTrip'];
     if (!rmt_submit_ok('meetup_new', input('_submit'))) {
@@ -5192,7 +5191,7 @@ function comment_edit(array $a): void {
 
 function meetup_rsvp(array $a): void {
     require_login(); csrf_check(); $me=current_user();
-    if (!can_host_meetups($me)) { flash('You must be 18+ to RSVP to meetups.'); redirect('/meetup/'.(int)$a['id']); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, '/meetup/'.(int)$a['id'], 'You must be 18+ to RSVP to meetups.', '/meetup/'.(int)$a['id']);
     $mid=(int)$a['id']; $m=q_one('SELECT * FROM meetups WHERE id=?', [$mid]); if(!$m) not_found();
     $has = q_one('SELECT 1 FROM meetup_rsvps WHERE meetup_id=? AND user_id=?', [$mid,(int)$me['id']]);
     // Withdrawing is always allowed -- including from something cancelled or in the past, because
@@ -5399,6 +5398,14 @@ function verify_email_confirm(array $a): void {
     /* A first trip that was waiting on this click is the most valuable thing that just happened,
        and it gets the landing. Being told "email confirmed" and dropped on a welcome page, while
        the trip you wrote ten minutes ago sits somewhere unmentioned, is how the moment is lost. */
+    if (!empty($applied['buddy_needs_age'])) {
+        // The buddy post is waiting on the 18+ step; it is asked now, then they land where they would have.
+        $after = !empty($applied['trip_id']) ? '/matches?new=' . (int) $applied['trip_id'] : '/buddies';
+        flash(!empty($applied['trip_id'])
+            ? 'Email confirmed. Your trip is live. One question before it is listed for travel buddies.'
+            : 'Email confirmed. One question before your travel buddy post goes up.');
+        redirect('/account/age?return=' . rawurlencode($after));
+    }
     if (!empty($applied['trip']) && !empty($applied['trip_id'])) {
         /* Same landing as posting a trip while already confirmed: the people, not the page about
            the trip. A traveler who has just written where they are going is asking one question,

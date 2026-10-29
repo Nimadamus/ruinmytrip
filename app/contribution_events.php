@@ -93,6 +93,8 @@ const RMT_CONTRIB_EVENTS = [
     // Written by app/buddies.php since the buddy feature shipped and dropped here every time,
     // because it was never added to this list. Nothing about a buddy post was ever counted.
     'buddy_post_created',
+    // The 18+ step (app/age_gate.php): a member gave a date of birth; adult is 1 or 0, nothing else.
+    'age_confirmed',
     /* Trip first, 2026-09-25. The visitor states the trip before being asked for an account, and
        each step is its own row so the drop between any two is a number, not an impression. */
     'human_interaction',           // browser: first tap, key or scroll of a visit (one bit, nothing else)

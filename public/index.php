@@ -203,6 +203,8 @@ $routes = [
     ['POST', '#^/unblock$#',                   'unblock_action'],
     ['POST', '#^/hide$#',                      'hide_action'],
     ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],
+    ['GET',  '#^/account/age$#',               'age_form'],
+    ['POST', '#^/account/age$#',               'age_submit'],
     ['GET',  '#^/settings$#',                  'settings_form'],
     ['POST', '#^/settings$#',                  'settings_save'],
     ['GET',  '#^/login$#',                     'login_form'],

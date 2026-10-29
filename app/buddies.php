@@ -912,7 +912,7 @@ function buddy_new_form(array $a): void {
         redirect('/plan?' . http_build_query($q));
     }
     require_login();
-    if (!can_host_meetups(current_user())) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
+    if (!can_host_meetups(current_user())) rmt_adult_gate(current_user(), (string) ($_SERVER['REQUEST_URI'] ?? '/buddies/new'), 'Travel buddies is 18+.', '/buddies');
     $pre = [];
     $t = (string) input('type');
     if (isset(RMT_BUDDY_TYPES[$t])) $pre['trip_type'] = $t;
@@ -928,7 +928,7 @@ function buddy_new_form(array $a): void {
 
 function buddy_create(array $a): void {
     require_login(); csrf_check(); $me = current_user();
-    if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, '/buddies/new', 'Travel buddies is 18+.', '/buddies');
     /* Same gate as before: nothing is published until the address is confirmed. A valid post is
        held and goes live on confirmation (app/onboarding_pending.php) instead of being discarded. */
     if (!email_is_verified($me)) {
@@ -1020,7 +1020,7 @@ function buddy_interest(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $id = (int) $a['id'];
     $back = rmt_return_to('/buddy/' . $id);
-    if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect($back); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, $back, 'Travel buddies is 18+.', $back);
     $b = rmt_buddy_get($id); if (!$b) not_found();
     if (!rmt_rate_ok('buddy_interest', (string) $me['id'], 30, 3600)) { flash('Slow down a little and try again soon.'); redirect($back); }
     $r = rmt_buddy_toggle_interest($b, (int) $me['id'], (string) input('note'));
@@ -1064,7 +1064,7 @@ function buddy_status(array $a): void {
 /** POST /buddies/here: "I am in this city now", as a public trip covering today. */
 function buddies_here_now(array $a): void {
     require_login(); csrf_check(); $me = current_user();
-    if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, '/buddies', 'Travel buddies is 18+.', '/buddies');
     $today = date('Y-m-d');
     $until = (string) input('until');
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $until) || $until < $today) $until = $today;
@@ -1082,7 +1082,7 @@ function buddies_here_now(array $a): void {
 /** POST /buddies/local: "I live here and I am open to meeting travelers", or switch it off. */
 function buddies_local(array $a): void {
     require_login(); csrf_check(); $me = current_user();
-    if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect('/buddies'); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, '/buddies', 'Travel buddies is 18+.', '/buddies');
     $uid = (int) $me['id'];
     if (function_exists('rmt_profile_ensure')) rmt_profile_ensure($uid);
     if (input('off') === '1') {
@@ -1101,7 +1101,7 @@ function buddies_local(array $a): void {
 function buddies_local_connect(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     $back = rmt_return_to('/buddies');
-    if (!can_host_meetups($me)) { flash('Travel buddies is 18+.'); redirect($back); }
+    if (!can_host_meetups($me)) rmt_adult_gate($me, $back, 'Travel buddies is 18+.', $back);
     if (!rmt_rate_ok('connect', (string) $me['id'], 60, 3600)) { flash('You are doing that very fast. Try again shortly.'); redirect($back); }
     $to = (int) $a['user_id'];
     if (input('withdraw') === '1') { rmt_local_connect_withdraw((int) $me['id'], $to); flash('Taken back.'); redirect($back); }
