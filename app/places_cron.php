@@ -570,6 +570,7 @@ function rmt_places_index_quality(): void {
           WHERE p.status = 'active'");
 
     $hist   = array_fill(0, 7, 0);
+    $one    = [];
     $with   = ['address' => 0, 'hours' => 0, 'website' => 0, 'phone' => 0, 'photo' => 0, 'review' => 0];
     $byCity = $byType = [];
     foreach ($rows as $r) {
@@ -578,6 +579,12 @@ function rmt_places_index_quality(): void {
            + ((int) $r['photos']  > 0 ? 1 : 0)
            + ((int) $r['reviews'] > 0 ? 1 : 0);
         $hist[$n]++;
+        if ($n === 1) {
+            $one[] = ['slug' => (string) $r['slug'], 'dest' => (string) $r['dest'], 'type' => (string) $r['type'],
+                      'signal' => (int) $r['has_address'] ? 'address' : ((int) $r['has_website'] ? 'website'
+                                : ((int) $r['has_phone'] ? 'phone' : ((int) $r['hours'] > 0 ? 'hours'
+                                : ((int) $r['photos'] > 0 ? 'photo' : 'review'))))];
+        }
         if ((int) $r['has_address']) $with['address']++;
         if ((int) $r['has_website']) $with['website']++;
         if ((int) $r['has_phone'])   $with['phone']++;
@@ -615,7 +622,9 @@ function rmt_places_index_quality(): void {
         'thresholds'        => $would,
         'thin_by_city'      => $byCity,    // thin means fewer than two signals
         'thin_by_type'      => $byType,
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "' + BS + 'n";
+        // ?list=1: every place with exactly one signal, which one, for a page by page audit.
+        'one_signal'        => (string) input('list') === '1' ? $one : null,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }
 
 /**
