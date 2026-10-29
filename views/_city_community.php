@@ -211,7 +211,7 @@ $stats = array_values(array_filter([
         <h3>What went wrong in <?= e($cityName) ?></h3>
         <?php if ($ccX['warnings']): ?>
           <ul><?php foreach ($ccX['warnings'] as $w): ?>
-            <li><a href="<?= e(url('review/' . (int) $w['id'])) ?>">“<?= e(excerpt((string) $w['what_ruined'], 140)) ?>”</a>
+            <li><a href="<?= e(url(ltrim(rmt_review_path($w), '/'))) ?>">“<?= e(excerpt((string) $w['what_ruined'], 140)) ?>”</a>
               <span class="hint"><?= $w['role'] === $ed ? 'RuinMyTrip research' : '@' . e((string) $w['username']) ?><?= !empty($w['place_name']) ? ' · ' . e((string) $w['place_name']) : '' ?></span></li>
           <?php endforeach; ?></ul>
         <?php else: ?>

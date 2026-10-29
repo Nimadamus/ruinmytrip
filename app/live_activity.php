@@ -66,8 +66,8 @@ function rmt_live_activity(?int $viewerId, int $limit = 8, ?int $destId = null):
     $lanes['review'] = array_map(static fn($r) => [
         'kind' => 'review', 'label' => 'Traveler review', 'title' => (string) ($r['title'] ?: ($r['place_name'] ?? 'A review')),
         'meta' => (string) ($r['place_name'] ?: ($r['dest_name'] ?? '')),
-        'href' => url('review/' . (int) $r['id']), 'who' => $who($r), 'editorial' => false,
-    ], $keep($safe(static fn() => q_all("SELECT r.id, r.title, r.user_id, u.username, p.display_name, pl.name place_name, d.name dest_name
+        'href' => url(ltrim(rmt_review_path($r), '/')), 'who' => $who($r), 'editorial' => false,
+    ], $keep($safe(static fn() => q_all("SELECT r.id, r.title, r.slug, r.subject_name, r.user_id, u.username, p.display_name, pl.name place_name, d.name dest_name
               FROM reviews r JOIN users u ON u.id = r.user_id AND u.status = 'active' AND u.role <> ?
          LEFT JOIN profiles p ON p.user_id = u.id
          LEFT JOIN places pl ON pl.id = r.place_id
@@ -91,7 +91,7 @@ function rmt_live_activity(?int $viewerId, int $limit = 8, ?int $destId = null):
 
     /* Topped up, labelled, when members have not filled it yet. */
     if ($real < $limit) {
-        $lines = $safe(static fn() => q_all("SELECT r.id, r.what_ruined, pl.name place_name, d.name dest_name
+        $lines = $safe(static fn() => q_all("SELECT r.id, r.title, r.slug, r.subject_name, r.what_ruined, pl.name place_name, d.name dest_name
                    FROM reviews r JOIN users u ON u.id = r.user_id AND u.status = 'active' AND u.role = ?
               LEFT JOIN places pl ON pl.id = r.place_id
               LEFT JOIN destinations d ON d.id = r.destination_id
@@ -107,7 +107,7 @@ function rmt_live_activity(?int $viewerId, int $limit = 8, ?int $destId = null):
         foreach (array_slice($lines, 0, 3) as $r) {
             $fill[] = ['kind' => 'warning', 'label' => 'What went wrong' . (!empty($r['dest_name']) ? ' in ' . $r['dest_name'] : ''),
                        'title' => excerpt((string) $r['what_ruined'], 150), 'meta' => (string) ($r['place_name'] ?? ''),
-                       'href' => url('review/' . (int) $r['id']), 'who' => 'RuinMyTrip research', 'editorial' => true];
+                       'href' => url(ltrim(rmt_review_path($r), '/')), 'who' => 'RuinMyTrip research', 'editorial' => true];
         }
         $cities = $destId ? $safe(static fn() => q_all('SELECT slug, name FROM destinations WHERE id = ?', [$destId]))
             : $safe(static fn() => q_all('SELECT slug, name FROM destinations ORDER BY id LIMIT 40'));
@@ -171,7 +171,7 @@ function rmt_city_extras(int $destId): array {
                                    FROM buddy_posts b JOIN users u ON u.id = b.user_id AND u.status = 'active'
                                   WHERE b.destination_id = ? AND b.status = 'open' AND b.date_to >= ?
                                ORDER BY b.date_from LIMIT 3", [$destId, date('Y-m-d')]);
-        $out['warnings'] = q_all("SELECT r.id, r.what_ruined, u.role, u.username, pl.name place_name
+        $out['warnings'] = q_all("SELECT r.id, r.title, r.slug, r.subject_name, r.what_ruined, u.role, u.username, pl.name place_name
                                     FROM reviews r JOIN users u ON u.id = r.user_id AND u.status = 'active'
                                LEFT JOIN places pl ON pl.id = r.place_id
                                    WHERE r.destination_id = ? AND r.status = 'published'
