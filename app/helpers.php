@@ -236,6 +236,9 @@ function view(string $name, array $data = [], array $meta = []): void {
            an app surface rather than a content one and get the slim footer instead. */
         'app_shell' => false,
     ], $meta);
+    /* Sign in, join and password reset are doors, not destinations (2026-10-29): /login was earning
+       search impressions for a form. Kept out of the index, links still followed. */
+    if (str_starts_with($name, 'auth/') && $__meta['robots'] === 'index, follow') $__meta['robots'] = 'noindex,follow';
     // A design preview (?design=v2, app/design_v2.php) is never a page of its own in search.
     if (function_exists('rmt_design_query_preview') && rmt_design_query_preview()) $__meta['robots'] = 'noindex,follow';
     /* An arrival is the first public page a signed out visitor sees, not the home page.
