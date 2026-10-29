@@ -166,6 +166,25 @@ function rmt_destination_page_description(array $d): string {
     return (string) ($d['summary'] ?? '');
 }
 
+/**
+ * The editorial text a title may call "prices", or '' when it holds none.
+ *
+ * The title used to read $ed['prices'], a column place_editorial never had (the field is
+ * `tickets`), so all 111 write ups were titled "opening hours" or "address & map" while the page
+ * led with the price: Ekstedt says 2,900 SEK in its first line and was titled "opening hours".
+ * `tickets` is not always a price either ("A la carte, no set menu"), so it counts only when it
+ * names an amount or says entry is free. Pages in the search snippet experiment
+ * (database/meta_tests.json) keep their title until it reads out, so the test stays clean.
+ */
+function rmt_place_title_price_text(?array $ed, string $path = ''): string {
+    $t = trim((string) ($ed['tickets'] ?? ''));
+    if ($t === '' || ($path !== '' && rmt_meta_test($path) !== null)) return '';
+    $cur = '(?:[€$£¥]|(?:eur(?:os?)?|usd|gbp|chf|sek|nok|dkk|isk|czk|huf|pln|aud|cad|nzd|jpy|thb|mxn|brl|ars|cop|pen|zar|try|'
+         . 'dollars?|pounds?|francs?|kron(?:a|or|er|e)|yen|baht|pesos?|reais|lira|forint|zloty|soles?|rand|dirhams?|rupees?|ringgit|dong|hkd|sgd|aed|inr|krw|twd|idr|myr|vnd)\b)';
+    $hit = preg_match('/\d[\d.,\x{00a0} ]*\s*' . $cur . '|[€$£¥]\s*\d|\b(?:usd|eur|gbp|chf|sek|nok|dkk|isk|czk|huf|pln|aud|cad|nzd|jpy|thb|mxn|brl|hkd|sgd|aed|inr|krw|twd|idr|myr|vnd)\s?\d|\bfree\b/iu', $t);
+    return $hit ? $t : '';
+}
+
 /** Place page title: price/ticket intent, not a fake "reviewed by travelers" claim. */
 function rmt_place_page_title(array $p): string {
     /* The old version was honest and too long: "Book of Kells Experience at Trinity College,
