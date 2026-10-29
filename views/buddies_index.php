@@ -190,7 +190,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
         <h3>Cruise buddies by line</h3>
         <p class="bl-links"><?php foreach (rmt_buddy_landing_all('cruise') as $lp): ?><a class="chip" href="<?= e(url(rmt_buddy_landing_path($lp['slug']))) ?>"><?= e($lp['name']) ?></a><?php endforeach; ?></p>
       </div></nav>
-      <div class="callout buddy-safety"><b>How privacy works.</b> Cards show a city or ship and dates, never a hotel, cabin, address or live location. Requests carry no contact details, and messages open only after the other person accepts. Block or <a href="<?= e(url('report')) ?>">report</a> anyone. Meet in public first. <a href="<?= e(url('safety')) ?>">Safety guide</a></div>
+      <div class="callout buddy-safety"><b>How privacy works.</b> Cards show a city or ship and dates, never a hotel, cabin, address or live location. Requests carry no contact details, and messages open only after the other person accepts. Block or <a href="<?= e(url('report')) ?>">report</a> anyone. Meet in public first. <a href="<?= e(url('safety')) ?>">Safety guide</a> · <a href="<?= e(url('blog/how-to-find-a-travel-buddy-safely')) ?>">Finding a buddy you can trust</a></div>
     </aside>
   </div>
 </div>

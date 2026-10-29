@@ -77,7 +77,7 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
     <ul class="bl-tips">
       <?php foreach ($p['tips'] as $t): ?><li><?= e($t) ?></li><?php endforeach; ?>
     </ul>
-    <p class="hint">Join free at 16. Posting a trip is 18+. Cards show only what a member chose to publish: never a hotel, cabin, address or live location. First meetings belong somewhere public. <a href="<?= e(url('safety')) ?>">How we keep it safe</a></p>
+    <p class="hint">Join free at 16. Posting a trip is 18+. Cards show only what a member chose to publish: never a hotel, cabin, address or live location. First meetings belong somewhere public. <a href="<?= e(url('safety')) ?>">How we keep it safe</a> · <a href="<?= e(url('blog/how-to-find-a-travel-buddy-safely')) ?>">Finding a buddy you can trust: a checklist</a></p>
   </section>
 
   <?php if ($cities): ?>
