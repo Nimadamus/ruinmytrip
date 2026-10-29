@@ -9027,6 +9027,3894 @@
     "display_name": "Wonderland Gentlemen's Club, 20, West 20th Street, Flatiron District, Manhattan Community Board 5, Manhattan, New York County, New York, 10011, United States"
    },
    "source_url": "https://www.openstreetmap.org/node/2703043898"
+  },
+  {
+   "slug": "100-maneiras-lisbon",
+   "name": "100 Maneiras",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rua do Teixeira",
+    "postal_code": "1250-238",
+    "neighborhood": "Bairro Alto",
+    "lat": "38.7146586",
+    "lng": "-9.1448577",
+    "website_url": "https://www.restaurante100maneiras.com",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 1194934441,
+    "name": "100 Maneiras",
+    "display_name": "100 Maneiras, Rua do Teixeira, Bairro Alto, Misericórdia, Lisbon, 1250-238, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1194934441"
+  },
+  {
+   "slug": "135-bar-and-lounge-london",
+   "name": "135 bar & lounge",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "135 Cambridge Heath Road",
+    "postal_code": "E1 5RN",
+    "neighborhood": "Bethnal Green",
+    "lat": "51.5229869",
+    "lng": "-0.0552609",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 142435502,
+    "name": "135 bar & lounge",
+    "display_name": "135 bar & lounge, 135, Cambridge Heath Road, Bethnal Green, London Borough of Tower Hamlets, Greater London, England, E1 5RN, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/142435502"
+  },
+  {
+   "slug": "14-16-bangkok",
+   "name": "อนุสรณ์สถาน 14 ตุลา 16",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Ratchadamnoen Klang Avenue",
+    "postal_code": "10200",
+    "neighborhood": "Phra Nakhon District",
+    "lat": "13.7568137",
+    "lng": "100.4991195",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "historic/monument",
+   "osm": {
+    "type": "node",
+    "id": 2337055730,
+    "name": "14 October 73 Memorial",
+    "display_name": "14 October 73 Memorial, Ratchadamnoen Klang Avenue, Lang Wat Ratchanatda Community, Bowon Niwet Subdistrict, Phra Nakhon District, Bangkok, 10200, Thailand"
+   },
+   "aliases": [
+    "14 October 73 Memorial",
+    "October 14 Memorial"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/2337055730"
+  },
+  {
+   "slug": "3-chefs-chinese-and-vietnamese-food-miami",
+   "name": "3 Chefs Chinese & Vietnamese Food",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1800 Biscayne Boulevard",
+    "postal_code": "33132",
+    "lat": "25.7938833",
+    "lng": "-80.1891917",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 1670843023,
+    "name": "3 Chefs Chinese & Vietnamese Food",
+    "display_name": "3 Chefs Chinese & Vietnamese Food, 1800, Biscayne Boulevard, Miami, Miami-Dade County, Florida, 33132, United States"
+   },
+   "aliases": [
+    "1800 Biscayne Plaza"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/1670843023"
+  },
+  {
+   "slug": "7-bangkok",
+   "name": "สนามมวยเวทีสถานีโทรทัศน์สีกองทัพบกช่อง 7",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Phahon Yothin 18/1",
+    "postal_code": "10900",
+    "neighborhood": "Chatuchak District",
+    "lat": "13.8033784",
+    "lng": "100.5569663",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "OSM tags this stadium, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "leisure/stadium",
+   "osm": {
+    "type": "node",
+    "id": 4294122090,
+    "name": "Channel 7 Boxing Stadium",
+    "display_name": "Channel 7 Boxing Stadium, Soi Phahon Yothin 18/1, Chom Phon Subdistrict, Chatuchak District, Bangkok, 10900, Thailand"
+   },
+   "aliases": [
+    "Channel 7 Boxing Stadium",
+    "สนามมวยช่อง 7;เวทีมวยไทย 7 สี"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/4294122090",
+   "hours": [
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "22:00"
+    }
+   ],
+   "hours_raw": "Su 10:00-22:00"
+  },
+  {
+   "slug": "7-eleven-bangkok",
+   "name": "7-Eleven",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Si Lom 26",
+    "postal_code": "10500",
+    "neighborhood": "Bang Rak District",
+    "lat": "13.7242717",
+    "lng": "100.5217107",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "OSM tags this convenience, which is not a usual hotel",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "shop/convenience",
+   "osm": {
+    "type": "way",
+    "id": 1213669435,
+    "name": "7-Eleven",
+    "display_name": "7-Eleven, Soi Si Lom 26, Pramot, Suriyawong Subdistrict, Bang Rak District, Bangkok, 10500, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/way/1213669435"
+  },
+  {
+   "slug": "adega-da-condessa-lisbon",
+   "name": "Adega da Condessa",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rua da Condessa 52",
+    "postal_code": "1200-158",
+    "neighborhood": "Santa Maria Maior",
+    "lat": "38.7129747",
+    "lng": "-9.1416319",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 490185689,
+    "name": "Adega da Condessa",
+    "display_name": "Adega da Condessa, 52, Rua da Condessa, Encarnação, Santa Maria Maior, Misericórdia, Lisbon, 1200-158, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/490185689"
+  },
+  {
+   "slug": "alba-london",
+   "name": "Alba",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "3 Bedford Road",
+    "postal_code": "SW4 7SH",
+    "neighborhood": "Stockwell",
+    "lat": "51.4651993",
+    "lng": "-0.1291139",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 132957893,
+    "name": "Alba",
+    "display_name": "Alba, 3, Bedford Road, Stockwell Park, Stockwell, London Borough of Lambeth, Greater London, England, SW4 7SH, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/132957893"
+  },
+  {
+   "slug": "aloha-youth-hostel-paris",
+   "name": "Aloha Youth Hostel",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue Borromée",
+    "postal_code": "75015",
+    "neighborhood": "15th Arrondissement",
+    "lat": "48.8421541",
+    "lng": "2.3046648",
+    "phone": "+33 1 42 73 03 03",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "node",
+    "id": 252863244,
+    "name": "Aloha Youth Hostel",
+    "display_name": "Aloha Youth Hostel, Rue Borromée, Quartier Necker, 15th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75015, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/252863244"
+  },
+  {
+   "slug": "amaltea-barcelona",
+   "name": "Amaltea",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Carrer de la Diputació",
+    "postal_code": "08013",
+    "neighborhood": "l'Eixample",
+    "lat": "41.3836428",
+    "lng": "2.1583028",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 319840473,
+    "name": "Amaltea",
+    "display_name": "Amaltea, Carrer de la Diputació, l'Antiga Esquerra de l'Eixample, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08013, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/319840473",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "13:00",
+     "closes": "16:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "20:00",
+     "closes": "23:00"
+    }
+   ],
+   "hours_raw": "Mo-Su 13:00-16:00; Sa 20:00-23:00"
+  },
+  {
+   "slug": "amstelpark-amsterdam",
+   "name": "Amstelpark",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "1083 HZ",
+    "neighborhood": "Zuid",
+    "lat": "52.3281305",
+    "lng": "4.8936700",
+    "website_url": "https://www.amsterdam.info/parks/amstelpark/",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "way",
+    "id": 26516487,
+    "name": "Amstelpark",
+    "display_name": "Amstelpark, Zuid, Amsterdam, North Holland, Netherlands, 1083 HZ, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/way/26516487"
+  },
+  {
+   "slug": "antic-tapas-ferran-barcelona",
+   "name": "Antic Tapas Ferran",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Carrer de Ferran 59",
+    "postal_code": "08002",
+    "neighborhood": "Ciutat Vella",
+    "lat": "41.3823086",
+    "lng": "2.1765833",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 643654725,
+    "name": "Antic Tapas Ferran",
+    "display_name": "Antic Tapas Ferran, 59, Carrer de Ferran, el Call, Gothic Quarter, Ciutat Vella, Barcelona, Barcelonès, Barcelona, Catalonia, 08002, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/643654725"
+  },
+  {
+   "slug": "ar-buchetto-rome",
+   "name": "Ar Buchetto",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Circonvallazione Appia 44",
+    "postal_code": "00179",
+    "neighborhood": "Municipio Roma VII",
+    "lat": "41.8764462",
+    "lng": "12.5183672",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 415068115,
+    "name": "Ar Buchetto",
+    "display_name": "Ar Buchetto, 44, Circonvallazione Appia, Municipio Roma VII, Rome, Roma Capitale, Lazio, 00179, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/415068115"
+  },
+  {
+   "slug": "arco-bistrot-rome",
+   "name": "Arco bistrot",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via dell'Arco di Travertino 44",
+    "postal_code": "00178",
+    "neighborhood": "Municipio Roma VII",
+    "lat": "41.8674244",
+    "lng": "12.5357996",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 430539414,
+    "name": "Arco bistrot",
+    "display_name": "Arco bistrot, 44, Via dell'Arco di Travertino, Quadraro, Municipio Roma VII, Rome, Roma Capitale, Lazio, 00178, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/430539414"
+  },
+  {
+   "slug": "arsenal-museum-london",
+   "name": "Arsenal Museum",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Drayton Park",
+    "postal_code": "N5 1GB",
+    "neighborhood": "Finsbury Park",
+    "lat": "51.5566742",
+    "lng": "-0.1081434",
+    "website_url": "https://www.arsenal.com/history/the-arsenal-museum",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 336347265,
+    "name": "Arsenal Museum",
+    "display_name": "Arsenal Museum, Drayton Park, Finsbury Park, London Borough of Islington, Greater London, England, N5 1GB, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/336347265"
+  },
+  {
+   "slug": "art-deco-museum-miami",
+   "name": "Art Deco Museum",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1001 Ocean Drive",
+    "postal_code": "33139",
+    "lat": "25.7803098",
+    "lng": "-80.1303898",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 13390864089,
+    "name": "Art Deco Museum",
+    "display_name": "Art Deco Museum, 1001, Ocean Drive, Miami Beach, Miami-Dade County, Florida, 33139, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/13390864089"
+  },
+  {
+   "slug": "arwad-barcelona",
+   "name": "Arwad",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Passeig de Sant Antoni 15",
+    "postal_code": "08014",
+    "neighborhood": "Sants-Montjuïc",
+    "lat": "41.3769402",
+    "lng": "2.1367319",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 573484611,
+    "name": "Arwad",
+    "display_name": "Arwad, 15, Passeig de Sant Antoni, Sants, Sants-Montjuïc, Barcelona, Barcelonès, Barcelona, Catalonia, 08014, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/573484611"
+  },
+  {
+   "slug": "auditorium-conciliazione-rome",
+   "name": "Auditorium Conciliazione",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via della Conciliazione",
+    "postal_code": "00193",
+    "neighborhood": "Municipio Roma I",
+    "lat": "41.9025871",
+    "lng": "12.4636471",
+    "website_url": "https://auditoriumconciliazione.it/",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "OSM tags this theatre, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/theatre",
+   "osm": {
+    "type": "node",
+    "id": 259653354,
+    "name": "Auditorium Conciliazione",
+    "display_name": "Auditorium Conciliazione, Via della Conciliazione, Borgo, Municipio Roma I, Rome, Roma Capitale, Lazio, 00193, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/259653354"
+  },
+  {
+   "slug": "b-leza-lisbon",
+   "name": "B'leza",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Cais do Gás 1",
+    "postal_code": "1200-149",
+    "neighborhood": "São Paulo",
+    "lat": "38.7054835",
+    "lng": "-9.1473475",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "OSM tags this nightclub, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/nightclub",
+   "osm": {
+    "type": "node",
+    "id": 2504936274,
+    "name": "B'leza",
+    "display_name": "B'leza, 1, Cais do Gás, São Paulo, Misericórdia, Lisbon, 1200-149, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2504936274"
+  },
+  {
+   "slug": "babilonia-barcelona",
+   "name": "Babilonia",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Avinguda de Gaudí 3",
+    "postal_code": "08025",
+    "neighborhood": "l'Eixample",
+    "lat": "41.4050316",
+    "lng": "2.1742781",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 616483280,
+    "name": "Babilonia",
+    "display_name": "Babilonia, 3, Avinguda de Gaudí, la Sagrada Família, l'Eixample, Barcelona, Barcelonès, Barcelona, Catalonia, 08025, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/616483280"
+  },
+  {
+   "slug": "bangkok-city-suite",
+   "name": "Bangkok City Suite",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1 Soi Phetchaburi 1",
+    "postal_code": "10400",
+    "neighborhood": "Ratchathewi District",
+    "lat": "13.7571598",
+    "lng": "100.5218859",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 317957633,
+    "name": "Bangkok City Suite",
+    "display_name": "Bangkok City Suite, 1, Soi Phetchaburi 1, ชุมชนโค้งรถไฟยมราช, Thung Phaya Thai Subdistrict, Ratchathewi District, Bangkok, 10400, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/317957633"
+  },
+  {
+   "slug": "batucada-rome",
+   "name": "Batucada",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via dei Monti Lepini 6",
+    "postal_code": "00139",
+    "neighborhood": "Municipio Roma III",
+    "lat": "41.9456180",
+    "lng": "12.5352074",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 373828266,
+    "name": "Batucada",
+    "display_name": "Batucada, 6, Via dei Monti Lepini, Monte Sacro, Municipio Roma III, Rome, Roma Capitale, Lazio, 00139, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/373828266"
+  },
+  {
+   "slug": "beans-and-beyond-london",
+   "name": "Beans & Beyond",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "819;819-821 Commercial Road",
+    "postal_code": "E14 7HG",
+    "neighborhood": "Limehouse",
+    "lat": "51.5121410",
+    "lng": "-0.0281996",
+    "phone": "+44 20 3089 6961",
+    "website_url": "https://www.bbcafe.co.uk/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (rule not understood: Mo-Sa 08:00-22:00, Su 10:00-16:00): Mo-Sa 08:00-22:00, Su 10:00-16:00;Mo-Sa 08:00-22:00 , Su 09:00-16:00"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "way",
+    "id": 607798992,
+    "name": "Beans & Beyond",
+    "display_name": "Beans & Beyond, 819;819-821, Commercial Road, Limehouse, London Borough of Tower Hamlets, Greater London, England, E14 7HG, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/way/607798992"
+  },
+  {
+   "slug": "beauty-bar-las-vegas",
+   "name": "Beauty Bar",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Fremont Street",
+    "postal_code": "89101",
+    "neighborhood": "Downtown Las Vegas",
+    "lat": "36.1688184",
+    "lng": "-115.1400570",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 2143510295,
+    "name": "Beauty Bar",
+    "display_name": "Beauty Bar, Fremont Street, Fremont East Entertainment District, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States"
+   },
+   "aliases": [
+    "Salon of Beauty"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/2143510295"
+  },
+  {
+   "slug": "beeldenbos-noord-amsterdam",
+   "name": "Beeldenbos Noord",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "1023 BJ",
+    "neighborhood": "Noord",
+    "lat": "52.3899596",
+    "lng": "4.9385813",
+    "website_url": "https://www.beeldenbosnoord.nl/",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "node",
+    "id": 9039126487,
+    "name": "Beeldenbos Noord",
+    "display_name": "Beeldenbos Noord, Noord, Schellingwoude, Amsterdam, North Holland, Netherlands, 1023 BJ, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/9039126487"
+  },
+  {
+   "slug": "bistrotheque-london",
+   "name": "Bistrotheque",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "23-27 Wadeson Street",
+    "postal_code": "E2 9DR",
+    "neighborhood": "Bethnal Green",
+    "lat": "51.5340961",
+    "lng": "-0.0560633",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 96008565,
+    "name": "Bistrotheque",
+    "display_name": "Bistrotheque, 23-27, Wadeson Street, Bethnal Green, London Borough of Tower Hamlets, Greater London, England, E2 9DR, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/96008565"
+  },
+  {
+   "slug": "blank-street-coffee-new-york-city",
+   "name": "Blank Street Coffee",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Montague Street",
+    "postal_code": "11201",
+    "neighborhood": "Brooklyn",
+    "lat": "40.6946861",
+    "lng": "-73.9934432",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 11766643572,
+    "name": "Blank Street Coffee",
+    "display_name": "Blank Street Coffee, Montague Street, Brooklyn Heights, Brooklyn, Kings County, New York, 11201, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/11766643572"
+  },
+  {
+   "slug": "blas-infante-barcelona",
+   "name": "Blas Infante",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Carrer d'Andrés Segovia 43-45",
+    "postal_code": "08913",
+    "neighborhood": "Sant Mori de Llefià",
+    "lat": "41.4377005",
+    "lng": "2.2229207",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "OSM tags this theatre, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/theatre",
+   "osm": {
+    "type": "node",
+    "id": 414079440,
+    "name": "Blas Infante",
+    "display_name": "Blas Infante, 43-45, Carrer d'Andrés Segovia, Sant Mori de Llefià, Districte 4, Badalona, Barcelonès, Barcelona, Catalonia, 08913, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/414079440"
+  },
+  {
+   "slug": "bonanza-swapmeet-las-vegas",
+   "name": "Bonanza Swapmeet",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1720 East Charleston Boulevard",
+    "postal_code": "89104",
+    "neighborhood": "Huntridge",
+    "lat": "36.1575154",
+    "lng": "-115.1273458",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "OSM tags this mall, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "shop/mall",
+   "osm": {
+    "type": "node",
+    "id": 12688970710,
+    "name": "Bonanza Swapmeet",
+    "display_name": "Bonanza Swapmeet, 1720, East Charleston Boulevard, Huntridge, Las Vegas, Clark County, Nevada, 89104, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/12688970710"
+  },
+  {
+   "slug": "bossotel-inn-bangkok",
+   "name": "Bossotel Inn",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Charoen Krung 42",
+    "postal_code": "10500",
+    "neighborhood": "Bang Rak District",
+    "lat": "13.7212127",
+    "lng": "100.5154612",
+    "website_url": "https://www.bossotelinn.com/",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 1142880102,
+    "name": "Bossotel Inn",
+    "display_name": "Bossotel Inn, Soi Charoen Krung 42, Bang Rak Subdistrict, Bang Rak District, Bangkok, 10500, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1142880102"
+  },
+  {
+   "slug": "brown-s-bistro-lisbon",
+   "name": "Brown's Bistro",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rua da Vitória 88",
+    "postal_code": "1100-571",
+    "neighborhood": "Santa Maria Maior",
+    "lat": "38.7109037",
+    "lng": "-9.1383316",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 474976351,
+    "name": "Brown's Bistro",
+    "display_name": "Brown's Bistro, 88, Rua da Vitória, Santa Maria Maior, Madalena, Lisbon, 1100-571, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/474976351"
+  },
+  {
+   "slug": "bully-s-bankok-bangkok",
+   "name": "Bully's Bankok",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Sukhumvit Road",
+    "postal_code": "10330",
+    "neighborhood": "Khlong Toei District",
+    "lat": "13.7421037",
+    "lng": "100.5524785",
+    "website_url": "https://www.facebook.com/BullysBKK",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 776037982,
+    "name": "Bully's Bankok",
+    "display_name": "Bully's Bankok, Sukhumvit Road, Khlong Toei Subdistrict, Khlong Toei District, Bangkok, 10330, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/776037982"
+  },
+  {
+   "slug": "bungalows-hostel-las-vegas",
+   "name": "Bungalows Hostel",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1236 South Las Vegas Boulevard",
+    "postal_code": "89104",
+    "neighborhood": "Meadows Village",
+    "lat": "36.1559990",
+    "lng": "-115.1504373",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "way",
+    "id": 234895887,
+    "name": "Bungalows Hostel",
+    "display_name": "Bungalows Hostel, 1236, South Las Vegas Boulevard, Meadows Village, Las Vegas, Clark County, Nevada, 89104, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/way/234895887"
+  },
+  {
+   "slug": "cafe-amazon-bangkok",
+   "name": "Café Amazon",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Kamphaeng Phet 3 Road",
+    "postal_code": "10900",
+    "neighborhood": "Chatuchak District",
+    "lat": "13.8162805",
+    "lng": "100.5536837",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "way",
+    "id": 1249184584,
+    "name": "Café Amazon",
+    "display_name": "Café Amazon, Kamphaeng Phet 3 Road, Chatuchak Subdistrict, Chatuchak District, Bangkok, 10900, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/way/1249184584",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "07:00",
+     "closes": "17:30"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "07:00",
+     "closes": "17:30"
+    }
+   ],
+   "hours_raw": "Mo-Su 07:00-17:30"
+  },
+  {
+   "slug": "cafe-bangrak-bangkok",
+   "name": "Cafe Bangrak",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Si Lom Road",
+    "postal_code": "10500",
+    "neighborhood": "Bang Rak District",
+    "lat": "13.7289158",
+    "lng": "100.5355833",
+    "website_url": "http://www.cafebangrak.com",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 311073637,
+    "name": "Cafe Bangrak",
+    "display_name": "Cafe Bangrak, Si Lom Road, Sala Daeng, Si Lom Subdistrict, Bang Rak District, Bangkok, 10500, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/311073637"
+  },
+  {
+   "slug": "cafe-luso-lisbon",
+   "name": "Café Luso",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Largo Trindade Coelho 22",
+    "postal_code": "1200-470",
+    "neighborhood": "Encarnação",
+    "lat": "38.7130853",
+    "lng": "-9.1437763",
+    "website_url": "https://www.cafeluso.pt/",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 491133062,
+    "name": "Café Luso",
+    "display_name": "Café Luso, 22, Largo Trindade Coelho, Encarnação, Misericórdia, Lisbon, 1200-470, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/491133062"
+  },
+  {
+   "slug": "cal-boter-barcelona",
+   "name": "Cal Boter",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Carrer de Tordera 62",
+    "postal_code": "08037",
+    "neighborhood": "Gràcia",
+    "lat": "41.4021663",
+    "lng": "2.1623411",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 570117144,
+    "name": "Cal Boter",
+    "display_name": "Cal Boter, 62, Carrer de Tordera, la Vila de Gràcia, Gràcia, Barcelona, Barcelonès, Barcelona, Catalonia, 08037, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/570117144"
+  },
+  {
+   "slug": "camille-paris",
+   "name": "Camille",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue Servan",
+    "postal_code": "75011",
+    "neighborhood": "11th Arrondissement",
+    "lat": "48.8620431",
+    "lng": "2.3824415",
+    "website_url": "https://www.camilleveganbags.com",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "OSM tags this bag, which is not a usual restaurant",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "shop/bag",
+   "osm": {
+    "type": "node",
+    "id": 7126171088,
+    "name": "Camille",
+    "display_name": "Camille, Rue Servan, Quartier Saint-Ambroise, 11th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75011, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/7126171088",
+   "hours": [
+    {
+     "day_of_week": 1,
+     "opens": "11:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "11:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "11:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "11:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "14:00",
+     "closes": "19:00"
+    }
+   ],
+   "hours_raw": "Tu-Fr 11:00-19:00; Sa 14:00-19:00"
+  },
+  {
+   "slug": "canalside-bar-london",
+   "name": "Canalside Bar",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "38 Regent's Canal towpath",
+    "postal_code": "NW1 8AF",
+    "neighborhood": "Chalk Farm",
+    "lat": "51.5411992",
+    "lng": "-0.1458705",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 26610612,
+    "name": "Canalside Bar",
+    "display_name": "Canalside Bar, 38, Regent's Canal towpath, Primrose Hill, Chalk Farm, London Borough of Camden, Greater London, England, NW1 8AF, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/26610612"
+  },
+  {
+   "slug": "carbone-new-york-city",
+   "name": "Carbone",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "181 Thompson Street",
+    "postal_code": "10012",
+    "neighborhood": "Manhattan",
+    "lat": "40.7280028",
+    "lng": "-74.0002252",
+    "phone": "+1-212-254-3000",
+    "website_url": "https://carbonenewyork.com/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 6418378714,
+    "name": "Carbone",
+    "display_name": "Carbone, 181, Thompson Street, University Village, Manhattan, New York County, New York, 10012, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/6418378714"
+  },
+  {
+   "slug": "cedar-guest-house-london",
+   "name": "Cedar Guest House",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "30 Hugh Street",
+    "postal_code": "SW1V 1RP",
+    "neighborhood": "Victoria",
+    "lat": "51.4922185",
+    "lng": "-0.1457660",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 276757512,
+    "name": "Cedar Guest House",
+    "display_name": "Cedar Guest House, 30, Hugh Street, Victoria, City of Westminster, Greater London, England, SW1V 1RP, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/276757512"
+  },
+  {
+   "slug": "centro-commerciale-granroma-rome",
+   "name": "Centro Commerciale GranRoma",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via Aristide Merloni",
+    "postal_code": "01555",
+    "neighborhood": "Torre Maura",
+    "lat": "41.8843100",
+    "lng": "12.6073756",
+    "website_url": "https://www.granromagranshopping.it/",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "OSM tags this mall, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "shop/mall",
+   "osm": {
+    "type": "node",
+    "id": 6448560551,
+    "name": "Centro Commerciale GranRoma",
+    "display_name": "Centro Commerciale GranRoma, Via Aristide Merloni, Torre Maura, Municipio Roma V, Torrenova, Rome, Roma Capitale, Lazio, 01555, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/6448560551"
+  },
+  {
+   "slug": "chelsea-space-london",
+   "name": "Chelsea Space",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rootstein Hopkins Parade Ground",
+    "postal_code": "SW1P 4RJ",
+    "neighborhood": "Millbank",
+    "lat": "51.4901511",
+    "lng": "-0.1293639",
+    "website_url": "https://www.arts.ac.uk/colleges/chelsea-college-of-arts/whats-on/chelsea-space",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 672741997,
+    "name": "Chelsea Space",
+    "display_name": "Chelsea Space, Rootstein Hopkins Parade Ground, Tachbrook Estate, Millbank, City of Westminster, Greater London, England, SW1P 4RJ, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/672741997"
+  },
+  {
+   "slug": "chiribito-barcelona",
+   "name": "Chiribito",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Passeig de Fabra i Puig 266",
+    "postal_code": "08031",
+    "neighborhood": "Nou Barris",
+    "lat": "41.4304493",
+    "lng": "2.1743213",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 499122827,
+    "name": "Chiribito",
+    "display_name": "Chiribito, 266, Passeig de Fabra i Puig, Vilapicina, el Turó de la Peira, Nou Barris, Barcelona, Barcelonès, Barcelona, Catalonia, 08031, Spain"
+   },
+   "aliases": [
+    "Restaurant Bar Chirimas"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/499122827"
+  },
+  {
+   "slug": "chiswick-house-london",
+   "name": "Chiswick House",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Grand Allee",
+    "postal_code": "W4 3EP",
+    "lat": "51.4838225",
+    "lng": "-0.2585293",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "OSM tags this house, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "building/house",
+   "osm": {
+    "type": "relation",
+    "id": 8048634,
+    "name": "Chiswick House",
+    "display_name": "Chiswick House, Grand Allee, London Borough of Hounslow, Greater London, England, W4 3EP, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/relation/8048634"
+  },
+  {
+   "slug": "church-green-london",
+   "name": "Church Green",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "neighborhood": "Poplar",
+    "lat": "51.5124551",
+    "lng": "-0.0204762",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "way",
+    "id": 911044739,
+    "name": "Church Green",
+    "display_name": "Church Green, Poplar, London Borough of Tower Hamlets, Greater London, England, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/way/911044739"
+  },
+  {
+   "slug": "clark-studio-theater-new-york-city",
+   "name": "Clark Studio Theater",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "West 65th Street",
+    "postal_code": "10023",
+    "neighborhood": "Manhattan",
+    "lat": "40.7741284",
+    "lng": "-73.9841309",
+    "website_url": "http://www.lincolncenter.org/venue/clark-studio-theater",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "OSM tags this theatre, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/theatre",
+   "osm": {
+    "type": "node",
+    "id": 368051456,
+    "name": "Clark Studio Theater",
+    "display_name": "Clark Studio Theater, West 65th Street, Lincoln Square, Manhattan Community Board 7, Manhattan, New York County, New York, 10023, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/368051456"
+  },
+  {
+   "slug": "cox-pavilion-las-vegas",
+   "name": "Cox Pavilion",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "4505 South Maryland Parkway",
+    "postal_code": "89154",
+    "neighborhood": "Midtown UNLV",
+    "lat": "36.1042473",
+    "lng": "-115.1433505",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "OSM tags this stadium, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "leisure/stadium",
+   "osm": {
+    "type": "way",
+    "id": 27146829,
+    "name": "Cox Pavilion",
+    "display_name": "Cox Pavilion, 4505, South Maryland Parkway, Midtown UNLV, Las Vegas, Clark County, Nevada, 89154, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/way/27146829"
+  },
+  {
+   "slug": "craven-cottage-london",
+   "name": "Craven Cottage",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Stevenage Road",
+    "postal_code": "SW6 6HH",
+    "neighborhood": "Fulham",
+    "lat": "51.4749218",
+    "lng": "-0.2217448",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "OSM tags this stadium, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "leisure/stadium",
+   "osm": {
+    "type": "way",
+    "id": 4380344,
+    "name": "Craven Cottage",
+    "display_name": "Craven Cottage, Stevenage Road, Fulham, London Borough of Hammersmith and Fulham, Greater London, England, SW6 6HH, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/way/4380344"
+  },
+  {
+   "slug": "cuban-museum-miami",
+   "name": "Cuban Museum",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Giralda Avenue",
+    "postal_code": "33234",
+    "lat": "25.7511035",
+    "lng": "-80.2591403",
+    "website_url": "https://coralgablesmuseum.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 367827368,
+    "name": "Cuban Museum",
+    "display_name": "Cuban Museum, Giralda Avenue, Coral Gables, Miami-Dade County, Florida, 33234, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/367827368"
+  },
+  {
+   "slug": "de-oranje-tulp-amsterdam",
+   "name": "De Oranje Tulp",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "32 Damrak",
+    "postal_code": "1012 LK",
+    "neighborhood": "Centrum",
+    "lat": "52.3760831",
+    "lng": "4.8965471",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 251147173,
+    "name": "Orange Tulip",
+    "display_name": "Orange Tulip, 32, Damrak, Centrum, Amsterdam, North Holland, Netherlands, 1012 LK, Netherlands"
+   },
+   "aliases": [
+    "Orange Tulip"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/251147173"
+  },
+  {
+   "slug": "dynasty-inn-bangkok-hotel",
+   "name": "Dynasty Inn Bangkok Hotel",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "5/5 Soi Sukhumvit 4",
+    "postal_code": "10110",
+    "neighborhood": "Khlong Toei District",
+    "lat": "13.7410823",
+    "lng": "100.5530873",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 776037977,
+    "name": "Dynasty Inn Bangkok Hotel",
+    "display_name": "Dynasty Inn Bangkok Hotel, 5/5, Soi Sukhumvit 4, Sama Han, Khlong Toei Subdistrict, Khlong Toei District, Bangkok, 10110, Thailand"
+   },
+   "aliases": [
+    "Dynasty Inn"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/776037977"
+  },
+  {
+   "slug": "el-jardi-de-l-abadessa-barcelona",
+   "name": "El Jardí de l'Abadessa",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Ronda de Dalt",
+    "postal_code": "08034",
+    "neighborhood": "les Corts",
+    "lat": "41.3942273",
+    "lng": "2.1098990",
+    "website_url": "https://www.jardiabadessa.com",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 365288417,
+    "name": "El Jardí de l'Abadessa",
+    "display_name": "El Jardí de l'Abadessa, Ronda de Dalt, Can Caralleu, Pedralbes, les Corts, Barcelona, Barcelonès, Barcelona, Catalonia, 08034, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/365288417"
+  },
+  {
+   "slug": "erasmus-hall-museum-new-york-city",
+   "name": "Erasmus Hall Museum",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Church Avenue",
+    "postal_code": "11203",
+    "neighborhood": "Brooklyn",
+    "lat": "40.6495683",
+    "lng": "-73.9574877",
+    "website_url": "https://6tocelebrate.org/site/erasmus-hall-museum-erasmus-hall-high-school/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 368061667,
+    "name": "Erasmus Hall Museum",
+    "display_name": "Erasmus Hall Museum, Church Avenue, East Flatbush, Brooklyn Community District 17, Brooklyn, Kings County, New York, 11203, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/368061667"
+  },
+  {
+   "slug": "forum-park-hotel-bangkok",
+   "name": "Forum Park Hotel",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1633/2 Soi Chan 2",
+    "postal_code": "10120",
+    "neighborhood": "Sathon District",
+    "lat": "13.7070248",
+    "lng": "100.5358115",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 481996223,
+    "name": "Forum Park Hotel",
+    "display_name": "Forum Park Hotel, 1633/2, Soi Chan 2, Thanurat, Thung Wat Don Subdistrict, Sathon District, Bangkok, 10120, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/481996223"
+  },
+  {
+   "slug": "fulton-grand-new-york-city",
+   "name": "Fulton Grand",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "439 Grand Avenue",
+    "postal_code": "11238",
+    "neighborhood": "Brooklyn",
+    "lat": "40.6825161",
+    "lng": "-73.9614865",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 925950706,
+    "name": "Fulton Grand",
+    "display_name": "Fulton Grand, 439, Grand Avenue, Brooklyn, Kings County, New York, 11238, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/925950706"
+  },
+  {
+   "slug": "gambrinus-amsterdam",
+   "name": "Gambrinus",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "180-H Ferdinand Bolstraat",
+    "postal_code": "1072 LV",
+    "neighborhood": "Zuid",
+    "lat": "52.3513256",
+    "lng": "4.8912113",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (rule not understood: Su-Tu 11:00-24:00, We,Th 11:00-01:00, Fr,Sa 11:00-02:00): Su-Tu 11:00-24:00, We,Th 11:00-01:00, Fr,Sa 11:00-02:00"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 249327301,
+    "name": "Gambrinus",
+    "display_name": "Gambrinus, 180-H, Ferdinand Bolstraat, Nieuwe Pijp, De Pijp, Zuid, Amsterdam, North Holland, Netherlands, 1072 LV, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/249327301"
+  },
+  {
+   "slug": "gardenhouse-tokyo",
+   "name": "東京池袋GardenHouse",
+   "city": "Tokyo",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "171-0031",
+    "neighborhood": "Mejiro",
+    "lat": "35.7201259",
+    "lng": "139.7117839",
+    "phone": "+81 3-6661-0862",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "node",
+    "id": 5171716931,
+    "name": "東京池袋GardenHouse",
+    "display_name": "東京池袋GardenHouse, 7, Mejiro 2, Mejiro, Toshima, Tokyo, 171-0031, Japan"
+   },
+   "source_url": "https://www.openstreetmap.org/node/5171716931"
+  },
+  {
+   "slug": "goya-london",
+   "name": "Goya",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "34 Lupus Street",
+    "postal_code": "SW1V 3EB",
+    "neighborhood": "Pimlico",
+    "lat": "51.4884009",
+    "lng": "-0.1374885",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 259569252,
+    "name": "Goya",
+    "display_name": "Goya, 34, Lupus Street, Tachbrook Estate, Pimlico, City of Westminster, Greater London, England, SW1V 3EB, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/259569252"
+  },
+  {
+   "slug": "granite-prospect-new-york-city",
+   "name": "Granite Prospect",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Brooklyn Bridge Park Greenway",
+    "postal_code": "11242",
+    "neighborhood": "Brooklyn",
+    "lat": "40.7019951",
+    "lng": "-73.9974077",
+    "website_url": "https://www.brooklynbridgepark.org/places-to-see/granite-prospect/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/viewpoint",
+   "osm": {
+    "type": "node",
+    "id": 3351167989,
+    "name": "Granite Prospect",
+    "display_name": "Granite Prospect, Brooklyn Bridge Park Greenway, Brooklyn Heights, Brooklyn, Kings County, New York, 11242, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/3351167989"
+  },
+  {
+   "slug": "greenpoint-branch-ymca-new-york-city",
+   "name": "Greenpoint Branch YMCA",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "95 Meserole Avenue",
+    "postal_code": "11222",
+    "neighborhood": "Brooklyn",
+    "lat": "40.7269935",
+    "lng": "-73.9533347",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "node",
+    "id": 368062506,
+    "name": "Greenpoint Branch YMCA",
+    "display_name": "Greenpoint Branch YMCA, 95, Meserole Avenue, Greenpoint, Brooklyn, Kings County, New York, 11222, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/368062506"
+  },
+  {
+   "slug": "hostel-freedom-traveller-rome",
+   "name": "Hostel Freedom Traveller",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via Gaeta 23",
+    "postal_code": "00185",
+    "neighborhood": "Municipio Roma I",
+    "lat": "41.9047400",
+    "lng": "12.5006320",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "node",
+    "id": 473194710,
+    "name": "Hostel Freedom Traveller",
+    "display_name": "Hostel Freedom Traveller, 23, Via Gaeta, Castro Pretorio, Municipio Roma I, Rome, Roma Capitale, Lazio, 00185, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/473194710"
+  },
+  {
+   "slug": "hyatt-centric-brickell-miami",
+   "name": "Hyatt Centric Brickell Miami",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1100 Brickell Bay Drive",
+    "postal_code": "33131",
+    "neighborhood": "Brickell",
+    "lat": "25.7629207",
+    "lng": "-80.1904641",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 9177017397,
+    "name": "Hyatt Centric Brickell Miami",
+    "display_name": "Hyatt Centric Brickell Miami, 1100, Brickell Bay Drive, Brickell, Miami, Miami-Dade County, Florida, 33131, United States"
+   },
+   "aliases": [
+    "Hyatt Centric"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/9177017397"
+  },
+  {
+   "slug": "i-trulli-amsterdam",
+   "name": "I Trulli",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "101 Rijnstraat",
+    "postal_code": "1079 HA",
+    "neighborhood": "Zuid",
+    "lat": "52.3445658",
+    "lng": "4.9061298",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 249406237,
+    "name": "I Trulli",
+    "display_name": "I Trulli, 101, Rijnstraat, Rijnbuurt, Rivierenbuurt, Zuid, Amsterdam, North Holland, Netherlands, 1079 HA, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/249406237"
+  },
+  {
+   "slug": "il-pirata-london",
+   "name": "Il Pirata London",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "81 Wapping High Street",
+    "postal_code": "E1W 2YN",
+    "neighborhood": "Wapping",
+    "lat": "51.5032228",
+    "lng": "-0.0596251",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 262562858,
+    "name": "Il Pirata London",
+    "display_name": "Il Pirata London, 81, Wapping High Street, St. George in the East, Wapping, London Borough of Tower Hamlets, Greater London, England, E1W 2YN, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/262562858"
+  },
+  {
+   "slug": "il-tiaso-rome",
+   "name": "Il Tiaso",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via Perugia 20",
+    "postal_code": "00176",
+    "neighborhood": "Municipio Roma V",
+    "lat": "41.8898116",
+    "lng": "12.5256948",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "OSM tags this books, which is not a usual restaurant",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "shop/books",
+   "osm": {
+    "type": "node",
+    "id": 552579747,
+    "name": "Il Tiaso",
+    "display_name": "Il Tiaso, 20, Via Perugia, Pigneto, Municipio Roma V, Rome, Roma Capitale, Lazio, 00176, Italy"
+   },
+   "aliases": [
+    "Keyboards"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/552579747"
+  },
+  {
+   "slug": "imperatori-armellini-rome",
+   "name": "Imperatori Armellini",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Piazza Mariano Armellini 15",
+    "postal_code": "00162",
+    "neighborhood": "Nomentano",
+    "lat": "41.9184807",
+    "lng": "12.5228320",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 259659463,
+    "name": "Imperatori Armellini",
+    "display_name": "Imperatori Armellini, 15, Piazza Mariano Armellini, Nomentano, Municipio Roma II, Rome, Roma Capitale, Lazio, 00162, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/259659463"
+  },
+  {
+   "slug": "incognito-lisbon",
+   "name": "Incógnito",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rua dos Poiais de São Bento 37A",
+    "postal_code": "1200-321",
+    "neighborhood": "São Bento",
+    "lat": "38.7107671",
+    "lng": "-9.1509016",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 676940348,
+    "name": "Incógnito",
+    "display_name": "Incógnito, 37A, Rua dos Poiais de São Bento, São Bento, Misericórdia, Lisbon, 1200-321, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/676940348"
+  },
+  {
+   "slug": "infancia-lisbon",
+   "name": "Infância",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "1700-094",
+    "neighborhood": "Campo Grande",
+    "lat": "38.7517725",
+    "lng": "-9.1502870",
+    "website_url": "http://www.cm-lisboa.pt/equipamentos/equipamento/info/infancia",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "node",
+    "id": 5457851361,
+    "name": "Infância",
+    "display_name": "Infância, Campo Grande, Alvalade, Lisbon, 1700-094, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/5457851361"
+  },
+  {
+   "slug": "jardim-afonso-de-albuquerque-lisbon",
+   "name": "Jardim Afonso de Albuquerque",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "neighborhood": "São Francisco Xavier",
+    "lat": "38.6966310",
+    "lng": "-9.2002672",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "way",
+    "id": 19647778,
+    "name": "Afonso de Albuquerque Square Garden",
+    "display_name": "Afonso de Albuquerque Square Garden, São Francisco Xavier, Belém, Lisbon, Portugal"
+   },
+   "aliases": [
+    "Afonso de Albuquerque Square Garden"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/19647778"
+  },
+  {
+   "slug": "kabob-korner-las-vegas",
+   "name": "Kabob Korner",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "507 Fremont Street",
+    "postal_code": "89101",
+    "neighborhood": "Downtown Las Vegas",
+    "lat": "36.1689436",
+    "lng": "-115.1403593",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 2149942888,
+    "name": "Kabob Korner",
+    "display_name": "Kabob Korner, 507, Fremont Street, Fremont East Entertainment District, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2149942888"
+  },
+  {
+   "slug": "kiesza-hideaway-new-york-city",
+   "name": "Kiesza - Hideaway",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Kent Avenue",
+    "postal_code": "11211",
+    "neighborhood": "Brooklyn",
+    "lat": "40.7230874",
+    "lng": "-73.9586209",
+    "website_url": "https://www.youtube.com/watch?v=ESXgJ9-H-2U",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/viewpoint",
+   "osm": {
+    "type": "node",
+    "id": 3285698877,
+    "name": "Kiesza - Hideaway",
+    "display_name": "Kiesza - Hideaway, Kent Avenue, Williamsburg, Brooklyn, Kings County, New York, 11211, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/3285698877"
+  },
+  {
+   "slug": "kimpton-epic-hotel-miami",
+   "name": "Kimpton EPIC Hotel",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "270 Biscayne Boulevard",
+    "postal_code": "33131",
+    "neighborhood": "Downtown Miami",
+    "lat": "25.7706352",
+    "lng": "-80.1891300",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 9188647952,
+    "name": "Kimpton EPIC Hotel",
+    "display_name": "Kimpton EPIC Hotel, 270, Biscayne Boulevard, Downtown Miami, Torch of Friendship, Miami, Miami-Dade County, Florida, 33131, United States"
+   },
+   "aliases": [
+    "Kimpton"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/9188647952"
+  },
+  {
+   "slug": "kings-cross-amsterdam",
+   "name": "Kings Cross",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "95 Warmoesstraat",
+    "postal_code": "1012 HZ",
+    "neighborhood": "Centrum",
+    "lat": "52.3745288",
+    "lng": "4.8970686",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 1388946516,
+    "name": "Kings Cross",
+    "display_name": "Kings Cross, 95, Warmoesstraat, Burgwallen-Oude Zijde, Centrum, Amsterdam, North Holland, Netherlands, 1012 HZ, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1388946516"
+  },
+  {
+   "slug": "la-fourmi-barcelona",
+   "name": "La Fourmi",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Carrer de Milà i Fontanals",
+    "postal_code": "08012",
+    "neighborhood": "Gràcia",
+    "lat": "41.4019257",
+    "lng": "2.1616543",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 588012926,
+    "name": "La Fourmi",
+    "display_name": "La Fourmi, Carrer de Milà i Fontanals, la Vila de Gràcia, Gràcia, Barcelona, Barcelonès, Barcelona, Catalonia, 08012, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/588012926"
+  },
+  {
+   "slug": "lazy-ballerinas-london",
+   "name": "Lazy Ballerinas",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "50 Fleet Street",
+    "postal_code": "EC4A 2EA",
+    "neighborhood": "West Smithfield",
+    "lat": "51.5140621",
+    "lng": "-0.1088749",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 32921722,
+    "name": "Lazy Ballerinas",
+    "display_name": "Lazy Ballerinas, 50, Fleet Street, West Smithfield, Blackfriars, City of London, Greater London, England, EC4A 2EA, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/32921722"
+  },
+  {
+   "slug": "le-cafe-noir-paris",
+   "name": "Le Café Noir",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue d'Argout",
+    "postal_code": "75002",
+    "neighborhood": "2nd Arrondissement",
+    "lat": "48.8663473",
+    "lng": "2.3443206",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 251023850,
+    "name": "Le Café Noir",
+    "display_name": "Le Café Noir, Rue d'Argout, Quartier du Mail, 2nd Arrondissement, Paris, Ile-de-France, Metropolitan France, 75002, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/251023850",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "08:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "08:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "08:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "08:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "08:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "02:00"
+    }
+   ],
+   "hours_raw": "Mo-Fr 08:00-02:00; Sa 10:00-02:00"
+  },
+  {
+   "slug": "le-vieux-chene-paris",
+   "name": "Le Vieux Chêne",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue Mouffetard",
+    "postal_code": "75005",
+    "neighborhood": "5th Arrondissement",
+    "lat": "48.8423393",
+    "lng": "2.3498473",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 251474115,
+    "name": "Le Vieux Chêne",
+    "display_name": "Le Vieux Chêne, Rue Mouffetard, Quartier du Jardin des Plantes, 5th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75005, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/251474115",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "16:00",
+     "closes": "02:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "16:00",
+     "closes": "02:00"
+    }
+   ],
+   "hours_raw": "16:00-02:00"
+  },
+  {
+   "slug": "leitaria-academica-lisbon",
+   "name": "Leitaria Académica",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Largo do Carmo 2",
+    "postal_code": "1200-022",
+    "neighborhood": "Santa Maria Maior",
+    "lat": "38.7116756",
+    "lng": "-9.1405786",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 301267561,
+    "name": "Leitaria Académica",
+    "display_name": "Leitaria Académica, 2, Largo do Carmo, Sacramento, Santa Maria Maior, Madalena, Lisbon, 1200-022, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/301267561"
+  },
+  {
+   "slug": "les-enfants-rouges-paris",
+   "name": "Les Enfants Rouges",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue de la Folie-Méricourt",
+    "postal_code": "75011",
+    "neighborhood": "11th Arrondissement",
+    "lat": "48.8643275",
+    "lng": "2.3716713",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "OSM tags this estate_agent, which is not a usual restaurant",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "office/estate_agent",
+   "osm": {
+    "type": "node",
+    "id": 7231390485,
+    "name": "Les Enfants rouges",
+    "display_name": "Les Enfants rouges, Rue de la Folie-Méricourt, Quartier Saint-Ambroise, 11th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75011, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/7231390485"
+  },
+  {
+   "slug": "lidos-hotel-london",
+   "name": "Lidos Hotel",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "45 Belgrave Road",
+    "postal_code": "SW1V 2BB",
+    "neighborhood": "Pimlico",
+    "lat": "51.4908060",
+    "lng": "-0.1387856",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 276070789,
+    "name": "Lidos Hotel",
+    "display_name": "Lidos Hotel, 45, Belgrave Road, Tachbrook Estate, Pimlico, City of Westminster, Greater London, England, SW1V 2BB, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/276070789"
+  },
+  {
+   "slug": "lolita-s-bangkok",
+   "name": "Lolita's",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Sukhumvit 6",
+    "postal_code": "10110",
+    "neighborhood": "Khlong Toei District",
+    "lat": "13.7392395",
+    "lng": "100.5556686",
+    "website_url": "http://www.lolitasbangkok.com/",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 670274486,
+    "name": "Lolita's",
+    "display_name": "Lolita's, Soi Sukhumvit 6, Sama Han, Khlong Toei Subdistrict, Khlong Toei District, Bangkok, 10110, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/670274486"
+  },
+  {
+   "slug": "luna-simone-hotel-london",
+   "name": "Luna Simone Hotel",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "49 Belgrave Road",
+    "postal_code": "SW1V 2BB",
+    "neighborhood": "Pimlico",
+    "lat": "51.4907457",
+    "lng": "-0.1386425",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 276070737,
+    "name": "Luna Simone Hotel",
+    "display_name": "Luna Simone Hotel, 49, Belgrave Road, Tachbrook Estate, Pimlico, City of Westminster, Greater London, England, SW1V 2BB, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/276070737"
+  },
+  {
+   "slug": "marquis-de-lafayette-monument-new-york-city",
+   "name": "Marquis de Lafayette Monument",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Prospect Park West Bike Path",
+    "postal_code": "11215",
+    "neighborhood": "Brooklyn",
+    "lat": "40.6644754",
+    "lng": "-73.9765845",
+    "website_url": "https://www.nycgovparks.org/parks/B073/monuments/883",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "historic/monument",
+   "osm": {
+    "type": "node",
+    "id": 3477007193,
+    "name": "Marquis de Lafayette Monument",
+    "display_name": "Marquis de Lafayette Monument, Prospect Park West Bike Path, Brooklyn, Kings County, New York, 11215, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/3477007193"
+  },
+  {
+   "slug": "menina-do-rio-lisbon",
+   "name": "Menina do Rio",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Avenida do Rio de Janeiro",
+    "postal_code": "1700-331",
+    "neighborhood": "Campo Grande",
+    "lat": "38.7565043",
+    "lng": "-9.1397321",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 1170440058,
+    "name": "Menina do Rio",
+    "display_name": "Menina do Rio, Avenida do Rio de Janeiro, São João de Brito, Campo Grande, Alvalade, Lisbon, 1700-331, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1170440058"
+  },
+  {
+   "slug": "miradouro-do-castelo-de-sao-jorge-lisbon",
+   "name": "Miradouro do Castelo de São Jorge",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Costa do Castelo",
+    "postal_code": "1100-335",
+    "neighborhood": "Alfama",
+    "lat": "38.7129910",
+    "lng": "-9.1342100",
+    "phone": "+351 218 800 620",
+    "website_url": "https://www.castelodesaojorge.pt/",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/viewpoint",
+   "osm": {
+    "type": "node",
+    "id": 5446794769,
+    "name": "Miradouro do Castelo de São Jorge",
+    "display_name": "Miradouro do Castelo de São Jorge, Costa do Castelo, São Vicente de Fora, Alfama, São Vicente, Lisbon, 1100-335, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/5446794769"
+  },
+  {
+   "slug": "mithai-ghar-london",
+   "name": "Mithai Ghar",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "133 Whitechapel Road",
+    "postal_code": "E1 1DT",
+    "neighborhood": "Whitechapel",
+    "lat": "51.5177880",
+    "lng": "-0.0656989",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 96229448,
+    "name": "Mithai Ghar",
+    "display_name": "Mithai Ghar, 133, Whitechapel Road, St. George in the East, Whitechapel, London Borough of Tower Hamlets, Greater London, England, E1 1DT, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/96229448"
+  },
+  {
+   "slug": "mocha-hookah-new-york-city",
+   "name": "Mocha Hookah",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "183 Atlantic Avenue",
+    "postal_code": "11201",
+    "neighborhood": "Brooklyn",
+    "lat": "40.6901914",
+    "lng": "-73.9935675",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 419360064,
+    "name": "Mocha Hookah",
+    "display_name": "Mocha Hookah, 183, Atlantic Avenue, Brooklyn Heights, Brooklyn, Kings County, New York, 11201, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/419360064",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "09:00",
+     "closes": "07:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "09:00",
+     "closes": "07:00"
+    }
+   ],
+   "hours_raw": "Mo-Su 09:00-07:00"
+  },
+  {
+   "slug": "monty-s-sunset-miami",
+   "name": "Monty's Sunset",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "344 Alton Road",
+    "postal_code": "33139",
+    "lat": "25.7714619",
+    "lng": "-80.1396090",
+    "website_url": "https://www.montyssobe.com/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 3448593179,
+    "name": "Monty's Sunset",
+    "display_name": "Monty's Sunset, 344, Alton Road, Miami Beach, Miami-Dade County, Florida, 33139, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/3448593179"
+  },
+  {
+   "slug": "mr-wong-s-wok-and-box-london",
+   "name": "Mr. Wong's Wok & Box",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "18 George Street",
+    "postal_code": "CR0 1PA",
+    "neighborhood": "Broad Green",
+    "lat": "51.3736898",
+    "lng": "-0.0992806",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "way",
+    "id": 198678790,
+    "name": "Mr. Wong's Wok & Box",
+    "display_name": "Mr. Wong's Wok & Box, 18, George Street, Broad Green, London Borough of Croydon, Greater London, England, CR0 1PA, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/way/198678790"
+  },
+  {
+   "slug": "naughty-coffee-miami",
+   "name": "Naughty Coffee",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Northeast 1st Street",
+    "postal_code": "33132",
+    "neighborhood": "Downtown Miami",
+    "lat": "25.7753372",
+    "lng": "-80.1901761",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 4706018094,
+    "name": "Naughty Coffee",
+    "display_name": "Naughty Coffee, Northeast 1st Street, Downtown Miami, Torch of Friendship, Miami, Miami-Dade County, Florida, 33132, United States"
+   },
+   "aliases": [
+    "Juan Valdez Café"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/4706018094",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "07:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 6,
+     "opens": "07:00",
+     "closes": "19:00"
+    }
+   ],
+   "hours_raw": "Mo-Su 07:00-19:00"
+  },
+  {
+   "slug": "notalho-lisbon",
+   "name": "Notalho",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Praça da Alegria 50",
+    "postal_code": "1250-004",
+    "neighborhood": "Santo António",
+    "lat": "38.7181699",
+    "lng": "-9.1455694",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 402605346,
+    "name": "Notalho",
+    "display_name": "Notalho, 50, Praça da Alegria, São José, Santo António, Madalena, Lisbon, 1250-004, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/402605346"
+  },
+  {
+   "slug": "nu-stadium-miami",
+   "name": "Nu Stadium",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1900 Northwest 37th Avenue",
+    "postal_code": "33125",
+    "lat": "25.7924491",
+    "lng": "-80.2602921",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "OSM tags this stadium, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "leisure/stadium",
+   "osm": {
+    "type": "relation",
+    "id": 20585093,
+    "name": "Nu Stadium",
+    "display_name": "Nu Stadium, 1900, Northwest 37th Avenue, Miami, Miami-Dade County, Florida, 33125, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/relation/20585093"
+  },
+  {
+   "slug": "palace-theater-new-york-city",
+   "name": "Palace Theater",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "1564 Broadway",
+    "postal_code": "10036",
+    "neighborhood": "Manhattan",
+    "lat": "40.7589003",
+    "lng": "-73.9846166",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "OSM tags this theatre, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/theatre",
+   "osm": {
+    "type": "node",
+    "id": 368051619,
+    "name": "Palace Theater",
+    "display_name": "Palace Theater, 1564, Broadway, Times Square, Manhattan Community Board 5, Manhattan, New York County, New York, 10036, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/368051619"
+  },
+  {
+   "slug": "panorama-restaurant-and-sky-lounge-miami",
+   "name": "Panorama Restaurant & Sky Lounge",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "McFarlane Road",
+    "postal_code": "33133",
+    "lat": "25.7276463",
+    "lng": "-80.2412960",
+    "website_url": "https://www.sonesta.com/CoconutGrove/index.cfm?fa=restaurant1.home",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 2514944685,
+    "name": "Panorama Restaurant & Sky Lounge",
+    "display_name": "Panorama Restaurant & Sky Lounge, McFarlane Road, Miami, Miami-Dade County, Florida, 33133, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2514944685"
+  },
+  {
+   "slug": "parc-de-l-espanya-industrial-barcelona",
+   "name": "Parc de l'Espanya Industrial",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "neighborhood": "Sants-Montjuïc",
+    "lat": "41.3777523",
+    "lng": "2.1409226",
+    "website_url": "https://www.barcelona.cat/ca/que-pots-fer-a-bcn/parcs-i-jardins/parc-de-l-espanya-industrial-92086015836",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one",
+    "opening_hours not stored (unsupported syntax: ph): Mo-Su,PH 08:00-23:00"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "way",
+    "id": 18593605,
+    "name": "Parc de l'Espanya Industrial",
+    "display_name": "Parc de l'Espanya Industrial, Sants, Sants-Montjuïc, Barcelona, Barcelonès, Barcelona, Catalonia, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/way/18593605"
+  },
+  {
+   "slug": "parco-villa-flaviana-rome",
+   "name": "Parco Villa Flaviana",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "postal_code": "00173",
+    "neighborhood": "Municipio Roma VII",
+    "lat": "41.8483009",
+    "lng": "12.5880248",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "node",
+    "id": 8642978615,
+    "name": "Parco Villa Flaviana",
+    "display_name": "Parco Villa Flaviana, Cinecittà Est, Municipio Roma VII, Osteria del Curato, Rome, Roma Capitale, Lazio, 00173, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/8642978615"
+  },
+  {
+   "slug": "pizzeria-san-marco-amsterdam",
+   "name": "Pizzeria San Marco",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "148A Amstelkade",
+    "postal_code": "1078 AW",
+    "neighborhood": "Zuid",
+    "lat": "52.3481335",
+    "lng": "4.8909739",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 249442603,
+    "name": "Pizzeria San Marco",
+    "display_name": "Pizzeria San Marco, 148A, Amstelkade, Scheldebuurt, Rivierenbuurt, Zuid, Amsterdam, North Holland, Netherlands, 1078 AW, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/249442603"
+  },
+  {
+   "slug": "portugalia-lisbon",
+   "name": "Portugalia",
+   "city": "Lisbon",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Largo Frei Heitor Pinto",
+    "postal_code": "1700-204",
+    "neighborhood": "Campo Grande",
+    "lat": "38.7551580",
+    "lng": "-9.1389282",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 1662570554,
+    "name": "Portugalia",
+    "display_name": "Portugalia, Largo Frei Heitor Pinto, São João de Brito, Campo Grande, Alvalade, Lisbon, 1700-204, Portugal"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1662570554"
+  },
+  {
+   "slug": "queen-s-park-farmers-market-london",
+   "name": "Queen's Park Farmers' Market",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Salusbury Road",
+    "postal_code": "NW6 6RG",
+    "neighborhood": "Kilburn",
+    "lat": "51.5367078",
+    "lng": "-0.2058295",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/marketplace",
+   "osm": {
+    "type": "node",
+    "id": 792683624,
+    "name": "Queen's Park Farmers' Market",
+    "display_name": "Queen's Park Farmers' Market, Salusbury Road, Brondesbury Park, Kilburn, London Borough of Brent, Greater London, England, NW6 6RG, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/792683624",
+   "hours": [
+    {
+     "day_of_week": 6,
+     "opens": "10:00",
+     "closes": "14:00"
+    }
+   ],
+   "hours_raw": "Su 10:00-14:00"
+  },
+  {
+   "slug": "residence-les-boulevards-paris",
+   "name": "Résidence les Boulevards",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "10 Rue de la Ville Neuve",
+    "postal_code": "75002",
+    "neighborhood": "2nd Arrondissement",
+    "lat": "48.8696872",
+    "lng": "2.3486973",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 251001754,
+    "name": "Résidence les Boulevards",
+    "display_name": "Résidence les Boulevards, 10, Rue de la Ville Neuve, Bonne-Nouvelle, 2nd Arrondissement, Paris, Ile-de-France, Metropolitan France, 75002, France"
+   },
+   "source_url": "https://www.openstreetmap.org/node/251001754"
+  },
+  {
+   "slug": "rivieralive-miami",
+   "name": "Rivieralive",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Southwest 22nd Street",
+    "postal_code": "33145",
+    "lat": "25.7499610",
+    "lng": "-80.2441578",
+    "phone": "+1-786-703-3729",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "OSM tags this nightclub, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/nightclub",
+   "osm": {
+    "type": "node",
+    "id": 5102158421,
+    "name": "Rivieralive",
+    "display_name": "Rivieralive, Southwest 22nd Street, The Pines, Miami, Miami-Dade County, Florida, 33145, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/5102158421"
+  },
+  {
+   "slug": "san-francisco-amsterdam",
+   "name": "San Francisco",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "42 Zeedijk",
+    "postal_code": "1012 CR",
+    "neighborhood": "Centrum",
+    "lat": "52.3752067",
+    "lng": "4.9009395",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 1175558612,
+    "name": "San Francisco",
+    "display_name": "San Francisco, 42, Zeedijk, Chinatown, Burgwallen-Oude Zijde, Centrum, Amsterdam, North Holland, Netherlands, 1012 CR, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1175558612"
+  },
+  {
+   "slug": "sidney-hotel-london",
+   "name": "Sidney Hotel",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "68-76 Belgrave Road",
+    "postal_code": "SW1V 2BP",
+    "neighborhood": "Pimlico",
+    "lat": "51.4903330",
+    "lng": "-0.1385570",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 273210322,
+    "name": "Sidney Hotel",
+    "display_name": "Sidney Hotel, 68-76, Belgrave Road, Tachbrook Estate, Pimlico, City of Westminster, Greater London, England, SW1V 2BP, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/273210322"
+  },
+  {
+   "slug": "st-christopher-s-inn-paris",
+   "name": "St Christopher's Inn",
+   "city": "Paris",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rue de Dunkerque",
+    "postal_code": "75010",
+    "neighborhood": "10th Arrondissement",
+    "lat": "48.8792017",
+    "lng": "2.3579963",
+    "phone": "+33 1 70 08 52 20",
+    "website_url": "https://www.st-christophers.co.uk/paris/gare-du-nord-hostel/",
+    "timezone": "Europe/Paris"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "way",
+    "id": 63203469,
+    "name": "St Christopher's Inn",
+    "display_name": "St Christopher's Inn, Rue de Dunkerque, Quartier Saint-Vincent-de-Paul, 10th Arrondissement, Paris, Ile-de-France, Metropolitan France, 75010, France"
+   },
+   "source_url": "https://www.openstreetmap.org/way/63203469"
+  },
+  {
+   "slug": "starbucks-bangkok",
+   "name": "Starbucks",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Borommaratchachonnani Road",
+    "postal_code": "10700",
+    "neighborhood": "Bangkok Noi District",
+    "lat": "13.7783255",
+    "lng": "100.4778596",
+    "website_url": "https://www.starbucks.com/",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 3431325833,
+    "name": "Starbucks Coffee",
+    "display_name": "Starbucks Coffee, Borommaratchachonnani Road, Arun Ammarin Subdistrict, Bangkok Noi District, Bangkok, 10700, Thailand"
+   },
+   "aliases": [
+    "Starbucks Coffee"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/3431325833"
+  },
+  {
+   "slug": "stephens-house-and-grounds-london",
+   "name": "Stephens House & Grounds",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "neighborhood": "Church End",
+    "lat": "51.5973963",
+    "lng": "-0.1936553",
+    "website_url": "http://www.stephenshouseandgardens.com/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "leisure/park",
+   "osm": {
+    "type": "way",
+    "id": 2914274,
+    "name": "Stephens House & Grounds",
+    "display_name": "Stephens House & Grounds, Church End, London Borough of Barnet, Greater London, England, United Kingdom"
+   },
+   "aliases": [
+    "Avenue House Grounds"
+   ],
+   "source_url": "https://www.openstreetmap.org/way/2914274"
+  },
+  {
+   "slug": "stock-amsterdam",
+   "name": "Stock",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "50 Damrak",
+    "postal_code": "1012 JN",
+    "neighborhood": "Centrum",
+    "lat": "52.3753858",
+    "lng": "4.8956474",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 251147180,
+    "name": "Stock",
+    "display_name": "Stock, 50, Damrak, Centrum, Amsterdam, North Holland, Netherlands, 1012 JN, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/251147180"
+  },
+  {
+   "slug": "sunrise-tacos-mexican-grill-24-hours-bangkok",
+   "name": "Sunrise Tacos Mexican Grill 24 hours",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Si Lom 4",
+    "postal_code": "10500",
+    "neighborhood": "Bang Rak District",
+    "lat": "13.7283505",
+    "lng": "100.5328854",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 1678653018,
+    "name": "Sunrise Tacos Mexican Grill 24 hours",
+    "display_name": "Sunrise Tacos Mexican Grill 24 hours, Soi Si Lom 4, Phat Phong, Suriyawong Subdistrict, Bang Rak District, Bangkok, 10500, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1678653018"
+  },
+  {
+   "slug": "sw-steakhouse-las-vegas",
+   "name": "SW Steakhouse",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Wynn South Gate",
+    "postal_code": "89109",
+    "lat": "36.1262145",
+    "lng": "-115.1669146",
+    "website_url": "https://www.wynnlasvegas.com/",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "refusal": {
+    "reason": "geographic_inconsistency",
+    "detail": "we say Las Vegas, the match is in SW Steakhouse, Wynn South Gate, Paradise, Clark County, Nevada, 89109, United St"
+   },
+   "osm": {
+    "type": "node",
+    "id": 1269362650,
+    "name": "SW Steakhouse",
+    "display_name": "SW Steakhouse, Wynn South Gate, Paradise, Clark County, Nevada, 89109, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1269362650"
+  },
+  {
+   "slug": "teddy-the-bake-bangkok",
+   "name": "Teddy The Bake",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Samsen 5",
+    "postal_code": "10200",
+    "neighborhood": "Phra Nakhon District",
+    "lat": "13.7662101",
+    "lng": "100.4996067",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 2145076337,
+    "name": "Teddy The Bake",
+    "display_name": "Teddy The Bake, Soi Samsen 5, Wat Sam Phraya Subdistrict, Phra Nakhon District, Bangkok, 10200, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2145076337",
+   "hours": [
+    {
+     "day_of_week": 0,
+     "opens": "10:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 1,
+     "opens": "10:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 2,
+     "opens": "10:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 3,
+     "opens": "10:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 4,
+     "opens": "10:00",
+     "closes": "19:00"
+    },
+    {
+     "day_of_week": 5,
+     "opens": "10:00",
+     "closes": "19:00"
+    }
+   ],
+   "hours_raw": "Mo-Sa 10:00-19:00"
+  },
+  {
+   "slug": "the-exchange-new-york-city",
+   "name": "The Exchange",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "15 West 47th Street",
+    "postal_code": "10036",
+    "neighborhood": "Manhattan",
+    "lat": "40.7572053",
+    "lng": "-73.9795994",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/marketplace",
+   "osm": {
+    "type": "node",
+    "id": 2717542874,
+    "name": "The Exchange",
+    "display_name": "The Exchange, 15, West 47th Street, Diamond District, Manhattan Community Board 5, Manhattan, New York County, New York, 10036, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2717542874"
+  },
+  {
+   "slug": "the-gatsby-hotel-new-york-city",
+   "name": "The Gatsby Hotel",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "135 East Houston Street",
+    "postal_code": "10002",
+    "neighborhood": "Manhattan",
+    "lat": "40.7231911",
+    "lng": "-73.9902082",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 2555126668,
+    "name": "The Gatsby Hotel",
+    "display_name": "The Gatsby Hotel, 135, East Houston Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2555126668"
+  },
+  {
+   "slug": "the-last-judgement-london",
+   "name": "The Last Judgement",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "95 Chancery Lane",
+    "postal_code": "WC2A 1DT",
+    "neighborhood": "Blackfriars",
+    "lat": "51.5153316",
+    "lng": "-0.1117428",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/pub",
+   "osm": {
+    "type": "node",
+    "id": 21593232,
+    "name": "The Last Judgement",
+    "display_name": "The Last Judgement, 95, Chancery Lane, Blackfriars, City of London, Greater London, England, WC2A 1DT, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/21593232"
+  },
+  {
+   "slug": "the-nest-bangkok",
+   "name": "The Nest",
+   "city": "Bangkok",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Soi Sukhumvit 7",
+    "postal_code": "10110",
+    "neighborhood": "Vadhana District",
+    "lat": "13.7445515",
+    "lng": "100.5559684",
+    "website_url": "www.nest-bangkok.com",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 1678679140,
+    "name": "The Nest",
+    "display_name": "The Nest, Soi Sukhumvit 7, เลิศสิน, Khlong Toei Nuea Subdistrict, Vadhana District, Bangkok, 10110, Thailand"
+   },
+   "source_url": "https://www.openstreetmap.org/node/1678679140"
+  },
+  {
+   "slug": "the-overlook-new-york-city",
+   "name": "The Overlook",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "East Plaza",
+    "postal_code": "11368",
+    "neighborhood": "Queens",
+    "lat": "40.7498554",
+    "lng": "-73.8449849",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "OSM tags this outdoor_seating, which is not a usual attraction",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "leisure/outdoor_seating",
+   "osm": {
+    "type": "way",
+    "id": 1204493731,
+    "name": "The Overlook",
+    "display_name": "The Overlook, East Plaza, Queens, Queens County, New York, 11368, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/way/1204493731"
+  },
+  {
+   "slug": "the-polish-bar-na-zdrowie-london",
+   "name": "The Polish Bar (Na Zdrowie)",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "6 Little Turnstile",
+    "postal_code": "WC1V 7DX",
+    "neighborhood": "Holborn",
+    "lat": "51.5173465",
+    "lng": "-0.1189566",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/bar",
+   "osm": {
+    "type": "node",
+    "id": 21593237,
+    "name": "The Polish Bar (Na Zdrowie)",
+    "display_name": "The Polish Bar (Na Zdrowie), 6, Little Turnstile, Holborn, London Borough of Camden, Greater London, England, WC1V 7DX, United Kingdom"
+   },
+   "aliases": [
+    "Bar Polski"
+   ],
+   "source_url": "https://www.openstreetmap.org/node/21593237"
+  },
+  {
+   "slug": "the-serpentine-lido-cafe-london",
+   "name": "The Serpentine Lido Cafe",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Rotten Row",
+    "postal_code": "SW7 1SG",
+    "neighborhood": "Knightsbridge",
+    "lat": "51.5046688",
+    "lng": "-0.1696555",
+    "website_url": "https://www.royalparks.org.uk/parks/hyde-park/food-and-drink/lido-bar-and-cafe",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/cafe",
+   "osm": {
+    "type": "node",
+    "id": 130210673,
+    "name": "The Serpentine Lido Cafe",
+    "display_name": "The Serpentine Lido Cafe, Rotten Row, Knightsbridge, City of Westminster, Greater London, England, SW7 1SG, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/130210673"
+  },
+  {
+   "slug": "topolski-century-london",
+   "name": "Topolski Century",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Concert Hall Approach",
+    "postal_code": "SE1 8XU",
+    "neighborhood": "Waterloo",
+    "lat": "51.5048027",
+    "lng": "-0.1156513",
+    "website_url": "http://www.topolskicentury.org.uk/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 472152158,
+    "name": "Topolski Century",
+    "display_name": "Topolski Century, Concert Hall Approach, South Bank, Waterloo, London Borough of Lambeth, Greater London, England, SE1 8XU, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/472152158"
+  },
+  {
+   "slug": "uncle-joe-s-las-vegas",
+   "name": "Uncle Joe's",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "505 Fremont Street",
+    "postal_code": "89101",
+    "neighborhood": "Downtown Las Vegas",
+    "lat": "36.1689735",
+    "lng": "-115.1404268",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 2148184438,
+    "name": "Uncle Joe's",
+    "display_name": "Uncle Joe's, 505, Fremont Street, Fremont East Entertainment District, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2148184438"
+  },
+  {
+   "slug": "upper-east-side-farmers-market-miami",
+   "name": "Upper East Side Farmers Market",
+   "city": "Miami",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Biscayne Boulevard",
+    "postal_code": "33101",
+    "lat": "25.8366339",
+    "lng": "-80.1840315",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/marketplace",
+   "osm": {
+    "type": "node",
+    "id": 3233769733,
+    "name": "Upper East Side Farmers Market",
+    "display_name": "Upper East Side Farmers Market, Biscayne Boulevard, Bayshore, Miami, Miami-Dade County, Florida, 33101, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/3233769733",
+   "hours": [
+    {
+     "day_of_week": 5,
+     "opens": "09:00",
+     "closes": "14:00"
+    }
+   ],
+   "hours_raw": "Sa 09:00-14:00"
+  },
+  {
+   "slug": "van-gelder-amsterdam",
+   "name": "Van Gelder",
+   "city": "Amsterdam",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "34 Damrak",
+    "postal_code": "1012 LK",
+    "neighborhood": "Centrum",
+    "lat": "52.3760003",
+    "lng": "4.8964629",
+    "timezone": "Europe/Amsterdam"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 251147174,
+    "name": "Van Gelder",
+    "display_name": "Van Gelder, 34, Damrak, Centrum, Amsterdam, North Holland, Netherlands, 1012 LK, Netherlands"
+   },
+   "source_url": "https://www.openstreetmap.org/node/251147174"
+  },
+  {
+   "slug": "vatti-taverna-barcelona",
+   "name": "Vatti Taverna",
+   "city": "Barcelona",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Passeig de Sant Antoni 19",
+    "postal_code": "08014",
+    "neighborhood": "Sants-Montjuïc",
+    "lat": "41.3771427",
+    "lng": "2.1369905",
+    "timezone": "Europe/Madrid"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 573484580,
+    "name": "Vatti Taverna",
+    "display_name": "Vatti Taverna, 19, Passeig de Sant Antoni, Sants, Sants-Montjuïc, Barcelona, Barcelonès, Barcelona, Catalonia, 08014, Spain"
+   },
+   "source_url": "https://www.openstreetmap.org/node/573484580"
+  },
+  {
+   "slug": "victor-hotel-london",
+   "name": "Victor Hotel",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "51 Belgrave Road",
+    "postal_code": "SW1V 2BP",
+    "neighborhood": "Pimlico",
+    "lat": "51.4906780",
+    "lng": "-0.1385005",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hotel",
+   "osm": {
+    "type": "node",
+    "id": 276070664,
+    "name": "Victor Hotel",
+    "display_name": "Victor Hotel, 51, Belgrave Road, Tachbrook Estate, Pimlico, City of Westminster, Greater London, England, SW1V 2BP, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/276070664"
+  },
+  {
+   "slug": "waterhouse-london",
+   "name": "Waterhouse",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "8-10 Orsman Road",
+    "postal_code": "N1 5QJ",
+    "neighborhood": "Haggerston",
+    "lat": "51.5366022",
+    "lng": "-0.0789765",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 248443149,
+    "name": "Waterhouse",
+    "display_name": "Waterhouse, 8-10, Orsman Road, De Beauvoir Town, Haggerston, London Borough of Hackney, Greater London, England, N1 5QJ, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/248443149"
+  },
+  {
+   "slug": "when-in-rome",
+   "name": "When in Rome",
+   "city": "Rome",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "Via Varese 34",
+    "postal_code": "00185",
+    "neighborhood": "Municipio Roma I",
+    "lat": "41.9029516",
+    "lng": "12.5054458",
+    "timezone": "Europe/Rome"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/hostel",
+   "osm": {
+    "type": "node",
+    "id": 663030469,
+    "name": "When in Rome",
+    "display_name": "When in Rome, 34, Via Varese, Castro Pretorio, Municipio Roma I, Rome, Roma Capitale, Lazio, 00185, Italy"
+   },
+   "source_url": "https://www.openstreetmap.org/node/663030469"
+  },
+  {
+   "slug": "white-bear-theatre-pub-london",
+   "name": "White Bear Theatre Pub",
+   "city": "London",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "138 Kennington Park Road",
+    "postal_code": "SE11 4DJ",
+    "neighborhood": "Elephant and Castle",
+    "lat": "51.4867905",
+    "lng": "-0.1078631",
+    "website_url": "https://www.whitebeartheatre.co.uk/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "OSM tags this theatre, which is not a usual experience",
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 0.9,
+   "osm_class": "amenity/theatre",
+   "osm": {
+    "type": "node",
+    "id": 295709722,
+    "name": "White Bear Theatre Pub",
+    "display_name": "White Bear Theatre Pub, 138, Kennington Park Road, Elephant and Castle, London Borough of Lambeth, Greater London, England, SE11 4DJ, United Kingdom"
+   },
+   "source_url": "https://www.openstreetmap.org/node/295709722"
+  },
+  {
+   "slug": "wo-fat-chinese-restaurant-las-vegas",
+   "name": "Wo Fat Chinese Restaurant",
+   "city": "Las Vegas",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "3700 East Desert Inn Road",
+    "postal_code": "89121",
+    "lat": "36.1298523",
+    "lng": "-115.0936239",
+    "timezone": "America/Los_Angeles"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "amenity/restaurant",
+   "osm": {
+    "type": "node",
+    "id": 2834881568,
+    "name": "Wo Fat Chinese Restaurant",
+    "display_name": "Wo Fat Chinese Restaurant, 3700, East Desert Inn Road, Las Vegas, Clark County, Nevada, 89121, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/2834881568"
+  },
+  {
+   "slug": "yeshiva-university-museum-new-york-city",
+   "name": "Yeshiva University Museum",
+   "city": "New York",
+   "source": "osm",
+   "attribution": "Data (c) OpenStreetMap contributors, ODbL 1.0. https://osm.org/copyright",
+   "fields": {
+    "street_address": "West 16th Street",
+    "postal_code": "10011",
+    "neighborhood": "Manhattan",
+    "lat": "40.7379780",
+    "lng": "-73.9938312",
+    "website_url": "https://www.yumuseum.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "timezone supplied by hand; Nominatim does not return one"
+   ],
+   "confidence": 1.0,
+   "osm_class": "tourism/museum",
+   "osm": {
+    "type": "node",
+    "id": 368061605,
+    "name": "Yeshiva University Museum",
+    "display_name": "Yeshiva University Museum, West 16th Street, Union Square, Manhattan Community Board 5, Manhattan, New York County, New York, 10011, United States"
+   },
+   "source_url": "https://www.openstreetmap.org/node/368061605"
   }
  ]
 }
