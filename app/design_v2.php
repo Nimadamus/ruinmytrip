@@ -166,3 +166,27 @@ function rmt_home_v2_places(int $limit = 6): array {
     }
     return array_values($out);
 }
+
+/**
+ * Proof for a first time visitor: a few of our own Official Reviews, one per city, the most critical
+ * first, skipping places the rating cards already show. They are editorial and the home page says so;
+ * nothing here is counted as, or dressed up as, a traveler review.
+ *
+ * @param list<int> $skipPlaceIds
+ * @return list<array<string,mixed>>
+ */
+function rmt_home_v2_official(array $skipPlaceIds = [], int $limit = 3): array {
+    $rows = q_all("SELECT r.id, r.title, r.rating, p.id place_id, p.slug, p.name, p.type, d.name dest_name
+                     FROM reviews r JOIN users u ON u.id = r.user_id
+                     JOIN places p ON p.id = r.place_id JOIN destinations d ON d.id = p.destination_id
+                    WHERE r.status = 'published' AND u.role = ? AND p.status = 'active'
+                    ORDER BY r.rating ASC, r.id ASC LIMIT 60", [RMT_EDITORIAL_ROLE]);
+    $out = []; $cities = [];
+    foreach ($rows as $r) {
+        if (in_array((int) $r['place_id'], $skipPlaceIds, true) || isset($cities[$r['dest_name']])) continue;
+        $cities[$r['dest_name']] = true;
+        $out[] = $r;
+        if (count($out) >= $limit) break;
+    }
+    return $out;
+}

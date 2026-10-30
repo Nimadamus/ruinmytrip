@@ -143,6 +143,7 @@ function home(array $a): void {
            is a count of rows. */
         $homeView = 'home_v2';
         $v2Places = rmt_home_v2_places(6);
+        $v2Official = rmt_home_v2_official(array_map('intval', array_column($v2Places, 'id')), 3);
         $placeCounts = [];
         foreach (q_all("SELECT destination_id, COUNT(*) n FROM places WHERE status = 'active' GROUP BY destination_id") as $pc) {
             $placeCounts[(int) $pc['destination_id']] = (int) $pc['n'];
@@ -169,7 +170,7 @@ function home(array $a): void {
         $v2CityCount = $stat_destinations;
         $v2Reviews = $reviews;
     }
-    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews') : []), [
+    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews','v2Official') : []), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.

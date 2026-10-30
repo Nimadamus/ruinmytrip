@@ -11,13 +11,29 @@
  * @var int $stat_community_reviews @var list<array> $v2Reviews @var list<array> $goingSoon
  */
 ?>
-<section class="v2-hero v2-hero-mapfirst">
+<section class="v2-hero v2-hero-mapfirst v2-hero-split">
   <div class="wrap">
-    <div class="v2-hero-top">
-      <p class="v2-kicker">The honest travel community</p>
-      <h1 class="v2-h1">Where have you been?</h1>
-      <p class="v2-lede">Start with your travel map. Then discover where to go next, share what really happened, review the places you went and meet travelers on your dates.</p>
+    <?php /* A stranger gets what the site is, why to trust it and what to do in the first screen,
+             with the map beside it rather than instead of it. Every promise below is one /about and
+             the community guidelines already make. */ ?>
+    <div class="v2-hero-grid2">
+    <div class="v2-hero-pitch">
+      <div class="v2-hero-top">
+        <p class="v2-kicker">The honest travel community</p>
+        <h1 class="v2-h1">Where have you been?</h1>
+        <p class="v2-lede">Travel reviews that say what actually went wrong: the tourist trap, the surprise fee, the queue that was not worth it. Read them before you go, then write yours for the next traveler.</p>
+      </div>
+      <div class="v2-hero-cta">
+        <a class="v2-btn v2-btn-accent" href="<?= e(url('review/new?src=home_hero')) ?>" data-cta="home_hero_review">Review a place you went</a>
+        <span class="v2-hero-cta-note">Stars first, no account needed to start</span>
+      </div>
     </div>
+
+    <ul class="v2-why" aria-label="Why RuinMyTrip">
+      <li><span class="v2-why-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/></svg></span><span><b>What went wrong is the point</b>A one star review that explains itself is as welcome as a rave. Nothing is removed for being critical.</span></li>
+      <li><span class="v2-why-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m6 6 12 12"/></svg></span><span><b>Nobody can buy a rating</b>No business can pay for a better score, a higher spot or a deleted review.</span></li>
+      <li><span class="v2-why-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 19 6v6c0 4.4-2.9 7.4-7 9-4.1-1.6-7-4.6-7-9V6l7-3z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg></span><span><b>Ours and yours, kept apart</b>Our Official Reviews are always labelled and never counted in traveler ratings.</span></li>
+    </ul>
 
     <div class="v2-hero-map v2-hero-map-xl tm" data-tm-embed data-tm-readonly="0" data-tm-codes=""
          data-tm-geo="<?= e(rmt_asset('assets/data/world-map.json')) ?>" data-tm-base="<?= e(url('map')) ?>"
@@ -31,8 +47,9 @@
       </div>
       <div class="v2-map-foot">
         <span class="v2-map-hint" data-tm-status aria-live="polite">Tap a country to color it in.</span>
-        <a class="v2-btn v2-btn-accent v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
+        <a class="v2-btn v2-btn-primary v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
       </div>
+    </div>
     </div>
 
     <?php /* What the map is the front door to: the community the site is for. Real counts only. */ ?>
@@ -70,6 +87,34 @@
     <?php endif; ?>
   </div>
 </section>
+
+<?php if (!empty($v2Official)): ?>
+<section class="v2-section v2-section-proof">
+  <div class="wrap">
+    <div class="v2-sec-head">
+      <div>
+        <h2 class="v2-h2">Read before you go</h2>
+        <p class="v2-sub">A few of our Official Reviews, written from official sources and labelled as ours. Traveler reviews are only just starting, so yours could be the first on a place.</p>
+      </div>
+      <a class="v2-link" href="<?= e(url('editorial-policy')) ?>">How we write these →</a>
+    </div>
+    <div class="v2-proof-grid">
+      <?php foreach ($v2Official as $or): ?>
+        <a class="v2-proof" href="<?= e(url('p/' . $or['slug'])) ?>" data-cta="home_official">
+          <span class="v2-proof-top">
+            <span class="ed-badge">Official Review</span>
+            <span class="v2-proof-stars" aria-label="<?= (int) $or['rating'] ?> of 5"><?= str_repeat('★', (int) $or['rating']) ?><span class="v2-dim"><?= str_repeat('★', 5 - (int) $or['rating']) ?></span></span>
+          </span>
+          <span class="v2-proof-meta"><?= e(rmt_place_type_label((string) $or['type'])) ?> · <?= e((string) $or['dest_name']) ?></span>
+          <b class="v2-proof-name"><?= e((string) $or['name']) ?></b>
+          <span class="v2-proof-title"><?= e((string) $or['title']) ?></span>
+          <span class="v2-proof-foot">Editorial, not counted in traveler ratings</span>
+        </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
 
 <?php if ($v2Places): ?>
 <section class="v2-section" id="rate">
