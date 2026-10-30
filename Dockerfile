@@ -13,10 +13,13 @@ RUN apt-get update \
  && a2enmod rewrite headers expires \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Uploads are re-encoded in memory; allow enough headroom for a large photo.
+# Uploads are re-encoded in memory; allow enough headroom for a large photo. A review or trip takes
+# six photos of up to 8MB in one post, so the post limit must fit six: at 12M two ordinary phone
+# photos chosen together were dropped whole, written text included (photo_upload_e2e.py P7).
+# Files are spooled to disk, so this does not raise memory use; each photo is decoded one at a time.
 RUN { \
       echo 'upload_max_filesize = 10M'; \
-      echo 'post_max_size = 12M'; \
+      echo 'post_max_size = 64M'; \
       echo 'memory_limit = 256M'; \
     } > /usr/local/etc/php/conf.d/rmt-uploads.ini
 
