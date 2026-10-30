@@ -69,7 +69,7 @@ try {
 
     $pub = $photo($trip('public'));
     ok('public trip: signed out gets it', rmt_media_access($pub, null) === 'trip');
-    ok('public trip: no shared cache', !str_contains(rmt_media_cache_header('trip'), 'public'));
+    ok('public trip: an hour of caching at most', rmt_media_cache_header('trip') === 'public, max-age=3600');
 
     $gone = $photo($trip('public', 'deleted'));
     ok('deleted trip: signed out is refused', rmt_media_access($gone, null) === 'deny');

@@ -6,8 +6,8 @@
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $er):?><li><?= e($er) ?></li><?php endforeach;?></ul></div><?php endif; ?>
 
   <form method="post" enctype="multipart/form-data" action="<?= e(url('u/'.$me['username'].'/edit')) ?>"><?= csrf_field() ?>
-    <label>Username</label>
-    <input type="text" value="<?= e($me['username']) ?>" disabled>
+    <label for="pe-username">Username</label>
+    <input type="text" id="pe-username" value="<?= e($me['username']) ?>" disabled>
     <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
       Your username is permanent: it is your public profile address and other travelers' links to you depend on it.
     </p>

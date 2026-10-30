@@ -293,8 +293,8 @@ def run(p, dev, ctxargs):
     anon.close()
     db("UPDATE trips SET visibility = 'public' WHERE id = ?", (tid,))
     r = b.new_context(**ctxargs).request.get(f'{BASE}/media/{key}')
-    check(tag('P8 public again: anyone gets it, no shared cache'),
-          r.status == 200 and 'public' not in r.headers.get('cache-control', ''), (r.status, r.headers.get('cache-control')))
+    check(tag('P8 public again: anyone gets it, cached an hour at most'),
+          r.status == 200 and r.headers.get('cache-control', '') == 'public, max-age=3600', (r.status, r.headers.get('cache-control')))
 
     check(tag('no script errors on any page'), not errs, errs[:3])
     b.close()

@@ -6344,7 +6344,7 @@ function media_show(array $a): void {
  * through the same rules the trip and activity pages use.
  *
  * Returns 'public' (anyone, cache it forever), 'trip' (on a trip anyone can see today but its owner
- * could make private tomorrow, so no shared cache), 'private' (this viewer only) or 'deny'. A key
+ * could make private tomorrow, so cached an hour at most), 'private' (this viewer only) or 'deny'. A key
  * that is on no trip and no activity (avatars, covers, reviews, posts, places) is 'public', exactly
  * as before. 404 rather than 403, as on trip_show: a refusal confirms the photo exists.
  */
@@ -6391,8 +6391,8 @@ function rmt_media_cache_header(string $access): string {
     return match ($access) {
         // Keys are random and content-addressed in practice, so a key's bytes never change.
         'public' => 'public, max-age=31536000, immutable',
-        // The browser may keep it; a shared cache may not, so making the trip private takes effect.
-        'trip'   => 'private, max-age=86400',
+        // Cacheable for an hour only, so a trip made private stops being served from the edge soon after.
+        'trip'   => 'public, max-age=3600',
         default  => 'private, no-store',
     };
 }
