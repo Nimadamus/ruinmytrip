@@ -349,7 +349,8 @@ function rmt_place_categories_for(string $bucket): array {
 function rmt_place_source_line(array $p): ?array {
     $src = trim((string) ($p['data_source'] ?? ''));
     $url = trim((string) ($p['data_source_url'] ?? ''));
-    $checked = substr((string) ($p['data_checked_at'] ?? ''), 0, 10);
+    $ts = strtotime((string) ($p['data_checked_at'] ?? ''));
+    $checked = $ts ? date('j F Y', $ts) : '';
     if ($src === '' && $url === '') return null;
 
     $who = match ($src) {
@@ -361,7 +362,9 @@ function rmt_place_source_line(array $p): ?array {
         'editorial'    => 'the RuinMyTrip editorial team',
         default        => $src !== '' ? $src : 'a cited source',
     };
-    $text = 'Address and hours from ' . $who;
+    // "Details", not "address and hours": most pages hold one or the other, and a credit line
+    // naming hours on a page that shows none is a small false claim.
+    $text = 'Details from ' . $who;
     if ($checked !== '') $text .= ', checked ' . $checked;
     return ['text' => $text . '.', 'url' => $url !== '' ? $url : null];
 }

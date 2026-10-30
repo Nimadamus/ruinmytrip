@@ -357,7 +357,7 @@ $osm = rmt_place_source_line(['data_source' => 'osm',
     'data_source_url' => 'https://www.openstreetmap.org/way/1', 'data_checked_at' => '2026-08-29 10:00:00']);
 check('OSM is credited by name, as ODbL requires',
       str_contains($osm['text'], 'OpenStreetMap contributors, ODbL'), true);
-check('...with the date it was checked', str_contains($osm['text'], 'checked 2026-08-29'), true);
+check('...with the date it was checked', str_contains($osm['text'], 'checked 29 August 2026'), true);
 check('...and a link to the object', $osm['url'], 'https://www.openstreetmap.org/way/1');
 check('a map source is never described as the venue', str_contains($osm['text'], 'the venue'), false);
 $own = rmt_place_source_line(['data_source' => 'official_site', 'data_source_url' => 'https://x.com']);
