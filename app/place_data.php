@@ -431,6 +431,29 @@ function rmt_place_hours_by_day(array $hours): array {
     return array_values($byDay);
 }
 
+/**
+ * The week in one clause, for a meta description: "Open daily 09:00 to 17:00", "Open Tuesday to
+ * Sunday 10:00 to 18:00", or "Open 5 days a week" when the pattern will not fit a sentence.
+ * Built only from the hours we hold; '' when we hold none.
+ */
+function rmt_place_hours_summary(array $byDay): string {
+    $open = [];
+    foreach ($byDay as $d) {
+        if (!$d['closed'] && $d['intervals']) $open[(int) $d['dow']] = implode(', ', $d['intervals']);
+    }
+    if (!$open) return '';
+    $fmt = static fn(string $iv): string => str_replace('-', ' to ', $iv);
+    $same = count(array_unique($open)) === 1 ? $fmt((string) reset($open)) : '';
+    if (count($open) === 7) return $same !== '' ? 'Open daily ' . $same : 'Open seven days a week';
+    $days = array_keys($open);
+    sort($days);
+    $run = $days === range($days[0], $days[count($days) - 1]);
+    if ($run && count($days) > 1 && $same !== '') {
+        return 'Open ' . RMT_DAY_NAMES[$days[0]] . ' to ' . RMT_DAY_NAMES[end($days)] . ' ' . $same;
+    }
+    return 'Open ' . count($open) . ' day' . (count($open) === 1 ? '' : 's') . ' a week';
+}
+
 /** 'HH:MM', or the raw value when it is not one. */
 function rmt_place_hhmm(?string $t): string {
     $t = trim((string) $t);

@@ -828,7 +828,14 @@ function place_show(array $a): void {
             $what = $category ? mb_strtolower((string) $category['name']) : mb_strtolower($typeLabel);
             $desc = $p['name'] . (preg_match('/^[aeiou]/i', $what) ? ' is an ' : ' is a ') . $what . ' in ' . $p['dest_name'] . '.';
             if (!empty($address['lines'])) $desc .= ' ' . implode(', ', $address['lines']) . '.';
-            $desc .= ' See it on a map, save it to a trip, and read what travelers say.';
+            /* Then what the page actually holds, from the rows behind it: the week's hours when we
+               have them, and which ways to reach the place. The old closing line was the same
+               eleven words on every page and told a searcher nothing. */
+            $week = rmt_place_hours_summary($hoursByDay);
+            if ($week !== '') $desc .= ' ' . $week . '.';
+            $reach = array_values(array_filter([!empty($p['phone']) ? 'phone' : '', !empty($p['website_url']) ? 'website' : '']));
+            $desc .= $reach ? ' ' . ucfirst(implode(', ', $reach)) . ' and directions on the page.'
+                            : ' Directions on the page.';
             $desc = mb_strimwidth($desc, 0, 300, '…');
         }
     }
