@@ -98,6 +98,7 @@
             <a href="<?= e(url('saved')) ?>">Saved</a>
             <a href="<?= e(url('invite')) ?>">Invite a traveler</a>
             <a href="<?= e(url('settings')) ?>">Settings</a>
+            <a href="<?= e(url('logout')) ?>">Sign out</a>
             <?php if (in_array($me['role'], ['admin', 'mod'], true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
           <?php endif; ?>
         </div>

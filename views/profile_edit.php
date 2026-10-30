@@ -123,4 +123,5 @@
       <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">View my profile</a>
     </div>
   </form>
+  <p class="muted" style="margin-top:22px;font-size:.9rem">Done for now? <a href="<?= e(url('logout')) ?>">Sign out</a></p>
 </div></div>
