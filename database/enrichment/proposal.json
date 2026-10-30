@@ -12915,6 +12915,194 @@
     "display_name": "Yeshiva University Museum, West 16th Street, Union Square, Manhattan Community Board 5, Manhattan, New York County, New York, 10011, United States"
    },
    "source_url": "https://www.openstreetmap.org/node/368061605"
+  },
+  {
+   "slug": "art-deco-museum-miami",
+   "name": "Art Deco Museum",
+   "city": "Miami",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "website_url": "https://mdpl.org/",
+    "timezone": "America/New_York"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://mdpl.org/"
+  },
+  {
+   "slug": "craven-cottage-london",
+   "name": "Craven Cottage",
+   "city": "London",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "website_url": "https://www.fulhamfc.com/",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.fulhamfc.com/"
+  },
+  {
+   "slug": "portugalia-lisbon",
+   "name": "Portugália",
+   "city": "Lisbon",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "website_url": "https://www.portugalia.pt/",
+    "timezone": "Europe/Lisbon"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.portugalia.pt/restaurantes"
+  },
+  {
+   "slug": "stephens-house-and-grounds-london",
+   "name": "Stephens House and Grounds",
+   "city": "London",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "17 East End Road",
+    "postal_code": "N3 3QE",
+    "phone": "+44 20 8346 7812",
+    "timezone": "Europe/London"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "http://www.stephenshouseandgardens.com/"
+  },
+  {
+   "slug": "meiji-jingu-stadium-tokyo",
+   "name": "Meiji Jingu Stadium",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "3-1 Kasumigaoka-machi, Shinjuku-ku",
+    "postal_code": "160-0013",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.jingu-stadium.com/access/"
+  },
+  {
+   "slug": "nissay-theatre-tokyo",
+   "name": "Nissay Theatre",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "1-1-1 Yurakucho, Chiyoda-ku",
+    "postal_code": "100-0006",
+    "phone": "+81 3 6811 1367",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.nissaytheatre.or.jp/access/"
+  },
+  {
+   "slug": "oi-racecourse-tokyo",
+   "name": "Oi Racecourse",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "2-1-2 Katsushima, Shinagawa-ku",
+    "postal_code": "140-0012",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://japanracing.jp/en/racing/go_racing/local_racecourses/n11.html"
+  },
+  {
+   "slug": "tokyo-takarazuka-theater",
+   "name": "Tokyo Takarazuka Theater",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "1-1-3 Yurakucho, Chiyoda-ku",
+    "postal_code": "100-0006",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://kageki.hankyu.co.jp/theater/tokyo/"
+  },
+  {
+   "slug": "old-shimbashi-station-railway-history-exhibition-hall-tokyo",
+   "name": "Old Shimbashi Station",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "1-5-3 Higashi-Shimbashi, Minato-ku",
+    "postal_code": "105-0021",
+    "website_url": "https://www.ejrcf.or.jp/shinbashi/",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.ejrcf.or.jp/shinbashi/"
+  },
+  {
+   "slug": "madame-tussaud-s-bangkok",
+   "name": "Madame Tussauds Bangkok",
+   "city": "Bangkok",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "Siam Discovery, 989 Rama I Road, Pathum Wan",
+    "postal_code": "10330",
+    "timezone": "Asia/Bangkok"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.madametussauds.com/bangkok/en/plan-your-visit/getting-here"
+  },
+  {
+   "slug": "middle-eastern-culture-center-in-japan-tokyo",
+   "name": "Middle Eastern Culture Center in Japan",
+   "city": "Tokyo",
+   "source": "official_site",
+   "attribution": "Address, phone or website as published by the venue or its operator, checked 2026-10-29.",
+   "fields": {
+    "street_address": "3-10-31 Osawa, Mitaka",
+    "postal_code": "181-0015",
+    "phone": "+81 422 32 7111",
+    "timezone": "Asia/Tokyo"
+   },
+   "notes": [
+    "checked by hand against the source page on 2026-10-29"
+   ],
+   "confidence": 1.0,
+   "source_url": "https://www.meccj.or.jp/"
   }
  ]
 }
