@@ -6322,6 +6322,8 @@ function admin_resolve(array $a): void {
 function media_show(array $a): void {
     $key = (string) ($a['key'] ?? '');
     if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $key)) not_found();
+    $access = rmt_media_access($key, current_user());
+    if ($access === 'deny') not_found();
     $m = rmt_storage_get($key);
     if (!$m) not_found();
 
@@ -6329,9 +6331,70 @@ function media_show(array $a): void {
     header('X-Content-Type-Options: nosniff');
     header('Content-Security-Policy: default-src \'none\'; sandbox');
     header('Content-Length: ' . strlen($m['bytes']));
-    // Keys are random and content-addressed in practice, so a key's bytes never change.
-    header('Cache-Control: public, max-age=31536000, immutable');
+    header('Cache-Control: ' . rmt_media_cache_header($access));
     echo $m['bytes'];
+}
+
+/**
+ * Who may fetch a stored photo (2026-10-30).
+ *
+ * A photo on a trip or a plan item used to be served to anyone holding its URL, so a private
+ * trip's photos stayed readable signed out, and because the response said public and immutable,
+ * Cloudflare could keep a copy and hand it to anybody. The photo now follows the thing it is on,
+ * through the same rules the trip and activity pages use.
+ *
+ * Returns 'public' (anyone, cache it forever), 'trip' (on a trip anyone can see today but its owner
+ * could make private tomorrow, so no shared cache), 'private' (this viewer only) or 'deny'. A key
+ * that is on no trip and no activity (avatars, covers, reviews, posts, places) is 'public', exactly
+ * as before. 404 rather than 403, as on trip_show: a refusal confirms the photo exists.
+ */
+function rmt_media_access(string $key, ?array $viewer): string {
+    $isMod = $viewer && in_array($viewer['role'] ?? '', ['admin', 'mod'], true);
+    $found = false;
+    $restricted = false;
+    $tp = q_all("SELECT p.status, t.id, t.user_id, t.visibility, t.status trip_status
+                   FROM trip_photos p JOIN trips t ON t.id = p.trip_id
+                  WHERE p.storage_key = ?", [$key]);
+    foreach ($tp as $r) {
+        $found = true;
+        $isOwner = $viewer && (int) $viewer['id'] === (int) $r['user_id'];
+        if ($r['trip_status'] !== 'published' || ($r['status'] ?? 'published') !== 'published') {
+            if (!$isOwner && !$isMod) return 'deny';
+            $restricted = true;
+            continue;
+        }
+        if (!rmt_trip_visible_to($r, $viewer)) return 'deny';
+        if (($r['visibility'] ?? 'public') !== 'public') $restricted = true;
+    }
+    // An activity's own photo (trip_activities.storage_key) and the album under it.
+    $ap = q_all("SELECT activity_id, user_id, status FROM activity_photos WHERE storage_key = ?
+                 UNION ALL
+                 SELECT id, user_id, 'published' FROM trip_activities WHERE storage_key = ?", [$key, $key]);
+    foreach ($ap as $r) {
+        $found = true;
+        $act = rmt_activity_get((int) $r['activity_id']);
+        $isOwner = $viewer && (int) $viewer['id'] === (int) $r['user_id'];
+        if (!$act || ($r['status'] ?? 'published') !== 'published') {
+            if (!$isOwner && !$isMod) return 'deny';
+            $restricted = true;
+            continue;
+        }
+        if (!rmt_activity_visible_to($act, $viewer)) return 'deny';
+        if (($act['visibility'] ?? 'trip') !== 'trip' || ($act['trip_visibility'] ?? 'public') !== 'public') $restricted = true;
+    }
+    if ($restricted) return 'private';
+    return $found ? 'trip' : 'public';
+}
+
+/** The Cache-Control a photo gets for a verdict from rmt_media_access(). */
+function rmt_media_cache_header(string $access): string {
+    return match ($access) {
+        // Keys are random and content-addressed in practice, so a key's bytes never change.
+        'public' => 'public, max-age=31536000, immutable',
+        // The browser may keep it; a shared cache may not, so making the trip private takes effect.
+        'trip'   => 'private, max-age=86400',
+        default  => 'private, no-store',
+    };
 }
 
 /**
@@ -6345,6 +6408,8 @@ function media_variant(array $a): void {
     $key = (string) ($a['key'] ?? '');
     $w = (int) ($a['w'] ?? 0);
     if (!in_array($w, [480, 960], true) || !preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $key)) not_found();
+    $access = rmt_media_access($key, current_user());
+    if ($access === 'deny') not_found();
     $dir = rtrim(sys_get_temp_dir(), '/' . chr(92)) . '/rmt_media_w';
     $file = $dir . '/' . $w . '_' . substr($key, 0, 32) . '.webp';
     $bytes = is_file($file) ? (string) @file_get_contents($file) : '';
@@ -6369,7 +6434,7 @@ function media_variant(array $a): void {
     header('X-Content-Type-Options: nosniff');
     header("Content-Security-Policy: default-src 'none'; sandbox");
     header('Content-Length: ' . strlen($bytes));
-    header('Cache-Control: public, max-age=31536000, immutable');
+    header('Cache-Control: ' . rmt_media_cache_header($access));
     echo $bytes;
 }
 

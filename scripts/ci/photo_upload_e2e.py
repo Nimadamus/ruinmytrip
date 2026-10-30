@@ -275,6 +275,27 @@ def run(p, dev, ctxargs):
     check(tag('P7 it is not called an expired form session'), 'session expired' not in t, t[:200])
     check(tag('P7 it says the photos were too large'), 'too large' in t.lower(), t[:300].replace('\n', ' '))
 
+    # P8 the trip goes private: its photos follow it. The owner still sees them on the page; a
+    # signed-out visitor holding the exact photo URL gets a 404, and nothing says a shared cache
+    # may keep a copy.
+    db("UPDATE trips SET visibility = 'private' WHERE id = ?", (tid,))
+    key = db('SELECT storage_key FROM trip_photos WHERE trip_id = ? ORDER BY id', (tid,))[0][0]
+    go(f'/trip/{tid}/{tslug}?x={stamp}')
+    nw = page.evaluate("[...document.images].filter(i => i.src.includes(%r)).map(i => i.naturalWidth)[0] || 0" % key[:32])
+    check(tag('P8 private trip: the owner still sees its photo'), nw > 0, nw)
+    r = page.request.get(f'{BASE}/media/{key}')
+    check(tag('P8 private trip: the owner fetches it, never shared-cached'),
+          r.status == 200 and 'private' in r.headers.get('cache-control', ''), (r.status, r.headers.get('cache-control')))
+    anon = b.new_context(**ctxargs)
+    for path in (f'/media/{key}', f'/media/w/480/{key}', f'/media/w/960/{key}'):
+        st = anon.request.get(BASE + path).status
+        check(tag(f'P8 private trip: signed out gets 404 for {path.split(key)[0]}'), st == 404, st)
+    anon.close()
+    db("UPDATE trips SET visibility = 'public' WHERE id = ?", (tid,))
+    r = b.new_context(**ctxargs).request.get(f'{BASE}/media/{key}')
+    check(tag('P8 public again: anyone gets it, no shared cache'),
+          r.status == 200 and 'public' not in r.headers.get('cache-control', ''), (r.status, r.headers.get('cache-control')))
+
     check(tag('no script errors on any page'), not errs, errs[:3])
     b.close()
 

@@ -102,6 +102,9 @@ foreach ($files as $file) {
              || str_contains($flat, "visibility='trip'")
              || preg_match('/where\s+a?\.?id\s*=\s*\?/', $flat) === 1
              || preg_match('/user_id\s*=\s*\?/', $flat) === 1
+             // rmt_media_access(): which activity a photo is on; each row is then checked with
+             // rmt_activity_visible_to() before a byte is served.
+             || str_contains($flat, 'where storage_key = ?')
              || str_contains($flat, 'count(')
              || str_contains($flat, 'max(');
         if (!$safe) $actOffenders[] = $rel . ': ' . mb_strimwidth($flat, 0, 100, '...');
