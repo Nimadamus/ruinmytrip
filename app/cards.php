@@ -149,8 +149,10 @@ function rmt_card_render(array $spec): string {
     }
     imagettftext($im, 24, 0, $W - $pad - $dw, $H - 52, $brand, $regular, $dom);
 
+    /* A photograph as PNG is 700 KB to 1 MB, and WhatsApp drops previews much over 300 KB, so a
+       card with a photo goes out as JPEG. share_card() reads the bytes to label it. */
     ob_start();
-    imagepng($im, null, 6);
+    if (!empty($spec['photo'])) imagejpeg($im, null, 84); else imagepng($im, null, 6);
     imagedestroy($im);
     return (string) ob_get_clean();
 }

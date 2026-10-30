@@ -7698,9 +7698,10 @@ function share_card(array $a): void {
     header('Cache-Control: public, max-age=86400');
     header('ETag: ' . $etag);
     if (($_SERVER['HTTP_IF_NONE_MATCH'] ?? '') === $etag) { http_response_code(304); exit; }
-    header('Content-Type: image/png');
+    $png = rmt_card_render($spec);
+    header('Content-Type: ' . (strncmp($png, chr(255) . chr(216), 2) === 0 ? 'image/jpeg' : 'image/png'));
     header('X-Content-Type-Options: nosniff');
-    echo rmt_card_render($spec);
+    echo $png;
     exit;
 }
 
