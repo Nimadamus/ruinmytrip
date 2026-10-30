@@ -718,11 +718,16 @@ function place_show(array $a): void {
         // old URL would throw away both the redirect and the page it points at.
         $prev = rmt_place_for_retired_slug((string) $a['slug']);
         if ($prev && rmt_place_is_public((string) $prev['status'])) redirect_permanent(url('p/'.$prev['slug']));
-        // A record we hid because it was never a real venue (migration 109) sends its old URL to
-        // the city it was filed under, so nobody who had the link lands on a 404.
-        $hid = q_one("SELECT d.slug FROM places p JOIN destinations d ON d.id = p.destination_id
+        // A record we hid because it was never a real venue (migration 109) answers 410 Gone. A
+        // 301 to the city page sends a crawler somewhere unrelated, which it reads as a soft 404;
+        // Gone is the honest answer, and the page still links the reader on to the city.
+        $hid = q_one("SELECT d.slug, d.name FROM places p JOIN destinations d ON d.id = p.destination_id
                        WHERE p.slug = ? AND p.status = 'hidden'", [(string) $a['slug']]);
-        if ($hid) redirect_permanent(url('d/'.$hid['slug']));
+        if ($hid) {
+            http_response_code(410);
+            view('404', ['goneCity' => $hid], ['title' => 'No longer listed | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,follow']);
+            exit;
+        }
         not_found();
     }
     $id = (int) $p['id'];
