@@ -4465,6 +4465,9 @@ function connect_request(array $a): void {
     require_login(); csrf_check();
     $me = current_user();
     $tripId = (int) input('trip_id');
+    // Asking to meet a stranger on their trip is a travel buddy request in all but name: 18+, the
+    // same gate as /buddy/{id}/interest, enforced here and not only by hiding the button.
+    if (!can_host_meetups($me)) rmt_adult_gate($me, rmt_return_to('/matches'), 'Meeting other travelers is 18+.', '/matches');
     /* Same ceiling as follows, and for the same reason: this creates a notification, and anything
        that creates a notification is a way to bother a lot of people quickly. */
     if (!rmt_rate_ok('connect', (string) $me['id'], 60, 3600)) {
@@ -7529,6 +7532,8 @@ function trip_activity_join(array $a): void {
 
     $back = '/activity/' . (int) $act['id'];
     if ((int) $act['user_id'] === (int) $me['id']) redirect($back);
+    // Joining somebody else's plan means meeting them: 18+, as for meetups and travel buddies.
+    if (!can_host_meetups($me)) rmt_adult_gate($me, $back, 'Joining other travelers\' plans is 18+.', $back);
     if (($act['join_mode'] ?? 'no') === 'no') {
         flash('That plan is not open to others.');
         redirect($back);

@@ -201,6 +201,20 @@ def journey(p, poster_dev, other_dev):
     check(f'[{y.label}] B8 cannot answer again', '/account/age' not in y.page.url, y.page.url)
     y.go('/buddies/new')
     check(f'[{y.label}] B8 still kept out of posting', '/buddies/new' not in y.page.url, y.page.url)
+    # B8b the server refuses a minor even when the button is bypassed: a hand made POST to every
+    # endpoint that asks to meet somebody writes nothing.
+    y.go('/buddies')
+    tok = y.page.evaluate("(document.querySelector('input[name=_csrf]') || {}).value || ''")
+    trip = db("SELECT id FROM trips WHERE user_id <> ? ORDER BY id DESC LIMIT 1", (y.uid,))
+    act = db("SELECT id FROM trip_activities WHERE user_id <> ? ORDER BY id DESC LIMIT 1", (y.uid,))
+    posts = [(f'/buddy/{bid}/interest', {'note': 'hi'}), ('/buddies/new', {}), ('/buddies/here', {}), ('/meetup/new', {})]
+    if trip: posts.append(('/connect', {'trip_id': str(trip[0][0])}))
+    if act: posts.append((f'/activity/{act[0][0]}/join', {}))
+    for path, form in posts:
+        y.page.request.post(BASE + path, form={'_csrf': tok, **form})
+    check(f'[{y.label}] B8b no interest written by a direct POST', not db('SELECT 1 FROM buddy_interest WHERE user_id = ?', (y.uid,)))
+    check(f'[{y.label}] B8b no buddy post written by a direct POST', not db('SELECT 1 FROM buddy_posts WHERE user_id = ?', (y.uid,)))
+    check(f'[{y.label}] B8b no connect request written by a direct POST', not db('SELECT 1 FROM trip_connects WHERE from_user_id = ?', (y.uid,)))
 
     # B9 trip first, signed out, with the buddy box ticked
     t = Member(b, poster_dev[1], f'{poster_dev[0]} trip first')

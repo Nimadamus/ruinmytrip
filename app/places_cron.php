@@ -571,6 +571,9 @@ function rmt_places_index_quality(): void {
 
     $hist   = array_fill(0, 7, 0);
     $one    = [];
+    $atLeast = $nonLatin = [];
+    $minList = (int) input('min');
+    $namesList = (string) input('names') === '1';
     $with   = ['address' => 0, 'hours' => 0, 'website' => 0, 'phone' => 0, 'photo' => 0, 'review' => 0];
     $byCity = $byType = [];
     foreach ($rows as $r) {
@@ -579,6 +582,18 @@ function rmt_places_index_quality(): void {
            + ((int) $r['photos']  > 0 ? 1 : 0)
            + ((int) $r['reviews'] > 0 ? 1 : 0);
         $hist[$n]++;
+        // ?min=N lists every place with at least N signals (the sitemap candidate audit);
+        // ?names=1 lists every place whose name carries a non-Latin script (the English name audit).
+        if ($minList > 0 && $n >= $minList) {
+            $atLeast[] = ['slug' => (string) $r['slug'], 'name' => (string) $r['name'], 'dest' => (string) $r['dest'],
+                          'type' => (string) $r['type'], 'signals' => $n, 'address' => (int) $r['has_address'],
+                          'website' => (int) $r['has_website'], 'phone' => (int) $r['has_phone'],
+                          'hours' => (int) $r['hours'] > 0 ? 1 : 0, 'photo' => (int) $r['photos'] > 0 ? 1 : 0,
+                          'review' => (int) $r['reviews'] > 0 ? 1 : 0];
+        }
+        if ($namesList && preg_match('/[^\x{0000}-\x{024F}\x{1E00}-\x{1EFF}\x{2000}-\x{206F}\x{20A0}-\x{20CF}]/u', (string) $r['name'])) {
+            $nonLatin[] = ['slug' => (string) $r['slug'], 'name' => (string) $r['name'], 'dest' => (string) $r['dest'], 'signals' => $n];
+        }
         if ($n === 1) {
             $one[] = ['slug' => (string) $r['slug'], 'dest' => (string) $r['dest'], 'type' => (string) $r['type'],
                       'signal' => (int) $r['has_address'] ? 'address' : ((int) $r['has_website'] ? 'website'
@@ -624,6 +639,8 @@ function rmt_places_index_quality(): void {
         'thin_by_type'      => $byType,
         // ?list=1: every place with exactly one signal, which one, for a page by page audit.
         'one_signal'        => (string) input('list') === '1' ? $one : null,
+        'at_least_min'      => $minList > 0 ? $atLeast : null,
+        'non_latin_names'   => $namesList ? $nonLatin : null,
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), "\n";
 }
 
