@@ -112,7 +112,7 @@
     <div class="v2-sec-head">
       <div>
         <h2 class="v2-h2">Cities to explore</h2>
-        <?php if ($stat_places > 0): ?><p class="v2-sub"><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities, each with hours, an address and directions.</p><?php endif; ?>
+        <?php if ($stat_places > 0): ?><p class="v2-sub"><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities, every one on the map with directions.</p><?php endif; ?>
       </div>
       <a class="v2-link" href="<?= e(url('explore')) ?>">All <?= (int) $v2CityCount ?> cities →</a>
     </div>
