@@ -116,12 +116,24 @@ function rmt_sitemap_group(string $group): array {
             }
             break;
 
+        case 'places':
+            /* Only the reviewed list in database/sitemap_places.txt (Nima, 2026-10-30): places
+               with a checked editorial review. The catalog as a whole was 832 of the URLs we
+               handed Google and ranked for restaurant names; a page with hours and nothing else
+               stays indexable for the traveler who has it, but is not submitted. Each listed
+               place is still asked rmt_indexable(), so the list can never put a noindex page
+               here. An empty or missing list file turns the group off. */
+            $allow = rmt_sitemap_place_allowlist();
+            if (!$allow) break;
+            foreach (rmt_index_places() as $pl) {
+                if (!isset($allow[(string) $pl['slug']]) || !$pl['verdict']['ok']) continue;
+                $add('/p/' . $pl['slug'], $pl['updated_at'] ?? null);
+            }
+            break;
+
         case 'categories':
         case 'neighborhoods':
-        case 'places':
             // Still indexable, still linked from the city a person is reading. Not submitted.
-            // The place catalog was 832 of the URLs we handed Google, and it ranked for
-            // restaurant names. A venue page stays where it is for the traveler who has it.
             break;
 
         case 'editorial':
@@ -273,6 +285,23 @@ function rmt_sitemap_generate(): array {
         }
     }
     return $counts;
+}
+
+/**
+ * The reviewed place slugs that may be submitted (database/sitemap_places.txt), as a set.
+ * Blank lines and # comments are ignored; anything that is not a slug is ignored.
+ * @return array<string,true>
+ */
+function rmt_sitemap_place_allowlist(?string $file = null): array {
+    $file ??= BASE_PATH . '/database/sitemap_places.txt';
+    if (!is_file($file)) return [];
+    $out = [];
+    foreach (file($file, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#' || !preg_match('/^[a-z0-9][a-z0-9-]{0,190}$/', $line)) continue;
+        $out[$line] = true;
+    }
+    return $out;
 }
 
 /** The parts currently cached, in index order. */

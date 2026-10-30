@@ -59,15 +59,15 @@ fi
 
 # 4. prove the server is reading the database we just provisioned, not an older one
 DB_PLACES=$(RMT_SQLITE="$DB" php -c php.local.ini -r 'require "app/bootstrap.php";
-  echo (int) q_one("SELECT COUNT(*) n FROM places p JOIN place_editorial pe ON pe.place_id = p.id")["n"];')
+  echo count(rmt_sitemap_group("places"));')
 SITEMAP_PLACES=$(curl -s "http://127.0.0.1:$PORT/sitemap.xml" | grep -cE "<loc>[^<]*/p/")
 
 if [ "$DB_PLACES" != "$SITEMAP_PLACES" ]; then
   echo "ERROR: server is not serving this database." >&2
-  echo "  database has $DB_PLACES editorial places, served sitemap lists $SITEMAP_PLACES." >&2
+  echo "  database gives $DB_PLACES sitemap places, served sitemap lists $SITEMAP_PLACES." >&2
   echo "  A stale process is almost certainly answering. Do not trust any check run against it." >&2
   exit 1
 fi
 
-echo "ready:    http://127.0.0.1:$PORT  ($DB_PLACES editorial places, server matches database)"
+echo "ready:    http://127.0.0.1:$PORT  ($DB_PLACES sitemap places, server matches database)"
 echo "log:      $LOG"
