@@ -5872,7 +5872,7 @@ function page_about(array $a): void {
                               WHERE r.status = 'published' AND u.role <> ?", [RMT_EDITORIAL_ROLE]),
     ];
     view('legal/about', ['counts' => $counts], [
-        'title' => 'About RuinMyTrip - what this site is and what it promises',
+        'title' => 'About RuinMyTrip: what this site is and what it promises',
         'description' => 'A travel discovery and review community built on honest traveler experiences. What we promise, what we are not, and how editorial content is kept separate.',
         'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'About', 'url' => url('about')]],
     ]);

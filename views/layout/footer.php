@@ -55,6 +55,7 @@
       <a href="<?= e(url('editorial-policy')) ?>">Editorial standards</a>
       <a href="<?= e(url('guidelines')) ?>">Community guidelines</a>
       <a href="<?= e(url('contact')) ?>">Contact and corrections</a>
+      <a href="https://www.instagram.com/ruinmytripcom/" rel="me noopener" target="_blank">Instagram</a>
     </div>
     <div>
       <h4>Legal</h4>

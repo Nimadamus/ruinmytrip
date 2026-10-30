@@ -23,7 +23,7 @@ require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/cards.php';
 
 $pdo = db();
-$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT)');
+$pdo->exec('CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, hero_url TEXT)');
 /* Plans live in trips since migration 071, so anything that counts travelers reads this. */
 $pdo->exec("CREATE TABLE IF NOT EXISTS trips (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INT,
               destination_id INT, title TEXT NOT NULL DEFAULT '', slug TEXT NOT NULL DEFAULT '',

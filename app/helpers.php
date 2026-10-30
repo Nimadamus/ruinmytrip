@@ -196,7 +196,8 @@ function editable_url_value(?string $u): string {
  * cannot use its own image, has to be able to ask for it by name instead of copying the key.
  */
 function rmt_default_og_image(): string {
-    return url('assets/img/og-default.jpg');
+    return function_exists('rmt_card_available') && rmt_card_available()
+        ? url('card/site/home.png') : url('assets/img/og-default.jpg');
 }
 
 /** The arrival event, shared by view() and the page cache so a cached page counts the same. */

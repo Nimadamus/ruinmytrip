@@ -90,6 +90,8 @@ function rmt_card_render(array $spec): string {
     $regular = rmt_card_font(false); $bold = rmt_card_font(true);
 
     imagefilledrectangle($im, 0, 0, $W, $H, $ink);
+    // On a photograph the grey meta line loses to the picture, so it is drawn nearly white.
+    if (rmt_card_backdrop($im, (string) ($spec['photo'] ?? ''))) $muted = imagecolorallocate($im, 226, 232, 240);
     imagefilledrectangle($im, 0, 0, 14, $H, $brand);          // the brand bar, same as the site's accent edge
     $pad = 72;
 
@@ -151,6 +153,53 @@ function rmt_card_render(array $spec): string {
     imagepng($im, null, 6);
     imagedestroy($im);
     return (string) ob_get_clean();
+}
+
+/**
+ * Load a stored photograph for a card: a /media/<key> upload or a file under public/assets.
+ * Anything else (an outside URL) is not fetched, so a card never waits on another server.
+ */
+function rmt_card_photo_bytes(string $src): string {
+    $path = (string) parse_url($src, PHP_URL_PATH);
+    if (preg_match('#^/media/([a-f0-9]{32}\.(?:jpg|png|webp))$#', $path, $m)) {
+        $got = rmt_storage_get($m[1]);
+        return $got ? (string) $got['bytes'] : '';
+    }
+    if (preg_match('#^/assets/img/[A-Za-z0-9_\-/]+\.(?:jpg|jpeg|png|webp)$#', $path)) {
+        $f = BASE_PATH . '/public' . $path;
+        return is_file($f) ? (string) file_get_contents($f) : '';
+    }
+    return '';
+}
+
+/**
+ * Lay the photograph under the card, cropped to fill, with the ink colour washed over it from the
+ * left so the words stay readable on any picture. A plain dark card with the city name on it
+ * previewed as a block of empty navy in every feed; the place itself is what makes somebody tap.
+ */
+function rmt_card_backdrop($im, string $src): bool {
+    if ($src === '') return false;
+    $bytes = rmt_card_photo_bytes($src);
+    $ph = $bytes !== '' ? @imagecreatefromstring($bytes) : false;
+    if (!$ph) return false;
+    $W = RMT_CARD_W; $H = RMT_CARD_H;
+    $sw = imagesx($ph); $sh = imagesy($ph);
+    $scale = max($W / $sw, $H / $sh);
+    $cw = (int) round($W / $scale); $ch = (int) round($H / $scale);
+    imagecopyresampled($im, $ph, 0, 0, (int) (($sw - $cw) / 2), (int) (($sh - $ch) / 2), $W, $H, $cw, $ch);
+    imagedestroy($ph);
+    imagealphablending($im, true);
+    // GD alpha: 0 opaque, 127 clear. Heavy behind the words on the left, lighter on the right,
+    // and darker again along the bottom where the pills and the domain sit.
+    for ($x = 0; $x < $W; $x += 4) {
+        $t = $x / $W;
+        $a = (int) round(14 + 58 * max(0, $t - 0.35) / 0.65);
+        imagefilledrectangle($im, $x, 0, $x + 3, $H, imagecolorallocatealpha($im, 15, 27, 45, $a));
+    }
+    for ($y = $H - 170; $y < $H; $y += 2) {
+        $t = ($y - ($H - 170)) / 170;
+        imagefilledrectangle($im, 0, $y, $W, $y + 1, imagecolorallocatealpha($im, 15, 27, 45, (int) round(127 - 95 * $t)));
+    }    return true;
 }
 
 /** Trim a body to one card-sized quote. */
@@ -267,7 +316,7 @@ function rmt_card_spec(string $kind, string $key): ?array {
                Without this it shared as the site's default image, so the one thing the link is
                about -- the city -- was not on the picture. Counts are live and appear only when
                they are real: a pill reading "0 going" is an advert for an empty room. */
-            $d = q_one('SELECT id, name, country FROM destinations WHERE slug = ?', [$key]);
+            $d = q_one('SELECT id, name, country, hero_url FROM destinations WHERE slug = ?', [$key]);
             if (!$d) return null;
             $did = (int) $d['id'];
             $going = (int) (q_one("SELECT COUNT(*) c FROM trips t
@@ -282,7 +331,15 @@ function rmt_card_spec(string $kind, string $key): ?array {
             if ($meets > 0) $pills[] = $meets . ($meets === 1 ? ' meetup' : ' meetups');
             return ['kicker' => 'Travelers', 'title' => 'Travelers in ' . $d['name'],
                     'meta' => trim((string) $d['country'] . ' · who is going, meetups and questions', ' ·'),
-                    'pills' => $pills];
+                    'pills' => $pills, 'photo' => (string) ($d['hero_url'] ?? '')];
+
+        case 'site':
+            // The card for pages with no picture of their own (rmt_default_og_image()).
+            if ($key !== 'home') return null;
+            return ['kicker' => 'Travel community', 'title' => 'Meet travelers going where you are going',
+                    'meta' => 'Post your dates and see who overlaps',
+                    'pills' => ['Free', 'Honest reviews', 'Travel buddies'],
+                    'photo' => '/assets/img/og-default.jpg'];
 
         case 'trip':
             /* A trip is the object the whole product turns on, and it was the one thing with no
