@@ -826,7 +826,7 @@ function place_show(array $a): void {
                and is an advertisement for not clicking; where it is and what it is are the facts a
                searcher came with. */
             $what = $category ? mb_strtolower((string) $category['name']) : mb_strtolower($typeLabel);
-            $desc = $p['name'] . ' is a ' . $what . ' in ' . $p['dest_name'] . '.';
+            $desc = $p['name'] . (preg_match('/^[aeiou]/i', $what) ? ' is an ' : ' is a ') . $what . ' in ' . $p['dest_name'] . '.';
             if (!empty($address['lines'])) $desc .= ' ' . implode(', ', $address['lines']) . '.';
             $desc .= ' See it on a map, save it to a trip, and read what travelers say.';
             $desc = mb_strimwidth($desc, 0, 300, '…');
@@ -5867,7 +5867,8 @@ function page_contact(array $a): void {
  */
 function place_correct_form(array $a): void {
     $p = rmt_place_by_slug((string) $a['slug']);
-    if (!$p || $p['status'] !== 'active') { not_found(); return; }
+    // Any public status: "it reopened" or "it moved" is exactly the correction a closed page needs.
+    if (!$p || !rmt_place_is_public((string) $p['status'])) { not_found(); return; }
     view('place_correct', ['p' => $p, 'errors' => [], 'sent' => false], [
         'title' => 'Suggest a correction to ' . $p['name'] . ' - RuinMyTrip',
         'description' => 'Tell us if the address, opening hours or details for ' . $p['name'] . ' are wrong.',
@@ -5881,7 +5882,7 @@ function place_correct_form(array $a): void {
 function place_correct_submit(array $a): void {
     csrf_check();
     $p = rmt_place_by_slug((string) $a['slug']);
-    if (!$p || $p['status'] !== 'active') { not_found(); return; }
+    if (!$p || !rmt_place_is_public((string) $p['status'])) { not_found(); return; }
     $me = current_user();
 
     // Rate limited by connection rather than by account, because the form deliberately does not

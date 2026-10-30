@@ -202,7 +202,12 @@ function rmt_place_page_title(array $p): string {
     $hasHours  = (int) ($p['hours_count'] ?? 0) > 0;
     $hasPrices = ($p['price_level'] ?? null) !== null
               || trim((string) ($p['editorial_prices'] ?? '')) !== '';
+    // A shut venue's title says so before anything else. "Prices" on a restaurant that closed is
+    // the one promise its page can no longer keep.
+    $status = (string) ($p['status'] ?? 'active');
     $answer = match (true) {
+        $status === 'permanently_closed' => 'now closed',
+        $status === 'temporarily_closed' => 'temporarily closed',
         $hasPrices && $hasHours => 'prices & hours',
         $hasPrices              => (string) ($p['type'] ?? '') === 'hotel' ? 'prices & fees' : 'prices',
         $hasHours               => 'opening hours',
