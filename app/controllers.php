@@ -718,6 +718,11 @@ function place_show(array $a): void {
         // old URL would throw away both the redirect and the page it points at.
         $prev = rmt_place_for_retired_slug((string) $a['slug']);
         if ($prev && rmt_place_is_public((string) $prev['status'])) redirect_permanent(url('p/'.$prev['slug']));
+        // A record we hid because it was never a real venue (migration 109) sends its old URL to
+        // the city it was filed under, so nobody who had the link lands on a 404.
+        $hid = q_one("SELECT d.slug FROM places p JOIN destinations d ON d.id = p.destination_id
+                       WHERE p.slug = ? AND p.status = 'hidden'", [(string) $a['slug']]);
+        if ($hid) redirect_permanent(url('d/'.$hid['slug']));
         not_found();
     }
     $id = (int) $p['id'];
