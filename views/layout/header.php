@@ -15,6 +15,11 @@
 <meta property="og:description" content="<?= e((string) ($__meta['og_description'] ?? '') !== '' ? (string) $__meta['og_description'] : $__meta['description']) ?>">
 <?php if (($__meta['canonical'] ?? '') !== ''): ?><meta property="og:url" content="<?= e($__meta['canonical']) ?>"><?php endif; ?>
 <meta property="og:image" content="<?= e($__meta['og_image']) ?>">
+<?php /* Share cards are always drawn at 1200x630. Saying so lets Facebook and LinkedIn render the
+         picture on the very first share instead of fetching it first and showing a bare link. */ ?>
+<?php if (str_contains((string) $__meta['og_image'], '/card/')): ?><meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630"><?php endif; ?>
+<meta property="og:image:alt" content="<?= e((string) ($__meta['og_title'] ?? '') !== '' ? (string) $__meta['og_title'] : $__meta['title']) ?>">
 <meta property="og:site_name" content="RuinMyTrip">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0f1b2d">

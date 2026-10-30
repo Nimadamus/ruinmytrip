@@ -1,8 +1,8 @@
 {
   "name": "RuinMyTrip",
   "short_name": "RuinMyTrip",
-  "description": "Travelers talking about where they went, what it cost, and who else will be there.",
-  "start_url": "/talk",
+  "description": "Honest trip reviews, your travel map, and travelers going where you are going.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#0f1b2d",
