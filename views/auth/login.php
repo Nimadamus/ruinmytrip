@@ -9,6 +9,8 @@
     <p class="muted">Sign in to your RuinMyTrip account.</p>
   <?php endif; ?>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $e):?><li><?= e($e) ?></li><?php endforeach;?></ul></div><?php endif; ?>
+  <?php /* Members who joined with Google have no password; the button they joined with has to be here too. */ ?>
+  <?php $qjReturn = (string) ($return ?? ''); include __DIR__ . '/_google_button.php'; ?>
   <form method="post" action="<?= e(url('login')) ?>"><?= csrf_field() ?>
     <input type="hidden" name="return" value="<?= e($return ?? '') ?>">
     <label for="email">Email</label>
