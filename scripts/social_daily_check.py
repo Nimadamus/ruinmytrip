@@ -90,7 +90,7 @@ def main():
         fails.append('trip form did not render (%s)' % code)
 
     # 3. Tracking, from the funnel.
-    code, body, _ = get(SITE + '/cron/funnel?days=1', key=cron_key())
+    code, body, _ = get(SITE + '/cron/funnel?only=scorecard&days=1', key=cron_key())
     if code != 200:
         fails.append('funnel endpoint %s' % code)
     else:

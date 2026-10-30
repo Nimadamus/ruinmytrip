@@ -13,7 +13,7 @@ conversion change cannot even be measured. Until links are being posted, the bot
 
 | Channel | Account | State | Verdict |
 |---|---|---|---|
-| Instagram @ruinmytripcom | exists, posts scheduled (task RMT IG Publisher) | no bio link, so posts cannot convert | add the bio link first |
+| Instagram @ruinmytripcom | exists, 2 posts, bio already links ruinmytrip.com (checked 10/29 on phone); publisher task disabled | parked by Nima 10/29 | revisit when Nima raises it |
 | Facebook Page | exists | restricted until about 11-08 | resume after the restriction |
 | Facebook groups (personal profile) | Nima's profile | drafts in ACQUISITION_FACEBOOK.md, one test brought 6 humans | best yield so far |
 | Reddit | only u/TrustMyRecord (betting brand, removed 3 times) | unusable | needs an established personal account |
@@ -26,7 +26,7 @@ to act from.
 
 ## Week 1 (in this order)
 
-1. Instagram bio link: `https://ruinmytrip.com/buddies?utm_source=instagram&utm_campaign=launch&utm_content=bio`
+1. Instagram: bio already links ruinmytrip.com. Optional later: switch it to `https://ruinmytrip.com/buddies?utm_source=instagram&utm_campaign=launch&utm_content=bio` so the KPI table credits it.
 2. Friends wave: the 20 personal messages in ~/rmt_campaign1/FRIEND_LINKS.md. The first ten reviews
    have to come from people who know us.
 3. Facebook groups: one honest post per group, only where links are allowed (copy below).
