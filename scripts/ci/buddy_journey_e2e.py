@@ -209,12 +209,24 @@ def journey(p, poster_dev, other_dev):
     act = db("SELECT id FROM trip_activities WHERE user_id <> ? ORDER BY id DESC LIMIT 1", (y.uid,))
     posts = [(f'/buddy/{bid}/interest', {'note': 'hi'}), ('/buddies/new', {}), ('/buddies/here', {}), ('/meetup/new', {})]
     if trip: posts.append(('/connect', {'trip_id': str(trip[0][0])}))
+    if trip: posts.append((f'/trip/{trip[0][0]}/going-too', {}))
     if act: posts.append((f'/activity/{act[0][0]}/join', {}))
     for path, form in posts:
         y.page.request.post(BASE + path, form={'_csrf': tok, **form})
     check(f'[{y.label}] B8b no interest written by a direct POST', not db('SELECT 1 FROM buddy_interest WHERE user_id = ?', (y.uid,)))
     check(f'[{y.label}] B8b no buddy post written by a direct POST', not db('SELECT 1 FROM buddy_posts WHERE user_id = ?', (y.uid,)))
     check(f'[{y.label}] B8b no connect request written by a direct POST', not db('SELECT 1 FROM trip_connects WHERE from_user_id = ?', (y.uid,)))
+    check(f'[{y.label}] B8b no going too trip written by a direct POST', not db('SELECT 1 FROM trips WHERE user_id = ?', (y.uid,)))
+    # B8c the other side: an adult cannot connect to, or go too on, a trip a 17 year old owns.
+    if trip:
+        db_minor_trip = php('$t = q_one("SELECT * FROM trips WHERE id = %d"); q_run("INSERT INTO trips (user_id, destination_id, title, slug, date_from, date_to, status, visibility, created_at) VALUES (?,?,?,?,?,?,?,?,?)", [%d, (int) $t["destination_id"], "Minor trip", "minor-trip", $t["date_from"], $t["date_to"], "published", "public", date("Y-m-d H:i:s")]); echo q_one("SELECT MAX(id) m FROM trips WHERE user_id = %d")["m"];' % (trip[0][0], y.uid, y.uid))
+        o.go('/buddies')
+        otok = o.page.evaluate("(document.querySelector('input[name=_csrf]') || {}).value || ''")
+        before = db('SELECT COUNT(*) FROM trips WHERE user_id = ?', (o.uid,))[0][0]
+        o.page.request.post(BASE + '/connect', form={'_csrf': otok, 'trip_id': db_minor_trip})
+        o.page.request.post(BASE + f'/trip/{db_minor_trip}/going-too', form={'_csrf': otok})
+        check(f'[{o.label}] B8c no connect to a minor\'s trip', not db('SELECT 1 FROM trip_connects WHERE trip_id = ?', (db_minor_trip,)))
+        check(f'[{o.label}] B8c no going too on a minor\'s trip', db('SELECT COUNT(*) FROM trips WHERE user_id = ?', (o.uid,))[0][0] == before)
 
     # B9 trip first, signed out, with the buddy box ticked
     t = Member(b, poster_dev[1], f'{poster_dev[0]} trip first')

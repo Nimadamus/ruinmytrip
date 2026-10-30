@@ -34,6 +34,13 @@ function rmt_adult_gate(?array $u, string $return, string $deny, string $denyTo)
 }
 
 /** Only a path on this site, never somewhere else. */
+/** Whether the member on the other side of a meeting is 18+. Read from the row, never shown. */
+function rmt_user_is_adult(int $uid): bool {
+    if ($uid < 1) return false;
+    $u = q_one('SELECT id, birthdate FROM users WHERE id = ?', [$uid]);
+    return $u ? can_host_meetups($u) : false;
+}
+
 function rmt_age_safe_return(string $r): string {
     return (preg_match('#^/(?!/)[^\s\\\\]*$#', $r) === 1) ? $r : '/buddies';
 }

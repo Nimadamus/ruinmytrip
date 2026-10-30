@@ -3576,6 +3576,15 @@ function trip_going_too(array $a): void {
         flash('You cannot do that.');
         redirect(rmt_return_to('/trip/' . (int) $t['id']));
     }
+    /* "Going too" on a stranger's trip notifies them and puts you both in each other's matches,
+       which is the doorway to a meeting: 18+ on both sides, as for travel buddies. */
+    if ((int) $t['user_id'] !== (int) $me['id']) {
+        if (!can_host_meetups($me)) rmt_adult_gate($me, '/trip/' . (int) $t['id'], 'Meeting other travelers is 18+.', '/trip/' . (int) $t['id']);
+        if (!rmt_user_is_adult((int) $t['user_id'])) {
+            flash('That is not available.');
+            redirect(rmt_return_to('/trip/' . (int) $t['id']));
+        }
+    }
     $r = rmt_plan_join($t, $me);
     flash($r['ok']
         ? 'Your dates are posted. You will see each other on the city page and in matches.'
@@ -4468,6 +4477,13 @@ function connect_request(array $a): void {
     // Asking to meet a stranger on their trip is a travel buddy request in all but name: 18+, the
     // same gate as /buddy/{id}/interest, enforced here and not only by hiding the button.
     if (!can_host_meetups($me)) rmt_adult_gate($me, rmt_return_to('/matches'), 'Meeting other travelers is 18+.', '/matches');
+    // Both ends: an accepted connect opens messaging, so a trip whose owner is not an adult takes
+    // no requests at all. Said as "not available", which names nobody's age.
+    $owner = q_one('SELECT user_id FROM trips WHERE id = ?', [$tripId]);
+    if ($owner && !rmt_user_is_adult((int) $owner['user_id'])) {
+        flash('That is not available.');
+        redirect(rmt_return_to('/matches'));
+    }
     /* Same ceiling as follows, and for the same reason: this creates a notification, and anything
        that creates a notification is a way to bother a lot of people quickly. */
     if (!rmt_rate_ok('connect', (string) $me['id'], 60, 3600)) {
@@ -4512,6 +4528,8 @@ function connect_decide(array $a): void {
     require_login(); csrf_check();
     $me = current_user();
     $answer = input('answer') === 'accept' ? 'accept' : 'decline';
+    // Accepting opens messaging with a stranger: 18+. Declining stays open to everybody.
+    if ($answer === 'accept' && !can_host_meetups($me)) rmt_adult_gate($me, '/matches', 'Meeting other travelers is 18+.', '/matches');
     $r = rmt_connect_decide((int) $me['id'], (int) $a['id'], $answer);
     if (!$r['ok']) { forbidden('That is not yours to answer.'); }
     if ($r['changed'] && $r['state'] === 'accepted') {
@@ -7534,7 +7552,7 @@ function trip_activity_join(array $a): void {
     if ((int) $act['user_id'] === (int) $me['id']) redirect($back);
     // Joining somebody else's plan means meeting them: 18+, as for meetups and travel buddies.
     if (!can_host_meetups($me)) rmt_adult_gate($me, $back, 'Joining other travelers\' plans is 18+.', $back);
-    if (($act['join_mode'] ?? 'no') === 'no') {
+    if (($act['join_mode'] ?? 'no') === 'no' || !rmt_user_is_adult((int) $act['user_id'])) {
         flash('That plan is not open to others.');
         redirect($back);
     }
