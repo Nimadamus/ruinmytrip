@@ -2635,7 +2635,7 @@ function travelers_index(array $a): void {
                         (SELECT COUNT(*) FROM trips t WHERE t.user_id=u.id AND t.status='published'
                            AND COALESCE(t.visibility,'public')='public') AS trips
                      FROM users u LEFT JOIN profiles p ON p.user_id=u.id
-                     WHERE u.status='active' AND u.role <> ? AND $dirBlock
+                     WHERE u.status='active' AND u.role <> ? AND $dirBlock AND " . rmt_not_qa_sql() . "
                      ORDER BY reviews DESC, trips DESC, u.id DESC LIMIT 80",
                     array_merge([RMT_EDITORIAL_ROLE], $dirBlockArgs));
     /* Six ways to find somebody, not one. The page was a directory ordered by review count, which
@@ -3129,7 +3129,7 @@ function search(array $a): void {
         if ($me) { [$blockSql] = rmt_match_block_sql('u.id'); $blockArgs = [(int) $me['id'], (int) $me['id']]; }
         $people = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url, p.home_city FROM users u
                          LEFT JOIN profiles p ON p.user_id=u.id
-                         WHERE u.status='active' AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
+                         WHERE u.status='active' AND " . rmt_not_qa_sql() . " AND (LOWER(u.username) LIKE ? OR LOWER(p.display_name) LIKE ?)
                            AND $blockSql
                          LIMIT 10", array_merge([$like, $like], $blockArgs));
         /* Talk is searched with LIKE rather than the full-text index the long-form types use. A

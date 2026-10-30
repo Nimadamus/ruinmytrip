@@ -311,3 +311,6 @@ function show_verified(?array $row): bool {
     if (rmt_is_editorial($row)) return false;
     return verification_system_exists() && !empty($row['verified']);
 }
+
+/** Our live QA members (a "+rmtqa" email alias, approved 2026-10-12) stay out of public lists of people. */
+function rmt_not_qa_sql(string $alias = 'u'): string { return "COALESCE($alias.email, '') NOT LIKE '%+rmtqa%'"; }

@@ -421,7 +421,7 @@ function rmt_suggest_users(string $qNorm, int $limit): array {
     $like = rmt_search_like($qNorm);
     $rows = q_all("SELECT u.id, u.username, p.display_name, p.avatar_url
                      FROM users u LEFT JOIN profiles p ON p.user_id = u.id
-                    WHERE u.status = 'active'
+                    WHERE u.status = 'active' AND " . rmt_not_qa_sql() . "
                       AND (LOWER(u.username) LIKE ? ESCAPE '!' OR LOWER(COALESCE(p.display_name, '')) LIKE ? ESCAPE '!')
                     ORDER BY u.username LIMIT " . ($limit * 2), [$like . '%', $like . '%']);
     $out = [];

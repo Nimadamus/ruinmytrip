@@ -51,7 +51,7 @@ function names(string $q): array {
 }
 
 $pdo = db();
-$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, role TEXT, status TEXT)");
+$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, email TEXT, role TEXT, status TEXT)");
 $pdo->exec("CREATE TABLE profiles (user_id INTEGER PRIMARY KEY, display_name TEXT, avatar_url TEXT)");
 $pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, slug TEXT, name TEXT, country TEXT, region TEXT, hero_url TEXT)");
 $pdo->exec("CREATE TABLE places (id INTEGER PRIMARY KEY AUTOINCREMENT, destination_id INT, slug TEXT UNIQUE,
@@ -63,6 +63,7 @@ $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/047_place_attribu
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/050_search_suggest.sqlite.sql'));
 
 $pdo->exec("INSERT INTO users (id,username,role,status) VALUES (1,'wanderjane','user','active'),(2,'ruinmytrip','" . RMT_EDITORIAL_ROLE . "','active')");
+$pdo->exec("INSERT INTO users (id,username,email,role,status) VALUES (3,'qamember','x+rmtqa1@example.invalid','user','active')");
 $pdo->exec("INSERT INTO profiles (user_id, display_name) VALUES (1,'Jane Traveler')");
 $pdo->exec("INSERT INTO destinations (id,slug,name,country,region) VALUES
     (1,'vienna-austria','Vienna','Austria','Vienna'),
@@ -179,6 +180,7 @@ check('no browse link for a category with nothing in it',
 echo "\n-- users --\n";
 check('a username is findable',     top('wanderjane'), 'Jane Traveler');
 check('a display name is findable', top('jane trav'), 'Jane Traveler');
+check('a QA member is not offered',   top('qamember'), null);
 
 echo "\n-- injection and abuse --\n";
 check("a quote is just text",        rmt_search_suggest("' OR 1=1 --")['count'], 0);
