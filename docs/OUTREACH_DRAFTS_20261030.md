@@ -308,7 +308,9 @@ Tracking check: `facebook`, `indiehackers`, `reddit` and `directory` are all in 
 
 **Weekly rhythm after the two week calendar:** one new community or directory per weekday at most, one Facebook post per group per month at most, every link tagged, drop channels that send zero humans in two weeks (KPI.md Tagged links table).
 
-## 7. Hosts & Locals recruitment (drafts, NOTHING POSTED; each needs Nima's "approve post 7.N")
+## 7. Hosts & Locals recruitment (APPROVED by Nima 2026-10-31, nothing posted yet)
+
+Schedule: 7.1 and 7.2 from Mon Nov 9 (Facebook restriction lifts about Nov 8), one group per day, featured cities first. 7.3 right after the Indie Hackers founder post (2.x, Nov 3), which itself still needs approval. 7.4 waits for an established Reddit account.
 
 Rules: same as section 6. Say the site is new. No member counts. Hosting is free, identities are not checked, and the host decides every request. Link tags: `?utm_source=<channel>&utm_campaign=hosts_locals`.
 
