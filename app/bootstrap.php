@@ -112,6 +112,9 @@ if (!defined('RMT_NO_AUTOSEED') && $config['db_driver'] === 'sqlite' && !file_ex
 // DB-backed sessions: logins survive container restarts/deploys and work across instances.
 // CLI has no session and no cookies, and starting one there hits the sessions table before a
 // maintenance script has had the chance to create it.
+// Content Security Policy headers (app/csp.php): set before any output, once per request.
+rmt_csp_send();
+
 if (PHP_SAPI !== 'cli') {
     session_set_save_handler(new DbSessionHandler(), true);
     session_name($config['session_name']);

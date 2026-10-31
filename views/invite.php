@@ -8,7 +8,7 @@
   <div class="card" style="margin:18px 0"><div class="card-body">
     <label for="invite-link" class="hint">Your link</label>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0 0">
-      <input id="invite-link" type="text" readonly value="<?= e($link) ?>" style="flex:1;min-width:240px" onclick="this.select()">
+      <input id="invite-link" type="text" readonly value="<?= e($link) ?>" style="flex:1;min-width:240px" data-select-on-click>
       <button type="button" class="btn btn-primary" data-copy="<?= e($link) ?>">Copy</button>
     </div>
     <?php $shareUrl = $link; $shareText = $message; include __DIR__ . '/_share.php'; ?>

@@ -23,7 +23,7 @@
   </form>
   <hr style="border:0;border-top:1px solid var(--line);margin:28px 0 18px">
   <form method="post" action="<?= e(url('blog/'.(int)$p['id'].'/delete')) ?>"
-        onsubmit="return confirm('Delete this post?');">
+        data-confirm-submit="Delete this post?">
     <?= csrf_field() ?>
     <button class="btn btn-ghost" style="color:#b42318">Delete this post</button>
   </form>

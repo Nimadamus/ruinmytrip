@@ -39,7 +39,7 @@ $vis = $current['visibility'] ?? 'public';
   <p style="margin:12px 0 0"><button class="btn btn-primary" type="submit"><?= $current ? 'Update plan' : 'Share plan' ?></button></p>
 </form>
 <?php if ($current && $lockDestId > 0): ?>
-<form method="post" action="<?= e(url('going/delete')) ?>" onsubmit="return confirm('Remove this plan?');" style="margin-top:8px">
+<form method="post" action="<?= e(url('going/delete')) ?>" data-confirm-submit="Remove this plan?" style="margin-top:8px">
   <?= csrf_field() ?>
   <input type="hidden" name="destination_id" value="<?= $lockDestId ?>">
   <button class="btn btn-ghost btn-sm" type="submit">Remove plan</button>

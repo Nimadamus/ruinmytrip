@@ -19,7 +19,7 @@
                worse for its members than one with a founder who has lost interest. */ ?>
       <?php if ($canEdit && $m['role'] !== 'owner'): ?>
         <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/members/'.(int)$m['user_id'].'/remove')) ?>"
-              onsubmit="return confirm('Remove @<?= e((string) $m['username']) ?> from this community?');">
+              data-confirm-submit="Remove @<?= e((string) $m['username']) ?> from this community?">
           <?= csrf_field() ?>
           <button class="btn btn-ghost btn-sm" style="color:#b42318">Remove</button>
         </form>

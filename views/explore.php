@@ -10,13 +10,13 @@
   <p class="muted">Every destination here carries a researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a> and practical tips, and most have a <a href="<?= e(url('guides')) ?>">city guide</a>. The review counts below are travelers only, so they read zero until real people post.</p>
   <form action="<?= e(url('explore')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
     <input type="search" name="q" aria-label="Search a city or country" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">
-    <select name="category" aria-label="Category" onchange="this.form.submit()">
+    <select name="category" aria-label="Category" data-autosubmit>
       <option value="">All styles</option>
       <?php foreach ($cats as $c): ?>
         <option value="<?= e($c['category']) ?>" <?= $cat===$c['category']?'selected':'' ?>><?= e(ucfirst($c['category'])) ?></option>
       <?php endforeach; ?>
     </select>
-    <select name="sort" aria-label="Sort by" onchange="this.form.submit()">
+    <select name="sort" aria-label="Sort by" data-autosubmit>
       <option value="name" <?= $sort==='name'?'selected':'' ?>>A to Z</option>
       <option value="rating" <?= $sort==='rating'?'selected':'' ?>>Highest rated</option>
       <option value="popular" <?= $sort==='popular'?'selected':'' ?>>Most wanted</option>

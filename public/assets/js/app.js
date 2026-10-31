@@ -3,6 +3,57 @@ document.addEventListener('click', function (e) {
   const t = e.target.closest('[data-confirm]');
   if (t && !confirm(t.getAttribute('data-confirm'))) e.preventDefault();
 });
+/* Behaviours that used to be inline event handler attributes (onclick=, onsubmit= ...), moved
+   here so the Content Security Policy can forbid inline script (docs/CSP_20261030.md). Each one
+   is keyed on a data attribute and does exactly what the attribute it replaced did. */
+// A form that asks before it is sent (was onsubmit="return confirm(...)").
+document.addEventListener('submit', function (e) {
+  const f = e.target;
+  if (f && f.hasAttribute && f.hasAttribute('data-confirm-submit') &&
+      !confirm(f.getAttribute('data-confirm-submit'))) e.preventDefault();
+}, true);
+document.addEventListener('change', function (e) {
+  const t = e.target;
+  if (!t || !t.matches) return;
+  // A select that sends its form as soon as it changes (was onchange="this.form.submit()").
+  if (t.matches('[data-autosubmit]') && t.form) { t.form.submit(); return; }
+  // A photo picker that says what it is doing and sends its form.
+  if (t.matches('[data-photo-autosubmit]') && t.form) {
+    let label = t.closest('[data-photo-label]');
+    label = label && label.querySelector('[data-photo-text]');
+    if (label && t.files && t.files.length) {
+      label.textContent = t.files.length === 1 ? 'Adding a photo…' : 'Adding ' + t.files.length + ' photos…';
+    }
+    t.form.submit();
+  }
+});
+document.addEventListener('click', function (e) {
+  const t = e.target.closest('[data-toggle-body],[data-close-body],[data-reveal],[data-select-on-click]');
+  if (!t) return;
+  if (t.hasAttribute('data-toggle-body')) {
+    const open = document.body.classList.toggle(t.getAttribute('data-toggle-body'));
+    if (t.hasAttribute('aria-expanded')) t.setAttribute('aria-expanded', open);
+  } else if (t.hasAttribute('data-close-body')) {
+    document.body.classList.remove(t.getAttribute('data-close-body'));
+  } else if (t.hasAttribute('data-reveal')) {
+    // "Show all": open the list, then the button's row goes.
+    const box = document.getElementById(t.getAttribute('data-reveal'));
+    if (box && t.hasAttribute('data-reveal-add')) box.classList.add(t.getAttribute('data-reveal-add'));
+    if (box && t.hasAttribute('data-reveal-remove')) box.classList.remove(t.getAttribute('data-reveal-remove'));
+    if (t.parentNode) t.parentNode.remove();
+  } else if (t.hasAttribute('data-select-on-click') && t.select) {
+    t.select();
+  }
+});
+// A picture that fails to load is removed rather than shown broken (was onerror="this.remove()").
+// Errors fired before this script ran are caught by the sweep below.
+document.addEventListener('error', function (e) {
+  const t = e.target;
+  if (t && t.tagName === 'IMG' && t.hasAttribute('data-hide-broken')) t.remove();
+}, true);
+document.querySelectorAll('img[data-hide-broken]').forEach(function (img) {
+  if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) img.remove();
+});
 // Close mobile nav when a link is tapped.
 document.querySelectorAll('.site-nav a').forEach(a =>
   a.addEventListener('click', () => document.body.classList.remove('nav-open')));

@@ -67,7 +67,7 @@ $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted'
           <form method="post" action="<?= e(url('buddy/' . (int) $p['id'] . '/status')) ?>"><?= csrf_field() ?><input type="hidden" name="return" value="<?= e($back) ?>">
             <input type="hidden" name="status" value="completed"><button class="btn btn-ghost btn-sm">Mark completed</button></form>
         <?php endif; ?>
-        <form method="post" action="<?= e(url('buddy/' . (int) $p['id'] . '/status')) ?>" onsubmit="return confirm('Cancel this trip and remove the post?')"><?= csrf_field() ?>
+        <form method="post" action="<?= e(url('buddy/' . (int) $p['id'] . '/status')) ?>" data-confirm-submit="Cancel this trip and remove the post?"><?= csrf_field() ?>
           <input type="hidden" name="status" value="removed"><button class="btn btn-ghost btn-sm">Cancel trip</button></form>
       </div>
     </div>
@@ -83,7 +83,7 @@ $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted'
       </div>
       <div class="bdash-acts">
         <a class="btn btn-ghost btn-sm" href="<?= e(url('trip/' . (int) $t['id'] . '/edit')) ?>">Edit</a>
-        <form method="post" action="<?= e(url('trip/' . (int) $t['id'] . '/delete')) ?>" onsubmit="return confirm('Cancel this trip? It is removed from your profile and from searches, along with any photos on it.')"><?= csrf_field() ?>
+        <form method="post" action="<?= e(url('trip/' . (int) $t['id'] . '/delete')) ?>" data-confirm-submit="Cancel this trip? It is removed from your profile and from searches, along with any photos on it."><?= csrf_field() ?>
           <button class="btn btn-ghost btn-sm">Cancel trip</button></form>
       </div>
     </div>

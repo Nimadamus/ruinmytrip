@@ -62,7 +62,7 @@
             <select name="poll_days"><option value="1">1 day</option><option value="3" selected>3 days</option><option value="7">7 days</option></select>
           </label>
         </fieldset>
-        <script>(function(){var b=document.querySelector('.js-poll-toggle'),f=document.getElementById('poll-fields');if(!b||!f)return;
+        <script nonce="<?= e(rmt_csp_nonce()) ?>">(function(){var b=document.querySelector('.js-poll-toggle'),f=document.getElementById('poll-fields');if(!b||!f)return;
           b.addEventListener('click',function(){var open=f.hidden;f.hidden=!open;b.setAttribute('aria-expanded',open?'true':'false');
           if(open){var i=f.querySelector('input');if(i)i.focus();}else{f.querySelectorAll('input').forEach(function(x){x.value='';});}});})();</script>
       </form>

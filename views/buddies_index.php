@@ -66,7 +66,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     </details>
     </details>
   </form>
-  <script>
+  <script nonce="<?= e(rmt_csp_nonce()) ?>">
   (function () { var d = document.getElementById('bs-filters'); if (d && window.matchMedia('(min-width: 760px)').matches) d.open = true; })();
   </script>
 </div></section>

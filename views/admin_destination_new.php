@@ -76,7 +76,7 @@
 
   <?php if ($draft['id']): ?>
     <form method="post" action="<?= e(url('admin/destination/draft/' . (int) $draft['id'] . '/publish')) ?>"
-          style="margin-top:14px" onsubmit="return confirm('Publish this city? It becomes a public page.');">
+          style="margin-top:14px" data-confirm-submit="Publish this city? It becomes a public page.">
       <?= csrf_field() ?>
       <button class="btn">Publish it</button>
       <span class="hint">Refused until the name, country, coordinates, category and summary are all there.</span>

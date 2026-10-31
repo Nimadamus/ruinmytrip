@@ -157,7 +157,7 @@
             <summary aria-label="More actions">&#8943;</summary>
             <div class="more-menu-panel">
               <a href="<?= e(url('report?target_type=user&target_id='.(int)$u['id'])) ?>">Report this profile</a>
-              <form method="post" action="<?= e(url('block')) ?>" onsubmit="return confirm('Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.');">
+              <form method="post" action="<?= e(url('block')) ?>" data-confirm-submit="Block @<?= e($u['username']) ?>? They will no longer be able to message or follow you.">
                 <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$u['id'] ?>">
                 <input type="hidden" name="return" value="<?= e(url('u/'.$u['username'])) ?>">
                 <button class="more-menu-danger">Block @<?= e($u['username']) ?></button>
@@ -368,7 +368,7 @@
     <p style="margin:.4rem 0 0"><?= e(mb_strimwidth((string)$r['body'], 0, 200, '…')) ?></p>
   </div></div><?php endforeach; ?>
   <?php if ($pv2): ?></div><?php if (count($reviews) > 12): ?>
-    <p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-reviews').classList.remove('v2-pf-cut');this.parentNode.remove()">Show all <?= count($reviews) ?> reviews</button></p>
+    <p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" data-reveal="v2-pf-reviews" data-reveal-remove="v2-pf-cut">Show all <?= count($reviews) ?> reviews</button></p>
   <?php endif; endif; ?>
   <?php endif; ?>
 
@@ -392,7 +392,7 @@
           <?= $rn ? $rn . ' ' . ($rn === 1 ? 'reply' : 'replies') : 'Open' ?></a></p>
       </div></div>
     <?php endforeach; ?>
-    <?php if ($pv2): ?></div><?php if (count($talkPosts) > 4): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-talk').classList.remove('v2-pf-short');this.parentNode.remove()">Show all <?= count($talkPosts) ?> posts</button></p><?php endif; endif; ?>
+    <?php if ($pv2): ?></div><?php if (count($talkPosts) > 4): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" data-reveal="v2-pf-talk" data-reveal-remove="v2-pf-short">Show all <?= count($talkPosts) ?> posts</button></p><?php endif; endif; ?>
   <?php endif; ?>
 
   <?php /* Trips only when there are trips. An empty "Trips" heading over "No trips shared yet."
@@ -429,7 +429,7 @@
   <?php if ($guides): ?><h2 style="margin-top:30px">Guides</h2>
   <div class="grid g-3<?= $pv2 && count($guides) > 6 ? ' v2-pf-six' : '' ?>" id="v2-pf-guides"><?php foreach ($guides as $g): ?>
     <article class="card"><a href="<?= e(url('g/'.$g['slug'])) ?>"><img class="card-media" loading="lazy" src="<?= e(abs_url($g['cover_url'])) ?>" alt=""><div class="card-body"><h3 style="font-size:1.05rem"><?= e($g['title']) ?></h3></div></a></article>
-  <?php endforeach; ?></div><?php if ($pv2 && count($guides) > 6): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" onclick="document.getElementById('v2-pf-guides').classList.remove('v2-pf-six');this.parentNode.remove()">Show all <?= count($guides) ?> guides</button></p><?php endif; ?><?php endif; ?>
+  <?php endforeach; ?></div><?php if ($pv2 && count($guides) > 6): ?><p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" data-reveal="v2-pf-guides" data-reveal-remove="v2-pf-six">Show all <?= count($guides) ?> guides</button></p><?php endif; ?><?php endif; ?>
 
   <?php if ($collections): ?><h2 style="margin-top:30px">Collections</h2>
   <div class="grid g-3"><?php foreach ($collections as $c): ?>

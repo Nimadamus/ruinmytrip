@@ -93,7 +93,7 @@ $cityName = $dest['name'] ?? '';
     <?php if (!$me): ?><p class="hint" style="margin:10px 0 0;text-align:center">Next: a free account so the trip is yours. Already a member? <a href="<?= e(url('login?return=' . rawurlencode('/plan'))) ?>">Sign in</a></p><?php endif; ?>
   </form>
 </div></div>
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 (function () {
   var box = document.getElementById('pf-buddy'), f = document.getElementById('pf-buddy-fields');
   if (box && f) box.addEventListener('change', function () { f.hidden = !box.checked; });

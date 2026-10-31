@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/csp.php';
+
 function e(?string $s): string { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
 function cfg(string $k, $default = null) { return $GLOBALS['config'][$k] ?? $default; }

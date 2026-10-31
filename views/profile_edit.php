@@ -123,7 +123,7 @@
       <a class="btn btn-ghost" href="<?= e(url('u/'.$me['username'])) ?>">View my profile</a>
     </div>
   </form>
-  <p class="muted" style="margin-top:22px;font-size:.9rem">Done for now? <form class="signout-form" method="post" action="<?= e(url('logout')) ?>"><?= csrf_field() ?><button type="submit" class="link-btn">Sign out</button></form></p>
+  <div class="muted" style="margin-top:22px;font-size:.9rem">Done for now? <form class="signout-form" method="post" action="<?= e(url('logout')) ?>"><?= csrf_field() ?><button type="submit" class="link-btn">Sign out</button></form></div>
   <p class="muted" style="margin-top:8px;font-size:.9rem">Want your account deleted?
     <a href="<?= e(url('contact?kind=privacy_request')) ?>">Send us a privacy request</a> from this account and we will remove it.</p>
 </div></div>

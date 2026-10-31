@@ -115,7 +115,7 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
         <input type="hidden" name="status" value="completed"><button class="btn btn-ghost">Mark completed</button></form>
       <?php endif; ?>
       <?php endif; ?>
-      <form method="post" action="<?= e(url('buddy/' . $pid . '/status')) ?>" style="margin:0" onsubmit="return confirm('Cancel this trip and remove the post?')"><?= csrf_field() ?>
+      <form method="post" action="<?= e(url('buddy/' . $pid . '/status')) ?>" style="margin:0" data-confirm-submit="Cancel this trip and remove the post?"><?= csrf_field() ?>
         <input type="hidden" name="status" value="removed"><button class="btn btn-ghost">Cancel trip</button></form>
     </div>
   <?php endif; ?>

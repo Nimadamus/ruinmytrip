@@ -27,7 +27,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
     </div>
     <?php if ($cat !== ''): ?><input type="hidden" name="category" value="<?= e($cat) ?>"><?php endif; ?>
     <label class="v2-ex-sort"><span class="sr-only">Sort</span>
-      <select name="sort" aria-label="Sort by" onchange="this.form.submit()">
+      <select name="sort" aria-label="Sort by" data-autosubmit>
         <option value="name" <?= $sort === 'name' ? 'selected' : '' ?>>A to Z</option>
         <option value="rating" <?= $sort === 'rating' ? 'selected' : '' ?>>Highest rated</option>
         <option value="popular" <?= $sort === 'popular' ? 'selected' : '' ?>>Most wanted</option>
@@ -54,7 +54,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
     <?php foreach ($dests as $d): $dPlaces = (int) ($d['places'] ?? 0); $dRev = (int) $d['reviews']; ?>
       <article class="v2-dest">
         <a class="v2-dest-link" href="<?= e(url('d/' . $d['slug'])) ?>" data-cta="explore_city">
-          <span class="v2-dest-img"><img loading="lazy" src="<?= e($d['hero_url']) ?>" alt="" onerror="this.remove()"></span>
+          <span class="v2-dest-img"><img loading="lazy" src="<?= e($d['hero_url']) ?>" alt="" data-hide-broken></span>
           <span class="v2-dest-body">
             <b class="v2-dest-name"><?= e($d['name']) ?></b>
             <span class="v2-dest-country"><?= e($d['country']) ?></span>
@@ -71,7 +71,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
   </div>
   <?php if (count($dests) > $exFirst): ?>
     <p class="v2-more-row"><button type="button" class="v2-btn v2-btn-ghost" data-v2-more
-      onclick="document.getElementById('v2-dests').classList.add('all');this.parentNode.remove()">Show all <?= count($dests) ?> cities</button></p>
+      data-reveal="v2-dests" data-reveal-add="all">Show all <?= count($dests) ?> cities</button></p>
   <?php endif; ?>
 
   <?php if (!empty($countries)): ?>

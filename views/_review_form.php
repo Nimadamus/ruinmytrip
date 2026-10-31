@@ -202,7 +202,7 @@ $anyDetail = $aspectValues || !empty($r['traveler_type'])
   </div>
 </details>
 
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 // Show the subratings for whatever is being reviewed, and disable the rest so the browser does not
 // submit them. Progressive enhancement: with this script off, the group rendered as active is the
 // only enabled one and the server drops anything that does not belong to the posted category.
@@ -222,7 +222,7 @@ $anyDetail = $aspectValues || !empty($r['traveler_type'])
 })();
 </script>
 
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 // Map the type-ahead box back onto the real <select>. Progressive enhancement only: with JS off,
 // the select itself is still there and fully usable.
 (function () {
@@ -291,7 +291,7 @@ $anyDetail = $aspectValues || !empty($r['traveler_type'])
 })();
 </script>
 
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 // The live count under the review box and the word beside the stars. Progressive enhancement only:
 // the server enforces the same minimum and the stars are plain radio buttons without it.
 (function () {

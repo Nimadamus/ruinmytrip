@@ -56,7 +56,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
         <a class="v2-btn v2-btn-primary v2-hide-sm" data-cta="nav_join" href="<?= e(url('register')) ?>">Join free</a>
       <?php endif; ?>
       <button type="button" class="v2-menu-btn" aria-label="Menu" aria-expanded="false" aria-controls="v2-sheet"
-              onclick="var o=document.body.classList.toggle('v2-sheet-open');this.setAttribute('aria-expanded',o)">
+              data-toggle-body="v2-sheet-open">
         <span aria-hidden="true"></span>
       </button>
     </div>
@@ -67,7 +67,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
     <div class="v2-sheet-top">
       <span class="v2-brand"><span class="v2-brand-mark" aria-hidden="true">◈</span><span>Ruin<b>My</b>Trip</span></span>
       <button type="button" class="v2-sheet-x" aria-label="Close menu"
-              onclick="document.body.classList.remove('v2-sheet-open')">✕</button>
+              data-close-body="v2-sheet-open">✕</button>
     </div>
     <form class="v2-search v2-search-sheet" action="<?= e(url('search')) ?>" method="get" role="search"
           data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">

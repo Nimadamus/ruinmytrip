@@ -58,7 +58,7 @@ $rmt_render_comment = static function (array $c, bool $isReply) use ($me, $retur
         <span class="hint comment-when" title="<?= e((string) $c['created_at']) ?>"><?= e(ago($c['created_at'])) ?><?= !empty($c['updated_at']) ? ' · edited' : '' ?></span>
         <?php if ($me && (int)$c['user_id'] === (int)$me['id']): ?>
           <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/delete')) ?>"
-                onsubmit="return confirm('Delete this comment?');"><?= csrf_field() ?>
+                data-confirm-submit="Delete this comment?"><?= csrf_field() ?>
             <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
             <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
           </form>

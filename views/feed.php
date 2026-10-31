@@ -267,7 +267,7 @@ $threads = $threads ?? [];
         <button class="btn btn-primary btn-sm" style="margin-left:auto">Post</button>
       </div>
     </form>
-    <script>
+    <script nonce="<?= e(rmt_csp_nonce()) ?>">
       /* Nothing clever: on a phone the file picker closes and there is otherwise no sign at all
          that a photograph is attached, so people attach the same one twice. */
       (function () {

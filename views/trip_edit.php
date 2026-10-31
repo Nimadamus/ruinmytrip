@@ -80,7 +80,7 @@
   </form>
   <hr style="border:0;border-top:1px solid var(--line);margin:28px 0 18px">
   <form method="post" action="<?= e(url('trip/'.(int)$t['id'].'/delete')) ?>"
-        onsubmit="return confirm('Delete this trip? It will be removed from your profile and the destination page.');">
+        data-confirm-submit="Delete this trip? It will be removed from your profile and the destination page.">
     <?= csrf_field() ?>
     <button class="btn btn-ghost" style="color:#b42318">Delete this trip</button>
   </form>

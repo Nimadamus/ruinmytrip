@@ -120,7 +120,7 @@
 $rmtClear = (string) ($_SESSION['rmt_clear_draft'] ?? '');
 if ($rmtClear !== '') { unset($_SESSION['rmt_clear_draft']); }
 if (preg_match('/^new-\d+-\d+$/', $rmtClear)): ?>
-<script>try { window.localStorage.removeItem('rmt.draft.<?= $rmtClear ?>'); } catch (e) {}</script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">try { window.localStorage.removeItem('rmt.draft.<?= $rmtClear ?>'); } catch (e) {}</script>
 <?php endif; ?>
 <script src="<?= e(rmt_asset('assets/js/review-draft.js')) ?>" defer></script>
 </body>

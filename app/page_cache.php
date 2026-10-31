@@ -18,6 +18,8 @@
 
 const RMT_PAGE_CACHE_TTL = 60;
 const RMT_PAGE_CACHE_CSRF = '__RMT_CSRF_TOKEN__';
+/* The CSP nonce is per response too (app/csp.php): stored as a placeholder, filled on serve. */
+const RMT_PAGE_CACHE_NONCE = '__RMT_CSP_NONCE__';
 
 function rmt_page_cache_dir(): string {
     return rtrim(sys_get_temp_dir(), '/' . chr(92)) . '/rmt_page_cache';
@@ -53,7 +55,7 @@ function rmt_page_cache_serve(?string $key): bool {
     $robots = substr($head, 7);
     if (function_exists('rmt_track_landing')) rmt_track_landing($robots);
     header('X-RMT-Cache: hit');
-    echo str_replace(RMT_PAGE_CACHE_CSRF, e(csrf_token()), $html);
+    echo str_replace([RMT_PAGE_CACHE_CSRF, RMT_PAGE_CACHE_NONCE], [e(csrf_token()), e(rmt_csp_nonce())], $html);
     return true;
 }
 
@@ -71,6 +73,7 @@ function rmt_page_cache_end(?string $key, string $robots): void {
         if (is_dir($dir) || @mkdir($dir, 0700, true)) {
             $tok = session_status() === PHP_SESSION_ACTIVE ? (string) ($_SESSION['_csrf'] ?? '') : '';
             $store = $tok !== '' ? str_replace(e($tok), RMT_PAGE_CACHE_CSRF, $html) : $html;
+            $store = str_replace('nonce="' . e(rmt_csp_nonce()) . '"', 'nonce="' . RMT_PAGE_CACHE_NONCE . '"', $store);
             $tmp = $dir . '/' . $key . '.' . getmypid() . '.tmp';
             if (@file_put_contents($tmp, "robots:" . $robots . "\n" . $store) !== false) {
                 @rename($tmp, $dir . '/' . $key . '.html');

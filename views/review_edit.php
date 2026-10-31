@@ -45,7 +45,7 @@
   </form>
   <hr style="border:0;border-top:1px solid var(--line);margin:28px 0 18px">
   <form method="post" action="<?= e(url('review/'.(int)$r['id'].'/delete')) ?>"
-        onsubmit="return confirm('Delete this review? It will be removed from your profile and from the destination page.');">
+        data-confirm-submit="Delete this review? It will be removed from your profile and from the destination page.">
     <?= csrf_field() ?>
     <button class="btn btn-ghost" style="color:#b42318">Delete this review</button>
   </form>

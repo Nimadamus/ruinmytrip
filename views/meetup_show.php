@@ -43,7 +43,7 @@
     <?php if ($isHost && $m['status'] !== 'cancelled'): ?>
       <a class="btn btn-ghost" href="<?= e(url('meetup/'.(int)$m['id'].'/edit')) ?>">Edit</a>
       <form method="post" action="<?= e(url('meetup/'.(int)$m['id'].'/cancel')) ?>" style="margin:0"
-            onsubmit="return confirm('Cancel this meetup? Everyone who RSVPed will see it is off.')">
+            data-confirm-submit="Cancel this meetup? Everyone who RSVPed will see it is off.">
         <?= csrf_field() ?><button class="btn btn-ghost">Cancel meetup</button>
       </form>
     <?php endif; ?>

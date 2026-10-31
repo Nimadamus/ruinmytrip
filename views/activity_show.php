@@ -167,7 +167,7 @@ $backTo = '/activity/' . (int) $act['id'];
             <div class="person-who"><b>@<?= e((string) $g['username']) ?></b></div>
             <div class="person-do">
               <form method="post" action="<?= e(url('activity/'.(int) $act['id'].'/decide')) ?>"
-                    onsubmit="return confirm('Remove @<?= e((string) $g['username']) ?> from this plan?');">
+                    data-confirm-submit="Remove @<?= e((string) $g['username']) ?> from this plan?">
                 <?= csrf_field() ?>
                 <input type="hidden" name="user_id" value="<?= (int) $g['user_id'] ?>">
                 <input type="hidden" name="decision" value="remove">
@@ -222,7 +222,7 @@ $backTo = '/activity/' . (int) $act['id'];
       </form>
 
       <form method="post" action="<?= e(url('activity/'.(int) $act['id'].'/cancel')) ?>"
-            onsubmit="return confirm('<?= $cancelled ? 'Put this plan back on?' : 'Cancel this plan and tell everybody coming?' ?>');">
+            data-confirm-submit="<?= $cancelled ? 'Put this plan back on?' : 'Cancel this plan and tell everybody coming?' ?>">
         <?= csrf_field() ?>
         <button class="btn btn-ghost btn-sm" style="color:<?= $cancelled ? 'var(--brand)' : '#b42318' ?>">
           <?= $cancelled ? 'Put it back on' : 'Cancel this plan' ?></button>

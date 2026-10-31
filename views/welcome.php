@@ -159,7 +159,7 @@ foreach ($popular as $pp) $rmt_popular_ids[(int) $pp['id']] = true;
     <p class="hint">A trip you filled in is saved with it.</p>
   </form>
 </div></section>
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 (function () {
   var name = document.getElementById('display_name');
   var bio = document.getElementById('bio');

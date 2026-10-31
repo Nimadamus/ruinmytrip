@@ -56,7 +56,7 @@
         <a class="btn btn-ghost btn-sm" href="<?= e(url('post/'.(int) $p['id'].'/edit')) ?>">Edit</a>
       <?php endif; ?>
       <form method="post" action="<?= e(url('post/'.(int) $p['id'].'/delete')) ?>"
-            onsubmit="return confirm('Delete this post? Replies go with it.');">
+            data-confirm-submit="Delete this post? Replies go with it.">
         <?= csrf_field() ?><button class="btn btn-ghost btn-sm" style="color:#b42318">Delete</button>
       </form>
     </div>

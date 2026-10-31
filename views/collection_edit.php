@@ -95,7 +95,7 @@
 
   <hr style="margin:28px 0">
   <p><a href="<?= e(url('c/'.$c['slug'])) ?>">View list →</a></p>
-  <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/delete')) ?>" onsubmit="return confirm('Delete this list? This cannot be undone.');">
+  <form method="post" action="<?= e(url('collection/'.(int)$c['id'].'/delete')) ?>" data-confirm-submit="Delete this list? This cannot be undone.">
     <?= csrf_field() ?>
     <button class="btn btn-ghost btn-sm" style="color:#b42318">Delete list</button>
   </form>

@@ -22,7 +22,7 @@ $shared = $shared ?? [];
         <a href="<?= e(url('u/'.$them['username'])) ?>">View profile</a>
         <a href="<?= e(url('report?target_type=user&target_id='.(int)$them['id'])) ?>">Report</a>
         <form method="post" action="<?= e(url($blocked ? 'unblock' : 'block')) ?>"
-              onsubmit="return confirm('<?= $blocked ? 'Unblock' : 'Block' ?> @<?= e($them['username']) ?>?');">
+              data-confirm-submit="<?= $blocked ? 'Unblock' : 'Block' ?> @<?= e($them['username']) ?>?">
           <?= csrf_field() ?><input type="hidden" name="user_id" value="<?= (int)$them['id'] ?>">
           <input type="hidden" name="return" value="<?= e(url('messages/'.$them['username'])) ?>">
           <button class="more-menu-danger"><?= $blocked ? 'Unblock' : 'Block' ?> @<?= e($them['username']) ?></button>

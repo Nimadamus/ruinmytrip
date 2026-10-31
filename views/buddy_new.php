@@ -115,7 +115,7 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
     </div>
   </form>
 </div></div>
-<script>
+<script nonce="<?= e(rmt_csp_nonce()) ?>">
 (function () {
   var sel = document.getElementById('trip_type'), box = document.getElementById('cruise-fields');
   if (!sel || !box) return;

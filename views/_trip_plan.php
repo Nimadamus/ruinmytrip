@@ -149,7 +149,7 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
                   </details>
                 <?php endif; ?>
                 <form method="post" action="<?= e(url('activity/'.(int) $act['id'].'/delete')) ?>"
-                      onsubmit="return confirm('Remove this from the plan?');">
+                      data-confirm-submit="Remove this from the plan?">
                   <?= csrf_field() ?>
                   <button class="act" title="Remove" aria-label="Remove this plan">&times;</button>
                 </form>

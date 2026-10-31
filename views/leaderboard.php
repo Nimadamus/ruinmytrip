@@ -12,7 +12,7 @@
   </p>
 
   <form action="<?= e(url('leaderboard')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
-    <select name="d" aria-label="Destination" onchange="this.form.submit()">
+    <select name="d" aria-label="Destination" data-autosubmit>
       <option value="">All destinations</option>
       <?php foreach ($destinations as $d): ?>
         <option value="<?= e($d['slug']) ?>" <?= ($dest && $dest['slug']===$d['slug'])?'selected':'' ?>><?= e($d['name']) ?></option>

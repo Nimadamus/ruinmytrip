@@ -117,7 +117,7 @@ $authorSaid = $authorSaid ?? [];
            broken image icon and the title as alt text is the worst possible first impression of
            somebody's own work. Nothing replaces it: no photograph is better than a broken one. */ ?>
   <?php if ($t['cover_url']): ?><img class="article-hero" src="<?= e($t['cover_url']) ?>"
-       alt="<?= e($t['title']) ?>" onerror="this.remove()"><?php endif; ?>
+       alt="<?= e($t['title']) ?>" data-hide-broken><?php endif; ?>
   <div><?= rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($t['body'])))) ?></div>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
@@ -177,7 +177,7 @@ $authorSaid = $authorSaid ?? [];
           <span class="hint"><?= $rmt_left ?> left</span></span>
           <input type="file" name="photos[]" accept="image/jpeg,image/png,image/webp" multiple
                  style="display:none"
-                 onchange="var t=this.closest('[data-photo-label]'); t=t&&t.querySelector('[data-photo-text]'); if(t&&this.files.length){t.textContent=this.files.length===1?'Adding a photo…':'Adding '+this.files.length+' photos…';} this.form.submit();"></label>
+                 data-photo-autosubmit></label>
       <?php else: ?>
         <span class="hint">Six photos is the most a trip carries.</span>
       <?php endif; ?>
