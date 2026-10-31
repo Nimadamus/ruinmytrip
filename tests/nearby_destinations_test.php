@@ -74,5 +74,10 @@ foreach ($ed['destinations'] ?? [] as $d) {
 }
 ok(count($ed['destinations'] ?? []) === 3, 'three cities in the file');
 
+/* Blog posts link on to the city's guide, sibling posts and the buddies page, except roundups. */
+ok(str_contains($ctl, "'blogDest','blogMore'") && str_contains($ctl, '$blogCities <= 2'), 'blog controller builds blogMore and skips multi city roundups');
+$bv = file_get_contents(BASE_PATH . '/views/blog_show.php');
+ok(str_contains($bv, "url('g/' . \$bm['guide']['slug'])") && str_contains($bv, 'rmt_buddy_landing_path'), 'blog view links the guide and the buddies page');
+
 echo "\nnearby_destinations_test: " . ($fail ? "$fail FAILED" : 'all passed') . "\n";
 exit($fail ? 1 : 0);

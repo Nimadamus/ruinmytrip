@@ -33,6 +33,26 @@
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>
 
+  <?php $bm = $blogMore ?? []; if (!empty($blogDest) && (!empty($bm['posts']) || !empty($bm['guide']) || !empty($bm['buddies']))): ?>
+    <div class="card" style="margin:26px 0 0"><div class="card-body">
+      <h2 class="h-card" style="margin:0 0 8px">More on <?= e((string) $blogDest['name']) ?></h2>
+      <ul class="list-plain">
+        <li style="margin:0 0 6px"><a href="<?= e(url('d/' . $blogDest['slug'])) ?>"><?= e((string) $blogDest['name']) ?>: places, honest reviews and who is going</a></li>
+        <?php if (!empty($bm['guide'])): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('g/' . $bm['guide']['slug'])) ?>"><?= e((string) $bm['guide']['title']) ?></a></li>
+        <?php endif; ?>
+        <?php foreach (array_slice($bm['posts'] ?? [], 0, 4) as $op): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('blog/' . $op['slug'])) ?>"><?= e((string) $op['title']) ?></a></li>
+        <?php endforeach; ?>
+        <?php if (!empty($bm['buddies'])): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url(rmt_buddy_landing_path($bm['buddies']['slug']))) ?>">Travel buddies in <?= e((string) $bm['buddies']['name']) ?></a></li>
+        <?php else: ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('d/' . $blogDest['slug'] . '/travelers')) ?>">Travelers going to <?= e((string) $blogDest['name']) ?></a></li>
+        <?php endif; ?>
+      </ul>
+    </div></div>
+  <?php endif; ?>
+
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?= e(url('blog')) ?>">← Back to blog</a>
   </div>

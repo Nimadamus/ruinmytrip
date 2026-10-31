@@ -1909,9 +1909,22 @@ function blog_show(array $a): void {
        adding a column that would then need backfilling for 143 posts. */
     $blogDest = null;
     if (preg_match('#/d/([a-z0-9\-]+)#', (string) ($p['body'] ?? ''), $bm)) {
-        $blogDest = q_one('SELECT id, slug, name FROM destinations WHERE slug = ?', [$bm[1]]);
+        $blogDest = q_one('SELECT id, slug, name, country FROM destinations WHERE slug = ?', [$bm[1]]);
     }
-    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest'), [
+    /* Where to read on: the city's own guide, the other 2026 notes about the same city, and the
+       travel buddies page for the country. A reader who came for one ticket price is usually
+       planning the whole trip, and before this the only way on from a post was "Back to blog". */
+    $blogMore = ['posts' => [], 'guide' => null, 'buddies' => null];
+    /* A roundup that links many cities (the tourist tax table) is about none of them in particular. */
+    $blogCities = preg_match_all('#/d/([a-z0-9\-]+)#', (string) ($p['body'] ?? ''), $bmAll) ? count(array_unique($bmAll[1])) : 0;
+    if ($blogDest && $blogCities <= 2) {
+        $blogMore['posts'] = array_values(array_filter(rmt_blog_posts_for_destination((string) $blogDest['slug']),
+            static fn(array $r) => $r['slug'] !== $p['slug']));
+        $blogMore['guide'] = q_one("SELECT slug, title FROM guides WHERE destination_id = ? AND status = 'published' ORDER BY id LIMIT 1",
+            [(int) $blogDest['id']]);
+        $blogMore['buddies'] = rmt_buddy_landing_for_dest((string) $blogDest['slug'], (string) $blogDest['country']);
+    }
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest','blogMore'), [
         'title' => $p['title'].' | RuinMyTrip',
         'description' => rmt_meta_test('/blog/'.$p['slug']) ?? $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : rmt_default_og_image(),
