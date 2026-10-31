@@ -1763,3 +1763,12 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .body-count.ok{color:var(--brand)}
 .review-saved-note{background:var(--tint,#ecfdf5);border-radius:10px;padding:10px 12px;margin:0 0 14px;font-size:.95rem}
 .hp-field{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+
+/* Sign out is a POST form with the CSRF token (2026-10-30), drawn as the link it replaced. */
+.signout-form{display:inline;margin:0}
+.link-btn{background:none;border:0;padding:0;margin:0;font:inherit;color:var(--brand);cursor:pointer;text-align:left}
+.link-btn:hover{text-decoration:underline}
+.nav-more-panel .signout-form{display:block}
+.nav-more-panel .link-btn{display:block;width:100%;padding:.5rem .7rem;border-radius:10px;font-size:.92rem;
+  font-weight:550;color:var(--ink-2)}
+.nav-more-panel .link-btn:hover{background:var(--surface-3);color:var(--brand);text-decoration:none}

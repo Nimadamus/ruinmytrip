@@ -80,6 +80,13 @@ def run(p, dev, ctxargs):
         page.locator(form_sel + ' button[type=submit], ' + form_sel + ' button:not([type])').first.click()
         page.wait_for_load_state('networkidle')
 
+    def signout():
+        # Sign out is POST with the CSRF token; GET /logout only shows the button.
+        go('/logout')
+        if page.locator('form[action$="/logout"] button').count():
+            page.locator('main form[action$="/logout"] button, .form-card form[action$="/logout"] button').first.click()
+            page.wait_for_load_state('networkidle')
+
     def tall(sel, name):
         if phone and page.locator(sel).count():
             h = page.locator(sel).first.bounding_box()
@@ -173,8 +180,21 @@ def run(p, dev, ctxargs):
     check(tag('M4 a used link says so plainly'), 'already been used' in page.inner_text('body'))
 
     # M5 sign out, protected page, sign back in to where you were going
+    # A GET (an <img src>, a prefetch, an old link) must not sign anybody out.
     go('/logout')
-    check(tag('M5 signed out'), page.locator('a[href$="/logout"]').count() == 0)
+    check(tag('M5 GET /logout shows a Sign out button and changes nothing'),
+          page.locator('.form-card form[action$="/logout"][method=post] button').count() == 1
+          and page.locator('form[action$="/logout"] input[name=_csrf]').count() >= 1)
+    go('/feed')
+    check(tag('M5 still signed in after GET /logout'), '/login' not in page.url and page.locator('form[action$="/logout"]').count() >= 1, page.url)
+    r = page.request.post(BASE + '/logout', form={'x': '1'}, max_redirects=0)
+    check(tag('M5 POST /logout without the token is refused'), r.status == 403, str(r.status))
+    go('/feed')
+    check(tag('M5 still signed in after a tokenless POST'), '/login' not in page.url, page.url)
+    check(tag('M5 the nav sign out is a POST form, not a link'),
+          page.locator('a[href$="/logout"]').count() == 0 and page.locator('form[action$="/logout"][method=post] input[name=_csrf]').count() >= 1)
+    signout()
+    check(tag('M5 signed out'), page.locator('form[action$="/logout"]').count() == 0 or 'You are signed out' in page.inner_text('body'))
     go(f'/u/{uname}/edit')
     check(tag('M5 a members page asks you to sign in'), '/login' in page.url, page.url)
     # M6 wrong then right password
@@ -236,7 +256,7 @@ def run(p, dev, ctxargs):
     c3.close()
 
     # M10 forgot password
-    go('/logout')
+    signout()
     go('/forgot-password')
     page.fill('form[action$="forgot-password"] input[name=email]', email)
     submit('form[action$="forgot-password"]')
@@ -249,7 +269,7 @@ def run(p, dev, ctxargs):
     go('/reset-password?token=' + rt)
     page.fill('input[name=password]', pw + 'X'); page.fill('input[name=password_confirm]', pw + 'X')
     submit('form[action$="reset-password"]')
-    go('/logout')
+    signout()
     go('/login')
     page.fill('form[action$="login"] input[name=email]', email)
     page.fill('form[action$="login"] input[name=password]', pw + 'X')
@@ -257,7 +277,7 @@ def run(p, dev, ctxargs):
     check(tag('M10 the new password signs in'), '/login' not in page.url, page.url)
 
     # M11 Google
-    go('/logout'); go('/login')
+    signout(); go('/login')
     g = page.locator('a[href*="auth/google"]')
     configured = php('echo (getenv("GOOGLE_CLIENT_ID") ?: (cfg("google_client_id") ?? "")) !== "" ? "1" : "0";') == '1'
     if g.count():

@@ -99,7 +99,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
         <a href="<?= e(url('feed')) ?>">Feed</a><a href="<?= e(url('matches')) ?>">Matches</a>
         <a href="<?= e(url('buddies/mine')) ?>">Your travel buddies</a><a href="<?= e(url('saved')) ?>">Saved</a>
         <a href="<?= e(url('invite')) ?>">Invite a traveler</a><a href="<?= e(url('settings')) ?>">Settings</a>
-        <a href="<?= e(url('logout')) ?>">Sign out</a>
+        <form class="signout-form" method="post" action="<?= e(url('logout')) ?>"><?= csrf_field() ?><button type="submit" class="link-btn">Sign out</button></form>
         <?php if (in_array($me['role'], ['admin', 'mod'], true)): ?><a href="<?= e(url('admin')) ?>">Admin</a><?php endif; ?>
       <?php endif; ?>
     </div>

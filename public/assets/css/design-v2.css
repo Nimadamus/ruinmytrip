@@ -103,6 +103,9 @@ body.v2-sheet-open .v2-sheet-in{transform:none}
 .v2-sheet-links{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
 .v2-sheet-links a{padding:10px;border-radius:10px;color:#2a3a50;font-weight:550;font-size:.94rem;min-height:44px;display:flex;align-items:center}
 .v2-sheet-links a:hover{background:#f3f6f4;text-decoration:none}
+.v2-sheet-links .signout-form{display:block;margin:0}
+.v2-sheet-links .link-btn{width:100%;padding:10px;border-radius:10px;color:#2a3a50;font-weight:550;font-size:.94rem;min-height:44px;display:flex;align-items:center}
+.v2-sheet-links .link-btn:hover{background:#f3f6f4;text-decoration:none}
 .v2-sheet-cta{display:grid;gap:10px;margin-top:22px}
 
 /* the phone bar */

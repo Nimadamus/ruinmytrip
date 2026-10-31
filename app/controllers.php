@@ -5394,7 +5394,18 @@ function register_submit(array $a): void {
     rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'validation']);
     view('auth/register', ['errors'=>$r['errors'], 'return'=>$return], ['title'=>'Join RuinMyTrip']);
 }
-function logout_action(array $a): void { logout(); flash('Signed out.'); redirect('/'); }
+/**
+ * GET /logout renders a page with a Sign out button and changes nothing. Signing out used to be
+ * a GET, so any page anywhere could sign a member out with an <img src="/logout">; the action is
+ * now POST /logout with the CSRF token (logout_action). Old links and bookmarks still land here
+ * rather than on a 404.
+ */
+function logout_form(array $a): void {
+    view('auth/logout', ['me' => current_user()],
+         ['title' => 'Sign out | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
+}
+/** POST /logout */
+function logout_action(array $a): void { csrf_check(); logout(); flash('Signed out.'); redirect('/'); }
 
 /* ---------- email verification ---------- */
 
