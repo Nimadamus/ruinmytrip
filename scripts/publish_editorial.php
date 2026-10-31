@@ -318,8 +318,16 @@ try {
         $g = $d['guide'];
         $gslug = $g['slug'] ?? slugify((string) $g['title']);
         $body  = rmt_paras((string) $g['body']);
-        $have  = q_one('SELECT id FROM guides WHERE slug = ?', [$gslug]);
-        if ($have) {
+        $have  = q_one('SELECT id, user_id, destination_id, title, summary, body, cover_url, premium, status FROM guides WHERE slug = ?', [$gslug]);
+        /* An unchanged guide is left alone. This UPDATE used to run on every boot and stamp
+           updated_at with the deploy time, so every guide claimed to have changed on every
+           deploy, and that date is the sitemap lastmod for /g/ pages (app/sitemap.php). */
+        if ($have && (int) $have['user_id'] === (int) $uid && (int) ($have['destination_id'] ?? 0) === $did
+            && (string) $have['title'] === (string) $g['title'] && (string) $have['summary'] === (string) $g['summary']
+            && (string) $have['body'] === $body && (string) ($have['cover_url'] ?? '') === (string) ($hero ?? '')
+            && (int) $have['premium'] === 0 && (string) $have['status'] === 'published') {
+            out("    guide unchanged (/g/{$gslug})");
+        } elseif ($have) {
             $run("UPDATE guides SET user_id=?, destination_id=?, title=?, summary=?, body=?, cover_url=?,
                     premium=0, status='published', updated_at=? WHERE id=?",
                  [$uid, $did, $g['title'], $g['summary'], $body, $hero, $now, (int)$have['id']]);

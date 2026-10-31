@@ -43,7 +43,24 @@ const RMT_SITEMAP_TTL = 21600;   // 6 hours
  * big file cannot.
  */
 const RMT_SITEMAP_GROUPS = ['core', 'destinations', 'categories', 'neighborhoods', 'places',
-                            'editorial', 'community', 'profiles', 'lists', 'talk'];
+                            'blog', 'guides', 'community', 'profiles', 'lists', 'talk'];
+
+/* Blog posts and guides are submitted again (owner approved, 2026-10-30), but only the ones that
+   are an article rather than a stub. Every rule below is a property of the row, so a new post is
+   judged the same way without anybody listing it. See rmt_sitemap_articles(). */
+
+/** Words of body text, tags stripped. A 2026 fee note runs 250 to 380; a stub runs 35. */
+const RMT_SITEMAP_ARTICLE_MIN_WORDS = 250;
+
+/** A page linking more distinct city pages than this is a roundup of links, not an article about
+    a place. Same line blog_show() draws when it decides a post is about no city in particular. */
+const RMT_SITEMAP_ROUNDUP_MAX_CITIES = 2;
+
+/** Five word shingle overlap at or above which a later page is a near copy of an earlier one. */
+const RMT_SITEMAP_NEAR_DUP = 0.5;
+
+/** A talk post is submitted when somebody else answered it, or when it is a write up on its own. */
+const RMT_SITEMAP_TALK_MIN_WORDS = 150;
 
 /**
  * Every URL in one group, already filtered to what is indexable.
@@ -61,10 +78,10 @@ function rmt_sitemap_group(string $group): array {
             // Pages that are the site rather than an entity in it. Community indexes are included
             // only when they have something on them -- an empty /meetups is a thin page, not a
             // ranking strategy.
-            // Guides, the blog and the review index are real pages. They are not submitted.
-            // Search was spending this site's impressions on hotel taxes and ticket notes,
-            // and those visits do not become members. /reviews comes back on its own once
-            // a traveler, rather than the house account, has published one.
+            // The /guides and /blog index pages are not submitted; the articles themselves are,
+            // in their own sitemaps, when they pass rmt_sitemap_articles() (2026-10-30).
+            // /reviews comes back on its own once a traveler, rather than the house account,
+            // has published one.
             foreach (['/', '/map', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
@@ -136,11 +153,10 @@ function rmt_sitemap_group(string $group): array {
             // Still indexable, still linked from the city a person is reading. Not submitted.
             break;
 
-        case 'editorial':
-            // Guides and blog posts stay indexable. They are not submitted. The counts stay
-            // so a missing table fails this group alone, the same as every other group.
-            q_one("SELECT COUNT(*) c FROM guides WHERE status='published'");
-            q_one("SELECT COUNT(*) c FROM blog_posts WHERE status='published'");
+        case 'blog':
+        case 'guides':
+            // Published, indexable, and an article: see rmt_sitemap_articles() for the rules.
+            foreach (rmt_sitemap_articles($group)['include'] as $row) $add($row['path'], $row['mod']);
             break;
 
         case 'community':
@@ -211,10 +227,18 @@ function rmt_sitemap_group(string $group): array {
             foreach (q_all("SELECT p.id, p.body, p.status, p.created_at, p.updated_at, p.repost_of,
                                    (SELECT COUNT(*) FROM comments cm
                                      WHERE cm.target_type='post' AND cm.target_id=p.id
-                                       AND cm.status='published') reply_count
+                                       AND cm.status='published') reply_count,
+                                   (SELECT COUNT(*) FROM comments cm
+                                     WHERE cm.target_type='post' AND cm.target_id=p.id
+                                       AND cm.status='published' AND cm.user_id <> p.user_id) other_reply_count
                               FROM posts p JOIN users u ON u.id=p.user_id
                              WHERE p.status='published' AND u.status='active'") as $p2) {
                 if (!rmt_indexable('post', $p2)['ok']) continue;
+                /* Indexable is not the same as worth submitting (2026-10-30). The ten questions the
+                   site asked openly had no answers and fifty to eighty words each: real pages for a
+                   member who wants to answer, and a question with no answer for a searcher. The
+                   page keeps its own robots tag; it is only left out of the sitemap. */
+                if (!rmt_sitemap_talk_ok($p2)) continue;
                 $add('post/' . (int) $p2['id'], $p2['updated_at'] ?: ($p2['created_at'] ?? null));
             }
             break;
@@ -324,4 +348,79 @@ function rmt_sitemap_is_stale(): bool {
 /** The name a child sitemap is served under. */
 function rmt_sitemap_filename(string $group, int $part): string {
     return 'sitemap-' . $group . ($part > 1 ? '-' . $part : '') . '.xml';
+}
+
+/** Is this talk post worth submitting? Someone else answered it, or it is a write up by itself. */
+function rmt_sitemap_talk_ok(array $p): bool {
+    if ((int) ($p['other_reply_count'] ?? 0) >= 1) return true;
+    return rmt_sitemap_word_count((string) ($p['body'] ?? '')) >= RMT_SITEMAP_TALK_MIN_WORDS;
+}
+
+/** Words in a body of text or HTML. */
+function rmt_sitemap_word_count(string $body): int {
+    return count(rmt_sitemap_words($body));
+}
+
+/** @return list<string> lowercased words, tags stripped and entities decoded */
+function rmt_sitemap_words(string $body): array {
+    $text = html_entity_decode(strip_tags(str_replace('<', ' <', $body)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    preg_match_all("/[\p{L}\p{N}][\p{L}\p{N}'\x{2019}-]*/u", mb_strtolower($text), $m);
+    return $m[0];
+}
+
+/** Text that marks a page as unfinished. Matched on title and body. */
+function rmt_sitemap_is_placeholder(string $title, string $body): bool {
+    return (bool) preg_match('/\b(lorem ipsum|placeholder|coming soon|test post|please ignore)\b/i',
+                             $title . ' ' . strip_tags($body));
+}
+
+/**
+ * Which blog posts or guides go in their sitemap, and why the rest do not.
+ *
+ * In order: published (the page 404s otherwise), indexable by the page's own rule, not a premium
+ * preview, not placeholder text, at least RMT_SITEMAP_ARTICLE_MIN_WORDS words, not a roundup of city
+ * links, and not a duplicate (same title, or a near copy of the body) of a page already included.
+ * Older pages win a duplicate: they were there first. lastmod is updated_at when set, else
+ * created_at; both publishers write updated_at only when the content changes.
+ *
+ * @return array{include:list<array{path:string,mod:?string,slug:string}>,exclude:list<array{slug:string,reason:string}>}
+ */
+function rmt_sitemap_articles(string $kind): array {
+    $isBlog = $kind === 'blog';
+    $rows = $isBlog
+        ? q_all("SELECT id, slug, title, body, status, created_at, updated_at, 0 premium FROM blog_posts
+                  WHERE status='published' ORDER BY created_at, id")
+        : q_all("SELECT id, slug, title, body, status, created_at, updated_at, premium FROM guides
+                  WHERE status='published' ORDER BY created_at, id");
+    $include = $exclude = [];
+    $titles = $shingles = [];
+    foreach ($rows as $r) {
+        $slug = (string) $r['slug'];
+        $body = (string) ($r['body'] ?? '');
+        $no = static function (string $why) use (&$exclude, $slug): void { $exclude[] = ['slug' => $slug, 'reason' => $why]; };
+        if (!preg_match('/^[a-z0-9\-]+$/', $slug))                   { $no('slug the route cannot serve'); continue; }
+        if (!rmt_indexable($isBlog ? 'blog' : 'guide', $r)['ok'])     { $no('not indexable'); continue; }
+        if ((int) $r['premium'] === 1)                                { $no('premium preview'); continue; }
+        if (rmt_sitemap_is_placeholder((string) $r['title'], $body))  { $no('placeholder text'); continue; }
+        $words = rmt_sitemap_words($body);
+        if (count($words) < RMT_SITEMAP_ARTICLE_MIN_WORDS)             { $no('thin: ' . count($words) . ' words'); continue; }
+        $cities = preg_match_all('#/d/([a-z0-9\-]+)#', $body, $m) ? count(array_unique($m[1])) : 0;
+        if ($cities > RMT_SITEMAP_ROUNDUP_MAX_CITIES)                  { $no('roundup: links ' . $cities . ' cities'); continue; }
+        $tkey = trim((string) preg_replace('/[^a-z0-9]+/', ' ', mb_strtolower((string) $r['title'])));
+        if (isset($titles[$tkey]))                                    { $no('duplicate title of ' . $titles[$tkey]); continue; }
+        $sh = [];
+        for ($i = 0, $n = count($words) - 4; $i < $n; $i++) $sh[implode(' ', array_slice($words, $i, 5))] = true;
+        $dupOf = null;
+        foreach ($shingles as $other => $osh) {
+            $inter = count(array_intersect_key($sh, $osh));
+            $union = count($sh) + count($osh) - $inter;
+            if ($union > 0 && $inter / $union >= RMT_SITEMAP_NEAR_DUP) { $dupOf = $other; break; }
+        }
+        if ($dupOf !== null)                                          { $no('near duplicate of ' . $dupOf); continue; }
+        $titles[$tkey] = $slug;
+        $shingles[$slug] = $sh;
+        $include[] = ['path' => ($isBlog ? 'blog/' : 'g/') . $slug, 'slug' => $slug,
+                      'mod' => ($r['updated_at'] ?? null) ?: ($r['created_at'] ?? null)];
+    }
+    return ['include' => $include, 'exclude' => $exclude];
 }
