@@ -21,6 +21,7 @@ RUN { \
       echo 'upload_max_filesize = 10M'; \
       echo 'post_max_size = 64M'; \
       echo 'memory_limit = 256M'; \
+      echo 'expose_php = Off'; \
     } > /usr/local/etc/php/conf.d/rmt-uploads.ini
 
 # Document root -> public/
