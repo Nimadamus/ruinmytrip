@@ -264,3 +264,24 @@ Content and Community Guidelines (tripadvisor.com Trust pages), Rick Steves foru
 (community.ricksteves.com), FlyerTalk trip report rules (flyertalk.com/forum/29002463-post2.html),
 Quora disclosure guidance (quoraadsupport.zendesk.com/hc/en-us/articles/360029041832), Thorn Tree closure
 (phocuswire.com, travelweekly.com).
+
+## 8. Accounts audit and no new account plan (2026-10-30 evening)
+
+Existing, authorized:
+- Instagram @ruinmytripcom: signed in on the phone app, bio links the site, 2 posts. PARKED by the owner; queue and publisher task (RMT IG Publisher) stay disabled until he raises it.
+- Facebook Page: restricted until about 2026-11-08. Resume queue in ~/rmt_social/FB_RESUME_AFTER_RESTRICTION.md (review invitation is item 6). Nothing scheduled before the restriction ends.
+- Directories already submitted: SaaSHub, AlternativeTo, Uneed (free queue). BetaList needs payment (not paid). Fazier needs a backlink (skipped).
+- Site owned channels: trip reminder email (live 744d490), on page review asks, weekly digest (opt out), match alerts.
+
+Not existing: X, Quora, Reddit brand accounts, TikTok. Creating them is the owner's call; the copy in section 4 is ready the day they exist.
+
+Work that needs no new account, in order:
+1. Search: every city and place page is the landing page. Keep the sitemap allowlist honest, push new reviews with IndexNow (cron/indexnow exists), and write one useful "what went wrong in X" guide a week from real member reviews only.
+2. Site owned asks: the trip reminder email, the review chips on the travel map, and "Review another place" after a review. Measured by review_opened and review_published with src=trip_over.
+3. Free directories that take a listing without payment or backlink: check each before submitting, one listing per directory, accurate description, no duplicates.
+4. Facebook after 11-08: the resume queue, then group replies only where group rules allow a link.
+
+## 9. Postal address for email footers (CAN-SPAM)
+
+Code is live (79b04dd): set MAIL_POSTAL_ADDRESS on Render and every footer prints it; rmt_mail_marketing_ready() stays false until it is set, so no promotional email can go out before then.
+CAN-SPAM accepts a street address, a USPS PO Box, or a private mailbox registered under USPS rules. Options, all paid, so the owner picks: USPS PO Box at the nearest post office; a UPS Store or similar commercial mailbox (gives a street style address); a virtual mailbox service with a USPS Form 1583. Never use a home address without the owner saying so.
