@@ -142,16 +142,21 @@ def run(p, dev, ctxargs):
     go('/register')
     check(tag('M2 a signed in member is not shown the join form again'), '/register' not in page.url, page.url)
 
-    # M2b the same email again is refused (fresh browser, signed out)
+    # M2b the same email again makes no second account and does not say the address is taken
+    # (account enumeration): the answer reads like a fresh signup and the owner gets an email.
     c2 = b.new_context(**ctxargs); p2 = c2.new_page()
     p2.goto(BASE + '/register'); p2.wait_for_load_state('networkidle')
     p2.fill('form[action$="register"] input[name=email]', email.upper())
     p2.fill('form[action$="register"] input[name=password]', pw)
     p2.check('form[action$="register"] input[name=age_ok]')
     p2.locator('form[action$="register"] button').first.click(); p2.wait_for_load_state('networkidle')
+    dup = p2.inner_text('body')
     check(tag('M2 the same email (any case) cannot join twice'),
-          len(db('SELECT 1 FROM users WHERE lower(email) = ?', (email,))) == 1 and 'already' in p2.inner_text('body'),
-          p2.inner_text('body')[:200])
+          len(db('SELECT 1 FROM users WHERE lower(email) = ?', (email,))) == 1)
+    check(tag('M2 the answer does not reveal the address has an account'),
+          'already registered' not in dup.lower() and 'already has an account' not in dup.lower()
+          and 'check your email' in dup.lower() and '/plan' in p2.url, p2.url)
+    check(tag('M2 nobody is signed in by it'), p2.locator('form[action$="/logout"]').count() == 0)
     c2.close()
 
     # M3 held review
