@@ -440,3 +440,54 @@ if ('serviceWorker' in navigator) {
     });
   });
 })();
+
+/* Trip chat: fetch new lines every few seconds while the page is open and visible, so a group
+   planning a trip sees each other's messages without reloading. The server escapes every line. */
+(function () {
+  var list = document.getElementById('trip-chat-list');
+  if (!list || !window.fetch) return;
+  var base = list.getAttribute('data-trip-chat');
+  var after = parseInt(list.getAttribute('data-after') || '0', 10);
+  var busy = false;
+  function add(m) {
+    if (document.getElementById('m' + m.id)) return;
+    var empty = list.querySelector('.trip-chat-empty');
+    if (empty) empty.remove();
+    var row = document.createElement('div');
+    row.className = 'msg-row' + (m.mine ? ' mine' : '');
+    row.id = 'm' + m.id;
+    var b = document.createElement('div');
+    b.className = 'msg-bubble';
+    if (!m.mine) {
+      var who = document.createElement('span');
+      who.className = 'msg-who';
+      who.textContent = m.who;
+      b.appendChild(who);
+    }
+    var p = document.createElement('p');
+    p.innerHTML = m.html;
+    b.appendChild(p);
+    var when = document.createElement('span');
+    when.className = 'msg-when';
+    when.textContent = m.when;
+    b.appendChild(when);
+    row.appendChild(b);
+    list.appendChild(row);
+  }
+  function poll() {
+    if (busy || document.hidden) return;
+    busy = true;
+    fetch(base + '?format=json&after=' + after, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : { lines: [] }; })
+      .then(function (d) {
+        var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 120;
+        (d.lines || []).forEach(function (m) { add(m); if (m.id > after) after = m.id; });
+        if (d.lines && d.lines.length && nearBottom) window.scrollTo(0, document.body.scrollHeight);
+      })
+      .catch(function () {})
+      .then(function () { busy = false; });
+  }
+  if (!location.hash) window.scrollTo(0, document.body.scrollHeight);
+  setInterval(poll, 5000);
+  document.addEventListener('visibilitychange', poll);
+})();

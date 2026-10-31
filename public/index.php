@@ -73,6 +73,8 @@ $routes = [
     ['POST', '#^/trip/(?<id>\d+)/invite$#',    'trip_invite'],
     ['POST', '#^/trip/(?<id>\d+)/invite/answer$#', 'trip_invite_answer'],
     ['POST', '#^/trip/(?<id>\d+)/member/remove$#', 'trip_member_remove'],
+    ['GET',  '#^/trip/(?<id>\d+)/chat$#',      'trip_chat'],
+    ['POST', '#^/trip/(?<id>\d+)/chat$#',      'trip_chat_send'],
     ['POST', '#^/activity/(?<id>\d+)/delete$#','trip_activity_delete'],
     ['POST', '#^/activity/(?<id>\d+)/join$#',  'trip_activity_join'],
     ['POST', '#^/activity/(?<id>\d+)/done$#',  'trip_activity_done'],

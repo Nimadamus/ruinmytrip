@@ -51,6 +51,13 @@ $shared = count($members) > 1;
           </li>
         <?php endforeach; ?>
       </ul>
+      <?php /* The chat is for the people in the list just above, so it sits under them, and only
+               they see the button. */
+      if ($me && rmt_trip_chat_allowed($t, $me)):
+        $chatUnread = rmt_trip_chat_unread((int) $t['id'], (int) $me['id']); ?>
+        <p style="margin:10px 0 0"><a class="btn btn-primary btn-sm" href="<?= e(url('trip/'.(int) $t['id'].'/chat')) ?>">Trip chat<?php
+          if ($chatUnread > 0): ?> &middot; <?= $chatUnread ?> new<?php endif; ?></a></p>
+      <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($isOwner): ?>

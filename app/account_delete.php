@@ -76,6 +76,8 @@ const RMT_ACCOUNT_DELETE_INVENTORY = [
     'review_photos'       => 'delete',
     'trips'               => 'delete; a trip other members accepted passes to the earliest of them, emptied of the deleted member\'s notes, cover, photos and activities',
     'trip_photos'         => 'delete',
+    'trip_messages'       => 'delete: their lines in trip chats; a trip deleted with them takes its chat',
+    'trip_chat_reads'     => 'delete',
     'trip_activities'     => 'delete, with activity_joins and activity_photos on them',
     'activity_photos'     => 'delete',
     'guides'              => 'delete',
@@ -223,6 +225,8 @@ function rmt_account_delete(int $uid): array {
                 if (!empty($r['k'])) $keys[] = (string) $r['k'];
             }
             $x("DELETE FROM trip_photos WHERE trip_id IN ($in)", $dropTrips);
+            $x("DELETE FROM trip_messages WHERE trip_id IN ($in)", $dropTrips);
+            $x("DELETE FROM trip_chat_reads WHERE trip_id IN ($in)", $dropTrips);
             $x("DELETE FROM trip_members WHERE trip_id IN ($in)", $dropTrips);
             $x("DELETE FROM trip_connects WHERE trip_id IN ($in)", $dropTrips);
             // Postgres cascades these (posts.trip_id ON DELETE CASCADE); SQLite's column has no action.
@@ -312,6 +316,8 @@ function rmt_account_delete(int $uid): array {
             'DELETE FROM hidden_content WHERE user_id = ?',
             'DELETE FROM review_votes WHERE user_id = ?',
             'DELETE FROM poll_votes WHERE user_id = ?',
+            'DELETE FROM trip_messages WHERE user_id = ?',
+            'DELETE FROM trip_chat_reads WHERE user_id = ?',
             'DELETE FROM meetup_rsvps WHERE user_id = ?',
             'DELETE FROM buddy_interest WHERE user_id = ?',
             'DELETE FROM notifications WHERE user_id = ? OR actor_id = ?',

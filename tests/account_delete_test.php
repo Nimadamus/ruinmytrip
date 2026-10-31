@@ -90,6 +90,9 @@ ins('trip_photos', ['trip_id' => $tripSolo, 'url' => '/media/trip_dana', 'storag
 ins('trip_photos', ['trip_id' => $tripShared, 'url' => '/media/omar_trip', 'storage_key' => 'omar_trip', 'user_id' => $omar, 'status' => 'published', 'created_at' => $now]);
 $actDana = ins('trip_activities', ['trip_id' => $tripShared, 'user_id' => $dana, 'title' => 'Dana dinner', 'storage_key' => 'act_dana', 'status' => 'published', 'created_at' => $now, 'updated_at' => $now]);
 $actOmar = ins('trip_activities', ['trip_id' => $tripShared, 'user_id' => $omar, 'title' => 'Omar tram ride', 'status' => 'published', 'created_at' => $now, 'updated_at' => $now]);
+ins('trip_messages', ['trip_id' => $tripShared, 'user_id' => $dana, 'body' => 'Dana in the trip chat', 'created_at' => $now]);
+ins('trip_messages', ['trip_id' => $tripShared, 'user_id' => $omar, 'body' => 'Omar in the trip chat', 'created_at' => $now]);
+ins('trip_chat_reads', ['trip_id' => $tripShared, 'user_id' => $dana, 'last_read_id' => 1]);
 ins('activity_joins', ['activity_id' => $actOmar, 'user_id' => $dana, 'state' => 'accepted', 'created_at' => $now, 'decided_by' => $omar]);
 ins('activity_joins', ['activity_id' => $actDana, 'user_id' => $omar, 'state' => 'accepted', 'created_at' => $now, 'decided_by' => $dana]);
 ins('activity_photos', ['activity_id' => $actOmar, 'user_id' => $dana, 'url' => '/media/act_dana', 'storage_key' => 'act_dana', 'status' => 'published', 'created_at' => $now]);
@@ -266,6 +269,9 @@ ok('conversation intact for Omar, both messages present',
     cnt('SELECT COUNT(*) c FROM messages WHERE id IN (?,?)', [$mDana, $mOmar]) === 2);
 ok('shared trip passed to Omar, emptied of her notes and cover',
     cnt("SELECT COUNT(*) c FROM trips WHERE id=? AND user_id=? AND body='' AND cover_url IS NULL", [$tripShared, $omar]) === 1);
+ok('her trip chat lines are gone and those of Omar stay',
+    cnt("SELECT COUNT(*) c FROM trip_messages WHERE body LIKE 'Dana%'") === 0
+    && cnt("SELECT COUNT(*) c FROM trip_messages WHERE trip_id=? AND user_id=?", [$tripShared, $omar]) === 1);
 ok("Omar's activity and photo on the shared trip intact", cnt('SELECT COUNT(*) c FROM trip_activities WHERE id=?', [$actOmar]) === 1
     && cnt("SELECT COUNT(*) c FROM trip_photos WHERE storage_key='omar_trip'") === 1
     && cnt("SELECT COUNT(*) c FROM media WHERE storage_key IN ('omar_trip','av_omar')") === 2);

@@ -866,6 +866,10 @@ section.block{padding:64px 0}
 .msg-when{display:block;font-size:.74rem;color:var(--muted);margin-top:3px}
 .msg-row.mine .msg-when{color:#dcefec}
 .msg-row.mine a{color:#eafffb;text-decoration:underline}
+.msg-who{display:block;font-size:.78rem;font-weight:600;margin-bottom:2px}
+.msg-who a{color:inherit;text-decoration:none}
+.trip-chat-people{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.trip-chat-people .avatar{width:32px;height:32px}
 
 .msg-composer{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:0;
   background:var(--paper);padding:10px 0 14px}

@@ -288,7 +288,8 @@ function messages_index(array $a): void {
     }
     $couldWrite = array_slice(array_values($couldWrite), 0, 6);
 
-    view('messages_index', compact('rows', 'threads', 'requests', 'couldWrite'), [
+    $tripChats = rmt_trip_chats_for($uid);
+    view('messages_index', compact('rows', 'threads', 'requests', 'couldWrite', 'tripChats'), [
         'title' => 'Messages | RuinMyTrip',
         'description' => 'Your RuinMyTrip conversations.',
         'app_shell' => true,

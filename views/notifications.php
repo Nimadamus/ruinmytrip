@@ -291,6 +291,16 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b><?= e($who) ?></b> shared upcoming travel dates.
           <?php endif; ?>
+        <?php elseif ($n['type'] === 'trip_chat'):
+          /* A line in the chat of a trip the reader is on. Checked again here, because somebody
+             taken off the trip since should not be sent to a page that will refuse them. */
+          $tr = q_one("SELECT * FROM trips WHERE id = ? AND status = 'published'", [(int) $n['target_id']]);
+          $who = $n['actor'] ? '@' . $n['actor'] : 'Somebody';
+          $what = $tr ? (string) $tr['title'] : 'a trip';
+          $href = ($tr && rmt_trip_chat_allowed($tr, $me)) ? url('trip/' . (int) $tr['id'] . '/chat') : null;
+        ?>
+          <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.</a>
+          <?php else: ?><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.<?php endif; ?>
         <?php elseif ($n['type']==='message'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id'], (int)$me['id']);

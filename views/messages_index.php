@@ -25,7 +25,31 @@ $rmtRow = static function (array $r): void { ?>
 <?php }; ?>
 <div class="wrap" style="max-width:680px;min-height:50vh">
   <h1 style="margin-top:24px">Messages</h1>
-  <?php if (!$threads && !$requests): ?>
+  <?php $tripChats = $tripChats ?? []; ?>
+  <?php if ($tripChats): ?>
+    <h2 class="rail-h" style="margin:16px 0 8px">Trip chats</h2>
+    <ul class="list-plain">
+      <?php foreach ($tripChats as $tc): ?>
+        <li class="card" style="margin-bottom:8px">
+          <a href="<?= e(url('trip/'.(int) $tc['id'].'/chat')) ?>" style="color:inherit;text-decoration:none">
+            <div class="card-body" style="padding:12px 16px;display:flex;align-items:center;gap:10px">
+              <div style="flex:1;min-width:0">
+                <div class="inbox-who">
+                  <b><?= e((string) $tc['title']) ?></b>
+                  <?php if ((int) $tc['unread'] > 0): ?><span class="chip inbox-new"><?= (int) $tc['unread'] ?> new</span><?php endif; ?>
+                </div>
+                <p class="muted" style="margin:.2rem 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?php
+                  if ($tc['last_username'] !== ''): ?>@<?= e($tc['last_username']) ?>: <?php endif; ?><?= e($tc['last_body']) ?></p>
+              </div>
+              <span class="hint"><?= $tc['last_at'] ? e(ago((string) $tc['last_at'])) : '' ?></span>
+            </div>
+          </a>
+        </li>
+      <?php endforeach; ?>
+    </ul>
+    <?php if ($threads || $requests): ?><h2 class="rail-h" style="margin:16px 0 8px">Direct messages</h2><?php endif; ?>
+  <?php endif; ?>
+  <?php if (!$threads && !$requests && !$tripChats): ?>
     <?php $emptyTitle = 'No conversations yet';
           $emptyWhy = 'Messages start from somebody\'s profile, or from a match. The people below are real members, and the cities are ones somebody has actually posted dates for.';
           $emptyCtaText = 'Find travelers'; $emptyCtaUrl = url('travelers');

@@ -48,7 +48,7 @@ function rmt_moderate(int $actorId, string $targetType, int $targetId, string $a
        it was sent to already has it, and the decision a reported message actually calls for is
        about the account that sent it. Both types are logged, reviewed and acted on through the
        sender rather than through a status column they do not have. */
-    $movesStatus = !in_array($targetType, ['user', 'message'], true) && isset(RMT_MOD_STATUS[$action]);
+    $movesStatus = !in_array($targetType, ['user', 'message', 'trip_message'], true) && isset(RMT_MOD_STATUS[$action]);
 
     $from = null;
     $to = null;
@@ -188,6 +188,19 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
                        WHERE m.id = ?", [$targetId]);
         if (!$row) return $out;
         $out['title']   = 'A message from @' . (string) ($row['username'] ?? 'a deleted account');
+        $out['author']  = (string) ($row['username'] ?? '');
+        $out['excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 300, '…');
+        $out['status']  = null;
+        return $out;
+    }
+
+    /* A line in a trip chat: private to the people on the trip, so the same treatment. */
+    if ($targetType === 'trip_message') {
+        $row = q_one("SELECT m.id, m.body, m.trip_id, u.username
+                        FROM trip_messages m LEFT JOIN users u ON u.id = m.user_id
+                       WHERE m.id = ?", [$targetId]);
+        if (!$row) return $out;
+        $out['title']   = 'A trip chat line from @' . (string) ($row['username'] ?? 'a deleted account');
         $out['author']  = (string) ($row['username'] ?? '');
         $out['excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 300, '…');
         $out['status']  = null;

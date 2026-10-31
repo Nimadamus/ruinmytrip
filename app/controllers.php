@@ -5685,6 +5685,8 @@ const RMT_REPORT_TARGETS = [
     /* A message. Reporting one is the only way a moderator ever learns about a private message,
        and blocking alone leaves the sender free to do the same thing to somebody else. */
     'message'    => 'messages',
+    /* A line in a trip chat, which only the people on the trip can see, for the same reason. */
+    'trip_message' => 'trip_messages',
 ];
 
 /**
@@ -5732,6 +5734,11 @@ function report_submit(array $a): void {
         $table = RMT_REPORT_TARGETS[$tt];
         if (!q_one("SELECT 1 FROM {$table} WHERE id = ?", [$tid])) {
             $errors[] = 'That content no longer exists.';
+        }
+        /* A trip chat line is only reportable by somebody who can read it. */
+        if (!$errors && $tt === 'trip_message') {
+            $tr = q_one('SELECT t.* FROM trip_messages m JOIN trips t ON t.id = m.trip_id WHERE m.id = ?', [$tid]);
+            if (!rmt_trip_chat_allowed($tr, $me)) $errors[] = 'That content no longer exists.';
         }
     }
 
