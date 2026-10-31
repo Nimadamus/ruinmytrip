@@ -158,7 +158,19 @@ def journey(p, poster_dev, other_dev):
     # B4 accept
     a.go(f'/buddy/{bid}')
     check(f'[{a.label}] B4 the poster sees the note', stamp in a.text())
+    check(f'[{a.label}] B4 an interest notification is written',
+          bool(db("SELECT 1 FROM notifications WHERE user_id = ? AND type = 'buddy_interest' AND actor_id = ? AND target_id = ?", (a.uid, o.uid, bid))))
+    a.go('/notifications')
+    check(f'[{a.label}] B4 the notification shows on the page', o.username in a.text(), a.text()[:300])
+    a.go(f'/buddy/{bid}')
     a.press(f'form[action$="buddy/{bid}/decide/{o.uid}"] button[value=accepted], form[action$="buddy/{bid}/decide/{o.uid}"] button')
+
+    check(f'[{o.label}] B4 an accepted notification is written',
+          bool(db("SELECT 1 FROM notifications WHERE user_id = ? AND type = 'buddy_accepted' AND actor_id = ?", (o.uid, a.uid))))
+    o.go('/notifications')
+    check(f'[{o.label}] B4 the acceptance shows on the page', a.username in o.text(), o.text()[:300])
+    o.go(f'/u/{a.username}')
+    check(f'[{o.label}] B4 the poster profile opens', a.username in o.text(), o.page.url)
 
     # B5 messages both ways
     o.go(f'/messages/{a.username}')
@@ -259,6 +271,8 @@ def journey(p, poster_dev, other_dev):
     bp = db("SELECT id FROM buddy_posts WHERE user_id = ? AND status = 'open'", (uid,))
     check(f'[{t.label}] B9 the buddy post went live after the age step', len(bp) == 1, bp)
     check(f'[{t.label}] B9 lands on the buddy post', bool(bp) and f'/buddy/{bp[0][0]}' in tp.url, tp.url)
+    check(f'[{a.label}] B9 the poster is told a matching traveler is coming',
+          bool(db("SELECT 1 FROM notifications WHERE user_id = ? AND type = 'buddy_match' AND actor_id = ?", (a.uid, uid))))
 
     for m in (a, o, y, t):
         check(f'[{m.label}] no script errors', not m.errs, m.errs[:3])
