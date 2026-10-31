@@ -179,6 +179,29 @@ function rmt_mail_password_reset(string $to, string $username, string $link): ar
     return rmt_mail_send($to, 'Reset your RuinMyTrip password', $html, $text);
 }
 
+/** Somebody tried to open a new account with an address that already has one. */
+function rmt_mail_account_exists(string $to, string $username, string $loginUrl, string $resetUrl): array {
+    $html = rmt_mail_layout(
+        'Somebody tried to join with your email',
+        '<p>Hi @' . e($username) . ', somebody just tried to create a new RuinMyTrip account with this '
+        . 'email address. You already have an account, so no new one was made.</p>'
+        . '<p>If it was you, sign in below. Forgot your password? <a href="' . e($resetUrl) . '">Reset it here</a>.</p>'
+        . '<p>If it was not you, ignore this email. Nothing changed on your account.</p>',
+        'Sign in', $loginUrl
+    );
+    $text = "Hi @{$username},
+
+Somebody just tried to create a new RuinMyTrip account with this email address. "
+          . "You already have an account, so no new one was made.
+
+If it was you, sign in: {$loginUrl}
+"
+          . "Forgot your password? Reset it: {$resetUrl}
+
+If it was not you, ignore this email. Nothing changed on your account.";
+    return rmt_mail_send($to, 'Somebody tried to join RuinMyTrip with your email', $html, $text);
+}
+
 /**
  * Stateless, non-expiring unsubscribe token: an HMAC of the user id, not a stored/burnable value
  * like auth_tokens. A digest link must keep working for months without a re-issued token every

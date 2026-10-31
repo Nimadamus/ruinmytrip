@@ -5347,8 +5347,21 @@ function register_submit(array $a): void {
              ['title'=>'Join RuinMyTrip']); return;
     }
     rmt_track('join_submit', ['source' => rmt_join_source($return)]);
+    $t0 = microtime(true);
     $r = rmt_register_quick((string) input('email'), (string) input('password'), input('age_ok') === '1', (string) input('username'));
+    if (!empty($r['exists'])) {
+        /* The address already has an account. The answer goes to the same place a new signup's
+           does, so the response to this POST says nothing about membership; the owner gets an
+           email telling them how to get in (rmt_register_existing). It counts toward the join
+           limit like a signup, which caps how fast anyone can probe addresses from one place. */
+        rmt_join_rate_record();
+        rmt_track('join_failure', ['source' => rmt_join_source($return), 'reason' => 'exists']);
+        rmt_auth_time_floor($t0);
+        flash(RMT_REGISTER_EXISTING_MSG);
+        redirect($return !== '' && $return !== '/feed' ? $return : '/plan?welcome=1');
+    }
     if ($r['ok']) {
+        rmt_auth_time_floor($t0);
         rmt_join_rate_record();
         rmt_track('join_created', ['source' => rmt_join_source($return)]);
         $mailed = (bool) ($r['mail_ok'] ?? false);
@@ -5550,12 +5563,15 @@ function forgot_form(array $a): void {
 function forgot_submit(array $a): void {
     csrf_check();
     $email = strtolower(trim(input('email')));
+    $t0 = microtime(true);
     $allowed = rmt_rate_ok('forgot_ip', rmt_client_ip(), 10, 3600)
             && rmt_rate_ok('forgot_email', $email, 3, 3600);
     if ($allowed && filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $u = q_one('SELECT * FROM users WHERE email = ?', [$email]);
         if ($u && $u['status'] !== 'suspended') send_password_reset_email($u);
     }
+    // Sending happens only for a registered address; the floor keeps that off the clock.
+    rmt_auth_time_floor($t0);
     view('auth/forgot', ['errors'=>[], 'sent'=>true], ['title'=>'Reset your password | RuinMyTrip']);
 }
 

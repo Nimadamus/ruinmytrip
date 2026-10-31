@@ -411,12 +411,24 @@ function plan_join_submit(array $a): void {
         return;
     }
     rmt_track('join_submit', ['source' => 'plan']);
+    $t0 = microtime(true);
     $r = rmt_register_quick((string) input('email'), (string) input('password'), input('age_ok') === '1', (string) input('username'));
+    if (!empty($r['exists'])) {
+        /* A registered address: answer like a new account whose review waits on email
+           confirmation (same redirect), keep the draft held in this session for when the owner
+           signs in, and mail the owner how to get in. See rmt_register_existing(). */
+        rmt_join_rate_record();
+        rmt_track('join_failure', ['source' => 'plan', 'reason' => 'exists']);
+        rmt_auth_time_floor($t0);
+        flash(RMT_REGISTER_EXISTING_MSG . ' Your review is still saved here: sign in to post it.');
+        redirect('/verify-email');
+    }
     if (!$r['ok']) {
         rmt_track('join_failure', ['source' => 'plan', 'reason' => 'validation']);
         $render($r['errors']);
         return;
     }
+    rmt_auth_time_floor($t0);
     rmt_join_rate_record();
     rmt_track('join_created', ['source' => 'plan']);
     $_SESSION['rmt_mail_ok'] = !empty($r['mail_ok']) ? '1' : '0';

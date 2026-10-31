@@ -110,7 +110,7 @@ function attempt_login(string $email, string $password): bool {
     if (!$u || $u['status'] === 'suspended') {
         // Spend roughly the same time as a real verify so response timing doesn't reveal
         // whether the address exists.
-        password_verify($password, '$2y$10$usesomesillystringforsalttoburnthesamecputime.aaaaaa');
+        password_verify($password, '$2y$10$.TVLLE5WC34GSFSW9bRMhOatS3vShRWfsTR9wnBl9O9I9rbXeStbG');
         return false;
     }
     if (!password_verify($password, $u['password_hash'])) return false;
@@ -177,11 +177,12 @@ function register_user(string $username, string $email, string $password, string
     if (strlen($password) < 8) $errors[] = 'Password must be at least 8 characters.';
     // A date of birth when one is given; otherwise the 16+ confirmation (app/quick_join.php).
     if ($birthdate !== '' ? age_from($birthdate) < 16 : !$ageConfirmed) $errors[] = 'You must be at least 16 to join RuinMyTrip.';
-    if (!$errors) {
-        if (q_one('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'That email is already registered.';
-        if (q_one('SELECT id FROM users WHERE username = ?', [$username])) $errors[] = 'That username is taken.';
-    }
+    // Usernames are public, so saying one is taken leaks nothing. Whether an EMAIL has an account
+    // is private: the answer for a registered address must read exactly like a fresh signup (see
+    // rmt_register_existing()), so it is only looked at once everything else has passed.
+    if (!$errors && q_one('SELECT id FROM users WHERE username = ?', [$username])) $errors[] = 'That username is taken.';
     if ($errors) return ['ok' => false, 'errors' => $errors];
+    if (q_one('SELECT id FROM users WHERE email = ?', [$email])) return rmt_register_existing($email, $password, $sendMail);
 
     $hash = password_hash($password, PASSWORD_BCRYPT);
     // The two uniqueness checks above are check-then-act: two near-simultaneous submissions (a
@@ -195,9 +196,9 @@ function register_user(string $username, string $email, string $password, string
                     [$username, $email, $hash, 'user', $birthdate !== '' ? $birthdate : null, 'active', date('Y-m-d H:i:s')]);
     } catch (\PDOException $e) {
         if ($e->getCode() !== '23505' && $e->getCode() !== '23000') throw $e;
-        if (q_one('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'That email is already registered.';
-        if (q_one('SELECT id FROM users WHERE username = ?', [$username])) $errors[] = 'That username is taken.';
-        return ['ok' => false, 'errors' => $errors ?: ['That email or username is already taken.']];
+        if (q_one('SELECT id FROM users WHERE username = ?', [$username])) return ['ok' => false, 'errors' => ['That username is taken.']];
+        if (q_one('SELECT id FROM users WHERE email = ?', [$email])) return rmt_register_existing($email, '', $sendMail);
+        return ['ok' => false, 'errors' => ['That did not go through. Try again.']];
     }
     q_run('INSERT INTO profiles (user_id, display_name, credibility_score) VALUES (?,?,0)', [$id, $username]);
     if (function_exists('rmt_invite_attach')) rmt_invite_attach((int) $id);
@@ -209,6 +210,51 @@ function register_user(string $username, string $email, string $password, string
     if (!$sendMail) return ['ok' => true, 'id' => (int)$id, 'mail_ok' => true, 'mail_detail' => 'not needed'];
     $mail = send_verification_email(['id' => (int)$id, 'email' => $email, 'username' => $username]);
     return ['ok' => true, 'id' => (int)$id, 'mail_ok' => $mail[0], 'mail_detail' => $mail[1]];
+}
+
+/** What a registration for an address that has an account says to the person who submitted it. */
+const RMT_REGISTER_EXISTING_MSG = 'Check your email. We sent a message to that address with the next step.';
+
+/**
+ * A signup for an address that already has an account.
+ *
+ * Account enumeration: the old "that email is taken" style answer told anyone with a list of addresses
+ * which of them are members, and for a travel and meetup product membership itself is private.
+ * So the submitter is told only to check their inbox, and the inbox owner is told what happened
+ * and how to get in (sign in, or reset the password). The owner is mailed at most twice a day per
+ * address, so the form cannot be used to flood somebody. The password is still hashed so the
+ * request costs the same CPU as a real signup, and the session id is still rotated so the
+ * response carries the same cookie a real signup does. Nobody is signed in.
+ *
+ * @return array{ok:false, exists:true, errors:list<string>}
+ */
+function rmt_register_existing(string $email, string $password, bool $sendMail = true): array {
+    password_hash($password !== '' ? $password : 'x', PASSWORD_BCRYPT);
+    if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_ACTIVE) session_regenerate_id(true);
+    if ($sendMail) {
+        $u = q_one('SELECT id, username, email, status FROM users WHERE email = ?', [strtolower(trim($email))]);
+        $allowed = !function_exists('rmt_rate_ok') || rmt_rate_ok('exists_notice', strtolower(trim($email)), 2, 86400);
+        if ($u && ($u['status'] ?? '') !== 'suspended' && $allowed && function_exists('rmt_mail_account_exists')) {
+            $base = rtrim((string) cfg('app_url'), '/');
+            try { rmt_mail_account_exists((string) $u['email'], (string) $u['username'], $base . '/login', $base . '/forgot-password'); }
+            catch (Throwable $e) { error_log('[register] exists notice: ' . $e->getMessage()); }
+        }
+    }
+    return ['ok' => false, 'exists' => true, 'errors' => [RMT_REGISTER_EXISTING_MSG]];
+}
+
+/**
+ * Hold an auth response until a fixed amount of time has passed since $start, plus a little jitter.
+ *
+ * Signup and password reset send an email only when the address is (or is not) registered, and a
+ * call to the mail provider takes long enough to see from outside. Padding both answers to the
+ * same floor hides it. Skipped in the test environment so the suites stay fast.
+ */
+function rmt_auth_time_floor(float $start, float $floor = 1.0): void {
+    if ((string) cfg('app_env') === 'test' || getenv('RMT_AUTH_FLOOR') === '0') return;
+    $until = $start + $floor + random_int(0, 150) / 1000;
+    $wait = $until - microtime(true);
+    if ($wait > 0) usleep((int) ($wait * 1000000));
 }
 
 function logout(): void { $_SESSION = []; session_destroy(); }
