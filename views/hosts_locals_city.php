@@ -93,9 +93,14 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
       <div class="hl-people"><?php foreach ($hosts as $hc) include __DIR__ . '/_hl_host.php'; ?></div>
     <?php else: ?>
       <div class="hl-empty">
+        <?php if ($flt['from'] !== '' && $counts['hosts'] > 0): ?>
+        <h3>No host is free on those dates</h3>
+        <p>Try other dates, or meet a local instead.</p>
+        <?php else: ?>
         <h3>No hosts in <?= e((string) $d['name']) ?> yet</h3>
         <p>Have a spare room or couch? Apply early. A moderator reviews every application before anybody sees it.</p>
         <a class="btn btn-primary" href="<?= e(url('hosts-locals/become-a-host')) ?>">Become a host</a>
+        <?php endif; ?>
       </div>
     <?php endif; ?>
   </section>

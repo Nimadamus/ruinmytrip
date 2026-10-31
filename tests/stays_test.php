@@ -56,6 +56,9 @@ ok(!rmt_stay_validate($good, $host())['ok'], 'a stay over a night the host is no
 ok(count(rmt_host_unavailable($host())) === 1, 'past ranges drop off');
 q_run("UPDATE host_profiles SET unavailable=? WHERE user_id=?", [json_encode([[$d3, date('Y-m-d', strtotime('+15 days'))]]), $id('sthost')]);
 ok(rmt_stay_validate($good, $host())['ok'], 'leaving on the first unavailable day is fine');
+$listed = fn(string $from, string $to) => in_array('sthost', array_column(rmt_hl_hosts(['dest_id' => (int) $dest['id'], 'from' => $from, 'to' => $to], null, 60), 'username'), true);
+ok($listed($d1, $d3), 'a host free on the searched dates is listed');
+ok(!$listed(date('Y-m-d', strtotime('+14 days')), date('Y-m-d', strtotime('+16 days'))), 'a host not hosting on the searched dates is left out');
 q_run("UPDATE host_profiles SET unavailable=NULL WHERE user_id=?", [$id('sthost')]);
 
 $r = rmt_stay_create($user('stguest'), $host(), rmt_stay_validate($good, $host())['data']);

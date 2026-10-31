@@ -214,6 +214,12 @@ function rmt_hl_hosts(array $f, ?int $viewerId, int $limit = 24): array {
     if (($f['lang'] ?? '') !== '') { $w[] = "(',' || COALESCE(p.languages, '') || ',') LIKE ?"; $a[] = '%,' . $f['lang'] . ',%'; }
     if (($f['interest'] ?? '') !== '') { $w[] = 'EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = u.id AND pi.interest = ?)'; $a[] = $f['interest']; }
     [$bs, $ba] = rmt_hl_block_sql('u.id', $viewerId); $w[] = $bs; array_push($a, ...$ba);
+    // With travel dates, hosts who listed any of those nights as not hosting are left out.
+    if (($f['from'] ?? '') !== '' && function_exists('rmt_host_unavailable_clash')) {
+        $to = ($f['to'] ?? '') > $f['from'] ? (string) $f['to'] : date('Y-m-d', strtotime($f['from'] . ' +1 day'));
+        $rows = rmt_hl_hosts(['from' => ''] + $f, $viewerId, 60);
+        return array_slice(array_values(array_filter($rows, fn($h) => rmt_host_unavailable_clash($h, (string) $f['from'], $to) === null)), 0, max(1, min(60, $limit)));
+    }
     return q_all("SELECT h.*, u.id user_id, u.username, u.email_verified_at, p.display_name, p.avatar_url, p.bio, p.languages,
                          d.name dest_name, d.slug dest_slug
                     FROM host_profiles h JOIN users u ON u.id = h.user_id

@@ -206,6 +206,13 @@ try:
         hp.set_viewport_size({'width': 1280, 'height': 900})
         tp.reload()
         check('the stay form shows when the host is not hosting', 'Not hosting:' in tp.inner_text('main'))
+        city = BASE + '/hosts-locals/destinations/' + dest['slug'] + '?role=hosts'
+        tp.goto(city + '&from=' + far + '&to=' + far)
+        check('a host not hosting on the searched dates is left out', tp.locator('.hl-person', has_text='Alfama').count() == 0 and 'No host is free on those dates' in tp.inner_text('main'))
+        soon = php("echo date('Y-m-d', strtotime('+20 days'));").strip(); soon2 = php("echo date('Y-m-d', strtotime('+22 days'));").strip()
+        tp.goto(city + '&from=' + soon + '&to=' + soon2)
+        tp.locator('.hl-person', has_text='Alfama').locator('a', has_text='Ask to stay').click(); tp.wait_for_load_state()
+        check('searched dates carry into the stay form', tp.input_value('#s-from') == soon and tp.input_value('#s-to') == soon2)
         hp.goto(BASE + '/hosts-locals/me#host-dates')
         hp.locator('.hl-off li button').click(); hp.wait_for_load_state()
         check('the host removes it', hp.locator('.hl-off li').count() == 0)

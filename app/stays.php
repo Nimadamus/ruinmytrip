@@ -193,7 +193,8 @@ function stay_new_form(array $a): void {
     $me = current_user();
     $host = rmt_stay_host_by_username((string) $a['username']);
     if (!$host || $host['status'] !== 'approved') not_found();
-    view('stay_new', ['host' => $host, 'why' => rmt_stay_blocked_reason($me, $host), 'errors' => [], 'old' => []],
+    $d = static fn(string $k): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET[$k] ?? '')) ? (string) $_GET[$k] : '';
+    view('stay_new', ['host' => $host, 'why' => rmt_stay_blocked_reason($me, $host), 'errors' => [], 'old' => ['date_from' => $d('from'), 'date_to' => $d('to')]],
          rmt_hl_meta('Ask to stay with @' . $host['username'] . ' | RuinMyTrip', 'Ask a host for a free stay.', '/stay/new/' . $host['username'], false));
 }
 
