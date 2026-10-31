@@ -28,8 +28,8 @@
   <p>Edit or delete your content and plans, control who can see your travel dates, block users, and request account deletion at any time.</p>
   <h2>Asking us for something</h2>
   <p>A copy of what we hold, a correction, or deletion of your account: ask through
-    <a href="<?= e(url('contact')) ?>">contact</a> and choose "a privacy request". You can also
-    delete your own content and account from your settings at any time without asking anybody.</p>
+    <a href="<?= e(url('contact')) ?>">contact</a> and choose "a privacy request". You can delete your
+    own reviews, posts and plans yourself at any time; deleting the account itself goes through that request.</p>
   <h2>Safety data</h2>
   <p>Reports and blocks are used by moderators to keep the community safe and may be retained for enforcement.</p>
 </div>
