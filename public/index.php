@@ -228,6 +228,8 @@ $routes = [
     ['POST', '#^/account/delete$#',            'account_delete_submit'],
     ['POST', '#^/account/delete/email$#',      'account_delete_email'],
     ['GET',  '#^/account/deleted$#',           'account_deleted_page'],
+    ['GET',  '#^/settings/email$#',            'settings_email_form'],
+    ['POST', '#^/settings/email$#',            'settings_email_save'],
     ['GET',  '#^/settings$#',                  'settings_form'],
     ['POST', '#^/settings$#',                  'settings_save'],
     ['GET',  '#^/login$#',                     'login_form'],

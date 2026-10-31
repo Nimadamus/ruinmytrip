@@ -113,5 +113,5 @@ $verified = !empty($me['email_verified_at']);
 
   <p style="margin-top:20px"><a href="<?= e(url('u/' . $me['username'] . '/references')) ?>">Your references</a> &middot;
     <a href="<?= e(url('stays')) ?>">Your stays</a> &middot; <a href="<?= e(url('buddies/mine')) ?>">Your travel buddy posts</a> &middot; <a href="<?= e(url('messages')) ?>">Messages</a> &middot;
-    <a href="<?= e(url('hosts-locals/safety')) ?>">Safety</a></p>
+    <a href="<?= e(url('settings/email')) ?>">Email settings</a> &middot; <a href="<?= e(url('hosts-locals/safety')) ?>">Safety</a></p>
 </div>

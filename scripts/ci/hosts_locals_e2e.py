@@ -116,7 +116,10 @@ try:
         check('the roles page has an invite link', 'hosts-locals?ref=hle2e_local' in lp.input_value('#hl-invite-link'))
         lp.goto(BASE + '/u/hle2e_local')
         check('own profile links back to the local settings', lp.locator('a.chip[href*="hosts-locals"]').count() >= 1)
-        lp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'])
+        lp.goto(BASE + '/settings/email'); lp.uncheck('input[name="on[]"][value="social"]')
+        lp.locator('form[action$="/settings/email"] button[type=submit]').click(); lp.wait_for_load_state()
+        check('email settings save a muted category', not lp.is_checked('input[name="on[]"][value="social"]') and lp.is_checked('input[name="on[]"][value="messages"]'))
+        no_hscroll(lp, '[phone] email settings')
         # The welcome screen sends a would-be host to the host form.
         wp, werr = page_for(True); login(wp, 'hle2e_trav')
         wp.goto(BASE + '/welcome'); wp.check('input[name=role_host]')

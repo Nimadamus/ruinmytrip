@@ -33,6 +33,7 @@ const RMT_DIRECT_MAIL_PER_DAY  = 6;
 function rmt_notify_email_direct(int $userId, string $subject, string $line, string $path,
                                  string $why = 'somebody wrote to you directly'): bool {
     if ($userId < 1 || !rmt_mail_enabled()) return false;
+    if (rmt_email_muted($userId, rmt_email_category($path))) return false;
 
     $u = q_one("SELECT u.id, u.username, u.email, u.status, u.email_verified_at,
                        COALESCE(p.digest_opt_out, 0) opt_out
@@ -101,5 +102,66 @@ Turn these off: " . $unsub;
     [$ok] = rmt_mail_send((string) $u['email'], 'Welcome to RuinMyTrip', $html, $text, rmt_mail_unsub_headers($unsub));
     if ($ok && function_exists('rmt_track')) rmt_track('welcome_email_sent');
     return (bool) $ok;
+}
+
+/**
+ * Email categories a member can switch off one by one at /settings/email. The category is read
+ * from where the email links to, so every existing caller is covered without a new argument.
+ */
+const RMT_EMAIL_CATEGORIES = [
+    'messages' => ['Messages', 'Private messages and trip chats'],
+    'requests' => ['Requests and answers', 'Stay requests, travelers asking to meet or join you, and their answers'],
+    'social'   => ['Replies and mentions', 'Replies to what you posted, comments and @mentions'],
+    'trips'    => ['Trips and matches', 'Somebody overlapping your dates, trip invitations and plans'],
+    'other'    => ['Everything else', 'Reminders and anything not listed above'],
+];
+
+function rmt_email_category(string $path): string {
+    $p = (string) (parse_url($path, PHP_URL_PATH) ?? $path);
+    if (str_starts_with($p, '/messages') || preg_match('#^/trip/\d+/chat#', $p)) return 'messages';
+    if (preg_match('#^/(stay|stays|buddies|buddy|hosts-locals|activity|connect)(/|$)#', $p)) return 'requests';
+    if (preg_match('#^/(post|review|blog|guide|talk|u)(/|$)#', $p)) return 'social';
+    if (preg_match('#^/(trip|matches|plan|going|e)(/|$)#', $p)) return 'trips';
+    return 'other';
+}
+
+/** @return list<string> */
+function rmt_email_muted_list(int $userId): array {
+    /* A database without migration 119 (an old test schema, or the minute before a deploy migrates)
+       has no column to read, which means nothing is muted rather than no email at all. */
+    try {
+        $raw = (string) (q_one('SELECT email_muted FROM profiles WHERE user_id = ?', [$userId])['email_muted'] ?? '');
+    } catch (\PDOException $e) {
+        return [];
+    }
+    return array_values(array_intersect(array_keys(RMT_EMAIL_CATEGORIES), explode(',', $raw)));
+}
+
+function rmt_email_muted(int $userId, string $category): bool {
+    return in_array($category, rmt_email_muted_list($userId), true);
+}
+
+/** GET /settings/email */
+function settings_email_form(array $a): void {
+    require_login();
+    $me = current_user();
+    rmt_profile_ensure((int) $me['id']);
+    $p = q_one('SELECT digest_opt_out FROM profiles WHERE user_id = ?', [(int) $me['id']]) ?: [];
+    view('settings_email', ['me' => $me, 'muted' => rmt_email_muted_list((int) $me['id']), 'all_off' => (int) ($p['digest_opt_out'] ?? 0) === 1],
+         ['title' => 'Email settings | RuinMyTrip', 'robots' => 'noindex, nofollow', 'app_shell' => true]);
+}
+
+/** POST /settings/email */
+function settings_email_save(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $uid = (int) $me['id'];
+    rmt_profile_ensure($uid);
+    $on = array_map('strval', (array) ($_POST['on'] ?? []));
+    $muted = array_values(array_diff(array_keys(RMT_EMAIL_CATEGORIES), $on));
+    $allOff = !empty($_POST['all_off']) ? 1 : 0;
+    q_run('UPDATE profiles SET email_muted = ?, digest_opt_out = ? WHERE user_id = ?', [implode(',', $muted), $allOff, $uid]);
+    flash($allOff ? 'Saved. RuinMyTrip will not email you, except account and security emails.' : 'Saved.');
+    redirect('/settings/email');
 }
 

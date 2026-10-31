@@ -1,6 +1,7 @@
 <?php /** @var array $me @var array $errors @var array $p */ ?>
 <div class="wrap"><div class="form-card form-wide">
   <h1>Edit your profile</h1>
+  <p class="hint" style="margin:-4px 0 14px"><a href="<?= e(url('settings/email')) ?>">Email settings</a> &middot; <a href="<?= e(url('hosts-locals/me')) ?>">Hosts &amp; Locals roles</a> &middot; <a href="<?= e(url('account/delete')) ?>">Delete account</a></p>
   <p class="muted">This is what other travelers see at
     <a href="<?= e(url('u/'.$me['username'])) ?>">ruinmytrip.com/u/<?= e($me['username']) ?></a>.</p>
   <?php if ($errors): ?><div class="errors"><ul><?php foreach($errors as $er):?><li><?= e($er) ?></li><?php endforeach;?></ul></div><?php endif; ?>
