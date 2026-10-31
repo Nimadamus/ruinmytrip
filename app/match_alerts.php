@@ -233,7 +233,8 @@ function rmt_alert_mail_overlap(array $a, string $what): bool {
         . '<p style="font-family:sans-serif;font-size:12px;color:#8895a3;text-align:center">'
         . '<a href="' . e(rmt_alert_off_url($a)) . '" style="color:#8895a3">Turn this alert off</a></p>';
     $text = "$what $label.\nPost your trip: " . abs_url(rmt_alert_join_url($a)) . "\nTurn this alert off: " . rmt_alert_off_url($a);
-    $r = rmt_mail_send((string) $a['email'], 'A traveler overlaps your dates in ' . $label, $html, $text);
+    $r = rmt_mail_send((string) $a['email'], 'A traveler overlaps your dates in ' . $label, $html, $text,
+                       rmt_mail_unsub_headers(rmt_alert_off_url($a)));
     if (!($r[0] ?? false)) return false;
     q_run('UPDATE match_alerts SET notified_at = ?, notify_count = notify_count + 1 WHERE id = ?', [date('Y-m-d H:i:s'), (int) $a['id']]);
     if (function_exists('rmt_track')) rmt_track('alert_match', ['source' => 'alert', 'destination_id' => (int) $a['destination_id']]);

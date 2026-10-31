@@ -59,6 +59,6 @@ function rmt_notify_email_direct(int $userId, string $subject, string $line, str
     );
     $text = $line . "\n\n" . $url . "\n\nTurn these off: " . $unsub;
 
-    [$ok] = rmt_mail_send((string) $u['email'], $subject, $html, $text);
+    [$ok] = rmt_mail_send((string) $u['email'], $subject, $html, $text, rmt_mail_unsub_headers($unsub));
     return (bool) $ok;
 }

@@ -13,6 +13,8 @@ declare(strict_types=1);
  *                    with no DNS setup. Move to a verified send.ruinmytrip.com address for
  *                    real deliverability before broad launch.
  *   MAIL_REPLY_TO    optional.
+ *   MAIL_POSTAL_ADDRESS  the sender's postal address. Printed in every email footer; anything
+ *                    promotional must not be sent without it (rmt_mail_marketing_ready, CAN-SPAM).
  *
  * Never throws: a mail failure must not break registration. Callers decide what to tell the user.
  */
@@ -25,7 +27,17 @@ function rmt_mail_from(): string { return getenv('MAIL_FROM') ?: 'RuinMyTrip <on
  * Send one email. Returns [ok, detail] — detail is an id on success, an error string on failure.
  * @return array{0:bool,1:string}
  */
-function rmt_mail_send(string $to, string $subject, string $html, string $text = ''): array {
+/** The postal address every email footer carries, or '' when it has not been configured. */
+function rmt_mail_postal_address(): string { return trim((string) (getenv('MAIL_POSTAL_ADDRESS') ?: '')); }
+
+/** Promotional email needs a working sender, a postal address in the footer and an unsubscribe link
+    (the caller's job). Nothing promotional is sent until the first two are true. */
+function rmt_mail_marketing_ready(): bool { return rmt_mail_enabled() && rmt_mail_postal_address() !== ''; }
+
+/** Mail clients show their own unsubscribe button when this header is present. */
+function rmt_mail_unsub_headers(string $url): array { return $url === '' ? [] : ['List-Unsubscribe' => '<' . $url . '>']; }
+
+function rmt_mail_send(string $to, string $subject, string $html, string $text = '', array $headers = []): array {
     $key = getenv('RESEND_API_KEY') ?: '';
     if ($key === '') return [false, 'RESEND_API_KEY not set, mail disabled'];
 
@@ -37,6 +49,7 @@ function rmt_mail_send(string $to, string $subject, string $html, string $text =
     ];
     if ($text !== '') $payload['text'] = $text;
     if ($rt = getenv('MAIL_REPLY_TO')) $payload['reply_to'] = $rt;
+    if ($headers) $payload['headers'] = $headers;
     $json = json_encode($payload, JSON_UNESCAPED_SLASHES);
 
     // ext-curl is not guaranteed to be compiled into every PHP build we might run on, and a
@@ -136,7 +149,10 @@ function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = ''
         . $bodyHtml . $cta
         . '<hr style="border:0;border-top:1px solid #e6ebf0;margin:32px 0 16px">'
         . '<p style="color:#8895a3;font-size:12px;margin:0">If you did not expect this email you can '
-        . 'safely ignore it. Nothing will change on your account.</p></div>';
+        . 'safely ignore it. Nothing will change on your account.</p>'
+        . (rmt_mail_postal_address() !== '' ? '<p style="color:#8895a3;font-size:12px;margin:8px 0 0">RuinMyTrip, '
+            . e(rmt_mail_postal_address()) . '</p>' : '')
+        . '</div>';
 }
 
 function rmt_mail_verification(string $to, string $username, string $link): array {
@@ -277,5 +293,5 @@ function rmt_mail_digest(string $to, string $username, array $activity, string $
           . ($activity['compliments'] > 0 ? $activity['compliments'] . " compliment(s)\n" : '')
           . "\nUnsubscribe: {$unsubscribeUrl}";
 
-    return rmt_mail_send($to, 'Your RuinMyTrip week', $html, $text);
+    return rmt_mail_send($to, 'Your RuinMyTrip week', $html, $text, rmt_mail_unsub_headers($unsubscribeUrl));
 }
