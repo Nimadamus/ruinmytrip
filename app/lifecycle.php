@@ -102,6 +102,17 @@ function rmt_lifecycle_run(int $limit = 200): int {
                VALUES (?,?,?,?,?,?)',
               [(int) $t['user_id'], 'trip_over', null, 'trip', (int) $t['id'], $now]);
         $made++;
+        /* The same ask by email, because a member who is back home is not opening the feed. It
+           lands on the review form for that city, not the trip page: the trip is already written,
+           the review is the thing that is missing. Verified, opted in and capped like every other
+           direct email (rmt_notify_email_direct). */
+        if (function_exists('rmt_notify_email_direct') && !empty($t['destination_id'])) {
+            $dest = q_one('SELECT name FROM destinations WHERE id = ?', [(int) $t['destination_id']]);
+            $name = $dest ? (string) $dest['name'] : 'your trip';
+            rmt_notify_email_direct((int) $t['user_id'], 'How was ' . $name . '?',
+                'Welcome back. While it is fresh, tell the next traveler what nearly ruined ' . $name . ' and what saved it.',
+                '/review/new?destination=' . (int) $t['destination_id'] . '&src=trip_over', 'your trip just ended');
+        }
     }
 
     /* Tomorrow. The one reminder that is worth a person's attention, because a plan somebody said

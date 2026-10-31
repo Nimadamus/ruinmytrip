@@ -94,7 +94,7 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?><b><?= e($line) ?></b><?php endif; ?>
         <?php elseif ($n['type'] === 'trip_soon' || $n['type'] === 'trip_over'):
           /* The member's own trip, which is why there is no actor and no "@somebody did X". */
-          $trip = q_one("SELECT t.id, t.slug, t.date_from, t.date_to, d.name dest_name, d.slug dest_slug
+          $trip = q_one("SELECT t.id, t.slug, t.date_from, t.date_to, t.destination_id, d.name dest_name, d.slug dest_slug
                            FROM trips t LEFT JOIN destinations d ON d.id = t.destination_id
                           WHERE t.id = ? AND t.status = 'published'", [(int) $n['target_id']]);
           $where = $trip ? (string) ($trip['dest_name'] ?: 'your trip') : 'your trip';
@@ -115,8 +115,10 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
               <a href="<?= e(url('d/'.$trip['dest_slug'].'/travelers')) ?>">See who else is going</a>.
             <?php endif; ?>
           <?php else: ?>
-            <a href="<?= e($href) ?>"><b>How was <?= e($where) ?>?</b></a>
-            Add your photos and write what nearly ruined it. That is the thing the next person reads.
+            <?php $rhref = url('review/new?' . http_build_query(['destination' => (int) ($trip['destination_id'] ?? 0), 'src' => 'trip_over'])); ?>
+            <a href="<?= e($rhref) ?>"><b>How was <?= e($where) ?>?</b></a>
+            Write what nearly ruined it. That is the thing the next person reads.
+            <a href="<?= e($href) ?>">Add photos to the trip</a>.
           <?php endif; ?>
         <?php elseif ($n['type']==='comment' || $n['type']==='mention'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';

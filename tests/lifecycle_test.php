@@ -28,6 +28,12 @@ $GLOBALS['config'] = [
 require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/lifecycle.php';
+/* The direct email is its own module with its own tests; here only what the sweep asks it to send. */
+$mailed = [];
+function rmt_notify_email_direct(int $uid, string $subject, string $line, string $path, string $why = ''): bool {
+    $GLOBALS['mailed'][] = ['uid' => $uid, 'subject' => $subject, 'path' => $path];
+    return true;
+}
 
 $pdo = db();
 $pdo->exec("CREATE TABLE trips (id INTEGER PRIMARY KEY, user_id INT, destination_id INT, title TEXT,
@@ -38,6 +44,9 @@ $pdo->exec("CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, us
 $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, trip_id INT, user_id INT, day TEXT,
               title TEXT, cancelled_at TEXT, status TEXT DEFAULT 'published')");
 $pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT)");
+
+$pdo->exec("CREATE TABLE destinations (id INTEGER PRIMARY KEY, name TEXT)");
+$pdo->exec("INSERT INTO destinations (id, name) VALUES (7, 'Lisbon')");
 
 $d = static fn(string $rel): string => date('Y-m-d', strtotime($rel));
 $pdo->exec("INSERT INTO trips (id,user_id,destination_id,title,slug,status,visibility,date_from,date_to) VALUES
@@ -82,7 +91,12 @@ ok($countOf('trip_over', 4) === 0, 'a trip that ended last year is left alone');
 ok($countOf('trip_soon', 7) === 0 && $countOf('trip_over', 7) === 0, 'a draft is not a trip yet');
 ok($countOf('trip_soon', 8) === 0, 'a trip with no dates has no moment to announce');
 
+ok(count($mailed) === 1, 'the finished trip is asked about by email once, ' . count($mailed) . ' sent');
+ok(($mailed[0]['uid'] ?? 0) === 1 && ($mailed[0]['subject'] ?? '') === 'How was Lisbon?', 'to its traveler, about its city');
+ok(str_starts_with((string) ($mailed[0]['path'] ?? ''), '/review/new?destination=7&src=trip_over'), 'and it opens the review form for that city');
+
 ok(rmt_lifecycle_run() === 0, 'running it again sends nothing');
+ok(count($mailed) === 1, 'and emails nobody twice');
 ok($countOf('trip_soon', 1) === 1, 'and does not duplicate the first one');
 
 /* The notification belongs to the traveler, so it carries no actor: there is nobody who did it. */

@@ -6540,6 +6540,9 @@ function sitemap(array $a): void {
     /* A crawler asking what we have is the moment to tell the ones that take a push. The cost of
        the call lands here, on a robot, rather than on a member mid-publish. */
     rmt_seo_flush_if_due();
+    /* The trip reminders used to run only when a signed in member opened their feed, which on a
+       quiet day is never. Crawlers ask for the sitemap every day; it is throttled to every 30 minutes. */
+    if (function_exists('rmt_lifecycle_if_due')) rmt_lifecycle_if_due();
     header('Content-Type: application/xml; charset=utf-8');
     echo '<?xml version="1.0" encoding="UTF-8"?>'."\n";
     echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
