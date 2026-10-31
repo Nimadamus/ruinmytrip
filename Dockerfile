@@ -26,6 +26,9 @@ RUN { \
 
 # Document root -> public/
 COPY docker/000-default.conf /etc/apache2/sites-available/000-default.conf
+# Silences AH00558 ("Could not reliably determine the server's fully qualified domain name"),
+# printed on every start. The name is only used in Apache's self-referential messages.
+RUN echo 'ServerName localhost' > /etc/apache2/conf-available/servername.conf && a2enconf servername
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

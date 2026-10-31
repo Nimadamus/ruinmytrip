@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-define('BASE_PATH', dirname(__DIR__));
+// Maintenance scripts define it themselves before requiring this file; defining it twice printed
+// a PHP warning into every deploy log (two per deploy, from the entrypoint's scripts).
+if (!defined('BASE_PATH')) define('BASE_PATH', dirname(__DIR__));
 require BASE_PATH . '/app/loadconfig.php';
 $config = rmt_load_config();
 $GLOBALS['config'] = $config;

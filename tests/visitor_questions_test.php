@@ -90,8 +90,12 @@ ok('your own trip page asks the second',  str_contains($tripView, "'after_first_
 echo "\n-- where it sends somebody afterwards --\n";
 $ctrl2 = (string) file_get_contents(BASE_PATH . '/app/controllers.php');
 $fn = substr($ctrl2, (int) strpos($ctrl2, 'function visitor_answer_submit'), 900);
-ok('an off site return is refused',      str_contains($fn, "str_contains(\$back, '://')"), true);
-ok('a protocol relative one too',        str_contains($fn, "str_starts_with(\$back, '//')"), true);
+// The check is the shared one in app/auth.php (tests/open_redirect_test.php drives it with hostile values).
+$authSrc = (string) file_get_contents(BASE_PATH . '/app/auth.php');
+$okFn = substr($authSrc, (int) strpos($authSrc, 'function rmt_return_path_ok'), 400);
+ok('the return goes through the shared check', str_contains($fn, 'rmt_return_path_ok($back)'), true);
+ok('an off site return is refused',      str_contains($okFn, "str_contains(\$path, '://')"), true);
+ok('a protocol relative one too',        str_contains($okFn, "str_starts_with(\$path, '//')"), true);
 ok('and the fallback is a page of ours', str_contains($fn, "'/matches'"), true);
 
 

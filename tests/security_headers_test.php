@@ -37,5 +37,12 @@ ok('media keeps its sandbox CSP from PHP',
 ok('X-Powered-By is removed', str_contains($conf, 'Header unset X-Powered-By'));
 ok('expose_php is off', str_contains($docker, "expose_php = Off"));
 
+// Deploy log noise that hid real warnings: two per deploy, 55 deploys in the 48 hours to 2026-10-30.
+$boot = (string) file_get_contents($root . '/app/bootstrap.php');
+ok('bootstrap does not redefine BASE_PATH a script already set',
+   str_contains($boot, "if (!defined('BASE_PATH')) define('BASE_PATH'") && !preg_match("/^define\('BASE_PATH'/m", $boot));
+ok('Apache has a ServerName (no AH00558 on every start)', str_contains($docker, "ServerName localhost")
+   && str_contains($docker, 'a2enconf servername'));
+
 echo $fails ? "\n$fails FAILED\n" : "\nAll security header tests passed.\n";
 exit($fails ? 1 : 0);
