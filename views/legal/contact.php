@@ -47,6 +47,7 @@
     <?php endif; ?>
     <form method="post" action="<?= e(url('contact')) ?>" style="max-width:560px">
       <?= csrf_field() ?>
+      <div class="hp-field" aria-hidden="true"><label>Leave this empty <input type="text" name="hp_note" value="" tabindex="-1" autocomplete="off"></label></div>
       <label for="kind">What is this about?</label>
       <select id="kind" name="kind">
         <option value="site_problem">Something on the site is broken</option>

@@ -146,3 +146,15 @@ function rmt_feedback_open_for_place(int $placeId): int {
     return (int) (q_one("SELECT COUNT(*) c FROM feedback WHERE place_id = ? AND status = 'pending'",
                         [$placeId])['c'] ?? 0);
 }
+
+/**
+ * Did the hidden "leave this empty" field come back filled?
+ *
+ * The contact and correction forms are open to signed out visitors, so they are what a spam bot
+ * finds first. A person never sees the field (it is off screen and out of the tab order); a bot
+ * filling every input does. The caller shows the normal thank you and stores nothing, so the bot
+ * learns nothing it can adjust to.
+ */
+function rmt_honeypot_tripped(): bool {
+    return trim((string) ($_POST['hp_note'] ?? '')) !== '';
+}

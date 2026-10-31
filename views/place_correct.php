@@ -34,6 +34,7 @@
 
     <form method="post" action="<?= e(url(ltrim(rmt_place_path($p), '/') . '/correct')) ?>">
       <?= csrf_field() ?>
+      <div class="hp-field" aria-hidden="true"><label>Leave this empty <input type="text" name="hp_note" value="" tabindex="-1" autocomplete="off"></label></div>
       <label for="kind">What is wrong?</label>
       <select id="kind" name="kind" required>
         <?php foreach (RMT_FEEDBACK_PLACE_KINDS as $k): ?>

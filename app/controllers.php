@@ -2912,7 +2912,7 @@ function suggest_places_json(array $a): void {
     header('Content-Type: application/json; charset=utf-8');
     header('Cache-Control: no-store');
 
-    $who = (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon');
+    $who = rmt_client_ip();
     if (!rmt_rate_ok('suggest_places', $who, 240, 60)) {
         http_response_code(429);
         echo json_encode(['places' => [], 'throttled' => true]);
@@ -2959,7 +2959,7 @@ function suggest_json(array $a): void {
 
     // A public endpoint that runs several queries per call is worth a limit. Keyed by IP, generous
     // enough that a fast typist with a 180ms debounce never sees it.
-    $who = (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon');
+    $who = rmt_client_ip();
     if (!rmt_rate_ok('suggest', $who, 240, 60)) {
         http_response_code(429);
         header('Content-Type: application/json; charset=utf-8');
@@ -2994,7 +2994,7 @@ function suggest_click(array $a): void {
     // Without it this is an open endpoint for writing rows into an analytics table from any page
     // on the internet, which is a small hole but a pointless one to leave.
     csrf_check();
-    if (!rmt_rate_ok('suggest_click', (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 120, 60)) {
+    if (!rmt_rate_ok('suggest_click', rmt_client_ip(), 120, 60)) {
         http_response_code(204);
         return;
     }
@@ -3873,7 +3873,7 @@ function rmt_attach_trip_photos(int $tripId, int $ownerId): array {
  */
 function contribution_event(array $a): void {
     csrf_check();
-    if (rmt_rate_ok('contrib_event', (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 180, 60)) {
+    if (rmt_rate_ok('contrib_event', rmt_client_ip(), 180, 60)) {
         rmt_track((string) input('event'), [
             'source'         => (string) input('source'),
             'place_id'       => (int) input('place_id'),
@@ -5920,13 +5920,19 @@ function place_correct_submit(array $a): void {
 
     // Rate limited by connection rather than by account, because the form deliberately does not
     // need one. Generous: a person correcting several places in a sitting is doing us a favour.
-    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 20, 3600)) {
+    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : rmt_client_ip(), 20, 3600)) {
         view('place_correct', ['p' => $p, 'sent' => false,
                                'errors' => ['That is a lot of corrections at once. Try again shortly.']], [
             'title' => 'Suggest a correction - RuinMyTrip', 'robots' => 'noindex,follow']);
         return;
     }
 
+    // The hidden field a person never sees: a bot that fills it is thanked and nothing is stored.
+    if (rmt_honeypot_tripped()) {
+        view('place_correct', ['p' => $p, 'errors' => [], 'sent' => true], [
+            'title' => 'Thank you - RuinMyTrip', 'robots' => 'noindex,follow']);
+        return;
+    }
     $r = rmt_feedback_submit((string) input('kind'), (int) $p['id'], (string) input('message'),
                              $me ? (int) $me['id'] : null, (string) input('contact_email'));
     if (!$r['ok']) {
@@ -5942,9 +5948,13 @@ function place_correct_submit(array $a): void {
 function page_contact_submit(array $a): void {
     csrf_check();
     $me = current_user();
-    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : (string) ($_SERVER['REMOTE_ADDR'] ?? 'anon'), 20, 3600)) {
+    if (!rmt_rate_ok('feedback', $me ? (string) $me['id'] : rmt_client_ip(), 20, 3600)) {
         view('legal/contact', ['errors' => ['That is a lot of messages at once. Try again shortly.'], 'sent' => false],
              ['title' => 'Contact RuinMyTrip', 'robots' => 'noindex,follow']);
+        return;
+    }
+    if (rmt_honeypot_tripped()) {
+        view('legal/contact', ['errors' => [], 'sent' => true], ['title' => 'Contact RuinMyTrip', 'robots' => 'noindex,follow']);
         return;
     }
     $kind = (string) input('kind');
