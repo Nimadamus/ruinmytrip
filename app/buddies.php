@@ -885,10 +885,26 @@ function buddies_index(array $a): void {
     $bf = $f;
     view('buddies_index', compact('bf', 'res', 'cards', 'sailings', 'examples', 'me', 'dests', 'countries', 'label', 'mine'), [
         'title' => $title . ' | RuinMyTrip',
-        'description' => 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Join free at 16. Posting a trip is 18+, and nobody can message you until you say yes.',
+        'description' => rmt_buddies_description(isset($a['type']) ? (string) $f['type'] : null),
         'canonical' => url($path),
         'breadcrumbs' => $crumbs,
     ]);
+}
+
+/**
+ * The meta description for /buddies and its trip type pages. Each type page had the hub's own
+ * description, so four URLs said the same thing in search. The hub keeps its text; a type page
+ * says what is different about it, in facts the page itself shows.
+ */
+function rmt_buddies_description(?string $type): string {
+    $hub = 'Going somewhere? Find people heading the same way. Meet travelers on your dates, locals open to meeting, and people on the same cruise. Join free at 16. Posting a trip is 18+, and nobody can message you until you say yes.';
+    if ($type === null || $type === '' || !isset(RMT_BUDDY_TYPES[$type])) return $hub;
+    return match ($type) {
+        'cruise'      => 'Find people sailing on your cruise. Search by cruise line, ship, port and date, and ask to connect with others aboard. Nobody can message you until you say yes.',
+        'backpacking' => 'Find a backpacking buddy for your route. See travelers heading to the same cities on your dates, post your own trip at 18+, and talk once you both say yes.',
+        'road_trip'   => 'Find a road trip buddy to share the drive. See who is heading your way on your dates, post your own trip at 18+, and nobody can message you until you say yes.',
+        default       => 'Find a ' . strtolower(RMT_BUDDY_TYPES[$type]) . ' buddy on RuinMyTrip. See travelers going where you are going on your dates, post your own trip at 18+, and connect only when you say yes.',
+    };
 }
 
 function buddies_mine(array $a): void {
