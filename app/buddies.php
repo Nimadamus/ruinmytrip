@@ -429,7 +429,7 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
         $rows = q_all("SELECT b.*, d.name dest_name, d.slug dest_slug, d.country dest_country,
                               u.username, u.email_verified_at, p.avatar_url, p.display_name, p.languages, p.travel_style profile_style,
                               (SELECT COUNT(*) FROM buddy_interest i WHERE i.post_id=b.id) interest_count
-                         FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active'
+                         FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active' AND COALESCE(u.email,'') NOT LIKE '%+rmtqa%'
                     LEFT JOIN destinations d ON d.id=b.destination_id
                     LEFT JOIN profiles p ON p.user_id=b.user_id
                         WHERE " . implode(' AND ', $w) . ' ORDER BY b.date_from, b.id LIMIT ' . max(1, $limit), $a);
@@ -631,7 +631,7 @@ function rmt_buddy_card_interests(array $cards): array {
 function rmt_buddy_same_sailing(array $post, ?array $viewer = null, int $limit = 20): array {
     if (($post['trip_type'] ?? '') !== 'cruise' || empty($post['ship_key'])) return [];
     return q_all("SELECT b.id, b.title, b.date_from, b.date_to, b.user_id, u.username, p.avatar_url, p.display_name
-                    FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active'
+                    FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active' AND COALESCE(u.email,'') NOT LIKE '%+rmtqa%'
                LEFT JOIN profiles p ON p.user_id=b.user_id
                    WHERE b.status IN ('open','closed','completed') AND b.id <> ? AND b.ship_key = ?
                      AND b.date_from >= ? AND b.date_from <= ?
@@ -647,7 +647,7 @@ function rmt_buddy_similar_sailings(array $post, int $limit = 8): array {
     $port = mb_strtolower(trim((string) ($post['departure_port'] ?? '')));
     if ($line === '' && $port === '') return [];
     return q_all("SELECT b.id, b.title, b.ship, b.cruise_line, b.departure_port, b.date_from, b.date_to, u.username
-                    FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active'
+                    FROM buddy_posts b JOIN users u ON u.id=b.user_id AND u.status='active' AND COALESCE(u.email,'') NOT LIKE '%+rmtqa%'
                    WHERE b.status='open' AND b.trip_type='cruise' AND b.id <> ? AND b.date_to >= ?
                      AND COALESCE(b.ship_key,'') <> ?
                      AND ((? <> '' AND LOWER(COALESCE(b.cruise_line,'')) = ?) OR (? <> '' AND LOWER(COALESCE(b.departure_port,'')) = ?))
@@ -694,6 +694,7 @@ function rmt_buddy_notify_matches(string $kind, int $targetId): int {
         $p = rmt_buddy_get($targetId);
         if (!$p || $p['status'] !== 'open') return 0;
         $actor = (int) $p['user_id'];
+        if (rmt_is_qa_user($actor)) return 0;   // a site test post never emails real travelers
         if ($p['trip_type'] === 'cruise') $add(rmt_buddy_same_sailing($p, null, RMT_BUDDY_MATCH_NOTIFY_MAX), 'buddy_sailing');
         if (!empty($p['destination_id'])) {
             $add(q_all("SELECT DISTINCT user_id FROM trips WHERE destination_id=? AND status='published' AND visibility='public'
@@ -711,6 +712,7 @@ function rmt_buddy_notify_matches(string $kind, int $targetId): int {
         if (!$t || ($t['visibility'] ?? 'public') !== 'public' || empty($t['destination_id']) || empty($t['date_from'])) return 0;
         if ($t['open_to_meeting'] !== null && (int) $t['open_to_meeting'] === 0) return 0;
         $actor = (int) $t['user_id'];
+        if (rmt_is_qa_user($actor)) return 0;
         $add(q_all("SELECT DISTINCT user_id FROM buddy_posts WHERE destination_id=? AND status='open'
                       AND date_from <= ? AND date_to >= ? AND date_to >= ?",
                     [(int) $t['destination_id'], $t['date_to'], $t['date_from'], $today]), 'buddy_match');
