@@ -26,7 +26,7 @@ $bcLogin = url('register?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH
     <?php if ($bcEx): ?>
       <span class="bcard-av bcard-av-ex" aria-hidden="true"><?= $bc['type'] === 'cruise' ? '&#9875;' : ($bc['kind'] === 'local' ? '&#8962;' : '&#9992;') ?></span>
     <?php else: ?>
-      <a href="<?= e(url('u/' . $bc['username'])) ?>" class="bcard-av"><img class="avatar" src="<?= e(avatar_url($bc['avatar_url'])) ?>" alt="" loading="lazy"></a>
+      <a href="<?= e(url('u/' . $bc['username'])) ?>" class="bcard-av" aria-label="<?= e('@' . $bc['username']) ?>"><img class="avatar" src="<?= e(avatar_url($bc['avatar_url'])) ?>" alt="" loading="lazy"></a>
     <?php endif; ?>
     <div class="bcard-who">
       <?php if ($bcEx): ?>
