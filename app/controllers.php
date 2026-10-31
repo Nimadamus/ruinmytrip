@@ -5687,6 +5687,8 @@ const RMT_REPORT_TARGETS = [
     'message'    => 'messages',
     /* A line in a trip chat, which only the people on the trip can see, for the same reason. */
     'trip_message' => 'trip_messages',
+    /* A reference one member wrote about another. Its subject reports it to dispute it. */
+    'reference'    => 'member_references',
 ];
 
 /**
@@ -5697,6 +5699,7 @@ const RMT_REPORT_TARGETS = [
  * passed on both types.
  */
 const RMT_REPORT_OWNER_COLUMN = [
+    'reference' => 'from_user_id',
     'meetup'  => 'host_id',
     'message' => 'sender_id',
 ];

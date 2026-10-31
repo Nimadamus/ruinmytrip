@@ -93,6 +93,12 @@ $actOmar = ins('trip_activities', ['trip_id' => $tripShared, 'user_id' => $omar,
 ins('trip_messages', ['trip_id' => $tripShared, 'user_id' => $dana, 'body' => 'Dana in the trip chat', 'created_at' => $now]);
 ins('trip_messages', ['trip_id' => $tripShared, 'user_id' => $omar, 'body' => 'Omar in the trip chat', 'created_at' => $now]);
 ins('trip_chat_reads', ['trip_id' => $tripShared, 'user_id' => $dana, 'last_read_id' => 1]);
+ins('host_profiles', ['user_id' => $dana, 'status' => 'approved', 'destination_id' => $dest, 'space_type' => 'couch', 'max_guests' => 1,
+    'min_nights' => 1, 'max_nights' => 2, 'about_space' => 'Dana couch', 'pets' => 'none', 'smoking' => 'no', 'created_at' => $now, 'updated_at' => $now]);
+ins('member_references', ['from_user_id' => $omar, 'to_user_id' => $dana, 'kind' => 'met', 'basis' => 'local_connect', 'rating_overall' => 5,
+    'body' => 'Omar about Dana', 'status' => 'published', 'created_at' => $now, 'updated_at' => $now]);
+ins('member_references', ['from_user_id' => $dana, 'to_user_id' => $omar, 'kind' => 'met', 'basis' => 'local_connect', 'rating_overall' => 5,
+    'body' => 'Dana about Omar', 'status' => 'published', 'created_at' => $now, 'updated_at' => $now]);
 ins('activity_joins', ['activity_id' => $actOmar, 'user_id' => $dana, 'state' => 'accepted', 'created_at' => $now, 'decided_by' => $omar]);
 ins('activity_joins', ['activity_id' => $actDana, 'user_id' => $omar, 'state' => 'accepted', 'created_at' => $now, 'decided_by' => $dana]);
 ins('activity_photos', ['activity_id' => $actOmar, 'user_id' => $dana, 'url' => '/media/act_dana', 'storage_key' => 'act_dana', 'status' => 'published', 'created_at' => $now]);
@@ -269,6 +275,9 @@ ok('conversation intact for Omar, both messages present',
     cnt('SELECT COUNT(*) c FROM messages WHERE id IN (?,?)', [$mDana, $mOmar]) === 2);
 ok('shared trip passed to Omar, emptied of her notes and cover',
     cnt("SELECT COUNT(*) c FROM trips WHERE id=? AND user_id=? AND body='' AND cover_url IS NULL", [$tripShared, $omar]) === 1);
+ok('her host profile and every reference by or about her are gone',
+    cnt('SELECT COUNT(*) c FROM host_profiles WHERE user_id=?', [$dana]) === 0
+    && cnt('SELECT COUNT(*) c FROM member_references WHERE from_user_id=? OR to_user_id=?', [$dana, $dana]) === 0);
 ok('her trip chat lines are gone and those of Omar stay',
     cnt("SELECT COUNT(*) c FROM trip_messages WHERE body LIKE 'Dana%'") === 0
     && cnt("SELECT COUNT(*) c FROM trip_messages WHERE trip_id=? AND user_id=?", [$tripShared, $omar]) === 1);

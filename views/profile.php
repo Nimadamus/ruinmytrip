@@ -70,8 +70,20 @@
                    there all the time. Links to that city's people page. */ ?>
           <span><a class="chip" href="<?= e(url('d/'.$homeDest['slug'].'/travelers')) ?>">Local in <?= e($homeDest['name']) ?></a></span>
           <?php if ((int) ($homeDest['open_to_meeting'] ?? 0) === 1): ?>
-            <span><a class="chip" href="<?= e(url('buddies?dest=' . rawurlencode($homeDest['slug']) . '&show=locals')) ?>">Open to meeting travelers</a></span>
+            <span><a class="chip" href="<?= e(url('hosts-locals/destinations/' . rawurlencode($homeDest['slug']))) ?>">Open to meeting travelers</a></span>
           <?php endif; ?>
+        <?php endif; ?>
+        <?php /* Hosts & Locals: the host role, when a moderator approved it and it is not paused, and
+                 references from members who actually connected with this person. */
+          $hlRoles = function_exists('rmt_member_roles') ? rmt_member_roles((int) $u['id']) : null;
+          $hlRefs = function_exists('rmt_refs_for') ? count(rmt_refs_for((int) $u['id'], $me ? (int) $me['id'] : null)) : 0; ?>
+        <?php if ($hlRoles && $hlRoles['host']): ?>
+          <span><a class="chip" href="<?= e(url('hosts-locals/become-a-host')) ?>">Interested in hosting</a></span>
+        <?php endif; ?>
+        <?php if ($hlRefs > 0 || $isMe): ?>
+          <span><a class="chip" href="<?= e(url('u/' . $u['username'] . '/references')) ?>"><?= $hlRefs ?> <?= $hlRefs === 1 ? 'reference' : 'references' ?></a></span>
+        <?php elseif ($me && function_exists('rmt_ref_basis') && rmt_ref_basis((int) $me['id'], (int) $u['id'])): ?>
+          <span><a class="chip" href="<?= e(url('u/' . $u['username'] . '/references')) ?>">Write a reference</a></span>
         <?php endif; ?>
         <?php if ((int) ($stats['countries'] ?? 0) > 0): ?>
           <span><b><?= (int)$stats['countries'] ?></b> <?= $stats['countries'] === 1 ? 'country' : 'countries' ?></span>

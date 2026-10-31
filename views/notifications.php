@@ -291,6 +291,15 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b><?= e($who) ?></b> shared upcoming travel dates.
           <?php endif; ?>
+        <?php elseif ($n['type'] === 'reference'):
+          $who = $n['actor'] ? '@' . $n['actor'] : 'A member'; ?>
+          <a href="<?= e(url('u/' . $me['username'] . '/references')) ?>"><b><?= e($who) ?></b> wrote you a reference.</a>
+        <?php elseif (in_array($n['type'], ['host_approved', 'host_rejected', 'host_paused'], true)): ?>
+          <a href="<?= e(url('hosts-locals/me#host')) ?>"><b><?= e([
+            'host_approved' => 'Your host profile was approved. It shows as interested in hosting; stays are not open yet.',
+            'host_rejected' => 'Your host profile was not approved. See the moderator note.',
+            'host_paused'   => 'A moderator paused your host profile.',
+          ][$n['type']]) ?></b></a>
         <?php elseif ($n['type'] === 'trip_chat'):
           /* A line in the chat of a trip the reader is on. Checked again here, because somebody
              taken off the trip since should not be sent to a page that will refuse them. */

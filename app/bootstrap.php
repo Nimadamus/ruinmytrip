@@ -89,6 +89,7 @@ require BASE_PATH . '/app/tags.php';
 require BASE_PATH . '/app/mentions.php';
 require BASE_PATH . '/app/messages.php';
 require BASE_PATH . '/app/trip_chat.php';
+require BASE_PATH . '/app/hosts_locals.php';
 require BASE_PATH . '/app/connects.php';
 require BASE_PATH . '/app/visitor_questions.php';
 require BASE_PATH . '/app/traffic_shape.php';

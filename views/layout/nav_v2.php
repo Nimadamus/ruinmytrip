@@ -25,6 +25,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <details class="v2-more">
         <summary>More</summary>
         <div class="v2-more-panel">
+          <a href="<?= e(url('hosts-locals')) ?>">Hosts &amp; Locals</a>
           <a href="<?= e(url('talk')) ?>">Talk</a>
           <a href="<?= e(url('events')) ?>">Events</a>
           <a href="<?= e(url('going')) ?>">Who is going</a>
@@ -86,6 +87,8 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <span><b>Explore cities</b><small>Places with hours, addresses and honest reviews</small></span></a>
     <a class="v2-sheet-item" href="<?= e(url('buddies')) ?>"><span class="v2-si-ico" aria-hidden="true">☺</span>
       <span><b>Travel buddies</b><small>See who overlaps your dates</small></span></a>
+    <a class="v2-sheet-item" href="<?= e(url('hosts-locals')) ?>"><span class="v2-si-ico" aria-hidden="true">&#8962;</span>
+      <span><b>Hosts &amp; Locals</b><small>Meet people who live where you are going</small></span></a>
     <a class="v2-sheet-item" href="<?= e(url('talk')) ?>"><span class="v2-si-ico" aria-hidden="true">?</span>
       <span><b>Ask a question</b><small>Travelers who have been answer</small></span></a>
     <p class="v2-sheet-h">More</p>
