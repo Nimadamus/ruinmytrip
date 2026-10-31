@@ -810,6 +810,10 @@ section.block{padding:64px 0}
   .board-filters{border-radius:var(--radius);padding:12px}
   .board-filters select{flex:1;min-width:0}
   .board-filters input[type=date]{flex:1 1 40%;min-width:0}
+  /* With dates in the row the selects were squeezed to an empty 35px circle on a phone: each select
+     gets a line of its own, the two dates share one, and every control is a full 44px tap target. */
+  .board-filters:has(input[type=date]) select{flex:1 1 100%}
+  .board-filters select,.board-filters input[type=date],.board-filters .tf-open,.board-filters .btn{min-height:44px}
 }
 
 /* Notifications read as people, so each row leads with a face, and the ones that were new when the
