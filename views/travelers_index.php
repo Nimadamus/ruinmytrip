@@ -13,6 +13,7 @@ $backTo = '/travelers' . ($cityRow ? '?city=' . (int) $cityRow['id'] : '');
       <p class="muted" style="max-width:62ch">Six ways to find somebody: whose dates land on yours,
         who is going where you are going, who is in a city today, who travels the way you do, who
         said yes to the same meetup, and who lives there.</p>
+      <?php $purposeHere = ''; include __DIR__ . '/_site_purpose.php'; ?>
       <p style="margin:.4rem 0 0"><a href="<?= e(url('buddies')) ?>">Search Travel Buddies by city, dates, cruise and interests &rarr;</a></p>
     </div>
     <?php if (!$me): ?>
