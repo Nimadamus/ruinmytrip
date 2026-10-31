@@ -828,7 +828,7 @@ section.block{padding:64px 0}
    and still works on its own. */
 .note{position:relative}
 .note > .note-body > a:first-of-type::after{content:"";position:absolute;inset:0;border-radius:inherit}
-.note .note-body a:not(:first-of-type){position:relative;z-index:1}
+.note .note-body a:not(:first-of-type){position:relative;z-index:1;text-decoration:underline;text-underline-offset:2px}
 .note{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-sm);
   background:var(--card);border:1px solid var(--line);margin-bottom:8px;position:relative}
 .note-new{background:var(--tint);border-color:#bfe5de}
@@ -1655,6 +1655,7 @@ main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
 .cc-extra{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:16px 0 0}
 .cc-extra h3{font-size:1rem;margin:0 0 6px}
 .cc-extra ul{list-style:none;margin:0 0 8px;padding:0}.cc-extra li{margin:0 0 6px}
+.cc-extra li a{text-decoration:underline;text-underline-offset:2px}
 /* Landing from a social post (views/layout/header.php). */
 .social-land{display:flex;flex-direction:column;gap:6px;margin:14px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:12px;background:var(--tint)}
 .social-land b{font-size:1.05rem}

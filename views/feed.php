@@ -492,7 +492,7 @@ $threads = $threads ?? [];
         <h2 class="rail-h">Travelers to follow</h2>
         <?php foreach ($rails['suggested'] as $u): ?>
           <div class="rail-person">
-            <a href="<?= e(url('u/'.$u['username'])) ?>">
+            <a href="<?= e(url('u/'.$u['username'])) ?>" aria-hidden="true" tabindex="-1">
               <img class="avatar" src="<?= e(avatar_url($u['avatar_url'] ?? null)) ?>" alt=""></a>
             <span>
               <a href="<?= e(url('u/'.$u['username'])) ?>"><b>@<?= e($u['username']) ?></b></a>
