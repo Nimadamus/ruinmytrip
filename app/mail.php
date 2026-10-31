@@ -140,7 +140,7 @@ function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = ''
         . 'text-decoration:none;padding:12px 22px;border-radius:8px;display:inline-block;'
         . 'font-weight:600">' . e($ctaText) . '</a></p>'
         . '<p style="color:#667;font-size:13px;margin:0">Or paste this link into your browser:<br>'
-        . '<span style="color:#356">' . e($ctaUrl) . '</span></p>';
+        . '<span style="color:#356;word-break:break-all">' . e($ctaUrl) . '</span></p>';
 
     return '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;margin:0 auto;'
         . 'padding:32px 24px;color:#1a2430;line-height:1.55">'
