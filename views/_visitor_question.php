@@ -28,7 +28,7 @@ $fbQ = RMT_VQ_QUESTIONS[$vqKey];
       <?php endforeach; ?>
     </p>
     <p style="margin:0">
-      <input type="text" name="note" maxlength="<?= (int) RMT_VQ_NOTE_MAX ?>" class="input"
+      <input type="text" name="note" aria-label="Anything else (optional)" maxlength="<?= (int) RMT_VQ_NOTE_MAX ?>" class="input"
              placeholder="Anything else? Optional." style="max-width:420px">
     </p>
   </form>

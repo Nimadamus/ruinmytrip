@@ -103,7 +103,7 @@
         <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_'.$target.'_'.(int) $photo['id'])) ?>">
         <input type="hidden" name="return" value="<?= e($rmt_back) ?>">
         <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
-        <input type="text" name="body" maxlength="2000" placeholder="Say something about this photo">
+        <input type="text" name="body" maxlength="2000" aria-label="Comment on this photo" placeholder="Say something about this photo">
         <button class="btn btn-ghost btn-sm">Reply</button>
       </form>
     <?php elseif (!$isPrivate): ?>

@@ -72,7 +72,7 @@ $rmt_render_comment = static function (array $c, bool $isReply) use ($me, $retur
           <summary class="hint" style="cursor:pointer">Edit</summary>
           <form method="post" action="<?= e(url('comment/'.(int)$c['id'].'/edit')) ?>" style="margin:8px 0 0"><?= csrf_field() ?>
             <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
-            <textarea name="body" maxlength="2000" style="min-height:60px"><?= e((string) $c['body']) ?></textarea>
+            <textarea name="body" aria-label="Edit your comment" maxlength="2000" style="min-height:60px"><?= e((string) $c['body']) ?></textarea>
             <button class="btn btn-ghost btn-sm" style="margin-top:6px">Save</button>
           </form>
         </details>
@@ -86,7 +86,7 @@ $rmt_render_comment = static function (array $c, bool $isReply) use ($me, $retur
             <input type="hidden" name="target_id" value="<?= (int)$targetId ?>">
             <input type="hidden" name="parent_id" value="<?= (int) ($c['parent_id'] ?: $c['id']) ?>">
             <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
-            <textarea name="body" placeholder="Reply to @<?= e($c['username']) ?>" maxlength="2000" style="min-height:60px"></textarea>
+            <textarea name="body" aria-label="Reply" placeholder="Reply to @<?= e($c['username']) ?>" maxlength="2000" style="min-height:60px"></textarea>
             <button class="btn btn-ghost btn-sm" style="margin-top:6px">Reply</button>
           </form>
         </details>
@@ -111,7 +111,7 @@ endforeach;
     <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_'.$targetType.'_'.$targetId)) ?>">
     <input type="hidden" name="target_type" value="<?= e($targetType) ?>"><input type="hidden" name="target_id" value="<?= (int)$targetId ?>">
     <input type="hidden" name="return" value="<?= e($returnUrl) ?>">
-    <textarea name="body" placeholder="Add a comment" maxlength="2000" style="min-height:80px"></textarea>
+    <textarea name="body" aria-label="Add a comment" placeholder="Add a comment" maxlength="2000" style="min-height:80px"></textarea>
     <button class="btn btn-primary" style="margin-top:8px">Post comment</button>
   </form>
 <?php else: ?>

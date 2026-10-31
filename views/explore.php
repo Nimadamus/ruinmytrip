@@ -9,7 +9,7 @@
     <a href="<?= e(url('events')) ?>">See the upcoming events</a> and who else is going.</p>
   <p class="muted">Every destination here carries a researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a> and practical tips, and most have a <a href="<?= e(url('guides')) ?>">city guide</a>. The review counts below are travelers only, so they read zero until real people post.</p>
   <form action="<?= e(url('explore')) ?>" method="get" style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 30px">
-    <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">
+    <input type="search" name="q" aria-label="Search a city or country" value="<?= e($qs) ?>" placeholder="Search a city or country" style="flex:1;min-width:220px">
     <select name="category" aria-label="Category" onchange="this.form.submit()">
       <option value="">All styles</option>
       <?php foreach ($cats as $c): ?>

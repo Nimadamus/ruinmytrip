@@ -124,4 +124,6 @@
     </div>
   </form>
   <p class="muted" style="margin-top:22px;font-size:.9rem">Done for now? <a href="<?= e(url('logout')) ?>">Sign out</a></p>
+  <p class="muted" style="margin-top:8px;font-size:.9rem">Want your account deleted?
+    <a href="<?= e(url('contact?kind=privacy_request')) ?>">Send us a privacy request</a> from this account and we will remove it.</p>
 </div></div>

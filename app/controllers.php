@@ -3945,10 +3945,16 @@ function contribute_page(array $a): void {
  * second later rather than waiting on a queue.
  */
 function contribute_suggest_place(array $a): void {
-    require_login(); csrf_check();
+    csrf_check();
+    // A suggestion is a private queue row checked by hand, so a visitor without an account may send
+    // one too; the hidden field and a per address limit keep scripts out.
     $me = current_user();
+    if (!$me && trim((string) ($_POST['hp_note'] ?? '')) !== '') {
+        flash('That could not be sent. If you are a person, reload the page and try again.');
+        redirect('/contribute');
+    }
 
-    if (!rmt_rate_ok('suggest_place', (string) $me['id'], 10, 3600)) {
+    if (!rmt_rate_ok('suggest_place', $me ? (string) $me['id'] : 'ip:' . rmt_client_ip(), $me ? 10 : 5, 3600)) {
         flash('That is a lot of suggestions at once. Try again a bit later.');
         redirect('/contribute');
     }
@@ -3976,7 +3982,7 @@ function contribute_suggest_place(array $a): void {
 
     q_run("INSERT INTO place_suggestions (name, city, type, website_url, suggested_by, status, created_at)
            VALUES (?,?,?,?,?,'pending',?)",
-          [$name, $city, $type, $website, (int) $me['id'], date('Y-m-d H:i:s')]);
+          [$name, $city, $type, $website, $me ? (int) $me['id'] : null, date('Y-m-d H:i:s')]);
     rmt_track('place_suggested', ['source' => 'contribute']);
     flash('Thanks. We will check it and add it. Places are added by hand, so it is not instant.');
     redirect('/contribute');

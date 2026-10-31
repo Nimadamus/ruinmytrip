@@ -34,10 +34,13 @@ $bp  = $boundPlace ?? null;
 <input type="hidden" name="destination_id" value="<?= (int) $boundDest['id'] ?>">
 <input type="hidden" name="subject_type" value="destination">
 <input type="hidden" name="subject_name" value="<?= e((string) $boundDest['name']) ?>">
-<?php else: ?>
+<?php else: /* Unbound: where the review is about. On the quick form this block is printed after the
+   stars and the box (2026-10-30), so a visitor starts by writing rather than by filling in three
+   lookup fields; the edit form keeps it first. */ ob_start(); ?>
+<h2 class="review-where-h" style="font-size:1.05rem;margin:18px 0 2px">Where was this?</h2>
 <label for="destination_id">Destination</label>
 <?php /* datalist gives type-ahead search over destinations with no JS and no extra request. */ ?>
-<input list="dest-options" id="dest-search" placeholder="Start typing: Kyoto, Lisbon, Banff…"
+<input list="dest-options" id="dest-search" aria-label="Destination" placeholder="Start typing: Kyoto, Lisbon, Banff…"
        autocomplete="off" value="<?php
          $cur = null;
          foreach ($dests as $d) if ((int)$d['id'] === (int)($r['destination_id'] ?? 0)) $cur = $d;
@@ -75,7 +78,7 @@ $bp  = $boundPlace ?? null;
   <?php endforeach; ?>
 </datalist>
 <p class="hint" id="place-hint" style="margin:4px 0 0"></p>
-<?php endif; ?>
+<?php $whereBlock = ob_get_clean(); endif; ?>
 
 <?php
 /* The quick form (2026-10-11). A new review asks for two things up front: how many stars and a few
@@ -83,6 +86,7 @@ $bp  = $boundPlace ?? null;
    itself when any of it already has a value (a restored draft, a validation re-render, or the
    front door's "what ruined it" sentence). The edit form keeps every field on show, labelled. */
 $quick = !isset($quickForm) || $quickForm;
+if (isset($whereBlock) && !$quick) { echo str_replace('<h2 class="review-where-h"', '<h2 hidden class="review-where-h"', $whereBlock); $whereBlock = null; }
 $ratingNow = (int) ($r['rating'] ?? 0);
 $bodyMin = defined('RMT_REVIEW_BODY_MIN') ? RMT_REVIEW_BODY_MIN : 40;
 $opt = '<span class="muted" style="font-weight:400">(optional)</span>';
@@ -124,6 +128,7 @@ $extraFields = static function () use ($val, $opt): void { ?>
           aria-describedby="body-count"
           placeholder="What was it actually like? What it cost, what surprised you, what you would tell a friend."><?= $val('body') ?></textarea>
 <p class="hint body-count" id="body-count" data-min="<?= (int) $bodyMin ?>"><?= (int) $bodyMin ?> characters minimum</p>
+<?php if (!empty($whereBlock)) { echo $whereBlock; $whereBlock = null; } ?>
 
 <?php if (!$quick): ?>
 <label for="visited_on">When were you there? <?= $opt ?></label>
@@ -226,6 +231,9 @@ $anyDetail = $aspectValues || !empty($r['traveler_type'])
       list = document.getElementById('dest-options');
   if (!box || !sel || !list) return;
   sel.style.display = 'none';
+  // The visible box is now the one to fill in, so the "Destination" label names it.
+  var lab = document.querySelector('label[for="destination_id"]');
+  if (lab) lab.htmlFor = 'dest-search';
   box.addEventListener('input', function () {
     var v = box.value.trim().toLowerCase();
     var hit = Array.prototype.find.call(list.options, function (o) { return o.value.toLowerCase() === v; });

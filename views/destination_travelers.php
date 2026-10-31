@@ -259,7 +259,7 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
       <input type="hidden" name="destination_id" value="<?= (int)$d['id'] ?>">
       <input type="hidden" name="return" value="<?= e($here) ?>">
-      <textarea name="body" rows="2" maxlength="1000"
+      <textarea name="body" rows="2" maxlength="1000" aria-label="Write a post"
                 placeholder="Ask <?= e($city) ?> travelers something, or say what you found"
                 style="width:100%"></textarea>
       <div style="display:flex;gap:8px;align-items:center;margin-top:6px">

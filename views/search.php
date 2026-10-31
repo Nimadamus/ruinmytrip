@@ -2,7 +2,7 @@
 <div class="wrap" style="min-height:50vh">
   <h1 style="margin-top:24px">Search</h1>
   <form action="<?= e(url('search')) ?>" method="get" style="display:flex;gap:10px;margin:14px 0 26px">
-    <input type="search" name="q" value="<?= e($qs) ?>" placeholder="Destinations, events, travelers, questions, places, trips…" style="flex:1">
+    <input type="search" name="q" aria-label="Search RuinMyTrip" value="<?= e($qs) ?>" placeholder="Destinations, events, travelers, questions, places, trips…" style="flex:1">
     <button class="btn btn-primary">Search</button>
   </form>
   <?php if ($qs===''): ?><p class="muted">Type a place, a trip, a review, or a traveler to begin.</p><?php else: ?>

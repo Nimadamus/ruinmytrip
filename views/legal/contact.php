@@ -51,7 +51,7 @@
       <label for="kind">What is this about?</label>
       <select id="kind" name="kind">
         <option value="site_problem">Something on the site is broken</option>
-        <option value="privacy_request">A privacy request</option>
+        <option value="privacy_request"<?= (string) ($_GET['kind'] ?? '') === 'privacy_request' ? ' selected' : '' ?>>A privacy request</option>
         <option value="general">General feedback</option>
       </select>
       <label for="message">Tell us</label>

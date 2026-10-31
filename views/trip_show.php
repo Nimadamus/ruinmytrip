@@ -275,7 +275,7 @@ $authorSaid = $authorSaid ?? [];
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('post_new')) ?>">
       <input type="hidden" name="trip_id" value="<?= (int)$t['id'] ?>">
       <input type="hidden" name="return" value="<?= e('/trip/'.(int)$t['id'].'/'.$t['slug']) ?>">
-      <textarea name="body" rows="2" maxlength="1000" style="width:100%"
+      <textarea name="body" rows="2" maxlength="1000" aria-label="Post an update" style="width:100%"
                 placeholder="<?= $phase === 'past' ? 'Add something you remember' : 'Post an update from this trip' ?>"></textarea>
       <button class="btn btn-primary btn-sm" style="margin-top:6px">Post update</button>
     </form>

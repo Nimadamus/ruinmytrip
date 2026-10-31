@@ -62,9 +62,11 @@
       Tell us the name and the city and we will check it and add it. Places are added by hand
       rather than instantly, so nobody can fill the site with entries that do not exist.
     </p>
-    <?php if ($me): ?>
-      <form method="post" action="<?= e(url('contribute/suggest-place')) ?>">
+    <form method="post" action="<?= e(url('contribute/suggest-place')) ?>">
         <?= csrf_field() ?>
+        <?php if (!$me): ?>
+        <div class="hp-field" aria-hidden="true"><label>Leave this empty <input type="text" name="hp_note" value="" tabindex="-1" autocomplete="off"></label></div>
+        <?php endif; ?>
         <div class="grid g-2" style="gap:12px">
           <div>
             <label for="sp-name">Place name</label>
@@ -91,11 +93,9 @@
           </div>
         </div>
         <p style="margin:14px 0 0"><button class="btn btn-primary">Suggest this place</button></p>
+        <?php if (!$me): ?>
+        <p class="muted" style="margin:8px 0 0;font-size:.9rem">No account needed to suggest a place.</p>
+        <?php endif; ?>
       </form>
-    <?php else: ?>
-      <p style="margin:0">
-        <a class="btn btn-ghost" href="<?= e(url('login?return=' . rawurlencode('/contribute'))) ?>">Sign in to suggest a place</a>
-      </p>
-    <?php endif; ?>
   </div></section>
 </div>

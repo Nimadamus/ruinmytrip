@@ -252,7 +252,7 @@ $backTo = '/activity/' . (int) $act['id'];
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_activity_'.(int) $act['id'])) ?>">
       <input type="hidden" name="return" value="<?= e($backTo) ?>">
       <img class="avatar" style="width:26px;height:26px" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
-      <input type="text" name="body" maxlength="2000" placeholder="Where are we meeting?">
+      <input type="text" name="body" maxlength="2000" aria-label="Message the group" placeholder="Where are we meeting?">
       <button class="btn btn-ghost btn-sm">Say it</button>
     </form>
   <?php endif; ?>

@@ -305,7 +305,7 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
         <?php endif; ?>
           <span class="note-when"><?= e(ago($n['created_at'])) ?></span>
         </div>
-        <?php if ($rmt_new): ?><span class="note-dot" aria-label="New"></span><?php endif; ?>
+        <?php if ($rmt_new): ?><span class="note-dot" role="img" aria-label="New"></span><?php endif; ?>
       </li>
     <?php endforeach; ?>
   </ul>
