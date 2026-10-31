@@ -74,6 +74,10 @@ h1,h2,h3,h4{color:var(--ink);line-height:1.2;margin:0 0 .5em}
 .btn-primary{background:var(--brand);color:#fff}
 .btn-primary:hover{background:var(--brand-2)}
 .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
+.btn-danger{background:#b42318;color:#fff}
+.btn-danger:hover{background:#912018}
+.account-delete-list{margin:0 0 6px;padding-left:20px;line-height:1.5}
+.account-delete-list li{margin:0 0 4px}
 .btn-accent{background:var(--accent);color:#fff}
 .btn-block{display:block;width:100%;text-align:center}
 .btn-sm{padding:.35rem .8rem;font-size:.85rem}

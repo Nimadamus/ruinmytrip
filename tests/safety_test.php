@@ -52,6 +52,9 @@ $allowed = [
     // you are going to is not a disclosure of your own trip to anybody: the row is read to find
     // the recipient, and nothing about it is rendered to another member.
     'matching.php',
+    // Account deletion reads a member's OWN trips and plans to delete them and find their photo
+    // keys. Nothing it reads is shown to anybody.
+    'account_delete.php',
 ];
 
 foreach ($files as $file) {

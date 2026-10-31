@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 const RMT_TOKEN_VERIFY_TTL = 86400;  // 24h
 const RMT_TOKEN_RESET_TTL  = 3600;   // 1h — short: a reset link is a live key to the account
+const RMT_TOKEN_DELETE_TTL = 1800;   // 30 min: an account deletion link (app/account_delete.php)
 
 function rmt_token_hash(string $raw): string { return hash('sha256', $raw); }
 
@@ -23,7 +24,8 @@ function rmt_token_issue(int $userId, string $kind): string {
         ->execute([date('Y-m-d H:i:s'), $userId, $kind]);
 
     $raw = bin2hex(random_bytes(32));
-    $ttl = $kind === 'reset' ? RMT_TOKEN_RESET_TTL : RMT_TOKEN_VERIFY_TTL;
+    $ttl = $kind === 'reset' ? RMT_TOKEN_RESET_TTL
+         : ($kind === 'account_delete' ? RMT_TOKEN_DELETE_TTL : RMT_TOKEN_VERIFY_TTL);
     db()->prepare('INSERT INTO auth_tokens (user_id, kind, token_hash, expires_at, created_at)
                    VALUES (?,?,?,?,?)')
         ->execute([

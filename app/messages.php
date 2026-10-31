@@ -233,14 +233,17 @@ function messages_index(array $a): void {
     $uid = (int) $me['id'];
     $rows = q_all(
         "SELECT c.id conversation_id, c.last_message_at,
-                u.username, u.id other_id, p.display_name, p.avatar_url,
+                u.username, u.id other_id, u.status other_status, p.display_name, p.avatar_url,
                 (SELECT body FROM messages WHERE conversation_id=c.id ORDER BY id DESC LIMIT 1) last_body,
                 (SELECT COUNT(*) FROM messages WHERE conversation_id=c.id AND sender_id<>? AND read_at IS NULL) unread,
                 (SELECT COUNT(*) FROM messages mine WHERE mine.conversation_id=c.id AND mine.sender_id=?) mine_count
          FROM conversations c
          JOIN users u ON u.id = (CASE WHEN c.user_lo_id=? THEN c.user_hi_id ELSE c.user_lo_id END)
          LEFT JOIN profiles p ON p.user_id = u.id
-         WHERE (c.user_lo_id=? OR c.user_hi_id=?) AND u.status='active'
+         WHERE (c.user_lo_id=? OR c.user_hi_id=?)
+           -- A member who deleted their account leaves the conversation behind for the other
+           -- person to read (app/account_delete.php). Suspended accounts stay out of sight.
+           AND (u.status='active' OR (u.status='deleted' AND EXISTS (SELECT 1 FROM messages dm WHERE dm.conversation_id=c.id)))
          ORDER BY c.last_message_at DESC NULLS LAST, c.id DESC",
         [$uid, $uid, $uid, $uid, $uid]
     );
@@ -251,7 +254,8 @@ function messages_index(array $a): void {
     $threads = [];
     $requests = [];
     foreach ($rows as $r) {
-        if ((int) $r['mine_count'] > 0) $threads[] = $r; else $requests[] = $r;
+        if ((string) $r['other_status'] === 'deleted') { $r['display_name'] = 'Deleted member'; $r['avatar_url'] = null; }
+        if ((int) $r['mine_count'] > 0 || (string) $r['other_status'] === 'deleted') $threads[] = $r; else $requests[] = $r;
     }
 
     /* Somebody whose dates land on yours and who you have never written to. An inbox with two
@@ -295,11 +299,26 @@ function messages_index(array $a): void {
 function messages_thread(array $a): void {
     require_login(); $me = current_user();
     $them = q_one("SELECT u.*, p.display_name, p.avatar_url FROM users u LEFT JOIN profiles p ON p.user_id=u.id
-                   WHERE u.username=? AND u.status='active'", [$a['username']]);
+                   WHERE u.username=? AND u.status IN ('active', 'deleted')", [$a['username']]);
     if (!$them) not_found();
     $themId = (int) $them['id'];
     $meId = (int) $me['id'];
     if ($themId === $meId) not_found();
+    /* A member who deleted their account: the conversation is still the reader's, read only,
+       from "Deleted member". No profile, no reply, nothing new can start here. */
+    if ((string) $them['status'] === 'deleted') {
+        $convId = rmt_find_conversation($meId, $themId);
+        $items = $convId ? q_all('SELECT * FROM messages WHERE conversation_id=? ORDER BY id', [$convId]) : [];
+        if (!$items) not_found();
+        db()->prepare('UPDATE messages SET read_at=? WHERE conversation_id=? AND sender_id<>? AND read_at IS NULL')
+            ->execute([date('Y-m-d H:i:s'), $convId, $meId]);
+        $them['display_name'] = 'Deleted member'; $them['avatar_url'] = null;
+        view('messages_thread', ['them' => $them, 'items' => $items, 'blocked' => false, 'shared' => [],
+            'theirHome' => null, 'gate' => ['ok' => false, 'reason' => 'gone'], 'incoming' => null, 'gone' => true], [
+            'title' => 'Messages with a deleted member | RuinMyTrip', 'robots' => 'noindex,nofollow', 'app_shell' => true,
+        ]);
+        return;
+    }
 
     $blocked = rmt_is_blocked($meId, $themId);
     $gate = rmt_message_allowed($meId, $themId);
