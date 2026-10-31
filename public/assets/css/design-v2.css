@@ -469,3 +469,40 @@ body:has(.v2-band) .site-footer{margin-top:0}
   .v2-profile .profile-cover{height:150px;border-radius:0 0 18px 18px;margin:0 -20px}
   .v2-initial-lg{width:84px;height:84px;font-size:2rem}
 }
+
+/* Home, 2026-10-30 polish: the three things a first visitor came for sit together in the pitch
+   (read reviews for a city, write one, find a buddy), the five ways in sit right under the first
+   screen, and every tap target on the page is at least 44px tall. */
+.v2-hero-split .v2-hero-grid2{grid-template-areas:"pitch map" "why map" "pillars pillars"}
+.v2-hero-split .v2-pillars{grid-area:pillars;margin:6px 0 0;max-width:none}
+.v2-hero-split .v2-pillar{min-height:64px}
+.v2-hero-search-label{display:block;margin:26px 0 8px;color:#e3edf3;font-weight:650;font-size:.95rem}
+.v2-hero-split .v2-hero-search-pitch{max-width:none;margin:0}
+.v2-hero-split .v2-hero-cta{margin-top:16px;gap:10px 12px}
+.v2-hero-split .v2-hero-cta .v2-btn{padding:0 22px}
+.v2-hero-split .v2-hero-cta-note{flex:1 1 100%}
+.v2-hero-split .v2-hero-join{margin-top:22px}
+.v2-hero-join a{display:inline-block;padding:13px 4px;margin:-13px 0}
+.v2-hero-map-xl .v2-btn-sm{min-height:44px}
+body:has(.v2-hero-split) .v2-sec-head .v2-link{display:inline-flex;align-items:center;min-height:44px}
+body:has(.v2-hero-split) .v2-rate-name{margin:2px 0 4px}
+body:has(.v2-hero-split) .v2-rate-name a{display:inline-flex;align-items:center;min-height:44px}
+body:has(.v2-hero-split) .v2-stars a{min-width:44px;min-height:44px}
+body:has(.v2-hero-split) .v2-stars{gap:0;margin-left:-8px}
+.v2-home-chips .v2-chip-sm{min-height:44px;padding:0 15px}
+.v2-band-links{gap:0 18px}
+.v2-band-links a,.v2-band-links span{display:inline-flex;align-items:center;min-height:44px}
+@media (max-width:900px){
+  .v2-hero-split .v2-hero-grid2{grid-template-areas:"pitch" "pillars" "map" "why"}
+}
+@media (max-width:640px){
+  .v2-hero-split .v2-hero-grid2{grid-template-areas:"pitch" "pillars" "why" "map"}
+  .v2-hero-search-label{margin-top:20px}
+  .v2-hero-split .v2-hero-cta .v2-btn{flex:1 1 100%}
+  .v2-hero-split .v2-hero-search-pitch .v2-btn{padding:0 18px}
+  .v2-hero-split .v2-pillars{margin-top:0;grid-template-columns:minmax(0,1fr);gap:8px}
+  .v2-hero-split .v2-pillars>.v2-pillar:first-child{grid-column:auto}
+  .v2-hero-split .v2-pillar{min-height:58px;padding:9px 14px}
+  .v2-hero-split .v2-pillar-txt{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  .v2-band-links{gap:0 14px}
+}

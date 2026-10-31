@@ -23,8 +23,16 @@
         <h1 class="v2-h1">Where have you been?</h1>
         <p class="v2-lede">Travel reviews that say what actually went wrong: the tourist trap, the surprise fee, the queue that was not worth it. Read them before you go, then write yours for the next traveler.</p>
       </div>
+      <label class="v2-hero-search-label" for="v2-home-q">Read reviews for a city or place</label>
+      <form class="v2-hero-search v2-hero-search-pitch" action="<?= e(url('search')) ?>" method="get" role="search"
+            data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
+        <span class="v2-search-ico" aria-hidden="true">⌕</span>
+        <input type="search" name="q" id="v2-home-q" placeholder="Try Lisbon or Tokyo">
+        <button class="v2-btn v2-btn-primary" type="submit">Search</button>
+      </form>
       <div class="v2-hero-cta">
         <a class="v2-btn v2-btn-accent" href="<?= e(url('review/new?src=home_hero')) ?>" data-cta="home_hero_review">Review a place you went</a>
+        <a class="v2-btn v2-btn-glass" href="<?= e(url('buddies')) ?>" data-cta="home_hero_buddy">Find a travel buddy</a>
         <span class="v2-hero-cta-note">Stars first, no account needed to start</span>
       </div>
     </div>
@@ -50,38 +58,31 @@
         <a class="v2-btn v2-btn-primary v2-btn-sm" data-tm-open data-cta="home_map" href="<?= e(url('map')) ?>">Save and share my map</a>
       </div>
     </div>
-    </div>
-
     <?php /* What the map is the front door to: the community the site is for. Real counts only. */ ?>
     <nav class="v2-pillars" aria-label="What you can do on RuinMyTrip">
       <a class="v2-pillar" href="<?= e(url('explore')) ?>" data-cta="home_explore">
         <span class="v2-pillar-ico" aria-hidden="true">⚲</span>
-        <span class="v2-pillar-txt"><b>Discover</b><small><?php if ($stat_places > 0): ?><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities<?php else: ?>Places worth the trip<?php endif; ?></small></span>
+        <span class="v2-pillar-txt"><b>Explore cities</b><small><?php if ($stat_places > 0): ?><?= number_format($stat_places) ?> places in <?= (int) $v2CityCount ?> cities<?php else: ?>Places worth the trip<?php endif; ?></small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('talk')) ?>" data-cta="home_share">
         <span class="v2-pillar-ico" aria-hidden="true">✎</span>
-        <span class="v2-pillar-txt"><b>Share</b><small>What really happened</small></span>
+        <span class="v2-pillar-txt"><b>Ask and share</b><small>Questions and trip stories</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('review/new?src=home')) ?>" data-cta="home_rate">
         <span class="v2-pillar-ico" aria-hidden="true">★</span>
-        <span class="v2-pillar-txt"><b>Review</b><small>Honest stars and notes</small></span>
+        <span class="v2-pillar-txt"><b>Write a review</b><small>Honest stars and notes</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('plan?cta=home_plan')) ?>" data-cta="home_plan">
         <span class="v2-pillar-ico" aria-hidden="true">✈</span>
-        <span class="v2-pillar-txt"><b>Plan</b><small>Dates and next city</small></span>
+        <span class="v2-pillar-txt"><b>Plan a trip</b><small>Dates and next city</small></span>
       </a>
       <a class="v2-pillar" href="<?= e(url('travelers')) ?>" data-cta="home_buddy">
         <span class="v2-pillar-ico" aria-hidden="true">☺</span>
-        <span class="v2-pillar-txt"><b>Connect</b><small>Travelers on your dates</small></span>
+        <span class="v2-pillar-txt"><b>Meet travelers</b><small>Travelers on your dates</small></span>
       </a>
     </nav>
+    </div>
 
-    <form class="v2-hero-search" action="<?= e(url('search')) ?>" method="get" role="search"
-          data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
-      <span class="v2-search-ico" aria-hidden="true">⌕</span>
-      <input type="search" name="q" placeholder="Search a city or place" aria-label="Search a place or city">
-      <button class="v2-btn v2-btn-primary" type="submit">Search</button>
-    </form>
     <?php if (!current_user()): ?>
       <p class="v2-hero-join">A free account keeps your map, reviews and trips together. <a href="<?= e(url('register?src=home_hero')) ?>" data-cta="home_join">Join free</a></p>
     <?php endif; ?>
