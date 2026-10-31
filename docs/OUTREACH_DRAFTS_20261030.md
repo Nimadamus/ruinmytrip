@@ -307,3 +307,19 @@ Tracking check: `facebook`, `indiehackers`, `reddit` and `directory` are all in 
 **Calls to action (pick one per post):** write a two line review of a place that disappointed you; color in your map; post your dates and see who overlaps.
 
 **Weekly rhythm after the two week calendar:** one new community or directory per weekday at most, one Facebook post per group per month at most, every link tagged, drop channels that send zero humans in two weeks (KPI.md Tagged links table).
+
+## 7. Hosts & Locals recruitment (drafts, NOTHING POSTED; each needs Nima's "approve post 7.N")
+
+Rules: same as section 6. Say the site is new. No member counts. Hosting is free, identities are not checked, and the host decides every request. Link tags: `?utm_source=<channel>&utm_campaign=hosts_locals`.
+
+**7.1 Expat and newcomer groups in the eight featured cities (Facebook groups that allow links, one per city per month)**
+> Anyone here happy to meet a traveler now and then? RuinMyTrip just opened Hosts & Locals: you list yourself as a local in your city and say what you would be up for, a coffee, a walk around your neighbourhood, food tips. Travelers ask, you say yes or no, and nobody can message you until you say yes. Free, and only your city shows. https://ruinmytrip.com/hosts-locals
+
+**7.2 Couchsurfing style hosting communities (where self promotion is allowed)**
+> For anyone who still likes hosting travelers for free: RuinMyTrip opened free hosting. No fees and no paid listings. A moderator reads every host profile before it goes up, you set your own nights and house rules, and you accept or decline every request. It never stores your address: you agree where to meet in messages after a yes. Identities are not checked, so references matter. https://ruinmytrip.com/hosts-locals/become-a-host
+
+**7.3 Indie Hackers update (after the Nov 3 founder post, only if that post was approved)**
+> Update: RuinMyTrip now has Hosts & Locals. One account can be a traveler, a local and a host. Locals and stays both run on a request the other side can refuse, messages open only after a yes, and references can only be written after a real accepted connection. Built on the existing travel buddy and messaging code rather than a new system. https://ruinmytrip.com/hosts-locals
+
+**7.4 Reddit (only from an established personal account, only in subs that allow it, e.g. weekly self promotion threads)**
+> Built a free way to meet locals and stay with hosts, with the guardrails I wished other sites had: request based, no messages until both agree, no addresses stored, references only after a real connection. Feedback welcome. https://ruinmytrip.com/hosts-locals
