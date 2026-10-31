@@ -21,7 +21,7 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
     <p class="hl-counts">
       <span><b><?= (int) $counts['locals'] ?></b> <?= $counts['locals'] === 1 ? 'local' : 'locals' ?></span>
       <span><b><?= (int) $counts['going'] ?></b> going</span>
-      <span><b><?= (int) $counts['hosts'] ?></b> interested in hosting</span>
+      <span><b><?= (int) $counts['hosts'] ?></b> <?= $counts['hosts'] === 1 ? 'host' : 'hosts' ?></span>
       <?php if ($reviews): ?><span><b><?= $reviews ?></b> <?= $reviews === 1 ? 'review' : 'reviews' ?></span><?php endif; ?>
     </p>
   </div>
@@ -87,8 +87,8 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
 
   <?php if ($flt['role'] === '' || $flt['role'] === 'hosts'): ?>
   <section aria-labelledby="hl-hosts" style="margin-bottom:34px">
-    <h2 class="hl-h2" id="hl-hosts">Interested in hosting <span class="hl-soon">Stays not open yet</span></h2>
-    <p class="hint" id="hl-stays-note">Hosting will be free. Stay requests are not open yet.</p>
+    <h2 class="hl-h2" id="hl-hosts">Hosts in <?= e((string) $d['name']) ?></h2>
+    <p class="hint" id="hl-stays-note">Stays are free. The host decides every request. We do not check identities, so read profiles and references first.</p>
     <?php if ($hosts): ?>
       <div class="hl-people"><?php foreach ($hosts as $hc) include __DIR__ . '/_hl_host.php'; ?></div>
     <?php else: ?>

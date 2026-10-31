@@ -44,6 +44,12 @@
     </ul>
 
     <h2>Overnight stays</h2>
-    <p>Stay requests are switched off. They will open once there is a stay request flow and a stay-specific way to get help. This page will say so when that changes.</p>
+    <ul>
+      <li>Stays are free. Never send or accept money, a deposit or a "booking fee". Anybody asking for one is breaking our rules: report them.</li>
+      <li>Read the host's or guest's profile and references, and the house rules, before you say yes.</li>
+      <li>Agree arrival details in RuinMyTrip messages, and share the address and your dates with a friend.</li>
+      <li>Keep your passport, money and phone with you, and have a backup place to stay in mind.</li>
+      <li>Every stay page has a <b>Report this stay</b> link for the guest and the host. Moderators review every report.</li>
+    </ul>
   </article>
 </div>

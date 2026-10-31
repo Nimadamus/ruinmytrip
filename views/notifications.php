@@ -291,12 +291,22 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b><?= e($who) ?></b> shared upcoming travel dates.
           <?php endif; ?>
+        <?php elseif (in_array($n['type'], ['stay_requested', 'stay_accepted', 'stay_declined', 'stay_confirmed', 'stay_cancelled'], true)):
+          $who = $n['actor'] ? '@' . $n['actor'] : 'A member';
+          $line = [
+            'stay_requested' => $who . ' asked to stay with you.',
+            'stay_accepted'  => $who . ' accepted your stay request. Confirm it and message them.',
+            'stay_declined'  => 'A stay request did not work out this time.',
+            'stay_confirmed' => $who . ' confirmed their stay with you.',
+            'stay_cancelled' => $who . ' cancelled a stay.',
+          ][$n['type']]; ?>
+          <a href="<?= e(url('stay/' . (int) $n['target_id'])) ?>"><b><?= e($line) ?></b></a>
         <?php elseif ($n['type'] === 'reference'):
           $who = $n['actor'] ? '@' . $n['actor'] : 'A member'; ?>
           <a href="<?= e(url('u/' . $me['username'] . '/references')) ?>"><b><?= e($who) ?></b> wrote you a reference.</a>
         <?php elseif (in_array($n['type'], ['host_approved', 'host_rejected', 'host_paused'], true)): ?>
           <a href="<?= e(url('hosts-locals/me#host')) ?>"><b><?= e([
-            'host_approved' => 'Your host profile was approved. It shows as interested in hosting; stays are not open yet.',
+            'host_approved' => 'Your host profile was approved. Travelers can now ask to stay.',
             'host_rejected' => 'Your host profile was not approved. See the moderator note.',
             'host_paused'   => 'A moderator paused your host profile.',
           ][$n['type']]) ?></b></a>

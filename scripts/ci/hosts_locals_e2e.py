@@ -43,7 +43,7 @@ def cleanup():
         " foreach (['DELETE FROM member_references WHERE from_user_id=? OR to_user_id=?', 'DELETE FROM local_connects WHERE from_user_id=? OR to_user_id=?',"
         " 'DELETE FROM notifications WHERE user_id=? OR actor_id=?', 'DELETE FROM messages WHERE sender_id=? OR sender_id=?',"
         " 'DELETE FROM conversations WHERE user_lo_id=? OR user_hi_id=?'] as $s) q_run($s, [$i, $i]);"
-        " q_run('DELETE FROM host_profiles WHERE user_id=?', [$i]); q_run('DELETE FROM moderation_log WHERE target_type=? AND target_id=?', ['host_profile', $i]);"
+        " q_run('DELETE FROM stay_requests WHERE guest_id=? OR host_id=?', [$i, $i]); q_run('DELETE FROM host_profiles WHERE user_id=?', [$i]); q_run('DELETE FROM moderation_log WHERE target_type=? AND target_id=?', ['host_profile', $i]);"
         " q_run('DELETE FROM profiles WHERE user_id=?', [$i]); q_run('DELETE FROM users WHERE id=?', [$i]); }" % json.dumps(USERS).replace('"', "'"))
 
 
@@ -54,6 +54,7 @@ php("$now = date('Y-m-d H:i:s'); $h = password_hash('%s', PASSWORD_DEFAULT);"
     " [$u, $u.'@example.invalid', $h, $u === 'hle2e_admin' ? 'admin' : 'member', 'active', $now, '1990-05-05', $now]);"
     " rmt_profile_ensure((int) q_one('SELECT id FROM users WHERE username=?', [$u])['id']); }"
     " q_run(\"UPDATE profiles SET languages='en,pt', bio='I live here and love showing people the food markets.' WHERE user_id=(SELECT id FROM users WHERE username='hle2e_local')\");"
+    " q_run(\"UPDATE profiles SET display_name='Trav Eler', bio='Slow traveler who likes markets and long walks.' WHERE user_id=(SELECT id FROM users WHERE username='hle2e_trav')\");"
     % (PW, json.dumps(USERS).replace('"', "'")))
 uid = lambda u: int(php("echo q_one('SELECT id FROM users WHERE username=?', ['%s'])['id'];" % u))
 
@@ -150,7 +151,7 @@ try:
         tp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'])
         host_card = tp.locator('.hl-person', has_text='Alfama')
         check('the approved host is public with a neighbourhood only', host_card.count() == 1 and 'Rua' not in host_card.inner_text())
-        check('stay requests are disabled', host_card.locator('button[disabled]', has_text='Stay requests not open yet').count() == 1)
+        check('a visitor is asked to join to request a stay', host_card.locator('a', has_text='Join to ask to stay').count() == 1)
         check('no identity badge is claimed', 'Identity checked' not in host_card.inner_text())
         # Traveler asks the local; local accepts; messages open.
         login(tp, 'hle2e_trav')
@@ -177,6 +178,30 @@ try:
         no_hscroll(tp, '[phone] profile')
         tp.goto(BASE + '/u/hle2e_trav/references')
         check('nobody can reference themselves', tp.locator('form.hl-form').count() == 0)
+        # A stay: the traveler asks the approved host, the host accepts, the traveler confirms.
+        tp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'] + '?role=hosts')
+        tp.locator('.hl-person', has_text='Alfama').locator('a', has_text='Ask to stay').click(); tp.wait_for_load_state()
+        check('the stay form opens', '/stay/new/hle2e_host' in tp.url, tp.url)
+        no_hscroll(tp, '[phone] stay form')
+        import datetime as _dt
+        d1 = (_dt.date.today() + _dt.timedelta(days=12)).isoformat(); d2 = (_dt.date.today() + _dt.timedelta(days=14)).isoformat()
+        tp.fill('#s-from', d1); tp.fill('#s-to', d2); tp.fill('#s-guests', '1')
+        tp.fill('#s-intro', 'Visiting for a long weekend to walk the old town and try the bakeries. Quiet and tidy guest.')
+        tp.check('input[name=agree]'); tp.locator('form.hl-form button[type=submit]').click(); tp.wait_for_load_state()
+        check('the request is sent', '/stay/' in tp.url and 'Waiting for the host' in tp.inner_text('main'), tp.url)
+        stay_url = tp.url
+        hp.goto(BASE + '/stays')
+        check('the host sees the request', hp.locator('a[href*="/stay/"]', has_text='Trav Eler').count() == 1)
+        hp.goto(stay_url); hp.locator('form[action$="/accept"] button').click(); hp.wait_for_load_state()
+        check('the host accepts', 'Accepted' in hp.inner_text('main'))
+        tp.goto(stay_url); tp.locator('form[action$="/confirm"] button').click(); tp.wait_for_load_state()
+        check('the traveler confirms', 'Confirmed' in tp.inner_text('main'))
+        check('messages are linked after the yes', tp.locator('a[href$="/messages/hle2e_host"]').count() == 1)
+        check('the stay can be reported', tp.locator('a[href*="report?target_type=stay"]').count() == 1)
+        tp.goto(BASE + '/messages/hle2e_host')
+        check('the guest can message the host', tp.locator('form.msg-composer textarea').count() == 1)
+        sp, _ = page_for(False); login(sp, 'hle2e_admin')
+        r = sp.goto(stay_url); check('nobody else can open the stay', r.status == 404, r.status); sp.context.close()
         for label, errs in [('local', lerr), ('host', herr), ('traveler', terr), ('admin', aerr)]:
             check('no script errors for the ' + label, not errs, errs)
         br.close()

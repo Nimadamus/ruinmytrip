@@ -5702,6 +5702,8 @@ const RMT_REPORT_TARGETS = [
     'trip_message' => 'trip_messages',
     /* A reference one member wrote about another. Its subject reports it to dispute it. */
     'reference'    => 'member_references',
+    /* A stay, reported by its guest or its host. */
+    'stay'         => 'stay_requests',
 ];
 
 /**
@@ -5713,6 +5715,9 @@ const RMT_REPORT_TARGETS = [
  */
 const RMT_REPORT_OWNER_COLUMN = [
     'reference' => 'from_user_id',
+    // A stay has two people in it and both may report it, so report_submit() skips the own-content
+    // check for stays and asks rmt_stay_party() instead. guest_id is listed so the column exists.
+    'stay'      => 'guest_id',
     'meetup'  => 'host_id',
     'message' => 'sender_id',
 ];
@@ -5752,6 +5757,7 @@ function report_submit(array $a): void {
             $errors[] = 'That content no longer exists.';
         }
         /* A trip chat line is only reportable by somebody who can read it. */
+        if (!$errors && $tt === 'stay' && !rmt_stay_party(rmt_stay($tid), $me)) $errors[] = 'That content no longer exists.';
         if (!$errors && $tt === 'trip_message') {
             $tr = q_one('SELECT t.* FROM trip_messages m JOIN trips t ON t.id = m.trip_id WHERE m.id = ?', [$tid]);
             if (!rmt_trip_chat_allowed($tr, $me)) $errors[] = 'That content no longer exists.';
@@ -5760,7 +5766,7 @@ function report_submit(array $a): void {
 
     // You cannot report your own content, and you cannot report the same thing twice while the
     // first report is still open.
-    if (!$errors && $tt !== 'user') {
+    if (!$errors && !in_array($tt, ['user', 'stay'], true)) {
         $table = RMT_REPORT_TARGETS[$tt];
         $col   = RMT_REPORT_OWNER_COLUMN[$tt] ?? 'user_id';
         $owner = q_one("SELECT {$col} owner_id FROM {$table} WHERE id = ?", [$tid]);

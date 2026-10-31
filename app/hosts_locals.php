@@ -16,18 +16,17 @@ declare(strict_types=1);
  *               approved it, the host can pause it at any time, and its neighbourhood is the only
  *               location it ever holds. There is no address column, so none can leak.
  *
- * OVERNIGHT STAYS ARE OFF. rmt_stays_enabled() is false and does not read any setting, so a stay
- * cannot be requested or confirmed until a stay request flow, a stay-specific report path and a
- * reviewed safety process exist and somebody changes this code on purpose. Host profiles can be
- * written, reviewed and shown as "interested in hosting" in the meantime, which is how the first
- * hosts are found before the feature opens.
+ * OVERNIGHT STAYS are on since 2026-10-31 (app/stays.php): request, host yes or no, guest confirms,
+ * either side cancels or reports. rmt_stays_enabled() is a code switch, not a setting, so turning
+ * stays off again is a deliberate change. Identities are not checked (Nima's decision, 10/31) and
+ * every page says so.
  *
  * Nothing on these pages is invented. Every person shown is a real member who chose to be shown,
  * every count is a live COUNT, and an empty city says it is empty and asks the reader to be first.
  */
 
 /** Overnight stays. Deliberately a constant false, not a setting: see the header. */
-function rmt_stays_enabled(): bool { return false; }
+function rmt_stays_enabled(): bool { return true; }
 
 /** What a local can offer. Never accommodation: that is hosting, and it is a different role. */
 const RMT_LOCAL_OFFERS = [
@@ -295,6 +294,8 @@ function rmt_hl_filters(array $g): array {
 const RMT_REF_KINDS = [
     'met'       => 'Met as a local and a traveler',
     'traveled'  => 'Traveled together',
+    'hosted'    => 'Hosted them',
+    'stayed'    => 'Stayed with them',
 ];
 const RMT_REF_BODY_MIN = 30;
 const RMT_REF_BODY_MAX = 2000;
@@ -309,6 +310,11 @@ const RMT_REF_BODY_MAX = 2000;
 function rmt_ref_basis(int $from, int $to): ?array {
     if ($from < 1 || $to < 1 || $from === $to) return null;
     $cut = date('Y-m-d H:i:s', time() - 86400);
+    /* A confirmed stay whose last night has passed is the strongest connection there is. */
+    $stay = q_one("SELECT guest_id FROM stay_requests WHERE state = 'confirmed' AND date_to < ?
+                     AND ((guest_id = ? AND host_id = ?) OR (guest_id = ? AND host_id = ?)) ORDER BY date_to DESC LIMIT 1",
+                  [date('Y-m-d'), $from, $to, $to, $from]);
+    if ($stay) return ['basis' => 'stay', 'kind' => (int) $stay['guest_id'] === $from ? 'stayed' : 'hosted'];
     if (q_one("SELECT 1 FROM local_connects WHERE state = 'accepted' AND COALESCE(decided_at, created_at) <= ?
                 AND ((from_user_id = ? AND to_user_id = ?) OR (from_user_id = ? AND to_user_id = ?)) LIMIT 1",
               [$cut, $from, $to, $to, $from])) return ['basis' => 'local_connect', 'kind' => 'met'];
@@ -339,7 +345,7 @@ function rmt_ref_blocked_reason(?array $me, array $them): ?string {
     if (($them['status'] ?? '') !== 'active') return 'This member is not active.';
     if (rmt_is_blocked((int) $me['id'], (int) $them['id'])) return 'You cannot write a reference for this member.';
     if (!rmt_ref_basis((int) $me['id'], (int) $them['id'])) {
-        return 'References are for people you actually connected with here: a local who said yes to meeting you, or somebody you traveled with. It opens a day after you connect.';
+        return 'References are for people you actually connected with here: a local who said yes to meeting you, somebody you traveled with, or a stay that has ended. It opens a day after you connect, or once the stay is over.';
     }
     return null;
 }
@@ -356,6 +362,7 @@ function rmt_ref_validate(array $in): array {
     return ['ok' => !$errors, 'errors' => $errors, 'data' => [
         'rating_overall' => $overall, 'rating_communication' => $star('rating_communication', false),
         'rating_reliability' => $star('rating_reliability', false), 'rating_accuracy' => $star('rating_accuracy', false),
+        'rating_hospitality' => $star('rating_hospitality', false),
         'body' => $body,
     ]];
 }
@@ -371,17 +378,18 @@ function rmt_ref_save(array $from, array $to, array $d): array {
     if ($have && $have['status'] !== 'published') return ['ok' => false, 'error' => 'This reference is with our moderators and cannot be changed right now.'];
     if ($have) {
         q_run('UPDATE member_references SET rating_overall = ?, rating_communication = ?, rating_reliability = ?, rating_accuracy = ?,
-                      body = ?, basis = ?, updated_at = ? WHERE id = ?',
+                      rating_hospitality = ?, body = ?, basis = ?, updated_at = ? WHERE id = ?',
               [$d['rating_overall'], $d['rating_communication'], $d['rating_reliability'], $d['rating_accuracy'],
-               $d['body'], $basis['basis'], $now, (int) $have['id']]);
+               $basis['kind'] === 'stayed' ? ($d['rating_hospitality'] ?? null) : null, $d['body'], $basis['basis'], $now, (int) $have['id']]);
         return ['ok' => true, 'created' => false];
     }
     if (!rmt_rate_ok('reference', (string) $from['id'], 10, 86400)) return ['ok' => false, 'error' => 'You have written a lot of references today. Try again tomorrow.'];
     q_run('INSERT INTO member_references (from_user_id, to_user_id, kind, basis, rating_overall, rating_communication,
-                  rating_reliability, rating_accuracy, body, status, created_at, updated_at)
-           VALUES (?,?,?,?,?,?,?,?,?, \'published\', ?, ?)',
+                  rating_reliability, rating_accuracy, rating_hospitality, body, status, created_at, updated_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?, \'published\', ?, ?)',
           [(int) $from['id'], (int) $to['id'], $basis['kind'], $basis['basis'], $d['rating_overall'], $d['rating_communication'],
-           $d['rating_reliability'], $d['rating_accuracy'], $d['body'], $now, $now]);
+           $d['rating_reliability'], $d['rating_accuracy'], $basis['kind'] === 'stayed' ? ($d['rating_hospitality'] ?? null) : null,
+           $d['body'], $now, $now]);
     q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
           [(int) $to['id'], 'reference', (int) $from['id'], 'user', (int) $to['id'], $now]);
     return ['ok' => true, 'created' => true];
@@ -416,7 +424,7 @@ function hosts_locals_hub(array $a): void {
     $jsonld = '<script type="application/ld+json">' . json_encode([
         '@context' => 'https://schema.org', '@type' => 'WebPage',
         'name' => 'Hosts & Locals', 'url' => url('hosts-locals'),
-        'description' => 'Meet locals, find travel buddies and, soon, stay with hosts on RuinMyTrip.',
+        'description' => 'Meet locals, find travel buddies and stay with hosts for free on RuinMyTrip.',
         'isPartOf' => ['@type' => 'WebSite', 'name' => 'RuinMyTrip', 'url' => url()],
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
     view('hosts_locals_hub', compact('me', 'cities', 'locals', 'hosts', 'notFound'), rmt_hl_meta(
@@ -514,7 +522,7 @@ function hosts_locals_become_host_submit(array $a): void {
     $status = rmt_host_save((int) $me['id'], $v['data']);
     if (function_exists('rmt_track')) rmt_track('host_applied');
     flash($status === 'pending'
-        ? 'Thank you. Your host profile is with our moderators. Nobody sees it until it is approved, and stay requests are not open yet.'
+        ? 'Thank you. Your host profile is with our moderators. Nobody sees it until it is approved. Once it is, travelers can ask to stay and you decide every request.'
         : 'Saved.');
     redirect('/hosts-locals/me');
 }

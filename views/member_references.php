@@ -31,7 +31,7 @@ $isMe = $me && (int) $me['id'] === (int) $u['id'];
           </div>
           <p style="margin:8px 0 4px;white-space:pre-wrap"><?= e((string) $r['body']) ?></p>
           <p class="hint" style="margin:0">
-            <?php foreach (['rating_communication' => 'Communication', 'rating_reliability' => 'Reliability', 'rating_accuracy' => 'Profile accuracy'] as $k => $l):
+            <?php foreach (['rating_communication' => 'Communication', 'rating_reliability' => 'Reliability', 'rating_accuracy' => 'Profile accuracy', 'rating_hospitality' => 'Hospitality'] as $k => $l):
               if (!empty($r[$k])): ?><?= $l ?> <?= (int) $r[$k] ?>/5 &middot; <?php endif; endforeach; ?>
             <?php if ($me && (int) $me['id'] !== (int) $r['from_user_id']): ?>
               <a href="<?= e(url('report?target_type=reference&target_id=' . (int) $r['id'])) ?>"><?= $isMe ? 'Dispute this reference' : 'Report' ?></a>
@@ -54,7 +54,9 @@ $isMe = $me && (int) $me['id'] === (int) $u['id'];
         <p class="hl-hint">You connected here: <?= e(RMT_REF_KINDS[$basis['kind'] ?? ''] ?? '') ?>. Say what happened, plainly. One reference per person.</p>
         <?php if ($errors): ?><div class="errors" role="alert"><ul><?php foreach ($errors as $er): ?><li><?= e($er) ?></li><?php endforeach; ?></ul></div><?php endif; ?>
         <div class="hl-ratings">
-          <?php foreach (['rating_overall' => 'Overall experience', 'rating_communication' => 'Communication', 'rating_reliability' => 'Reliability', 'rating_accuracy' => 'Accuracy of their profile'] as $k => $l): ?>
+          <?php $rk = ['rating_overall' => 'Overall experience', 'rating_communication' => 'Communication', 'rating_reliability' => 'Reliability', 'rating_accuracy' => 'Accuracy of their profile'];
+                if (($basis['kind'] ?? '') === 'stayed') $rk['rating_hospitality'] = 'Hospitality';
+                foreach ($rk as $k => $l): ?>
             <div><label for="r-<?= $k ?>"><?= $l ?><?= $k === 'rating_overall' ? '' : ' <span class="hint">(optional)</span>' ?></label>
               <select id="r-<?= $k ?>" name="<?= $k ?>"<?= $k === 'rating_overall' ? ' required' : '' ?>>
                 <option value=""><?= $k === 'rating_overall' ? 'Choose' : 'Skip' ?></option>

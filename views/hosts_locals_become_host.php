@@ -8,7 +8,7 @@ $o = static fn(string $k, $def = '') => (string) ($old[$k] ?? $def);
 $canApply = $me && !empty($me['email_verified_at']) && can_host_meetups($me);
 $statusLine = [
     'pending'   => 'Your application is with our moderators. Nobody else can see it yet.',
-    'approved'  => 'Approved. You appear as "interested in hosting" on your city page. Changing the description sends it back for review.',
+    'approved'  => 'Approved. You appear as a host on your city page and travelers can ask to stay. Changing the description sends it back for review.',
     'paused'    => 'Paused. Your host profile is hidden until you resume it.',
     'rejected'  => 'Not approved. You can change it and apply again.',
     'withdrawn' => 'Withdrawn. You can apply again any time.',
@@ -19,7 +19,7 @@ $statusLine = [
     <p class="hl-crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('hosts-locals')) ?>">Hosts &amp; Locals</a> / Become a host</p>
     <p class="hl-kicker">Stay With a Local</p>
     <h1>Host travelers in your city, for free</h1>
-    <p class="hl-lede">Offer a spare room or a couch to travelers who want to see your city through you. Applications are open now. Stay requests are not open yet.</p>
+    <p class="hl-lede">Offer a spare room or a couch to travelers who want to see your city through you. A moderator reviews your profile, then travelers can ask to stay and you decide every request.</p>
   </div>
 </section>
 
@@ -28,7 +28,7 @@ $statusLine = [
     <div><h3>Always free</h3><p>No payments, no commission and no paid listings. Hosting is hospitality, not a rental.</p></div>
     <div><h3>Reviewed first</h3><p>A moderator reads every application before it appears anywhere. You can pause or withdraw it any time.</p></div>
     <div><h3>Your address stays yours</h3><p>A host profile holds a city and a neighbourhood at most. There is no address field, so none can be shown.</p></div>
-    <div><h3>You choose every guest</h3><p>When stays open, every request will be yours to accept or decline, and messages open only after you say yes.</p></div>
+    <div><h3>You choose every guest</h3><p>Every request is yours to accept or decline, and messages open only after you say yes.</p></div>
   </div>
 
   <?php if ($host): ?>
@@ -96,7 +96,7 @@ $statusLine = [
     </fieldset>
 
     <label class="hl-checks" style="display:block"><span style="display:flex;gap:10px;align-items:center;font-weight:500;min-height:44px">
-      <input type="checkbox" name="agree" value="1" required> I have read the <a href="<?= e(url('hosts-locals/safety')) ?>">safety guide</a> and <a href="<?= e(url('guidelines')) ?>">community guidelines</a>, and I understand hosting is free and that stay requests are not open yet.</span></label>
+      <input type="checkbox" name="agree" value="1" required> I have read the <a href="<?= e(url('hosts-locals/safety')) ?>">safety guide</a> and <a href="<?= e(url('guidelines')) ?>">community guidelines</a>, and I understand hosting is free and that identities are not checked.</span></label>
     <p style="margin:16px 0 0"><button class="btn btn-primary" type="submit"><?= $host ? 'Save and send for review' : 'Send my application' ?></button></p>
     <p class="hl-hint">Your languages, interests and photo come from <a href="<?= e(url('u/' . $me['username'] . '/edit')) ?>">your profile</a>.</p>
   </form>

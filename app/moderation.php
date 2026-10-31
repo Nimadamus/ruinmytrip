@@ -48,7 +48,7 @@ function rmt_moderate(int $actorId, string $targetType, int $targetId, string $a
        it was sent to already has it, and the decision a reported message actually calls for is
        about the account that sent it. Both types are logged, reviewed and acted on through the
        sender rather than through a status column they do not have. */
-    $movesStatus = !in_array($targetType, ['user', 'message', 'trip_message'], true) && isset(RMT_MOD_STATUS[$action]);
+    $movesStatus = !in_array($targetType, ['user', 'message', 'trip_message', 'stay'], true) && isset(RMT_MOD_STATUS[$action]);
 
     $from = null;
     $to = null;
@@ -191,6 +191,18 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
         $out['author']  = (string) ($row['username'] ?? '');
         $out['excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 300, '…');
         $out['status']  = null;
+        return $out;
+    }
+
+    /* A stay: who, when, and the guest's introduction. Acted on through the accounts. */
+    if ($targetType === 'stay') {
+        $row = function_exists('rmt_stay') ? rmt_stay($targetId) : null;
+        if (!$row) return $out;
+        $out['title']   = 'Stay: @' . $row['guest_username'] . ' with host @' . $row['host_username'] . ', ' . $row['date_from'] . ' to ' . $row['date_to'] . ' (' . $row['state'] . ')';
+        $out['author']  = (string) $row['host_username'];
+        $out['excerpt'] = mb_strimwidth((string) $row['intro'], 0, 300, '…');
+        $out['status']  = null;
+        $out['url']     = null;
         return $out;
     }
 

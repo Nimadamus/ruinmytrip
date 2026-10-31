@@ -16,7 +16,7 @@ $back = '/hosts-locals';
     <p class="hl-crumbs"><a href="<?= e(url()) ?>">Home</a> / Hosts &amp; Locals</p>
     <p class="hl-kicker">Hosts &amp; Locals</p>
     <h1>Experience the world through the people who live there</h1>
-    <p class="hl-lede">Going somewhere new? Meet someone who knows it best. Find local friends, travelers on your dates and, soon, hosts who offer a free place to stay.</p>
+    <p class="hl-lede">Going somewhere new? Meet someone who knows it best. Find local friends, travelers on your dates, and hosts who offer a free place to stay.</p>
     <form class="hl-search" method="get" action="<?= e(url('hosts-locals')) ?>" role="search">
       <div class="hl-field"><label for="hl-where">Where are you going
         <input id="hl-where" type="text" name="where" list="hl-cities" placeholder="Tokyo, Lisbon, Mexico City" autocomplete="off" required></label></div>
@@ -58,9 +58,9 @@ $back = '/hosts-locals';
       </div>
       <div class="hl-exp">
         <span class="hl-exp-ico" aria-hidden="true">&#8962;</span>
-        <h3>Stay With a Local <span class="hl-soon">Coming later</span></h3>
-        <p>Members who offer a free room or couch to travelers. Hosting will always be free. Stay requests are not open yet.</p>
-        <p class="hint">You can apply to host now. Every application is reviewed before anybody sees it.</p>
+        <h3>Stay With a Local</h3>
+        <p>Members who offer a free room or couch to travelers. Always free: no payments, no fees. Ask to stay, and the host decides.</p>
+        <p class="hint">Every host profile is reviewed by a moderator before anybody sees it. Identities are not checked.</p>
         <div class="hl-exp-acts">
           <a class="btn btn-primary btn-sm" href="<?= e(url('hosts-locals/become-a-host')) ?>">Become a host</a>
           <a class="btn btn-ghost btn-sm" href="<?= e(url('hosts-locals/how-it-works')) ?>">How it works</a>
@@ -105,8 +105,8 @@ $back = '/hosts-locals';
       </div>
     <?php endif; ?>
     <?php if ($hosts): ?>
-      <h3 style="margin:26px 0 10px">Interested in hosting</h3>
-      <p class="hint" id="hl-stays-note">Stay requests are not open yet.</p>
+      <h3 style="margin:26px 0 10px">Hosts</h3>
+      <p class="hint" id="hl-stays-note">Stays are free and the host decides every request.</p>
       <div class="hl-people"><?php foreach ($hosts as $hc) include __DIR__ . '/_hl_host.php'; ?></div>
     <?php endif; ?>
   </div>

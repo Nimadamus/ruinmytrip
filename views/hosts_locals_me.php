@@ -74,9 +74,9 @@ $verified = !empty($me['email_verified_at']);
   <?php endif; ?>
 
   <section class="hl-form" id="host" aria-labelledby="hl-host">
-    <h2 class="hl-h2" id="hl-host" style="font-size:1.3rem">Stay With a Local: hosting <span class="hl-soon">Stays not open yet</span></h2>
+    <h2 class="hl-h2" id="hl-host" style="font-size:1.3rem">Stay With a Local: hosting</h2>
     <?php if (!$host): ?>
-      <p>Have a spare room or couch? Apply now and a moderator reviews it. Stay requests are not open yet.</p>
+      <p>Have a spare room or couch? Apply and a moderator reviews it. Then travelers can ask to stay, and you decide.</p>
       <a class="btn btn-primary" href="<?= e(url('hosts-locals/become-a-host')) ?>">Apply to host</a>
     <?php else: ?>
       <p><b>Status: <?= e(ucfirst((string) $host['status'])) ?></b> in <?= e((string) ($host['dest_name'] ?? '')) ?>.
@@ -112,6 +112,6 @@ $verified = !empty($me['email_verified_at']);
   </section>
 
   <p style="margin-top:20px"><a href="<?= e(url('u/' . $me['username'] . '/references')) ?>">Your references</a> &middot;
-    <a href="<?= e(url('buddies/mine')) ?>">Your travel buddy posts</a> &middot; <a href="<?= e(url('messages')) ?>">Messages</a> &middot;
+    <a href="<?= e(url('stays')) ?>">Your stays</a> &middot; <a href="<?= e(url('buddies/mine')) ?>">Your travel buddy posts</a> &middot; <a href="<?= e(url('messages')) ?>">Messages</a> &middot;
     <a href="<?= e(url('hosts-locals/safety')) ?>">Safety</a></p>
 </div>

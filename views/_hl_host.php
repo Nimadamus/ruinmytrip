@@ -2,6 +2,7 @@
 /**
  * One approved host. The neighbourhood is the only location a host profile holds. While overnight
  * stays are switched off (rmt_stays_enabled), the request button says so instead of pretending.
+ * Identities are not checked, and the card does not suggest otherwise.
  *
  * @var array  $hc  a row from rmt_hl_hosts()
  * @var ?array $me
@@ -32,7 +33,7 @@ $hcLangs = rmt_language_labels(rmt_languages_for($hc['languages'] ?? null));
   <p class="muted"><?= e(mb_strimwidth((string) $hc['about_space'], 0, 180, '…')) ?></p>
   <div class="hl-person-acts">
     <?php if (rmt_stays_enabled()): ?>
-      <a class="btn btn-primary btn-sm" href="<?= e(url('u/' . $hc['username'])) ?>">Request to stay</a>
+      <a class="btn btn-primary btn-sm" href="<?= e(url(isset($me) && $me ? 'stay/new/' . $hc['username'] : 'register?return=' . rawurlencode('/stay/new/' . $hc['username']))) ?>"><?= isset($me) && $me ? 'Ask to stay' : 'Join to ask to stay' ?></a>
     <?php else: ?>
       <button class="btn btn-ghost btn-sm" type="button" disabled aria-describedby="hl-stays-note">Stay requests not open yet</button>
     <?php endif; ?>

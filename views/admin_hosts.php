@@ -40,5 +40,5 @@
     </tbody>
   </table>
   <?php endif; ?>
-  <p class="hint" style="margin-top:14px">Approving shows the profile as "interested in hosting". It does not enable stays: rmt_stays_enabled() is off in code.</p>
+  <p class="hint" style="margin-top:14px">Approving lists the member as a host: travelers can then send stay requests, which the host accepts or declines. Reported stays are in <a href="<?= e(url('admin/moderation')) ?>">moderation</a>.</p>
 </div>

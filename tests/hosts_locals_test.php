@@ -27,7 +27,7 @@ $user = fn($u) => q_one("SELECT * FROM users WHERE username=?", [$u]);
 $id = fn($u) => (int) $user($u)['id'];
 foreach (['hllocal', 'hlhost', 'hltraveler', 'hlstranger', 'hladmin'] as $u) rmt_profile_ensure($id($u));
 
-ok(rmt_stays_enabled() === false, 'overnight stays are switched off');
+ok(rmt_stays_enabled() === true, 'overnight stays are on (app/stays.php)');
 putenv('MAIL_POSTAL_ADDRESS');
 ok(rmt_welcome_email($id('hllocal')) === false, 'no welcome email while promotional mail is not compliant');
 
@@ -98,7 +98,7 @@ $h = render('hosts_locals_hub');
 ok(str_contains($h, 'Experience the world through the people who live there') && str_contains($h, 'Stay With a Local'), 'the hub renders for a visitor');
 ok(str_contains($h, 'does not guarantee') || str_contains($h, 'cannot promise'), 'the hub says no check is a guarantee');
 $city = render('hosts_locals_city', ['slug' => $dest['slug']]);
-ok(str_contains($city, 'Locals in ' . $dest['name']) && str_contains($city, 'Stay requests not open yet'), 'the city page shows locals and a disabled stay button');
+ok(str_contains($city, 'Locals in ' . $dest['name']) && str_contains($city, 'Join to ask to stay'), 'the city page shows locals and a host a visitor can join to ask');
 ok(!str_contains($city, 'Old Town Street'), 'no address on the city page');
 ok(str_contains($city, 'content="index, follow"'), 'a city with members is indexable');
 $empty = null;

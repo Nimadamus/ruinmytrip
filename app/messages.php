@@ -210,6 +210,10 @@ function rmt_message_allowed(int $meId, int $themId): array {
     if (function_exists('rmt_connect_mutual') && rmt_connect_mutual($meId, $themId)) {
         return ['ok' => true, 'reason' => 'accepted'];
     }
+    /* A host who said yes to a stay request. */
+    if (function_exists('rmt_stay_mutual') && rmt_stay_mutual($meId, $themId)) {
+        return ['ok' => true, 'reason' => 'accepted'];
+    }
 
     /* Not allowed, and the page deserves to know which kind of not allowed. Read from the connect
        rows rather than guessed: "waiting on them" and "they said no" are different sentences and

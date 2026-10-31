@@ -95,6 +95,8 @@ ins('trip_messages', ['trip_id' => $tripShared, 'user_id' => $omar, 'body' => 'O
 ins('trip_chat_reads', ['trip_id' => $tripShared, 'user_id' => $dana, 'last_read_id' => 1]);
 ins('host_profiles', ['user_id' => $dana, 'status' => 'approved', 'destination_id' => $dest, 'space_type' => 'couch', 'max_guests' => 1,
     'min_nights' => 1, 'max_nights' => 2, 'about_space' => 'Dana couch', 'pets' => 'none', 'smoking' => 'no', 'created_at' => $now, 'updated_at' => $now]);
+ins('stay_requests', ['guest_id' => $omar, 'host_id' => $dana, 'date_from' => '2030-01-01', 'date_to' => '2030-01-03', 'guests' => 1,
+    'intro' => 'Omar asks Dana', 'state' => 'requested', 'created_at' => $now, 'updated_at' => $now]);
 ins('member_references', ['from_user_id' => $omar, 'to_user_id' => $dana, 'kind' => 'met', 'basis' => 'local_connect', 'rating_overall' => 5,
     'body' => 'Omar about Dana', 'status' => 'published', 'created_at' => $now, 'updated_at' => $now]);
 ins('member_references', ['from_user_id' => $dana, 'to_user_id' => $omar, 'kind' => 'met', 'basis' => 'local_connect', 'rating_overall' => 5,
@@ -277,7 +279,8 @@ ok('shared trip passed to Omar, emptied of her notes and cover',
     cnt("SELECT COUNT(*) c FROM trips WHERE id=? AND user_id=? AND body='' AND cover_url IS NULL", [$tripShared, $omar]) === 1);
 ok('her host profile and every reference by or about her are gone',
     cnt('SELECT COUNT(*) c FROM host_profiles WHERE user_id=?', [$dana]) === 0
-    && cnt('SELECT COUNT(*) c FROM member_references WHERE from_user_id=? OR to_user_id=?', [$dana, $dana]) === 0);
+    && cnt('SELECT COUNT(*) c FROM member_references WHERE from_user_id=? OR to_user_id=?', [$dana, $dana]) === 0
+    && cnt('SELECT COUNT(*) c FROM stay_requests WHERE guest_id=? OR host_id=?', [$dana, $dana]) === 0);
 ok('her trip chat lines are gone and those of Omar stay',
     cnt("SELECT COUNT(*) c FROM trip_messages WHERE body LIKE 'Dana%'") === 0
     && cnt("SELECT COUNT(*) c FROM trip_messages WHERE trip_id=? AND user_id=?", [$tripShared, $omar]) === 1);

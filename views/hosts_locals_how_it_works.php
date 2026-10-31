@@ -9,7 +9,7 @@
     <ul>
       <li><b>Traveler.</b> Everybody. Post a trip or a buddy post with a city and dates, and find people going at the same time.</li>
       <li><b>Local.</b> You live somewhere and are happy to meet travelers. You choose what you offer, from a coffee to a neighbourhood walk, and roughly when you are free. Being a local never means offering a bed.</li>
-      <li><b>Host.</b> You would offer a traveler a free room or couch. You apply, a moderator reviews it, and you can pause it any time. Stay requests are not open yet.</li>
+      <li><b>Host.</b> You would offer a traveler a free room or couch. You apply, a moderator reviews it, and you can pause it any time. Every stay request is yours to accept or decline.</li>
     </ul>
 
     <h2>Meeting a local, step by step</h2>
@@ -24,9 +24,16 @@
     <h2>Finding a travel buddy</h2>
     <p>The travel buddy search covers dated trips, buddy posts and locals together. Search by city or country and by dates, filter by interests and travel style, and ask to join. Trips show the city and dates you chose to publish, never a hotel, a flight or a live location. <a href="<?= e(url('buddies')) ?>">Search travel buddies</a>.</p>
 
-    <h2>Hosting, and why stays are not open yet</h2>
-    <p>Hosting will always be free: no payments, no commission and no paid listings. Stay requests open once there is a proper request flow, where the host accepts or declines every guest, and a stay-specific way to report a problem and get help. Until then you can write a host profile, have it reviewed, and appear as "interested in hosting" so travelers know you are there. We do not check identity documents, so read profiles and references before you agree to anything.</p>
-    <p>A host profile shows a city and, if you choose, a neighbourhood. It never holds an address, so it can never show one.</p>
+    <h2>Staying with a host, step by step</h2>
+    <ol>
+      <li>Find a host on a city page and read their profile, house rules and references.</li>
+      <li>Press <b>Ask to stay</b>: your dates, how many of you, and an introduction. You need a confirmed email, a name and a sentence about yourself on your profile, and to be 18 or over.</li>
+      <li>The host accepts or declines. A decline is never explained.</li>
+      <li>After a yes, private messages open. Agree where and when to meet there: RuinMyTrip never stores an address.</li>
+      <li>Confirm the stay. Either of you can cancel before the first night, and either of you can report the stay at any time.</li>
+      <li>After the last night, each of you can leave a reference.</li>
+    </ol>
+    <p>Hosting is always free: no payments, no fees, no paid listings. Never send or accept money for a stay. We do not check identity documents, so read profiles and references before you agree to anything. A host shows a city and, if they choose, a neighbourhood, never an address.</p>
 
     <h2>References</h2>
     <p>References are what members say about each other. They can only be written after a real connection here, a local who accepted a request or somebody you traveled with, and only once that connection is a day old. Nobody can write one for themselves, and each person can write one per member for each kind of connection. If a reference about you is unfair or untrue, report it and a moderator will review it. References are separate from place and city reviews.</p>
