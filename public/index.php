@@ -279,6 +279,7 @@ $routes = [
     ['POST', '#^/admin/feedback/resolve$#',    'admin_feedback_resolve'],
     ['GET',  '#^/admin/moderation$#',           'admin_moderation'],
     ['GET',  '#^/admin/hosts$#',                'admin_hosts'],
+    ['GET',  '#^/admin/safety$#',               'admin_safety'],
     ['POST', '#^/admin/hosts/decide$#',         'admin_hosts_decide'],
     ['POST', '#^/admin/moderation/act$#',       'admin_moderation_act'],
     ['POST', '#^/admin/suggestions/resolve$#',  'admin_suggestions_resolve'],

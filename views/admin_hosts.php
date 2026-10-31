@@ -6,7 +6,7 @@
   <h1 class="hl-h2">Host applications</h1>
   <p class="hint">New members in 7 days: <b><?= (int) $growth['members_7d'] ?></b> &middot; listed locals: <b><?= (int) $growth['locals'] ?></b>
     &middot; published references: <b><?= (int) $growth['references'] ?></b> &middot; disputed references open: <b><?= (int) $growth['disputed'] ?></b>
-    &middot; <a href="<?= e(url('admin/moderation')) ?>">Reports and suspensions</a></p>
+    &middot; <a href="<?= e(url('admin/moderation')) ?>">Reports and suspensions</a> &middot; <a href="<?= e(url('admin/safety')) ?>">Safety signals</a></p>
   <nav class="hl-tabs" aria-label="Status">
     <?php foreach (RMT_HOST_STATUSES as $s): ?>
       <a href="<?= e(url('admin/hosts?status=' . $s)) ?>"<?= $s === $status ? ' aria-current="page"' : '' ?>><?= e(ucfirst($s)) ?> (<?= (int) ($counts[$s] ?? 0) ?>)</a>
