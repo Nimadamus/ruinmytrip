@@ -18,6 +18,7 @@
 usage: python scripts/ci/member_journey_e2e.py BASE DB_PATH
 E2E_DESIGN=v2 runs it in the redesign. Writes only to the dev database it is pointed at.
 """
+import e2e_db
 import os, sys, sqlite3, random, string, subprocess
 from playwright.sync_api import sync_playwright
 
@@ -38,13 +39,22 @@ def check(name, cond, detail=''):
 
 
 def db(sql, args=()):
-    c = sqlite3.connect(DB)
+    c = e2e_db.connect(DB)
     try:
         rows = c.execute(sql, args).fetchall()
         c.commit()
         return rows
     finally:
         c.close()
+
+
+# The place ids differ between databases (dev copy, Postgres staging); look them up by slug.
+# A database without those two places (a fresh staging copy) uses its first two places instead.
+_found = [db('SELECT slug, id FROM places WHERE slug = ?', (slug,)) for slug, _ in (HELD, LIVE)]
+if all(_found):
+    HELD, LIVE = _found[0][0], _found[1][0]
+else:
+    HELD, LIVE = db('SELECT slug, id FROM places ORDER BY id LIMIT 2')
 
 
 def php(code):
@@ -192,8 +202,10 @@ def run(p, dev, ctxargs):
           and page.locator('form[action$="/logout"] input[name=_csrf]').count() >= 1)
     go('/feed')
     check(tag('M5 still signed in after GET /logout'), '/login' not in page.url and page.locator('form[action$="/logout"]').count() >= 1, page.url)
-    r = page.request.post(BASE + '/logout', form={'x': '1'}, max_redirects=0)
-    check(tag('M5 POST /logout without the token is refused'), r.status == 403, str(r.status))
+    # Sent from the page itself: Playwright's request API does not send a Secure session cookie
+    # over plain http (a production config staging copy on 127.0.0.1), and would read as a sign out.
+    st = page.evaluate("fetch('/logout', {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'x=1', redirect: 'manual'}).then(r => r.status)")
+    check(tag('M5 POST /logout without the token is refused'), st == 403, str(st))
     go('/feed')
     check(tag('M5 still signed in after a tokenless POST'), '/login' not in page.url, page.url)
     check(tag('M5 the nav sign out is a POST form, not a link'),

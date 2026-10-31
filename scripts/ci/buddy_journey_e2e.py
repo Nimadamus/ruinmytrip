@@ -17,6 +17,7 @@ usage: python scripts/ci/buddy_journey_e2e.py BASE DB_PATH
 Runs twice: poster on a laptop with the other member on a phone, then the other way round.
 Writes only to the dev database it is pointed at.
 """
+import e2e_db
 import os, sys, sqlite3, random, string, subprocess, datetime as dt
 from playwright.sync_api import sync_playwright
 
@@ -36,7 +37,7 @@ def check(name, cond, detail=''):
 
 
 def db(sql, args=()):
-    c = sqlite3.connect(DB)
+    c = e2e_db.connect(DB)
     try:
         rows = c.execute(sql, args).fetchall()
         c.commit()
@@ -82,7 +83,9 @@ class Member:
         return self.page.inner_text('body')
 
     def join(self, stamp, role):
-        email = f'e2e_buddy_{role}_{stamp}@example.com'
+        # E2E_MAIL_TO (e.g. me+stg{role}{stamp}@gmail.com) sends the run's mail to a real inbox, for a
+        # staging run with real mail; by default nothing deliverable is used.
+        email = os.environ.get('E2E_MAIL_TO', 'e2e_buddy_{role}_{stamp}@example.com').format(role=role, stamp=stamp)
         self.go('/register')
         self.page.fill('form[action$="register"] input[name=email]', email)
         self.page.fill('form[action$="register"] input[name=password]', 'longenough123')
@@ -183,6 +186,25 @@ def journey(p, poster_dev, other_dev):
     o.go(f'/messages/{a.username}')
     check(f'[{o.label}] B5 the reply arrives', 'Great, see you there' in o.text())
 
+    # B5b pass on a request: a third member asks, the poster passes, and that member cannot message
+    d = Member(b, other_dev[1], f'{other_dev[0]} passed').join(stamp, 'passed')
+    d.go(f'/buddy/{bid}')
+    d.press(f'form[action$="buddy/{bid}/interest"] button')
+    d.answer_age('1990-06-15')
+    d.page.fill('textarea[name=note]', f'Could join for a couple of days ({stamp}).')
+    d.press(f'form[action$="buddy/{bid}/interest"] button')
+    a.go(f'/buddy/{bid}')
+    a.page.locator(f'form[action$="buddy/{bid}/decide/{d.uid}"]:has(input[value=declined]) button').first.click(); a.settle()
+    st = db('SELECT state FROM buddy_interest WHERE post_id = ? AND user_id = ?', (bid, d.uid))
+    check(f'[{a.label}] B5b the request is passed on', bool(st) and st[0][0] == 'declined', st)
+    check(f'[{d.label}] B5b no acceptance notice for a pass',
+          not db("SELECT 1 FROM notifications WHERE user_id = ? AND type = 'buddy_accepted'", (d.uid,)))
+    d.go(f'/messages/{a.username}')
+    if d.page.locator('textarea[name=body]').count():
+        d.page.fill('textarea[name=body]', 'can we talk?')
+        d.press('form.msg-composer button')
+    check(f'[{d.label}] B5b a passed member cannot message the poster', not db('SELECT 1 FROM messages WHERE sender_id = ?', (d.uid,)))
+
     # B6 block
     o.page.locator('details.more-menu summary').first.click()
     o.press('button.more-menu-danger')
@@ -253,7 +275,7 @@ def journey(p, poster_dev, other_dev):
     tp.fill('textarea[name=buddy_note]', f'Looking for someone to share walks and dinners, ref {stamp}9.')
     tp.check('input[name=safety_ack]')
     t.press('#plan-form button[type=submit], #plan-form button:not([type])')
-    email = f'e2e_buddy_tripfirst_{stamp}@example.com'
+    email = os.environ.get('E2E_MAIL_TO', 'e2e_buddy_{role}_{stamp}@example.com').format(role='tripfirst', stamp=stamp)
     check(f'[{t.label}] B9 the join step', '/plan/join' in tp.url, tp.url)
     tp.fill('form[action$="plan/join"] input[name=email]', email)
     tp.fill('form[action$="plan/join"] input[name=password]', 'longenough123')

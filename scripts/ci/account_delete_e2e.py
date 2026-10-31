@@ -12,6 +12,7 @@
 usage: python scripts/ci/account_delete_e2e.py BASE DB_PATH [SHOT_DIR]
 Writes only to the dev database it is pointed at.
 """
+import e2e_db
 import os, sys, sqlite3, random, string, subprocess, datetime as dt
 from playwright.sync_api import sync_playwright
 
@@ -30,7 +31,7 @@ def check(name, cond, detail=''):
 
 
 def db(sql, args=()):
-    c = sqlite3.connect(DB)
+    c = e2e_db.connect(DB)
     try:
         rows = c.execute(sql, args).fetchall()
         c.commit()
@@ -43,9 +44,14 @@ HASH = subprocess.run([PHP, '-r', f'echo password_hash("{PW}", PASSWORD_BCRYPT);
 NOW = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
+def mail_for(name):
+    # E2E_MAIL_TO (e.g. me+del{role}@gmail.com) sends the run's mail to a real inbox on a staging run.
+    return os.environ.get('E2E_MAIL_TO', '{role}@example.com').format(role=name, stamp='')
+
+
 def seed_user(name, role='user'):
     db('INSERT INTO users (username, email, password_hash, role, status, created_at, email_verified_at, age_confirmed_at) '
-       'VALUES (?,?,?,?,?,?,?,?)', (name, f'{name}@example.com', HASH, role, 'active', NOW, NOW, NOW))
+       'VALUES (?,?,?,?,?,?,?,?)', (name, mail_for(name), HASH, role, 'active', NOW, NOW, NOW))
     uid = db('SELECT id FROM users WHERE username = ?', (name,))[0][0]
     db('INSERT INTO profiles (user_id, display_name, bio, credibility_score) VALUES (?,?,?,0)', (uid, name.title(), f'bio of {name}'))
     return uid
@@ -105,7 +111,7 @@ def run(p, dev_name, dev):
     b = p.chromium.launch(headless=True)
     try:
         a = Member(b, dev, f'{dev_name} member')
-        a.login(f'{dana}@example.com')
+        a.login(mail_for(dana))
         check(f'[{a.label}] signed in', '/login' not in a.page.url, a.page.url)
 
         # D1 settings section
@@ -153,13 +159,13 @@ def run(p, dev_name, dev):
         check(f'[{a.label}] D3 old profile is gone', r.status == 404, r.status)
         a.page.goto(BASE + '/account/deleted'); a.settle()
         check(f'[{a.label}] D3 confirmation is shown once', not a.page.url.endswith('/account/deleted'), a.page.url)
-        a.login(f'{dana}@example.com')
+        a.login(mail_for(dana))
         check(f'[{a.label}] D3 old email and password do not sign in', '/login' in a.page.url, a.page.url)
         a.close()
 
         # D4 the other member keeps the conversation, read only
         o = Member(b, dev, f'{dev_name} other')
-        o.login(f'{omar}@example.com')
+        o.login(mail_for(omar))
         o.go('/messages')
         check(f'[{o.label}] D4 inbox shows Deleted member', 'Deleted member' in o.text() and dana not in o.text())
         o.page.locator('a:has-text("Deleted member")').first.click(); o.settle()
@@ -172,7 +178,7 @@ def run(p, dev_name, dev):
 
         # D5 admin cannot self delete
         s = Member(b, dev, f'{dev_name} admin')
-        s.login(f'{boss}@example.com')
+        s.login(mail_for(boss))
         s.go('/account/delete')
         check(f'[{s.label}] D5 staff told why, no form', 'Staff accounts cannot be deleted' in s.text()
               and s.page.locator('#account-delete-submit').count() == 0)

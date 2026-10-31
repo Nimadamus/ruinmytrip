@@ -18,6 +18,7 @@ Every way a visitor's review used to be lost, replayed against a local server:
 usage: python scripts/ci/guest_review_e2e.py BASE DB_PATH [shots_dir]
 Exits non-zero on any failure. Writes nothing outside the dev database it is pointed at.
 """
+import e2e_db
 import os, sys, sqlite3, time, json, random, string, urllib.request
 from playwright.sync_api import sync_playwright
 
@@ -36,7 +37,7 @@ def check(name, cond, detail=''):
 
 
 def db(sql, args=()):
-    c = sqlite3.connect(DB)
+    c = e2e_db.connect(DB)
     try:
         return c.execute(sql, args).fetchall()
     finally:
