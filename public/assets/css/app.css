@@ -269,6 +269,8 @@ textarea{min-height:140px;resize:vertical}
 @media (max-width:680px){
   .g-2,.g-3,.g-4{grid-template-columns:1fr}
   .footer-grid{grid-template-columns:1fr 1fr}
+  /* 30px tall footer links were the most common under-size tap target on a phone. */
+  .site-footer:not(.site-footer-slim) a:not(.footer-base a){padding:12px 0;line-height:1.25}
   .hero-inner{padding:64px 20px 48px}
   .dest-hero img{height:240px}
   .dest-hero .overlay{flex-direction:column;align-items:flex-start}
