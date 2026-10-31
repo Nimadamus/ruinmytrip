@@ -537,11 +537,15 @@
       <?php endif; ?>
 
       <?php /* Our own 2026 notes that cite this city (taxes, tickets, entry rules), matched on a link
-               to this page inside the post body. Labelled as ours, below everything travelers wrote. */ ?>
-      <?php if (!empty($relatedPosts)): ?>
-        <div class="section-rule" style="margin-top:34px"><h2>2026 costs and rules for <?= e($d['name']) ?></h2></div>
+               to this page inside the post body, and the city's own guide. Labelled as ours, below
+               everything travelers wrote. */ ?>
+      <?php if (!empty($relatedPosts) || !empty($cityGuide)): ?>
+        <div class="section-rule" style="margin-top:34px"><h2>Plan <?= e($d['name']) ?>: guide and 2026 costs</h2></div>
         <p class="hint" style="margin:0 0 8px">Researched by the RuinMyTrip team from official sources. <?= rmt_editorial_badge() ?></p>
         <ul class="list-plain">
+          <?php if (!empty($cityGuide)): ?>
+            <li style="margin:0 0 6px"><a href="<?= e(url('g/'.$cityGuide['slug'])) ?>"><?= e((string) $cityGuide['title']) ?></a></li>
+          <?php endif; ?>
           <?php foreach ($relatedPosts as $rp): ?>
             <li style="margin:0 0 6px"><a href="<?= e(url('blog/'.$rp['slug'])) ?>"><?= e((string) $rp['title']) ?></a></li>
           <?php endforeach; ?>

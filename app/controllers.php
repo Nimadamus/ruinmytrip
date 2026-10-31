@@ -382,6 +382,11 @@ function destination(array $a): void {
     $photos = rmt_city_photos($id, current_user(), 12);
     $photoCount = count(rmt_city_photos($id, current_user(), 400));
     $relatedPosts = rmt_blog_posts_for_destination((string) $d['slug']);
+    /* The city's published guide. Linked from nowhere else on the site since 2026-09-21, so the 80
+       editorial guides were reachable only through /guides, which nothing links to either. */
+    $cityGuide = q_one("SELECT g.slug, g.title FROM guides g JOIN users u ON u.id = g.user_id
+                         WHERE g.destination_id = ? AND g.status = 'published' AND g.premium = 0 AND u.role = ?
+                         ORDER BY g.id LIMIT 1", [$id, RMT_EDITORIAL_ROLE]);
     $been = $me ? (bool) rmt_visit_get((int)$me['id'], $id) : false;
     $beenCount = rmt_visit_count($id);
     $beenPeople = rmt_visits_for_destination($id, 8);
@@ -437,7 +442,7 @@ function destination(array $a): void {
     /* The strongest indexable places, linked straight from the city (app/design_v2.php). Off unless
        RMT_CITY_TOP_PLACES=1 or the city redesign is on: it changes internal linking on 85 pages. */
     $cityTop = rmt_city_top_places_enabled() ? rmt_city_top_places($id, 12) : [];
-    view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','nearby','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
+    view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','nearby','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','cityGuide','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,
@@ -1920,8 +1925,9 @@ function blog_show(array $a): void {
     if ($blogDest && $blogCities <= 2) {
         $blogMore['posts'] = array_values(array_filter(rmt_blog_posts_for_destination((string) $blogDest['slug']),
             static fn(array $r) => $r['slug'] !== $p['slug']));
-        $blogMore['guide'] = q_one("SELECT slug, title FROM guides WHERE destination_id = ? AND status = 'published' ORDER BY id LIMIT 1",
-            [(int) $blogDest['id']]);
+        $blogMore['guide'] = q_one("SELECT g.slug, g.title FROM guides g JOIN users u ON u.id = g.user_id
+                                     WHERE g.destination_id = ? AND g.status = 'published' AND g.premium = 0 AND u.role = ?
+                                     ORDER BY g.id LIMIT 1", [(int) $blogDest['id'], RMT_EDITORIAL_ROLE]);
         $blogMore['buddies'] = rmt_buddy_landing_for_dest((string) $blogDest['slug'], (string) $blogDest['country']);
     }
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest','blogMore'), [

@@ -56,7 +56,7 @@ ok(rmt_nearby_destinations(['id' => 1, 'lat' => null, 'lng' => null], 3) === [],
 $ctl = file_get_contents(BASE_PATH . '/app/controllers.php');
 ok(str_contains($ctl, "rmt_nearby_destinations(\$d, 6, ") && str_contains($ctl, "'related','nearby',"), 'city controller passes nearby to the view');
 $view = file_get_contents(BASE_PATH . '/views/destination.php');
-ok(str_contains($view, '$nearby') && str_contains($view, '$relatedPosts'), 'city view renders nearby cities and the 2026 posts');
+ok(str_contains($view, '$nearby') && str_contains($view, '$relatedPosts') && str_contains($view, "url('g/'.\$cityGuide['slug'])"), 'city view renders nearby cities, the 2026 posts and the city guide');
 
 /* The three new Official Reviews keep each city's live summary, so the page's meta description
    does not change with them. */

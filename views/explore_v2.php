@@ -95,5 +95,5 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
       </div>
     </section>
   <?php endif; ?>
-  <p class="v2-note" style="margin-top:28px">Travelling for something in particular? <a href="<?= e(url('events')) ?>">See the upcoming events</a> and who else is going. Every city also carries our own researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a>, labelled as ours.</p>
+  <p class="v2-note" style="margin-top:28px">Travelling for something in particular? <a href="<?= e(url('events')) ?>">See the upcoming events</a> and who else is going. Every city also carries our own researched <a href="<?= e(url('editorial-policy')) ?>">editorial review</a>, labelled as ours, and most have a practical <a href="<?= e(url('guides')) ?>">city guide</a>.</p>
 </div>
