@@ -64,6 +64,7 @@ $routes = [
     ['POST', '#^/stay/(?<id>\d+)/(?<action>accept|decline|confirm|cancel)$#', 'stay_action'],
     ['POST', '#^/hosts-locals/local$#',                   'hosts_locals_local_submit'],
     ['POST', '#^/hosts-locals/host/status$#',             'hosts_locals_host_status'],
+    ['POST', '#^/hosts-locals/host/unavailable$#',        'hosts_locals_host_unavailable'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/followers$#', 'profile_followers'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/following$#', 'profile_following'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)$#','profile'],

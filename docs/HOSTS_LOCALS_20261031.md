@@ -60,3 +60,4 @@ Nothing was rebuilt. New pieces only where nothing existed.
 
 * `tests/hosts_locals_test.php` (logic, visitor pages), `tests/account_delete_test.php` (deletion), gate suite.
 * `scripts/ci/hosts_locals_e2e.py BASE`: full journey in a real browser on phone and desktop against a local server.
+* 2026-10-31: hosts list dates they are not hosting (host_profiles.unavailable, migration 120, /hosts-locals/me#host-dates); stay requests over those nights are refused. Stay reminders two days before and reference prompts after (rmt_stay_reminders_sweep). Moderator signals at /admin/safety.

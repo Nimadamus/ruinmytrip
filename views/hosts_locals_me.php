@@ -90,6 +90,20 @@ $verified = !empty($me['email_verified_at']);
           <form method="post" action="<?= e(url('hosts-locals/host/status')) ?>" data-confirm-submit="Withdraw your host profile?"><?= csrf_field() ?><input type="hidden" name="status" value="withdrawn"><button class="btn btn-ghost btn-sm">Withdraw</button></form>
         <?php endif; ?>
       </p>
+      <?php if (in_array($host['status'], ['pending', 'approved', 'paused'], true)): $off = rmt_host_unavailable($host); ?>
+        <h3 id="host-dates" style="margin:18px 0 6px;font-size:1.05rem">Dates you are not hosting</h3>
+        <p class="hl-hint">Travelers cannot ask to stay on these nights. Past dates drop off by themselves.</p>
+        <?php if ($off): ?><ul class="hl-off">
+          <?php foreach ($off as $i => $r): ?>
+            <li><?= e(rmt_date_range_label($r)) ?>
+              <form method="post" action="<?= e(url('hosts-locals/host/unavailable')) ?>" style="display:inline"><?= csrf_field() ?><input type="hidden" name="remove" value="<?= (int) $i ?>"><button class="btn btn-ghost btn-sm" aria-label="Remove <?= e(rmt_date_range_label($r)) ?>">Remove</button></form></li>
+          <?php endforeach; ?></ul><?php endif; ?>
+        <form method="post" action="<?= e(url('hosts-locals/host/unavailable')) ?>" class="hl-off-add" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end"><?= csrf_field() ?>
+          <div><label for="off-from">First date</label><input id="off-from" type="date" name="from" min="<?= e(date('Y-m-d')) ?>" required></div>
+          <div><label for="off-to">Last date</label><input id="off-to" type="date" name="to" min="<?= e(date('Y-m-d')) ?>"></div>
+          <button class="btn btn-primary btn-sm" type="submit">Add dates</button>
+        </form>
+      <?php endif; ?>
     <?php endif; ?>
   </section>
 

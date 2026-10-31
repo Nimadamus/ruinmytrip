@@ -9,7 +9,8 @@ $name = (string) ($host['display_name'] ?: '@' . $host['username']);
     <img class="avatar" src="<?= e(avatar_url($host['avatar_url'] ?? null)) ?>" alt="">
     <div><h1 class="hl-h2" style="font-size:1.6rem;margin:0">Ask to stay with <?= e($name) ?></h1>
       <span class="hint"><?= e((string) $host['dest_name']) ?><?= ($host['neighborhood'] ?? '') !== '' ? ', ' . e((string) $host['neighborhood']) . ' area' : '' ?>
-        &middot; <?= e(RMT_HOST_SPACES[$host['space_type']] ?? '') ?> &middot; up to <?= (int) $host['max_guests'] ?> &middot; <?= (int) $host['min_nights'] ?> to <?= (int) $host['max_nights'] ?> nights</span></div>
+        &middot; <?= e(RMT_HOST_SPACES[$host['space_type']] ?? '') ?> &middot; up to <?= (int) $host['max_guests'] ?> &middot; <?= (int) $host['min_nights'] ?> to <?= (int) $host['max_nights'] ?> nights</span>
+      <?php if ($off = rmt_host_unavailable($host)): ?><br><span class="hint">Not hosting: <?= e(implode(', ', array_map('rmt_date_range_label', $off))) ?></span><?php endif; ?></div>
   </div>
   <?php if (($host['house_rules'] ?? '') !== ''): ?><p class="hl-callout hl-callout-ok"><b>House rules:</b> <?= e((string) $host['house_rules']) ?></p><?php endif; ?>
   <p class="hl-callout">Staying is free: never send money to a host, for any reason. We do not check identities. Read their profile and references, keep messages on RuinMyTrip, and tell someone where you are staying. <a href="<?= e(url('hosts-locals/safety')) ?>">Safety guide</a>.</p>

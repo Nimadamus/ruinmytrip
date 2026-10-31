@@ -87,6 +87,7 @@ function rmt_stay_validate(array $in, array $host): array {
         if ($n < (int) $host['min_nights'] || $n > (int) $host['max_nights']) {
             $errors[] = 'This host takes stays of ' . (int) $host['min_nights'] . ' to ' . (int) $host['max_nights'] . ' nights.';
         }
+        if ($clash = rmt_host_unavailable_clash($host, $from, $to)) $errors[] = 'This host is not hosting ' . rmt_date_range_label($clash) . '. Pick other dates.';
     }
     $guests = (int) ($in['guests'] ?? 0);
     if ($guests < 1 || $guests > (int) $host['max_guests']) $errors[] = 'This host has room for up to ' . (int) $host['max_guests'] . ' ' . ((int) $host['max_guests'] === 1 ? 'guest' : 'guests') . '.';
@@ -294,4 +295,58 @@ function rmt_stay_reminders_maybe(): void {
     if (is_file($flag) && time() - (int) filemtime($flag) < 1800) return;
     @touch($flag);
     try { rmt_stay_reminders_sweep(); } catch (Throwable $e) { /* a reminder never breaks a page */ }
+}
+
+/* ---------- host availability ---------- */
+
+const RMT_HOST_UNAVAILABLE_MAX = 20;
+
+/** The host's upcoming "not hosting" ranges, sorted, past ones left out. @return list<array{0:string,1:string}> */
+function rmt_host_unavailable(array $host, ?string $today = null): array {
+    $today ??= date('Y-m-d');
+    $raw = json_decode((string) ($host['unavailable'] ?? ''), true);
+    $out = [];
+    foreach (is_array($raw) ? $raw : [] as $r) {
+        if (!is_array($r) || count($r) !== 2) continue;
+        [$a, $b] = array_map('strval', array_values($r));
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $a) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $b) || $b < $a || $b < $today) continue;
+        $out[] = [$a, $b];
+    }
+    usort($out, fn($x, $y) => $x[0] <=> $y[0]);
+    return $out;
+}
+
+/** The first "not hosting" range that one of the nights from $from to the night before $to falls in. */
+function rmt_host_unavailable_clash(array $host, string $from, string $to): ?array {
+    foreach (rmt_host_unavailable($host) as $r) if ($from <= $r[1] && $to > $r[0]) return $r;
+    return null;
+}
+
+function rmt_date_range_label(array $r): string {
+    return $r[0] === $r[1] ? date('j M Y', strtotime($r[0])) : date('j M', strtotime($r[0])) . ' to ' . date('j M Y', strtotime($r[1]));
+}
+
+/** POST /hosts-locals/host/unavailable: add a range (from, to) or remove one (remove = index). */
+function hosts_locals_host_unavailable(array $a): void {
+    require_login(); csrf_check();
+    $me = current_user();
+    $host = rmt_host_profile((int) $me['id']);
+    if (!$host) redirect('/hosts-locals/become-a-host');
+    $list = rmt_host_unavailable($host);
+    if (input('remove') !== null && input('remove') !== '') {
+        array_splice($list, (int) input('remove'), 1);
+        $msg = 'Removed.';
+    } else {
+        $from = (string) input('from'); $to = (string) input('to') ?: $from;
+        $ok = preg_match('/^\d{4}-\d{2}-\d{2}$/', $from) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $to);
+        if (!$ok) $msg = 'Pick the first and last date you are not hosting.';
+        elseif ($to < $from) $msg = 'The last date must be on or after the first.';
+        elseif ($to < date('Y-m-d')) $msg = 'Those dates have already passed.';
+        elseif (count($list) >= RMT_HOST_UNAVAILABLE_MAX) $msg = 'You can list up to ' . RMT_HOST_UNAVAILABLE_MAX . ' date ranges. Remove one first.';
+        else { $list[] = [$from, $to]; $msg = 'Saved. Travelers cannot ask for those nights.'; }
+    }
+    usort($list, fn($x, $y) => $x[0] <=> $y[0]);
+    q_run('UPDATE host_profiles SET unavailable = ?, updated_at = ? WHERE user_id = ?', [json_encode(array_values($list)), date('Y-m-d H:i:s'), (int) $me['id']]);
+    flash($msg);
+    redirect('/hosts-locals/me#host-dates');
 }

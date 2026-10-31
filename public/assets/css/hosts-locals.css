@@ -137,3 +137,6 @@
 .hl-filter-box>summary{cursor:pointer;padding:12px 16px;font-weight:650;min-height:44px;list-style-position:inside}
 .hl-filter-box[open]>summary{border-bottom:1px solid var(--line)}
 .hl-filter-box .hl-filters{padding:14px 16px 16px;margin:0}
+.hl-off{list-style:none;padding:0;margin:8px 0 14px}
+.hl-off li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.hl-off-add input{min-height:40px}

@@ -50,6 +50,14 @@ ok(!rmt_stay_validate(['date_from' => date('Y-m-d'), 'date_to' => $d1] + $good, 
 ok(!rmt_stay_validate(['intro' => 'hi'] + $good, $host())['ok'], 'a one word introduction is refused');
 ok(!rmt_stay_validate(['agree' => ''] + $good, $host())['ok'], 'the safety box is required');
 
+// Dates the host is not hosting: a clash is refused, touching the departure day is fine, past ranges drop off.
+q_run("UPDATE host_profiles SET unavailable=? WHERE user_id=?", [json_encode([[date('Y-m-d', strtotime('+12 days')), date('Y-m-d', strtotime('+12 days'))], ['2001-01-01', '2001-01-05']]), $id('sthost')]);
+ok(!rmt_stay_validate($good, $host())['ok'], 'a stay over a night the host is not hosting is refused');
+ok(count(rmt_host_unavailable($host())) === 1, 'past ranges drop off');
+q_run("UPDATE host_profiles SET unavailable=? WHERE user_id=?", [json_encode([[$d3, date('Y-m-d', strtotime('+15 days'))]]), $id('sthost')]);
+ok(rmt_stay_validate($good, $host())['ok'], 'leaving on the first unavailable day is fine');
+q_run("UPDATE host_profiles SET unavailable=NULL WHERE user_id=?", [$id('sthost')]);
+
 $r = rmt_stay_create($user('stguest'), $host(), rmt_stay_validate($good, $host())['data']);
 ok($r['ok'], 'the guest sends a request');
 $sid = (int) $r['id'];
