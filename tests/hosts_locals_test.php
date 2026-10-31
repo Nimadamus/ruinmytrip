@@ -98,6 +98,13 @@ ok(str_contains($h, 'does not guarantee') || str_contains($h, 'cannot promise'),
 $city = render('hosts_locals_city', ['slug' => $dest['slug']]);
 ok(str_contains($city, 'Locals in ' . $dest['name']) && str_contains($city, 'Stay requests not open yet'), 'the city page shows locals and a disabled stay button');
 ok(!str_contains($city, 'Old Town Street'), 'no address on the city page');
+ok(str_contains($city, 'content="index, follow"'), 'a city with members is indexable');
+$empty = null;
+foreach (q_all('SELECT id, slug FROM destinations ORDER BY id DESC LIMIT 40') as $cand) {
+    $cc = rmt_hl_city_counts((int) $cand['id']);
+    if ($cc['locals'] + $cc['hosts'] + $cc['going'] === 0) { $empty = $cand; break; }
+}
+if ($empty) ok(str_contains(render('hosts_locals_city', ['slug' => $empty['slug']]), 'content="noindex, follow"'), 'an empty city is noindex');
 ok(str_contains(render('hosts_locals_page', ['page' => 'safety']), 'Verification does not guarantee personal safety'), 'the safety page renders');
 ok(str_contains(render('hosts_locals_page', ['page' => 'how-it-works']), 'One profile, three roles'), 'how it works renders');
 ok(str_contains(render('hosts_locals_destinations'), 'Hosts &amp; Locals by city'), 'the cities page renders');

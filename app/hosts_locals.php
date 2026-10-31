@@ -401,7 +401,7 @@ function rmt_refs_for(int $uid, ?int $viewerId): array {
 
 function rmt_hl_meta(string $title, string $desc, string $path, bool $index = true): array {
     return ['title' => $title, 'description' => $desc, 'canonical' => url(ltrim($path, '/')),
-            'noindex' => !$index, 'css' => ['assets/css/hosts-locals.css']];
+            'robots' => $index ? 'index, follow' : 'noindex, follow', 'css' => ['assets/css/hosts-locals.css']];
 }
 
 /** GET /hosts-locals */
@@ -632,7 +632,7 @@ function admin_hosts(array $a): void {
         'references' => (int) q_one("SELECT COUNT(*) n FROM member_references WHERE status = 'published'")['n'],
         'disputed'   => (int) q_one("SELECT COUNT(*) n FROM reports WHERE target_type = 'reference' AND status = 'open'")['n'],
     ];
-    view('admin_hosts', compact('rows', 'status', 'counts', 'growth'), ['title' => 'Host applications | RuinMyTrip admin', 'noindex' => true]);
+    view('admin_hosts', compact('rows', 'status', 'counts', 'growth'), ['title' => 'Host applications | RuinMyTrip admin', 'robots' => 'noindex, nofollow']);
 }
 
 /** POST /admin/hosts/decide */

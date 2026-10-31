@@ -184,7 +184,7 @@ function trip_chat(array $a): void {
         'title' => 'Trip chat: ' . (string) $t['title'] . ' | RuinMyTrip',
         'description' => 'The private chat for the travelers on this trip.',
         'app_shell' => true,
-        'noindex' => true,
+        'robots' => 'noindex, nofollow',
     ]);
 }
 
