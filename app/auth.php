@@ -66,10 +66,20 @@ function rmt_safe_return_path(string $path): string {
         if ($path === $appUrl) $path = '/';
         elseif (str_starts_with($path, $appUrl . '/')) $path = substr($path, strlen($appUrl));
     }
-    if ($path === '' || $path[0] !== '/' || str_starts_with($path, '//') || str_contains($path, '://')) {
-        return '/feed';
-    }
+    if (!rmt_return_path_ok($path)) return '/feed';
     return $path;
+}
+
+/**
+ * Is this a same-origin path a Location header can carry without leaving the site?
+ *
+ * Beyond absolute and protocol-relative URLs, browsers rewrite a backslash to a forward slash and
+ * silently drop tabs and newlines anywhere in a URL, so "/\evil.example" and "/<TAB>/evil.example"
+ * both arrive as "//evil.example": somebody else's host, reached through our link.
+ */
+function rmt_return_path_ok(string $path): bool {
+    return $path !== '' && $path[0] === '/' && !str_starts_with($path, '//') && !str_contains($path, '://')
+        && !preg_match('/[\\\\\x00-\x1F\x7F]/', $path);
 }
 
 /**

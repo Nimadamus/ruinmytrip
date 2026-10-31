@@ -41,7 +41,8 @@ function lift(string $src, string $name): string {
     }
     return '';
 }
-eval(lift($authSrc, 'rmt_safe_return_path') . "\n" . lift($authSrc, 'rmt_return_to'));
+eval(lift($authSrc, 'rmt_safe_return_path') . "\n" . lift($authSrc, 'rmt_return_to')
+     . "\n" . lift($authSrc, 'rmt_return_path_ok'));
 
 $fails = 0;
 function ok(string $name, bool $cond, string $detail = ''): void {
@@ -83,12 +84,20 @@ $hostile = [
     'a backslash-prefixed authority'       => '\\\\evil.example/login',
     'our host as a prefix of theirs'       => 'https://ruinmytrip.com.evil.example/x',
     'a userinfo trick'                     => 'https://ruinmytrip.com@evil.example/x',
+    // Browsers turn "\" into "/" and drop tabs and newlines, so each of these becomes //evil.example.
+    'a slash then a backslash'             => '/\\evil.example/login',
+    'a slash, a tab, then a slash'         => "/\t/evil.example/login",
+    'a slash, a newline, then a slash'     => "/\n/evil.example/login",
+    'a slash, a CR, then a slash'          => "/\r/evil.example/login",
 ];
 foreach ($hostile as $label => $value) {
     $got = returns_to($value);
-    ok("refuses $label", $got !== '' && $got[0] === '/' && !str_starts_with($got, '//')
-        && !str_contains($got, '://'), 'got=' . $got);
+    $norm = preg_replace('/[\t\r\n]/', '', str_replace('\\', '/', $got));   // what a browser makes of it
+    ok("refuses $label", $got !== '' && $norm[0] === '/' && !str_starts_with($norm, '//')
+        && !str_contains($norm, '://'), 'got=' . json_encode($got));
 }
+ok('visitor_answer_submit uses the shared check',
+   str_contains(file_get_contents(BASE_PATH . '/app/controllers.php'), "redirect(rmt_return_path_ok(\$back) ? \$back : '/matches')"));
 
 // --- No endpoint follows the raw value --------------------------------------------------------
 // The helper only helps where it is used. A new action endpoint that reaches for input('return')

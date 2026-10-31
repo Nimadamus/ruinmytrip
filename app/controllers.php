@@ -205,10 +205,7 @@ function visitor_answer_submit(array $a): void {
        /feed, which is the wrong place to drop somebody who just answered a question on their
        matches page, and a redirect target taken from a form is worth keeping narrow anyway. */
     $back = trim((string) input('return'));
-    $ok2  = $back !== '' && $back[0] === '/' && !str_starts_with($back, '//')
-            && !str_contains($back, '://') && !str_contains($back, "
-");
-    redirect($ok2 ? $back : '/matches');
+    redirect(rmt_return_path_ok($back) ? $back : '/matches');
 }
 
 function events_index(array $a): void {
