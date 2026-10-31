@@ -10,9 +10,9 @@
       <li><b>Email confirmed</b> means the member clicked a link sent to their address. It says nothing else about them.</li>
       <li><b>Adults only.</b> Meeting travelers, posting trips and hosting need a date of birth showing 18 or over. We do not check documents for this.</li>
       <li><b>Host applications</b> are read by a moderator before they appear. That is a review of what the member wrote, not a background check.</li>
-      <li><b>Identity checked</b> will appear only after a real identity check. None are run yet, so no member shows it today.</li>
+      <li><b>We do not check identity documents.</b> A name and photo on a profile are what the member chose to show.</li>
     </ul>
-    <p><b>Verification does not guarantee personal safety.</b> RuinMyTrip does not guarantee the safety, identity or behaviour of any member, host, guest or meetup.</p>
+    <p><b>Nothing on this site guarantees personal safety.</b> RuinMyTrip does not guarantee the safety, identity or behaviour of any member, host, guest or meetup.</p>
 
     <h2>Before you meet</h2>
     <ul>
@@ -44,6 +44,6 @@
     </ul>
 
     <h2>Overnight stays</h2>
-    <p>Stay requests are switched off. They will open only once identity checks, a stay-specific way to get help, and our review of the legal and safety duties that come with hosting are complete. This page will say so when that changes.</p>
+    <p>Stay requests are switched off. They will open once there is a stay request flow and a stay-specific way to get help. This page will say so when that changes.</p>
   </article>
 </div>

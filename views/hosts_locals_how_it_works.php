@@ -25,7 +25,7 @@
     <p>The travel buddy search covers dated trips, buddy posts and locals together. Search by city or country and by dates, filter by interests and travel style, and ask to join. Trips show the city and dates you chose to publish, never a hotel, a flight or a live location. <a href="<?= e(url('buddies')) ?>">Search travel buddies</a>.</p>
 
     <h2>Hosting, and why stays are not open yet</h2>
-    <p>Hosting will always be free: no payments, no commission and no paid listings. Before anybody can ask to sleep in a stranger's home, three things have to be true: hosts and guests can have their identity checked, there is a stay-specific way to report and get help, and the whole process has been tested. Until then you can write a host profile, have it reviewed, and appear as "interested in hosting" so travelers know you are there.</p>
+    <p>Hosting will always be free: no payments, no commission and no paid listings. Stay requests open once there is a proper request flow, where the host accepts or declines every guest, and a stay-specific way to report a problem and get help. Until then you can write a host profile, have it reviewed, and appear as "interested in hosting" so travelers know you are there. We do not check identity documents, so read profiles and references before you agree to anything.</p>
     <p>A host profile shows a city and, if you choose, a neighbourhood. It never holds an address, so it can never show one.</p>
 
     <h2>References</h2>

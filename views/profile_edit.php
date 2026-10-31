@@ -94,7 +94,8 @@
         <b>I am open to meeting travelers in my city</b>
         <span class="hint">Puts you on your city's page under "locals open to meeting travelers".
           It means you are happy to answer a question or meet in a public place. It shares nothing
-          else: no address, no live location, and you can untick it at any time.</span>
+          else: no address, no live location, and you can untick it at any time.
+          <a href="<?= e(url('hosts-locals/me#local')) ?>">Choose what you offer travelers</a>.</span>
       </span>
     </label>
 

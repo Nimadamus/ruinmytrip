@@ -19,7 +19,7 @@ $statusLine = [
     <p class="hl-crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('hosts-locals')) ?>">Hosts &amp; Locals</a> / Become a host</p>
     <p class="hl-kicker">Stay With a Local</p>
     <h1>Host travelers in your city, for free</h1>
-    <p class="hl-lede">Offer a spare room or a couch to travelers who want to see your city through you. Applications are open now. Stay requests open once identity checks are live.</p>
+    <p class="hl-lede">Offer a spare room or a couch to travelers who want to see your city through you. Applications are open now. Stay requests are not open yet.</p>
   </div>
 </section>
 

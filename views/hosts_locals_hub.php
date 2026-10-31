@@ -59,7 +59,7 @@ $back = '/hosts-locals';
       <div class="hl-exp">
         <span class="hl-exp-ico" aria-hidden="true">&#8962;</span>
         <h3>Stay With a Local <span class="hl-soon">Coming later</span></h3>
-        <p>Members who offer a free room or couch to travelers. Hosting will always be free. Stay requests open only once identity checks and our safety process are live.</p>
+        <p>Members who offer a free room or couch to travelers. Hosting will always be free. Stay requests are not open yet.</p>
         <p class="hint">You can apply to host now. Every application is reviewed before anybody sees it.</p>
         <div class="hl-exp-acts">
           <a class="btn btn-primary btn-sm" href="<?= e(url('hosts-locals/become-a-host')) ?>">Become a host</a>
@@ -106,7 +106,7 @@ $back = '/hosts-locals';
     <?php endif; ?>
     <?php if ($hosts): ?>
       <h3 style="margin:26px 0 10px">Interested in hosting</h3>
-      <p class="hint" id="hl-stays-note">Stay requests are not open yet. They open once identity checks are live.</p>
+      <p class="hint" id="hl-stays-note">Stay requests are not open yet.</p>
       <div class="hl-people"><?php foreach ($hosts as $hc) include __DIR__ . '/_hl_host.php'; ?></div>
     <?php endif; ?>
   </div>
@@ -130,7 +130,7 @@ $back = '/hosts-locals';
     <p class="hl-sub">We are connecting strangers, so we say plainly what we check and what we do not.</p>
     <div class="hl-trust">
       <div><h3>Adults only</h3><p>Meeting travelers, posting trips and hosting are for members 18 and over.</p></div>
-      <div><h3>Badges mean a real check</h3><p>"Email confirmed" means exactly that. "Identity checked" appears only after an identity check, and none are run yet.</p></div>
+      <div><h3>We do not check identities</h3><p>"Email confirmed" means exactly that and nothing more. Read profiles and references, and meet in public first.</p></div>
       <div><h3>You decide who reaches you</h3><p>No messages until both sides agree. Block anybody in one tap, report anything, and we review every report.</p></div>
       <div><h3>No addresses, ever</h3><p>Profiles show a city, and a host shows a neighbourhood at most. Never a street, a number or a live location.</p></div>
     </div>

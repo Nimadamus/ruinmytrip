@@ -110,7 +110,22 @@ try:
         lp.fill('#l-avail', 'Weekday evenings')
         lp.locator('#local button[type=submit]').click(); lp.wait_for_load_state()
         check('local listing lands on their city', '/hosts-locals/destinations/' + dest['slug'] in lp.url, lp.url)
-        check('the local is shown with their offers', lp.locator('.hl-person', has_text='Weekday evenings').count() == 0)  # nobody sees themselves
+        check('the local does not see themselves', lp.locator('.hl-person', has_text='Weekday evenings').count() == 0)  # nobody sees themselves
+        lp.goto(BASE + '/hosts-locals/me')
+        check('the roles page has an invite link', 'hosts-locals?ref=hle2e_local' in lp.input_value('#hl-invite-link'))
+        lp.goto(BASE + '/u/hle2e_local')
+        check('own profile links back to the local settings', lp.locator('a.chip[href*="hosts-locals"]').count() >= 1)
+        lp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'])
+        # The welcome screen sends a would-be host to the host form.
+        wp, werr = page_for(True); login(wp, 'hle2e_trav')
+        wp.goto(BASE + '/welcome'); wp.check('input[name=role_host]')
+        wp.locator('form.onboard button[type=submit]').last.click(); wp.wait_for_load_state()
+        check('welcome "host" goes to the host form', '/hosts-locals/become-a-host' in wp.url, wp.url)
+        wp.goto(BASE + '/welcome'); wp.check('input[name=role_local]')
+        wp.locator('form.onboard button[type=submit]').last.click(); wp.wait_for_load_state()
+        check('welcome "local" goes to the local settings', '/hosts-locals/me' in wp.url, wp.url)
+        check('no script errors on welcome', not werr, werr)
+        wp.context.close()
         # A host applies; an address is refused.
         hp, herr = page_for(False); login(hp, 'hle2e_host')
         hp.goto(BASE + '/hosts-locals/become-a-host')
@@ -136,7 +151,7 @@ try:
         host_card = tp.locator('.hl-person', has_text='Alfama')
         check('the approved host is public with a neighbourhood only', host_card.count() == 1 and 'Rua' not in host_card.inner_text())
         check('stay requests are disabled', host_card.locator('button[disabled]', has_text='Stay requests not open yet').count() == 1)
-        check('identity is honestly not checked', 'Identity not checked yet' in host_card.inner_text())
+        check('no identity badge is claimed', 'Identity checked' not in host_card.inner_text())
         # Traveler asks the local; local accepts; messages open.
         login(tp, 'hle2e_trav')
         tp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'] + '?role=locals')

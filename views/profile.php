@@ -71,6 +71,8 @@
           <span><a class="chip" href="<?= e(url('d/'.$homeDest['slug'].'/travelers')) ?>">Local in <?= e($homeDest['name']) ?></a></span>
           <?php if ((int) ($homeDest['open_to_meeting'] ?? 0) === 1): ?>
             <span><a class="chip" href="<?= e(url('hosts-locals/destinations/' . rawurlencode($homeDest['slug']))) ?>">Open to meeting travelers</a></span>
+          <?php elseif ($isMe): ?>
+            <span><a class="chip" href="<?= e(url('hosts-locals/me#local')) ?>">Be a local: meet travelers in <?= e($homeDest['name']) ?></a></span>
           <?php endif; ?>
         <?php endif; ?>
         <?php /* Hosts & Locals: the host role, when a moderator approved it and it is not paused, and

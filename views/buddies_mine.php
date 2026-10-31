@@ -141,6 +141,7 @@ $stateLabel = ['interested' => 'Waiting for an answer', 'accepted' => 'Accepted'
   <p class="hint">Saved city trips are on your <a href="<?= e(url('saved')) ?>">Saved</a> page.</p>
 
   <h2>Meeting travelers where you live</h2>
+  <p class="hint">Say what you would be happy to do, a coffee, a walk, food tips, on <a href="<?= e(url('hosts-locals/me#local')) ?>">your Hosts &amp; Locals page</a>.</p>
   <?php if (!empty($profile['open_to_meeting']) && !empty($profile['home_name'])): ?>
     <p>You are listed as a local in <a href="<?= e(url('buddies?dest=' . rawurlencode((string) $profile['home_slug']) . '&show=locals')) ?>"><?= e($profile['home_name']) ?></a> who is open to meeting travelers. Only the city shows.</p>
     <form method="post" action="<?= e(url('buddies/local')) ?>"><?= csrf_field() ?><input type="hidden" name="off" value="1"><input type="hidden" name="return" value="<?= e($back) ?>">

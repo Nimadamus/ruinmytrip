@@ -28,6 +28,8 @@ $id = fn($u) => (int) $user($u)['id'];
 foreach (['hllocal', 'hlhost', 'hltraveler', 'hlstranger', 'hladmin'] as $u) rmt_profile_ensure($id($u));
 
 ok(rmt_stays_enabled() === false, 'overnight stays are switched off');
+putenv('MAIL_POSTAL_ADDRESS');
+ok(rmt_welcome_email($id('hllocal')) === false, 'no welcome email while promotional mail is not compliant');
 
 // Locals.
 $v = rmt_local_validate(['destination_id' => $dest['id'], 'offers' => ['coffee', 'food', 'bogus'], 'availability' => 'Weekends']);
@@ -105,7 +107,7 @@ foreach (q_all('SELECT id, slug FROM destinations ORDER BY id DESC LIMIT 40') as
     if ($cc['locals'] + $cc['hosts'] + $cc['going'] === 0) { $empty = $cand; break; }
 }
 if ($empty) ok(str_contains(render('hosts_locals_city', ['slug' => $empty['slug']]), 'content="noindex, follow"'), 'an empty city is noindex');
-ok(str_contains(render('hosts_locals_page', ['page' => 'safety']), 'Verification does not guarantee personal safety'), 'the safety page renders');
+ok(str_contains(render('hosts_locals_page', ['page' => 'safety']), 'Nothing on this site guarantees personal safety'), 'the safety page renders');
 ok(str_contains(render('hosts_locals_page', ['page' => 'how-it-works']), 'One profile, three roles'), 'how it works renders');
 ok(str_contains(render('hosts_locals_destinations'), 'Hosts &amp; Locals by city'), 'the cities page renders');
 ok(str_contains(render('hosts_locals_become_host'), 'Create your profile to apply'), 'become a host asks a visitor to join');

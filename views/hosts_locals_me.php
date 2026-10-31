@@ -18,7 +18,6 @@ $verified = !empty($me['email_verified_at']);
     <?php if ($roles['local']): ?><span class="hl-badge hl-badge-role">Local in <?= e((string) $roles['home']['name']) ?></span><?php endif; ?>
     <?php if ($roles['host']): ?><span class="hl-badge hl-badge-role">Host</span><?php endif; ?>
     <?php if ($verified): ?><span class="hl-badge hl-badge-ok">Email confirmed</span><?php else: ?><span class="hl-badge hl-badge-no">Email not confirmed</span><?php endif; ?>
-    <span class="hl-badge hl-badge-no">Identity not checked yet</span>
   </div>
 
   <?php if (!$verified || !$adult): ?>
@@ -77,7 +76,7 @@ $verified = !empty($me['email_verified_at']);
   <section class="hl-form" id="host" aria-labelledby="hl-host">
     <h2 class="hl-h2" id="hl-host" style="font-size:1.3rem">Stay With a Local: hosting <span class="hl-soon">Stays not open yet</span></h2>
     <?php if (!$host): ?>
-      <p>Have a spare room or couch? Apply now and a moderator reviews it. Stay requests open once identity checks are live.</p>
+      <p>Have a spare room or couch? Apply now and a moderator reviews it. Stay requests are not open yet.</p>
       <a class="btn btn-primary" href="<?= e(url('hosts-locals/become-a-host')) ?>">Apply to host</a>
     <?php else: ?>
       <p><b>Status: <?= e(ucfirst((string) $host['status'])) ?></b> in <?= e((string) ($host['dest_name'] ?? '')) ?>.
@@ -92,6 +91,24 @@ $verified = !empty($me['email_verified_at']);
         <?php endif; ?>
       </p>
     <?php endif; ?>
+  </section>
+
+  <?php /* Growth: a member brings in the people they know who live somewhere travelers go. The
+           link is the existing invite link (?ref=, app/invites.php) pointed at this page. */
+    $hlInvite = url('hosts-locals?ref=' . rawurlencode((string) $me['username']));
+    $hlInviteText = 'Travelers come to your city and want to meet somebody who lives there. Be a local on RuinMyTrip, free: ' . $hlInvite;
+    $hlProfile = url('u/' . $me['username']); ?>
+  <section class="hl-form" id="invite" style="margin-top:20px" aria-labelledby="hl-inv">
+    <h2 class="hl-h2" id="hl-inv" style="font-size:1.3rem">Invite a local or a host</h2>
+    <p class="hl-hint">Know somebody who lives where travelers go? Send them your link. You will see when they join.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0">
+      <label class="sr-only" for="hl-invite-link">Your invite link</label>
+      <input id="hl-invite-link" type="text" readonly value="<?= e($hlInvite) ?>" style="flex:1;min-width:220px;min-height:44px" data-select-on-click>
+      <button type="button" class="btn btn-primary" data-copy="<?= e($hlInvite) ?>">Copy link</button>
+    </div>
+    <?php $shareUrl = $hlInvite; $shareText = $hlInviteText; include __DIR__ . '/_share.php'; ?>
+    <p class="hl-hint">Your public profile to share: <a href="<?= e($hlProfile) ?>"><?= e($hlProfile) ?></a>
+      <button type="button" class="btn btn-ghost btn-sm" data-copy="<?= e($hlProfile) ?>">Copy</button></p>
   </section>
 
   <p style="margin-top:20px"><a href="<?= e(url('u/' . $me['username'] . '/references')) ?>">Your references</a> &middot;

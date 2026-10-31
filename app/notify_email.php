@@ -62,3 +62,44 @@ function rmt_notify_email_direct(int $userId, string $subject, string $line, str
     [$ok] = rmt_mail_send((string) $u['email'], $subject, $html, $text, rmt_mail_unsub_headers($unsub));
     return (bool) $ok;
 }
+
+/**
+ * One welcome email, sent the first time a member confirms their address.
+ *
+ * It describes the account rather than answering anything the member did, so it is treated as
+ * promotional: it goes out only when rmt_mail_marketing_ready() is true, which needs the sender's
+ * postal address in the footer, and it carries the unsubscribe link and header. Until then it is
+ * simply not sent.
+ */
+function rmt_welcome_email(int $userId): bool {
+    if ($userId < 1 || !rmt_mail_marketing_ready()) return false;
+    $u = q_one("SELECT u.id, u.username, u.email, u.status, u.email_verified_at, COALESCE(p.digest_opt_out, 0) opt_out
+                  FROM users u LEFT JOIN profiles p ON p.user_id = u.id WHERE u.id = ?", [$userId]);
+    if (!$u || $u['status'] !== 'active' || empty($u['email_verified_at']) || (int) $u['opt_out'] === 1) return false;
+    if (!rmt_rate_ok('welcome_mail', (string) $userId, 1, 86400 * 3650)) return false;
+    $unsub = rmt_unsubscribe_url($userId);
+    $li = static fn(string $b, string $t, string $path): string =>
+        '<li style="margin:0 0 10px"><b>' . e($b) . '</b> ' . e($t) . ' <a href="' . e(url($path)) . '">Open</a></li>';
+    $html = rmt_mail_layout('Welcome to RuinMyTrip',
+        '<p>Your account is ready. One profile does all of this:</p><ul style="padding-left:18px">'
+        . $li('Honest reviews.', 'Rate a place, bad parts included.', 'review/new')
+        . $li('Travel buddies.', 'Post a city and dates and see who overlaps.', 'buddies')
+        . $li('Hosts & Locals.', 'Meet people who live where you are going, or be a local in your own city.', 'hosts-locals')
+        . $li('Your travel map.', 'Color in the countries you have been to.', 'map')
+        . '</ul><p style="color:#8895a3;font-size:12px;margin:24px 0 0">You are getting this once because you confirmed your email. '
+        . '<a href="' . e($unsub) . '" style="color:#8895a3">Turn off emails like this</a>.</p>',
+        'Finish your profile', url('welcome'));
+    $text = "Welcome to RuinMyTrip.
+
+Reviews: " . url('review/new') . "
+Travel buddies: " . url('buddies')
+          . "
+Hosts & Locals: " . url('hosts-locals') . "
+Travel map: " . url('map') . "
+
+Turn these off: " . $unsub;
+    [$ok] = rmt_mail_send((string) $u['email'], 'Welcome to RuinMyTrip', $html, $text, rmt_mail_unsub_headers($unsub));
+    if ($ok && function_exists('rmt_track')) rmt_track('welcome_email_sent');
+    return (bool) $ok;
+}
+

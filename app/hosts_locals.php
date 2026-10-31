@@ -17,7 +17,7 @@ declare(strict_types=1);
  *               location it ever holds. There is no address column, so none can leak.
  *
  * OVERNIGHT STAYS ARE OFF. rmt_stays_enabled() is false and does not read any setting, so a stay
- * cannot be requested or confirmed until identity verification, a stay-specific report flow and a
+ * cannot be requested or confirmed until a stay request flow, a stay-specific report path and a
  * reviewed safety process exist and somebody changes this code on purpose. Host profiles can be
  * written, reviewed and shown as "interested in hosting" in the meantime, which is how the first
  * hosts are found before the feature opens.
@@ -514,7 +514,7 @@ function hosts_locals_become_host_submit(array $a): void {
     $status = rmt_host_save((int) $me['id'], $v['data']);
     if (function_exists('rmt_track')) rmt_track('host_applied');
     flash($status === 'pending'
-        ? 'Thank you. Your host profile is with our moderators. Nobody sees it until it is approved, and stay requests open only once identity checks are live.'
+        ? 'Thank you. Your host profile is with our moderators. Nobody sees it until it is approved, and stay requests are not open yet.'
         : 'Saved.');
     redirect('/hosts-locals/me');
 }

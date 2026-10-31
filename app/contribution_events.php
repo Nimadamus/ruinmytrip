@@ -90,6 +90,8 @@ const RMT_CONTRIB_EVENTS = [
        nowhere to put one. 'message_started' already counts a conversation beginning. */
     'message_sent',
     'message_thread_viewed',
+    // Trip chat and Hosts & Locals, 2026-10-31. Counts only, never words.
+    'trip_chat_sent', 'host_applied', 'local_listed', 'welcome_role_host', 'welcome_role_local', 'welcome_email_sent',
     // Written by app/buddies.php since the buddy feature shipped and dropped here every time,
     // because it was never added to this list. Nothing about a buddy post was ever counted.
     'buddy_post_created',

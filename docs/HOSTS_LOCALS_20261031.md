@@ -39,7 +39,7 @@ Nothing was rebuilt. New pieces only where nothing existed.
 
 ## Before overnight stays can open (needs Nima's approval)
 
-1. Identity verification vendor. Options: Stripe Identity (about $1.50 per check), Persona, Veriff. This is a money decision.
+1. Identity verification: dropped by Nima on 2026-10-31 ("we dont need to identity check ppl"). The site says plainly that identities are not checked.
 2. Stay request flow with host accept or decline, a stay-specific report path and an incident runbook.
 3. Legal review: local short term letting and guest registration rules, consumer protection terms, privacy notice update for ID data, insurance position.
 4. Moderator coverage for safety reports.

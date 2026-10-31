@@ -88,7 +88,7 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
   <?php if ($flt['role'] === '' || $flt['role'] === 'hosts'): ?>
   <section aria-labelledby="hl-hosts" style="margin-bottom:34px">
     <h2 class="hl-h2" id="hl-hosts">Interested in hosting <span class="hl-soon">Stays not open yet</span></h2>
-    <p class="hint" id="hl-stays-note">Hosting will be free. Stay requests open only once identity checks and our safety process are live.</p>
+    <p class="hint" id="hl-stays-note">Hosting will be free. Stay requests are not open yet.</p>
     <?php if ($hosts): ?>
       <div class="hl-people"><?php foreach ($hosts as $hc) include __DIR__ . '/_hl_host.php'; ?></div>
     <?php else: ?>

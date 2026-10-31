@@ -21,8 +21,6 @@ $hcLangs = rmt_language_labels(rmt_languages_for($hc['languages'] ?? null));
   <div class="hl-badges">
     <span class="hl-badge hl-badge-role">Host</span>
     <?php if (!empty($hc['email_verified_at'])): ?><span class="hl-badge hl-badge-ok">Email confirmed</span><?php endif; ?>
-    <?php if (!empty($hc['id_verified_at'])): ?><span class="hl-badge hl-badge-ok">Identity checked</span>
-    <?php else: ?><span class="hl-badge hl-badge-no">Identity not checked yet</span><?php endif; ?>
     <?php foreach (array_slice($hcLangs, 0, 2) as $l): ?><span class="hl-badge"><?= e($l) ?></span><?php endforeach; ?>
   </div>
   <dl class="hl-facts">

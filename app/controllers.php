@@ -2870,6 +2870,17 @@ function welcome_submit(array $a): void {
         flash('Saved. Confirm your email and your dates and your first post go live straight away.');
         redirect('/verify-email');
     }
+    /* Ticked "host" or "meet travelers in my city": the page that sets that role up comes next. */
+    if (!empty($_POST['role_host'])) {
+        if (function_exists('rmt_track')) rmt_track('welcome_role_host');
+        flash('Profile saved. Tell us about the space you could offer.');
+        redirect('/hosts-locals/become-a-host');
+    }
+    if (!empty($_POST['role_local'])) {
+        if (function_exists('rmt_track')) rmt_track('welcome_role_local');
+        flash('Profile saved. Pick your city and what you would be happy to do.');
+        redirect('/hosts-locals/me#local');
+    }
     if ($wants && (trim((string) ($_POST['date_from'] ?? '')) !== '')) {
         flash('Profile started. Here is who else will be there.');
         redirect('/matches');
@@ -5463,10 +5474,12 @@ function verify_email_confirm(array $a): void {
              ['title'=>'Confirm your email | RuinMyTrip', 'robots'=>'noindex,nofollow', 'canonical'=>'']);
         return;
     }
+    $firstConfirm = empty(q_one('SELECT email_verified_at FROM users WHERE id = ?', [(int) $row['user_id']])['email_verified_at'] ?? null);
     db()->prepare('UPDATE users SET email_verified_at = COALESCE(email_verified_at, ?) WHERE id = ?')
         ->execute([date('Y-m-d H:i:s'), (int)$row['user_id']]);
     rmt_token_consume((int)$row['id']);
     rmt_track('join_confirmed');
+    if ($firstConfirm && function_exists('rmt_welcome_email')) rmt_welcome_email((int) $row['user_id']);
     session_regenerate_id(true);
     $_SESSION['uid'] = (int)$row['user_id'];
     /* Whatever they wrote before the email arrived goes live now, in the same request. Making
