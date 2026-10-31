@@ -48,10 +48,16 @@ function rmt_token_lookup(string $raw, string $kind): ?array {
     return $row;
 }
 
-/** Mark a token used. Single-use is enforced here, not by deletion (keeps an audit trail). */
-function rmt_token_consume(int $tokenId): void {
-    db()->prepare('UPDATE auth_tokens SET used_at = ? WHERE id = ?')
-        ->execute([date('Y-m-d H:i:s'), $tokenId]);
+/**
+ * Mark a token used. Single-use is enforced here, not by deletion (keeps an audit trail).
+ *
+ * Returns true only for the request that actually flipped it from unused to used, so two
+ * submissions racing on one link cannot both act on it.
+ */
+function rmt_token_consume(int $tokenId): bool {
+    $st = db()->prepare('UPDATE auth_tokens SET used_at = ? WHERE id = ? AND used_at IS NULL');
+    $st->execute([date('Y-m-d H:i:s'), $tokenId]);
+    return $st->rowCount() === 1;
 }
 
 /** Burn every outstanding token of a kind for a user (e.g. after a successful reset). */

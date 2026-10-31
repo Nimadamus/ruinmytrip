@@ -5556,9 +5556,13 @@ function reset_submit(array $a): void {
              ['title'=>'Choose a new password | RuinMyTrip']); return;
     }
     $uid = (int) $row['user_id'];
+    // Claim the link before acting on it: of two submissions racing on one link, only one wins.
+    if (!rmt_token_consume((int)$row['id'])) {
+        view('auth/reset', ['token'=>$raw, 'valid'=>false, 'errors'=>['That reset link is invalid or has expired.']],
+             ['title'=>'Choose a new password | RuinMyTrip']); return;
+    }
     db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
         ->execute([password_hash($pw, PASSWORD_BCRYPT), $uid]);
-    rmt_token_consume((int)$row['id']);
     rmt_token_burn_all($uid, 'reset');   // any other outstanding reset links die with this one
 
     // Completing a reset proves control of the mailbox, so it also confirms the address.
@@ -5566,6 +5570,9 @@ function reset_submit(array $a): void {
         ->execute([date('Y-m-d H:i:s'), $uid]);
 
     session_regenerate_id(true);
+    // A reset is how a member takes back an account somebody else got into: every other session
+    // signed in as them ends here, or the intruder stays signed in with the new password set.
+    rmt_sessions_end_for_user($uid, session_id());
     $_SESSION['uid'] = $uid;
     flash('Password updated. You are signed in.');
     redirect('/feed');

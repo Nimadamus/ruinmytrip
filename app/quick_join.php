@@ -176,6 +176,9 @@ function google_callback(array $a): void {
             } else {
                 q_run('UPDATE users SET google_sub = ?, email_verified_at = ?, password_hash = ? WHERE id = ?',
                       [$sub, $now, password_hash(bin2hex(random_bytes(24)), PASSWORD_BCRYPT), (int) $u['id']]);
+                // Whoever registered the address first may still be signed in. Losing the
+                // password is not enough on its own; their sessions end too.
+                rmt_sessions_end_for_user((int) $u['id'], session_id());
             }
         }
     }

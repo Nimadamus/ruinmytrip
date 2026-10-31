@@ -93,3 +93,23 @@ final class DbSessionHandler implements SessionHandlerInterface
         return 0;
     }
 }
+
+/**
+ * Sign a member out everywhere except the session in hand.
+ *
+ * Used when control of an account changes hands: a completed password reset, and a Google sign
+ * in that takes over an account whose address was never confirmed. Without it, whoever held a
+ * session before (the person who stole the old password, or who registered somebody else's
+ * address first and waited) stayed signed in as that member after the rightful owner took it back.
+ *
+ * Sessions are stored by DbSessionHandler with PHP's default serializer, where the signed-in id
+ * reads "uid|i:<n>;" at the start of the data or right after the previous value ends (";" or "}").
+ * Returns how many sessions were ended.
+ */
+function rmt_sessions_end_for_user(int $uid, string $keepId = ''): int {
+    if ($uid < 1) return 0;
+    $needle = 'uid|i:' . $uid . ';';
+    $st = db()->prepare('DELETE FROM sessions WHERE id <> ? AND (data LIKE ? OR data LIKE ? OR data LIKE ?)');
+    $st->execute([$keepId, $needle . '%', '%;' . $needle . '%', '%}' . $needle . '%']);
+    return $st->rowCount();
+}
