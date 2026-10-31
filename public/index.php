@@ -205,6 +205,11 @@ $routes = [
     ['GET',  '#^/unsubscribe$#',                'unsubscribe_action'],
     ['GET',  '#^/account/age$#',               'age_form'],
     ['POST', '#^/account/age$#',               'age_submit'],
+    // Deleting your own account (app/account_delete.php). The deletion itself is POST only.
+    ['GET',  '#^/account/delete$#',            'account_delete_form'],
+    ['POST', '#^/account/delete$#',            'account_delete_submit'],
+    ['POST', '#^/account/delete/email$#',      'account_delete_email'],
+    ['GET',  '#^/account/deleted$#',           'account_deleted_page'],
     ['GET',  '#^/settings$#',                  'settings_form'],
     ['POST', '#^/settings$#',                  'settings_save'],
     ['GET',  '#^/login$#',                     'login_form'],

@@ -6560,11 +6560,16 @@ function admin_mail_check(array $a): void {
 }
 
 /* ---------- legal / safety ---------- */
-function page_terms(array $a): void { view('legal/terms', [], ['title'=>'Terms of Service | RuinMyTrip']); }
-function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Privacy Policy | RuinMyTrip']); }
-function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'=>'Community Guidelines | RuinMyTrip']); }
-function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure | RuinMyTrip']); }
-function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety | RuinMyTrip']); }
+function page_terms(array $a): void { view('legal/terms', [], ['title'=>'Terms of Service | RuinMyTrip',
+    'description'=>'RuinMyTrip Terms of Service in plain language: who can join (16+, 18+ for meetups), owning what you post, acceptable use, meetups, honest reviews and liability.']); }
+function page_privacy(array $a): void { view('legal/privacy', [], ['title'=>'Privacy Policy | RuinMyTrip',
+    'description'=>'How RuinMyTrip handles your data: we never share your precise or live location, never sell personal data, and count site use with our own software.']); }
+function page_guidelines(array $a): void { view('legal/guidelines', [], ['title'=>'Community Guidelines | RuinMyTrip',
+    'description'=>'Community guidelines: honest reviews are welcome, critical ones included. What crosses the line, how reports work, and why nobody can pay for a rating.']); }
+function page_affiliate(array $a): void { view('legal/affiliate', [], ['title'=>'Affiliate Disclosure | RuinMyTrip',
+    'description'=>'Some RuinMyTrip links to hotels, tours and travel services may be affiliate links. How commissions work and why they never change our reviews or rankings.']); }
+function page_safety(array $a): void { view('legal/safety', [], ['title'=>'Meetup Safety | RuinMyTrip',
+    'description'=>'Meetup safety on RuinMyTrip: meet in public places, how location stays private, what to check before you go, and the report, block and age rules behind it.']); }
 function page_editorial(array $a): void {
     view('legal/editorial', [], [
         'title' => 'Editorial policy: how RuinMyTrip labels its own content',

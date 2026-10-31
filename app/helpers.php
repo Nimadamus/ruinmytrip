@@ -316,3 +316,6 @@ function show_verified(?array $row): bool {
 
 /** Our live QA members (a "+rmtqa" email alias, approved 2026-10-12) stay out of public lists of people. */
 function rmt_not_qa_sql(string $alias = 'u'): string { return "COALESCE($alias.email, '') NOT LIKE '%+rmtqa%'"; }
+function rmt_is_qa_user(int $uid): bool {
+    return str_contains((string) (q_one('SELECT email FROM users WHERE id = ?', [$uid])['email'] ?? ''), '+rmtqa');
+}

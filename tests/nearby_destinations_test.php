@@ -62,9 +62,9 @@ ok(str_contains($view, '$nearby') && str_contains($view, '$relatedPosts') && str
    does not change with them. */
 $ed = json_decode((string) file_get_contents(BASE_PATH . '/database/editorial/cities_20261030.json'), true);
 $live = [
-    'san-francisco-usa' => 'Hills, fog, and a real comeback: 24.2 million visitors forecast for 2026, a 14 percent hotel tax, 9 dollar cable cars, and Alcatraz tickets that sell out weeks ahead.',
+    'san-francisco-usa' => 'Hills, fog, and a real comeback: 24.4 million visitors forecast for 2026, a 14 percent hotel tax, 9 dollar cable cars, and Alcatraz tickets that sell out weeks ahead.',
     'manaus-brazil' => 'A gilded opera house in the Amazon, the Meeting of the Waters, and the real jungle a boat ride away, with yellow fever prep and app-only transport as the price of entry.',
-    'buzios-brazil' => 'Twenty-three beaches on a peninsula three hours from Rio, still the easy Brazilian beach town Brigitte Bardot put on the map, reachable by bus from about 19 US dollars.',
+    'buzios-brazil' => 'Twenty-three beaches on a peninsula three hours from Rio, still the easy Brazilian beach town Brigitte Bardot put on the map, reachable by direct coach from Rio\'s Novo Rio bus station.',
 ];
 foreach ($ed['destinations'] ?? [] as $d) {
     ok(($live[$d['slug']] ?? null) === $d['summary'], "{$d['slug']}: summary equals the live meta description");

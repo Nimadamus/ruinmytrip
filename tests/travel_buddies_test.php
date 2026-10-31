@@ -30,7 +30,7 @@ function rmt_is_blocked(int $a, int $b): bool {
 function dest_by_id(int $id): ?array { return q_one('SELECT * FROM destinations WHERE id=?', [$id]); }
 
 $pdo = db();
-$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, status TEXT NOT NULL DEFAULT 'active', role TEXT NOT NULL DEFAULT 'user',
+$pdo->exec("CREATE TABLE users (id INTEGER PRIMARY KEY, username TEXT, email TEXT, status TEXT NOT NULL DEFAULT 'active', role TEXT NOT NULL DEFAULT 'user',
               birthdate TEXT, email_verified_at TEXT, created_at TEXT)");
 $pdo->exec('CREATE TABLE profiles (user_id INTEGER PRIMARY KEY, display_name TEXT, avatar_url TEXT, languages TEXT, travel_style TEXT,
               open_to_meeting INT NOT NULL DEFAULT 0, home_destination_id INT, home_city TEXT, bio TEXT)');

@@ -1,10 +1,17 @@
 <?php /** @var array $gate @var ?array $incoming @var array $them @var array $items @var bool $blocked @var array $shared @var ?array $theirHome */
 $me = current_user();
 $shared = $shared ?? [];
+$gone = !empty($gone);
 ?>
 <div class="wrap thread-shell">
   <div class="thread-head">
     <a href="<?= e(url('messages')) ?>" class="thread-back" aria-label="All messages">&#8592;</a>
+    <?php if ($gone): ?>
+    <span class="thread-who">
+      <img class="avatar" src="<?= e(avatar_url(null)) ?>" alt="">
+      <span><b>Deleted member</b> <span class="hint">This member deleted their account</span></span>
+    </span>
+    <?php else: ?>
     <a class="thread-who" href="<?= e(url('u/'.$them['username'])) ?>">
       <img class="avatar" src="<?= e(avatar_url($them['avatar_url'])) ?>" alt="">
       <span>
@@ -29,6 +36,7 @@ $shared = $shared ?? [];
         </form>
       </div>
     </details>
+    <?php endif; ?>
   </div>
 
   <?php /* The reason the two of you are in the same place at the same time, said once at the top.
@@ -84,7 +92,10 @@ $shared = $shared ?? [];
            no next step is how a product feels broken rather than careful. */ ?>
   <?php if (!$gate['ok'] && $gate['reason'] !== 'blocked'): ?>
     <div class="msg-gate">
-      <?php if ($gate['reason'] === 'requested'): ?>
+      <?php if ($gate['reason'] === 'gone'): ?>
+        <p style="margin:0"><b>This member deleted their account.</b>
+          <span class="hint">You can still read this conversation, but you cannot reply.</span></p>
+      <?php elseif ($gate['reason'] === 'requested'): ?>
         <p style="margin:0 0 4px"><b>Waiting on @<?= e($them['username']) ?>.</b></p>
         <p class="hint" style="margin:0">You said you would like to meet. If they say yes, you can
           message each other here.</p>

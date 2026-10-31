@@ -341,13 +341,13 @@ foreach (rmt_sitemap_parts() as $pt) {
    and the entrypoint logged and continued. Seven groups of real URLs disappeared without an error
    anybody saw. A group that fails now costs that group only. */
 
-$pdo->exec("DROP TABLE guides");                 // the editorial group's query will now throw
+$pdo->exec("DROP TABLE guides");                 // the guides group's query will now throw
 $counts = rmt_sitemap_generate();
-check('the broken group is reported as failed', $counts['editorial'], -1);
+check('the broken group is reported as failed', $counts['guides'], -1);
 check('but the others still generated', $counts['places'] >= 0 && $counts['destinations'] >= 0, true);
 $groups = array_column(rmt_sitemap_parts(), 'group_key');
 check('and their files exist', in_array('destinations', $groups, true), true);
-check('the failed group has no file rather than an empty one', in_array('editorial', $groups, true), false);
+check('the failed group has no file rather than an empty one', in_array('guides', $groups, true), false);
 
 echo "\nBoth 404 paths agree:\n";
 /* There are two, and only one was ever checked. not_found() is what a controller calls when the

@@ -9,11 +9,11 @@ $rmtRow = static function (array $r): void { ?>
   <li class="card" style="margin-bottom:8px">
     <a href="<?= e(url('messages/'.$r['username'])) ?>" style="color:inherit;text-decoration:none">
       <div class="card-body" style="padding:12px 16px;display:flex;align-items:center;gap:10px">
-        <img class="avatar" src="<?= e(avatar_url($r['avatar_url'])) ?>" alt="<?= e($r['username']) ?>">
+        <img class="avatar" src="<?= e(avatar_url($r['avatar_url'])) ?>" alt="">
         <div style="flex:1;min-width:0">
           <div class="inbox-who">
             <b><?= e($r['display_name'] ?: $r['username']) ?></b>
-            <span class="muted">@<?= e($r['username']) ?></span>
+            <?php if (($r['other_status'] ?? 'active') !== 'deleted'): ?><span class="muted">@<?= e($r['username']) ?></span><?php endif; ?>
             <?php if ((int) $r['unread'] > 0): ?><span class="chip inbox-new"><?= (int) $r['unread'] ?> new</span><?php endif; ?>
           </div>
           <p class="muted" style="margin:.2rem 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><?= e($r['last_body'] ?? '') ?></p>
