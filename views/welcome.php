@@ -138,7 +138,7 @@ foreach ($popular as $pp) $rmt_popular_ids[(int) $pp['id']] = true;
       <section class="onboard-step onboard-inner">
         <h2>Say something</h2>
         <p class="hint">A question counts. So does a warning about the last place that ruined your trip.</p>
-        <textarea name="hello" rows="3" maxlength="<?= RMT_POST_MAX ?>"
+        <textarea name="hello" aria-label="Say hello" rows="3" maxlength="<?= RMT_POST_MAX ?>"
                   placeholder="Where are you going next, or what should the rest of us avoid?"></textarea>
       </section>
 

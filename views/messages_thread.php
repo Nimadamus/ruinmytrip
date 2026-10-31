@@ -120,7 +120,7 @@ $shared = $shared ?? [];
     <form class="msg-composer" method="post" action="<?= e(url('messages/'.$them['username'].'/send')) ?>">
       <?= csrf_field() ?>
       <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('message_'.(int)$them['id'])) ?>">
-      <textarea name="body" rows="1" placeholder="Message @<?= e($them['username']) ?>"
+      <textarea name="body" rows="1" aria-label="Message" placeholder="Message @<?= e($them['username']) ?>"
                 maxlength="<?= RMT_MESSAGE_BODY_MAX ?>" required></textarea>
       <button class="btn btn-primary">Send</button>
     </form>

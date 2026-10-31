@@ -239,7 +239,7 @@ $threads = $threads ?? [];
       <input type="hidden" name="return" value="/feed">
       <div class="composer-row">
         <img class="avatar" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
-        <textarea name="body" rows="2" maxlength="1000"
+        <textarea name="body" rows="2" maxlength="1000" aria-label="Write a post"
                   <?php /* Not the same question twice. Somebody with no trip has the card above
                            asking where they are going; asking it again ten pixels below reads as
                            a template repeating itself rather than as an invitation. */ ?>
@@ -416,7 +416,7 @@ $threads = $threads ?? [];
               <input type="hidden" name="_submit" value="<?= e(rmt_submit_token('comment_'.$rmt_t.'_'.(int) $it['id'])) ?>">
               <input type="hidden" name="return" value="<?= e($scope === 'everyone' ? '/feed?scope=everyone' : '/feed') ?>">
               <img class="avatar" style="width:24px;height:24px" src="<?= e(avatar_url(rmt_profile_avatar((int) $me['id']))) ?>" alt="">
-              <input type="text" name="body" maxlength="2000" placeholder="Reply to @<?= e($it['author']['username'] ?? '') ?>">
+              <input type="text" name="body" maxlength="2000" aria-label="Reply" placeholder="Reply to @<?= e($it['author']['username'] ?? '') ?>">
               <button class="btn btn-ghost btn-sm">Reply</button>
             </form>
           <?php endif; ?>

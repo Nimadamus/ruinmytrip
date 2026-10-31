@@ -67,7 +67,7 @@
   <?php if ($me && (int) $p['user_id'] !== (int) $me['id']): ?>
     <form method="post" action="<?= e(url('post/'.(int) $p['id'].'/repost')) ?>" style="margin:0 0 14px">
       <?= csrf_field() ?>
-      <input type="text" name="body" maxlength="<?= RMT_POST_MAX ?>" placeholder="Add a line (optional)"
+      <input type="text" name="body" maxlength="<?= RMT_POST_MAX ?>" aria-label="Add a line" placeholder="Add a line (optional)"
              style="max-width:420px;display:inline-block;vertical-align:middle">
       <button class="btn btn-ghost btn-sm">Repost<?= $repostCount ? ' · '.$repostCount : '' ?></button>
     </form>
