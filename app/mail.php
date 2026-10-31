@@ -134,7 +134,8 @@ function rmt_mail_interpret(int $code, string $body, string $via): array {
  * Templates. Plain, minimal, no tracking pixels, no external assets.
  * ---------------------------------------------------------------- */
 
-function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = '', string $ctaUrl = ''): string {
+function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = '', string $ctaUrl = '',
+                         ?string $footNote = null): string {
     $cta = $ctaUrl === '' ? '' :
         '<p style="margin:28px 0"><a href="' . e($ctaUrl) . '" style="background:#0f1b2d;color:#fff;'
         . 'text-decoration:none;padding:12px 22px;border-radius:8px;display:inline-block;'
@@ -148,8 +149,8 @@ function rmt_mail_layout(string $heading, string $bodyHtml, string $ctaText = ''
         . '<h1 style="font-size:22px;margin:0 0 12px">' . e($heading) . '</h1>'
         . $bodyHtml . $cta
         . '<hr style="border:0;border-top:1px solid #e6ebf0;margin:32px 0 16px">'
-        . '<p style="color:#8895a3;font-size:12px;margin:0">If you did not expect this email you can '
-        . 'safely ignore it. Nothing will change on your account.</p>'
+        . '<p style="color:#8895a3;font-size:12px;margin:0">' . e($footNote ?? 'If you did not expect this email you can '
+        . 'safely ignore it. Nothing will change on your account.') . '</p>'
         . (rmt_mail_postal_address() !== '' ? '<p style="color:#8895a3;font-size:12px;margin:8px 0 0">RuinMyTrip, '
             . e(rmt_mail_postal_address()) . '</p>' : '')
         . '</div>';

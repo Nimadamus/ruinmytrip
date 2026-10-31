@@ -124,6 +124,17 @@
     </div>
   </form>
   <p class="muted" style="margin-top:22px;font-size:.9rem">Done for now? <a href="<?= e(url('logout')) ?>">Sign out</a></p>
-  <p class="muted" style="margin-top:8px;font-size:.9rem">Want your account deleted?
-    <a href="<?= e(url('contact?kind=privacy_request')) ?>">Send us a privacy request</a> from this account and we will remove it.</p>
+  <section class="account-delete-section" id="delete-account" style="margin-top:28px;padding-top:18px;border-top:1px solid var(--line)">
+    <h2 style="font-size:1.1rem;margin:0 0 6px">Delete account</h2>
+    <?php if ($why = rmt_account_delete_blocked_reason($me)): ?>
+      <p class="muted" style="font-size:.9rem;margin:0"><?= e($why) ?></p>
+    <?php else: ?>
+      <p class="muted" style="font-size:.9rem;margin:0 0 10px">Removes your profile, your content and your photos for good,
+        and signs you out everywhere. The next page explains exactly what is deleted and what is kept.</p>
+      <a class="btn btn-ghost btn-sm" href="<?= e(url('account/delete')) ?>">Delete my account</a>
+      <p class="muted" style="font-size:.85rem;margin:10px 0 0">You can also
+        <a href="<?= e(url('contact?kind=privacy_request')) ?>">send us a privacy request</a> for a copy of your data,
+        a correction, or a deletion handled by us.</p>
+    <?php endif; ?>
+  </section>
 </div></div>
