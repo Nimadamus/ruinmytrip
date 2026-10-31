@@ -96,7 +96,42 @@ UTM pattern: `utm_source=facebook&utm_campaign=launch&utm_content=<group-slug>`
 > Since the group welcomes helpful things: I built a free page per cruise line where you post your ship and date and see who else is sailing. Messaging only opens when both people accept. It has very few people on it so far, so if it is useful, adding your sailing there helps the next person find you: https://ruinmytrip.com/cruise-buddies/[line]?utm_source=facebook&utm_campaign=launch&utm_content=fb-find-cruise-travel-buddy
 
 **Admin request for #8, #9, #10** (sent by the owner as a private message to one admin per group; write each in his own words, do not paste the same text three times)
-> Hi, I am a member of [group]. I built a free, non commercial travel site where people post their [cruise line / road trip] dates and find others on the same dates, with messaging only after both accept. Nothing is sold. Would you be OK with me posting about it once, with a link and a clear note that I built it? If not, no problem at all, I will not post it.
+> Hi, I am a member of [group]. I built a free travel site (no fees for members; some hotel and tour links may be affiliate links, disclosed on the site) where people post their [cruise line / road trip] dates and find others on the same dates, with messaging only after both accept. Nothing is sold. Would you be OK with me posting about it once, with a link and a clear note that I built it? If not, no problem at all, I will not post it.
+
+**Trip free alternates** (use these when the owner has no real upcoming trip; never fill the [brackets] with an invented one)
+
+**#1 alternate (TRAVEL COMPANION WANTED)**: skip. The group requires a real destination and dates; without a trip there is nothing honest to post.
+
+**#3 alternate (Solo Travelers Looking for Travel Partner)**
+> For anyone who has found a travel partner online: did you agree on a budget and daily pace before meeting, or work it out on the road? I have seen trips go wrong over exactly that.
+>
+> Disclosure: I made a free page where travelers list a city and dates and see who overlaps, and messaging only opens once both people accept. It is new and quiet, so I am mainly asking what people actually check first: https://ruinmytrip.com/buddies?utm_source=facebook&utm_campaign=launch&utm_content=fb-solo-travelers-partner
+
+**#5 alternate (Travelling Europe)**
+> What is the one thing you wish someone had told you before your first trip to a European city you love? A closing day, a ticket you should have booked ahead, a neighborhood to skip?
+>
+> I ask because I built a free site where travelers write what nearly ruined a trip, so the next person can avoid it. You can write one without an account. It is new, most places have no member reviews yet, and I would be glad to read answers here even if nobody clicks: https://ruinmytrip.com/ruined?utm_source=facebook&utm_campaign=launch&utm_content=fb-travelling-europe
+
+**#6 alternate (Backpacking South-East Asia)**
+> For people who have done the classic loop: which stop did you leave early, and which one did you wish you had more days for?
+>
+> Partly asking for a free review site I built that asks what went wrong rather than only for stars. It also has a map where you color in the countries you have been to and share it as a link, no account needed. It is new, so honest answers here are worth more to me than visits: https://ruinmytrip.com/map?utm_source=facebook&utm_campaign=launch&utm_content=fb-backpacking-sea
+
+**#7 alternate (Find a Cruise and Travel Buddy)**
+> Hello all, new here. A question for people who found cabin mates or shore day company through a group like this: what did you agree on before sailing?
+>
+> Since the group welcomes helpful things: I built a free page per cruise line where you post your ship and date and see who else is sailing. Messaging only opens when both people accept. Very few sailings have anyone on them yet, so adding yours helps the next person find you: https://ruinmytrip.com/buddies/cruise?utm_source=facebook&utm_campaign=launch&utm_content=fb-find-cruise-travel-buddy
+
+**Posts for the admin approval groups** (use only after that group's admin says yes in writing; each is written for its own group)
+
+**#8 USA Travel & Road Trips** (after an admin yes)
+> Thanks to the admins for letting me share this once. I built a free page for road trips: you post your route or start city and dates, and see who else is driving the same way, for company or to share fuel. Nobody can message you until you accept them, and posting a trip is 18 and over. It is new, so there are very few trips on it yet. If you try it, I would like to hear what is missing: https://ruinmytrip.com/buddies/road-trip?utm_source=facebook&utm_campaign=launch&utm_content=fb-usa-road-trips
+
+**#9 Royal Caribbean Cruise Friends & Family** (after an admin yes)
+> With the admins' OK: I made a free page for Royal Caribbean sailings where you add your ship and sail date and see who else on the site is on the same one, for a sail away drink or a shared port day. Messaging opens only after both people accept. I built it, it is new, and most sailings have nobody on them yet, so this is as much a request for feedback as anything: https://ruinmytrip.com/cruise-buddies/royal-caribbean?utm_source=facebook&utm_campaign=launch&utm_content=fb-rci-friends-family
+
+**#10 Cruise Friends & Family** (after an admin yes)
+> Posting with admin permission. For anyone who likes meeting people before boarding: I built a free page per cruise line where you post your ship and date and see who else is sailing. You choose who can message you. It is early days with only a handful of people, and I would welcome blunt feedback from regular cruisers here: https://ruinmytrip.com/buddies/cruise?utm_source=facebook&utm_campaign=launch&utm_content=fb-cruise-friends-family
 
 Post only after a written yes. Then use a fresh draft written for that group (link for #8: `https://ruinmytrip.com/buddies/road-trip?utm_source=facebook&utm_campaign=launch&utm_content=fb-usa-road-trips`; #9: `https://ruinmytrip.com/cruise-buddies/royal-caribbean?utm_source=facebook&utm_campaign=launch&utm_content=fb-rci-friends-family`; #10: `https://ruinmytrip.com/buddies/cruise?utm_source=facebook&utm_campaign=launch&utm_content=fb-cruise-friends-family`).
 
@@ -253,3 +288,22 @@ If a moderator removes a post: note the reason in `docs/ACQUISITION_EXPERIMENTS.
 | https://ruinmytrip.com/buddies/cruise?utm_source=facebook&utm_campaign=launch&utm_content=fb-cruise-friends-family | | | | admin yes needed |
 
 Tracking check: `facebook`, `indiehackers`, `reddit` and `directory` are all in `RMT_ACQ_SOURCES` (`app/acquisition.php`, checked 10/30), so each row is credited; `utm_content` tells the groups and directories apart.
+
+---
+
+## 6. Launch messaging (use across every channel)
+
+**One line:** RuinMyTrip is where travelers say what actually went wrong, so the next person does not repeat it, and where you can find people going to the same place on the same dates.
+
+**Three pillars, in this order**
+1. *Honest reviews.* Start from what nearly ruined the trip: the tourist trap, the surprise fee, the queue that was not worth it. Critical reviews are welcome and nobody can pay for a rating. Our own editorial ratings are always labelled "Official Review" and never mixed into traveler scores.
+2. *Travel companions.* Post a city or a sailing with your dates and see who overlaps. Nobody can message you until you accept, posting a trip is 18 and over, and meetups follow the safety page.
+3. *Share where you have been.* A free country map you can share as a link, and short trip notes, no account needed to start.
+
+**Proof points we can use (true on 2026-10-30, re-check before each post):** 85 city pages and about 1,378 place pages; review form and map work without an account; a page per cruise line for 10 lines.
+
+**Never say:** member counts, review counts, "thousands of travelers", "join the community everyone is talking about", testimonials, quotes from members, or any trip or match we did not see on the site that day. Do not describe a personal trip that did not happen. Say plainly that the site is new.
+
+**Calls to action (pick one per post):** write a two line review of a place that disappointed you; color in your map; post your dates and see who overlaps.
+
+**Weekly rhythm after the two week calendar:** one new community or directory per weekday at most, one Facebook post per group per month at most, every link tagged, drop channels that send zero humans in two weeks (KPI.md Tagged links table).
