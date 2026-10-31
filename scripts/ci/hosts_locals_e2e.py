@@ -184,6 +184,14 @@ try:
         no_hscroll(tp, '[phone] profile')
         tp.goto(BASE + '/u/hle2e_trav/references')
         check('nobody can reference themselves', tp.locator('form.hl-form').count() == 0)
+        # Stay reminder lines render in notifications.
+        php("$t = q_one(\"SELECT id FROM users WHERE username='hle2e_trav'\")['id']; $h = q_one(\"SELECT id FROM users WHERE username='hle2e_host'\")['id'];"
+            " foreach (['stay_soon', 'stay_reference'] as $k) q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)', [$t, $k, $h, 'stay', 999999, date('Y-m-d H:i:s')]);")
+        tp.goto(BASE + '/notifications')
+        body = tp.inner_text('main')
+        check('the stay reminder shows', 'Your stay with @hle2e_host starts soon' in body)
+        check('the reference prompt shows', 'How did your stay with @hle2e_host go?' in body)
+        php("q_run(\"DELETE FROM notifications WHERE target_id=999999 AND type IN ('stay_soon','stay_reference')\");")
         # A stay: the traveler asks the approved host, the host accepts, the traveler confirms.
         tp.goto(BASE + '/hosts-locals/destinations/' + dest['slug'] + '?role=hosts')
         tp.locator('.hl-person', has_text='Alfama').locator('a', has_text='Ask to stay').click(); tp.wait_for_load_state()

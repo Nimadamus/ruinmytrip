@@ -301,6 +301,11 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
             'stay_cancelled' => $who . ' cancelled a stay.',
           ][$n['type']]; ?>
           <a href="<?= e(url('stay/' . (int) $n['target_id'])) ?>"><b><?= e($line) ?></b></a>
+        <?php elseif ($n['type'] === 'stay_soon'):
+          $who = $n['actor'] ? '@' . $n['actor'] : 'the other member'; ?>
+          <a href="<?= e(url('stay/' . (int) $n['target_id'])) ?>"><b>Your stay with <?= e($who) ?> starts soon.</b> Check the details and the safety guide.</a>
+        <?php elseif ($n['type'] === 'stay_reference' && $n['actor']): ?>
+          <a href="<?= e(url('u/' . $n['actor'] . '/references')) ?>"><b>How did your stay with @<?= e((string) $n['actor']) ?> go?</b> Write them a reference.</a>
         <?php elseif ($n['type'] === 'reference'):
           $who = $n['actor'] ? '@' . $n['actor'] : 'A member'; ?>
           <a href="<?= e(url('u/' . $me['username'] . '/references')) ?>"><b><?= e($who) ?></b> wrote you a reference.</a>

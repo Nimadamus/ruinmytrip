@@ -72,6 +72,17 @@ ok($bg && $bg['kind'] === 'stayed' && $bh && $bh['kind'] === 'hosted', 'after th
 $ref = rmt_ref_save($user('stguest'), $user('sthost'), rmt_ref_validate(['rating_overall' => 5, 'rating_hospitality' => 5, 'body' => 'A spotless room and a host who knew every bakery nearby.'])['data']);
 ok($ref['ok'] && (int) q_one("SELECT rating_hospitality h FROM member_references WHERE from_user_id=?", [$id('stguest')])['h'] === 5, 'the guest rates hospitality');
 
+// Reminders: two days before, and a reference prompt after, once each, skipped for who already wrote one.
+$sid4 = (int) rmt_stay_create($user('stother'), $host(), rmt_stay_validate($good, $host())['data'])['id'];
+q_run("UPDATE stay_requests SET state='confirmed', date_from=?, date_to=? WHERE id=?", [date('Y-m-d', strtotime('+2 days')), date('Y-m-d', strtotime('+4 days')), $sid4]);
+$nrem = fn(string $t, int $sid) => (int) q_one("SELECT COUNT(*) n FROM notifications WHERE type=? AND target_id=?", [$t, $sid])['n'];
+rmt_stay_reminders_sweep(); rmt_stay_reminders_sweep();
+ok($nrem('stay_soon', $sid4) === 2, 'both people get one reminder two days before, even after two sweeps');
+ok($nrem('stay_soon', $sid) === 0, 'a stay already over gets no starting reminder');
+ok($nrem('stay_reference', $sid) === 1 && (bool) q_one("SELECT 1 x FROM notifications WHERE type='stay_reference' AND target_id=? AND user_id=?", [$sid, $id('sthost')]),
+   'after the last night only the one who has not written a reference is asked');
+q_run("UPDATE stay_requests SET state='cancelled' WHERE id=?", [$sid4]);
+
 // A second request, declined and cancelled paths.
 $r2 = rmt_stay_create($user('stother'), $host(), rmt_stay_validate($good, $host())['data']);
 ok($r2['ok'] && rmt_stay_move(rmt_stay((int) $r2['id']), $user('sthost'), 'declined')['ok'], 'the host declines');

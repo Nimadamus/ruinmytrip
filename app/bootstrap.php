@@ -130,4 +130,6 @@ if (PHP_SAPI !== 'cli') {
     // Every notification written during a POST is pushed to the recipient's devices after the
     // response is sent. See rmt_push_flush(); without VAPID keys this is a no-op.
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') register_shutdown_function('rmt_push_flush_at_shutdown');
+    // Stay reminders are written by whichever request comes first after half an hour; see rmt_stay_reminders_maybe().
+    register_shutdown_function('rmt_stay_reminders_maybe');
 }

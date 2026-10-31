@@ -252,3 +252,46 @@ function stay_action(array $a): void {
     ][$to] : (string) $r['error']);
     redirect('/stay/' . (int) $s['id']);
 }
+
+/**
+ * Reminders for confirmed stays, written once each: both people two days before the first night, and
+ * both a prompt to write a reference after the last night (only while they have not written one).
+ * Idempotent: an existing notification of the same type for the same stay and person means skip.
+ */
+function rmt_stay_reminders_sweep(?string $today = null): int {
+    $today ??= date('Y-m-d');
+    $sent = 0;
+    $once = static function (int $to, string $type, int $actor, int $stayId): bool {
+        return !q_one('SELECT 1 x FROM notifications WHERE user_id = ? AND type = ? AND target_type = ? AND target_id = ?', [$to, $type, 'stay', $stayId]);
+    };
+    $soon = q_all("SELECT id, guest_id, host_id, date_from FROM stay_requests WHERE state = 'confirmed' AND date_from > ? AND date_from <= ?",
+                  [$today, date('Y-m-d', strtotime($today . ' +2 days'))]);
+    foreach ($soon as $s) foreach ([[(int) $s['guest_id'], (int) $s['host_id']], [(int) $s['host_id'], (int) $s['guest_id']]] as [$to, $other]) {
+        if (!$once($to, 'stay_soon', $other, (int) $s['id'])) continue;
+        rmt_stay_notify($to, 'stay_soon', $other, (int) $s['id'], 'Your stay starts soon',
+                        'Your stay starts on ' . date('j M', strtotime((string) $s['date_from'])) . '. Check arrival details in your messages, and read the safety guide.');
+        $sent++;
+    }
+    $ended = q_all("SELECT id, guest_id, host_id FROM stay_requests WHERE state = 'confirmed' AND date_to < ? AND date_to >= ?",
+                   [$today, date('Y-m-d', strtotime($today . ' -14 days'))]);
+    foreach ($ended as $s) foreach ([[(int) $s['guest_id'], (int) $s['host_id']], [(int) $s['host_id'], (int) $s['guest_id']]] as [$to, $other]) {
+        if (!$once($to, 'stay_reference', $other, (int) $s['id'])) continue;
+        if (q_one('SELECT 1 x FROM member_references WHERE from_user_id = ? AND to_user_id = ?', [$to, $other])) continue;
+        $u = q_one('SELECT username FROM users WHERE id = ?', [$other]);
+        if (!$u) continue;
+        q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+              [$to, 'stay_reference', $other, 'stay', (int) $s['id'], date('Y-m-d H:i:s')]);
+        rmt_notify_email_direct($to, 'How did the stay go?', 'Write a short reference for @' . $u['username'] . ' so other members know what to expect.',
+                                '/u/' . $u['username'] . '/references', 'your stay ended');
+        $sent++;
+    }
+    return $sent;
+}
+
+/** At most every half hour, after any request has been answered. */
+function rmt_stay_reminders_maybe(): void {
+    $flag = sys_get_temp_dir() . '/rmt_stay_remind';
+    if (is_file($flag) && time() - (int) filemtime($flag) < 1800) return;
+    @touch($flag);
+    try { rmt_stay_reminders_sweep(); } catch (Throwable $e) { /* a reminder never breaks a page */ }
+}
