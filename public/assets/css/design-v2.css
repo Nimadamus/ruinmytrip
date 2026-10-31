@@ -524,3 +524,8 @@ body:has(.v2-hero-split) .v2-stars{gap:0;margin-left:-8px}
   .meet-nav a{display:inline-flex;align-items:center;min-height:44px}
   .site-footer:not(.site-footer-slim) a:not(.footer-base a){min-height:44px}
 }
+/* Phone: links that sit outside running text (card meta, card titles, callouts, people rows) get at
+   least the 24px WCAG 2.2 target, without blowing up card layouts to 44px. */
+@media (max-width:680px){
+  .hint a,.person-who a,.callout a,h3>a,.meta-row a,.card-body b>a,.leaflet-control-attribution a{display:inline-block;padding-top:4px;padding-bottom:4px;min-height:24px;min-width:24px}
+}
