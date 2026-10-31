@@ -506,3 +506,18 @@ body:has(.v2-hero-split) .v2-stars{gap:0;margin-left:-8px}
   .v2-hero-split .v2-pillar-txt{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
   .v2-band-links{gap:0 14px}
 }
+
+/* Phone tap targets (site audit 2026-10-30). A crawl at 390px found buttons, chips, selects and
+   small "see all" style links at 16 to 42px tall across most pages. Everything a thumb is meant to
+   press is at least 44px here; links inside running text are left alone. */
+@media (max-width:680px){
+  a.chip,button.chip,.v2-chip,.v2-chip-sm,.v2-place-rate,
+  main select,main input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]){min-height:44px}
+  .btn{padding-top:12px;padding-bottom:12px}
+  .btn-sm{padding-top:12px;padding-bottom:12px;min-height:44px}
+  .v2-link,.section-more,.pv2-crumbs a,.bcard-name,.cc-soon a.hint{display:inline-flex;align-items:center;min-height:44px}
+  .v2-dest-people{bottom:0;padding:12px 0 10px}
+  .leaflet-container .leaflet-bar.leaflet-control-zoom a{width:44px;height:44px;line-height:44px}
+  .meet-nav a{display:inline-flex;align-items:center;min-height:44px}
+  .site-footer:not(.site-footer-slim) a:not(.footer-base a){min-height:44px}
+}
