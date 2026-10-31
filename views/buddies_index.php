@@ -72,6 +72,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
 </div></section>
 
 <div class="wrap buddy-body">
+  <?php $purposeHere = 'buddies'; include __DIR__ . '/_site_purpose.php'; ?>
   <nav class="buddy-types" aria-label="Kind of trip">
     <a class="chip<?= $bf['type'] === '' ? ' active' : '' ?>" href="<?= e(url('buddies')) ?>">All trips</a>
     <?php foreach (RMT_BUDDY_TYPES as $k => $v): ?>

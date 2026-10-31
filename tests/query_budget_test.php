@@ -56,8 +56,10 @@ if (!$dest || !$user) { echo "FAIL: the development database has no destinations
 $cases = [];
 
 /* 61 from 2026-10-11: Lisbon left the destination title test and now runs the one near-window
-   lookup (rmt_acq_window_near) every control city already runs. */
-$cases[] = ['the city page', 61, static function () use ($dest) {
+   lookup (rmt_acq_window_near) every control city already runs.
+   62 from 2026-10-30: one read of city coordinates for "Near {city}" (rmt_nearby_destinations),
+   so every city page links to other cities even before travelers post dates for two of them. */
+$cases[] = ['the city page', 62, static function () use ($dest) {
     destination(['slug' => (string) $dest['slug']]);
 }];
 

@@ -6,6 +6,7 @@
       <p class="muted"><?= $mine
         ? 'Everything you have written, including drafts only you can see.'
         : 'Honest reviews of destinations, stays, food, attractions and experiences.' ?></p>
+      <?php if (!$mine) { $purposeHere = 'reviews'; include __DIR__ . '/_site_purpose.php'; } ?>
     </div>
     <a class="btn btn-accent btn-sm" href="<?= e(url('review/new')) ?>">Write a Review</a>
   </div>

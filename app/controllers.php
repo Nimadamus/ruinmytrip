@@ -404,6 +404,9 @@ function destination(array $a): void {
     /* Where the people who come here also go. A real query over real trips, counted in travelers,
        which turns every city page from a leaf into a doorway. */
     $related = rmt_related_destinations($id, 6);
+    /* Cities near this one on the map, so every city links onward even before travelers have
+       posted dates for two cities (app/discovery.php). */
+    $nearby = rmt_nearby_destinations($d, 6, array_map('intval', array_column($related, 'id')));
     /* The city on a map: places this site holds, and plans the viewer is allowed to see, from the
        same visibility-filtered list the page already built. Nothing on it is a person's position. */
     $cityMap = [];
@@ -434,7 +437,7 @@ function destination(array $a): void {
     /* The strongest indexable places, linked straight from the city (app/design_v2.php). Off unless
        RMT_CITY_TOP_PLACES=1 or the city redesign is on: it changes internal linking on 85 pages. */
     $cityTop = rmt_city_top_places_enabled() ? rmt_city_top_places($id, 12) : [];
-    view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
+    view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','nearby','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
         'description' => rmt_destination_page_description($d),
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,

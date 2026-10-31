@@ -2,6 +2,7 @@
 <div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Explore</p>
   <h1>Explore destinations</h1>
+  <?php $purposeHere = 'explore'; include __DIR__ . '/_site_purpose.php'; ?>
   <?php /* The other way into a community, and the one with a reason attached: somebody who does not
            know which city they want often does know which week they are free. */ ?>
   <p class="hint" style="margin:0 0 12px">Travelling for something in particular?

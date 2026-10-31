@@ -327,6 +327,36 @@ function rmt_related_destinations(int $destId, int $limit = 6): array {
 }
 
 /**
+ * Other cities on the map near this one: the same country first, then the closest by distance.
+ *
+ * Pure geography from coordinates the city rows already hold, so it says nothing it cannot back
+ * up: "Porto is 274 km from Lisbon" is a measurement, not a recommendation. It exists because
+ * rmt_related_destinations() is empty until travelers post dates for two cities, which left most
+ * city pages linking to no other city at all. Cities already in $exclude (the traveler based list)
+ * are skipped so the two sections never repeat each other.
+ *
+ * @param list<int> $exclude
+ * @return list<array{id:int,name:string,slug:string,country:string,km:int,same_country:bool}>
+ */
+function rmt_nearby_destinations(array $d, int $limit = 6, array $exclude = []): array {
+    $id = (int) ($d['id'] ?? 0);
+    if ($id < 1 || !is_numeric($d['lat'] ?? null) || !is_numeric($d['lng'] ?? null)) return [];
+    $skip = array_flip(array_map('intval', $exclude));
+    $lat1 = deg2rad((float) $d['lat']); $lng1 = deg2rad((float) $d['lng']);
+    $out = [];
+    foreach (q_all('SELECT id, name, slug, country, lat, lng FROM destinations WHERE id <> ? AND lat IS NOT NULL AND lng IS NOT NULL', [$id]) as $r) {
+        if (isset($skip[(int) $r['id']])) continue;
+        $lat2 = deg2rad((float) $r['lat']); $lng2 = deg2rad((float) $r['lng']);
+        $h = sin(($lat2 - $lat1) / 2) ** 2 + cos($lat1) * cos($lat2) * sin(($lng2 - $lng1) / 2) ** 2;
+        $out[] = ['id' => (int) $r['id'], 'name' => (string) $r['name'], 'slug' => (string) $r['slug'],
+                  'country' => (string) $r['country'], 'km' => (int) round(6371 * 2 * asin(min(1.0, sqrt($h)))),
+                  'same_country' => (string) $r['country'] === (string) ($d['country'] ?? '')];
+    }
+    usort($out, static fn(array $a, array $b): int => [$b['same_country'], $a['km'], $a['name']] <=> [$a['same_country'], $b['km'], $b['name']]);
+    return array_slice($out, 0, max(0, $limit));
+}
+
+/**
  * Move rows from one city to the front, keeping the order inside each group.
  *
  * A stable partition, not a sort. Full text ranking scores a name against a name and has no idea

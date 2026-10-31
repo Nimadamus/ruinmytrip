@@ -524,6 +524,30 @@
         </div>
       <?php endif; ?>
 
+      <?php /* Geography, not a guess: the cities this site covers that are nearest on the map, the
+               same country first, with the straight line distance. See rmt_nearby_destinations(). */ ?>
+      <?php if (!empty($nearby)): ?>
+        <div class="section-rule" style="margin-top:34px"><h2>Near <?= e($d['name']) ?></h2></div>
+        <div class="tag-list">
+          <?php foreach ($nearby as $nd): ?>
+            <a class="chip" href="<?= e(url('d/'.$nd['slug'])) ?>"><?= e($nd['name']) ?><?= $nd['same_country'] ? '' : ', ' . e($nd['country']) ?>
+              <span class="hint"><?= number_format($nd['km']) ?> km</span></a>
+          <?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php /* Our own 2026 notes that cite this city (taxes, tickets, entry rules), matched on a link
+               to this page inside the post body. Labelled as ours, below everything travelers wrote. */ ?>
+      <?php if (!empty($relatedPosts)): ?>
+        <div class="section-rule" style="margin-top:34px"><h2>2026 costs and rules for <?= e($d['name']) ?></h2></div>
+        <p class="hint" style="margin:0 0 8px">Researched by the RuinMyTrip team from official sources. <?= rmt_editorial_badge() ?></p>
+        <ul class="list-plain">
+          <?php foreach ($relatedPosts as $rp): ?>
+            <li style="margin:0 0 6px"><a href="<?= e(url('blog/'.$rp['slug'])) ?>"><?= e((string) $rp['title']) ?></a></li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+
       <p style="margin:18px 0 0">
         <button class="btn btn-ghost btn-sm" type="button" data-copy="<?= e(url('d/'.$d['slug'])) ?>">Copy link</button>
       </p>

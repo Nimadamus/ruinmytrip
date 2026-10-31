@@ -17,6 +17,7 @@ $exQuery = static fn(array $over): string => url('explore' . (($q = http_build_q
   <div class="v2-ex-head">
     <h1 class="v2-h1 v2-h1-page">Explore cities</h1>
     <p class="v2-sub"><?= count($dests) ?> <?= count($dests) === 1 ? 'city' : 'cities' ?><?= $cat !== '' ? ' for ' . e(ucfirst($cat)) : '' ?>, each with places, hours, addresses and honest reviews.</p>
+    <?php $purposeHere = 'explore'; include __DIR__ . '/_site_purpose.php'; ?>
   </div>
 
   <form class="v2-ex-tools" action="<?= e(url('explore')) ?>" method="get" role="search">
