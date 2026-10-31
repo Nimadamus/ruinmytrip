@@ -79,5 +79,15 @@ ok(str_contains($ctl, "'blogDest','blogMore'") && str_contains($ctl, '$blogCitie
 $bv = file_get_contents(BASE_PATH . '/views/blog_show.php');
 ok(str_contains($bv, "url('g/' . \$bm['guide']['slug'])") && str_contains($bv, 'rmt_buddy_landing_path'), 'blog view links the guide and the buddies page');
 
+/* Trip type pages say something of their own, and every country they link is a real landing page. */
+$bti = file_get_contents(BASE_PATH . '/views/_buddy_type_intro.php');
+ok(str_contains(file_get_contents(BASE_PATH . '/views/buddies_index.php'), '_buddy_type_intro.php'), 'buddies index includes the trip type intro');
+$countryBlock = substr($bti, (int) strpos($bti, '$btCountries'), (int) strpos($bti, '$btText') - (int) strpos($bti, '$btCountries'));
+preg_match_all("/'([a-z]+)'/", (string) preg_replace("/'[a-z_]+'\s*=>/", '', $countryBlock), $m);
+$landing = file_get_contents(BASE_PATH . '/app/buddy_landing_pages.php') . file_get_contents(BASE_PATH . '/app/buddy_landing.php');
+ok(count($m[1]) > 10, 'trip type intro lists country pages');
+foreach (array_unique($m[1]) as $c) ok(str_contains($landing, "'$c'"), "trip type intro links a real country page: $c");
+ok(!preg_match('/[\x{2012}-\x{2015}]| - /u', $bti . file_get_contents(BASE_PATH . '/views/_site_purpose.php')), 'no dashes in the new hub copy');
+
 echo "\nnearby_destinations_test: " . ($fail ? "$fail FAILED" : 'all passed') . "\n";
 exit($fail ? 1 : 0);
