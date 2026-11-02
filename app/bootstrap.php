@@ -61,6 +61,7 @@ require BASE_PATH . '/app/growth_scorecard.php';
 require BASE_PATH . '/app/kpi.php';
 require BASE_PATH . '/app/proof.php';
 require BASE_PATH . '/app/acquire_board.php';
+require BASE_PATH . '/app/members_report.php';
 require BASE_PATH . '/app/live_activity.php';
 require BASE_PATH . '/app/social_landing.php';
 require BASE_PATH . '/app/communities.php';

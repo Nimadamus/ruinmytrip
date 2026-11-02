@@ -32,7 +32,7 @@ foreach (glob(BASE_PATH . '/app/*.php') as $f) {
 ok('no cron route reads ?key= directly', !$direct);
 $n = 0;
 foreach (glob(BASE_PATH . '/app/*.php') as $f) $n += substr_count((string) file_get_contents($f), '$given = rmt_cron_key_given();');
-ok('all eight cron routes use the helper', $n === 8);
+ok('all nine cron routes use the helper', $n === 9);
 
 echo $fails ? "\ncron_key_header_test: $fails FAILED\n" : "\ncron_key_header_test: all passed\n";
 exit($fails ? 1 : 0);
