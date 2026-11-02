@@ -61,7 +61,7 @@ function rmt_kpi_daily(int $days = 14): array {
     $days = min(max($days, 1), 60);
     $span = rmt_kpi_days($days);
     $from = $span[0]['from']; $to = $span[count($span) - 1]['to'];
-    $real = rmt_sc_real_user_sql('u');
+    $real = rmt_sc_genuine_user_sql('u');
     $notSelf = "COALESCE(acq_content, '') <> 'selfcheck'";
 
     $grid = [];

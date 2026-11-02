@@ -28,8 +28,7 @@ function rmt_members_report(?string $now = null): array {
         catch (Throwable $e) { $errors[] = $name; return []; }
     };
 
-    $real = rmt_sc_real_user_sql('u');
-    $genuine = "($real AND u.role NOT IN ('admin', 'mod'))";
+    $genuine = rmt_sc_genuine_user_sql('u');
 
     /* Every account, classified, with what it has done. Counts only, never content. */
     $acts = [

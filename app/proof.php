@@ -296,7 +296,7 @@ function rmt_proof(int $days = 14, ?string $now = null): array {
         if (isset($grid[$day])) $grid[$day]['map_saves']++;
     }
 
-    $real = rmt_sc_real_user_sql('u');
+    $real = rmt_sc_genuine_user_sql('u');
     $product = [
         'reviews_published' => "SELECT r.created_at FROM reviews r JOIN users u ON u.id = r.user_id
                                  WHERE r.status = 'published' AND r.created_at >= ? AND r.created_at < ? AND $real",

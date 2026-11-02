@@ -58,7 +58,7 @@ function rmt_acquire_board(int $days = 31): array {
         $errors = ['events'];
     }
 
-    $real = rmt_sc_real_user_sql('u');
+    $real = rmt_sc_genuine_user_sql('u');
     $count = static function (string $sql, array $args, string $name) use (&$errors): ?int {
         try { return (int) (q_one($sql, $args)['c'] ?? 0); }
         catch (Throwable $e) { $errors[] = $name; return null; }

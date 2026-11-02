@@ -25,6 +25,12 @@ function rmt_sc_real_user_sql(string $alias = 'u'): string {
          . "' AND SUBSTR($alias.username, 1, 5) <> 'team_' AND $alias.email NOT LIKE '%+rmtqa%'";
 }
 
+/** Business metrics only: real users minus staff (admin, mod), so the owner's own posts and tests
+    never count as growth. Product features (travelers hub, alerts) keep rmt_sc_real_user_sql. */
+function rmt_sc_genuine_user_sql(string $alias = 'u'): string {
+    return '(' . rmt_sc_real_user_sql($alias) . " AND $alias.role NOT IN ('admin', 'mod'))";
+}
+
 /** Distinct journeys that recorded an event since a time, excluding our own checks. */
 function rmt_sc_journeys(string $event, string $since, string $extra = '', array $args = []): int {
     try {
