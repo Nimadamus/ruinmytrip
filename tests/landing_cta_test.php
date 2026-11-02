@@ -53,7 +53,7 @@ ob_start();
 include BASE_PATH . '/views/_landing_acts.php';
 $guestHtml = ob_get_clean();
 ok('a guest is asked to create an account', str_contains($guestHtml, 'Create a free account') && str_contains($guestHtml, 'Build your profile'));
-ok('guest buttons stack as real links', substr_count($guestHtml, '<a class="btn') === 5);
+ok('one primary and one alternative button, the rest as links', substr_count($guestHtml, '<a class="btn') === 2 && substr_count($guestHtml, '<a href=') === 3);
 
 $me = ['username' => 'ada'];
 $onDark = false;
