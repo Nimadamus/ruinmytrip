@@ -153,6 +153,11 @@ function rmt_lifecycle_run(int $limit = 200): int {
         }
     }
 
+    /* Promotional onboarding email (off until promotional mail is compliant). Counted apart. */
+    if (function_exists('rmt_onboarding_nudges')) {
+        try { rmt_onboarding_nudges(); } catch (\Throwable $e) { error_log('[rmt_onboarding] ' . $e->getMessage()); }
+    }
+
     return $made;
 }
 

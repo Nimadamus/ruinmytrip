@@ -29,7 +29,7 @@ foreach (['hllocal', 'hlhost', 'hltraveler', 'hlstranger', 'hladmin'] as $u) rmt
 
 ok(rmt_stays_enabled() === true, 'overnight stays are on (app/stays.php)');
 putenv('MAIL_POSTAL_ADDRESS');
-ok(rmt_welcome_email($id('hllocal')) === false, 'no welcome email while promotional mail is not compliant');
+ok(rmt_onboarding_nudges() === 0, 'no promotional onboarding email while promotional mail is not compliant');
 
 // Locals.
 $v = rmt_local_validate(['destination_id' => $dest['id'], 'offers' => ['coffee', 'food', 'bogus'], 'availability' => 'Weekends']);

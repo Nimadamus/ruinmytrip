@@ -65,43 +65,92 @@ function rmt_notify_email_direct(int $userId, string $subject, string $line, str
 }
 
 /**
- * One welcome email, sent the first time a member confirms their address.
+ * One welcome email when an account becomes usable: the first email confirmation, or a Google
+ * sign up (Google has already confirmed the address).
  *
- * It describes the account rather than answering anything the member did, so it is treated as
- * promotional: it goes out only when rmt_mail_marketing_ready() is true, which needs the sender's
- * postal address in the footer, and it carries the unsubscribe link and header. Until then it is
- * simply not sent.
+ * Transactional: it confirms the account that was just opened and says how to use and control it
+ * (profile, privacy, email settings, safety). It sells nothing and links nothing outside the
+ * account, so it does not wait for rmt_mail_marketing_ready(). Anything that encourages use after
+ * that (rmt_onboarding_nudges) is promotional and stays behind that gate. Sent once per account.
  */
 function rmt_welcome_email(int $userId): bool {
-    if ($userId < 1 || !rmt_mail_marketing_ready()) return false;
-    $u = q_one("SELECT u.id, u.username, u.email, u.status, u.email_verified_at, COALESCE(p.digest_opt_out, 0) opt_out
-                  FROM users u LEFT JOIN profiles p ON p.user_id = u.id WHERE u.id = ?", [$userId]);
-    if (!$u || $u['status'] !== 'active' || empty($u['email_verified_at']) || (int) $u['opt_out'] === 1) return false;
+    if ($userId < 1 || !rmt_mail_enabled()) return false;
+    $u = q_one("SELECT u.id, u.username, u.email, u.status, u.email_verified_at, u.google_sub
+                  FROM users u WHERE u.id = ?", [$userId]);
+    if (!$u || $u['status'] !== 'active' || empty($u['email_verified_at'])) return false;
     if (!rmt_rate_ok('welcome_mail', (string) $userId, 1, 86400 * 3650)) return false;
-    $unsub = rmt_unsubscribe_url($userId);
+    $how = !empty($u['google_sub']) ? 'Sign in with Google (Continue with Google on the sign in page).'
+                                    : 'Sign in with this email address and the password you chose.';
     $li = static fn(string $b, string $t, string $path): string =>
-        '<li style="margin:0 0 10px"><b>' . e($b) . '</b> ' . e($t) . ' <a href="' . e(url($path)) . '">Open</a></li>';
-    $html = rmt_mail_layout('Welcome to RuinMyTrip',
-        '<p>Your account is ready. One profile does all of this:</p><ul style="padding-left:18px">'
-        . $li('Honest reviews.', 'Rate a place, bad parts included.', 'review/new')
-        . $li('Travel buddies.', 'Post a city and dates and see who overlaps.', 'buddies')
-        . $li('Hosts & Locals.', 'Meet people who live where you are going, or be a local in your own city.', 'hosts-locals')
-        . $li('Your travel map.', 'Color in the countries you have been to.', 'map')
-        . '</ul><p style="color:#8895a3;font-size:12px;margin:24px 0 0">You are getting this once because you confirmed your email. '
-        . '<a href="' . e($unsub) . '" style="color:#8895a3">Turn off emails like this</a>.</p>',
-        'Finish your profile', url('welcome'));
-    $text = "Welcome to RuinMyTrip.
+        '<li style="margin:0 0 10px"><b>' . e($b) . '</b> ' . e($t) . ' <a href="' . e(url($path)) . '">' . e(url($path)) . '</a></li>';
+    $html = rmt_mail_layout('Your RuinMyTrip account is ready',
+        '<p>Your account <b>@' . e((string) $u['username']) . '</b> is open. ' . e($how) . '</p>'
+        . '<p style="margin:16px 0 6px"><b>Your account, at a glance</b></p><ul style="padding-left:18px">'
+        . $li('Profile.', 'Add a name, a line about how you travel and your home city, so other travelers know who is asking.', 'welcome')
+        . $li('Privacy.', 'Trips can be private. Nobody can message you until you accept them.', 'guidelines')
+        . $li('Email.', 'Choose which emails you get, one type at a time.', 'settings/email')
+        . $li('Safety.', 'Meet in public, tell someone where you are, and report anything off.', 'hosts-locals/safety')
+        . $li('Leaving.', 'You can delete the account and everything in it yourself.', 'account/delete')
+        . '</ul><p style="color:#8895a3;font-size:12px;margin:24px 0 0">You are getting this once because an account was '
+        . 'opened with this address. If that was not you, tell us at <a href="' . e(url('contact')) . '" style="color:#8895a3">' . e(url('contact')) . '</a> and we will close it.</p>',
+        'Set up your profile', url('welcome'));
+    $text = "Your RuinMyTrip account @" . $u['username'] . " is open. " . $how . "
 
-Reviews: " . url('review/new') . "
-Travel buddies: " . url('buddies')
+"
+          . "Profile: " . url('welcome') . "
+Privacy: " . url('guidelines') . "
+Email settings: " . url('settings/email')
           . "
-Hosts & Locals: " . url('hosts-locals') . "
-Travel map: " . url('map') . "
+Safety: " . url('hosts-locals/safety') . "
+Delete account: " . url('account/delete')
+          . "
 
-Turn these off: " . $unsub;
-    [$ok] = rmt_mail_send((string) $u['email'], 'Welcome to RuinMyTrip', $html, $text, rmt_mail_unsub_headers($unsub));
+If you did not open this account, tell us at " . url('contact') . " and we will close it.";
+    [$ok] = rmt_mail_send((string) $u['email'], 'Your RuinMyTrip account is ready', $html, $text);
     if ($ok && function_exists('rmt_track')) rmt_track('welcome_email_sent');
     return (bool) $ok;
+}
+
+/**
+ * Promotional onboarding: one "finish your profile" email three days after joining, only to a
+ * confirmed member whose profile is still incomplete and who has not opted out. Off until
+ * rmt_mail_marketing_ready() (postal address configured); carries the unsubscribe link and header.
+ *
+ * @return int emails sent
+ */
+function rmt_onboarding_nudges(int $limit = 50, ?string $now = null): int {
+    if (!rmt_mail_marketing_ready()) return 0;
+    $t = strtotime(($now ?? date('Y-m-d H:i:s')));
+    $real = function_exists('rmt_sc_real_user_sql') ? ' AND ' . rmt_sc_real_user_sql('u') : '';
+    $rows = q_all("SELECT u.id, u.email, u.username FROM users u LEFT JOIN profiles p ON p.user_id = u.id
+                    WHERE u.status = 'active' AND u.email_verified_at IS NOT NULL AND COALESCE(p.digest_opt_out, 0) = 0
+                      AND u.created_at <= ? AND u.created_at >= ?$real
+                      AND (TRIM(COALESCE(p.display_name, '')) = '' OR LENGTH(TRIM(COALESCE(p.bio, ''))) < 20
+                           OR TRIM(COALESCE(p.home_city, '')) = '')
+                    ORDER BY u.id LIMIT " . max(1, $limit),
+                  [date('Y-m-d H:i:s', $t - 3 * 86400), date('Y-m-d H:i:s', $t - 10 * 86400)]);
+    $sent = 0;
+    foreach ($rows as $u) {
+        $uid = (int) $u['id'];
+        if (function_exists('rmt_email_muted') && rmt_email_muted($uid, 'other')) continue;
+        if (!rmt_rate_ok('onboard_d3', (string) $uid, 1, 86400 * 3650)) continue;
+        $unsub = rmt_unsubscribe_url($uid);
+        $html = rmt_mail_layout('Finish your profile in a minute',
+            '<p>Travelers decide whether to say yes to a buddy request or a meetup from your profile. A name, one line '
+            . 'about how you travel and your home city is enough.</p><p>Going somewhere soon? Add the dates and see who '
+            . 'overlaps: <a href="' . e(url('buddies')) . '">' . e(url('buddies')) . '</a></p>'
+            . '<p style="color:#8895a3;font-size:12px;margin:24px 0 0"><a href="' . e($unsub) . '" style="color:#8895a3">'
+            . 'Turn off emails like this</a>.</p>',
+            'Finish your profile', url('welcome'));
+        $text = "Finish your profile: " . url('welcome') . "
+See who overlaps your dates: " . url('buddies')
+              . "
+
+Turn these off: " . $unsub;
+        [$ok] = rmt_mail_send((string) $u['email'], 'Finish your RuinMyTrip profile', $html, $text, rmt_mail_unsub_headers($unsub));
+        if ($ok) { $sent++; if (function_exists('rmt_track')) rmt_track('onboarding_nudge_sent'); }
+    }
+    return $sent;
 }
 
 /**
