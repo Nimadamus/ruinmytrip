@@ -47,10 +47,9 @@ function rmt_members_report(?string $now = null): array {
     foreach ($acts as $name => $sql) {
         foreach ($all("acts_$name", $sql) as $r) $byUser[(int) $r['k']][$name] = (int) $r['c'];
     }
-    $google = [];
-    foreach ($all('oauth', "SELECT DISTINCT user_id FROM oauth_identities") as $r) $google[(int) $r['user_id']] = true;
 
     $rows = $all('accounts', "SELECT u.id, u.created_at, u.role, u.status, u.email_verified_at,
+                                     CASE WHEN COALESCE(u.google_sub, '') <> '' THEN 1 ELSE 0 END AS google,
                                      CASE WHEN $genuine THEN 'genuine'
                                           WHEN u.status <> 'active' THEN 'inactive'
                                           WHEN u.role IN ('admin', 'mod') THEN 'staff'
@@ -69,7 +68,7 @@ function rmt_members_report(?string $now = null): array {
         if ($r['cls'] === 'genuine' && $lastGenuine === null) $lastGenuine = (string) $r['created_at'];
         $accounts[] = [
             'id' => $id, 'joined_utc' => (string) $r['created_at'], 'class' => $r['cls'],
-            'confirmed' => $r['email_verified_at'] !== null, 'google' => isset($google[$id]),
+            'confirmed' => $r['email_verified_at'] !== null, 'google' => (bool) $r['google'],
             'profile_complete' => (bool) $r['profile_complete'], 'local' => (bool) $r['local'],
             'actions' => array_sum($a), 'did' => $a,
         ];
@@ -88,7 +87,7 @@ function rmt_members_report(?string $now = null): array {
             'new_24h' => $win(86400), 'new_7d' => $win(7 * 86400), 'new_30d' => $win(30 * 86400),
             'last_joined_utc' => $lastGenuine,
             'confirmed' => $one('confirmed', "SELECT COUNT(*) c FROM users u WHERE $genuine AND u.email_verified_at IS NOT NULL"),
-            'google' => $one('google', "SELECT COUNT(DISTINCT o.user_id) c FROM oauth_identities o $j o.user_id WHERE $genuine"),
+            'google' => $one('google', "SELECT COUNT(*) c FROM users u WHERE $genuine AND COALESCE(u.google_sub, '') <> ''"),
             'profiles_complete' => count(array_filter($accounts, fn($x) => $x['class'] === 'genuine' && $x['profile_complete'])),
             'with_any_action' => count(array_filter($accounts, fn($x) => $x['class'] === 'genuine' && $x['actions'] > 0)),
         ],
