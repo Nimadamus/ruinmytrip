@@ -15,7 +15,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
 <section class="buddy-hero"><div class="wrap">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <?php if ($label && str_starts_with(trim((string) parse_url($bcBack, PHP_URL_PATH), '/'), 'buddies/')): ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a> / <?= e($label) ?><?php else: ?>Travel buddies<?php endif; ?></p>
   <p class="eyebrow">Travel buddies</p>
-  <h1><?= $bf['type'] === 'cruise' ? 'Find people on your cruise.' : 'Going somewhere? Find people heading the same way.' ?></h1>
+  <h1><?= $bf['type'] === 'cruise' ? 'Find people on your cruise.' : 'Find a travel buddy heading your way.' ?></h1>
   <p class="buddy-lede">Meet travelers going where you are going, connect with locals and people already there, or find others on the same cruise. Nobody can message you until you say yes.</p>
   <div class="buddy-cta">
     <a class="btn btn-accent" href="<?= e($postHref) ?>">Post your trip</a>

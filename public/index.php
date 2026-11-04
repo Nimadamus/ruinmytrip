@@ -172,6 +172,9 @@ $routes = [
     // Travel buddies: who else is going where I am going, locals, and people on the same cruise.
     ['GET',  '#^/buddies$#',                   'buddies_index'],
     // Landing pages for the countries and cruise lines people search a companion for (app/buddy_landing.php).
+    // The bare paths people type or guess: 301 to the hub instead of a 404.
+    ['GET',  '#^/(?:travel-buddies|travel-buddy|find-a-travel-buddy)/?$#', 'buddy_landing_hub_redirect'],
+    ['GET',  '#^/cruise-buddies/?$#',          'buddy_landing_cruise_hub_redirect'],
     ['GET',  '#^/travel-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_country'],
     ['GET',  '#^/cruise-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_cruise'],
     ['GET',  '#^/buddies/mine$#',              'buddies_mine'],

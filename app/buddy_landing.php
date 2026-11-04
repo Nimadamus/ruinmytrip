@@ -244,3 +244,5 @@ function buddy_landing_show(array $a): void {
 
 function buddy_landing_country(array $a): void { buddy_landing_show($a + ['kind' => 'country']); }
 function buddy_landing_cruise(array $a): void { buddy_landing_show($a + ['kind' => 'cruise']); }
+function buddy_landing_hub_redirect(array $a = []): void { redirect_permanent(url('buddies')); }
+function buddy_landing_cruise_hub_redirect(array $a = []): void { redirect_permanent(url('buddies/cruise')); }
