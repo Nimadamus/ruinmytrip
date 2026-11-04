@@ -1,6 +1,6 @@
 # Launch posts, final copy (2026-11-02, for posting from 2026-11-03)
 
-Every number below was read from production on 2026-11-02 (`/cron/proof`, `/cron/members`, home page).
+Every number below was read from production on 2026-11-02 and re-read 2026-11-03 10:13 PM PST (`/cron/proof`, `/cron/members`, home page).
 Re-read them the morning of posting (`~/rmt_kpi/DAILY_REPORT.md`) and change any that moved.
 Nothing here has been posted. Each post needs Nima's OK and goes out from his own account.
 
@@ -23,7 +23,7 @@ Build story with real numbers and a specific question does well. Reply to every 
 > * Travel buddies matched by overlapping dates, including a page per cruise line.
 > * Hosts & Locals, opened last week: list yourself as a local for a coffee or a walk, or apply to host for free. Nobody can message you until you say yes, and no address is ever stored.
 >
-> The honest numbers: in the last 31 days about 60 real visitors (after filtering out around 26,000 bot hits), 1 member, 0 member reviews. Google showed us 867 times in October and sent 8 clicks. So reach is the problem, but I would rather hear it from people looking at it cold.
+> The honest numbers: in the last 31 days about 60 real visitors (after filtering out around 29,000 bot visits), 1 member, 0 member reviews. Google showed us 867 times in October and sent 8 clicks. So reach is the problem, but I would rather hear it from people looking at it cold.
 >
 > How it is run: I make the product calls; day to day code, content checks and moderation are done with an AI agent (Claude) and reviewed before anything ships.
 >
