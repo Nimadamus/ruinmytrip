@@ -27,7 +27,7 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
       <p class="muted tm-sub">Somebody shared the countries they have been to. Make your own in a minute and send it back, no account needed.</p>
     <?php else: ?>
       <p class="tm-kicker">Travel map</p>
-      <h1 data-tm-title><?= $n > 0 ? "I've been to <span data-tm-count>" . e(rmt_map_count_label($n)) . '</span>' : 'Where have you been?' ?></h1>
+      <h1 data-tm-title data-tm-empty="Map the countries you have been to"><?= $n > 0 ? "I've been to <span data-tm-count>" . e(rmt_map_count_label($n)) . '</span>' : 'Map the countries you have been to' ?></h1>
       <p class="muted tm-sub">Tap every country you have been to. Your map is a link you can share, no account needed.</p>
     <?php endif; ?>
   </header>
@@ -62,6 +62,7 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
   <section class="tm-list">
     <h2 class="tm-h2">Countries</h2>
     <div class="tag-row" data-tm-chips><?php foreach ($codes as $c): ?><span class="chip"><?= e($names[$c] ?? $c) ?></span><?php endforeach; ?></div>
+    <div class="tm-conts" data-tm-conts hidden></div>
   </section>
 
   <?php if (!$readOnly): $tmReview = rmt_map_review_pick($codes); ?>
@@ -79,6 +80,18 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
     <a class="btn btn-primary btn-sm" href="<?= e(url('plan')) ?>" data-cta="map_plan">Add my next trip</a>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('buddies')) ?>">Find a travel buddy</a>
   </div></section>
+
+  <?php if (!$owner && !$shared): ?>
+  <section class="tm-about">
+    <h2 class="tm-h2">A free map of the countries you have visited</h2>
+    <p>Tap a country to color it in, or type its name. Tap it again to take it off. The count, the list and your totals by continent update as you go, and when you are done you have a link to send or an image to post.</p>
+    <h2 class="tm-h2">Questions</h2>
+    <?php foreach (rmt_map_faq() as [$fq, $fa]): ?>
+      <h3><?= e($fq) ?></h3>
+      <p><?= e($fa) ?></p>
+    <?php endforeach; ?>
+  </section>
+  <?php endif; ?>
 </div>
 <style>
 .tm-head{margin:18px 0 10px}.tm-kicker{text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:var(--brand);margin:0 0 4px;font-weight:700}
@@ -92,6 +105,10 @@ $returnTo = '/map' . ($codes ? '?c=' . rmt_map_key($codes) : '');
 .tm-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.tm-save{margin:0}
 .tm-note{min-height:1.2em;margin:8px 0 0}.tm-h2{font-size:1.1rem;margin:22px 0 8px}.tm-next{margin:26px 0}
 .tm-review{margin:22px 0 0}.tm-review .tm-city{text-decoration:none;min-height:36px;display:inline-flex;align-items:center}
+.tm-conts{margin-top:14px;display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}.tm-conts[hidden]{display:none}
+.tm-cont{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;font-size:.95rem}
+.tm-cont b{display:block;flex:0 0 100%;height:6px;border-radius:3px;background:var(--line);overflow:hidden}.tm-cont i{display:block;height:100%;background:#14b8a6}
+.tm-about{margin:8px 0 30px;max-width:720px}.tm-about h3{font-size:1rem;margin:16px 0 4px}.tm-about p{margin:0 0 8px}
 .tm-tip{position:fixed;pointer-events:none;background:#0f1b2d;color:#fff;padding:4px 8px;border-radius:6px;font-size:.85rem;z-index:50}
 </style>
 <script src="<?= e(rmt_asset('assets/js/travel-map.js')) ?>" defer></script>

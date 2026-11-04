@@ -8027,7 +8027,16 @@ function travel_map_page(array $a): void {
     $title = $owner
         ? $who . "'s travel map: " . rmt_map_count_label($n) . ' | RuinMyTrip'
         : ($fromUrl && $n > 0 ? 'My travel map: ' . rmt_map_count_label($n) . ' | RuinMyTrip'
-                              : 'Travel map: color in every country you have been to | RuinMyTrip');
+                              : 'Countries visited map: color in where you have been | RuinMyTrip');
+    $mapLd = '';
+    if (!$owner && !$fromUrl) {
+        $mapLd = jsonld(['@context' => 'https://schema.org', '@type' => 'WebApplication', 'name' => 'RuinMyTrip travel map',
+                         'url' => url('map'), 'applicationCategory' => 'TravelApplication', 'operatingSystem' => 'Any',
+                         'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'USD']])
+            . jsonld(['@context' => 'https://schema.org', '@type' => 'FAQPage',
+                      'mainEntity' => array_map(fn($f) => ['@type' => 'Question', 'name' => $f[0],
+                          'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], rmt_map_faq())]);
+    }
     view('travel_map', [
         'codes' => $codes, 'saved' => $saved, 'owner' => $owner, 'isOwnerView' => $isOwnerView,
         'who' => $who, 'me' => $me, 'names' => rmt_map_names(), 'shared' => (bool) $shared,
@@ -8035,10 +8044,11 @@ function travel_map_page(array $a): void {
         'title' => $title,
         'description' => $n > 0
             ? rmt_map_headline($codes) . '. Make your own travel map in a minute, share it, and meet travelers going where you are going next.'
-            : 'Tap every country you have been to and get a map you can share. Free, no account needed. Keep it on your RuinMyTrip profile and meet travelers going where you are going.',
+            : 'Tap every country you have visited and get a map you can share, with totals by continent. Free, no account needed. Keep it on your RuinMyTrip profile and meet travelers going where you are going.',
         'og_title' => $n > 0 ? rmt_map_headline($codes) : 'Where have you been? Make your travel map',
         'og_image' => rmt_map_card_url($codes),
         'canonical' => url('map'),
+        'jsonld' => $mapLd,
     ]);
 }
 

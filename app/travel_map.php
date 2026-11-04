@@ -26,6 +26,17 @@ function rmt_world_map(): array {
     return $map;
 }
 
+/** The questions on /map, shown on the page and sent as FAQPage data from this one list. */
+function rmt_map_faq(): array {
+    return [
+        ['Do I need an account?', 'No. The map works without one, and your countries live in the link. A free profile only matters if you want the map kept on your page.'],
+        ['How do I share my map?', 'Press Share my map to send a link, or Download image for a picture of it. Whoever opens the link sees your map and can make their own.'],
+        ['Who can see it?', 'Only people you give the link to, unless you save it to your profile, where it is shown on your public page.'],
+        ['Which places can I pick?', 'Countries and territories on the map, including ones like Puerto Rico and Greenland, so a count here can come out higher than a count of UN members.'],
+        ['How are continents counted?', 'By UN region, with Central America and the Caribbean under North America. Russia counts as Europe, and Turkey and Cyprus as Asia.'],
+    ];
+}
+
 /** Every country that can be picked, keyed by its code. @return array<string,string> code => name */
 function rmt_map_names(): array {
     static $names = null;

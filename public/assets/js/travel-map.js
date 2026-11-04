@@ -23,13 +23,42 @@
   function key() { return codes().join('-'); }
   function label(n) { return n + (n === 1 ? ' country' : ' countries'); }
 
+  /* Countries per continent, from the "ct" code each country carries in the map file. */
+  var CONT = [['AF', 'Africa'], ['AN', 'Antarctica'], ['AS', 'Asia'], ['EU', 'Europe'], ['NA', 'North America'], ['OC', 'Oceania'], ['SA', 'South America']];
+  function reached(list) {
+    var seen = {};
+    list.forEach(function (c) { if (byId[c] && byId[c].ct) seen[byId[c].ct] = (seen[byId[c].ct] || 0) + 1; });
+    return seen;
+  }
+  function continents(list) {
+    var box = root.querySelector('[data-tm-conts]');
+    if (!box) return;
+    var seen = reached(list), total = {};
+    Object.keys(byId).forEach(function (id) { var t = byId[id].ct; if (t) total[t] = (total[t] || 0) + 1; });
+    box.textContent = '';
+    box.hidden = !Object.keys(seen).length;
+    CONT.forEach(function (ct) {
+      if (!seen[ct[0]]) return;
+      var row = document.createElement('div'); row.className = 'tm-cont';
+      var name = document.createElement('span'); name.textContent = ct[1];
+      var num = document.createElement('span'); num.className = 'muted'; num.textContent = seen[ct[0]] + ' of ' + total[ct[0]];
+      var bar = document.createElement('i'); bar.style.width = Math.max(4, Math.round(seen[ct[0]] / total[ct[0]] * 100)) + '%';
+      var track = document.createElement('b'); track.appendChild(bar);
+      row.appendChild(name); row.appendChild(num); row.appendChild(track);
+      box.appendChild(row);
+    });
+  }
+
   function refresh() {
     var list = codes(), n = list.length, k = key();
     Object.keys(shapes).forEach(function (id) {
       shapes[id].forEach(function (el) { el.classList.toggle('on', !!picked[id]); });
     });
     var title = root.querySelector('[data-tm-title]');
-    if (title) title.innerHTML = n ? "I've been to <span data-tm-count></span>" : 'Where have you been?';
+    if (title) {
+      if (n) title.innerHTML = "I've been to <span data-tm-count></span>";
+      else title.textContent = title.getAttribute('data-tm-empty') || 'Where have you been?';
+    }
     root.querySelectorAll('[data-tm-count]').forEach(function (el) { el.textContent = label(n); });
     var chips = root.querySelector('[data-tm-chips]');
     if (chips) {
@@ -38,6 +67,7 @@
         var s = document.createElement('span'); s.className = 'chip'; s.textContent = name; chips.appendChild(s);
       });
     }
+    continents(list);
     if (readOnly) return;
     review(list);
     var url = base + (k ? '?c=' + k : '');
@@ -169,7 +199,8 @@
     // from=share: whoever opens it sees it as somebody else's map, with "make your own", rather
     // than as their own map already coloured in with another person's countries.
     var url = base + (n ? '?c=' + key() + '&from=share' : '');
-    var text = n ? "I've been to " + label(n) + '. Where have you been?' : 'Make your travel map';
+    var m = Object.keys(reached(codes())).length;
+    var text = n ? "I've been to " + label(n) + (m > 1 ? ' on ' + m + ' continents' : '') + '. Where have you been?' : 'Make your travel map';
     if (navigator.share) {
       navigator.share({ title: 'My travel map', text: text, url: url }).catch(function () {});
     } else if (navigator.clipboard) {
