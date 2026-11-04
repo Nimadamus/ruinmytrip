@@ -1784,3 +1784,10 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .nav-more-panel .link-btn{display:block;width:100%;padding:.5rem .7rem;border-radius:10px;font-size:.92rem;
   font-weight:550;color:var(--ink-2)}
 .nav-more-panel .link-btn:hover{background:var(--surface-3);color:var(--brand);text-decoration:none}
+
+/* Numbered circles where nearby map dots merge (public/assets/js/map.js). 44px tap target. */
+.leaflet-marker-icon.map-cluster{display:flex;box-sizing:border-box;align-items:center;justify-content:center;border-radius:50%;
+  background:rgba(15,118,110,.88);color:#fff;font:700 13px/1 system-ui,sans-serif;
+  border:3px solid rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
+.leaflet-marker-icon.map-cluster::before{content:"";position:absolute;inset:-7px;border-radius:50%}
+.map-cluster span{pointer-events:none}

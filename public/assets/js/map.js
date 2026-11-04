@@ -27,6 +27,12 @@
        points the marker becomes a small dot, which reads as a distribution and still clicks. */
     var dots = points.length > 25;
 
+    /* Past about forty points a dense centre is still a pile of overlapping dots that a thumb
+       cannot tell apart. Nearby dots merge into one numbered circle; tapping it zooms in until
+       they separate. Done here in a few lines rather than with a plugin, because the grid is all
+       a city map needs. Trip maps keep every dot: the day colours are the point there. */
+    var cluster = null;
+
     /* On a trip of several days the useful question is not "where is everything", it is "what is
        Tuesday". Each day gets a colour and a line in the key. One day, or no days at all, gets the
        plain treatment: a legend with one entry is furniture. */
@@ -36,6 +42,7 @@
     });
     dayOrder.sort();
     var byDay = dayOrder.length > 1 && dayOrder.length <= 10;
+    cluster = (!byDay && points.length > 40) ? { layer: L.layerGroup().addTo(map), cat: null } : null;
     var palette = ['#0f766e', '#b45309', '#1d4ed8', '#a21caf', '#15803d', '#be123c',
                    '#0e7490', '#7c2d12', '#4338ca', '#365314'];
     var colourFor = function (p) {
@@ -51,8 +58,9 @@
       var marker = (dots || byDay)
         ? L.circleMarker([p.lat, p.lng], {
             radius: 7, weight: 2, color: col, fillColor: col, fillOpacity: 0.75
-          }).addTo(map)
-        : L.marker([p.lat, p.lng]).addTo(map);
+          })
+        : L.marker([p.lat, p.lng]);
+      if (!cluster) marker.addTo(map);
       var html = '<b>' + escapeHtml(p.label || '') + '</b>';
       if (p.meta) html += '<br><span>' + escapeHtml(p.meta) + '</span>';
       if (p.href) html = '<a href="' + escapeAttr(p.href) + '">' + html + '</a>';
@@ -63,6 +71,51 @@
 
     if (bounds.length === 1) map.setView(bounds[0], 15);
     else map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+
+    /* Greedy, by screen distance: a point joins the first group whose first point is within
+       RADIUS pixels at this zoom, otherwise it starts one. A fixed grid was tried first and put
+       two numbered circles on top of each other wherever a dense centre straddled a cell line. */
+    var RADIUS = 52;
+    var drawClusters = function () {
+      if (!cluster) return;
+      cluster.layer.clearLayers();
+      var z = map.getZoom();
+      var groups = [];
+      markers.forEach(function (m) {
+        if (cluster.cat !== null && m.cat !== cluster.cat) return;
+        var pt = map.project([m.p.lat, m.p.lng], z);
+        for (var i = 0; i < groups.length; i++) {
+          if (groups[i].pt.distanceTo(pt) < RADIUS) { groups[i].items.push(m); return; }
+        }
+        groups.push({ pt: pt, items: [m] });
+      });
+      groups.forEach(function (g) {
+        var group = g.items;
+        if (group.length === 1 || z >= map.getMaxZoom()) {
+          group.forEach(function (m) { cluster.layer.addLayer(m.layer); });
+          return;
+        }
+        var lat = 0, lng = 0, gb = [];
+        group.forEach(function (m) { lat += m.p.lat; lng += m.p.lng; gb.push([m.p.lat, m.p.lng]); });
+        var n = group.length;
+        var size = n < 10 ? 30 : (n < 50 ? 36 : 42);
+        var icon = L.divIcon({
+          className: 'map-cluster',
+          html: '<span>' + n + '</span>',
+          iconSize: [size, size]
+        });
+        var c = L.marker([lat / n, lng / n], {
+          icon: icon, keyboard: true, title: n + ' places here, zoom in', alt: n + ' places'
+        });
+        c.on('click', function () {
+          var b = L.latLngBounds(gb);
+          if (b.getNorthEast().equals(b.getSouthWest())) map.setView(b.getCenter(), map.getMaxZoom());
+          else map.fitBounds(b, { padding: [40, 40] });
+        });
+        cluster.layer.addLayer(c);
+      });
+    };
+    if (cluster) { map.on('zoomend', drawClusters); drawClusters(); }
 
     /* Category filtering on a city map. Only where there is something to filter: a key with one
        entry is furniture, and a row of fourteen chips over a map is a second map. */
@@ -84,9 +137,12 @@
           var keep = [];
           markers.forEach(function (m) {
             var show = value === null || m.cat === value;
-            if (show) { m.layer.addTo(map); keep.push([m.p.lat, m.p.lng]); }
+            if (show) keep.push([m.p.lat, m.p.lng]);
+            if (cluster) return;
+            if (show) m.layer.addTo(map);
             else map.removeLayer(m.layer);
           });
+          if (cluster) { cluster.cat = value; drawClusters(); }
           if (keep.length) map.fitBounds(keep, { padding: [30, 30], maxZoom: 16 });
         });
         return a;
