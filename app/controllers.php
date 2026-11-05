@@ -8052,6 +8052,45 @@ function travel_map_page(array $a): void {
     ]);
 }
 
+/** GET /tourist-tax-calculator: one URL, the answer rendered by the server from the query string. */
+function tourist_tax_page(array $a): void {
+    $cities = rmt_tt_cities();
+    $slug = input('city');
+    $city = $cities[$slug] ?? null;
+    if ($city === null) $slug = '';
+    $clamp = static fn(string $k, int $d, int $max): int => max(1, min($max, (int) (input($k) !== '' ? input($k) : $d)));
+    $nights = $clamp('nights', 3, 60);
+    $people = $clamp('people', 2, 20);
+    $rooms = $clamp('rooms', 1, 10);
+    $tierKey = input('tier');
+    $priceIn = input('price');
+    $result = null;
+    if ($city) {
+        if (!isset($city['tiers'][$tierKey])) $tierKey = (string) array_key_first($city['tiers']);
+        $needsPrice = rmt_tt_needs($city)['price'];
+        $price = is_numeric($priceIn) ? max(0.0, min(100000000.0, (float) $priceIn)) : null;
+        if (!$needsPrice || $price !== null) {
+            $result = rmt_tt_estimate($city, $city['tiers'][$tierKey], $nights, $people, $rooms, (float) $price);
+        }
+    }
+    $meta = [
+        'title' => 'Tourist tax calculator 2026: what your stay really adds | RuinMyTrip',
+        'description' => 'Work out the 2026 tourist tax for your stay in ' . count($cities) . ' cities, from Paris and Rome to Tokyo and New York. Free, no account needed, with the sources for every rate.',
+        'canonical' => url('tourist-tax-calculator'),
+    ];
+    if (($_SERVER['QUERY_STRING'] ?? '') !== '') {
+        $meta['robots'] = 'noindex, follow';
+    } else {
+        $meta['jsonld'] = jsonld(['@context' => 'https://schema.org', '@type' => 'WebApplication', 'name' => 'Tourist tax calculator',
+                                  'url' => url('tourist-tax-calculator'), 'applicationCategory' => 'TravelApplication', 'operatingSystem' => 'Any',
+                                  'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'USD']])
+            . jsonld(['@context' => 'https://schema.org', '@type' => 'FAQPage',
+                      'mainEntity' => array_map(fn($f) => ['@type' => 'Question', 'name' => $f[0],
+                          'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f[1]]], rmt_tt_faq())]);
+    }
+    view('tourist_tax', compact('cities', 'slug', 'city', 'tierKey', 'nights', 'people', 'rooms', 'priceIn', 'result'), $meta);
+}
+
 /** POST /map/save: keep the map on the member's profile. Signed out goes to Join and comes back. */
 function travel_map_save(array $a): void {
     csrf_check();

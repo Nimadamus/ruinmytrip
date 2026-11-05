@@ -1791,3 +1791,24 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
   border:3px solid rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.35);cursor:pointer}
 .leaflet-marker-icon.map-cluster::before{content:"";position:absolute;inset:-7px;border-radius:50%}
 .map-cluster span{pointer-events:none}
+
+/* tourist tax calculator */
+.tt{max-width:760px;padding-top:28px;padding-bottom:48px}
+.tt-kicker{margin:0 0 6px;font-size:.8rem;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.tt-head h1{margin:0 0 8px}
+.tt-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:18px;margin:18px 0}
+.tt-form label{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:.92rem;min-width:0}
+.tt-form select,.tt-form input{width:100%;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit}
+.tt-wide{grid-column:1/-1}
+.tt-result{padding:20px;margin:0 0 26px}
+.tt-total{margin:0 0 4px;font-size:2.4rem;font-weight:750;line-height:1.1;color:var(--ink)}
+.tt-links{display:flex;flex-wrap:wrap;gap:8px 20px;margin:12px 0 0}
+.tt-table,.tt-faq{margin-top:30px}
+.tt-scroll{overflow-x:auto}
+.tt-table table{width:100%;border-collapse:collapse}
+.tt-table th,.tt-table td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tt-table td:first-child{white-space:nowrap}
+.tt-faq h3{margin:16px 0 4px;font-size:1.02rem}
+.tt-faq p{margin:0}
+@media (max-width:520px){.tt-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tt-links a,.tt-table td a,.tt-table p a{text-decoration:underline;text-underline-offset:2px}

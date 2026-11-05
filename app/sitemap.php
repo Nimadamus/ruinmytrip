@@ -82,7 +82,7 @@ function rmt_sitemap_group(string $group): array {
             // in their own sitemaps, when they pass rmt_sitemap_articles() (2026-10-30).
             // /reviews comes back on its own once a traveler, rather than the house account,
             // has published one.
-            foreach (['/', '/map', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start',
+            foreach (['/', '/map', '/tourist-tax-calculator', '/explore', '/events', '/travelers', '/buddies', '/buddies/cruise', '/buddies/backpacking', '/buddies/road-trip', '/founding', '/start',
                       '/editorial-policy', '/terms', '/privacy', '/guidelines', '/affiliate',
                       '/safety', '/contribute', '/about', '/contact'] as $p) $add($p);
             foreach (array_keys(RMT_BUDDY_LANDING) as $bl) $add('/' . rmt_buddy_landing_path($bl));

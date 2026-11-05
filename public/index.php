@@ -70,6 +70,7 @@ $routes = [
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)$#','profile'],
     ['GET',  '#^/feed$#',                      'feed'],
     ['GET',  '#^/map$#',                       'travel_map_page'],
+    ['GET',  '#^/tourist-tax-calculator$#',    'tourist_tax_page'],
     ['POST', '#^/map/save$#',                  'travel_map_save'],
     ['GET',  '#^/u/(?<username>[A-Za-z0-9_]+)/map$#', 'travel_map_page'],
     ['GET',  '#^/card/map/(?<key>[a-z0-9\-]+)\.png$#', 'travel_map_card'],

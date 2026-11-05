@@ -33,6 +33,10 @@
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>
 
+  <?php $ttCity = null; foreach (rmt_tt_cities() as $ttK => $ttC) { if ($ttC['note'] === ($p['slug'] ?? '')) { $ttCity = $ttK; break; } }
+  if ($ttCity !== null || ($p['slug'] ?? '') === 'tourist-taxes-2026'): ?>
+    <p style="margin:22px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : ''))) ?>">Work out the tax on your stay</a></p>
+  <?php endif; ?>
   <?php $bm = $blogMore ?? []; if (!empty($blogDest) && (!empty($bm['posts']) || !empty($bm['guide']) || !empty($bm['buddies']))): ?>
     <div class="card" style="margin:26px 0 0"><div class="card-body">
       <h2 class="h-card" style="margin:0 0 8px">More on <?= e((string) $blogDest['name']) ?></h2>
