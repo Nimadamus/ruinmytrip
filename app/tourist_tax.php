@@ -144,6 +144,22 @@ function rmt_tt_cities(): array {
     return $c;
 }
 
+function rmt_tt_key_for_dest(string $dest): ?string {
+    foreach (rmt_tt_cities() as $k => $c) {
+        if ($c['dest'] === $dest) return (string) $k;
+    }
+    return null;
+}
+
+/** The next $n cities round the list, so every note gets the same number of links from its neighbours. */
+function rmt_tt_neighbours(string $key, int $n): array {
+    $all = array_values(rmt_tt_cities());
+    $at = (int) array_search($key, array_keys(rmt_tt_cities()), true);
+    $out = [];
+    for ($i = 1; $i <= $n; $i++) $out[] = $all[($at + $i) % count($all)];
+    return $out;
+}
+
 /** Which of the form's inputs a city's tiers need. */
 function rmt_tt_needs(array $city): array {
     $n = ['people' => false, 'rooms' => false, 'price' => false, 'per_person_price' => false];

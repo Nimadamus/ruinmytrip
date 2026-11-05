@@ -36,6 +36,10 @@
   <?php $ttCity = null; foreach (rmt_tt_cities() as $ttK => $ttC) { if ($ttC['note'] === ($p['slug'] ?? '')) { $ttCity = $ttK; break; } }
   if ($ttCity !== null || ($p['slug'] ?? '') === 'tourist-taxes-2026'): ?>
     <p style="margin:22px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : ''))) ?>">Work out the tax on your stay</a></p>
+    <?php if ($ttCity !== null): ?>
+      <p class="muted" style="margin:14px 0 0">Tourist tax in other cities:
+        <?php foreach (rmt_tt_neighbours($ttCity, 6) as $i => $ttN): ?><?= $i ? ', ' : ' ' ?><a href="<?= e(url('blog/' . $ttN['note'])) ?>"><?= e($ttN['name']) ?></a><?php endforeach; ?>.</p>
+    <?php endif; ?>
   <?php endif; ?>
   <?php $bm = $blogMore ?? []; if (!empty($blogDest) && (!empty($bm['posts']) || !empty($bm['guide']) || !empty($bm['buddies']))): ?>
     <div class="card" style="margin:26px 0 0"><div class="card-body">

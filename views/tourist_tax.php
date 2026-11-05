@@ -70,10 +70,11 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
   <section class="tt-table">
     <h2>2026 tourist tax by city</h2>
     <div class="tt-scroll"><table>
-      <thead><tr><th>City</th><th>2026 rate</th></tr></thead>
+      <thead><tr><th>City</th><th>2026 rate</th><th><span class="sr-only">Calculator</span></th></tr></thead>
       <tbody>
         <?php foreach ($cities as $k => $c): ?>
-          <tr><td><a href="<?= e(url('tourist-tax-calculator?city=' . $k)) ?>"><?= e($c['name']) ?></a></td><td><?= e($c['rate']) ?></td></tr>
+          <tr><td><a href="<?= e(url('blog/' . $c['note'])) ?>"><?= e($c['name']) ?></a></td><td><?= e($c['rate']) ?></td>
+            <td><a href="<?= e(url('tourist-tax-calculator?city=' . $k)) ?>" aria-label="Work out <?= e($c['name']) ?>">Work it out</a></td></tr>
         <?php endforeach; ?>
       </tbody>
     </table></div>

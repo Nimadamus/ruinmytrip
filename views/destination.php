@@ -549,6 +549,9 @@
           <?php foreach ($relatedPosts as $rp): ?>
             <li style="margin:0 0 6px"><a href="<?= e(url('blog/'.$rp['slug'])) ?>"><?= e((string) $rp['title']) ?></a></li>
           <?php endforeach; ?>
+          <?php if (($ttKey = rmt_tt_key_for_dest((string) $d['slug'])) !== null): ?>
+            <li style="margin:0 0 6px"><a href="<?= e(url('tourist-tax-calculator?city=' . $ttKey)) ?>">Work out the tourist tax on your <?= e($d['name']) ?> stay</a></li>
+          <?php endif; ?>
         </ul>
       <?php endif; ?>
 

@@ -31,5 +31,8 @@ foreach ($C as $k => $c) {
 $copy = file_get_contents(BASE_PATH . '/app/tourist_tax.php') . file_get_contents(BASE_PATH . '/views/tourist_tax.php');
 if (preg_match('/[\x{2013}\x{2014}]/u', $copy)) { echo "FAIL dash in copy\n"; $fail++; }
 if (rmt_tt_money(1234.5, 'EUR') !== '€1,234.50' || rmt_tt_money(7200, 'HUF') !== '7,200 HUF') { echo "FAIL money\n"; $fail++; }
+if (rmt_tt_key_for_dest('paris-france') !== 'paris' || rmt_tt_key_for_dest('nowhere') !== null) { echo "FAIL dest key\n"; $fail++; }
+$nb = array_column(rmt_tt_neighbours('vienna', 2), 'name');
+if ($nb !== ['Amsterdam', 'Barcelona']) { echo "FAIL neighbours wrap\n"; $fail++; }
 echo $fail ? "FAILED\n" : "ok\n";
 exit($fail ? 1 : 0);
