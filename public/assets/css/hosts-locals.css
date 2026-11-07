@@ -140,3 +140,5 @@
 .hl-off{list-style:none;padding:0;margin:8px 0 14px}
 .hl-off li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
 .hl-off-add input{min-height:40px}
+.hl-callout a{text-decoration:underline;text-underline-offset:2px} /* axe link-in-text-block, 2026-11-07 */
+.hl-prose a{text-decoration:underline;text-underline-offset:2px}
