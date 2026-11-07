@@ -24,6 +24,8 @@
       <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
       <a href="<?= e(url('map')) ?>">Travel map</a>
       <a href="<?= e(url('tourist-tax-calculator')) ?>">Tourist tax calculator</a>
+      <a href="<?= e(url('blog/trip-went-wrong-what-you-can-claim')) ?>">Trip went wrong? What to claim</a>
+      <a href="<?= e(url('ruined')) ?>">Travel warnings</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
       <a href="<?= e(url('going')) ?>">Who's going</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a>
