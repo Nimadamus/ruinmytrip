@@ -235,3 +235,59 @@ function rmt_moderation_history(int $limit = 100): array {
                    LEFT JOIN users u ON u.id = m.actor_id
                    ORDER BY m.id DESC LIMIT " . max(1, $limit));
 }
+
+/**
+ * The account behind a reported thing: its author, a message's sender, a meetup's host, a
+ * reference's writer, or the account itself. Null for a stay (two people are in it, and the report
+ * says which; the moderator decides from the report, through the person's own entry).
+ */
+const RMT_MOD_OWNER_COLUMN = [
+    'review' => 'user_id', 'trip' => 'user_id', 'guide' => 'user_id', 'blog_post' => 'user_id',
+    'meetup' => 'host_id', 'buddy' => 'user_id', 'comment' => 'user_id', 'collection' => 'user_id',
+    'post' => 'user_id', 'activity' => 'user_id', 'trip_photo' => 'user_id', 'review_photo' => 'user_id',
+    'activity_photo' => 'user_id', 'message' => 'sender_id', 'trip_message' => 'user_id',
+    'reference' => 'from_user_id',
+];
+
+function rmt_moderation_account_for(string $targetType, int $targetId): ?int {
+    if ($targetId < 1) return null;
+    if ($targetType === 'user') return $targetId;
+    $col = RMT_MOD_OWNER_COLUMN[$targetType] ?? null;
+    $table = RMT_REPORT_TARGETS[$targetType] ?? null;
+    if (!$col || !$table) return null;
+    $id = (int) (q_one("SELECT {$col} AS uid FROM {$table} WHERE id = ?", [$targetId])['uid'] ?? 0);
+    return $id > 0 ? $id : null;
+}
+
+/**
+ * Suspend or reinstate an account (2026-11-07). Until this existed a moderator could hide what a
+ * harasser posted and do nothing about the harasser: the only way to suspend anybody was a script
+ * run against the production database.
+ *
+ * Suspended means: signed out on the next request (current_user() refuses the status), unable to
+ * sign in or reset a password, and gone from every public list that already filters on an active
+ * author. Nothing is deleted, so reinstating puts everything back. Staff and the editorial account
+ * are not suspended from here, and nobody suspends themselves. Every decision is a moderation_log
+ * row with the status before and after.
+ *
+ * @return array{ok:bool,error?:string,from?:string,to?:string}
+ */
+function rmt_account_set_status(int $actorId, int $userId, string $action, ?int $reportId = null, string $note = ''): array {
+    $to = ['suspend' => 'suspended', 'reinstate' => 'active'][$action] ?? null;
+    if (!$to) return ['ok' => false, 'error' => 'Unknown action.'];
+    $u = q_one('SELECT id, role, status FROM users WHERE id = ?', [$userId]);
+    if (!$u) return ['ok' => false, 'error' => 'That account no longer exists.'];
+    if ($userId === $actorId) return ['ok' => false, 'error' => 'You cannot suspend your own account.'];
+    if (in_array((string) $u['role'], ['admin', 'mod', defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial'], true)) {
+        return ['ok' => false, 'error' => 'Staff and editorial accounts are not suspended from the moderation queue.'];
+    }
+    $from = (string) $u['status'];
+    if (!in_array($from, ['active', 'suspended'], true)) return ['ok' => false, 'error' => 'This account is ' . $from . ' and cannot be changed here.'];
+    if ($from !== $to) q_run('UPDATE users SET status = ? WHERE id = ?', [$to, $userId]);
+    q_run('INSERT INTO moderation_log
+           (actor_id, target_type, target_id, report_id, action, from_status, to_status, note, created_at)
+           VALUES (?,?,?,?,?,?,?,?,?)',
+          [$actorId ?: null, 'user', $userId, $reportId ?: null, $action, $from, $to,
+           mb_substr(trim($note), 0, 500) ?: null, date('Y-m-d H:i:s')]);
+    return ['ok' => true, 'from' => $from, 'to' => $to];
+}

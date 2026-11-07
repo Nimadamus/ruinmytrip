@@ -6249,6 +6249,16 @@ function admin_moderation_act(array $a): void {
     redirect('/admin/moderation');
 }
 
+/** POST /admin/moderation/account — suspend or reinstate the account behind a report (app/moderation.php). */
+function admin_moderation_account(array $a): void {
+    require_role('admin', 'mod'); csrf_check();
+    $res = rmt_account_set_status((int) current_user()['id'], (int) input('user_id'), (string) input('action'),
+                                  (int) input('report_id') ?: null, (string) input('note'));
+    flash($res['ok'] ? ($res['to'] === 'suspended' ? 'Account suspended, and recorded.' : 'Account reinstated, and recorded.')
+                     : ($res['error'] ?? 'That could not be done.'));
+    redirect('/admin/moderation');
+}
+
 /** GET /admin/suggestions — places travelers have asked us to add. */
 function admin_suggestions(array $a): void {
     require_role('admin', 'mod');

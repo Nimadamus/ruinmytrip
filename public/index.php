@@ -309,6 +309,7 @@ $routes = [
     ['GET',  '#^/admin/safety$#',               'admin_safety'],
     ['POST', '#^/admin/hosts/decide$#',         'admin_hosts_decide'],
     ['POST', '#^/admin/moderation/act$#',       'admin_moderation_act'],
+    ['POST', '#^/admin/moderation/account$#',   'admin_moderation_account'],
     ['POST', '#^/admin/suggestions/resolve$#',  'admin_suggestions_resolve'],
     ['GET',  '#^/admin/place/(?<id>\d+)$#',     'admin_place_form'],
     ['POST', '#^/admin/place/(?<id>\d+)$#',     'admin_place_save'],

@@ -69,6 +69,24 @@
           <button class="btn btn-ghost" name="action" value="remove">Remove</button>
           <button class="btn btn-ghost" name="action" value="restore">Restore</button>
         </form>
+        <?php /* The account behind it: hiding a harasser's post does nothing about the harasser. */
+          $modUid = rmt_moderation_account_for((string) $item['target_type'], (int) $item['target_id']);
+          $modAcct = $modUid ? q_one('SELECT id, username, role, status FROM users WHERE id = ?', [$modUid]) : null; ?>
+        <?php if ($modAcct && !in_array((string) $modAcct['role'], ['admin', 'mod', RMT_EDITORIAL_ROLE], true)
+                  && in_array((string) $modAcct['status'], ['active', 'suspended'], true)): ?>
+          <form method="post" action="<?= e(url('admin/moderation/account')) ?>" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0 0">
+            <?= csrf_field() ?>
+            <input type="hidden" name="user_id" value="<?= (int) $modAcct['id'] ?>">
+            <input type="hidden" name="report_id" value="<?= (int) $item['first_report_id'] ?>">
+            <span class="hint">Account @<?= e((string) $modAcct['username']) ?> is <strong><?= e((string) $modAcct['status']) ?></strong>.</span>
+            <input type="text" name="note" placeholder="Why (recorded in the log)" maxlength="500" style="flex:1;min-width:200px" required>
+            <?php if ($modAcct['status'] === 'active'): ?>
+              <button class="btn btn-ghost" name="action" value="suspend">Suspend account</button>
+            <?php else: ?>
+              <button class="btn btn-ghost" name="action" value="reinstate">Reinstate account</button>
+            <?php endif; ?>
+          </form>
+        <?php endif; ?>
       </div></section>
     <?php endforeach; ?>
   <?php endif; ?>
