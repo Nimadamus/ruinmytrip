@@ -17,7 +17,9 @@ PAGES = {'day-of-the-dead': '/e/day-of-the-dead-oaxaca', 'yi-peng': '/e/yi-peng-
 # One sourced scam section per city: campaign scams-<city slug> lands on /d/<slug>#scams.
 SCAM_CITIES = ['bangkok-thailand', 'rome-italy', 'paris-france', 'barcelona-spain', 'marrakech-morocco', 'istanbul-turkiye',
                'cairo-egypt', 'prague-czechia', 'lisbon-portugal', 'amsterdam-netherlands', 'mexico-city-mexico',
-               'cancun-mexico', 'rio-de-janeiro-brazil', 'ho-chi-minh-city-vietnam', 'seminyak-bali-indonesia', 'jaipur-india']
+               'cancun-mexico', 'rio-de-janeiro-brazil', 'ho-chi-minh-city-vietnam', 'seminyak-bali-indonesia', 'jaipur-india',
+               'phuket-thailand', 'dubai-uae', 'athens-greece', 'buenos-aires-argentina', 'cusco-peru', 'cartagena-colombia',
+               'kathmandu-nepal', 'siem-reap-cambodia']
 for _c in SCAM_CITIES:
     PAGES['scams-' + _c] = '/d/' + _c
 SOURCES = {'reddit', 'facebook', 'instagram', 'tiktok', 'x', 'youtube', 'linkedin', 'pinterest', 'whatsapp', 'telegram',

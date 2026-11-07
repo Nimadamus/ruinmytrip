@@ -1732,5 +1732,881 @@
    "https://travel.gc.ca/destinations/india"
   ],
   "notes": "THIN ON CITY DETAIL: all sources are national India advice; no fetched official source names Jaipur or Rajasthan for any scam. The gem-export scam is national Canada advice (it does not name Jaipur). FCDO also warns that criminals impersonate British High Commission contact details (not listed). No official Rajasthan tourism or police page with scam warnings was fetched."
+ },
+ "phuket-thailand": {
+  "items": [
+   {
+    "name": "Jet-ski and motorbike rental damage claims",
+    "what_happens": "Rental businesses have accused renters of damaging the jet-ski or motorbike on return and held passports left as a guarantee; renters who refused to pay have been harassed and threatened.",
+    "avoid": "Never leave your passport as collateral, read the contract and check the insurance, photograph existing damage before you set off, and rent only from reputable companies.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+      "quote": "Do not hand your passport over as a guarantee, for example to motorcycle or jet-ski rental businesses."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "Rental companies have at times accused renters of causing damage upon return of the equipment."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Bar and nightclub overcharging",
+    "what_happens": "Some bars, nightclubs and entertainment venues try to charge exorbitant prices, and arguments over the bill can lead to threats of violence.",
+    "avoid": "Confirm prices before you order, avoid running a tab, and do not leave your credit card with bar or restaurant staff.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "Some bars, nightclubs and entertainment venues may try to charge exorbitant prices. Discussions about overcharging may lead to threats of violence."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Drink spiking",
+    "what_happens": "Drink spiking and drug-assisted sexual assault happen in tourist areas around Thailand, with male and female victims; spiked food, gum and cigarettes are also used to rob people.",
+    "avoid": "Do not leave drinks unattended, do not accept drinks or snacks from strangers, and pre-arrange your transport home.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+      "quote": "Drink spiking and drug-assisted sexual assault does happen in tourist areas around Thailand, with male and female victims."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "These items may contain drugs that could put you at risk of sexual assault and robbery."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Taxi and tuk-tuk disputes, unlicensed vehicles",
+    "what_happens": "Fare disputes with taxi and tuk-tuk operators occur and have occasionally turned violent or intimidating; unlicensed vehicles (black and white plates) are not insured to carry passengers and may not use meters.",
+    "avoid": "Use licensed taxis from official stands, a trusted ride-hailing app or hotel transport, and pre-arrange late-night rides; if a dispute turns threatening, ask the police for help.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "Disputes with taxis operators, tuk-tuks (motorized rickshaws), etc., occur and have occasionally resulted in violence or intimidation."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+      "quote": "Pre-arrange your transport home so you do not have to accept lifts in unlicensed vehicles."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Card fraud and ATM skimming",
+    "what_happens": "Card fraud occurs and ATMs have been fitted with skimmers.",
+    "avoid": "Keep your card in sight during payments, use ATMs inside banks, cover the keypad and check your statements.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+      "quote": "There have been incidents of ATM skimming. Use an ATM in a bank and always protect your PIN."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "Credit card and ATM fraud occurs. Be cautious when using debit or credit cards"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Gem and jewellery resale scam",
+    "what_happens": "Merchants sell lower-quality gems or jewellery at inflated prices with a promise that you can resell them at a profit; the guarantees are not always honoured.",
+    "avoid": "Do not buy gems or jewellery as an investment or on a resale promise.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/thailand",
+      "quote": "merchants sell lower-quality items at inflated prices with promises that the items can be resold at a profit"
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+   "https://travel.gc.ca/destinations/thailand"
+  ],
+  "notes": "All items are national Thailand advice; neither FCDO nor Canada names Phuket for any scam (Canada names Phuket only for jellyfish, riptides and 2025 defused devices). Items chosen are ones that plausibly apply in Phuket: the rental item explicitly covers jet-skis. Phuket airport (phuket.airportthai.co.th) reset the connection, so its official taxi counters are not cited. Job scams (FCDO, Canada) were left out as not tourist-specific."
+ },
+ "dubai-uae": {
+  "items": [
+   {
+    "name": "Calls from fake authorities or banks",
+    "what_happens": "Scammers phone foreigners claiming to be local authorities or financial institutions, trying to collect personal information or get a fund transfer to \"resolve\" administrative or customs issues.",
+    "avoid": "Do not send money or give personal or card details over the phone; hang up and contact the authority or your bank on a number you look up yourself.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "Foreigners have received calls from scammers claiming to be local authorities or financial institutions."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Compromised public Wi-Fi",
+    "what_happens": "Cybercrime is common, and criminals may compromise public Wi-Fi networks to steal card or personal information.",
+    "avoid": "Avoid public Wi-Fi for banking or purchases, and do not buy on unencrypted websites.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "Perpetrators may compromise public Wi-Fi networks to steal credit card or personal information."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Card and ATM fraud",
+    "what_happens": "Credit card and ATM fraud occur.",
+    "avoid": "Keep your card in sight, use ATMs inside banks or businesses, cover the keypad and check your statements.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "Credit card and ATM fraud occur. Be cautious when using debit or credit cards"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Drink spiking",
+    "what_happens": "Criminals can spike drinks and then assault or rob the victim.",
+    "avoid": "Do not accept drinks from strangers or leave your drink unattended.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/united-arab-emirates/safety-and-security",
+      "quote": "Do not accept drinks from strangers or leave your drink unattended. Criminals can spike drinks and assault or rob you."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "Never leave food or drinks unattended or in the care of strangers"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Unlicensed taxis and unagreed private-taxi fares",
+    "what_happens": "Official advice is to use only licensed taxis or recognised apps; in Dubai, authorised taxis are cream with coloured roofs and street taxis run on the meter, while private taxis charge flat rates.",
+    "avoid": "Take taxis from the official queue or a recognised app, pay by the meter, and agree the fare in advance if you use a private taxi.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/united-arab-emirates/safety-and-security",
+      "quote": "In Dubai authorised taxis are painted cream with different coloured roofs"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "If using a private taxi, negotiate the fare in advance"
+     },
+     {
+      "publisher": "Roads and Transport Authority Dubai (rta.ae)",
+      "url": "https://www.rta.ae/wps/portal/rta/ae/public-transport/taxi",
+      "quote": "Pay the taxi fare as per the meter."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Romance scams",
+    "what_happens": "Romance scams are common, and victims have lost thousands of dollars, including people who travel to the UAE to meet someone they met online.",
+    "avoid": "If you travel to meet an online contact, keep hold of your passport, money and return ticket.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/united-arab-emirates",
+      "quote": "Romance scams are common. Victims of these types of scams have lost thousands of dollars."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/united-arab-emirates/safety-and-security",
+   "https://travel.gc.ca/destinations/united-arab-emirates",
+   "https://www.rta.ae/wps/portal/rta/ae/public-transport/taxi"
+  ],
+  "notes": "THIN ON CITY-SPECIFIC SCAMS: FCDO and Canada name Dubai only for taxi colours; the other items are national UAE advice. The taxi item is a \"use the official option\" item: no source describes a specific Dubai taxi scam. Dubai Police news pages did not respond to the fetcher, so they are not cited. FCDO also covers property scams (investment, not listed)."
+ },
+ "athens-greece": {
+  "items": [
+   {
+    "name": "Pickpockets on the metro and airport trains",
+    "what_happens": "Thefts of passports, wallets and handbags are common on the metro and in crowded tourist places in central Athens; Canada also names trains to and from the airport and Larissa and Peloponnese stations.",
+    "avoid": "Keep bags closed and in front of you on the metro and airport trains, do not carry all valuables in one place, and carry a copy of your passport rather than the original.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/greece/safety-and-security",
+      "quote": "Thefts of passports, wallets and handbags are common on the metro and in crowded tourist places, particularly in central Athens."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "on public transportation, including metro and trains to and from Athens International Airport"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Distraction thefts and unsolicited \"help\"",
+    "what_happens": "Organised groups of thieves use distraction techniques at tourist sites, in restaurants, bars, patios and hotel lobbies, and on beaches.",
+    "avoid": "Be wary of unsolicited offers or advice from strangers, and avoid showing signs of affluence.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "Organized groups of thieves often use distraction techniques and are particularly active:"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "be wary of unsolicited offers or advice from strangers"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Airport taxi fare",
+    "what_happens": "Taxis between Athens International Airport and the city run on fixed rates, which Canada advises confirming before you set off.",
+    "avoid": "Confirm the fixed rate with the driver before departure, or book a licensed cab through an app such as Uber or Free Now.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "There are fixed rates for transportation to and from Athens International Airport. Confirm the rate before departure."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/greece/safety-and-security",
+      "quote": "taxi-hailing apps such as Uber or Free Now which supply licensed cabs"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Drink spiking",
+    "what_happens": "Drinks can be spiked around bars and clubs, and spiked food, gum or cigarettes have been used to rob or assault people.",
+    "avoid": "Watch each other's drinks, do not leave food or drinks unattended, and do not accept snacks or drinks from new acquaintances.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/greece/safety-and-security",
+      "quote": "keep an eye on each other's drinks to make sure they do not get spiked"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "Never leave food or drinks unattended or in the care of strangers."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Card and ATM fraud",
+    "what_happens": "Credit card and ATM fraud occurs.",
+    "avoid": "Keep your card in sight, use ATMs in public areas or inside a bank, cover the keypad and check your statements.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/greece",
+      "quote": "Credit card and ATM fraud occurs."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/greece/safety-and-security",
+   "https://travel.gc.ca/destinations/greece"
+  ],
+  "notes": "THIN ON SCAMS: pickpocketing and the airport fixed fare are Athens-specific; spiking and card fraud are national Greece advice. The often-reported Athens bar/\"drinks with a stranger\" overcharge scam was not found in any fetched official source, so it is not claimed. Athens International Airport (aia.gr) returned HTTP 403, so its fixed-fare page is not cited; Canada notes the Tourist Police on 1571."
+ },
+ "buenos-aires-argentina": {
+  "items": [
+   {
+    "name": "The \"mustard\" spill distraction",
+    "what_happens": "Someone sprays mustard or another substance on you, and while an accomplice \"helps\" clean it off, your bags are taken. Thieves, often women, work in teams.",
+    "avoid": "Politely but firmly refuse help and walk away, keeping hold of your bags.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "A common form of distraction theft reported in Buenos Aires is the 'mustard scam'."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "spraying a substance on victims and then robbing them while pretending to help clean the stain"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Phone lifted under merchandise at café tables",
+    "what_happens": "A street seller puts merchandise such as dishcloths or socks on top of your phone at a restaurant table, then picks up the phone along with it.",
+    "avoid": "Keep your phone off the table, especially on terraces, and be suspicious of vendors who approach your table.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "putting merchandise such as dishcloths or socks on top of your phone at restaurants and picking up your phone along with the merchandise"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake \"hotel guests\" at check-in",
+    "what_happens": "Thieves posing as hotel guests snatch bags while you are checking in.",
+    "avoid": "Keep your bags close, or between your feet, at hotel and hostel reception.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "keep your bags close while you are checking into a hotel or hostel - thieves posing as hotel guests can snatch them"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Counterfeit change from taxis and unofficial airport taxis",
+    "what_happens": "Unscrupulous taxi drivers sometimes swap your good banknotes for counterfeit ones; at Ezeiza (Ministro Pistarini) airport only officially marked taxis should be used.",
+    "avoid": "Pay with exact change, book a taxi by app or use a radio taxi with a visible door logo, and use the official taxi stand in the airport arrivals area.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "Try to pay with exact change, since unscrupulous taxi drivers sometimes trade counterfeit bills for good ones"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "If you hail a taxi in the street, only use a 'radio taxi'. These have a clearly visible logo on the car doors."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "Only use officially marked taxis for travel to and from Buenos Aires' Ministro Pistarini International Airport."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Followed from ATMs and exchange bureaus",
+    "what_happens": "Criminals wait outside ATMs and casas de cambio, or follow people after they withdraw or exchange money.",
+    "avoid": "Use indoor ATMs in hotels or supermarkets, avoid ATMs at night, and use official exchange bureaus only.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "or follow a victim after they exchange or withdraw money"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "Use official exchange bureaus"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Express kidnapping",
+    "what_happens": "Victims are briefly abducted and forced to empty their bank accounts by transfer or at ATMs; FCDO links the risk to casual taxis.",
+    "avoid": "Avoid casual street taxis, do not flaunt expensive items, and let someone know where you are.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "Victims of express kidnap are held and forced to empty their bank accounts by making bank transfers or going to ATMs"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/argentina",
+      "quote": "express kidnappings involving tourists have occurred in Argentina"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Spiking and robbery by new acquaintances",
+    "what_happens": "Food and drinks can be spiked, and tourists have been robbed or assaulted after inviting someone they had just met, online or in person, back to their accommodation.",
+    "avoid": "Do not leave drinks unattended, do not accept food or drink from strangers, and be cautious about inviting new acquaintances to where you are staying.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "There have been reports of foreign tourists being robbed or assaulted after inviting into their accommodation someone they have recently met, online or in person."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+      "quote": "Drinks and food can be spiked and could put you at risk of robbery or assault."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/argentina/safety-and-security",
+   "https://travel.gc.ca/destinations/argentina",
+   "https://data.buenosaires.gob.ar/dataset/transportes-autorizados-pasajeros"
+  ],
+  "notes": "FCDO names Buenos Aires for the mustard scam and lists BA hotspots (Palermo, San Telmo, La Boca, Florida Street, Retiro and others); Canada names BA tourist areas and Ezeiza airport. The phone/merchandise, counterfeit-change, check-in and ATM items are national Argentina advice that applies in BA. The city radio-taxi list (data.buenosaires.gob.ar, linked by FCDO) could not be fetched (connection dropped), so it is listed as a link only, not quoted."
+ },
+ "cusco-peru": {
+  "items": [
+   {
+    "name": "Street money changers with old or fake notes",
+    "what_happens": "Street money changers in Cusco tourist areas have passed off intis (a former currency, no longer in circulation), and counterfeit soles and US dollars circulate widely; street changers may also work with pickpockets.",
+    "avoid": "Do not change money on the street; use banks or official exchange offices and check notes you receive.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+      "quote": "There have been reports of street money changers in Cusco tourist areas fraudulently using Peruvian intis (former currency now out of circulation)."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "Avoid moneychangers on the street, as they may carry counterfeit currency or work with pickpockets."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Unscrupulous tour agents and guides",
+    "what_happens": "Unscrupulous tour agents have targeted young women travelling alone in the Cusco area, and tour guides have been implicated in some sexual assaults.",
+    "avoid": "Book through registered agencies (iPerú can tell you which are reputable), buy your own drinks and keep sight of them, and avoid going alone with a guide you have just met.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+      "quote": "Unscrupulous tour agents have targeted young females, travelling alone in the Cusco area."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "In some cases, tour guides have been implicated."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Machu Picchu tickets from informal sellers",
+    "what_happens": "Informal agencies and operators have offered entry tickets to Machu Picchu after they were already sold out; the official tourism site advises verifying agencies and payment account names.",
+    "avoid": "Buy tickets through the Ministry of Culture's official sale channels or in person in Machu Picchu Pueblo, and check that any agency is registered before you pay.",
+    "sources": [
+     {
+      "publisher": "Ministerio de Cultura del Perú, Dirección Desconcentrada de Cultura Cusco",
+      "url": "https://www.culturacusco.gob.pe/noticia/imagen/comunicado-31/",
+      "quote": "ofrecen boletos de ingreso, cuando ya se encuentran agotados"
+     },
+     {
+      "publisher": "PROMPERÚ (peru.travel, official Peru tourism site)",
+      "url": "https://www.peru.travel/news/how-to-buy-tickets-to-visit-the-historic-sanctuary-of-machupicchu",
+      "quote": "Verify the authenticity of the agencies, validate payment account names, and seek official agency information from the Ministry of Foreign Trade and Tourism."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake taxis and express kidnapping",
+    "what_happens": "Criminals posing as taxi drivers rob tourists around airports and bus terminals, and express kidnappings, where victims are forced to withdraw money from ATMs, often involve fake or gang-linked taxi drivers.",
+    "avoid": "Use authorised taxis from inside the airport or bus terminal, a reputable company or a ride-hailing app, or ask your hotel to book; do not hail taxis on the street.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+      "quote": "Incidents often involve armed criminals posing as taxi drivers, or taxi drivers working for organised gangs."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "Only use authorized cabs located inside airport terminals and bus stations"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake police",
+    "what_happens": "Thieves pose as police officers to win victims' trust, and some real officers have demanded money to dismiss minor offences.",
+    "avoid": "Ask to see official ID, note the officer's name, badge number and district, and ask for any fine in writing to pay later.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "Thieves also pose as police officers to gain the confidence and cooperation of their potential victims."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Spill-and-clean distraction thefts",
+    "what_happens": "Street crime is a significant problem in Cusco; a common ruse is spraying a substance on someone and robbing them while \"helping\" clean it, or asking questions while an accomplice steals.",
+    "avoid": "Refuse help from strangers after a spill, keep moving, and keep bags closed and in front of you.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+      "quote": "Street crime, including muggings and thefts, is a significant problem in Lima, Cusco, Arequipa and other major cities."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "A common scam involves spraying a substance on victims and then robbing them while pretending to help clean the stain"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Unregulated ayahuasca and San Pedro \"cleansing\"",
+    "what_happens": "Shamans and others offer \"spiritual cleansing\" ceremonies to tourists in and around Cusco; the brews are unregulated, people have become seriously ill or died, and sexual assaults have been reported.",
+    "avoid": "Avoid spiritual cleansing and ayahuasca ceremonies.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+      "quote": "Shamans and other people offer 'spiritual cleansing' (Ayahuasca or San Pedro) to tourists in the Amazon area, northern Peru and Cusco."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/peru",
+      "quote": "Avoid participating in spiritual cleansing or ayahuasca ceremonies."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/peru/safety-and-security",
+   "https://travel.gc.ca/destinations/peru",
+   "https://www.peru.travel/en/useful-data/iperu",
+   "https://www.culturacusco.gob.pe/noticia/imagen/comunicado-31/"
+  ],
+  "notes": "FCDO names Cusco for money changers, tour agents, street crime and ayahuasca; Canada lists Cusco for petty crime. Fake taxis, fake police and spill thefts are national Peru advice. The Cultura Cusco notice (Spanish, published 26 July 2023) is dated; the Ministry's online sale domain has varied (peru.travel in 2023 named machupicchu.gob.pe; recent Ministry notices name tuboleto.cultura.pe), so the item does not name a single domain."
+ },
+ "cartagena-colombia": {
+  "items": [
+   {
+    "name": "Scopolamine drugging",
+    "what_happens": "Criminals drug victims with scopolamine or similar drugs in food, drinks, cigarettes, aerosols or even flyers, then rob, assault or express-kidnap them; they often work in teams with women gaining the victim's trust, and Canada names Cartagena.",
+    "avoid": "Never leave food or drinks unattended and do not accept anything from strangers or new acquaintances, including on the street.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Criminals often work in teams, with women easing the victim into a false sense of security."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "Criminals can administer drugs through food, drinks, cigarettes, aerosols and even paper flyers."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Dating-app lures",
+    "what_happens": "Criminals use dating apps and websites to find foreigners travelling alone, then drug and rob them.",
+    "avoid": "Do not go to a stranger's accommodation or invite strangers to yours, and meet only in busy public places.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "Criminals use dating applications and websites to identify and lure foreign nationals who are travelling alone and looking to meet local people."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "Do not accept invitations from strangers to their accommodation, and do not invite strangers to your accommodation."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Tourist overcharging",
+    "what_happens": "Scammers in popular tourist areas charge tourists elevated prices for services, food and drink, including on cards.",
+    "avoid": "Ask for a printed price list before ordering, and keep your card in sight.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Card overcharging also happens, especially in popular tourist areas, where scammers target tourists by charging them elevated prices for services, food and drink."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake police checking your money",
+    "what_happens": "People posing as police ask to inspect your documents or money, supposedly to check for counterfeits, and rob you.",
+    "avoid": "Do not hand over money or documents; ask to do it at the nearest police station (CAI), your hotel or another public place.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "Criminals posing as police are known to operate in Bogotá and elsewhere. They may ask to inspect money to see if it is counterfeit."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Individuals posing as police officers have approached foreigners to verify their documents or foreign currency with the intent to rob them."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Express kidnapping in unlicensed taxis",
+    "what_happens": "Express kidnappings, assaults and robberies happen in unlicensed taxis; victims are forced to withdraw cash from ATMs, sometimes held overnight for a second withdrawal.",
+    "avoid": "Book taxis by phone, app or through your hotel or restaurant; do not hail on the street, and use ATMs inside banks or malls in business hours.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "There have been reports of express kidnappings, assaults and robberies in unlicensed taxis."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Express kidnappings are frequent and often occur in affluent areas, as well as in tourist areas."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Unlicensed tour boats",
+    "what_happens": "Unlicensed tour boats that do not meet safety standards have been involved in boating accidents; Canada names Cartagena.",
+    "avoid": "Choose a reputable, licensed boat company and do not board a boat that looks unsafe.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Due to unlicensed tour boats not meeting safety standards, boating accidents have occurred"
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+   "https://travel.gc.ca/destinations/colombia"
+  ],
+  "notes": "Canada names Cartagena for scopolamine drugging and unlicensed tour boat accidents (in bulleted lists after the quoted lines); FCDO names the Caribbean coast for street crime. Dating-app, overcharging, fake-police and taxi items are national Colombia advice that applies in Cartagena. No official Cartagena city or police page with scam warnings was fetched."
+ },
+ "kathmandu-nepal": {
+  "items": [
+   {
+    "name": "Helicopter rescue and cheap-trek scams",
+    "what_happens": "Some trekking guides take inexperienced trekkers up too fast and then call expensive helicopter evacuations they take a cut from; documented scams include unnecessary evacuations, falsified documents and inflated bills.",
+    "avoid": "Book with registered, reputable trekking agencies and helicopter companies, avoid unusually cheap packages, ask for a medical assessment before agreeing to an evacuation, and keep copies of all documents.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/nepal/safety-and-security",
+      "quote": "some trekking guides taking inexperienced trekkers to high altitudes too quickly, and then calling in expensive helicopter medivacs from which the guides take a cut"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/nepal",
+      "quote": "There have been documented cases of helicopter rescue and insurance scams in Nepal."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Pickpockets in Thamel, Sanepa and Kupondol",
+    "what_happens": "Pickpockets and bag-snatchers work airports, buses and the tourist areas of Kathmandu, especially Thamel, Sanepa and Kupondol; crime rises in the September to November festival season.",
+    "avoid": "Keep bags closed and in front of you, carry little cash, and take extra care in the evening and in crowds.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/nepal/safety-and-security",
+      "quote": "Watch out for pickpockets and bag-snatchers, particularly in airports, on buses and in areas popular with foreign nationals like Thamel, Sanepa and Kupondol in Kathmandu."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/nepal",
+      "quote": "Take particular care when walking around Kupandol, Sanepa and Thamel, popular tourist spots in Kathmandu, where pickpocketing is common."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Drink spiking",
+    "what_happens": "Drinks, snacks, gum or cigarettes offered by strangers may be drugged, putting you at risk of robbery or sexual assault.",
+    "avoid": "Do not leave drinks unattended and do not accept food, drinks or cigarettes from new acquaintances.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/nepal/safety-and-security",
+      "quote": "Be wary of accepting drinks from strangers and do not leave drinks unattended."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/nepal",
+      "quote": "Avoid accepting snacks, beverages, gum or cigarettes from new acquaintances, as these items may contain drugs"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Theft from hotel rooms",
+    "what_happens": "Thefts from hotel rooms occur.",
+    "avoid": "Keep valuables in a hotel safe where possible.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/nepal",
+      "quote": "Theft also occurs from hotel rooms."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/nepal/safety-and-security",
+      "quote": "Keep valuables in a hotel safe if possible."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/nepal/safety-and-security",
+   "https://travel.gc.ca/destinations/nepal"
+  ],
+  "notes": "THIN: pickpocketing is Kathmandu-specific in both sources. The helicopter-rescue scam happens on treks, not in the city itself, but it is the main official scam warning for Nepal and treks are typically booked in Kathmandu. Spiking and hotel-room theft are national Nepal advice. No Nepal Tourism Board page with scam warnings could be fetched (the TIMS page returned 404)."
+ },
+ "siem-reap-cambodia": {
+  "items": [
+   {
+    "name": "Fake motorbike taxi drivers around Pub Street",
+    "what_happens": "Lone women have been sexually assaulted by men claiming to be motorbike taxi drivers in the Pub Street area of Siem Reap.",
+    "avoid": "Be wary of approaches and offers of transport from strangers; arrange rides through your hotel or a ride-hailing app, especially late at night.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "lone women being sexually assaulted by men claiming to be motorbike taxi drivers in the Pub Street area of Siem Reap"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Bag snatching from tuk-tuks and motorbikes",
+    "what_happens": "Thieves on motorbikes cut bag straps and snatch bags and phones from tourists on foot, in tuk-tuks and on motorbikes, often causing injury; Canada names Siem Reap.",
+    "avoid": "Carry bags on the side away from the road, do not put bags in a bicycle basket, prefer tuk-tuks with side grills, and keep valuables in the hotel safe.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "Thieves will cut bag straps and snatch bags or phones from tourists on foot or in tuk-tuks and on motorbikes, often causing injury."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cambodia",
+      "quote": "Theft targeting foreigners is frequent on sidewalks, on motorcycles and tuktuks (rickshaws) in:"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Rigged card games and \"meet my family\" invitations",
+    "what_happens": "Tourist scams include card games, after which criminals sometimes take travellers to ATMs and force them to withdraw money; FCDO also warns about strangers who befriend you quickly and invite you home to meet their family.",
+    "avoid": "Decline invitations from people who befriend you quickly, and never join card games with strangers.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cambodia",
+      "quote": "Scams targeting tourists occur, including card games. The criminals sometimes take travellers to ATMs and force them to withdraw money."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "wary if a Cambodian or other foreign national befriends you quickly and invites you to their home or hotel to meet their family"
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake dollar bills in change",
+    "what_happens": "Travellers have been given fake US dollar bills as change in shops and clubs.",
+    "avoid": "Check that notes you receive are genuine and are not damaged or torn.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "Travellers have reported fake dollar bills being given as change in shops and clubs."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Extra \"fees\" at land border crossings",
+    "what_happens": "Travellers arriving overland have been asked by border officials for extra charges before being allowed into Cambodia, and individuals offer \"help\" with documents or transport.",
+    "avoid": "Get an e-visa in advance through the official government service, and be careful about accepting help with paperwork or transport at the border.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cambodia",
+      "quote": "Some have reported that border officials demanded they pay extra charges before they can enter Cambodia."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cambodia",
+      "quote": "Carefully consider accepting assistance from individuals offering to help with documentation or transportation."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Theft from luggage on the Phnom Penh bus",
+    "what_happens": "Items have been taken from luggage in bus luggage compartments, especially between Phnom Penh and Siem Reap, and from passengers' bags while they sleep.",
+    "avoid": "Keep valuables and your passport in a bag on your lap, not in the hold, and stay alert on overnight or long journeys.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cambodia",
+      "quote": "Items have been removed from luggage stored in the luggage compartments of buses, especially on the journey between Phnom Penh and Siem Reap."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "There have been incidents on bus journeys where passengers have had items taken from bags while asleep."
+     }
+    ],
+    "checked": "2026-11-07"
+   },
+   {
+    "name": "Drink spiking",
+    "what_happens": "Police have reported drink spiking in some bars visited by foreigners.",
+    "avoid": "Do not leave drinks unattended or accept drinks from strangers.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+      "quote": "Police have reported instances of drink spiking in some bars visited by foreign nationals. Do not leave drinks unattended."
+     }
+    ],
+    "checked": "2026-11-07"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/cambodia/safety-and-security",
+   "https://travel.gc.ca/destinations/cambodia",
+   "https://www.angkorenterprise.gov.kh/en"
+  ],
+  "notes": "FCDO names Siem Reap's Pub Street; Canada names Siem Reap for street theft and the Phnom Penh-Siem Reap bus. Card games, fake notes, spiking and border fees are national Cambodia advice; the border item applies to overland arrivals (e.g. from Thailand). Angkor Enterprise is listed only as the official Angkor pass seller; its page does not itself warn about fake tickets, so no ticket scam is claimed. Job scams are centred on Sihanoukville, Poipet and border areas (not listed)."
  }
 }
