@@ -135,11 +135,19 @@ const RMT_DEST_SOCIAL_TITLE_TEST_ENDED = [
  * Off: set this to false. Read: impressions, clicks and position, test against control, 28 days.
  */
 const RMT_SCAM_TITLE_TEST = true;
+/* The test group is fixed at the 16 it started with. A city that gains a scam section later keeps
+   the control title, so the groups being compared do not change part way through. */
+const RMT_SCAM_TITLE_TEST_CITIES = [
+    'amsterdam-netherlands', 'bangkok-thailand', 'barcelona-spain', 'cairo-egypt', 'cancun-mexico',
+    'ho-chi-minh-city-vietnam', 'istanbul-turkiye', 'jaipur-india', 'lisbon-portugal', 'marrakech-morocco',
+    'mexico-city-mexico', 'paris-france', 'prague-czechia', 'rio-de-janeiro-brazil', 'rome-italy',
+    'seminyak-bali-indonesia',
+];
 
 function rmt_destination_scam_title(array $d): ?array {
     if (!RMT_SCAM_TITLE_TEST || !function_exists('rmt_city_scams')) return null;
     $slug = (string) ($d['slug'] ?? '');
-    if ($slug === '' || !rmt_city_scams($slug)) return null;
+    if ($slug === '' || !in_array($slug, RMT_SCAM_TITLE_TEST_CITIES, true) || !rmt_city_scams($slug)) return null;
     $n = (string) $d['name'];
     return [
         $n . ' scams, tourist traps and costs (2026) | RuinMyTrip',

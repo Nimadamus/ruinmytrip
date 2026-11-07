@@ -13,7 +13,7 @@ pages did not have, and lost. This one promises exactly the section the page now
 ranks "[city] scams" as medium demand per city, with a results page that already holds scaled AI scam
 sites, which a sourced section can beat.
 
-**Test group (16):** amsterdam-netherlands, bangkok-thailand, barcelona-spain, cairo-egypt,
+**Test group (16, fixed in RMT_SCAM_TITLE_TEST_CITIES: cities that gain a scam section later stay on the control title):** amsterdam-netherlands, bangkok-thailand, barcelona-spain, cairo-egypt,
 cancun-mexico, ho-chi-minh-city-vietnam, istanbul-turkiye, jaipur-india, lisbon-portugal,
 marrakech-morocco, mexico-city-mexico, paris-france, prague-czechia, rio-de-janeiro-brazil,
 rome-italy, seminyak-bali-indonesia. **Control:** every other `/d/{slug}`.
