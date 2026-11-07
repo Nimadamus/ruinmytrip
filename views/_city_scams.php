@@ -21,12 +21,15 @@ $checked = $scams['checked'] ?: ($scams['items'][0]['checked'] ?? '');
       <li style="margin:0 0 12px">
         <b><?= e($it['name']) ?>.</b> <?= e($it['what']) ?>
         <?php if ($it['avoid'] !== ''): ?><br><span class="muted"><b>Avoid it:</b> <?= e($it['avoid']) ?></span><?php endif; ?>
-        <br><span class="hint">Source:
+        <br><a class="hint" rel="nofollow" data-cta="city_scams" href="<?= e(url('review/new?src=city_scams&about=destination&destination=' . (int) $d['id'] . '&ruined=' . rawurlencode($it['name'] . ': '))) ?>">Happened to you? Tell the next traveler</a>
+        <span class="hint"> · Source:
           <?php foreach ($it['sources'] as $i => $s): ?><?= $i ? ', ' : '' ?><a href="<?= e($s['url']) ?>" rel="noopener" target="_blank"><?= e($s['publisher']) ?></a><?php endforeach; ?>
         </span>
       </li>
     <?php endforeach; ?>
   </ul>
+  <?php $shareUrl = url('d/' . $d['slug']) . '#scams'; $shareText = 'Scams and traps in ' . $d['name'] . ', from official travel advice'; $shareLabel = 'Share this list';
+        include __DIR__ . '/_share.php'; ?>
   <p style="margin:6px 0 0;display:flex;gap:8px;flex-wrap:wrap">
     <a class="btn btn-ghost btn-sm" href="<?= e(url('ruined?d=' . $d['slug'])) ?>">What travelers say went wrong in <?= e((string) $d['name']) ?></a>
     <a class="btn btn-accent btn-sm" data-cta="city_scams" href="<?= e(url('review/new?src=city_scams&destination=' . (int) $d['id'])) ?>">Got caught out here? Warn the next traveler</a>
