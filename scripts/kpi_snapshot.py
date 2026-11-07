@@ -31,6 +31,7 @@ SITE_COLS = ['visitors', 'returning', 'review_starts', 'review_held', 'reviews',
 # From 2026-10-11 the scoreboard reads /cron/proof (app/proof.php): browsers split into verified
 # humans, suspected bots and unverified, every count defined in docs/METRICS.md. /cron/kpi is the
 # fallback until that endpoint is deployed; its 'visitors' counts headless browsers that scroll.
+GROWTH_COLS = ['warnings', 'warn_clicks', 'partner_clicks']
 PROOF_COLS = ['verified_humans', 'suspected_bots', 'unverified', 'returning_humans', 'search_humans',
               'referral_humans', 'map_users', 'map_saves', 'review_opened', 'review_submitted', 'review_held', 'reviews_published',
               'signups', 'confirmed', 'active_members', 'trips', 'buddy_posts', 'messages', 'alerts_confirmed']
@@ -95,6 +96,17 @@ def main():
     except Exception:  # not deployed yet: the legacy numbers, labelled as such below
         kpi = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d' % a.days, {'X-Cron-Key': key}))
         site_cols, source = SITE_COLS, 'kpi (legacy: visitors include bots)'
+    # The growth-phase actions (2026-11-07) live in /cron/kpi; merged in by day when the proof view leads.
+    if source == 'proof':
+        try:
+            extra = json.loads(get('https://ruinmytrip.com/cron/kpi?days=%d' % a.days, {'X-Cron-Key': key}))
+            by_day = {d['day']: d for d in extra.get('days', [])}
+            for d in kpi.get('days', []):
+                for c in GROWTH_COLS:
+                    d[c] = by_day.get(d['day'], {}).get(c, '')
+            site_cols = site_cols + GROWTH_COLS
+        except Exception:
+            pass
     g = gsc_by_day(a.days)
     cols = ['day', 'google_impressions', 'google_clicks'] + site_cols
     rows = []
