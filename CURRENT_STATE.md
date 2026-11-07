@@ -4,6 +4,12 @@ Replace stale lines here; do not append history. Last touched 2026-10-02.
 
 ## 2026-11-07 launch audit (branch claude/relaxed-wright-enrc9x, NOT deployed)
 
+**Release candidate and go/no-go: docs/RELEASE_CANDIDATE_20261107.md.** Hosting is PAUSED
+(`rmt_hosting_paused()`): no new stays or host applications, existing stays continue. Moderators can
+suspend from /admin/moderation; staff are emailed on reports. Indexing decisions with evidence:
+docs/SEO_RECOMMENDATIONS_20261107.md (do NOT noindex /review/*: they are not duplicates). Terms draft
+for counsel: docs/legal/TERMS_DRAFT_20261107.md. First 100 users: docs/FIRST_100_USERS_20261107.md.
+
 docs/LAUNCH_PLAN_20261107.md: grades, the eight decisions waiting on Nima, strategy. On the branch: /ruined
 splits traveler warnings from research; "Scams and traps" on 8 city pages from official sources
 (app/city_scams.php, database/scams/city_scams.json, tests/city_scams_test.php); one claims page
