@@ -63,6 +63,22 @@ $ruinedCard = static function (array $r, bool $research): void {
     <?php endif; ?>
   </section>
 
+  <?php /* Every city with a sourced scam section, so the warnings page is the hub for them (2026-11-07). */
+    if (!$dest && function_exists('rmt_city_scams_all') && ($rmtScamAll = rmt_city_scams_all())):
+      $rmtScamNames = [];
+      foreach ($dests as $dd) if (isset($rmtScamAll[$dd['slug']])) $rmtScamNames[$dd['slug']] = (string) $dd['name'];
+      asort($rmtScamNames); ?>
+  <section aria-labelledby="ruined-scams" style="margin:0 0 34px">
+    <h2 id="ruined-scams" style="margin:0 0 6px">Known scams by city</h2>
+    <p class="hint" style="margin:0 0 12px;max-width:70ch">What official travel advice warns visitors about, city by city, each point linked to the government or official page that says it.</p>
+    <div class="chips" style="display:flex;flex-wrap:wrap;gap:8px">
+      <?php foreach ($rmtScamNames as $sl => $nm): ?>
+        <a class="chip" href="<?= e(url('d/' . $sl) . '#scams') ?>"><?= e($nm) ?> <span class="muted">(<?= count($rmtScamAll[$sl]['items']) ?>)</span></a>
+      <?php endforeach; ?>
+    </div>
+  </section>
+  <?php endif; ?>
+
   <?php if ($researchRows): ?>
   <section aria-labelledby="ruined-research" style="padding-bottom:50px">
     <h2 id="ruined-research" style="margin:0 0 6px">From our research<?= $dest ? ' on ' . e((string) $dest['name']) : '' ?></h2>
