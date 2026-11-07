@@ -174,10 +174,21 @@ function home(array $a): void {
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.
-        'title' => 'RuinMyTrip: meet travelers going where you are going',
-        'description' => 'A travel community, not a guidebook. Post your dates, see whose overlap, join public meetups, and read reviews written by travelers who actually went. Free to join.',
-        'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'WebSite','name'=>'RuinMyTrip','url'=>cfg('app_url'),
-            'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']]),
+        /* 2026-11-07: the title promised "meet travelers going where you are going" while the hero
+           under it says travel reviews that admit what went wrong, and the only brand query in
+           Search Console ("ruins trip") landed on /login. The title now says what the page shows,
+           brand first. Ship this alone and read it against docs/SEO_TITLE_TEST_RESULT_20261011.md. */
+        'title' => 'RuinMyTrip: honest travel reviews, warnings and travel buddies',
+        'description' => 'Travel reviews that say what actually went wrong: the tourist trap, the surprise fee, the queue nobody mentioned. Read them before you go, write yours after, and find travelers going your way. Free.',
+        'jsonld' => jsonld(['@context'=>'https://schema.org','@graph'=>[
+            ['@type'=>'WebSite','@id'=>cfg('app_url').'/#website','name'=>'RuinMyTrip','url'=>cfg('app_url'),
+             'publisher'=>['@id'=>cfg('app_url').'/#organization'],
+             'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']],
+            /* Organization: who runs the site, so a brand search can resolve to it. No sameAs until a
+               social account is confirmed as ours; an unverified profile link is worse than none. */
+            ['@type'=>'Organization','@id'=>cfg('app_url').'/#organization','name'=>'RuinMyTrip','url'=>cfg('app_url'),
+             'logo'=>url('assets/img/icon-512.png'),'contactPoint'=>['@type'=>'ContactPoint','contactType'=>'customer support','url'=>url('contact')]],
+        ]]),
     ]);
 }
 
