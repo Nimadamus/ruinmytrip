@@ -29,6 +29,6 @@ $checked = $scams['checked'] ?: ($scams['items'][0]['checked'] ?? '');
   </ul>
   <p style="margin:6px 0 0;display:flex;gap:8px;flex-wrap:wrap">
     <a class="btn btn-ghost btn-sm" href="<?= e(url('ruined?d=' . $d['slug'])) ?>">What travelers say went wrong in <?= e((string) $d['name']) ?></a>
-    <a class="btn btn-accent btn-sm" href="<?= e(url('review/new?src=city_scams&destination=' . (int) $d['id'])) ?>">Got caught out here? Warn the next traveler</a>
+    <a class="btn btn-accent btn-sm" data-cta="city_scams" href="<?= e(url('review/new?src=city_scams&destination=' . (int) $d['id'])) ?>">Got caught out here? Warn the next traveler</a>
   </p>
 </div></div>
