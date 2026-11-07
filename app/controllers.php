@@ -4037,10 +4037,10 @@ function ruined_page(array $a): void {
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'What ruined it', 'url' => url('ruined')]];
     if ($dest) $crumbs[] = ['name' => (string) $dest['name'], 'url' => url('ruined?d=' . $dest['slug'])];
     view('ruined', compact('memberRows', 'memberTotal', 'researchRows', 'researchTotal', 'dests', 'dest'), [
-        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] . ': traps and warnings' : 'What ruined the trip: travel warnings and tourist traps') . ' | RuinMyTrip',
+        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] . ': traps and warnings' : 'Travel warnings: tourist scams and traps by city') . ' | RuinMyTrip',
         'description' => $dest
             ? 'Warnings about ' . $dest['name'] . ' before you go: one-line warnings from travelers, and researched traps labelled as ours. Add what nearly ruined yours.'
-            : 'Tourist traps, surprise fees and the things travelers wish somebody had warned them about. Traveler warnings and our researched ones, always labelled apart.',
+            : 'Tourist scams and traps by city, from official travel advice with sources, plus what travelers say went wrong. Read before you go; warn the next traveler after.',
         'robots' => rmt_robots_for(rmt_indexable($dest ? 'filter' : 'static')),
         'breadcrumbs' => $crumbs,
     ]);
