@@ -8,6 +8,8 @@
  */
 putenv('DATABASE_URL');
 putenv('RESEND_API_KEY');
+// This suite covers hosting OPEN; tests/hosting_pause_test.php covers it paused (the live state since 2026-11-07).
+define('RMT_TEST_HOSTING_OPEN', true);
 require dirname(__DIR__) . '/app/bootstrap.php';
 require_once dirname(__DIR__) . '/app/controllers.php';
 ini_set('display_errors', '0');

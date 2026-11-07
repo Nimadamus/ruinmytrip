@@ -17,7 +17,7 @@ $quiet = array_values(array_filter($rows, static fn($r) => ($r['locals'] + $r['h
             <small><?php $bits = [];
               if ($c['locals']) $bits[] = $c['locals'] . ' local' . ($c['locals'] === 1 ? '' : 's');
               if ($c['going'])  $bits[] = $c['going'] . ' going';
-              if ($c['hosts'])  $bits[] = $c['hosts'] . ' hosting soon';
+              if ($c['hosts'] && !rmt_hosting_paused())  $bits[] = $c['hosts'] . ' hosting soon';
               echo e(implode(' · ', $bits)); ?></small></span>
         </a>
       <?php endforeach; ?>

@@ -310,6 +310,11 @@ Tracking check: `facebook`, `indiehackers`, `reddit` and `directory` are all in 
 
 ## 7. Hosts & Locals recruitment (APPROVED by Nima 2026-10-31, nothing posted yet)
 
+> **HOSTING PAUSED 2026-11-07 (Nima): do not post 7.2, and do not post the hosting/stays lines of 7.3 or
+> 7.4.** New stays and host applications are paused on the site (`rmt_hosting_paused()` in
+> app/hosts_locals.php) until safety, moderation, Terms and privacy are ready. 7.1 is about meeting
+> locals, not hosting, and can go ahead with any "stay"/"host" wording removed.
+
 Schedule: 7.1 and 7.2 from Mon Nov 9 (Facebook restriction lifts about Nov 8), one group per day, featured cities first. 7.3 right after the Indie Hackers founder post (2.x, Nov 3), which itself still needs approval. 7.4 waits for an established Reddit account.
 
 Rules: same as section 6. Say the site is new. No member counts. Hosting is free, identities are not checked, and the host decides every request. Link tags: `?utm_source=<channel>&utm_campaign=hosts_locals`.

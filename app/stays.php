@@ -53,6 +53,7 @@ function rmt_stay_party(?array $stay, ?array $u): ?string {
 /** Why this member may not ask this host, or null when they may. */
 function rmt_stay_blocked_reason(?array $guest, ?array $host): ?string {
     if (!rmt_stays_enabled()) return 'Stay requests are not open.';
+    if (rmt_hosting_paused()) return RMT_HOSTING_PAUSED_NOTE;
     if (!$guest) return 'Sign in first.';
     if (!$host) return 'This member is not hosting.';
     if ((int) $guest['id'] === (int) $host['user_id']) return 'That is your own host profile.';

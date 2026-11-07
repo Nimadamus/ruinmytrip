@@ -2890,7 +2890,7 @@ function welcome_submit(array $a): void {
         redirect('/verify-email');
     }
     /* Ticked "host" or "meet travelers in my city": the page that sets that role up comes next. */
-    if (!empty($_POST['role_host'])) {
+    if (!empty($_POST['role_host']) && !rmt_hosting_paused()) {
         if (function_exists('rmt_track')) rmt_track('welcome_role_host');
         flash('Profile saved. Tell us about the space you could offer.');
         redirect('/hosts-locals/become-a-host');

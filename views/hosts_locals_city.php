@@ -17,11 +17,11 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
       <a href="<?= e(url('hosts-locals/destinations')) ?>">Cities</a> / <?= e((string) $d['name']) ?></p>
     <p class="hl-kicker"><?= e((string) ($d['country'] ?? '')) ?></p>
     <h1>Meet people in <?= e((string) $d['name']) ?></h1>
-    <p class="hl-lede">Locals who are happy to meet a traveler, travelers who will be there when you are, and members interested in hosting.</p>
+    <p class="hl-lede">Locals who are happy to meet a traveler<?= rmt_hosting_paused() ? ' and travelers who will be there when you are.' : ', travelers who will be there when you are, and members interested in hosting.' ?></p>
     <p class="hl-counts">
       <span><b><?= (int) $counts['locals'] ?></b> <?= $counts['locals'] === 1 ? 'local' : 'locals' ?></span>
       <span><b><?= (int) $counts['going'] ?></b> going</span>
-      <span><b><?= (int) $counts['hosts'] ?></b> <?= $counts['hosts'] === 1 ? 'host' : 'hosts' ?></span>
+      <?php if (!rmt_hosting_paused()): ?><span><b><?= (int) $counts['hosts'] ?></b> <?= $counts['hosts'] === 1 ? 'host' : 'hosts' ?></span><?php endif; ?>
       <?php if ($reviews): ?><span><b><?= $reviews ?></b> <?= $reviews === 1 ? 'review' : 'reviews' ?></span><?php endif; ?>
     </p>
   </div>
@@ -33,7 +33,7 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
   <form class="hl-filters" method="get" action="<?= e(url('hosts-locals/destinations/' . $d['slug'])) ?>">
     <label>Show<select name="role">
       <option value="">Everybody</option>
-      <?php foreach (['locals' => 'Locals', 'travelers' => 'Travelers going', 'hosts' => 'Hosts'] as $k => $l): ?>
+      <?php foreach (rmt_hosting_paused() ? ['locals' => 'Locals', 'travelers' => 'Travelers going'] : ['locals' => 'Locals', 'travelers' => 'Travelers going', 'hosts' => 'Hosts'] as $k => $l): ?>
         <option value="<?= $k ?>"<?= $flt['role'] === $k ? ' selected' : '' ?>><?= $l ?></option><?php endforeach; ?>
     </select></label>
     <label>Language<select name="lang"><option value="">Any</option>

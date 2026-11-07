@@ -36,7 +36,13 @@ $statusLine = [
       <a href="<?= e(url('hosts-locals/me#host')) ?>">Manage hosting</a>.</p>
   <?php endif; ?>
 
-  <?php if (!$me): ?>
+  <?php if (rmt_hosting_paused() && !$host): ?>
+    <div class="hl-empty">
+      <h3>New host applications are paused</h3>
+      <p><?= e(RMT_HOSTING_PAUSED_NOTE) ?></p>
+      <a class="btn btn-primary" href="<?= e(url($me ? 'hosts-locals/me#local' : 'register?return=%2Fhosts-locals%2Fme')) ?>">Meet travelers as a local instead</a>
+    </div>
+  <?php elseif (!$me): ?>
     <div class="hl-empty">
       <h3>Create your profile to apply</h3>
       <p>Hosting is for members 18 and over with a confirmed email address.</p>

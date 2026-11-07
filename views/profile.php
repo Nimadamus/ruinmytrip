@@ -80,7 +80,7 @@
           $hlRoles = function_exists('rmt_member_roles') ? rmt_member_roles((int) $u['id']) : null;
           $hlRefs = function_exists('rmt_refs_for') ? count(rmt_refs_for((int) $u['id'], $me ? (int) $me['id'] : null)) : 0; ?>
         <?php if ($hlRoles && $hlRoles['host']): ?>
-          <span><a class="chip" href="<?= e(url($isMe ? 'hosts-locals/me#host' : 'stay/new/' . $u['username'])) ?>"><?= $isMe ? 'Host' : 'Host: ask to stay' ?></a></span>
+          <span><?php if ($isMe || !rmt_hosting_paused()): ?><a class="chip" href="<?= e(url($isMe ? 'hosts-locals/me#host' : 'stay/new/' . $u['username'])) ?>"><?= $isMe ? 'Host' : 'Host: ask to stay' ?></a><?php else: ?><span class="chip">Host</span><?php endif; ?></span>
         <?php endif; ?>
         <?php if ($hlRefs > 0 || $isMe): ?>
           <span><a class="chip" href="<?= e(url('u/' . $u['username'] . '/references')) ?>"><?= $hlRefs ?> <?= $hlRefs === 1 ? 'reference' : 'references' ?></a></span>

@@ -54,8 +54,10 @@ foreach ($popular as $pp) $rmt_popular_ids[(int) $pp['id']] = true;
       <h2 aria-hidden="true">Also here to...</h2>
       <label class="opt-in"><input type="checkbox" name="role_local" value="1">
         <span><b>Meet travelers in my city</b><span class="hint">Be a local: a coffee, a walk, food tips. You choose who you meet. Never a place to stay.</span></span></label>
+      <?php if (!rmt_hosting_paused()): ?>
       <label class="opt-in"><input type="checkbox" name="role_host" value="1">
         <span><b>Host travelers for free</b><span class="hint">Apply to offer a room or couch, free. Reviewed first, and you decide every request.</span></span></label>
+      <?php endif; ?>
     </fieldset>
 
     <section class="onboard-step">

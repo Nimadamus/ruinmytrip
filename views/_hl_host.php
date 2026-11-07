@@ -32,11 +32,11 @@ $hcLangs = rmt_language_labels(rmt_languages_for($hc['languages'] ?? null));
   </dl>
   <p class="muted"><?= e(mb_strimwidth((string) $hc['about_space'], 0, 180, '…')) ?></p>
   <div class="hl-person-acts">
-    <?php if (rmt_stays_enabled()): ?>
+    <?php if (rmt_stays_enabled() && !rmt_hosting_paused()): ?>
       <?php /* Travel dates from the city filter carry into the stay form. */ $stayUrl = 'stay/new/' . $hc['username'] . (!empty($flt['from']) ? '?' . http_build_query(array_filter(['from' => $flt['from'], 'to' => $flt['to'] ?? ''])) : ''); ?>
       <a class="btn btn-primary btn-sm" href="<?= e(url(isset($me) && $me ? $stayUrl : 'register?return=' . rawurlencode('/' . $stayUrl))) ?>"><?= isset($me) && $me ? 'Ask to stay' : 'Join to ask to stay' ?></a>
     <?php else: ?>
-      <button class="btn btn-ghost btn-sm" type="button" disabled aria-describedby="hl-stays-note">Stay requests not open yet</button>
+      <button class="btn btn-ghost btn-sm" type="button" disabled aria-describedby="hl-stays-note"><?= rmt_hosting_paused() ? 'New stays paused' : 'Stay requests not open yet' ?></button>
     <?php endif; ?>
     <a class="btn btn-ghost btn-sm" href="<?= e(url('u/' . $hc['username'])) ?>">Profile</a>
   </div>

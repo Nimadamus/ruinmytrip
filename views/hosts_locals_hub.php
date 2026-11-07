@@ -16,7 +16,7 @@ $back = '/hosts-locals';
     <p class="hl-crumbs"><a href="<?= e(url()) ?>">Home</a> / Hosts &amp; Locals</p>
     <p class="hl-kicker">Hosts &amp; Locals</p>
     <h1>Experience the world through the people who live there</h1>
-    <p class="hl-lede">Going somewhere new? Meet someone who knows it best. Find local friends, travelers on your dates, and hosts who offer a free place to stay.</p>
+    <p class="hl-lede">Going somewhere new? Meet someone who knows it best. Find local friends and travelers on your dates<?= rmt_hosting_paused() ? '' : ', and hosts who offer a free place to stay' ?>.</p>
     <form class="hl-search" method="get" action="<?= e(url('hosts-locals')) ?>" role="search">
       <div class="hl-field"><label for="hl-where">Where are you going
         <input id="hl-where" type="text" name="where" list="hl-cities" placeholder="Tokyo, Lisbon, Mexico City" autocomplete="off" required></label></div>
@@ -61,10 +61,14 @@ $back = '/hosts-locals';
         <h3>Stay With a Local</h3>
         <p>Members who offer a free room or couch to travelers. Always free: no payments, no fees. Ask to stay, and the host decides.</p>
         <p class="hint">Every host profile is reviewed by a moderator before anybody sees it. Identities are not checked.</p>
+        <?php if (rmt_hosting_paused()): ?>
+          <p class="hl-callout" style="margin:8px 0 0"><?= e(RMT_HOSTING_PAUSED_NOTE) ?></p>
+        <?php else: ?>
         <div class="hl-exp-acts">
           <a class="btn btn-primary btn-sm" href="<?= e(url('hosts-locals/become-a-host')) ?>">Become a host</a>
           <a class="btn btn-ghost btn-sm" href="<?= e(url('hosts-locals/how-it-works')) ?>">How it works</a>
         </div>
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -82,7 +86,7 @@ $back = '/hosts-locals';
             <small><?php $bits = [];
               if ($c['locals']) $bits[] = $c['locals'] . ' local' . ($c['locals'] === 1 ? '' : 's');
               if ($c['going'])  $bits[] = $c['going'] . ' going';
-              if ($c['hosts'])  $bits[] = $c['hosts'] . ' hosting soon';
+              if ($c['hosts'] && !rmt_hosting_paused())  $bits[] = $c['hosts'] . ' hosting soon';
               echo e($bits ? implode(' · ', $bits) : 'Be the first local here'); ?></small></span>
         </a>
       <?php endforeach; ?>

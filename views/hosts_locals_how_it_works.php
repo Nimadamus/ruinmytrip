@@ -3,6 +3,7 @@
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('hosts-locals')) ?>">Hosts &amp; Locals</a> / How it works</p>
   <article class="hl-prose">
     <h1 class="hl-h2" style="font-size:clamp(1.8rem,4vw,2.5rem)">How Hosts &amp; Locals works</h1>
+    <?php if (rmt_hosting_paused()): ?><p class="hl-callout"><?= e(RMT_HOSTING_PAUSED_NOTE) ?></p><?php endif; ?>
     <p>RuinMyTrip started as a place for honest travel reviews. Hosts &amp; Locals adds the part a review cannot give you: the people. It runs on one free account, and you can be a traveler, a local and a host at the same time.</p>
 
     <h2>One profile, three roles</h2>

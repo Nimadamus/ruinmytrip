@@ -28,6 +28,23 @@ declare(strict_types=1);
 /** Overnight stays. Deliberately a constant false, not a setting: see the header. */
 function rmt_stays_enabled(): bool { return true; }
 
+/**
+ * New hosting is PAUSED (Nima, 2026-11-07) until safety, moderation, Terms and privacy are ready
+ * for strangers sleeping in each other's homes. Paused means: no new stay request, no new host
+ * application, hosts not listed or promoted anywhere. NOT paused: every stay already requested or
+ * agreed (accept, decline, confirm, cancel, report, references all keep working), and an existing
+ * host can still edit, pause or withdraw their profile. Locals (a coffee, a walk) are not hosting
+ * and are untouched. Flip this to false to reopen; tests/hosting_pause_test.php describes both states.
+ */
+function rmt_hosting_paused(): bool {
+    // The tests of the open state (hosts_locals_test, stays_test) define this to keep exercising it.
+    if (defined('RMT_TEST_HOSTING_OPEN')) return false;
+    return true;
+}
+
+/** The one sentence every paused surface shows. */
+const RMT_HOSTING_PAUSED_NOTE = 'New stays and new host applications are paused while we finish the safety, moderation and legal work that hosting strangers needs. Stays already arranged are not affected, and meeting a local is open as usual.';
+
 /** What a local can offer. Never accommodation: that is hosting, and it is a different role. */
 const RMT_LOCAL_OFFERS = [
     'coffee'        => 'Meet for a coffee or a drink',
@@ -425,7 +442,7 @@ function hosts_locals_hub(array $a): void {
     if ($f['dest']) redirect('/hosts-locals/destinations/' . $f['dest']['slug'] . rmt_hl_query($f));
     $cities = rmt_hl_featured_cities();
     $locals = rmt_hl_locals([], $me ? (int) $me['id'] : null, 6);
-    $hosts = rmt_hl_hosts([], $me ? (int) $me['id'] : null, 3);
+    $hosts = rmt_hosting_paused() ? [] : rmt_hl_hosts([], $me ? (int) $me['id'] : null, 3);
     $notFound = $f['where'] !== '' ? $f['where'] : '';
     $jsonld = '<script type="application/ld+json">' . json_encode([
         '@context' => 'https://schema.org', '@type' => 'WebPage',
@@ -435,7 +452,8 @@ function hosts_locals_hub(array $a): void {
     ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>';
     view('hosts_locals_hub', compact('me', 'cities', 'locals', 'hosts', 'notFound'), rmt_hl_meta(
         'Hosts & Locals: meet the people who live there | RuinMyTrip',
-        'Going somewhere new? Meet a local who knows it best, find a travel buddy on your dates, and connect with future hosts. Free, with real members only.',
+        rmt_hosting_paused() ? 'Going somewhere new? Meet a local who knows it best and find a travel buddy on your dates. Free, with real members only.'
+                             : 'Going somewhere new? Meet a local who knows it best, find a travel buddy on your dates, and connect with future hosts. Free, with real members only.',
         '/hosts-locals') + ['jsonld' => $jsonld, 'breadcrumbs' => [['name' => 'Home', 'url' => url()], ['name' => 'Hosts & Locals', 'url' => url('hosts-locals')]]]);
 }
 
@@ -465,7 +483,7 @@ function hosts_locals_city(array $a): void {
     $flt = $f = rmt_hl_filters($_GET + ['dest' => $d['slug']]);
     $vid = $me ? (int) $me['id'] : null;
     $locals = $f['role'] === '' || $f['role'] === 'locals' ? rmt_hl_locals($f, $vid, 24) : [];
-    $hosts = $f['role'] === '' || $f['role'] === 'hosts' ? rmt_hl_hosts($f, $vid, 12) : [];
+    $hosts = !rmt_hosting_paused() && ($f['role'] === '' || $f['role'] === 'hosts') ? rmt_hl_hosts($f, $vid, 12) : [];
     $travelers = [];
     if ($f['role'] === '' || $f['role'] === 'travelers') {
         $bf = rmt_buddy_filters(['dest' => $d['slug'], 'from' => $f['from'], 'to' => $f['to'], 'interest' => $f['interest'], 'show' => 'going']);
@@ -517,6 +535,7 @@ function hosts_locals_become_host_submit(array $a): void {
     require_verified_email(); csrf_check();
     $me = current_user();
     if (!can_host_meetups($me)) rmt_adult_gate($me, '/hosts-locals/become-a-host', 'Hosting is for members 18 and over.', '/hosts-locals');
+    if (rmt_hosting_paused() && !rmt_host_profile((int) $me['id'])) { flash(RMT_HOSTING_PAUSED_NOTE); redirect('/hosts-locals/become-a-host'); }
     if (!rmt_rate_ok('host_apply', (string) $me['id'], 10, 3600)) { flash('Try again shortly.'); redirect('/hosts-locals/become-a-host'); }
     $v = rmt_host_validate($_POST);
     if (!$v['ok']) {
