@@ -1,7 +1,7 @@
 <div class="wrap prose" style="padding:30px 20px 60px">
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / Terms</p>
   <h1>Terms of Service</h1>
-  <p class="muted">Last updated <?= date('F Y') ?>. This is a plain-language summary for the MVP and will be expanded before public launch.</p>
+  <p class="muted">Last updated September 2026. This is a plain-language summary for the MVP and will be expanded before public launch.</p>
   <h2>1. Who can use RuinMyTrip</h2>
   <p>You must be at least 16 years old to create an account, and at least 18 to host or attend meetups. You are responsible for keeping your account secure.</p>
   <h2>2. Your content</h2>
