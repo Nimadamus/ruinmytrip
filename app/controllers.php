@@ -4007,16 +4007,20 @@ function ruined_page(array $a): void {
     $slug = trim((string) input('d'));
     $dest = $slug !== '' ? q_one('SELECT * FROM destinations WHERE slug=?', [$slug]) : null;
     $destId = $dest ? (int) $dest['id'] : null;
-    $rows = rmt_reviews_ruined(90, $destId);
-    $total = rmt_reviews_ruined_count($destId);
+    /* Two lists, never one: what travelers told us, and what our own research found. The page used
+       to call all of it "from people who were there" while every line on it was the house account's. */
+    $memberRows = rmt_reviews_ruined(60, $destId, true);
+    $memberTotal = rmt_reviews_ruined_count($destId, true);
+    $researchRows = rmt_reviews_ruined(60, $destId, false, true);
+    $researchTotal = rmt_reviews_ruined_count($destId, false, true);
     $dests = all_dests();
     $crumbs = [['name' => 'Home', 'url' => url()], ['name' => 'What ruined it', 'url' => url('ruined')]];
     if ($dest) $crumbs[] = ['name' => (string) $dest['name'], 'url' => url('ruined?d=' . $dest['slug'])];
-    view('ruined', compact('rows', 'dests', 'dest', 'total'), [
-        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] : 'What ruined the trip') . ' | RuinMyTrip',
+    view('ruined', compact('memberRows', 'memberTotal', 'researchRows', 'researchTotal', 'dests', 'dest'), [
+        'title' => ($dest ? 'What ruined trips to ' . $dest['name'] . ': traps and warnings' : 'What ruined the trip: travel warnings and tourist traps') . ' | RuinMyTrip',
         'description' => $dest
-            ? 'One sentence each from travelers about what nearly ruined ' . $dest['name'] . ', and a place to add yours.'
-            : 'The thing travelers wish somebody had warned them about, one sentence each. Read them before you go, add yours when you get back.',
+            ? 'Warnings about ' . $dest['name'] . ' before you go: one-line warnings from travelers, and researched traps labelled as ours. Add what nearly ruined yours.'
+            : 'Tourist traps, surprise fees and the things travelers wish somebody had warned them about. Traveler warnings and our researched ones, always labelled apart.',
         'robots' => rmt_robots_for(rmt_indexable($dest ? 'filter' : 'static')),
         'breadcrumbs' => $crumbs,
     ]);
@@ -4044,7 +4048,12 @@ function review_new_form(array $a): void {
     // A review started from a place page is bound to that place outright: its destination, type and
     // exact name are filled in and locked, so the one thing that decides which page the review lands
     // on is not left to the writer re-spelling a name in a free-text box.
-    $bound = rmt_place_by_id((int) input('place'));
+    /* ?place= is an id everywhere this site links it, but a hand-typed or shared link often carries
+       the slug, which (int) turned into 0 and silently dropped: the writer got an unbound form with
+       no word about why. Accept either. */
+    $placeArg = trim((string) input('place'));
+    $bound = ctype_digit($placeArg) ? rmt_place_by_id((int) $placeArg)
+           : ($placeArg !== '' ? rmt_place_by_slug($placeArg) : null);
     /* A review this visitor already wrote and the site is holding (session or the server copy,
        app/review_drafts.php) opens back up in the form instead of a blank one. Only for the same
        place, or for the unbound form when the held review had no place either. */

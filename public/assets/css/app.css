@@ -654,6 +654,9 @@ section.block{padding:64px 0}
 .act{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;
   font:inherit;font-size:.88rem;font-weight:600;color:var(--muted);padding:.32rem .6rem;
   border-radius:999px;line-height:1}
+/* 44px tap targets: the icon-only like and save were 24px tall on a phone (journey test 2026-11-07). */
+.act{min-height:44px;min-width:44px;justify-content:center}
+main .signout-form .link-btn{min-height:44px;display:inline-flex;align-items:center}
 .act:hover{background:var(--surface-3);color:var(--ink);text-decoration:none}
 .act.on{color:#d0342c}
 .act.on:hover{background:#fdeceb}

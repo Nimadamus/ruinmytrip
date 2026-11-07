@@ -46,6 +46,9 @@ ok(rmt_reviews_ruined_count(2) === 1, 'city count');
 ok(array_column(rmt_reviews_ruined(1), 'id') === [7], 'limit');
 ok(array_column(rmt_reviews_ruined(50, null, true), 'id') === [3, 1], 'members only drops the house account');
 ok(rmt_reviews_ruined_count(null, true) === 2, 'members only count');
+ok(array_column(rmt_reviews_ruined(50, null, false, true), 'id') === [7], 'research only keeps just the house account');
+ok(rmt_reviews_ruined_count(null, false, true) === 1, 'research only count');
+ok(rmt_reviews_ruined_count(null, true) + rmt_reviews_ruined_count(null, false, true) === rmt_reviews_ruined_count(), 'the two lists add up to the whole, nothing counted twice');
 
 echo "ruined_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

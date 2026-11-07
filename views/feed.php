@@ -16,6 +16,7 @@ $engagement = $engagement ?? ['likes' => [], 'comments' => [], 'mine' => []];
 $threads = $threads ?? [];
 ?>
 <div class="wrap feed-shell">
+  <h1 class="sr-only">Your feed</h1>
 
   <?php /* The trip this member is actually on, or about to be on. It is the thing the page is
            about; everything below it is context for it. No trip, no card: an empty one would be

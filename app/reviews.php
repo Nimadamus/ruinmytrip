@@ -203,12 +203,18 @@ function rmt_review_can_edit(array $r, ?array $user): bool {
  *
  * @return list<array<string,mixed>>
  */
-function rmt_reviews_ruined(int $limit = 60, ?int $destId = null, bool $membersOnly = false): array {
+function rmt_reviews_ruined(int $limit = 60, ?int $destId = null, bool $membersOnly = false, bool $editorialOnly = false): array {
     $where = "r.status='published' AND u.status='active' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''";
     $args = [];
     if ($destId) { $where .= ' AND r.destination_id = ?'; $args[] = $destId; }
     if ($membersOnly) {
         $where .= ' AND u.role <> ?';
+        $args[] = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+    }
+    /* The research lines, and only those: /ruined shows them under their own heading so a line the
+       house wrote from sources is never counted among, or mistaken for, a traveler's own warning. */
+    if ($editorialOnly) {
+        $where .= ' AND u.role = ?';
         $args[] = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
     }
     return q_all("SELECT r.*, u.username, u.role, d.name dest_name, d.slug dest_slug, pl.name place_name, pl.slug place_slug
@@ -220,12 +226,18 @@ function rmt_reviews_ruined(int $limit = 60, ?int $destId = null, bool $membersO
                 ORDER BY r.created_at DESC, r.id DESC LIMIT " . (int) $limit, $args);
 }
 
-function rmt_reviews_ruined_count(?int $destId = null, bool $membersOnly = false): int {
+function rmt_reviews_ruined_count(?int $destId = null, bool $membersOnly = false, bool $editorialOnly = false): int {
     $where = "r.status='published' AND u.status='active' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''";
     $args = [];
     if ($destId) { $where .= ' AND r.destination_id = ?'; $args[] = $destId; }
     if ($membersOnly) {
         $where .= ' AND u.role <> ?';
+        $args[] = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
+    }
+    /* The research lines, and only those: /ruined shows them under their own heading so a line the
+       house wrote from sources is never counted among, or mistaken for, a traveler's own warning. */
+    if ($editorialOnly) {
+        $where .= ' AND u.role = ?';
         $args[] = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial';
     }
     return (int) (q_one("SELECT COUNT(*) c FROM reviews r JOIN users u ON u.id = r.user_id WHERE $where", $args)['c'] ?? 0);
