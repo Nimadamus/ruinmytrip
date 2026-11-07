@@ -47,6 +47,8 @@ function rmt_review_validate(array $in, bool $isDraft): array {
     $visited  = trim((string) ($in['visited_on'] ?? ''));
     /* The headline is optional (2026-10-02): left empty, it is the writer's own first sentence,
        cut at a word. Their words, never ours; one fewer box between a visitor and a review. */
+    // A warning on its own is a review: "what nearly ruined it" stands in for an empty body.
+    if ($body === '' && $ruined !== '') $body = $ruined;
     if ($title === '' && mb_strlen($body) >= RMT_REVIEW_BODY_MIN) $title = rmt_review_headline_from($body);
 
     $rating = (int) ($in['rating'] ?? 0);

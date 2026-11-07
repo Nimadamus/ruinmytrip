@@ -58,6 +58,7 @@ async function pageHealth(p, label, mobile) {
     await warn.fill('The airport taxi rank quoted triple the meter price.');
     await p.locator('form:has(#act-warn-text) button[type=submit]').click(); await p.waitForLoadState();
     check(`${dev} J1 warning carries into the review form`, /\/review\/new/.test(p.url()) && (await p.locator('[name=what_ruined]').inputValue()).includes('triple the meter'), p.url());
+    check(`${dev} J1 the sentence is in the main review box, ready to publish`, (await p.locator('textarea[name=body]').inputValue()).includes('triple the meter'));
     await p.goto(BASE + '/');
     await p.locator('#act-find-where').fill(CITY);
     await p.locator('form:has(#act-find-where) button[type=submit]').click(); await p.waitForLoadState();

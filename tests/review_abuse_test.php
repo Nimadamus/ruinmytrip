@@ -52,6 +52,14 @@ $v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'restaurant
     'body' => 'Book at https://their.example and the menu is at www.menu.example, both worth a look.'], false);
 ok('two links are fine', !array_filter($v['errors'], static fn($e) => str_contains($e, 'links')));
 
+// A warning is a review (2026-11-07): the homepage promises one sentence is enough.
+$v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'destination', 'subject_name' => 'X', 'rating' => '2',
+    'body' => '', 'what_ruined' => 'The airport taxi rank quoted triple the meter price.'], false);
+ok('a warning alone publishes as the review', $v['ok'] && $v['data']['body'] === 'The airport taxi rank quoted triple the meter price.' && $v['data']['title'] !== '');
+$v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'destination', 'subject_name' => 'X', 'rating' => '2',
+    'body' => '', 'what_ruined' => 'Bad taxi.'], false);
+ok('a warning still needs to say something (the same minimum as a review)', !$v['ok']);
+
 $_SERVER['HTTP_X_FORWARDED_FOR'] = '1.2.3.4, 162.158.0.1';
 $_SERVER['HTTP_CF_CONNECTING_IP'] = '203.0.113.9';
 ok('the rate limit key is the Cloudflare client address', rmt_client_ip() === '203.0.113.9');

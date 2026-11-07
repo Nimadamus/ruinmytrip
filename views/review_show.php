@@ -107,7 +107,7 @@
     </div></div>
   <?php endif; ?>
 
-  <?php if ($r['what_ruined']): ?>
+  <?php if ($r['what_ruined'] && trim((string) $r['what_ruined']) !== trim((string) $r['body'])): /* a warning that is the whole review is not printed twice */ ?>
     <div class="card" style="margin:14px 0"><div class="card-body">
       <p class="eyebrow" style="color:#b42318;margin:0 0 6px">What nearly ruined the trip</p>
       <p style="margin:0;white-space:pre-wrap"><?= rmt_linkify_mentions(rmt_linkify_tags(e($r['what_ruined']))) ?></p>

@@ -4084,7 +4084,11 @@ function review_new_form(array $a): void {
               'subject_type'   => $bound['type'],
               'subject_name'   => $bound['name']];
         if ($held) $r = array_merge($held, $r);
-        if (($ruined = trim((string) input('ruined'))) !== '') $r['what_ruined'] = mb_substr($ruined, 0, 2000);
+        if (($ruined = trim((string) input('ruined'))) !== '') {
+            $r['what_ruined'] = mb_substr($ruined, 0, 2000);
+            // The sentence they typed is the review: it opens in the main box, not a folded field.
+            if (trim((string) ($r['body'] ?? '')) === '') $r['body'] = $r['what_ruined'];
+        }
         // A tap on one of the "Been here?" stars arrives as ?rating=; the form opens with it chosen.
         $stars = (int) input('rating');
         if ($stars >= 1 && $stars <= 5) $r['rating'] = $stars;
@@ -4110,7 +4114,13 @@ function review_new_form(array $a): void {
     if ($stars >= 1 && $stars <= 5) $r = ($r ?? []) + ['rating' => $stars];
     // The front-door question ("What ruined your trip?") arrives here as ?ruined=; it opens the
     // form with the sentence already in the box, which is the whole point of asking for it first.
-    if (($ruined = trim((string) input('ruined'))) !== '') $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
+    if (($ruined = trim((string) input('ruined'))) !== '') {
+        $r = ($r ?? []) + ['what_ruined' => mb_substr($ruined, 0, 2000)];
+        /* The homepage says "one sentence is enough" (2026-11-07). The sentence used to land only in
+           the folded "what nearly ruined it" field, under an empty main box that wanted 40 more
+           characters, so the writer met a form that seemed to have lost their words. */
+        if (trim((string) ($r['body'] ?? '')) === '') $r['body'] = $r['what_ruined'];
+    }
     if ($held) $r = array_merge($held, $r ?? []);
     rmt_track('review_form_start', ['source' => (string) (input('src') ?: 'contribute'),
                                     'destination_id' => $preselect]);
