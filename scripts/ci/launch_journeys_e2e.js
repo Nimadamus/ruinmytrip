@@ -1,6 +1,6 @@
 // Seven real-browser journeys (first visit, warnings search, guest review -> join -> confirm, profile,
 // 18+ buddy post, returning member, search landings) on phone and desktop. Added 2026-11-07.
-// usage: node scripts/ci/launch_journeys_e2e.js http://127.0.0.1:8098 /path/to/copy.sqlite [shots_dir]
+// usage: node scripts/ci/launch_journeys_e2e.js http://127.0.0.1:8098 /path/to/copy.sqlite|postgres://u:p@host:port/db [shots_dir]
 // Point it at a COPY of database/preview.sqlite served with RMT_DESIGN_V2=all; it writes accounts.
 // Real browser journeys against a local RuinMyTrip server (isolated DB copy).
 // usage: node journeys.js BASE DB SHOTDIR
@@ -10,7 +10,14 @@ const [BASE, DB, SHOTS] = process.argv.slice(2);
 const ROOT = '/home/user/ruinmytrip';
 const results = [];
 const check = (n, c, d = '') => { results.push([n, !!c, d]); console.log((c ? 'PASS ' : 'FAIL ') + n + (c ? '' : '  -- ' + String(d).slice(0, 300))); };
-const php = (code) => execFileSync('php', ['-r', 'require "app/bootstrap.php"; ' + code], { cwd: ROOT, env: { ...process.env, RMT_SQLITE: DB, RMT_APP_URL: BASE } }).toString().trim();
+// DB is a SQLite path, or a postgres:// URL to run the same journeys against Postgres (production's driver).
+const dbEnv = /^postgres(ql)?:\/\//.test(DB) ? { DATABASE_URL: DB, DB_SSLMODE: 'disable', APP_URL: BASE } : { RMT_SQLITE: DB };
+const php = (code) => execFileSync('php', ['-r', 'require "app/bootstrap.php"; ' + code], { cwd: ROOT, env: { ...process.env, ...dbEnv, RMT_APP_URL: BASE } }).toString().trim();
+// The place J3 reviews: the Lisbon aquarium when the database has it, else any public place.
+const PLACE = JSON.parse(php(`$r=q_one("SELECT slug, name FROM places WHERE status='active' AND destination_id IS NOT NULL ORDER BY CASE WHEN slug='oceanario-de-lisboa-lisbon' THEN 0 ELSE 1 END, id LIMIT 1"); echo json_encode($r);`));
+const PLACE_RE = new RegExp(PLACE.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/)[0], 'i');
+// The city J1/J5 search and post for: Lisbon when present, else any published city.
+const CITY = JSON.parse(php(`$r=q_one("SELECT slug, name FROM destinations ORDER BY CASE WHEN slug='lisbon-portugal' THEN 0 ELSE 1 END, id LIMIT 1"); echo json_encode($r);`)).name;
 const uid = (email) => php(`$r=q_one("SELECT id FROM users WHERE email=?",[${JSON.stringify(email)}]); echo $r["id"]??"";`);
 
 async function pageHealth(p, label, mobile) {
@@ -30,10 +37,14 @@ async function pageHealth(p, label, mobile) {
   const b = await chromium.launch();
   for (const [dev, vp] of [['phone', { width: 390, height: 844, isMobile: true, hasTouch: true }], ['desktop', { width: 1366, height: 900 }]]) {
     const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, isMobile: !!vp.isMobile, hasTouch: !!vp.hasTouch, deviceScaleFactor: 1 });
+    // Only this site is under test: third-party requests (hot-linked photos, map tiles) are cut so a
+    // slow or blocked CDN cannot hold a page's load event and read as an app failure.
+    const host = new URL(BASE).host;
+    await ctx.route('**/*', r => (new URL(r.request().url()).host === host ? r.continue() : r.abort()));
     const p = await ctx.newPage();
     const errors = [];
     p.on('pageerror', e => errors.push(e.message));
-    p.on('console', m => { if (m.type() === 'error' && !/favicon|Content Security Policy|Report-Only/.test(m.text())) errors.push(m.text()); });
+    p.on('console', m => { if (m.type() === 'error' && !/favicon|Content Security Policy|Report-Only|net::ERR_FAILED/.test(m.text())) errors.push(m.text()); });
     const M = dev === 'phone';
     const shot = async (n) => SHOTS && p.screenshot({ path: `${SHOTS}/${dev}_${n}.png` });
 
@@ -48,9 +59,9 @@ async function pageHealth(p, label, mobile) {
     await p.locator('form:has(#act-warn-text) button[type=submit]').click(); await p.waitForLoadState();
     check(`${dev} J1 warning carries into the review form`, /\/review\/new/.test(p.url()) && (await p.locator('[name=what_ruined]').inputValue()).includes('triple the meter'), p.url());
     await p.goto(BASE + '/');
-    await p.locator('#act-find-where').fill('Lisbon');
+    await p.locator('#act-find-where').fill(CITY);
     await p.locator('form:has(#act-find-where) button[type=submit]').click(); await p.waitForLoadState();
-    check(`${dev} J1 find companions lands on buddies for the city`, /\/buddies/.test(p.url()) && /Lisbon/i.test(await p.locator('main').innerText()), p.url());
+    check(`${dev} J1 find companions lands on buddies for the city`, /\/buddies/.test(p.url()) && (await p.locator('main').first().innerText()).toLowerCase().includes(CITY.toLowerCase()), p.url());
     await shot('j1_review_form');
 
     // J2 traveler searching destination warnings
@@ -73,7 +84,7 @@ async function pageHealth(p, label, mobile) {
 
     // J3 guest writes a review, then joins and confirms
     const email = `qa_${dev}_${Date.now()}@example.test`;
-    await p.goto(BASE + '/p/oceanario-de-lisboa-lisbon');
+    await p.goto(BASE + '/p/' + PLACE.slug);
     await pageHealth(p, `${dev} J3 place page`, M);
     await p.locator('a[href*="src=place_rate"][href*="rating=2"]').first().click(); await p.waitForLoadState();
     check(`${dev} J3 star tap on place page prefills place + rating`, await p.locator('input[name=rating][value="2"]').isChecked(), p.url());
@@ -114,7 +125,7 @@ async function pageHealth(p, label, mobile) {
       await p.goto(`${BASE}/u/${uname}`);
       await pageHealth(p, `${dev} J4 public profile`, M);
       const prof = await p.locator('main').innerText();
-      check(`${dev} J4 profile shows name and review`, /QA Traveler/.test(prof) && /Oceanario|Oceanário/i.test(prof), prof.slice(0, 200));
+      check(`${dev} J4 profile shows name and review`, /QA Traveler/.test(prof) && PLACE_RE.test(prof.normalize('NFD').replace(/[\u0300-\u036f]/g, '')), prof.slice(0, 200));
       check(`${dev} J4 profile does not expose email`, !prof.includes(email));
       await shot('j4_profile');
 
@@ -129,15 +140,15 @@ async function pageHealth(p, label, mobile) {
         check(`${dev} J5 gate returns to buddy form`, /buddies\/new/.test(p.url()), p.url());
       }
       await shot('j5_buddy_form');
-      await p.locator('select[name=destination_id]').selectOption({ label: /Lisbon/ }).catch(async () => {
-        const v = await p.locator('select[name=destination_id] option', { hasText: 'Lisbon' }).first().getAttribute('value');
+      await p.locator('select[name=destination_id]').selectOption({ label: new RegExp(CITY) }).catch(async () => {
+        const v = await p.locator('select[name=destination_id] option', { hasText: CITY }).first().getAttribute('value');
         await p.locator('select[name=destination_id]').selectOption(v);
       });
       const d = new Date(Date.now() + 20 * 864e5), e = new Date(Date.now() + 26 * 864e5);
       await p.locator('input[name=date_from]').fill(d.toISOString().slice(0, 10));
       await p.locator('input[name=date_to]').fill(e.toISOString().slice(0, 10));
-      const t = p.locator('input[name=title]'); if (await t.count()) await t.fill('Solo in Lisbon, looking for a museum and food buddy');
-      const de = p.locator('textarea[name=description]'); if (await de.count()) await de.fill('First time in Lisbon. Happy to share a tasca dinner or a day trip to Sintra with another solo traveler.');
+      const t = p.locator('input[name=title]'); if (await t.count()) await t.fill('Solo in ' + CITY + ', looking for a museum and food buddy');
+      const de = p.locator('textarea[name=description]'); if (await de.count()) await de.fill('First time in ' + CITY + '. Happy to share a dinner or a day trip with another solo traveler.');
       const tp = p.locator('select[name=travel_party]'); if (await tp.count()) { const v = await tp.locator('option').nth(1).getAttribute('value'); await tp.selectOption(v); }
       const sa = p.locator('input[name=safety_ack]'); if (await sa.count()) await sa.check({ force: true });
       await p.locator('form:has([name=destination_id]) [type=submit], form:has([name=destination_id]) button:not([type])').last().click(); await p.waitForLoadState();
