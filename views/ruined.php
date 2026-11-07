@@ -41,6 +41,8 @@ $ruinedCard = static function (array $r, bool $research): void {
         </div></div>
 <?php }; ?>
 
+  <p class="hint" style="margin:0 0 10px">Chasing money back for a cancelled flight, a lost bag or a holiday that was not as sold?
+    <a href="<?= e(url('blog/trip-went-wrong-what-you-can-claim')) ?>">What you can claim, and from whom</a>.</p>
   <?php if ($dest && rmt_city_scams((string) $dest['slug'])): ?>
     <p class="hint" style="margin:0 0 16px">Looking for known scams? <a href="<?= e(url('d/' . $dest['slug']) . '#scams') ?>">What official travel advice warns about in <?= e((string) $dest['name']) ?></a>, with sources.</p>
   <?php endif; ?>
