@@ -1,0 +1,284 @@
+{
+ "checked": "2026-11-07",
+ "posts": {
+  "venice-access-fee-2026": {
+   "verdict": "stale",
+   "discrepancies": [],
+   "stale": [
+    "The 2026 scheme ended on 26 July 2026; the post is written in the present tense ('applies on 60 days', 'Book it when you book the train') with no note that no fee applies now.",
+    "The 2027 calendar has been approved (72 days, 26 March to 15 August 2027, max 10 euros); the post has no 2027 information.",
+    "Fee amounts and exemptions for 2027 are still to be defined; operational arrangements to be announced by 31 December 2026."
+   ],
+   "new_official_info": [
+    {
+     "fact": "From 27 July 2026 the fee no longer applies; it returns in 2027 with arrangements announced by 31 Dec 2026.",
+     "source_url": "https://cda.ve.it/it/",
+     "quote": "The Access Fee will be payable again from 2027. The arrangements will be announced by 31 December 2026."
+    },
+    {
+     "fact": "Giunta approved a 2027 calendar of 72 days (vs 60 in 2026).",
+     "source_url": "https://live.comune.venezia.it/it/2026/10/contributo-di-accesso-la-giunta-approva-il-calendario-2027-72-giornate-da-venerdi-santo",
+     "quote": "il provvedimento individua complessivamente 72 giornate, rispetto alle 60 del 2026"
+    },
+    {
+     "fact": "2027 calendar runs from Good Friday 26 March to Sunday 15 August 2027; amount capped at 10 euros, exemptions/booking/amount structure still to be set.",
+     "source_url": "https://live.comune.venezia.it/it/2026/10/contributo-di-accesso-la-giunta-approva-il-calendario-2027-72-giornate-da-venerdi-santo",
+     "quote": "il calendario partirà da Venerdì Santo, il 26 marzo, e si chiuderà la domenica di Ferragosto, il 15 agosto 2027"
+    }
+   ],
+   "notes": "2026 calendar (60 days, 3 Apr-26 Jul incl. Mon 6 Apr, 24 Apr-3 May, 1-7 Jun), hours 08:30-16:00, 5 euros if paid by the fourth-last day before entry / 10 euros in the four days before, and the overnight-guest exemption with registration all match the city's 26 March 2026 notice (live.comune.venezia.it/it/2026/03/venezia-aperto-il-portale-il-contributo-di-accesso-2026, fetched: 'L'orario di applicazione sarà dalle ore 8.30 alle 16.'). Post's 'more than three days ahead' is a loose paraphrase of 'entro il quart'ultimo giorno antecedente'. cda.veneziaunica.it returned an Incapsula block and cda.ve.it / the October 2026 Comune notices rendered empty to the fetcher; the 2027 and post-27-July quotes above are from the official pages' search-index text, not a full page read. Vaporetto 9.50 euro 75-minute ticket matches veneziaunica.it ('From 9,5 €'). 2025 statistics (5,421,425 euros, 723,497 payments, 49% at 10 euros), 2024 totals, 47,995 residents and 85,000 peak not verified: the official provisional 2025 report (live.comune.venezia.it CDA_report2025.pdf, 404 on fetch) is indexed as showing 704,467 payments, which differs from 723,497 but may be provisional vs final."
+  },
+  "park-guell-ticket-price-2026": {
+   "verdict": "errors",
+   "discrepancies": [
+    {
+     "site_says": "Adult admission is 18 euros, an 80% jump from 10 euros at the start of 2026.",
+     "official_says": "The rise to 18 euros was applied in 2025; the price is unchanged in 2026.",
+     "source_url": "https://ajuntament.barcelona.cat/horta-guinardo/en/noticies/public-prices-remain-stable-going-into-2026-1587156",
+     "quote": "Admission prices for the Park Güell remain unchanged at 18 euros following the rise applied in 2025."
+    },
+    {
+     "site_says": "Sagrada Familia: a centenary surcharge of 2 to 5 euros applies from June through December 2026.",
+     "official_says": "The official prices page lists no supplement or surcharge; the claim appears only on a third-party reseller site.",
+     "source_url": "https://sagradafamilia.org/en/prices",
+     "quote": "Prices are per person."
+    },
+    {
+     "site_says": "Entry is capped at 1,400 visitors per hour.",
+     "official_says": "Not stated on the official prices or ticket pages (only travel guides give 1,400/hour); unverified.",
+     "source_url": "https://parkguell.barcelona/en/planning-your-visit/prices-and-times",
+     "quote": "The park is open all the year round."
+    }
+   ],
+   "stale": [
+    "Headline/summary frame '18 euros after an 80 percent jump' as a 2026 change; the jump was in 2025."
+   ],
+   "new_official_info": [
+    {
+     "fact": "Reduced 13.50 euros for children 7-12, over-65s and companions of disabled visitors; under-7s free.",
+     "source_url": "https://parkguell.barcelona/en/planning-your-visit/prices-and-times",
+     "quote": "Children from 7 to 12 | 13,50 €"
+    },
+    {
+     "fact": "30-minute late-entry window on timed tickets.",
+     "source_url": "https://parkguell.barcelona/en/buy-tickets",
+     "quote": "You have 30 minutes after the time marked on your ticket to enter the site."
+    }
+   ],
+   "notes": "18 euros general admission confirmed on parkguell.barcelona. Sagrada 26/36 confirmed (sagradafamilia.org/en/prices). Barcelona tourist-tax paragraph not re-checked here; see TAX_FACTS.md (rates correct; 7-night cap and exemption for ages 16 and under omitted). T-Casual 13 euros not checked."
+  },
+  "sagrada-familia-tickets-2026": {
+   "verdict": "errors",
+   "discrepancies": [
+    {
+     "site_says": "Entry is timed, with 30 minutes of grace after the time on the ticket.",
+     "official_says": "No grace period: late arrivals cannot enter.",
+     "source_url": "https://sagradafamilia.org/en/faqs",
+     "quote": "Tickets are only valid for the time chosen. If you arrive late, you won't be able to enter. Please be on time."
+    },
+    {
+     "site_says": "A centenary surcharge of 2 to 5 euros applies from June through December 2026.",
+     "official_says": "No surcharge or supplement on the official prices page, FAQ or opening-hours page.",
+     "source_url": "https://sagradafamilia.org/en/prices",
+     "quote": "Prices are per person."
+    }
+   ],
+   "stale": [],
+   "new_official_info": [
+    {
+     "fact": "Under-11s enter free (all four ticket types).",
+     "source_url": "https://sagradafamilia.org/en/prices",
+     "quote": "Under 11s | 0,00 €"
+    },
+    {
+     "fact": "Guided tour plus towers is 40 euros base.",
+     "source_url": "https://sagradafamilia.org/en/prices",
+     "quote": "Basilica + guided tour + towers | 40,00 €"
+    },
+    {
+     "fact": "November-February hours Mon-Sat 9:00-18:00, Sun 10:30-18:00; tickets online only.",
+     "source_url": "https://sagradafamilia.org/en/opening-hours",
+     "quote": "November to February: Monday to Saturday, 9:00 to 18:00; Sunday, 10:30 to 18:00."
+    }
+   ],
+   "notes": "Prices 26/36, seniors 21/28, under-30s and student card 24/34, guided tour 30, disabled free and companions pay only extras: all correct. Cross upper arm 20 Feb 2026 at 172.5 m confirmed by sagradafamilia.org news/blog (search-index text). 'Structurally complete / now finished' overstates: official site says interior works on the tower continue in 2027 and 2028. sagradafamilia.org/en/tickets shows an undated 'temporarily closed to the public' banner; the matching news item is dated 30/10/2020, so it looks like a leftover, not a current closure."
+  },
+  "anne-frank-house-tickets-2026": {
+   "verdict": "correct",
+   "discrepancies": [],
+   "stale": [],
+   "new_official_info": [
+    {
+     "fact": "Student card gives no discount.",
+     "source_url": "https://www.annefrank.org/en/museum/tickets/",
+     "quote": "Student card: no discount"
+    }
+   ],
+   "notes": "Adult 16.50, 10-17 7.00, 0-9 1.00 incl. 1 euro booking fee; Tuesday 10:00 CET release six weeks ahead; online only; Museumkaart/ICOM 1 euro, EYC 7 euros, I amsterdam Card no discount: all confirmed. 'Midday slots gone in two to three minutes' is not on the official site (unverified). Official page has no statement about third-party resellers; post's claim is advice, not a sourced fact. Amsterdam tax lines: see TAX_FACTS.md."
+  },
+  "alcatraz-tickets-2026": {
+   "verdict": "correct",
+   "discrepancies": [],
+   "stale": [],
+   "new_official_info": [
+    {
+     "fact": "Day tour: children 5-11 $29.15, seniors 62+ $45.15; night tour adult $59.65.",
+     "source_url": "https://www.nps.gov/alca/planyourvisit/fees.htm",
+     "quote": "NIGHT TOUR | $0 | $34.85 | $58.35 | $59.65 | $55.25"
+    }
+   ],
+   "notes": "Adult day tour $47.95 (NPS fee table, last updated 21 Jan 2026), Alcatraz City Cruises sole NPS-authorized ferry, Pier 33, audio tour included, standard CityPASS excludes Alcatraz and CityPASS + Alcatraz = Alcatraz plus three attractions (citypass.com, the product's seller) all confirmed. 'Night tours sell out first' not on official pages (unverified)."
+  },
+  "eiffel-tower-tickets-2026": {
+   "verdict": "stale",
+   "discrepancies": [],
+   "stale": [
+    "New 2027 fares apply to visits from 11 January 2027 (amounts not yet seen); all post prices will be out of date in about two months.",
+    "Counter ticket sales for groups ended 29 September 2026 (not in post, relevant to its 'no separate desk price' paragraph)."
+   ],
+   "new_official_info": [
+    {
+     "fact": "2027 fares take effect for visits from 11 January 2027.",
+     "source_url": "https://www.toureiffel.paris/en/rates-opening-times",
+     "quote": "New 2027 fares apply for visits from January 11, 2027."
+    },
+    {
+     "fact": "Summit closed for annual maintenance in January in recent years (5 Jan-6 Feb 2026); 2027 dates not found.",
+     "source_url": "https://www.toureiffel.paris/en/news/visit/everything-know-about-closing-top-january",
+     "quote": "temporarily closed to the public from January 5th to February 6th, 2026"
+    }
+   ],
+   "notes": "toureiffel.paris returned 403 to the fetcher on every page; figures were confirmed only from the official domain's search-index text: adult 23.50 lift 2nd, 36.70 lift top, 14.80 stairs 2nd, 28.00 stairs+lift top; youth 11.80 lift 2nd and 18.40 top; child 4-11 9.20 top. Other youth/child figures (7.40, 14.00, 6.00, 3.80, 7.00) not individually confirmed. Family arithmetic in post is internally correct. Quotes here are from search-index text, not a page read."
+  },
+  "pompeii-tickets-2026": {
+   "verdict": "correct",
+   "discrepancies": [
+    {
+     "site_says": "Winter hours, from 15 October to 14 March, are 9am to 5pm with last entry at 3.30pm.",
+     "official_says": "Winter period runs to 15 March (summer heading has a typo, so the boundary is ambiguous). Minor.",
+     "source_url": "https://pompeiisites.org/en/visiting-info/timetables-and-tickets/",
+     "quote": "15 October to 15 March"
+    }
+   ],
+   "stale": [],
+   "new_official_info": [
+    {
+     "fact": "From 16 March to 14 October entries are capped per slot: 15,000 9:00-13:00 and 5,000 13:00-17:30.",
+     "source_url": "https://pompeiisites.org/en/visiting-info/timetables-and-tickets/",
+     "quote": "In Pompeii, tickets are personal and there is a daily limit of 20,000 entries."
+    },
+    {
+     "fact": "Suburban villas can be added to the 20 euro Express ticket for 8 euros by card at the Herculaneum Gate; Oplontis, Villa Arianna, Villa San Marco and Stabiae Museum closed on Tuesdays.",
+     "source_url": "https://pompeiisites.org/en/visiting-info/timetables-and-tickets/",
+     "quote": "Tickets from January 12, 2026."
+    }
+   ],
+   "notes": "20 / 25 / 30 (Pompeii Plus, 3 days) / 8 single sites / Villa Arianna and San Marco free / MyPompeii 45 or 10 / 2 euro reduced for EU 18-24 and eligible non-EU residents / free first Sunday / 20,000 cap / nominative tickets / summer hours: all confirmed. No 2027 changes listed."
+  },
+  "westminster-abbey-tickets-2026": {
+   "verdict": "errors",
+   "discrepancies": [
+    {
+     "site_says": "Adult ticket 31 pounds.",
+     "official_says": "Adults £32.",
+     "source_url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+     "quote": "Adults £32"
+    },
+    {
+     "site_says": "Over 65s and students pay 28 pounds.",
+     "official_says": "£29 for 65+ and students.",
+     "source_url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+     "quote": "Adults 65+ £29"
+    },
+    {
+     "site_says": "Family rate of one adult plus one child at 31 pounds.",
+     "official_says": "£32.",
+     "source_url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+     "quote": "Families (1 adult and 1 child) £32"
+    },
+    {
+     "site_says": "General admission runs roughly 9:30 to 3:30.",
+     "official_says": "9.00am-3.00pm shown for Saturday 7 November 2026 (hours vary by date).",
+     "source_url": "https://www.westminster-abbey.org/visit-us/prices-and-entry-times",
+     "quote": "9.00am - 3.00pm"
+    }
+   ],
+   "stale": [
+    "The 25 June-1 September 2026 summer discount has ended and is no longer on the official page; the worked examples (62 / 90 / 78.76 pounds) use the old 31-pound price.",
+    "Closing line 'treat 31 pounds as the standing adult price' is wrong now."
+   ],
+   "new_official_info": [],
+   "notes": "Children 6-17 £14 and 0-5 free confirmed; closure-at-short-notice warning confirmed ('Westminster Abbey is a working church and sometimes subject to closure at short notice.'). Summer-discount figures could not be re-verified because the page no longer shows them. Post also lists the same source URL three times."
+  },
+  "edinburgh-castle-tickets-2026": {
+   "verdict": "errors",
+   "discrepancies": [
+    {
+     "site_says": "Children aged 7 to 15 pay 14 pounds online against 15.50 at the gate.",
+     "official_says": "Child (7-15) £11.50 online, £13.00 walk-up.",
+     "source_url": "https://www.edinburghcastle.scot/plan-your-visit/tickets/",
+     "quote": "Child (7-15yrs) £11.50 £13.00"
+    },
+    {
+     "site_says": "The page lists three family options (48.50/54, 67.50/74.50, 80/88.50).",
+     "official_says": "The official ticket page lists no family tickets.",
+     "source_url": "https://www.edinburghcastle.scot/plan-your-visit/tickets/",
+     "quote": "Admission prices are subject to change."
+    },
+    {
+     "site_says": "Worked example: family of four pays 67.50 online vs 75 for four separate tickets and 74.50 at the gate; 121 on Flexi.",
+     "official_says": "No family ticket; 2 adults + 2 children = £70 online, £78 walk-up, £121 Flexi.",
+     "source_url": "https://www.edinburghcastle.scot/plan-your-visit/tickets/",
+     "quote": "Adult (16-64yrs) £23.50 £26.00"
+    }
+   ],
+   "stale": [],
+   "new_official_info": [
+    {
+     "fact": "Under-7s free but must be added to the booking; Young Scot cardholders pay £1.",
+     "source_url": "https://www.edinburghcastle.scot/plan-your-visit/tickets/",
+     "quote": "Pay just £1 to visit the castle"
+    }
+   ],
+   "notes": "Adult 23.50/26, concession 19/21, Flexi 38/22.50/30.50 with 7-day window, and sell-out warning all confirmed. Quote for the child row is the table row text as extracted."
+  },
+  "hagia-sophia-tickets-2026": {
+   "verdict": "errors",
+   "discrepancies": [
+    {
+     "site_says": "The ministry page publishes no child, student or senior reduction against the 25 euro rate.",
+     "official_says": "Children under 8 enter free with an adult and ID.",
+     "source_url": "https://muze.gen.tr/muze-detay/ayasofya",
+     "quote": "Entrance is free of charge for children under the age of 8"
+    },
+    {
+     "site_says": "AR experience delivered through mobile headsets, bundled.",
+     "official_says": "AR runs on the visitor's own phone/tablet with headphones; headphones are sold at the booth.",
+     "source_url": "https://muze.gen.tr/muze-detay/ayasofya",
+     "quote": "Visiting area AR (Augmented Reality) experience requires for visitors to use headphones with your phone or tablets."
+    }
+   ],
+   "stale": [
+    "Page still labels 09:00-19:30 as 2025 hours; sidebar shows seasonal hours (08:00 opening 1 April-1 October). Post's caveat about 2026 hours remains accurate."
+   ],
+   "new_official_info": [
+    {
+     "fact": "Museum passes are not accepted.",
+     "source_url": "https://muze.gen.tr/muze-detay/ayasofya",
+     "quote": "There are no Museum Passes available for visiting the Hagia Sophia."
+    }
+   ],
+   "notes": "25 euro price, 23 languages, Friday 12:00-14:00 closure and morning closure until 10:00 confirmed. Page states a single price, not explicitly a 'foreign visitor' rate. Worked example with two teenagers stays arithmetically valid."
+  }
+ },
+ "unverified": [
+  "venice-access-fee-2026: 2025 totals (5,421,425 EUR, 723,497 payments, 49% at 10 EUR), 2024 totals, 47,995 residents, 85,000 peak; official 2025 report PDF 404, cda.veneziaunica.it blocked (Incapsula)",
+  "park-guell-ticket-price-2026: 1,400 visitors/hour cap; T-Casual 13 EUR",
+  "sagrada-familia-tickets-2026 / park-guell: centenary surcharge (not on official site; appears only on reseller sagradafamiliatickets.info)",
+  "eiffel-tower-tickets-2026: toureiffel.paris 403 to fetcher; youth stairs (7.40, 14.00) and child (6.00, 3.80, 7.00) prices not individually confirmed; 2027 amounts not seen",
+  "anne-frank-house-tickets-2026: slots selling out in 2-3 minutes",
+  "alcatraz-tickets-2026: night tours sell out first",
+  "westminster-abbey-tickets-2026: summer-discount figures (page no longer shows them)",
+  "Excluded per instructions: tokyo-skytree-tickets-2026, gold-museum-san-jose-tickets-2026 and other search-test pages. No ticket post other than the excluded ones has Search Console impressions in docs; selection used KEYWORDS.md names then fame. No blog posts exist for Louvre or Book of Kells."
+ ]
+}
