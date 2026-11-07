@@ -10,9 +10,18 @@ place the link went: a group, a thread, a creator, a hostel. Lowercase, digits a
 import re, sys
 from urllib.parse import urlencode
 
-PAGES = {'day-of-the-dead': '/e/day-of-the-dead-oaxaca', 'yi-peng': '/e/yi-peng-chiang-mai', 'web-summit': '/e/web-summit-lisbon'}
+PAGES = {'day-of-the-dead': '/e/day-of-the-dead-oaxaca', 'yi-peng': '/e/yi-peng-chiang-mai', 'web-summit': '/e/web-summit-lisbon',
+         # 2026-11-07: the pages that answer questions people ask in travel communities.
+         'warn': '/', 'ruined': '/ruined', 'claims': '/blog/trip-went-wrong-what-you-can-claim',
+         'tax-calculator': '/tourist-tax-calculator'}
+# One sourced scam section per city: campaign scams-<city slug> lands on /d/<slug>#scams.
+SCAM_CITIES = ['bangkok-thailand', 'rome-italy', 'paris-france', 'barcelona-spain', 'marrakech-morocco', 'istanbul-turkiye',
+               'cairo-egypt', 'prague-czechia', 'lisbon-portugal', 'amsterdam-netherlands', 'mexico-city-mexico',
+               'cancun-mexico', 'rio-de-janeiro-brazil', 'ho-chi-minh-city-vietnam', 'seminyak-bali-indonesia', 'jaipur-india']
+for _c in SCAM_CITIES:
+    PAGES['scams-' + _c] = '/d/' + _c
 SOURCES = {'reddit', 'facebook', 'instagram', 'tiktok', 'x', 'youtube', 'linkedin', 'pinterest', 'whatsapp', 'telegram',
-           'discord', 'email', 'creator', 'newsletter', 'qr', 'other'}
+           'discord', 'email', 'creator', 'newsletter', 'qr', 'other', 'friends', 'indiehackers', 'producthunt', 'betalist', 'alternativeto'}
 MEDIUMS = {'post', 'comment', 'reply', 'bio', 'story', 'group', 'dm', 'social', 'email', 'other'}
 
 def link(source, medium, campaign, content):
@@ -20,8 +29,10 @@ def link(source, medium, campaign, content):
     if medium not in MEDIUMS: sys.exit(f'unknown medium {medium}: {sorted(MEDIUMS)}')
     if campaign not in PAGES: sys.exit(f'unknown campaign {campaign}: {sorted(PAGES)}')
     if not re.fullmatch(r'[a-z0-9][a-z0-9\-]{1,39}', content): sys.exit('content: lowercase letters, digits, dashes, max 40')
-    return 'https://ruinmytrip.com' + PAGES[campaign] + '?' + urlencode(
-        {'utm_source': source, 'utm_medium': medium, 'utm_campaign': campaign, 'utm_content': content})
+    path = PAGES[campaign]
+    return 'https://ruinmytrip.com' + path + '?' + urlencode(
+        {'utm_source': source, 'utm_medium': medium, 'utm_campaign': campaign, 'utm_content': content}) + (
+        '#scams' if campaign.startswith('scams-') else '')
 
 if __name__ == '__main__':
     if len(sys.argv) != 5: sys.exit(__doc__)
