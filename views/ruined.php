@@ -41,6 +41,9 @@ $ruinedCard = static function (array $r, bool $research): void {
         </div></div>
 <?php }; ?>
 
+  <?php if ($dest && rmt_city_scams((string) $dest['slug'])): ?>
+    <p class="hint" style="margin:0 0 16px">Looking for known scams? <a href="<?= e(url('d/' . $dest['slug']) . '#scams') ?>">What official travel advice warns about in <?= e((string) $dest['name']) ?></a>, with sources.</p>
+  <?php endif; ?>
   <section aria-labelledby="ruined-travelers" style="margin:6px 0 34px">
     <h2 id="ruined-travelers" style="margin:0 0 6px">From travelers<?= $dest ? ' who went to ' . e((string) $dest['name']) : '' ?></h2>
     <?php if (!$memberRows): ?>

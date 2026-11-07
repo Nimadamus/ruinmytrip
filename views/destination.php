@@ -248,6 +248,8 @@
         </div></div>
       <?php endif; ?>
 
+      <?php include __DIR__ . '/_city_scams.php'; ?>
+
       <?php
       /* Discovery. Every row here is built from rows this site holds, and a row with nothing
          behind it is not rendered at all -- no "Top hotels / no hotels found" shells. */

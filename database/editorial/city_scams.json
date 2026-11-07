@@ -1,0 +1,779 @@
+{
+  "bangkok-thailand": {
+    "items": [
+      {
+        "name": "Gem and jewellery resale scam",
+        "what_happens": "Merchants sell lower-quality gems or jewellery at inflated prices, promising the items can be resold at a profit; the guarantees they offer are not always honoured.",
+        "avoid": "Do not buy gems or jewellery as an investment or on a resale promise, and think carefully before any purchase if you are not knowledgeable about gems.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "merchants sell lower-quality items at inflated prices with promises that the items can be resold at a profit"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Bar or nightclub overcharging",
+        "what_happens": "Some bars, nightclubs and entertainment venues try to charge exorbitant prices, and arguments over the bill can lead to threats of violence.",
+        "avoid": "Confirm prices before you order, avoid running a tab, and do not leave your credit card with bar or restaurant staff.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "Some bars, nightclubs and entertainment venues may try to charge exorbitant prices. Discussions about overcharging may lead to threats of violence."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Rental damage claim / passport held as deposit",
+        "what_happens": "Motorbike or jet-ski rental businesses may claim you damaged the vehicle and keep the passport you left as a guarantee; renters who refused to pay have been harassed and threatened.",
+        "avoid": "Never hand over your passport as collateral, read the rental contract, photograph existing damage before you ride, and rent only from reputable companies.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+            "quote": "Do not hand your passport over as a guarantee, for example to motorcycle or jet-ski rental businesses."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "Rental companies have at times accused renters of causing damage upon return of the equipment."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Drink spiking",
+        "what_happens": "Drinks have been spiked in tourist areas, with drug-assisted sexual assault and robbery affecting both men and women.",
+        "avoid": "Do not leave drinks unattended or accept drinks, snacks or cigarettes from strangers, and pre-arrange your transport home.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+            "quote": "Drink spiking and drug-assisted sexual assault does happen in tourist areas around Thailand, with male and female victims."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "Never leave food or drinks unattended or in the care of strangers."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Card skimming and ATM fraud",
+        "what_happens": "Card fraud happens, including ATM skimming and cards being misused while out of your sight during transactions.",
+        "avoid": "Keep your card in sight, use ATMs inside banks, cover the keypad when entering your PIN, and check your statements.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+            "quote": "Do not lose sight of your card during transactions. There have been incidents of ATM skimming. Use an ATM in a bank"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "pay careful attention when your cards are being handled by others"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Unlicensed taxis and tuk-tuk disputes",
+        "what_happens": "Unlicensed vehicles may not use meters and are not correctly insured to carry passengers, and fare disputes with taxi or tuk-tuk operators have occasionally turned violent or intimidating.",
+        "avoid": "Use licensed taxis from official stands, a trusted ride-hailing app, or the airport rail link; if a dispute turns threatening, ask local police for help.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "Disputes with taxis operators, tuk-tuks (motorized rickshaws), etc., occur and have occasionally resulted in violence or intimidation."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/thailand",
+            "quote": "Unlicensed vehicles (bearing black and white licence plates) are not correctly insured to carry passengers and may not use meters."
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/thailand/safety-and-security",
+      "https://travel.gc.ca/destinations/thailand"
+    ],
+    "notes": "Both sources are country-level, not Bangkok-specific; the rental scam is mostly a beach-resort issue. Neither fetched source describes the classic 'tuk-tuk detour to a gem shop' (a driver taking you to a shop); only the gem resale scam itself is supported, so the detour is not claimed. Both sources also warn about fake high-paying job offers that lead to forced scam work (not included as a tourist trap). US State Dept (403) and Smartraveller (503) could not be fetched; a Thai government gem-scam page found by search rendered empty and was not used."
+  },
+  "rome-italy": {
+    "items": [
+      {
+        "name": "Distraction pickpocketing",
+        "what_happens": "Thieves use distraction techniques, such as spilling a drink on you, engaging you in long conversations or persistently offering help, to take your belongings, especially in city centres, at tourist sites and on public transport.",
+        "avoid": "Keep your belongings in sight, be wary of unsolicited offers or help from strangers, and do not carry all your valuables together.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/italy/safety-and-security",
+            "quote": "beware of thieves using distraction techniques"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/italy",
+            "quote": "spill drinks on you or your belongings"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Unlicensed airport taxi / touts in arrivals",
+        "what_happens": "Vehicles offering rides in the arrivals area may not be properly authorised; official taxis are white with a TAXI sign on the roof.",
+        "avoid": "Use only licensed taxis from an official rank, by phone or by app, or the authorised vehicles in the airport's designated areas.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/italy/safety-and-security",
+            "quote": "Only use officially licensed taxis, which have a taxi sign on the roof and a company name and number written on the side."
+          },
+          {
+            "publisher": "Aeroporti di Roma (Fiumicino airport operator)",
+            "url": "https://www.adr.it/pax-fco-taxi",
+            "quote": "Qualsiasi altro veicolo disponibile nella zona Arrivi potrebbe non essere in possesso di regolare autorizzazione"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/italy",
+            "quote": "Use only officially licensed taxis from a stand or requested by phone or app."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Fake car fault / help-me stop",
+        "what_happens": "Thieves may get you to stop your car by asking for help or directions or by pointing out a fake fault, then steal from it; thefts from parked cars and snatches at traffic lights are common.",
+        "avoid": "Do not stop for strangers flagging a problem, keep doors locked and windows closed, and never leave luggage in the car, even in the boot.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/italy/safety-and-security",
+            "quote": "pointing out a fictional fault with your car"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/italy",
+            "quote": "never leave belongings unattended in a vehicle, even in the trunk"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Drink spiking",
+        "what_happens": "Victims of spiked drinks have been robbed and sometimes assaulted.",
+        "avoid": "Do not take drinks, snacks or cigarettes from strangers and never leave drinks unattended.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/italy/safety-and-security",
+            "quote": "Victims of spiked drinks have been robbed and sometimes assaulted."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/italy",
+            "quote": "Never leave food or drinks unattended or in the care of strangers."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Card and ATM fraud",
+        "what_happens": "Credit card, debit card and ATM fraud occurs.",
+        "avoid": "Cover the keypad when entering your PIN, use ATMs in public areas or inside a bank, and check your statements for unauthorised transactions.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/italy",
+            "quote": "Credit and debit card as well as ATM fraud occurs."
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/italy/safety-and-security",
+      "https://www.adr.it/pax-fco-taxi",
+      "https://travel.gc.ca/destinations/italy"
+    ],
+    "notes": "FCDO and Canada advice is national, not Rome-specific. The Fiumicino airport operator lists a fixed fare to central Rome (inside the Aurelian Walls) and says the city sets fares and can change them without notice, so the amount is left out. Canada also notes that Italian taxi drivers start the meter where they set off, not at pick-up (a rule, not a scam; not listed). No official Rome source found for street-vendor 'bracelet' or gladiator-photo scams, so those are not claimed."
+  },
+  "paris-france": {
+    "items": [
+      {
+        "name": "Pickpocket teams on the Métro and RER",
+        "what_happens": "Pickpockets work in gangs, with one distracting you while another goes into your bag, and they operate on the Métro, RER lines and at mainline stations.",
+        "avoid": "Carry your bag across your body, keep valuables in separate inside pockets, and stay alert around tourist sites and ATMs.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/france/safety-and-security",
+            "quote": "Pickpockets can work in gangs; one distracts you while the other one goes into your bag."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/france",
+            "quote": "Petty crime occurs frequently on public transportation"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Fake petition",
+        "what_happens": "At tourist sites, young people with a petition, sometimes pretending to be deaf and mute, ask for your signature and money; the money does not go to any charity, and accomplices may rob you while you sign.",
+        "avoid": "Do not stop to sign petitions from street approaches or give them money, and keep hold of your bag if approached.",
+        "sources": [
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "vous croisez régulièrement des jeunes filles et garçons qui vous abordent pétition à la main, pouvant se prétendre sourds et muets"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Shell game (bonneteau)",
+        "what_happens": "A street card or cup game where you bet on finding a card; the operator is helped by accomplices posing as players, so you always lose.",
+        "avoid": "Do not play or bet on street games.",
+        "sources": [
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "le maître du jeu est assisté de complices qui se font passer pour des joueurs"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Illegal airport and station taxis",
+        "what_happens": "Illegal taxis at Paris airports and train stations charge much more than official taxis, and they are not insured for passengers.",
+        "avoid": "Use only official taxi ranks at airports and never accept a ride from someone offering transport in the terminal, station or street.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/france",
+            "quote": "Illegal taxis operate at airports and train stations in Paris. Scammers charge much higher rates than the official taxis."
+          },
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "N’acceptez jamais d’être pris en charge par une personne qui viendrait vous proposer ses services de transport dans les aéroports, les gares"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Fake police officers",
+        "what_happens": "Scammers pose as police and ask for your papers and money.",
+        "avoid": "A real police officer will never ask you for money; ask to see the officer's official police card.",
+        "sources": [
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "Certains escrocs peuvent se faire passer pour des policiers et vous demander vos papiers et de l’argent."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Street ticket resellers and touting cabarets",
+        "what_happens": "Unofficial ticket resellers at stations can charge far more than the real price, and some cabarets tout on the street and then make customers buy very expensive drinks.",
+        "avoid": "Buy tickets only at station counters and machines or from official resellers, and avoid venues that pull customers in off the pavement.",
+        "sources": [
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "n’achetez jamais de tickets à des revendeurs à la sauvette qui vous les feront payer plus cher"
+          },
+          {
+            "publisher": "Préfecture de police de Paris (via French Ministry of the Interior)",
+            "url": "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+            "quote": "Évitez certains cabarets parisiens, où le personnel racole les clients sur le trottoir."
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/france/safety-and-security",
+      "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
+      "https://travel.gc.ca/destinations/france"
+    ],
+    "notes": "The Préfecture de police guide is in French and lists 2022 taxi tariffs (not used). It is undated beyond those tariffs, so treat details as possibly older. A 'bracelet' scam in Montmartre came up in search but was not in a fetched official source, so it is not claimed."
+  },
+  "barcelona-spain": {
+    "items": [
+      {
+        "name": "Fake plain-clothes police",
+        "what_happens": "Thieves posing as police officers ask to see your wallet, passport or ID, claiming it is for identification.",
+        "avoid": "Genuine police ask for ID but never for your wallet or purse; ask to see their official identification badge.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "Thieves posing as police officers may ask to see your wallet, claiming they need to see it for identification."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/spain",
+            "quote": "Individuals posing as plainclothes police officers may ask to see your passport, IDs or wallets."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Distraction theft (stain or directions)",
+        "what_happens": "Thieves, often in teams, distract you, for example by asking for directions or pointing out a stain on your clothes, and steal your belongings; they are very active on Las Ramblas, at Sagrada Família, Park Güell, the airport and the Aerobus.",
+        "avoid": "Keep valuables in front, inner or zipped pockets, keep your bag closed and in view on transport, and do not carry everything in one place.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "Thieves use distraction techniques and often work in teams."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/spain",
+            "quote": "such as asking for directions or informing you of a stain on your clothes"
+          },
+          {
+            "publisher": "Ajuntament de Barcelona (City Council)",
+            "url": "https://ajuntament.barcelona.cat/seguretatiprevencio/en/stay-safe",
+            "quote": "It is best to carry money, credit cards and documents in front inner pockets or zipped pockets."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Something's wrong with your car",
+        "what_happens": "Thieves flag you down claiming there is a problem with your car (such as a flat tyre) or that you damaged theirs, then steal the car or your belongings when you stop.",
+        "avoid": "Do not trust anyone who tells you something is wrong with your car; stop only somewhere public and lit, such as a petrol station.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "They may flag you down, claiming there is something wrong with your car or that you have damaged theirs."
+          },
+          {
+            "publisher": "Ajuntament de Barcelona (City Council)",
+            "url": "https://ajuntament.barcelona.cat/seguretatiprevencio/en/stay-safe",
+            "quote": "do not trust someone who warns you that something is wrong with your car"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/spain",
+            "quote": "Thieves have been known to simulate or provoke road-related incidents, such as flat tires."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Unlicensed taxis",
+        "what_happens": "Unlicensed taxi services operate, and passengers caught using them can be fined.",
+        "avoid": "Use only official registered taxis or a reputable firm you recognise, and book airport transfers through a licensed company.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "Only use official registered or licensed taxis, or reputable transport companies you recognise."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Street money changers",
+        "what_happens": "Unofficial money changers may give you counterfeit money, and having counterfeit money is a serious crime in Spain.",
+        "avoid": "Change money only at official exchange offices or banks.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "Always use official money exchange offices or banks because unofficial money changers may give you counterfeit money."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Drink spiking",
+        "what_happens": "Drugs such as GHB may be used to spike drinks, putting you at risk of sexual assault and robbery.",
+        "avoid": "Buy your own drinks, keep them in sight, and do not accept food, drinks or cigarettes from new acquaintances.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+            "quote": "Buy your own drinks and always keep them in sight to avoid them being spiked."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/spain",
+            "quote": "Never leave food or drinks unattended or in the care of strangers."
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+      "https://ajuntament.barcelona.cat/seguretatiprevencio/en/stay-safe",
+      "https://travel.gc.ca/destinations/spain"
+    ],
+    "notes": "FCDO advice is national; Canada lists Barcelona hotspots by name. FCDO also warns about timeshare and holiday-club offers with false incentives (not city-specific; not listed). Barcelona City Council's pages give general prevention tips but name no specific scams."
+  },
+  "marrakech-morocco": {
+    "items": [
+      {
+        "name": "Fake tourist guides",
+        "what_happens": "People posing as official tourist guides commonly harass tourists, especially in the medina.",
+        "avoid": "If you use a guide in the medina, make sure they have an official badge and permission from the local authority.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+            "quote": "It is common for people posing as official tourist guides to harass tourists."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Swapped goods after purchase",
+        "what_happens": "Scammers swap the goods you bought for lower-quality items.",
+        "avoid": "Watch your purchase being packed and check it before you leave the shop.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+            "quote": "Beware of scammers substituting inferior goods for the ones you bought."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Card fraud and ATM theft",
+        "what_happens": "Credit and debit card fraud and thefts at ATMs happen often; FCDO also advises caution when using ATMs, noting that aggressive begging is common.",
+        "avoid": "Cover the keypad when entering your PIN, keep your card in sight, use ATMs inside banks or businesses, and check your statements.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+            "quote": "Credit card fraud and scams are common."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/morocco",
+            "quote": "Credit and debit card fraud, as well as thefts from ATMs occur frequently."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Unmetered or unlicensed taxis",
+        "what_happens": "Many cars booked through ride-hailing apps may be unlicensed and uninsured, and petit taxi drivers often pick up other passengers on the way.",
+        "avoid": "Agree the fare before you set off or check the taxi is using its meter, and leave the ride somewhere well lit if you feel uncomfortable.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+            "quote": "It is advisable to either agree a fare in advance or check the taxi is using a meter."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Medina pickpockets and drive-by snatching",
+        "what_happens": "Pickpocketing, bag-snatching, motorcycle drive-by theft of jewellery and handbags, and scams are common in medinas, markets and other tourist areas.",
+        "avoid": "Stay on main streets in the medina, carry little cash and few valuables, and do not wear expensive jewellery, especially after dark.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+            "quote": "Petty crime is common in tourist areas, especially in historical districts (medina quarters) and on beaches."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/morocco",
+            "quote": "Petty crime, such as pickpocketing, purse and drive-by snatching, scams and other types of thefts occur"
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/morocco/safety-and-security",
+      "https://travel.gc.ca/destinations/morocco"
+    ],
+    "notes": "All sources are national (Morocco), not Marrakech-specific, though the medina guidance applies directly. The 'avoid' tip for swapped goods (watch packing, check before leaving) follows from the FCDO warning; the source itself only says to beware. FCDO also warns about marriage and online-romance fraud (not listed). No official Marrakech or Moroccan tourism-board page on scams was fetched."
+  },
+  "istanbul-turkiye": {
+    "items": [
+      {
+        "name": "Friendly stranger to bar (steep bill)",
+        "what_happens": "Locals invite tourists to a bar or restaurant for food and drinks, then force them to pay a steep bill; food or drink offered by strangers may also be spiked.",
+        "avoid": "Turn down invitations from strangers to bars, restaurants or nightclubs, avoid down-market bars, and buy your own drinks.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/turkiye",
+            "quote": "A particularly common scam in Istanbul involves locals inviting tourists to bars for food and drinks and then forcing them to pay a steep bill."
+          },
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/turkey/safety-and-security",
+            "quote": "Be wary of strangers approaching you to change money, or to take you to a restaurant or nightclub."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Counterfeit US dollar notes",
+        "what_happens": "Counterfeit 50 and 100 US dollar notes are reported to be circulating, and banks and exchanges may refuse them.",
+        "avoid": "Avoid accepting 50 or 100 US dollar bills where possible.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/turkey/safety-and-security",
+            "quote": "Banks and money exchanges may not accept 50 or 100 US dollar bills, due to a reported surge in counterfeit banknotes"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Street money changers",
+        "what_happens": "Strangers may approach you offering to change money.",
+        "avoid": "Change money only at reputable banks or official exchange offices.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/turkey/safety-and-security",
+            "quote": "Be wary of strangers approaching you to change money"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/turkiye",
+            "quote": "If you want to exchange currency, go to reputable banks or official exchange offices."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Unofficial taxis",
+        "what_happens": "Taking a ride from an unofficial taxi driver is highly risky.",
+        "avoid": "Use a registered, metered taxi, note the registration number before getting in and check the driver's identity, or book by app or in advance.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/turkey/safety-and-security",
+            "quote": "Find a registered taxi, note the registration number before entering and ensure the fare is metered."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/turkiye",
+            "quote": "Confirm the driver's identity and licence plate before getting into the car"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Card and ATM fraud",
+        "what_happens": "Credit card, debit card and ATM fraud occurs.",
+        "avoid": "Use ATMs inside banks or shopping centres rather than on the street, and cover the keypad when entering your PIN.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/turkiye",
+            "quote": "Use ATMs inside establishments such as banks and shopping centres instead of those on the street"
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/turkey/safety-and-security",
+      "https://travel.gc.ca/destinations/turkiye"
+    ],
+    "notes": "FCDO also says street robbery and pickpocketing are common in Istanbul's main tourist areas, and warns of deaths from methanol in illegally produced or counterfeit spirits, including in Istanbul (safety risks, not scams; not listed). Both sources warn about online-romance scams. No official Istanbul tourism or taxi-regulator page was fetched."
+  },
+  "cairo-egypt": {
+    "items": [
+      {
+        "name": "Touts and scammers at tourist sites",
+        "what_happens": "Scammers and touts sometimes target foreign nationals in tourist areas.",
+        "avoid": "Be cautious when approached at tourist sites, and use reputable providers you have researched in advance for services and excursions.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/egypt/safety-and-security",
+            "quote": "Be cautious in tourist areas, where scammers and touts sometimes target foreign nationals."
+          },
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/egypt/safety-and-security",
+            "quote": "use reputable providers for any services and excursions, and carry out research beforehand"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Distraction theft at sights and on the metro",
+        "what_happens": "Purse snatching and pickpocketing happen most often at tourist sites and on the metro, sometimes by thieves using distraction tactics.",
+        "avoid": "Stay aware of your surroundings and watch out for people trying to distract you; report any theft to the Tourist Police before you leave Egypt.",
+        "sources": [
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/egypt",
+            "quote": "Purse snatching and pickpocketing occur most often in tourist locations and on the metro."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Hotel doctor overcharging",
+        "what_happens": "Some hotel doctors have overcharged for treatment and medicines.",
+        "avoid": "Check the cost before treatment and make sure your travel insurance covers medical care.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/egypt/health",
+            "quote": "Some hotel doctors have overcharged for treatment and medicines."
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/egypt/safety-and-security",
+      "https://travel.gc.ca/destinations/egypt"
+    ],
+    "notes": "THIN SOURCING: official sources give only a general warning about touts and scammers at tourist sites. No fetched official source names specific Cairo or Giza scams (such as camel or horse rides, papyrus shops or fake tickets), so none are claimed. FCDO says pickpocketing is rare in Egypt while Canada says it is becoming more common at tourist sites and on the metro, so the two disagree. The 'avoid' for hotel doctors (check costs and insurance) is inferred, not stated by the source. Both sources also advise women not to take taxis alone at night where possible (a safety point, not listed)."
+  },
+  "prague-czechia": {
+    "items": [
+      {
+        "name": "Fake plain-clothes police",
+        "what_happens": "Criminals pretending to be plain-clothes police ask to see your foreign currency and passport; Czech police are not allowed to do this.",
+        "avoid": "Do not show them your money; offer to go with them to the nearest police station, or call 112 to check their identity.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+            "quote": "Beware of criminals pretending to be plainclothes policemen who ask to see your foreign currency and passport."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/czechia",
+            "quote": "Individuals posing as plainclothes police officers may ask to see your foreign currency and passports."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Street money exchange (counterfeit notes)",
+        "what_happens": "Money changed on the street is often counterfeit, and unofficial exchange is illegal.",
+        "avoid": "Change money only at an official exchange office or bank, never with street vendors.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+            "quote": "always change money at a currency exchange or bank rather than on the street as this money is often counterfeit"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/czechia",
+            "quote": "Non-official currency exchange is illegal. Plus, you are at risk of receiving counterfeit bills."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Taxi overcharging and rigged meters",
+        "what_happens": "Some taxis charge high prices, fake taxis in unmarked cars overcharge, and there are reports of illegally modified meters; maximum metered fares in Prague were abolished on 1 October 2026.",
+        "avoid": "Avoid hailing taxis on the street; use a major taxi company, a dispatch service, or an app that shows the total fare upfront, and always ask for a printed receipt.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+            "quote": "Beware of drivers pretending to be taxi services but offering rides in unmarked cars and overcharging for journeys."
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/czechia",
+            "quote": "avoid hailing taxis on the street"
+          },
+          {
+            "publisher": "Prague Airport (Letiště Praha)",
+            "url": "https://www.prg.aero/en/unofficial-taxi-services",
+            "quote": "there have been complaints of fare overcharging and reports of illegally modified taximeters"
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Airport touts posing as 'Official Taxi'",
+        "what_happens": "At Prague Airport, people outside the terminals offer rides and may wear 'Official Taxi' labels without being the official airport taxi service.",
+        "avoid": "Do not accept unsolicited ride offers at the terminal; if a fare is clearly excessive or no receipt is given, do not pay and call the Municipal Police on 156.",
+        "sources": [
+          {
+            "publisher": "Prague Airport (Letiště Praha)",
+            "url": "https://www.prg.aero/en/unofficial-taxi-services",
+            "quote": "Be cautious of individuals claiming to be taxi drivers, often wearing labels such as \"Official Taxi\""
+          },
+          {
+            "publisher": "Prague Airport (Letiště Praha)",
+            "url": "https://www.prg.aero/en/unofficial-taxi-services",
+            "quote": "If the fare is clearly excessive or the driver refuses to issue a receipt, do not pay and contact the Municipal Police at 156."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Nightclub consumption charges and consumption cards",
+        "what_happens": "Nightclub charges are often high, and losing a consumption card before you pay can bring heavy penalties; some bars, restaurants and clubs try to overcharge.",
+        "avoid": "Check prices before you order and keep your consumption card safe until you have paid.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+            "quote": "be careful with consumption cards, which carry high financial penalties if you lose them before you pay your bill"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/czechia",
+            "quote": "Some bars, restaurants and nightclubs may try to charge exorbitant prices or overcharge you."
+          }
+        ],
+        "checked": "2026-11-07"
+      },
+      {
+        "name": "Pickpockets on tram 22 and central metro stations",
+        "what_happens": "Gangs of pickpockets use jostling and distraction, especially on tram 22 to Prague Castle, the airport routes and central metro stations such as Můstek and Muzeum.",
+        "avoid": "Keep valuables secure and out of sight on crowded trams and metros, and report any theft to the police within 24 hours.",
+        "sources": [
+          {
+            "publisher": "UK FCDO",
+            "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+            "quote": "on trams to popular tourist sites like Prague Castle"
+          },
+          {
+            "publisher": "Government of Canada (travel.gc.ca)",
+            "url": "https://travel.gc.ca/destinations/czechia",
+            "quote": "tram 22, which runs to and from Prague Castle"
+          }
+        ],
+        "checked": "2026-11-07"
+      }
+    ],
+    "official_links": [
+      "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "https://www.prg.aero/en/unofficial-taxi-services",
+      "https://travel.gc.ca/destinations/czechia"
+    ],
+    "notes": "Prague Airport says that from 1 October 2026 metered taxi fares in Prague are no longer capped, so FCDO/Canada advice to check the rate printed on the taxi still applies, but there is no legal maximum now. The airport gives a typical airport-to-centre fare (about CZK 800) as a guide only. FCDO points to Prague City Police advice for some of these items."
+  }
+}

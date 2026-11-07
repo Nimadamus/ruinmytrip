@@ -25,6 +25,7 @@ require BASE_PATH . '/app/quick_join.php';
 require BASE_PATH . '/app/reviews.php';
 require BASE_PATH . '/app/review_aspects.php';
 require BASE_PATH . '/app/editorial.php';
+require BASE_PATH . '/app/city_scams.php';
 require BASE_PATH . '/app/editorial_blog.php';
 require BASE_PATH . '/app/places.php';
 require BASE_PATH . '/app/place_data.php';
