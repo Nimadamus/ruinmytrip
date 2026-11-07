@@ -32,7 +32,16 @@ $long = 'Queenstown Is Worth Seeing And Expensive To Do: NZ$199 Jet Boats, NZ$32
 $t = rmt_meta_title($long);
 check('a long one drops the brand rather than the subject', str_contains($t, 'RuinMyTrip'), false);
 check('and stays inside the budget', mb_strlen($t) <= 61, true);
-check('never mid-word', (bool) preg_match('/(\s|…)$|[a-z]…$/u', $t), true);
+// Never mid-word: either the title is a whole leading phrase of the headline (the next character in
+// the headline is a separator), or it is the word-boundary cut with an ellipsis.
+$body = rtrim($t, '…');
+check('never mid-word', str_starts_with($long, $body) && (str_ends_with($t, '…') || preg_match('/^[\s,:;\-–]/u', mb_substr($long, mb_strlen($body), 1))), true);
+check('a natural break ends the title as a whole phrase, no ellipsis', $t, 'Queenstown Is Worth Seeing And Expensive To Do');
+check('the break used is the last one inside the budget',
+      rmt_meta_title('San Francisco in 2026: Views Intact, the Hotel Bill Up, the Fog the Same as Ever'),
+      'San Francisco in 2026: Views Intact, the Hotel Bill Up');
+check('a break too early is not used, so the cut falls back to the word boundary',
+      str_ends_with(rmt_meta_title('Rome: ' . str_repeat('wonderfully ', 8)), '…'), true);
 check('no dangling punctuation before the ellipsis', str_contains($t, ',…'), false);
 check('empty falls back to the brand', rmt_meta_title(''), 'RuinMyTrip');
 check('markup is not a title', rmt_meta_title('<b>Rome</b>'), 'Rome | RuinMyTrip');

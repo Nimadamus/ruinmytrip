@@ -448,6 +448,17 @@ function rmt_meta_title(string $head, string $brand = 'RuinMyTrip', int $max = 6
     $head = trim(preg_replace('/\s+/', ' ', strip_tags($head)) ?? '');
     if ($head === '') return $brand;
     if (mb_strlen($head) > $max) {
+        /* A headline with a natural break inside the budget ends there, as a whole phrase, instead
+           of mid-clause with "…" (2026-11-07: 145 editorial review titles and 63 guide titles read
+           "…the Hotel Bill…" in search results). The last ": ", ", ", " - " or " and " between
+           28 characters and the limit wins; with none, the word-boundary cut below still applies. */
+        $best = null;
+        foreach ([': ', ', ', ' - ', ' – ', ' and '] as $sep) {
+            for ($p = mb_strpos($head, $sep); $p !== false; $p = mb_strpos($head, $sep, $p + 1)) {
+                if ($p >= 28 && $p <= $max && ($best === null || $p > $best)) $best = $p;
+            }
+        }
+        if ($best !== null) return rtrim(mb_substr($head, 0, $best), " ,;:-–—");
         $cut = mb_substr($head, 0, $max);
         $sp = mb_strrpos($cut, ' ');
         // Never break a word: a title ending "expensi…" reads as a broken page, not a long one.
