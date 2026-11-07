@@ -157,10 +157,15 @@
           <input type="hidden" name="return" value="<?= e(url(ltrim(rmt_review_path($r),'/'))) ?>">
           <button class="btn btn-sm <?= $mine?'btn-primary':'btn-ghost' ?>"><?= e($rmt_vote_labels[$vt]) ?> <?= (int)$voteCounts[$vt] ?></button>
         </form>
+      <?php elseif (!$me): ?>
+        <?php /* Signed out, a vote is a door: sign in and land back here, rather than a chip that looks
+                 like a button and does nothing (2026-11-07). */ ?>
+        <a class="chip" rel="nofollow" href="<?= e(url('login?return=' . rawurlencode(rmt_review_path($r)))) ?>"><?= e($rmt_vote_labels[$vt]) ?> <?= (int)$voteCounts[$vt] ?></a>
       <?php else: ?>
         <span class="chip"><?= e($rmt_vote_labels[$vt]) ?> <?= (int)$voteCounts[$vt] ?></span>
       <?php endif; ?>
     <?php endforeach; ?>
+    <?php if (!$me): ?><span class="hint">Sign in to tell the writer it helped.</span><?php endif; ?>
   </div>
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 40px">
