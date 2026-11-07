@@ -17,7 +17,7 @@ echo "Smoke testing $BASE"
 echo "-- public routes (expect 200) --"
 for p in / /explore /travelers /founding /d/kyoto-japan /guides /reviews /meetups /going /tags \
          /login /register /terms /privacy /guidelines /safety /affiliate \
-         /editorial-policy /sitemap.xml /robots.txt /in/japan /start \
+         /editorial-policy /sitemap.xml /robots.txt /travel-buddies/japan /start \
          /d/san-francisco-usa /d/manaus-brazil /d/buzios-brazil \
          /blog /blog/tourist-taxes-2026 /blog/amsterdam-tourist-tax-2026 \
          /blog/kyoto-lodging-tax-2026 /blog/edinburgh-visitor-levy-2026 \
@@ -36,7 +36,12 @@ check /this-page-does-not-exist 404
 check /feed 302   # logged out -> /login
 check /welcome 302
 echo "-- content / DB connectivity --"
-if curl -s ${INSECURE} "$BASE/" | grep -q "Honest 2026 travel intel"; then echo "  OK   homepage rendered (DB reachable)"; else echo "  FAIL homepage content / DB"; fail=$((fail+1)); fi
+# The home page's Official Review cards are rows from the database: present means the DB answered.
+if curl -s ${INSECURE} "$BASE/" | grep -q "Official Review"; then echo "  OK   homepage rendered (DB reachable)"; else echo "  FAIL homepage content / DB"; fail=$((fail+1)); fi
+# /in/{country} moved to /travel-buddies/{country} in October (Q7): a 301, not a page.
+check /in/japan 301
+# One URL per page (2026-11-07): a trailing slash is a single 301 to the path without it.
+check /d/kyoto-japan/ 301
 if curl -s ${INSECURE} "$BASE/sitemap.xml" | grep -q "/meetups"; then echo "  FAIL sitemap lists empty /meetups"; fail=$((fail+1)); else echo "  OK   sitemap omits empty /meetups"; fi
 if curl -s ${INSECURE} "$BASE/sitemap.xml" | grep -q "<loc>"; then echo "  OK   sitemap has URLs"; else echo "  FAIL sitemap empty"; fail=$((fail+1)); fi
 # Editorial content must be labelled wherever it renders. If this ever stops matching, the
