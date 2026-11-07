@@ -33,8 +33,13 @@
           <a class="btn btn-accent" data-review-cta="review"
              href="<?= e(url('d/'.$r['dest_slug'].'/places')) ?>">Review another place in <?= e((string) $r['dest_name']) ?></a>
         <?php endif; ?>
-        <a class="btn btn-ghost" href="<?= e(url('u/'.$r['username'])) ?>">Your profile</a>
       </p>
+      <?php /* The moment somebody has just warned a stranger is the moment they will send it to a
+               friend who is going there: that is how the next writer arrives (2026-11-07). */
+        $shareUrl = url(ltrim(rmt_review_path($r), '/'));
+        $shareText = (string) ($r['title'] ?: $r['subject_name']);
+        $shareLabel = 'Send it to someone going' . (!empty($r['dest_name']) ? ' to ' . $r['dest_name'] : ' there');
+        include __DIR__ . '/_share.php'; unset($shareLabel); ?>
       <p class="hint" style="margin:12px 0 0">Going somewhere next? <a data-cta="after_review"
          href="<?= e(url('plan?cta=after_review')) ?>">Add your dates</a> and see which travelers will be there at the same time.</p>
     </div>

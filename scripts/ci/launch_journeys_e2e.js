@@ -114,6 +114,7 @@ async function pageHealth(p, label, mobile) {
       if (await btn.count()) { await btn.click(); await p.waitForLoadState(); }
       const after = php(`echo q_one("SELECT status FROM reviews WHERE user_id=? ORDER BY id DESC",[${id}])["status"]??"none";`);
       check(`${dev} J3 review published after confirm`, after === 'published', after);
+      check(`${dev} J3 the just-published page offers to send it on`, /Send it to someone going/.test(await p.locator('main').first().innerText()), p.url());
       await shot('j3_after_confirm');
 
       // J4 profile
