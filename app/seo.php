@@ -127,9 +127,30 @@ const RMT_DEST_SOCIAL_TITLE_TEST_ENDED = [
     ],
 ];
 
+/**
+ * Scam title test (2026-11-07, docs/SEO_SCAM_TITLE_TEST_20261107.md). The cities whose page carries a
+ * sourced "Scams and traps" section (app/city_scams.php, 16 at the start) say so in the title and the
+ * search snippet; every other city keeps the control title. The title promises only what the page
+ * holds, which is the lesson of the September test (its titles promised travelers who were not there).
+ * Off: set this to false. Read: impressions, clicks and position, test against control, 28 days.
+ */
+const RMT_SCAM_TITLE_TEST = true;
+
+function rmt_destination_scam_title(array $d): ?array {
+    if (!RMT_SCAM_TITLE_TEST || !function_exists('rmt_city_scams')) return null;
+    $slug = (string) ($d['slug'] ?? '');
+    if ($slug === '' || !rmt_city_scams($slug)) return null;
+    $n = (string) $d['name'];
+    return [
+        $n . ' scams, tourist traps and costs (2026) | RuinMyTrip',
+        'Scams and traps official travel advice warns about in ' . $n . ', each sourced, plus 2026 costs and honest reviews. Warn the next traveler.',
+    ];
+}
+
 function rmt_destination_page_title(array $d): string {
     $slug = (string) ($d['slug'] ?? '');
     if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][0];
+    if ($t = rmt_destination_scam_title($d)) return $t[0];
     return $d['name'].' 2026: costs, tickets, taxes and what nearly ruins it | RuinMyTrip';
 }
 
@@ -163,6 +184,7 @@ function rmt_destination_og_description(array $d): string {
 function rmt_destination_page_description(array $d): string {
     $slug = (string) ($d['slug'] ?? '');
     if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][1];
+    if ($t = rmt_destination_scam_title($d)) return $t[1];
     return (string) ($d['summary'] ?? '');
 }
 
