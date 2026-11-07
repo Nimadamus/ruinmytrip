@@ -40,10 +40,17 @@ async function pageHealth(p, label, mobile) {
     // J1 first-time visitor
     await p.goto(BASE + '/');
     await pageHealth(p, `${dev} J1 home`, M);
-    const reviewCta = p.getByRole('link', { name: /Review a place you went/i }).first();
-    check(`${dev} J1 primary CTA visible above fold`, await reviewCta.isVisible() && (await reviewCta.boundingBox()).y < vp.height);
-    await reviewCta.click(); await p.waitForLoadState();
-    check(`${dev} J1 CTA leads to review form`, /\/review\/new/.test(p.url()) && await p.locator('textarea[name=body]').count() > 0, p.url());
+    // The hero's three first actions (2026-11-07): warn, explore, find people.
+    const warn = p.locator('#act-warn-text');
+    check(`${dev} J1 warn box visible on first screen`, await warn.isVisible() && (await warn.boundingBox()).y < vp.height * 1.25, JSON.stringify(await warn.boundingBox()));
+    check(`${dev} J1 explore and companion actions present`, await p.locator('#act-explore').count() === 1 && await p.locator('#act-find-where').count() === 1);
+    await warn.fill('The airport taxi rank quoted triple the meter price.');
+    await p.locator('form:has(#act-warn-text) button[type=submit]').click(); await p.waitForLoadState();
+    check(`${dev} J1 warning carries into the review form`, /\/review\/new/.test(p.url()) && (await p.locator('[name=what_ruined]').inputValue()).includes('triple the meter'), p.url());
+    await p.goto(BASE + '/');
+    await p.locator('#act-find-where').fill('Lisbon');
+    await p.locator('form:has(#act-find-where) button[type=submit]').click(); await p.waitForLoadState();
+    check(`${dev} J1 find companions lands on buddies for the city`, /\/buddies/.test(p.url()) && /Lisbon/i.test(await p.locator('main').innerText()), p.url());
     await shot('j1_review_form');
 
     // J2 traveler searching destination warnings

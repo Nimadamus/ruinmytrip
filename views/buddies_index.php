@@ -86,7 +86,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
       <?php foreach ($mine as $m): ?><a class="chip" href="<?= e($m['href']) ?>"><?= e($m['label']) ?></a><?php endforeach; ?></p>
   <?php endif; ?>
   <div class="buddy-layout">
-    <main class="buddy-results">
+    <section class="buddy-results" aria-label="Travel buddy results">
       <div class="buddy-count">
         <h2><?php if ($n === 0): ?>Be the first traveler <?= $place !== '' ? 'heading to ' . e($place) : 'here' ?><?php else: ?><?= $n ?> <?= $n === 1 ? 'traveler' : 'travelers' ?><?= $place !== '' ? ' for ' . e($place) : '' ?><?php endif; ?></h2>
         <?php
@@ -151,7 +151,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
           </div>
         </section>
       <?php endif; ?>
-    </main>
+    </section>
 
     <aside class="buddy-side">
       <?php if ($me): ?>

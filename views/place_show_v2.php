@@ -127,7 +127,7 @@ $statusLabel = rmt_place_status_label((string) $p['status']);
     </div>
 
     <div class="pv2-grid">
-      <main class="pv2-main">
+      <div class="pv2-main">
         <?php if (!$closed): ?>
           <section class="pv2-card pv2-rate">
             <?php include __DIR__ . '/_rate_place.php'; ?>
@@ -296,7 +296,7 @@ $statusLabel = rmt_place_status_label((string) $p['status']);
             </form>
           <?php endif; ?>
         </section>
-      </main>
+      </div>
 
       <aside class="pv2-side">
         <?php $hasFacts = rmt_place_has_address($p) || !empty($p['phone']) || !empty($p['website_url']) || $coords || $hoursByDay; ?>
