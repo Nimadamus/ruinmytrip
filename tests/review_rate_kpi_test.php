@@ -36,7 +36,7 @@ ok($days[1]['day'] === '2026-10-01' && $days[1]['from'] === '2026-10-01 07:00:00
 $days = rmt_kpi_days(1, '2026-12-01 12:00:00');
 ok($days[0]['from'] === '2026-12-01 08:00:00', 'and PST in winter');
 $k = rmt_kpi_daily(3);
-ok(count($k['days']) === 3 && count($k['metrics']) === 10, 'three days, ten metrics');
+ok(count($k['days']) === 3 && count($k['metrics']) === 14 && in_array('search_visitors', $k['metrics'], true) && in_array('warnings', $k['metrics'], true), 'three days, fourteen metrics (the growth four added 2026-11-07)');
 
 $src = file_get_contents(BASE_PATH . '/views/_rate_place.php');
 ok(str_contains($src, 'rel="nofollow"') && str_contains($src, 'src=place_rate&rating='), 'stars are nofollow links into the form');

@@ -18,6 +18,11 @@ declare(strict_types=1);
  *   buddy_searches   distinct journeys that used the buddy finder
  *   buddy_posts      buddy posts by real members
  *   messages         messages sent by real members
+ * Added 2026-11-07 for the growth phase:
+ *   search_visitors  distinct browsers that arrived from a search engine and then tapped, typed or scrolled
+ *   warnings         member reviews published that day with a "what nearly ruined it" line
+ *   warn_clicks      distinct journeys that pressed a warning door (home warn box, scam section, nav)
+ *   partner_clicks   clicks on a paid partner link (none render until a program is switched on)
  *
  * One query per metric over the whole window, bucketed here: the first version ran one query per
  * metric per day and a 30 day read took the free instance past its time limit. Stored timestamps
@@ -26,7 +31,8 @@ declare(strict_types=1);
 
 const RMT_KPI_TZ = 'America/Los_Angeles';
 const RMT_KPI_METRICS = ['visitors', 'returning', 'review_starts', 'review_held', 'reviews', 'accounts', 'trips',
-                         'buddy_searches', 'buddy_posts', 'messages'];
+                         'buddy_searches', 'buddy_posts', 'messages',
+                         'search_visitors', 'warnings', 'warn_clicks', 'partner_clicks'];
 
 /** @return list<array{day:string, from:string, to:string}> oldest first, today last */
 function rmt_kpi_days(int $days, ?string $now = null): array {
@@ -103,7 +109,25 @@ function rmt_kpi_daily(int $days = 14): array {
         }
     }
 
+    // Organic: a human browser whose journey arrived from a search engine (acq_source, first touch).
+    foreach (rmt_kpi_rows("SELECT created_at, visitor FROM contribution_events
+                            WHERE event = 'human_interaction' AND acq_source = 'search' AND created_at >= ? AND created_at < ?
+                              AND visitor IS NOT NULL AND $notSelf", [$from, $to]) as $r) {
+        $put('search_visitors', (string) $r['created_at'], (string) $r['visitor']);
+    }
+    // The warning doors and the paid links, from the CTA clicks the browser reports (cta_click.detail).
+    foreach (rmt_kpi_rows("SELECT created_at, journey, detail FROM contribution_events
+                            WHERE event = 'cta_click' AND created_at >= ? AND created_at < ? AND $notSelf
+                              AND detail IN ('home_warn','city_scams','home_scams','nav_warn','partner_airhelp','partner_tickets')",
+                          [$from, $to]) as $r) {
+        $isPartner = str_starts_with((string) $r['detail'], 'partner_');
+        $put($isPartner ? 'partner_clicks' : 'warn_clicks', (string) $r['created_at'], $isPartner ? null : (string) ($r['journey'] ?? ''));
+    }
+
     $product = [
+        'warnings'    => "SELECT r.created_at FROM reviews r JOIN users u ON u.id = r.user_id
+                           WHERE r.status = 'published' AND r.what_ruined IS NOT NULL AND TRIM(r.what_ruined) <> ''
+                             AND r.created_at >= ? AND r.created_at < ? AND $real",
         'reviews'     => "SELECT r.created_at FROM reviews r JOIN users u ON u.id = r.user_id
                            WHERE r.status = 'published' AND r.created_at >= ? AND r.created_at < ? AND $real",
         'accounts'    => "SELECT u.created_at FROM users u WHERE u.created_at >= ? AND u.created_at < ? AND $real",

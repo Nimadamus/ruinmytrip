@@ -25,7 +25,9 @@ import gsc_report  # noqa: E402
 
 SERVICE = 'srv-d9co4n0k1i2s73cg0nfg'
 SITE_COLS = ['visitors', 'returning', 'review_starts', 'review_held', 'reviews', 'accounts', 'trips',
-             'buddy_searches', 'buddy_posts', 'messages']
+             'buddy_searches', 'buddy_posts', 'messages',
+             # growth phase, 2026-11-07 (app/kpi.php)
+             'search_visitors', 'warnings', 'warn_clicks', 'partner_clicks']
 # From 2026-10-11 the scoreboard reads /cron/proof (app/proof.php): browsers split into verified
 # humans, suspected bots and unverified, every count defined in docs/METRICS.md. /cron/kpi is the
 # fallback until that endpoint is deployed; its 'visitors' counts headless browsers that scroll.
@@ -98,7 +100,7 @@ def main():
     rows = []
     for d in kpi['days']:
         imp, clk = g.get(d['day'], ('', ''))
-        rows.append([d['day'], imp, clk] + [d[c] for c in site_cols])
+        rows.append([d['day'], imp, clk] + [d.get(c, '') for c in site_cols])
 
     with open(os.path.join(a.out, 'kpi.csv'), 'w', newline='') as f:
         w = csv.writer(f)

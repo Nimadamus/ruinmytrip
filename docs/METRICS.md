@@ -81,3 +81,16 @@ to three days behind and include people who never reached the page.
 Measured with `scripts/ci/proof_load_check.php` under the production limit of 256MB: 52,000 events
 (production's 31 day volume on 2026-10-11) peak 30MB in 0.7 s; 160,000 events 76MB; 300,000 events
 110MB. It stops reading at 400,000 events and says so.
+
+## Growth phase: where each number lives (2026-11-07)
+
+| What Nima asked to track | Where it is read | Notes |
+|---|---|---|
+| Organic traffic | Google clicks and impressions: `python scripts/gsc_report.py --days 28` and the KPI.md columns (`scripts/kpi_snapshot.py`, needs the Search Console credentials on Nima's machine). On-site: `search_visitors` in `/cron/kpi` | `search_visitors` counts humans whose visit arrived from a search engine, our own checks excluded |
+| Indexed pages | Search Console coverage (URL Inspection via the same credentials, as in docs/SITEMAP_PROPOSAL_20261102.md); the sitemap lists what we submit | No indexing rule was changed in the growth phase |
+| Submissions | `reviews`, `warnings` (reviews with a "what nearly ruined it" line), `trips`, `buddy_posts` in `/cron/kpi` | Real members only (staff and test accounts out) |
+| Engagement | `visitors`, `returning`, `warn_clicks` (home warn box, scam sections, nav), helpful votes on `/admin/funnel` | |
+| Conversions | `review_starts` to `review_held` to `reviews`; `accounts`; per channel on `/admin/funnel` (Acquisition, now) from the tagged links in docs/ANSWER_BANK_20261107.md | One tagged link per post (`scripts/outreach_link.py`) |
+| Revenue signals | `partner_clicks` in `/cron/kpi`, then the partner's own dashboard | Zero until a program is switched on (docs/PARTNERS.md); no revenue is assumed from clicks |
+| Title change (2026-11-07) | CTR for the 214 URLs in docs/research_20261107/title_fix_baseline.csv, 28 days before against 28 days after deploy | Read no earlier than 4 weeks after the deploy |
+| Snippet test | `scripts/gsc_snippet_test.py`, read on 2026-11-25 | Its pages were left untouched |
