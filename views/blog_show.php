@@ -29,6 +29,8 @@
           include __DIR__ . '/_meet_travelers.php'; $dsCompact = false; ?>
   <?php endif; ?>
   <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $p['body'] : rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
+  <?php /* A partner link only on our own utility notes, only once a program is joined (app/partners.php). */
+        if ($isEd) echo rmt_partner_block_for_post((string) $p['slug']); ?>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>

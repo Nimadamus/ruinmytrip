@@ -60,6 +60,13 @@ $v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'destinatio
     'body' => '', 'what_ruined' => 'Bad taxi.'], false);
 ok('a warning still needs to say something (the same minimum as a review)', !$v['ok']);
 
+$v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'restaurant', 'subject_name' => 'X', 'rating' => '5',
+    'body' => 'Lovely dinner, and use my promo code TRAVEL10 for ten percent off your booking.'], false);
+ok('a promo code is refused in a review (as /affiliate promises)', !$v['ok'] && (bool) array_filter($v['errors'], static fn($e) => str_contains($e, 'affiliate')));
+$v = rmt_review_validate(['destination_id' => '1', 'subject_type' => 'restaurant', 'subject_name' => 'X', 'rating' => '2',
+    'body' => 'The waiter pushed a discount on us and then the bill was higher than the menu said.'], false);
+ok('ordinary words about prices and discounts are not caught', !array_filter($v['errors'], static fn($e) => str_contains($e, 'affiliate')));
+
 $_SERVER['HTTP_X_FORWARDED_FOR'] = '1.2.3.4, 162.158.0.1';
 $_SERVER['HTTP_CF_CONNECTING_IP'] = '203.0.113.9';
 ok('the rate limit key is the Cloudflare client address', rmt_client_ip() === '203.0.113.9');

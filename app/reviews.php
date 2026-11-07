@@ -77,6 +77,13 @@ function rmt_review_validate(array $in, bool $isDraft): array {
         if ($rating !== 0 && ($rating < 1 || $rating > 5)) $errors[] = 'Rating must be from 1 to 5.';
     }
 
+    /* Paid links and promo codes have no place in a review (2026-11-07): the /affiliate page promises
+       members cannot post them, and a review carrying one is an ad wearing a star rating. Same
+       pattern posts and comments use, nothing broader, so a traveler's review is not caught by it. */
+    if (defined('RMT_QUALITY_PITCH_PATTERNS')
+        && preg_match(RMT_QUALITY_PITCH_PATTERNS['affiliate'], trim((string) ($in['title'] ?? '')) . ' ' . $body . ' ' . $great . ' ' . $ruined)) {
+        $errors[] = 'Promo codes, referral and affiliate links are not allowed in a review.';
+    }
     /* Link spam (2026-10-11): a review is somebody's experience, not a list of URLs. Two links is
        plenty for "their website" and "the booking page"; past that it reads as an advert. */
     if (preg_match_all('~https?://|www\.~i', trim((string) ($in['title'] ?? '')) . ' ' . $body . ' ' . $great . ' ' . $ruined) > RMT_REVIEW_MAX_LINKS) {
