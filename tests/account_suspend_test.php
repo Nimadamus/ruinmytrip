@@ -51,6 +51,14 @@ $queue = rmt_moderation_queue(100); $history = [];
 ob_start(); include dirname(__DIR__) . '/views/admin_moderation.php'; $html = (string) ob_get_clean();
 ok(str_contains($html, 'admin/moderation/account') && str_contains($html, 'value="' . $uid['sabuser'] . '"') && str_contains($html, 'Suspend account'), 'the moderation queue offers Suspend account for the reported author');
 
+// Staff hear about a report: admins and mods only, no member, capped at six an hour.
+q_run("DELETE FROM rate_limits WHERE bucket LIKE 'report_alert:%'");
+$sent = rmt_report_alert_staff('review', 'harassment');
+ok(in_array('smod@example.invalid', $sent, true) && in_array('sadmin@example.invalid', $sent, true), 'a report alerts the moderators and admins');
+ok(!in_array('svictim@example.invalid', $sent, true) && !in_array('sabuser@example.invalid', $sent, true), 'and nobody else');
+for ($i = 0; $i < 6; $i++) rmt_report_alert_staff('review', 'spam');
+ok(rmt_report_alert_staff('review', 'spam') === [], 'past six an hour it stops (the queue still has them)');
+
 $pdo->rollBack();
 echo $fails ? "account_suspend_test: $fails FAILED\n" : "account_suspend_test: all passed\n";
 exit($fails ? 1 : 0);

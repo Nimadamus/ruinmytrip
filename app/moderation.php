@@ -291,3 +291,37 @@ function rmt_account_set_status(int $actorId, int $userId, string $action, ?int 
            mb_substr(trim($note), 0, 500) ?: null, date('Y-m-d H:i:s')]);
     return ['ok' => true, 'from' => $from, 'to' => $to];
 }
+
+/**
+ * Tell staff a report came in (2026-11-07). A report used to sit in /admin/moderation until
+ * somebody happened to open it, which is fine for spam and not for "this person is threatening
+ * me". Recipients are the admin and mod accounts with a confirmed address, read from the database,
+ * not a hard-coded inbox. The email says what kind of thing and the reason, never the reported text
+ * or who reported it, and links to the queue. At most six alerts an hour site-wide; anything past
+ * that is still in the queue. Never throws: a mail failure must not lose the report.
+ *
+ * @return list<string> the addresses it tried (for tests); empty when capped or mail is off
+ */
+function rmt_report_alert_staff(string $targetType, string $reason): array {
+    if (!function_exists('rmt_mail_send')) return [];
+    $staff = q_all("SELECT email FROM users WHERE role IN ('admin','mod') AND status='active'
+                     AND email_verified_at IS NOT NULL AND email LIKE '%@%'");
+    if (!$staff) return [];
+    if (!rmt_rate_ok('report_alert', 'site', 6, 3600)) return [];
+    $kind = str_replace('_', ' ', $targetType);
+    $why = str_replace('_', ' ', $reason);
+    $queue = rtrim((string) cfg('app_url'), '/') . '/admin/moderation';
+    $tried = [];
+    foreach ($staff as $s) {
+        $to = (string) $s['email'];
+        try {
+            rmt_mail_send($to, 'New report on RuinMyTrip: ' . $why,
+                function_exists('rmt_mail_layout')
+                    ? rmt_mail_layout('A ' . $kind . ' was reported', '<p>Reason given: <b>' . htmlspecialchars($why) . '</b>.</p><p>Open the moderation queue to read it in context and decide.</p>', 'Open the queue', $queue)
+                    : '<p>A ' . htmlspecialchars($kind) . ' was reported (' . htmlspecialchars($why) . '). ' . htmlspecialchars($queue) . '</p>',
+                'A ' . $kind . ' was reported (' . $why . '). Open the queue: ' . $queue);
+        } catch (\Throwable $e) { /* the report is saved; the queue still has it */ }
+        $tried[] = $to;
+    }
+    return $tried;
+}

@@ -5841,6 +5841,7 @@ function report_submit(array $a): void {
     q_run("INSERT INTO reports (reporter_id,target_type,target_id,reason,details,status,created_at)
            VALUES (?,?,?,?,?, 'open', ?)",
         [(int)$me['id'], $tt, $tid, $reason, $details ?: null, date('Y-m-d H:i:s')]);
+    rmt_report_alert_staff($tt, $reason);
     flash('Thanks. Our moderators will review this.');
     redirect('/');
 }
