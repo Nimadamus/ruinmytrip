@@ -499,3 +499,24 @@ function rmt_meta_description(string $text, int $max = 155): string {
     $sp = mb_strrpos($cut, ' ');
     return rtrim($sp !== false ? mb_substr($cut, 0, $sp) : $cut, " ,;:-–—") . '…';
 }
+
+/**
+ * A stored timestamp ("2026-07-25 03:30:37", UTC like every row this app writes) as ISO 8601 for
+ * structured data. Google reads "2026-07-25 03:30:37" as ambiguous; a bare date passes through.
+ */
+function rmt_iso_datetime(?string $ts): ?string {
+    $ts = trim((string) $ts);
+    if ($ts === '') return null;
+    if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $ts)) return $ts;
+    try { return (new DateTimeImmutable($ts, new DateTimeZone('UTC')))->format(DATE_ATOM); }
+    catch (Throwable $e) { return null; }
+}
+
+/** schema.org author for a row: the editorial Organization, or the member as a Person. */
+function rmt_jsonld_author(array $row): ?array {
+    if (rmt_is_editorial($row)) return ['@type' => 'Organization', 'name' => rmt_editorial_name(), 'url' => url('editorial-policy')];
+    $a = $row['author'] ?? null;
+    if (!is_array($a) || empty($a['username'])) return null;
+    return ['@type' => 'Person', 'name' => (string) ($a['display_name'] ?: $a['username']), 'url' => url('u/' . $a['username'])];
+}
+

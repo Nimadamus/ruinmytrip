@@ -1748,7 +1748,14 @@ function guide_show(array $a): void {
         'description'=>rmt_meta_description((string) $g['summary']),
         'og_image'=>abs_url($g['cover_url']),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Guides','url'=>url('guides')],['name'=>$g['title'],'url'=>url('g/'.$g['slug'])]],
-        'jsonld'=>jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$g['title'],'datePublished'=>$g['created_at']]),
+        // ISO dates, an author and the cover (crawl 2026-11-07: "2026-07-25 03:30:37", no author, no image).
+        // No dateModified: updated_at moves on every editorial publish run, so it would claim edits that never happened.
+        'jsonld'=>jsonld(['@context'=>'https://schema.org','@type'=>'Article','headline'=>$g['title'],
+            'description'=>rmt_meta_description((string) $g['summary']),
+            'datePublished'=>rmt_iso_datetime($g['created_at'] ?? null),
+            'author'=>rmt_jsonld_author($g),
+            'image'=>!empty($g['cover_url']) ? abs_url($g['cover_url']) : null,
+            'mainEntityOfPage'=>url('g/'.$g['slug'])]),
     ]);
 }
 
@@ -1916,7 +1923,8 @@ function blog_show(array $a): void {
     $tags = rmt_tags_for('blog_post', $pid);
     $isEd = rmt_is_editorial($p);
     $ld = ['@context'=>'https://schema.org','@type'=>'Article','headline'=>$p['title'],
-           'description'=>$p['summary'],'datePublished'=>$p['created_at'],
+           'description'=>$p['summary'],'datePublished'=>rmt_iso_datetime($p['created_at'] ?? null),
+           'image'=>!empty($p['cover_url']) ? abs_url($p['cover_url']) : null,
            'url'=>url('blog/'.$p['slug'])];
     if ($isEd) $ld['author'] = ['@type'=>'Organization','name'=>rmt_editorial_name()];
     $askDests = all_dests();
