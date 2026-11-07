@@ -147,6 +147,7 @@ const RMT_CTA_KEYS = [
     'home_scams', 'city_scams',
     // Partner links (app/partners.php): counted so a program is judged on clicks before anyone guesses revenue.
     'partner_airhelp', 'partner_tickets',
+    'nav_warn',
     // The same city stars put first for a reader who arrived from a post that asked them (2026-10-18).
     'outreach_rate',
     // Match alerts and the "I'm going" card (2026-10-01). share_* is the channel a card went out on.

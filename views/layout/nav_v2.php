@@ -19,7 +19,8 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
     </form>
     <nav class="v2-links" aria-label="Primary">
       <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>>Explore</a>
-      <a href="<?= e(url('map')) ?>"<?= $nv2On('/map') ?>>Travel map</a>
+      <?php /* Warnings are what the site is for (2026-11-07); the map stays one tap away in More and in the phone tab bar. */ ?>
+      <a href="<?= e(url('ruined')) ?>"<?= $nv2On('/ruined') ?>>Warnings</a>
       <a href="<?= e(url('reviews')) ?>"<?= $nv2On('/reviews') ?>>Reviews</a>
       <a href="<?= e(url('buddies')) ?>"<?= $nv2On('/buddies') ?>>Travel buddies</a>
       <details class="v2-more">
@@ -32,7 +33,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
           <a href="<?= e(url('travelers')) ?>">All travelers</a>
           <a href="<?= e(url('meetups')) ?>">Meetups</a>
           <a href="<?= e(url('communities')) ?>">Communities</a>
-          <a href="<?= e(url('ruined')) ?>">Ruined</a>
+          <a href="<?= e(url('map')) ?>">Travel map</a>
           <a href="<?= e(url('collections')) ?>">Collections</a>
           <a href="<?= e(url('leaderboard')) ?>">Top travelers</a>
           <a href="<?= e(url('tags')) ?>">Topics</a>
@@ -76,6 +77,8 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <input type="search" name="q" placeholder="A place, a city, or a country" aria-label="Search">
     </form>
     <p class="v2-sheet-h">Share</p>
+    <a class="v2-sheet-item" data-cta="nav_warn" href="<?= e(url('ruined')) ?>"><span class="v2-si-ico" aria-hidden="true">!</span>
+      <span><b>Travel warnings</b><small>What went wrong for others, and yours for the next traveler</small></span></a>
     <a class="v2-sheet-item" data-cta="nav_rate" href="<?= e(url('review/new?src=home')) ?>"><span class="v2-si-ico" aria-hidden="true">★</span>
       <span><b>Rate a place</b><small>Stars and a few lines, no account to start</small></span></a>
     <a class="v2-sheet-item" href="<?= e(url('map')) ?>"><span class="v2-si-ico" aria-hidden="true">◉</span>
@@ -96,7 +99,7 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <a href="<?= e(url('reviews')) ?>">Reviews</a><a href="<?= e(url('events')) ?>">Events</a>
       <a href="<?= e(url('going')) ?>">Who is going</a><a href="<?= e(url('travelers')) ?>">All travelers</a>
       <a href="<?= e(url('meetups')) ?>">Meetups</a><a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('ruined')) ?>">Ruined</a><a href="<?= e(url('collections')) ?>">Collections</a>
+      <a href="<?= e(url('collections')) ?>">Collections</a>
       <a href="<?= e(url('leaderboard')) ?>">Top travelers</a><a href="<?= e(url('tags')) ?>">Topics</a>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a><a href="<?= e(url('matches')) ?>">Matches</a>
