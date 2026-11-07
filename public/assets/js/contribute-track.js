@@ -120,6 +120,27 @@
     kinds.forEach(function (k) { window.addEventListener(k, verify, { capture: true, passive: true }); });
   })();
 
+  /* A read of a member's review (2026-11-07): what "Read by N travelers" on the writer's own page
+     counts. Same bar as human_verified: a TRUSTED touch, wheel, tap or key, at least 1.5 s after
+     load, no automation flag, once per review per tab session. The page only asks for it when the
+     reader is not the writer ([data-review-read]). Nothing but the path is sent. */
+  (function () {
+    if (!document.querySelector('[data-review-read]') || navigator.webdriver) return;
+    var KEY = 'rmt_rr:' + location.pathname;
+    try { if (sessionStorage.getItem(KEY)) return; } catch (e) { /* storage refused: still count */ }
+    var t0 = (window.performance && performance.now) ? performance.now() : 0;
+    var kinds = ['touchstart', 'wheel', 'pointerdown', 'keydown'];
+    function read(ev) {
+      if (!ev || ev.isTrusted !== true) return;
+      var now = (window.performance && performance.now) ? performance.now() : 2000;
+      if (now - t0 < 1500) return;
+      kinds.forEach(function (k) { window.removeEventListener(k, read, true); });
+      try { sessionStorage.setItem(KEY, '1'); } catch (e) { /* ignore */ }
+      send('review_read', { path: location.pathname });
+    }
+    kinds.forEach(function (k) { window.addEventListener(k, read, { capture: true, passive: true }); });
+  })();
+
   // Exposed so the draft script can report a restore without duplicating the beacon plumbing.
   window.rmtTrack = send;
 })();

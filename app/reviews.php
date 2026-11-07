@@ -292,3 +292,19 @@ function rmt_reviews_release_held(int $userId): int {
     if ($n && function_exists('rmt_award_badges')) rmt_award_badges($userId);
     return $n;
 }
+
+/**
+ * How many distinct travelers read a review (2026-11-07): browsers that sent review_read for its
+ * page (a trusted interaction, see contribute-track.js), our own selfcheck visits out, the writer
+ * never asked (the page does not request the beacon from its author). Shown only to the writer.
+ */
+function rmt_review_read_count(int $reviewId): int {
+    if ($reviewId < 1) return 0;
+    try {
+        return (int) (q_one("SELECT COUNT(DISTINCT visitor) n FROM contribution_events
+                              WHERE event = 'review_read' AND visitor IS NOT NULL AND visitor <> ''
+                                AND (path = ? OR path LIKE ?) AND COALESCE(acq_content, '') <> 'selfcheck'",
+                            ['/review/' . $reviewId, '/review/' . $reviewId . '/%'])['n'] ?? 0);
+    } catch (\PDOException $e) { return 0; }
+}
+

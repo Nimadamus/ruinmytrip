@@ -103,6 +103,7 @@ const RMT_CONTRIB_EVENTS = [
     'human_interaction',           // browser: first tap, key or scroll of a visit (one bit, nothing else)
     'human_verified',              // browser: first TRUSTED tap or key, 1.5 s after load, no webdriver flag (2026-10-11)
     'automation_detected',         // browser: navigator.webdriver was true (2026-10-11)
+    'review_read',                 // browser: a trusted touch, wheel, tap or key on a member's review, 1.5 s in, once per tab session (2026-11-07)
     'cta_click',                   // browser: a social call to action was pressed, detail = which
     'plan_view',                   // the trip first form was rendered
     'plan_started',                // browser: somebody put a value into it

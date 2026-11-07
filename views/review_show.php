@@ -153,6 +153,14 @@
   <?php endif; ?>
 
   <?php $isOwn = $me && (int)$me['id'] === (int)$r['user_id']; ?>
+  <?php /* "Read by N travelers": the writer sees it; everyone else is what is counted (rmt_review_read_count). */
+    $rmtMemberReview = ($r['status'] ?? '') === 'published' && !rmt_is_editorial($r); ?>
+  <?php if ($rmtMemberReview && !$isOwn): ?><span data-review-read hidden></span><?php endif; ?>
+  <?php if ($rmtMemberReview && $isOwn): $rmtReads = rmt_review_read_count((int) $r['id']); ?>
+    <p class="hint" style="margin:18px 0 0"><?= $rmtReads > 0
+        ? 'Read by ' . $rmtReads . ' ' . ($rmtReads === 1 ? 'traveler' : 'travelers') . ' so far. Only you can see this number.'
+        : 'Nobody has read it yet. Send it to someone going there, below.' ?></p>
+  <?php endif; ?>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:26px 0 4px">
     <span class="muted" style="margin-right:4px">Was this review helpful?</span>
     <?php foreach (RMT_REVIEW_VOTE_TYPES as $vt): $mine = in_array($vt, $myVotes, true); ?>

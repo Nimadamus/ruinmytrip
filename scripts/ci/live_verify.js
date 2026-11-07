@@ -5,7 +5,7 @@ const { chromium } = require('playwright');
 const [BASE, SHOTS] = process.argv.slice(2);
 const results = [];
 const check = (n, c, d = '') => { results.push([n, !!c]); console.log((c ? 'PASS ' : 'FAIL ') + n + (c ? '' : '  -- ' + String(d).slice(0, 240))); };
-const SELFCHECK = 'utm_content=selfcheck'; // excluded from human counts (docs/qa)
+const SELFCHECK = 'utm_source=other&utm_medium=other&utm_campaign=selfcheck&utm_content=selfcheck'; // excluded from human counts (docs/qa)
 
 const PAGES = [
   ['/', /Find out what could ruin your trip/, 'home hero'],
