@@ -18,7 +18,7 @@
     <?php $rateDest = $blogDest; $rateSrc = 'blog_rate'; $rateQ = null; include __DIR__ . '/_rate_dest.php'; ?>
   <?php endif; ?>
   <?php if ($isEd): ?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif; ?>
-  <?php if ($p['cover_url']): ?><img class="article-hero" src="<?= e(abs_url($p['cover_url'])) ?>" alt="<?= e($p['title']) ?>"><?php endif; ?>
+  <?php if ($p['cover_url']): ?><?php $heroSet = rmt_media_srcset((string) $p['cover_url']); /* a phone got the full original: 218 KB where 23 KB would do (crawl 2026-11-07) */ ?><img class="article-hero" src="<?= e(abs_url($p['cover_url'])) ?>"<?php if ($heroSet): ?> srcset="<?= e($heroSet) ?>" sizes="(max-width: 760px) 100vw, 760px"<?php endif; ?> width="1280" height="720" fetchpriority="high" alt="<?= e($p['title']) ?>"><?php endif; ?>
   <p style="font-size:1.15rem;color:var(--muted)"><?= e($p['summary']) ?></p>
   <?php /* These posts are what search lands on, and the city strip used to sit under the whole
            article. On 2026-09-29 every engaged search visit of the week was one blog page read
