@@ -9,6 +9,9 @@ report (`~/rmt_kpi/DAILY_REPORT.md`) and `/cron/acquire` show visits, joins and 
 
 ## 1. Indie Hackers, Tue 3 Nov, morning Pacific (status: needs OK + his account)
 
+> **2026-11-07: hosting is paused.** Change the Hosts & Locals bullet to locals only ("list yourself as a local
+> for a coffee or a walk") and drop "or apply to host for free" before posting.
+
 Rules: no single site wide promo ban; group owners set guidelines, read the group's before posting.
 Build story with real numbers and a specific question does well. Reply to every comment that day.
 
