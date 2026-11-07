@@ -1,11 +1,33 @@
 <?php
 declare(strict_types=1);
+
+/* One URL per page: /d/paris-france/ answered 200 with a canonical pointing at itself, a duplicate
+   of /d/paris-france (crawl 2026-11-07). A GET or HEAD for any path ending in a slash goes, in one
+   301, to the same path without it, query kept, percent-encoding kept as sent.
+   Safety: only a path made of RFC 3986 path characters is redirected (no backslash, no control
+   characters), and leading slashes collapse to one, so "//evil.com/" and "/\evil.com/" can never
+   become an off-site Location. Anything else falls through to the router, which 404s it.
+   Real directories (/assets/, /uploads/) are served by Apache before PHP runs (public/.htaccess),
+   so this never meets mod_dir's own slash-adding redirect and cannot loop with it.
+   It runs before bootstrap: a redirect needs no session, cookie or database.
+   POST is left alone so no form loses its body. tests/trailing_slash_test.php drives it. */
+$rawPath = (string) strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+if ($rawPath !== '/' && str_ends_with($rawPath, '/')
+    && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)
+    && preg_match('#^/[A-Za-z0-9\-._~!$&\'()*+,;=:@%/]+$#', $rawPath)) {
+    $target = '/' . trim($rawPath, '/');
+    $qs = (string) ($_SERVER['QUERY_STRING'] ?? '');
+    header('Location: ' . $target . ($qs !== '' ? '?' . $qs : ''), true, 301);
+    exit;
+}
+
 require dirname(__DIR__) . '/app/bootstrap.php';
 require BASE_PATH . '/app/controllers.php';
 
 $path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
 $path = '/' . trim(rawurldecode($path), '/');
 if ($path === '/') $path = '/';
+
 
 // Route table: [method, pattern(regex with named groups), handler]
 $routes = [
