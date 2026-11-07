@@ -257,6 +257,18 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
           <?php else: ?>
             <b><?= e($who) ?></b> liked your <?= e($noun) ?>.
           <?php endif; ?>
+        <?php elseif ($n['type']==='helpful'):
+          $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
+          $rmtOthers = (int) ($n['others'] ?? 0);
+          if ($rmtOthers === 1 && !empty($n['also'][0])) $who .= ' and @' . $n['also'][0];
+          elseif ($rmtOthers > 1) $who .= ' and ' . $rmtOthers . ' others';
+          $href = rmt_notification_target_url('review', (int)$n['target_id']);
+        ?>
+          <?php if ($href): ?>
+            <a href="<?= e($href) ?>"><b><?= e($who) ?></b> found your review helpful.</a>
+          <?php else: ?>
+            <b><?= e($who) ?></b> found your review helpful.
+          <?php endif; ?>
         <?php elseif ($n['type']===RMT_MATCH_NOTIFY_TYPE):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           /* Read from TRIPS, which is where a trip lives. This read the legacy going table, and

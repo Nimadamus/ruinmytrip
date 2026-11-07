@@ -3321,7 +3321,7 @@ function invite_page(array $a): void {
  * @return list<array<string,mixed>>
  */
 function rmt_notifications_rollup(array $items): array {
-    $rollable = ['like' => true, 'save' => true];
+    $rollable = ['like' => true, 'save' => true, 'helpful' => true];
     $out = [];
     $index = [];
     foreach ($items as $n) {
@@ -4886,6 +4886,22 @@ function rmt_notify_like(int $actorId, string $tt, int $tid): void {
           [$owner, 'like', $actorId, $tt, $tid, date('Y-m-d H:i:s')]);
 }
 
+/**
+ * Somebody found a review helpful: the one piece of news that tells a writer the warning worked,
+ * and the best reason to come back and write the next one (2026-11-07; before this a helpful vote
+ * told its author nothing). Same rules as a like: once per voter per review, never across a block,
+ * never for your own, rolled up in the list, in-site only (no email).
+ */
+function rmt_notify_helpful(int $actorId, int $reviewId): void {
+    $owner = rmt_content_owner_id('review', $reviewId);
+    if ($owner < 1 || $owner === $actorId) return;
+    if (rmt_is_blocked($owner, $actorId)) return;
+    if (q_one("SELECT 1 x FROM notifications WHERE user_id=? AND type='helpful' AND actor_id=? AND target_type='review' AND target_id=?",
+              [$owner, $actorId, $reviewId])) return;
+    q_run('INSERT INTO notifications (user_id,type,actor_id,target_type,target_id,created_at) VALUES (?,?,?,?,?,?)',
+          [$owner, 'helpful', $actorId, 'review', $reviewId, date('Y-m-d H:i:s')]);
+}
+
 /** POST /destination/been — self-asserted "I've been". Not a review, not a rating. */
 function destination_been_action(array $a): void {
     require_login(); csrf_check(); $me = current_user();
@@ -5109,6 +5125,7 @@ function review_vote_action(array $a): void {
             redirect(rmt_return_to());
         }
         rmt_award_badges((int) $r['user_id']); // votes received can newly qualify the author for Elite Traveler
+        if ($type === 'useful') rmt_notify_helpful((int) $me['id'], $rid);
     }
     redirect(rmt_return_to());
 }
