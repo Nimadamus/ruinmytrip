@@ -25,6 +25,13 @@ const PAGES = [
   ['/login', /Sign in|Log in/i, 'login'],
   ['/register', /./, 'register'],
   ['/terms', /Last updated September 2026/, 'terms date fixed'],
+  // Phase 2 (2026-11-07)
+  ['/d/lisbon-portugal', /Scams and traps in Lisbon/, 'lisbon scams section'],
+  ['/d/mexico-city-mexico', /Happened to you\? Tell the next traveler/, 'scam item invites a warning'],
+  ['/blog/westminster-abbey-tickets-2026', /32 pounds for an adult ticket/, 'westminster corrected'],
+  ['/blog/edinburgh-castle-tickets-2026', /11\.50 pounds online/, 'edinburgh corrected'],
+  ['/blog/venice-access-fee-2026', /the 2026 fee days are over/, 'venice update'],
+  ['/affiliate', /Where a paid link can appear/, 'affiliate policy'],
 ];
 
 (async () => {
@@ -51,6 +58,15 @@ const PAGES = [
     check(`${dev} no script errors`, errs.length === 0, errs.slice(0, 3).join(' || '));
     await ctx.close();
   }
+  // Phase 2: nav, no partner block while unconfigured, a review form that keeps the sentence.
+  { const c = await b.newContext(); const p = await c.newPage();
+    await p.goto(BASE + '/?' + SELFCHECK);
+    check('nav: Warnings is a primary link', (await p.locator('nav[aria-label=Primary] a', { hasText: 'Warnings' }).count()) === 1);
+    await p.goto(BASE + '/blog/trip-went-wrong-what-you-can-claim?' + SELFCHECK);
+    check('no partner block until a program is switched on', (await p.locator('.partner-block').count()) === 0);
+    await p.goto(BASE + '/review/new?src=home_warn&ruined=' + encodeURIComponent('The taxi rank quoted triple the meter price.') + '&' + SELFCHECK);
+    check('the warning sentence opens in the main review box', (await p.locator('textarea[name=body]').inputValue()).includes('triple the meter'));
+    await c.close(); }
   // Redirects, read with a plain request.
   const ctx = await b.newContext(); const rq = ctx.request;
   const slash = await rq.get(BASE + '/d/rome-italy/', { maxRedirects: 0 });
