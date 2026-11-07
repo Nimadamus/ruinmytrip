@@ -22,13 +22,13 @@ function rmt_tt_cities(): array {
     $c = [
         'amsterdam' => ['name' => 'Amsterdam', 'cur' => 'EUR', 'dest' => 'amsterdam-netherlands', 'note' => 'amsterdam-tourist-tax-2026',
             'rate' => '12.5% of the room price', 'tiers' => $one(['pct' => 12.5]),
-            'tip' => 'Worked out on the room price without VAT. Accommodation VAT in the Netherlands is 21% from 1 January 2026, on top of this.'],
+            'tip' => 'Worked out on the room price without VAT. Accommodation VAT in the Netherlands is 21% from 1 January 2026 (campsites stay at 9%), on top of this.'],
         'barcelona' => ['name' => 'Barcelona', 'cur' => 'EUR', 'dest' => 'barcelona-spain', 'note' => 'barcelona-tourist-tax-2026',
-            'rate' => '8.40 to 12 euros per person per night', 'tiers' => [
+            'rate' => '8.40 to 12 euros per person per night, first 7 nights', 'cap' => 7, 'tiers' => [
                 '5' => ['label' => 'Five star hotel', 'pp' => 12.0],
                 '4' => ['label' => 'Four star hotel', 'pp' => 8.4],
                 'rental' => ['label' => 'Tourist apartment', 'pp' => 9.5]],
-            'tip' => 'Regional rate plus the 5 euro city surcharge from 1 April 2026. The surcharge rises 1 euro a year through 2029. Other hotel categories are not listed here yet.'],
+            'tip' => 'Count only guests aged 17 and over: 16 and under do not pay. At most 7 nights per person are taxed. Regional rate plus the 5 euro city surcharge from 1 April 2026, rising to 6 euros from 1 April 2027. Other categories are not listed here yet.'],
         'berlin' => ['name' => 'Berlin', 'cur' => 'EUR', 'dest' => 'berlin-germany', 'note' => 'berlin-city-tax-2026',
             'rate' => '7.5% of the room price', 'tiers' => $one(['pct' => 7.5]),
             'tip' => 'Worked out on the net room price. Business stays pay it too.'],
@@ -102,7 +102,7 @@ function rmt_tt_cities(): array {
                 '5' => ['label' => 'Five star hotel', 'pp' => 4.69],
                 '4' => ['label' => 'Four star hotel', 'pp' => 3.48],
                 '3' => ['label' => 'Three star hotel', 'pp' => 2.28]],
-            'tip' => 'Unrated stays pay 6.70% of the price per person per night, up to 6.43 euros, and are not worked out here.'],
+            'tip' => 'Count adults only: guests under 18 do not pay. Unrated stays pay 6.70% of the price per person per night, up to 6.43 euros, and are not worked out here.'],
         'osaka' => ['name' => 'Osaka', 'cur' => 'JPY', 'dest' => 'osaka-japan', 'note' => 'osaka-accommodation-tax-2026',
             'rate' => '0 to 500 yen per person per night', 'tiers' => $one(['bands' => [[0, 0], [5000, 200], [15000, 400], [20000, 500]]]),
             'tip' => 'Charged separately from the room and paid at the property, even on prepaid bookings.'],
@@ -122,7 +122,7 @@ function rmt_tt_cities(): array {
             'rate' => '800 kronur per room per night', 'tiers' => $one(['room' => 800.0]),
             'tip' => 'Iceland lodging tax for hotels and guesthouses. Charged per room, not per person.'],
         'rome' => ['name' => 'Rome', 'cur' => 'EUR', 'dest' => 'rome-italy', 'note' => 'rome-tourist-tax-2026',
-            'rate' => '3.50 to 10 euros per person per night, first 10 nights', 'cap' => 10, 'tiers' => [
+            'rate' => '3 to 10 euros per person per night, first 10 nights', 'cap' => 10, 'tiers' => [
                 '5' => ['label' => 'Five star hotel', 'pp' => 10.0],
                 '4' => ['label' => 'Four star hotel', 'pp' => 7.5],
                 '3' => ['label' => 'Three star hotel', 'pp' => 6.0],
@@ -130,7 +130,7 @@ function rmt_tt_cities(): array {
                 '1' => ['label' => 'One star hotel', 'pp' => 4.0],
                 'rental' => ['label' => 'B&B or short let', 'pp' => 6.0],
                 'hostel' => ['label' => 'Hostel', 'pp' => 3.5]],
-            'tip' => ''],
+            'tip' => 'Count only guests aged 10 and over: children under 10 do not pay. Youth hostel stays are exempt. Campsites pay 3 euros for the first 5 nights and are not worked out here.'],
         'san-francisco' => ['name' => 'San Francisco', 'cur' => 'USD', 'dest' => 'san-francisco-usa', 'note' => 'san-francisco-hotel-tax-2026',
             'rate' => '14% of the room price', 'tiers' => $one(['pct' => 14.0]),
             'tip' => 'Hotels also pass on a Tourism Improvement District assessment of 2% to 2.25%, not counted here.'],
@@ -203,6 +203,6 @@ function rmt_tt_faq(): array {
         ['What is a tourist tax?', 'A charge a city or country adds to an overnight stay, on top of the room. It can be a flat amount per person, a percentage of the room price, or a band set by hotel category or room price.'],
         ['Is the tourist tax included in my hotel price?', 'Often not. Many hotels collect it at the property when you check out, even on prepaid bookings, so read the tax line on your booking before you travel.'],
         ['Which city has the highest tourist tax in Europe?', 'Amsterdam charges 12.5% of the room price in 2026, and VAT comes on top. On a flat rate, a Paris palace hotel charges 15.93 euros per adult per night.'],
-        ['Do children pay tourist tax?', 'It depends on the city. Lisbon charges guests aged 13 and over, Porto exempts guests aged 12 or under, and Paris charges adults. Each city note lists what the source says.'],
+        ['Do children pay tourist tax?', 'It depends on the city. Lisbon charges guests aged 13 and over, Porto exempts guests aged 12 or under, Rome exempts children under 10, Barcelona exempts guests aged 16 or under, and Paris and Nice charge adults. Each city note lists what the source says.'],
     ];
 }

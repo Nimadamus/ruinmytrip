@@ -1,0 +1,456 @@
+{
+ "checked": "2026-11-07",
+ "cities": {
+  "amsterdam": {
+   "facts": [
+    {
+     "statement": "Rate is 12.5% of the overnight charge, per night",
+     "value": "12.5% of room price",
+     "effective": "1 January 2024 (ordinance still in force; no newer ordinance in CVDR)",
+     "source_url": "https://repository.officiele-overheidspublicaties.nl/cvdr/CVDR703815/1/xml/CVDR703815_1.xml",
+     "publisher": "Gemeente Amsterdam, Verordening Toeristenbelasting 2024 (CVDR703815, Gemeenteblad 2023-494741)",
+     "quote": "De belasting bedraagt per overnachting 12,5 procent van de vergoeding bedoeld in artikel 4",
+     "confidence": "high"
+    },
+    {
+     "statement": "Base is the amount subject to VAT as lodging (i.e. excl. VAT), excluding the tourist tax itself, including bundled services",
+     "value": "net room price excl. VAT and excl. tourist tax",
+     "effective": "1 January 2024",
+     "source_url": "https://repository.officiele-overheidspublicaties.nl/cvdr/CVDR703815/1/xml/CVDR703815_1.xml",
+     "publisher": "Gemeente Amsterdam",
+     "quote": "Als vergoeding wordt aangemerkt het bedrag dat als verschuldigd wegens logies aan de heffing van omzetbelasting is onderworpen",
+     "confidence": "high"
+    },
+    {
+     "statement": "Rate unchanged for 2026",
+     "value": "12.5%",
+     "effective": "2026",
+     "source_url": "https://khn.nl/nieuws/toeristenbelasting-amsterdam-blijft-in-2026-gelijk-12-5",
+     "publisher": "KHN (hospitality association) citing municipal budget; SECONDARY",
+     "quote": "De toeristenbelasting blijft in 2026 op 12,5 procent van de overnachtingsprijs",
+     "confidence": "medium"
+    },
+    {
+     "statement": "No maximum number of nights and no child/age exemption in the ordinance; exemptions are care institutions, government-contracted refugee/homeless shelter",
+     "value": "none",
+     "effective": "1 January 2024",
+     "source_url": "https://repository.officiele-overheidspublicaties.nl/cvdr/CVDR703815/1/xml/CVDR703815_1.xml",
+     "publisher": "Gemeente Amsterdam",
+     "quote": "De belasting wordt niet geheven ter zake van het verblijf door degene die als verzorgde in een van overheidswege erkende inrichting",
+     "confidence": "high"
+    },
+    {
+     "statement": "Liable party is the accommodation provider, who may pass it to the guest",
+     "value": "collected by the property",
+     "effective": "1 January 2024",
+     "source_url": "https://repository.officiele-overheidspublicaties.nl/cvdr/CVDR703815/1/xml/CVDR703815_1.xml",
+     "publisher": "Gemeente Amsterdam",
+     "quote": "Belastingplichtig is degene die gelegenheid biedt tot verblijf",
+     "confidence": "high"
+    },
+    {
+     "statement": "Dutch VAT on hotel/holiday-home lodging rose from 9% to 21% (camping pitches stay 9%)",
+     "value": "21%",
+     "effective": "1 January 2026",
+     "source_url": "https://www.rijksoverheid.nl/actueel/nieuws/2025/12/17/kabinet-zet-met-belastingwijzigingen-2026-stappen-naar-een-beter-belastingstelsel",
+     "publisher": "Rijksoverheid (Ministerie van Financiën), 17 Dec 2025",
+     "quote": "Voor overnachtingen in hotelkamers, vakantiewoningen of stacaravans betaal je vanaf 2026 niet 9% maar 21% btw.",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [
+    {
+     "statement": "Coalition agreement 2026-2030 plans 16% in 2027, then +1 point a year to 20%",
+     "status": "proposed (college budget 2027 proposal; council vote reported for 11-12 Nov 2026, not yet held on 2026-11-07)",
+     "source_url": "https://static2.khn.nl/public/images/media/Afdelingen-en-Regios/Amsterdam/Documenten/Aankondiging-verhoging-toeristenbelasting-Amsterdam-in-het-coalitieakkoord-2026.pdf",
+     "publisher": "Coalition agreement excerpt hosted by KHN; SECONDARY (amsterdam.nl blocked)",
+     "quote": "We verhogen de toeristenbelasting in een eerste stap naar 16 procent in 2027.",
+     "confidence": "medium"
+    }
+   ],
+   "discrepancies": [
+    {
+     "where": "calculator",
+     "site_says": "tip: 'Accommodation VAT in the Netherlands is 21% from 1 January 2026'",
+     "official_says": "21% applies to hotel rooms, holiday homes and static caravans; camping pitches remain at 9% (low severity wording issue)",
+     "source_url": "https://www.rijksoverheid.nl/actueel/nieuws/2025/12/17/kabinet-zet-met-belastingwijzigingen-2026-stappen-naar-een-beter-belastingstelsel"
+    },
+    {
+     "where": "post",
+     "site_says": "'Together they take roughly a third of the quoted rate.'",
+     "official_says": "12.5% tax + 21% VAT = 33.5% of the NET rate; as a share of a VAT-inclusive quoted price it is about 28%. Ambiguous, low severity.",
+     "source_url": "https://repository.officiele-overheidspublicaties.nl/cvdr/CVDR703815/1/xml/CVDR703815_1.xml"
+    }
+   ],
+   "notes": "Core numbers (12.5% of net room price, 21% VAT from 1 Jan 2026, 16% for 2027 described as a plan) are correct. amsterdam.nl returned HTTP 403 to automated fetches; the binding rate was verified from the ordinance text in the official CVDR repository. 'Europe's highest tourist tax', 23.7m overnight stays, bed freeze, rental and cruise caps, Anne Frank/GVB prices were not checked (outside tax scope). No page last-updated date (ordinance dated 2023-11-21)."
+  },
+  "barcelona": {
+   "facts": [
+    {
+     "statement": "Catalan tax (IEET), Barcelona-city general rate from 1 April 2026: 5-star/GL 7.00; 4-star 3.40; tourist apartment (HUT) 4.50; youth hostel 1.00; other establishments/campsites 2.00; cruise >12h 4.00, <=12h 6.00 (per person per day)",
+     "value": "7.00 / 3.40 / 4.50 / 1.00 / 2.00 / 4.00 / 6.00 EUR",
+     "effective": "1 April 2026 (Llei 2/2026, DOGC 10 March 2026)",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/quota-tributaria/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "Hotel de 4 estrelles i 4 estrelles superior ... (EB2) 3,40 € 5,00 € 6,00 € 7,00 €",
+     "confidence": "high"
+    },
+    {
+     "statement": "Barcelona municipal surcharge, all categories: 5 EUR (1 Apr 2026-31 Mar 2027), 6 EUR (2027-28), 7 EUR (2028-29), target 8 EUR thereafter",
+     "value": "5 EUR in 2026",
+     "effective": "1 April 2026",
+     "source_url": "https://ajuntament.barcelona.cat/hisenda/sites/default/files/normativa/2026-02/2.2-ordenanca-recarrec-turistic.pdf",
+     "publisher": "Ajuntament de Barcelona, Ordenança fiscal 2.2 (BOPB 2-2-2026)",
+     "quote": "2026 5€ De l'1 d'abril de 2026 al 31 de març de 2027",
+     "confidence": "high"
+    },
+    {
+     "statement": "Totals per person per night from 1 April 2026: 5-star 12, 4-star 8.40, HUT 9.50, other 7, cruise 9 / 11",
+     "value": "12 / 8.40 / 9.50 / 7 / 9 / 11 EUR",
+     "effective": "1 April 2026",
+     "source_url": "https://ajuntament.barcelona.cat/turisme/en/latest-news/news/the-parliament-of-catalonia-passes-an-increase-of-the-tourist-tax-1607097",
+     "publisher": "Ajuntament de Barcelona (Turisme), published 02/03/2026",
+     "quote": "increasing this surcharge from four to five euros",
+     "confidence": "high"
+    },
+    {
+     "statement": "Maximum 7 stay units per person are taxed",
+     "value": "7 nights",
+     "effective": "in force",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/base-imposable/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "En qualsevol cas, es computa un màxim de set unitats d'estada per persona.",
+     "confidence": "high"
+    },
+    {
+     "statement": "Exempt: persons aged 16 or under; stays subsidised by EU public social programmes",
+     "value": "16 and under exempt",
+     "effective": "in force",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/fet-imposable-i-exempcions/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "Les persones d'edat igual o inferior a setze anys.",
+     "confidence": "high"
+    },
+    {
+     "statement": "Paid through the establishment and shown separately on the invoice; owner files the return",
+     "value": "collected at the property",
+     "effective": "in force",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "El pagament es fa a través de l'establiment turístic",
+     "confidence": "high"
+    },
+    {
+     "statement": "Bookings paid in full (stay + tax) before a rate change keep the old rate",
+     "value": "rate at booking if prepaid",
+     "effective": "in force",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/quota-tributaria/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "la tarifa aplicable és la vigent en el moment de fer la reserva sempre que se satisfaci en aquest moment l'import",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [
+    {
+     "statement": "Barcelona municipal surcharge rises to 6 EUR for stays 1 Apr 2027-31 Mar 2028 (so 5-star 13, 4-star 9.40, HUT 10.50)",
+     "status": "adopted (Ordenança fiscal 2.2 approved definitively 30 Jan 2026)",
+     "source_url": "https://ajuntament.barcelona.cat/hisenda/sites/default/files/normativa/2026-02/2.2-ordenanca-recarrec-turistic.pdf",
+     "publisher": "Ajuntament de Barcelona",
+     "quote": "2027 6€ De l'1 d'abril de 2027 al 31 de març de 2028",
+     "confidence": "high"
+    },
+    {
+     "statement": "Rest-of-Catalonia rates step up on 1 April 2027 (Barcelona-city base rates unchanged)",
+     "status": "adopted (Llei 2/2026)",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/quota-tributaria/",
+     "publisher": "Agència Tributària de Catalunya",
+     "quote": "Tarifes a partir de l' 01.04.2027 Hotel de 5 estrelles ... (ET1) 6,00 €",
+     "confidence": "high"
+    }
+   ],
+   "discrepancies": [
+    {
+     "where": "calculator",
+     "site_says": "no 'cap' for barcelona, so every night is charged",
+     "official_says": "Tax is charged on at most 7 stay units per person ('es computa un màxim de set unitats d'estada per persona'). Stays over 7 nights are overstated.",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/base-imposable/"
+    },
+    {
+     "where": "calculator",
+     "site_says": "multiplies the rate by every person, no age note",
+     "official_says": "Guests aged 16 or under are exempt ('igual o inferior a setze anys').",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/fet-imposable-i-exempcions/"
+    },
+    {
+     "where": "post",
+     "site_says": "no mention of the 7-night cap or the under-17 exemption",
+     "official_says": "Max 7 nights per person; persons 16 and under exempt.",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/base-imposable/"
+    },
+    {
+     "where": "post",
+     "site_says": "title: 'Barcelona tourist tax 2026: 4.50 euros plus 5 euro city surcharge'",
+     "official_says": "4.50 is only the tourist-apartment (HUT) rate; hotels are 7.00 (5*) and 3.40 (4*) plus 5. Not false but misleading as a headline rate.",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/quota-tributaria/"
+    },
+    {
+     "where": "calculator",
+     "site_says": "tiers only 5*, 4*, rental; tip says other categories not listed",
+     "official_says": "Official also has youth hostel 1.00+5=6.00, other establishments 2.00+5=7.00, cruise 9/11 (omission only).",
+     "source_url": "https://atc.gencat.cat/ca/tributs/ieet/quota-tributaria/"
+    }
+   ],
+   "notes": "All listed numbers (7/3.40/4.50 base, 5 EUR surcharge, 12/8.40/9.50 totals, up to 11 for cruise, +1 EUR/yr to 8) are correct. The ACM briefing note (acm.cat) on Llei 2/2026 matched ATC. DOGC page for Llei 2/2026 was reached but not parsed (portal shell); facts taken from ATC and the city ordinance. ATC pages show no last-updated date. Ticket prices, licence expiry, illegal-listing and fine figures were not checked (outside tax scope)."
+  },
+  "lisbon": {
+   "facts": [
+    {
+     "statement": "Taxa Turística de Dormida: 4.00 EUR per guest per night",
+     "value": "4.00 EUR",
+     "effective": "1 September 2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa, Aviso n.º 18684/2024/2 (DR 2.ª série n.º 164, 26-08-2024), hosted on dados.cm-lisboa.pt",
+     "quote": "Taxa de Dormida Por hóspede e noite 4,00",
+     "confidence": "high"
+    },
+    {
+     "statement": "Maximum 7 nights per guest per stay",
+     "value": "7 nights",
+     "effective": "1 September 2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa (Regulamento Geral de Taxas)",
+     "quote": "é devida até a um máximo de 7 (sete) noites por Hóspede e por estadia",
+     "confidence": "high"
+    },
+    {
+     "statement": "Effective date of the 4 EUR dormida subsection",
+     "value": "1 September 2024",
+     "effective": "1 September 2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa",
+     "quote": "a qual entra em vigor no dia 1 de setembro de 2024",
+     "confidence": "high"
+    },
+    {
+     "statement": "Exempt: guests under 13 (incl. the day they turn 13); medical-treatment stays plus one companion; emergency placements; incoming higher-education students up to 60 days",
+     "value": "under 13 exempt",
+     "effective": "1 September 2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa (art. 71)",
+     "quote": "Os Hóspedes com idade inferior a 13 anos, aplicando-se a isenção também ao dia em que esta idade é atingida",
+     "confidence": "high"
+    },
+    {
+     "statement": "Collected by tourist accommodation, local lodging (AL) operators and platforms with a city protocol, which self-assess and remit",
+     "value": "collected by the property/platform",
+     "effective": "1 September 2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa",
+     "quote": "os estabelecimentos de alojamento local ... bem como as plataformas turísticas com quem o Município estabeleça protocolo para a cobrança",
+     "confidence": "high"
+    },
+    {
+     "statement": "Cruise passengers in transit pay a sea-arrival tax of 2.00 EUR (under 13 exempt)",
+     "value": "2.00 EUR",
+     "effective": "2024",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf",
+     "publisher": "Câmara Municipal de Lisboa",
+     "quote": "a fixação do valor da taxa de dormida em 4,00€/ pessoa/ noite, e da taxa de chegada via marítima em 2,00€",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [],
+   "discrepancies": [
+    {
+     "where": "post",
+     "site_says": "'Any cap on how many nights of a single stay are taxed, and the age below which a guest is exempt ... are worth checking on the operator invoice.'",
+     "official_says": "The same regulation fixes both: maximum 7 nights per guest per stay; guests under 13 exempt.",
+     "source_url": "https://dados.cm-lisboa.pt/dataset/ce3bcbe8-682b-4ecf-98f3-c4dc39e6367b/resource/fd9c6212-4f0f-49f5-8ec9-cd3387053beb/download/anexo-1-drn1652saviso186842024226082024alteracaoreggeraltaxasprecosoutrasreceitas.pdf"
+    }
+   ],
+   "notes": "Rate (4 EUR) and worked examples in the post are correct; calculator (4 EUR, cap 7, 13+) is correct. informacoeseservicos.lisboa.pt returned HTTP 403 to automated fetch, so the city service page (and its last-updated date) could not be read; the Diário da República text was read via the city's open-data portal. Edital 234/2024 in Boletim Municipal 1593 was not opened. No officially announced 2027 change found (searched; none located). Post claim that the tax 'appears as its own line at checkout' not verified."
+  },
+  "nice": {
+   "facts": [
+    {
+     "statement": "Rates per person per night from 1 Jan 2026 (metropolitan + 34% LNPCA additional = total): palace 4.80+1.63=6.43; 5* 3.50+1.19=4.69; 4* 2.60+0.88=3.48; 3* 1.70+0.58=2.28; 2* 1.34; 1*/B&B/hostels 1.07; campsites 0.80/0.27",
+     "value": "6.43 / 4.69 / 3.48 / 2.28 / 1.34 / 1.07 EUR",
+     "effective": "1 January 2026",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/2026%20Tourist%20Tax%20Rates%20-%20METROPOLE%20NICE%20COTE%20D%27AZUR.pdf",
+     "publisher": "Métropole Nice Côte d'Azur (official tourist-tax portal)",
+     "quote": "Tourist tax rates per person per night as from 1st January 2026",
+     "confidence": "high"
+    },
+    {
+     "statement": "Unclassified/awaiting classification: 6.70% (5% + 1.70%) of pre-tax cost per person per night, capped at 6.43",
+     "value": "6.70%, cap 6.43 EUR",
+     "effective": "1 January 2026",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/2026%20Tourist%20Tax%20Rates%20-%20METROPOLE%20NICE%20COTE%20D%27AZUR.pdf",
+     "publisher": "Métropole Nice Côte d'Azur",
+     "quote": "(*) Rate applied to the pre-tax cost per person per night, capped at €6.43.",
+     "confidence": "high"
+    },
+    {
+     "statement": "Exempt: minors; seasonal workers employed in the commune; emergency/temporary rehousing; rent under 23 EUR/day",
+     "value": "minors exempt",
+     "effective": "2026",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/Modalit%C3%A9s%20d%27application%20de%20la%20Taxe%20de%20S%C3%A9jour%20M%C3%A9tropolitaine%20-%20ann%C3%A9e%202026.pdf",
+     "publisher": "Métropole Nice Côte d'Azur, Modalités d'application 2026",
+     "quote": "Sont exemptés de la taxe de séjour : 1° Les personnes mineures",
+     "confidence": "high"
+    },
+    {
+     "statement": "No maximum number of nights; collected by the host and shown on the invoice, often paid separately",
+     "value": "collected at the property",
+     "effective": "2026",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/2026%20Tourist%20Tax%20Rates%20-%20METROPOLE%20NICE%20COTE%20D%27AZUR.pdf",
+     "publisher": "Métropole Nice Côte d'Azur",
+     "quote": "it is common for the hotelier, manager, or accommodation provider to ask the traveller to pay it separately",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [
+    {
+     "statement": "2027 rates unchanged from 2026",
+     "status": "announced by the Métropole on its official portal",
+     "source_url": "https://taxedesejour.ofeaweb.fr/ts/metropole-nca",
+     "publisher": "Métropole Nice Côte d'Azur",
+     "quote": "Les TARIFS 2027 de la Taxe de Séjour restent identiques aux Tarifs 2026",
+     "confidence": "high"
+    }
+   ],
+   "discrepancies": [
+    {
+     "where": "post",
+     "site_says": "'The rate sheet ... does not state which travellers are exempt, so that has to be checked separately with the métropole.'",
+     "official_says": "The Métropole's 2026 modalités sheet lists exemptions: minors, seasonal workers, emergency rehousing, rent under 23 EUR/day.",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/Modalit%C3%A9s%20d%27application%20de%20la%20Taxe%20de%20S%C3%A9jour%20M%C3%A9tropolitaine%20-%20ann%C3%A9e%202026.pdf"
+    },
+    {
+     "where": "calculator",
+     "site_says": "Nice tiers multiply by all 'people'; tip does not say minors are exempt (Paris tip does)",
+     "official_says": "Minors are exempt ('Les personnes mineures'); families are overstated.",
+     "source_url": "https://taxedesejour.ofeaweb.fr/Content/configuration/metropole-nca/ImprimesDeclaratif/Modalit%C3%A9s%20d%27application%20de%20la%20Taxe%20de%20S%C3%A9jour%20M%C3%A9tropolitaine%20-%20ann%C3%A9e%202026.pdf"
+    }
+   ],
+   "notes": "Every rate in the post and calculator (6.43/4.69/3.48/2.28, 6.70% capped at 6.43, worked examples 41.76/27.36/72.36) matches the official sheet. Rate PDFs show no last-updated date; owner guide PDF is 'actualisé au 4/06/26'."
+  },
+  "paris": {
+   "facts": [
+    {
+     "statement": "Per adult per night (municipal + 10% dept + 15% SGP + 200% IDFM): palace 15.93; 5* 11.70; 4* 8.45 (2.60+0.26+0.39+5.20); 3* 5.53; 2* 3.25; 1*/B&B/hostels 2.60; campsites 1.95/0.65",
+     "value": "15.93 / 11.70 / 8.45 / 5.53 EUR",
+     "effective": "1 January 2026",
+     "source_url": "https://taxedesejour.paris.fr/includes/download/HCnDUN-Tarifs-2027-Paris.pdf",
+     "publisher": "Ville de Paris (taxedesejour.paris.fr) 2027 grid, stated identical to 2026",
+     "quote": "TARIFS NETS PAR PERSONNE MAJEURE ET PAR NUITEE",
+     "confidence": "high"
+    },
+    {
+     "statement": "2026 grid (same figures) under heading 'LES TARIFS DE LA TAXE DE SÉJOUR EN VIGUEUR À PARIS à partir du 1er janvier 2026'",
+     "value": "same as above",
+     "effective": "1 January 2026",
+     "source_url": "https://www.ghr.fr/IMG/pdf/les_tarifs_en_vigueur_a_partir_du_1er_janvier_2026.pdf",
+     "publisher": "Ville de Paris document (copy hosted by GHR trade body; SECONDARY host)",
+     "quote": "Unité Comptable Taxe de Séjour de la Ville de Paris",
+     "confidence": "high"
+    },
+    {
+     "statement": "Unclassified: 5% of pre-tax cost per person per night plus additional shares, capped at 15.93; cost per person divides by all travellers incl. minors",
+     "value": "5% + shares, cap 15.93 EUR",
+     "effective": "1 January 2026",
+     "source_url": "https://www.ghr.fr/IMG/pdf/les_tarifs_en_vigueur_a_partir_du_1er_janvier_2026.pdf",
+     "publisher": "Ville de Paris document (via GHR)",
+     "quote": "le coût de la nuitée par personne est calculé en divisant le prix total de la nuitée par le nombre de voyageurs, mineurs compris",
+     "confidence": "high"
+    },
+    {
+     "statement": "Exempt: minors, seasonal workers, Paris residents, emergency rehousing; collected by host at time of stay",
+     "value": "minors exempt",
+     "effective": "2026-2027",
+     "source_url": "https://taxedesejour.paris.fr/",
+     "publisher": "Ville de Paris",
+     "quote": "les personnes suivantes sont exemptes de taxe de séjour sur présentation d'un justificatif : les mineurs",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [
+    {
+     "statement": "2027 grid identical to 2026, subject to later legislative change",
+     "status": "announced by Ville de Paris",
+     "source_url": "https://taxedesejour.paris.fr/",
+     "publisher": "Ville de Paris",
+     "quote": "La grille tarifaire ... à partir du 1er janvier 2027 sera identique à celle applicable en 2026 sous réserve de modification législative ultérieure",
+     "confidence": "high"
+    }
+   ],
+   "discrepancies": [],
+   "notes": "Post and calculator are correct (15.93/11.70/8.45/5.53, component breakdown, 5% unclassified capped at 15.93, adults only, worked examples 67.60/44.24/93.60, 41.60 IDFM share). The 2026 PDF itself was read from the GHR-hosted copy of the Ville de Paris document; the official portal's 2027 PDF carries identical figures and says 2027 equals 2026. paris.fr article page not fetched. No last-updated date on the portal."
+  },
+  "rome": {
+   "facts": [
+    {
+     "statement": "Per person per night: 1* 4.00; 2* 5.00; 3* 6.00; 4* 7.50; 5*+ 10.00; B&B, agriturismo, short lets, holiday apartments cat.1, country houses 6.00; holiday apartments cat.2 5.00; guest houses 7.00/6.00/5.00; hostels and refuges 3.50; campsites 3.00",
+     "value": "4.00-10.00 EUR hotels",
+     "effective": "1 October 2023 (DGC n. 255 of 17 July 2023); no later tariff deliberation listed on the city service page",
+     "source_url": "https://www.comune.roma.it/web-resources/cms/documents/Nuove_tariffe_contributo_di_soggiorno_dal_01.10.2023_logo.pdf",
+     "publisher": "Roma Capitale",
+     "quote": "Albergo a 5 stelle o a maggiore classificazione ed eventuale Dipendenza a 5 stelle Euro 10,00",
+     "confidence": "high"
+    },
+    {
+     "statement": "Max 10 consecutive nights per calendar year in the same property (5 for campsites)",
+     "value": "10 nights",
+     "effective": "1 October 2023",
+     "source_url": "https://www.comune.roma.it/web-resources/cms/documents/Nuove_tariffe_contributo_di_soggiorno_dal_01.10.2023_logo.pdf",
+     "publisher": "Roma Capitale",
+     "quote": "NUMERO MASSIMO DI PERNOTTAMENTI (consecutivi nell'anno solare effettuati nella medesima struttura)",
+     "confidence": "high"
+    },
+    {
+     "statement": "Exempt: children until their 10th birthday; youth-hostel stays; patients/carers; coach drivers and tour leaders; police on duty; property staff",
+     "value": "under 10 exempt",
+     "effective": "Regulation as amended by DAC n. 34 of 12 March 2024",
+     "source_url": "https://www.comune.roma.it/web-resources/cms/documents/Deliberazione_Assemblea_Capitolina_n._342024.pdf",
+     "publisher": "Roma Capitale, Assemblea Capitolina",
+     "quote": "i minori fino al compimento del decimo anno di età",
+     "confidence": "high"
+    },
+    {
+     "statement": "Collected by the property / short-let intermediary and remitted quarterly",
+     "value": "collected at the property",
+     "effective": "in force",
+     "source_url": "https://www.comune.roma.it/web/it/scheda-servizi.page?contentId=INF41430",
+     "publisher": "Roma Capitale",
+     "quote": "I responsabili del pagamento sono i gestori delle strutture ricettive e i soggetti che incassano",
+     "confidence": "high"
+    }
+   ],
+   "announced_2027": [],
+   "discrepancies": [
+    {
+     "where": "post",
+     "site_says": "No mention of exemptions; worked example 'Two adults ... four nights in a four star hotel ... 60 euros'",
+     "official_says": "Children under 10 are exempt (example is fine for two adults, but readers with children are not told).",
+     "source_url": "https://www.comune.roma.it/web-resources/cms/documents/Deliberazione_Assemblea_Capitolina_n._342024.pdf"
+    },
+    {
+     "where": "calculator",
+     "site_says": "rate label '3.50 to 10 euros'; hostel tier 3.50",
+     "official_says": "Campsites are 3.00 (cap 5 nights), so the city range starts at 3.00; also stays in 'ostelli della gioventù' are exempt under art. 5.1(a). Low severity.",
+     "source_url": "https://www.comune.roma.it/web-resources/cms/documents/Deliberazione_Assemblea_Capitolina_n._342024.pdf"
+    }
+   ],
+   "notes": "All post and calculator numbers match the official 2023 table (still the latest on comune.roma.it as of 2026-11-07). No official 2026 or 2027 Rome tariff change found; whether Rome used any 2026 national-budget allowance to raise the tax could not be confirmed from an official page. Service page shows no last-updated date."
+  }
+ },
+ "unverified": [
+  "Amsterdam: amsterdam.nl tourist-tax page (HTTP 403 to fetch); 2026 rate confirmed via CVDR ordinance, 2027 16% plan only via KHN-hosted coalition text and news; council vote (reported 11-12 Nov 2026) not yet held.",
+  "Amsterdam: 'Europe's highest tourist tax' claim and non-tax figures in the post (overnight stays, caps, ticket prices) not checked.",
+  "Lisbon: informacoeseservicos.lisboa.pt service page (HTTP 403); Edital 234/2024 not opened; no 2027 change found but absence not provable.",
+  "Lisbon: whether the tax appears as a separate checkout line.",
+  "Barcelona: DOGC text of Llei 2/2026 not parsed directly (ATC and ACM summaries used); non-tax claims in post (licences, fines, ticket prices) not checked.",
+  "Paris: 2026 PDF read from GHR-hosted copy; official portal 2027 PDF confirms identical figures.",
+  "Rome: whether any 2026/2027 increase has been deliberated after the latest documents on comune.roma.it."
+ ]
+}

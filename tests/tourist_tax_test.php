@@ -17,6 +17,8 @@ $cases = [
     ['osaka', '', 1, 1, 1, 4999, 0.0], ['osaka', '', 1, 1, 1, 15000, 400.0], ['kyoto', '', 1, 1, 1, 100000, 10000.0],
     ['kyoto', '', 1, 1, 1, 5999, 200.0], ['lisbon', '', 10, 2, 1, 0, 56.0], ['porto', '', 9, 1, 1, 0, 21.0],
     ['edinburgh', '', 7, 1, 1, 100, 25.0], ['reykjavik', '', 2, 3, 2, 0, 3200.0],
+    // Barcelona taxes at most 7 nights per person (ATC, base imposable, checked 2026-11-07).
+    ['barcelona', '4', 3, 2, 1, 0, 50.40], ['barcelona', '4', 10, 2, 1, 0, 117.60], ['barcelona', '5', 8, 1, 1, 0, 84.0],
 ];
 foreach ($cases as [$k, $t, $n, $p, $r, $price, $want]) {
     $got = rmt_tt_estimate($C[$k], $C[$k]['tiers'][$t], $n, $p, $r, (float) $price)['total'];
