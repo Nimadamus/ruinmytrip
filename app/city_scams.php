@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Scams and traps on a city page, from official sources only (2026-11-07).
  *
- * Data: database/editorial/city_scams.json, keyed by destination slug. Every item names the scam,
+ * Data: database/scams/city_scams.json, keyed by destination slug. Every item names the scam,
  * says what happens and how to avoid it, and carries at least one source with the publisher, the
  * URL and a short quote from the page that supports it. Sources are government travel advice
  * (UK FCDO, US State Department, Smartraveller, Canada) or official city, police and transport pages.
@@ -19,7 +19,7 @@ declare(strict_types=1);
  * shown without its evidence. tests/city_scams_test.php holds the file to the same rules.
  */
 
-const RMT_CITY_SCAMS_FILE = BASE_PATH . '/database/editorial/city_scams.json';
+const RMT_CITY_SCAMS_FILE = BASE_PATH . '/database/scams/city_scams.json';
 
 /** Every city's entry, validated, cached for the request. @return array<string, array> */
 function rmt_city_scams_all(): array {
