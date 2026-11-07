@@ -1,0 +1,585 @@
+{
+  "page": "When a trip goes wrong: what you can claim (flights, bags, bookings)",
+  "researched_on": "2026-11-07",
+  "facts": [
+    {
+      "id": "us_cancel_def",
+      "topic": "US_DOT_refunds",
+      "statement": "A 'cancelled flight' is a scheduled flight published in the carrier's reservation system at ticket sale that the carrier does not operate.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "published in the carrier's Computer Reservation System at the time of the ticket sale but not operated by the carrier",
+      "confidence": "Quote abbreviated with an ellipsis; 14 CFR 260.2."
+    },
+    {
+      "id": "us_sigchange_delay",
+      "topic": "US_DOT_refunds",
+      "statement": "A significant change includes departing 3+ hours early or arriving 3+ hours late (domestic) or 6+ hours (international) versus the original schedule.",
+      "number": "3 h domestic / 6 h international",
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "three or more hours for domestic itineraries or six or more hours for international itineraries after the original scheduled arrival time",
+      "confidence": null
+    },
+    {
+      "id": "us_sigchange_other",
+      "topic": "US_DOT_refunds",
+      "statement": "Other significant changes: different origin/destination airport, more connections, downgrade to a lower class, and certain changes affecting passengers with disabilities.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "(3) The consumer is scheduled to depart from a different origination airport or arrive at a different destination airport; (4) ... more connection points",
+      "confidence": null
+    },
+    {
+      "id": "us_refund_timing",
+      "topic": "US_DOT_refunds",
+      "statement": "A 'prompt refund' means within 7 business days for credit card purchases and 20 calendar days for cash, check, debit or other payment.",
+      "number": "7 business days (credit card) / 20 calendar days (other)",
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "within 7 business days after the earliest date the refund was requested ... for credit card purchases and within 20 calendar days",
+      "confidence": null
+    },
+    {
+      "id": "us_no_forced_voucher",
+      "topic": "US_DOT_refunds",
+      "statement": "An airline cannot treat a passenger as accepting a voucher or credit instead of a refund unless the passenger affirmatively agrees.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "unless the consumer affirmatively agrees to the alternative form of compensation",
+      "confidence": null
+    },
+    {
+      "id": "us_bag_delay_def",
+      "topic": "US_DOT_refunds",
+      "statement": "A checked bag is 'significantly delayed' if not delivered within 12 hours of arrival (domestic), 15 hours (international, nonstop US segment 12 h or less) or 30 hours (international, nonstop US segment over 12 h).",
+      "number": "12 h / 15 h / 30 h",
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "within 12 hours of the last flight segment's arrival for domestic itineraries, within 15 hours ... and within 30 hours",
+      "confidence": null
+    },
+    {
+      "id": "us_bag_fee_refund",
+      "topic": "US_DOT_refunds",
+      "statement": "Carriers must promptly refund the checked-bag fee for a lost or significantly delayed bag, but only if the passenger files a Mishandled Baggage Report.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "must provide a prompt refund to a consumer of any fee charged for transporting a lost bag or a significantly delayed checked bag",
+      "confidence": null
+    },
+    {
+      "id": "us_bag_mbr",
+      "topic": "US_DOT_refunds",
+      "statement": "No bag-fee refund obligation unless a Mishandled Baggage Report (MBR) is filed with the operating (or last-segment) carrier.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260 (text pulled via eCFR versioner API, title 14 up to date as of 2026-11-05)",
+      "quote": "does not have an obligation to provide a refund of the fee ... unless a passenger files a Mishandled Baggage Report (MBR)",
+      "confidence": null
+    },
+    {
+      "id": "us_rule_dates",
+      "topic": "US_DOT_refunds",
+      "statement": "The refund rule was effective June 25, 2024; airlines had until October 28, 2024 to implement the ticket-refund, bag-fee and ancillary-fee refund requirements.",
+      "number": null,
+      "effective_date": "2024-06-25 effective; 2024-10-28 compliance",
+      "source_url": "https://www.govinfo.gov/content/pkg/FR-2024-04-26/html/2024-07177.htm (Federal Register 89 FR 32760, Apr 26, 2024)",
+      "quote": "regulated entities will have six months from the date of publication of the final rule, or October 28, 2024, to implement",
+      "confidence": null
+    },
+    {
+      "id": "us_ecfr_unchanged",
+      "topic": "US_DOT_refunds_status",
+      "statement": "As of the eCFR text current to 2026-11-05, 14 CFR part 260 has had no amendments since August 12, 2024 (only 2024-06-25 and 2024-08-12 versions exist). The core thresholds above are still the codified law.",
+      "number": null,
+      "effective_date": "text current to 2026-11-05",
+      "source_url": "https://www.ecfr.gov/api/versioner/v1/versions/title-14.json?part=260",
+      "quote": "[DOT-OST-2022-0089 and DOT-OST-2016-0208, 89 FR 32832, Apr. 26, 2024, as amended by DOT-OST-2022-0089, 89 FR 65536, Aug. 12, 2024]",
+      "confidence": "This conclusion comes from the eCFR version history. It is not a statement DOT made."
+    },
+    {
+      "id": "us_renumber_pause_2025",
+      "topic": "US_DOT_refunds_status",
+      "statement": "On Dec 5, 2025, DOT paused enforcement of the cancellation-refund rule (until June 30, 2026) for flights that are only renumbered, provided the passenger is rebooked on the renumbered flight and it operates with no significant change or delay.",
+      "number": null,
+      "effective_date": "2025-12-05",
+      "source_url": "https://www.federalregister.gov/documents/2025/12/05/2025-22140/airline-refunds-and-other-consumer-protections",
+      "quote": "exercising its discretion to not enforce the requirements in 14 CFR 260.6, 260.9 and 14 CFR 399.80(l) ... when a flight is renumbered",
+      "confidence": null
+    },
+    {
+      "id": "us_renumber_pause_2026",
+      "topic": "US_DOT_refunds_status",
+      "statement": "On July 7, 2026, DOT extended the renumbered-flight enforcement pause to July 7, 2027 while it completes a rulemaking on the definition of a flight cancellation. The rest of the refund rule was not suspended.",
+      "number": null,
+      "effective_date": "2026-07-07 to 2027-07-07",
+      "source_url": "https://www.federalregister.gov/documents/2026/07/07/2026-13675/airline-refunds-and-other-consumer-protections",
+      "quote": "This enforcement discretion is extended for 1-year from the date of this publication, expiring on July 7, 2027.",
+      "confidence": "DOT says a rulemaking that could change the 'cancelled flight' definition is pending, so recheck before you publish."
+    },
+    {
+      "id": "us_comp_anprm_withdrawn",
+      "topic": "US_DOT_refunds_status",
+      "statement": "DOT withdrew its Dec 2024 advance notice on requiring airlines to compensate passengers for disruptions, as of Nov 17, 2025. No federal US cash-compensation-for-delay rule exists.",
+      "number": null,
+      "effective_date": "2025-11-17",
+      "source_url": "https://www.federalregister.gov/documents/2025/11/17/2025-20042/airline-passenger-rights-withdrawal",
+      "quote": "The Department is withdrawing the ANPRM on Airline Passenger Rights issued on December 11, 2024.",
+      "confidence": "The withdrawal is verified. 'No federal compensation rule exists' is an inference from this document and from the part 260 text."
+    },
+    {
+      "id": "eu_comp_bands",
+      "topic": "EU261",
+      "statement": "Compensation for cancellation or denied boarding: EUR 250 (1,500 km or less), EUR 400 (intra-EU over 1,500 km and other flights 1,500-3,500 km), EUR 600 (over 3,500 km).",
+      "number": "EUR 250 / 400 / 600",
+      "effective_date": "page last checked 21/09/2026",
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "250 1 500 km or less 400 More than 1 500 km within the EU ... 600 More than 3 500 km",
+      "confidence": "The quote is copied from a table on the page."
+    },
+    {
+      "id": "eu_delay_3h",
+      "topic": "EU261",
+      "statement": "Arriving at the final destination 3+ hours late entitles the passenger to compensation unless the delay was caused by extraordinary circumstances.",
+      "number": "3 hours",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "If you arrived at your final destination with a delay of 3 hours or more, you are entitled to compensation",
+      "confidence": null
+    },
+    {
+      "id": "eu_delay_300",
+      "topic": "EU261",
+      "statement": "For flights over 3,500 km between the EU and a non-EU country (to the EU only if operated by an EU airline), a delay of at least 3 but under 4 hours gives EUR 300.",
+      "number": "EUR 300 (3-4 h, >3,500 km)",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "300 More than 3 500 km for flights that either: (a) depart from the EU to a non-EU country",
+      "confidence": null
+    },
+    {
+      "id": "eu_delay_court_basis",
+      "topic": "EU261",
+      "statement": "The Your Europe page gives no court basis for delay compensation. The basis is the CJEU judgment of 19 Nov 2009 in joined cases C-402/07 and C-432/07 (Sturgeon / Böck), which the 2026 amending regulation now writes into law.",
+      "number": null,
+      "effective_date": "judgment 2009-11-19",
+      "source_url": "https://data.consilium.europa.eu/doc/document/PE-39-2026-REV-2/en/pdf",
+      "quote": "explicitly include the right to compensation for passengers experiencing long delays, in accordance with the judgment of the Court of Justice in joined Cases C-402/07",
+      "confidence": "Your Europe does not cite the judgment, and the EUR-Lex judgment text could not be fetched (bot challenge). The citation comes from recital 17 of the official PE-CONS 39/2/26 REV 2 text."
+    },
+    {
+      "id": "eu_extraordinary",
+      "topic": "EU261",
+      "statement": "Extraordinary circumstances include air traffic management decisions, political instability, adverse weather and security risks. Most technical problems and strikes by the airline's own staff are not extraordinary. The airline must prove it.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "Examples of events defined as extraordinary circumstances are air traffic management decisions, political instability, adverse weather conditions and security risks.",
+      "confidence": null
+    },
+    {
+      "id": "eu_not_extraordinary",
+      "topic": "EU261",
+      "statement": "Not extraordinary: most technical problems found during maintenance or caused by failure to maintain an aircraft, and strikes by the air carrier's own staff.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "most technical problems which come to light during aircraft maintenance or are caused by failure to maintain an aircraft",
+      "confidence": null
+    },
+    {
+      "id": "eu_care",
+      "topic": "EU261",
+      "statement": "Right to care: free refreshments, food, accommodation if rebooked to the next day, transport to and from the accommodation, and 2 calls or emails. For delays the right depends on delay length and distance.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "Airlines should provide assistance free of charge while you wait.",
+      "confidence": null
+    },
+    {
+      "id": "eu_5h_refund",
+      "topic": "EU261",
+      "statement": "If departure is delayed 5+ hours, the airline must reimburse the ticket and, where relevant, offer a return flight to the departure airport.",
+      "number": "5 hours",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "If your flight is delayed at least 5 hours at departure, the airline must reimburse your ticket",
+      "confidence": null
+    },
+    {
+      "id": "eu_complain",
+      "topic": "EU261",
+      "statement": "Complain to the airline first. If there is no reply within 2 months, or the reply is unsatisfactory, complain to the national enforcement body in the country where the incident happened. Your Europe links an official NEB list PDF dated 2024-01-30.",
+      "number": "2 months",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "If you don't receive a reply from the airline within 2 months or if you are not satisfied with the reply",
+      "confidence": null
+    },
+    {
+      "id": "eu_neb_list",
+      "topic": "EU261",
+      "statement": "Official list of national enforcement bodies (European Commission PDF).",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://transport.ec.europa.eu/document/download/d7b5dd33-4083-4faa-8132-b6dc8b3a1c07_en?filename=2004_261_national_enforcement_bodies-2024-01-30.pdf",
+      "quote": "lodge a complaint with the relevant national authority PDF in the country where the incident took place",
+      "confidence": "This URL is the link on the Your Europe page. The PDF itself was not opened."
+    },
+    {
+      "id": "eu_reform_agreement",
+      "topic": "EU261_reform",
+      "statement": "Parliament and Council reached a political agreement on revising EU261 on 15 June 2026. The Commission says the current protection level, including compensation after a 3-hour delay at EUR 250/400/600, is kept. New: airlines must inform passengers of their rights within 96 hours of a disruption.",
+      "number": null,
+      "effective_date": "2026-06-15 agreement",
+      "source_url": "https://transport.ec.europa.eu/news-events/news/commission-welcomes-landmark-agreement-revised-air-passenger-rights-2026-06-15_en",
+      "quote": "The current standard level of protection for air passengers is maintained.",
+      "confidence": null
+    },
+    {
+      "id": "eu_reform_adopted",
+      "topic": "EU261_reform",
+      "statement": "Parliament adopted the conciliation joint text on 7 July 2026 (third reading). The amending regulation was signed on 16 September 2026. It applies 12 months after entry into force (20 days after OJ publication), so as of Nov 2026 the current EU261 rules still apply.",
+      "number": null,
+      "effective_date": "signed 2026-09-16; application ~autumn 2027",
+      "source_url": "https://data.consilium.europa.eu/doc/document/PE-39-2026-REV-2/en/pdf",
+      "quote": "It shall apply from … [12 months from the date of entry into force of this amending Regulation].",
+      "confidence": "Parliament resolution P10_TA(2026)0238 verified. EUR-Lex lists it as Regulation (EU) 2026/2202, but EUR-Lex could not be fetched, so the OJ publication date and exact application date are unverified."
+    },
+    {
+      "id": "eu_reform_amounts",
+      "topic": "EU261_reform",
+      "statement": "The amended Article 7 keeps EUR 250/400/600, and the carrier may halve the EUR 600 band when arrival is no more than 4 hours late in specified cases.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://data.consilium.europa.eu/doc/document/PE-39-2026-REV-2/en/pdf",
+      "quote": "may reduce the compensation provided for in paragraph 1, point (c), by 50 % if the arrival time does not exceed",
+      "confidence": "Read from the signed PE-CONS text. Check the OJ version before you publish."
+    },
+    {
+      "id": "uk_threshold",
+      "topic": "UK261",
+      "statement": "Compensation is available if you arrive more than three hours late at your destination airport. It is not automatic, so claim from the airline.",
+      "number": "3 hours",
+      "effective_date": null,
+      "source_url": "https://www.caa.co.uk/air-passengers/travel-problems-and-rights/flight-delays-and-cancellations/delays/",
+      "quote": "you may be entitled to claim compensation if you arrive more than three hours late at your destination airport",
+      "confidence": null
+    },
+    {
+      "id": "uk_amounts",
+      "topic": "UK261",
+      "statement": "UK261 amounts: GBP 220 (under 1,500 km), GBP 350 (1,500-3,500 km), GBP 260 (over 3,500 km, 3-4 h late), GBP 520 (over 3,500 km, more than 4 h late).",
+      "number": "£220 / £350 / £260 / £520",
+      "effective_date": null,
+      "source_url": "https://www.caa.co.uk/air-passengers/travel-problems-and-rights/flight-delays-and-cancellations/delays/",
+      "quote": "If you arrive more than four hours late, the compensation amount is £520 per person.",
+      "confidence": null
+    },
+    {
+      "id": "uk_extraordinary",
+      "topic": "UK261",
+      "statement": "Airlines need not pay compensation for delays caused by extraordinary circumstances.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.caa.co.uk/air-passengers/travel-problems-and-rights/flight-delays-and-cancellations/delays/",
+      "quote": "Airlines do not have to pay compensation if they consider the delay to be caused by “extraordinary circumstances”.",
+      "confidence": null
+    },
+    {
+      "id": "uk_adr",
+      "topic": "UK261_escalation",
+      "statement": "Escalation: complain to the airline first. If unresolved, or no response within eight weeks, go to its approved ADR provider (AviationADR/CDRL or CEDR). ADR is free.",
+      "number": "8 weeks",
+      "effective_date": null,
+      "source_url": "https://www.caa.co.uk/air-passengers/travel-problems-and-rights/travel-complaints/alternative-dispute-resolution/",
+      "quote": "take your complaint to your airline or airport’s ADR provider if they have not responded to you within eight weeks of your written complaint",
+      "confidence": null
+    },
+    {
+      "id": "uk_pact",
+      "topic": "UK261_escalation",
+      "statement": "If the airline is not in an ADR scheme, the CAA's Passenger Advice and Complaints Team (PACT) may help, but its decisions are not binding.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.caa.co.uk/air-passengers/travel-problems-and-rights/travel-complaints/alternative-dispute-resolution/",
+      "quote": "If your airline or airport is not signed up to an ADR provider, the CAA’s Passenger Advice and Complaints Team (PACT)",
+      "confidence": null
+    },
+    {
+      "id": "ca_large",
+      "topic": "Canada_APPR",
+      "statement": "Large carriers: CAD 400 (3 to under 6 h late), 700 (6 to under 9 h), 1,000 (9+ h). Applies to disruptions within the carrier's control (APPR s.19 via s.12(2)(d)/(3)(d)).",
+      "number": "CAD 400 / 700 / 1,000",
+      "effective_date": "regs current to 2026-10-19, last amended 2022-09-08",
+      "source_url": "https://laws-lois.justice.gc.ca/eng/regulations/SOR-2019-150/section-19.html",
+      "quote": "$400, if the arrival of the passenger’s flight at the destination ... is delayed by three hours or more, but less than six hours",
+      "confidence": null
+    },
+    {
+      "id": "ca_small",
+      "topic": "Canada_APPR",
+      "statement": "Small carriers: CAD 125 (3 to under 6 h), 250 (6 to under 9 h), 500 (9+ h).",
+      "number": "CAD 125 / 250 / 500",
+      "effective_date": null,
+      "source_url": "https://protection-passager-passenger.otc-cta.gc.ca/en/refunds-and-compensation/flight-delays-cancellations-rebooking-refunds-compensation",
+      "quote": "3 or more hours late, but less than 6 hours $400 $125 6 or more hours late, but less than 9 hours $700 $250",
+      "confidence": "The quote is copied from a CTA table (the 9h+ row reads '$1,000 $500'). APPR s.19(1)(b) gives the same small-carrier amounts. The page was modified 2026-02-26."
+    },
+    {
+      "id": "ca_refund_comp",
+      "topic": "Canada_APPR",
+      "statement": "If the ticket is refunded instead, the minimum compensation is CAD 400 (large) or CAD 125 (small).",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://laws-lois.justice.gc.ca/eng/regulations/SOR-2019-150/section-19.html",
+      "quote": "minimum compensation of (a) $400, in the case of a large carrier; and (b) $125, in the case of a small carrier",
+      "confidence": null
+    },
+    {
+      "id": "ca_deadlines",
+      "topic": "Canada_APPR",
+      "statement": "Claim from the carrier within 1 year of the delay or cancellation. The carrier has 30 days to pay or explain why not.",
+      "number": "1 year / 30 days",
+      "effective_date": null,
+      "source_url": "https://laws-lois.justice.gc.ca/eng/regulations/SOR-2019-150/section-19.html",
+      "quote": "must file a request for compensation with the carrier before the first anniversary of the day on which the flight delay or flight cancellation occurred",
+      "confidence": null
+    },
+    {
+      "id": "ca_complaint",
+      "topic": "Canada_APPR",
+      "statement": "Complaint route: contact the airline in writing and wait up to 30 days, then file an air travel complaint with the Canadian Transportation Agency (complaints portal / form).",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://protection-passager-passenger.otc-cta.gc.ca/en/air-travel-complaints",
+      "quote": "Before making a complaint with the CTA, you must contact the airline in writing and wait for a response",
+      "confidence": "The form URL https://formulaires-forms.otc-cta.gc.ca/en/air-travel-complaint was linked from the CTA page but not opened."
+    },
+    {
+      "id": "ca_no_new_amendments",
+      "topic": "Canada_APPR",
+      "statement": "The official consolidated APPR (current to 2026-10-19) shows no amendment since 2022-09-08, so the amounts above are in force.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://laws-lois.justice.gc.ca/eng/regulations/SOR-2019-150/section-19.html",
+      "quote": "Regulations are current to 2026-10-19 and last amended on 2022-09-08.",
+      "confidence": null
+    },
+    {
+      "id": "mc_bag_limit",
+      "topic": "Montreal_Convention",
+      "statement": "Montreal Convention baggage liability limit (Art. 22(2)) is 1,519 SDR per passenger, effective 28 Dec 2024. It was 1,288 SDR from Dec 2019 to Dec 27, 2024.",
+      "number": "1,519 SDR (previously 1,288)",
+      "effective_date": "2024-12-28",
+      "source_url": "https://otc-cta.gc.ca/eng/content/notification-air-carriers-upward-revision-limits-liability-governed-montreal-convention",
+      "quote": "1,519 SDRs for each passenger",
+      "confidence": "The CTA page says 'Effective December 28, 2024'. The UK Order SI 2025/123 confirms 1,288 -> 1,519. The ICAO PDF returned 403."
+    },
+    {
+      "id": "mc_bag_limit_uk",
+      "topic": "Montreal_Convention",
+      "statement": "UK confirmation: the Carriage by Air (Revision of Limits of Liability under the Montreal Convention) Order 2025 lists Art. 22(2) as revised from 1,288 to 1,519.",
+      "number": "1,519 SDR",
+      "effective_date": null,
+      "source_url": "https://www.legislation.gov.uk/uksi/2025/123/made",
+      "quote": "Article 22, paragraph 2 ... 1,288 ... 1,519",
+      "confidence": "The quote is reconstructed from a table row."
+    },
+    {
+      "id": "mc_bag_deadlines",
+      "topic": "Montreal_Convention",
+      "statement": "Written complaint deadlines: within 7 days for damaged baggage, and within 21 days of receiving delayed baggage.",
+      "number": "7 days / 21 days",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/passenger-rights/air/index_en.htm",
+      "quote": "you should do it in writing to the airline within 7 days, or within 21 days of receiving your luggage if it was delayed",
+      "confidence": "Stated on Your Europe (it mirrors Montreal Convention Art. 31). The treaty text itself was not fetched."
+    },
+    {
+      "id": "mc_2yr",
+      "topic": "Montreal_Convention",
+      "statement": "There is a 2-year time limit for court action for delay damages under the Montreal/Warsaw Conventions (per CTA).",
+      "number": "2 years",
+      "effective_date": null,
+      "source_url": "https://protection-passager-passenger.otc-cta.gc.ca/en/refunds-and-compensation/flight-delays-cancellations-rebooking-refunds-compensation",
+      "quote": "There is a 2-year time limit for any court action to claim damage.",
+      "confidence": null
+    },
+    {
+      "id": "fcba_60",
+      "topic": "US_card_disputes",
+      "statement": "To keep Fair Credit Billing Act rights, send a written billing-error notice to the card issuer within 60 days.",
+      "number": "60 days",
+      "effective_date": null,
+      "source_url": "https://www.consumerfinance.gov/ask-cfpb/how-do-i-dispute-a-charge-on-my-credit-card-bill-en-61/",
+      "quote": "send a written billing error notice to the card company within 60 calendar days after the charge appeared on your statement",
+      "confidence": null
+    },
+    {
+      "id": "fcba_60_reg",
+      "topic": "US_card_disputes",
+      "statement": "Reg Z: the notice must reach the creditor's billing-error address no later than 60 days after the first statement showing the error was transmitted.",
+      "number": "60 days",
+      "effective_date": null,
+      "source_url": "https://www.consumerfinance.gov/rules-policy/regulations/1026/13/",
+      "quote": "no later than 60 days after the creditor transmitted the first periodic statement that reflects the alleged billing error",
+      "confidence": null
+    },
+    {
+      "id": "fcba_not_delivered",
+      "topic": "US_card_disputes",
+      "statement": "Billing errors include charges for services not accepted or not delivered as agreed, which is relevant to a cancelled trip or service.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://www.consumerfinance.gov/rules-policy/regulations/1026/13/",
+      "quote": "property or services not accepted by the consumer or the consumer's designee, or not delivered to the consumer or the consumer's designee as agreed",
+      "confidence": null
+    },
+    {
+      "id": "fcba_timeline",
+      "topic": "US_card_disputes",
+      "statement": "The issuer must acknowledge within 30 days and resolve within 2 complete billing cycles (no later than 90 days).",
+      "number": "30 days / 90 days",
+      "effective_date": null,
+      "source_url": "https://www.consumerfinance.gov/rules-policy/regulations/1026/13/",
+      "quote": "within 2 complete billing cycles (but in no event later than 90 days) after receiving a billing error notice",
+      "confidence": null
+    },
+    {
+      "id": "ptd_liability",
+      "topic": "EU_Package_Travel",
+      "statement": "The package organiser is responsible for proper performance of all travel services in the package and must fix problems at no extra cost to the traveller.",
+      "number": null,
+      "effective_date": "page last checked 11/05/2026",
+      "source_url": "https://europa.eu/youreurope/citizens/travel/holidays/package-travel/index_en.htm",
+      "quote": "The organiser is responsible for the proper performance of all travel services included in your package.",
+      "confidence": null
+    },
+    {
+      "id": "ptd_compensation",
+      "topic": "EU_Package_Travel",
+      "statement": "If services don't meet the agreed standard and can't be fixed on the spot, the traveller may be entitled to compensation. If transport is included and alternatives are impossible, the organiser must offer repatriation.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/holidays/package-travel/index_en.htm",
+      "quote": "If the travel services do not reach the agreed standards and this cannot be resolved on the spot, you may also be entitled to compensation.",
+      "confidence": null
+    },
+    {
+      "id": "ptd_price_reduction",
+      "topic": "EU_Package_Travel",
+      "statement": "Travellers are entitled to a price reduction, compensation for damages, or both, when services are not performed or are improperly performed (standard information form).",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://data.consilium.europa.eu/doc/document/PE-4-2026-REV-1/en/pdf",
+      "quote": "Travellers are also entitled to a price reduction or compensation for damages, or to both, where the travel services are not performed",
+      "confidence": "Taken from the standard-information-form annex of the 2026 amending directive. The Art. 14 text of Directive 2015/2302 on EUR-Lex could not be fetched."
+    },
+    {
+      "id": "ptd_cancel_refund",
+      "topic": "EU_Package_Travel",
+      "statement": "If the organiser cancels, the traveller gets a refund and compensation where appropriate. For cancellations due to natural disaster or serious security problems, the refund is full but there is no extra compensation.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/holidays/package-travel/index_en.htm",
+      "quote": "if the organiser cancels the sale before the start of your package, you are entitled to a refund and compensation, where appropriate.",
+      "confidence": null
+    },
+    {
+      "id": "ptd_8pct",
+      "topic": "EU_Package_Travel",
+      "statement": "Price increases are allowed only for specified costs, no later than 20 days before departure. Above 8%, the traveller can cancel without a fee.",
+      "number": "8% / 20 days",
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/holidays/package-travel/index_en.htm",
+      "quote": "If the price increase is more than 8% of the total price of the package, you have the right to end the package contract",
+      "confidence": null
+    },
+    {
+      "id": "ptd_insolvency",
+      "topic": "EU_Package_Travel",
+      "statement": "Insolvency protection refunds payments and repatriates the traveller if the trader goes bankrupt.",
+      "number": null,
+      "effective_date": null,
+      "source_url": "https://europa.eu/youreurope/citizens/travel/holidays/package-travel/index_en.htm",
+      "quote": "This will refund any payments you may have made and will, if required, repatriate you",
+      "confidence": null
+    },
+    {
+      "id": "ptd_revision",
+      "topic": "EU_Package_Travel_reform",
+      "statement": "An amending directive to 2015/2302 was signed 29 April 2026 (Council decision 30 March 2026). Member States must apply it 34 months after entry into force, so the current 2015/2302 rules still apply in Nov 2026. It keeps the 14-day refund on termination.",
+      "number": null,
+      "effective_date": "signed 2026-04-29; application ~2029",
+      "source_url": "https://data.consilium.europa.eu/doc/document/PE-4-2026-REV-1/en/pdf",
+      "quote": "shall apply those measures from … [34 months after the date of entry into force of this amending Directive]",
+      "confidence": "The search index names it Directive (EU) 2026/1024, published 8 May 2026, but EUR-Lex was not fetched, so the number and OJ date are unverified."
+    }
+  ],
+  "unverified": [
+    {
+      "item": "DOT complaint route (airconsumer.dot.gov portal, OACP mail address, phone 202-366-2220)",
+      "reason": "transportation.gov and airconsumer.dot.gov returned 403/503 to automated fetches. Only search snippets were seen.",
+      "candidate_urls": [
+        "https://www.transportation.gov/airconsumer/file-consumer-complaint",
+        "https://airconsumer.dot.gov/consumer/s/"
+      ]
+    },
+    {
+      "item": "DOT automatic-refunds consumer page and airline customer service dashboard wording",
+      "reason": "transportation.gov blocked (403). Rule facts were verified from eCFR and the Federal Register instead.",
+      "candidate_urls": [
+        "https://www.transportation.gov/airconsumer/automatic-refunds",
+        "https://www.transportation.gov/airconsumer/airline-customer-service-dashboard"
+      ]
+    },
+    {
+      "item": "Sturgeon judgment text on EUR-Lex (C-402/07, C-432/07)",
+      "reason": "EUR-Lex served a bot challenge. The citation was verified only via the Council PE-CONS text.",
+      "candidate_urls": [
+        "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:62007CJ0402"
+      ]
+    },
+    {
+      "item": "EU261 amending Regulation number (EU) 2026/2202, OJ publication date, exact application date",
+      "reason": "EUR-Lex not fetchable. The Council press release returned 403.",
+      "candidate_urls": [
+        "https://eur-lex.europa.eu/eli/reg/2026/2202/oj/eng",
+        "https://www.consilium.europa.eu/en/press/press-releases/2026/07/13/council-gives-final-clearance-for-stronger-air-passenger-rights/"
+      ]
+    },
+    {
+      "item": "Revised Package Travel Directive number (EU) 2026/1024, OJ date 8 May 2026, insolvency refund timelines, voucher rules",
+      "reason": "EUR-Lex and the Council press release were not fetchable. The voucher and insolvency details were seen only in search summaries.",
+      "candidate_urls": [
+        "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32026L1024"
+      ]
+    },
+    {
+      "item": "Montreal Convention Art. 31 treaty text and ICAO 2024 revised-limits PDF",
+      "reason": "ICAO PDF returned 403. The limit and date were verified via CTA and UK legislation.gov.uk, and the deadlines via Your Europe.",
+      "candidate_urls": [
+        "https://www.icao.int/sites/default/files/secretariat/legal/LEB%20Treaty%20Collection%20Documents/2024_Revised_Limits_of_Liability_Under_the_Montreal_Convention_of_1999_en.pdf"
+      ]
+    },
+    {
+      "item": "UK261 scope (which flights are covered) and cancellation amounts",
+      "reason": "Not stated on the CAA delays page fetched. Only delay amounts were verified."
+    },
+    {
+      "item": "Visa/Mastercard chargeback timelines",
+      "reason": "Intentionally excluded: no official public network page was checked."
+    },
+    {
+      "item": "US DOT pending rulemaking redefining 'cancelled flight'",
+      "reason": "Referenced in the July 7, 2026 FR notice. No NPRM text was found or verified."
+    }
+  ]
+}

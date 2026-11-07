@@ -1,0 +1,21 @@
+diff --git a/public/index.php b/public/index.php
+index 7a5cdd1..eeb3760 100644
+--- a/public/index.php
++++ b/public/index.php
+@@ -7,6 +7,16 @@ $path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
+ $path = '/' . trim(rawurldecode($path), '/');
+ if ($path === '/') $path = '/';
+ 
++/* One URL per page: /d/paris-france/ answered 200 with a canonical pointing at itself, a duplicate
++   of /d/paris-france (crawl 2026-11-07). A GET or HEAD for any path ending in a slash goes to the
++   same path without it, query kept. POSTs are left alone so no form loses its body. */
++$rawPath = (string) strtok($_SERVER['REQUEST_URI'] ?? '/', '?');
++if ($rawPath !== '/' && str_ends_with($rawPath, '/') && in_array($_SERVER['REQUEST_METHOD'] ?? 'GET', ['GET', 'HEAD'], true)) {
++    $qs = (string) ($_SERVER['QUERY_STRING'] ?? '');
++    header('Location: /' . trim($rawPath, '/') . ($qs !== '' ? '?' . $qs : ''), true, 301);
++    exit;
++}
++
+ // Route table: [method, pattern(regex with named groups), handler]
+ $routes = [
+     ['GET',  '#^/$#',                          'home'],

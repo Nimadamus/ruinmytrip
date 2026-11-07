@@ -2,6 +2,15 @@
 
 Replace stale lines here; do not append history. Last touched 2026-10-02.
 
+## 2026-11-07 launch audit (branch claude/relaxed-wright-enrc9x, NOT deployed)
+
+docs/LAUNCH_PLAN_20261107.md: grades, the eight decisions waiting on Nima, strategy. On the branch: /ruined
+splits traveler warnings from research; "Scams and traps" on 8 city pages from official sources
+(app/city_scams.php, database/scams/city_scams.json, tests/city_scams_test.php); one claims page
+(/blog/trip-went-wrong-what-you-can-claim); homepage title/Organization schema (ship alone); tap targets;
+Article JSON-LD; blog hero srcset. Proposal only: docs/proposals/trailing_slash_301.patch.
+Journeys: node scripts/ci/launch_journeys_e2e.js (RMT_DESIGN_V2=all, a copy of the preview DB).
+
 ## 2026-10-01 audit and build (docs/AUDIT_20261001.md)
 
 Live: robots.txt crawl blocks (docs/CRAWL_BLOCKS_20261001.md); /d/*/travelers indexed and submitted only
