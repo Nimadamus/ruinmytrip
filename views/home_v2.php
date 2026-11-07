@@ -113,6 +113,14 @@
         </a>
       <?php endforeach; ?>
     </div>
+    <?php /* The cities with sourced scam warnings (app/city_scams.php), one row, so the warnings are
+             one tap from the front door rather than buried on a city page. */
+      $v2ScamSlugs = array_keys(rmt_city_scams_all());
+      $v2ScamCities = $v2ScamSlugs ? q_all('SELECT slug, name FROM destinations WHERE slug IN (' . implode(',', array_fill(0, count($v2ScamSlugs), '?')) . ') ORDER BY name', $v2ScamSlugs) : []; ?>
+    <?php if ($v2ScamCities): ?>
+      <p class="v2-sub" style="margin:22px 0 8px"><b>Known scams and traps</b>, from official travel advice, with sources:</p>
+      <div class="v2-chips v2-chips-wrap"><?php foreach ($v2ScamCities as $c): ?><a class="v2-chip v2-chip-sm" href="<?= e(url('d/' . $c['slug']) . '#scams') ?>" data-cta="home_scams"><?= e((string) $c['name']) ?></a><?php endforeach; ?><a class="v2-chip v2-chip-sm" href="<?= e(url('ruined')) ?>" data-cta="home_scams">What travelers say went wrong →</a></div>
+    <?php endif; ?>
   </div>
 </section>
 <?php endif; ?>
