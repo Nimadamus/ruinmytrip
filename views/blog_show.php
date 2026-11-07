@@ -48,6 +48,9 @@
       <h2 class="h-card" style="margin:0 0 8px">More on <?= e((string) $blogDest['name']) ?></h2>
       <ul class="list-plain">
         <li style="margin:0 0 6px"><a href="<?= e(url('d/' . $blogDest['slug'])) ?>"><?= e((string) $blogDest['name']) ?>: places, honest reviews and who is going</a></li>
+        <?php if (function_exists('rmt_city_scams') && rmt_city_scams((string) $blogDest['slug'])): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('d/' . $blogDest['slug']) . '#scams') ?>">Scams and traps in <?= e((string) $blogDest['name']) ?>, from official travel advice</a></li>
+        <?php endif; ?>
         <?php if (!empty($bm['guide'])): ?>
           <li style="margin:0 0 6px"><a href="<?= e(url('g/' . $bm['guide']['slug'])) ?>"><?= e((string) $bm['guide']['title']) ?></a></li>
         <?php endif; ?>
