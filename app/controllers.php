@@ -184,10 +184,11 @@ function home(array $a): void {
             ['@type'=>'WebSite','@id'=>cfg('app_url').'/#website','name'=>'RuinMyTrip','url'=>cfg('app_url'),
              'publisher'=>['@id'=>cfg('app_url').'/#organization'],
              'potentialAction'=>['@type'=>'SearchAction','target'=>url('search?q={q}'),'query-input'=>'required name=q']],
-            /* Organization: who runs the site, so a brand search can resolve to it. No sameAs until a
-               social account is confirmed as ours; an unverified profile link is worse than none. */
+            /* Organization: who runs the site, so a brand search can resolve to it. sameAs lists only
+               the profile the footer already links as ours with rel="me"; add others only when they exist. */
             ['@type'=>'Organization','@id'=>cfg('app_url').'/#organization','name'=>'RuinMyTrip','url'=>cfg('app_url'),
-             'logo'=>url('assets/img/icon-512.png'),'contactPoint'=>['@type'=>'ContactPoint','contactType'=>'customer support','url'=>url('contact')]],
+             'logo'=>url('assets/img/icon-512.png'),'sameAs'=>['https://www.instagram.com/ruinmytripcom/'],
+             'contactPoint'=>['@type'=>'ContactPoint','contactType'=>'customer support','url'=>url('contact')]],
         ]]),
     ]);
 }
