@@ -19,7 +19,7 @@
 
 No check was skipped or bypassed; every push went through the pre-push gate.
 
-## Staged, not deployed: branch `rmt-launch-1107` (1414e23)
+## Staged, not deployed: branch `rmt-launch-1107`
 
 Place and review pages in the 16 cities with a sourced "Scams and traps" section now link to it
 ("6 scams to know in Prague"), only where the section exists. Clicks count in `warn_clicks` as
