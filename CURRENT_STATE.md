@@ -2,7 +2,7 @@
 
 Replace stale lines here; do not append history. Last touched 2026-10-02.
 
-## 2026-11-07 launch audit (branch claude/relaxed-wright-enrc9x, NOT deployed)
+## 2026-11-07 launch audit (DEPLOYED: production 2f31b51; next: branch rmt-launch-1107, docs/LAUNCH_EXECUTION_20261107.md)
 
 **Release candidate and go/no-go: docs/RELEASE_CANDIDATE_20261107.md.** Hosting is PAUSED
 (`rmt_hosting_paused()`): no new stays or host applications, existing stays continue. Moderators can

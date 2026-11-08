@@ -3,7 +3,7 @@
 **Candidate:** branch `claude/relaxed-wright-enrc9x`, a fast-forward of `main` (`b045de9`): 22 code
 and content commits plus documentation commits. **No database migration, no new environment variable, no sitemap,
 canonical or noindex change** except the approved trailing-slash 301. `main` has not moved since
-the branch was cut. **Not deployed.**
+the branch was cut. **Deployed 2026-11-07** (production `2f31b51`, Render live 8:26 AM PST; live check 191/191; see docs/LAUNCH_EXECUTION_20261107.md).
 
 **Indexing (owner decision 2026-11-07):** the 144 URL noindex proposal is REJECTED in full. Audit: the
 candidate adds no noindex, X-Robots-Tag, robots.txt, canonical or sitemap restriction; the only
