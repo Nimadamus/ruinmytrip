@@ -1,5 +1,12 @@
 # Indexing and SEO recommendations, with evidence (2026-11-07)
 
+**OWNER DECISION 2026-11-07 (final): every noindex proposal in this file is REJECTED**, including
+`docs/research_20261107/proposed_noindex_144.csv` in full. No legitimate public page is to be noindexed;
+which pages Google indexes is Google's decision. Current robots directives, meta robots, canonical rules
+and sitemaps stay exactly as they are; any change to any of them needs Nima's explicit approval first.
+SEO work goes into original useful content, navigation, internal linking and measured search
+performance, not exclusion. The noindex wording below is kept only as the record of what was proposed.
+
 **Nothing in this file has been changed on the site.** Each item needs Nima's decision. Exact URL lists
 are in `docs/research_20261107/` (`unsubmitted_all.csv`, `review_overlap_195.csv`,
 `places_thin_candidates.csv`, `in_country_42.csv`). The crawl was read-only, GET only, against
@@ -40,18 +47,18 @@ fix is a short hand-written search title per review, not more truncation code. D
 sitemap until the titles are fixed.
 
 **One exception:** `/review/180` is about a restaurant that has moved ("Ondine has left George IV
-Bridge…"). Rewrite it or noindex it; your call.
+Bridge…"). Rewrite it (noindex rejected 2026-11-07).
 
 ## 2. Where the real thin-content risk is
 
 | Group | URLs | Median unique words | Under 150 words | Recommendation |
 |---|---|---|---|---|
-| Place pages not in any sitemap (`/p/…`, data-only) | 735 | 117 | 705 | **Decide with Search Console first.** This is the footprint the September spam update targets: hundreds of templated pages built from map data. Proposed rule: noindex a place page that has no traveler review, no editorial text, no photo **and** zero impressions in the last 16 months. Run `scripts/gsc_report.py` (page level, 16 months) against `places_thin_candidates.csv` to get the exact list. Pages with impressions (e.g. `/p/le-rapido-paris`, 86 impressions in the snippet window) stay indexable. |
-| `/in/{country}` | 42 | 47.5 | 41 | Noindex (thin hubs; the 14 that mattered already 301 to `/travel-buddies/{country}`), or 301 the rest the same way. Exact list: `in_country_42.csv`. |
+| Place pages not in any sitemap (`/p/…`, data-only) | 735 | 117 | 705 | **Decide with Search Console first.** This is the footprint the September spam update targets: hundreds of templated pages built from map data. ~~Proposed rule: noindex thin place pages.~~ **REJECTED 2026-11-07: all stay indexable.** Improve them instead: add editorial text, photos and traveler reviews, and link them from their city and neighbourhood pages; measure with `scripts/gsc_report.py`. |
+| `/in/{country}` | 42 | 47.5 | 41 | ~~Noindex~~ **REJECTED 2026-11-07: stay indexable.** Build them out with real country content and internal links. |
 | `/d/{city}/places` lists | 34 | 77 | 23 | Leave indexable, keep unsubmitted (they mostly list the same places as the city page). |
 | `/d/{city}?cat=` and category pages | 39 | 530 | 1 | Leave as is; real lists. |
-| Neighbourhood pages | 8 | 85 | 8 | Noindex until each has reviews (backlog P2 item 3 is to build them out). |
-| Tag pages | 5 | 50 | 5 | Already gated at 3+ items for the sitemap; noindex below that. |
+| Neighbourhood pages | 8 | 85 | 8 | ~~Noindex~~ **REJECTED 2026-11-07: stay indexable.** Build them out (backlog P2 item 3). |
+| Tag pages | 5 | 50 | 5 | Already gated at 3+ items for the sitemap (unchanged). ~~Noindex below that~~ **REJECTED 2026-11-07.** |
 | Blog posts not in the sitemap | 40 | 370 | 0 | Submit the ones with sources and a check date; they are real articles. |
 | Guides not in the sitemap | 2 | 364 | 0 | Submit. |
 | Hubs (`/blog`, `/guides`, `/reviews`, `/tags` …) | 10 | 177 | 5 | Leave indexable and unsubmitted. |
@@ -76,7 +83,10 @@ pages with no impressions**, so do those last or not at all.
 Trailing-slash duplicates (one 301, approved), Article JSON-LD dates and authors, the blog hero image,
 and `/ruined` honesty.
 
-## 5b. The proposed noindex list (144 URLs, none of them reviews)
+## 5b. The proposed noindex list (144 URLs, none of them reviews): REJECTED IN FULL
+
+**Owner decision 2026-11-07, final: rejected. None of these 144 URLs, and no other legitimate public
+page, will be noindexed.** Never implemented in code; the CSV is kept as a record only.
 
 `docs/research_20261107/proposed_noindex_144.csv`: 42 `/in/{country}`, 39 `/d/{city}` category
 filters, 34 `/d/{city}/places` lists, 8 neighbourhood pages, 5 tag pages, 9 chain-branch place pages

@@ -5,6 +5,10 @@ and content commits plus documentation commits. **No database migration, no new 
 canonical or noindex change** except the approved trailing-slash 301. `main` has not moved since
 the branch was cut. **Not deployed.**
 
+**Indexing (owner decision 2026-11-07):** the 144 URL noindex proposal is REJECTED in full. Audit: the
+candidate adds no noindex, X-Robots-Tag, robots.txt, canonical or sitemap restriction; the only
+indexing-related code change is the approved trailing-slash 301.
+
 ## Recommendation: GO, on your approval
 
 Everything code can verify is green on the production image against both databases. The
@@ -63,12 +67,12 @@ Hosting can be reopened independently later by setting `rmt_hosting_paused()` to
 | Mobile | A- | **A** | No overflow anywhere tested, 44px targets |
 | Navigation and discovery | B- | **B+** | Claims and warnings in the footer; blog and guides still not in the main nav (an earlier decision of yours) |
 | Content quality and trust | B | **A-** | Honest `/ruined`, sourced scams and claims, tax errors fixed. 133 templated budget posts remain |
-| Technical SEO | B- | **B+** | Slash duplicates fixed, structured data fixed. Indexing decisions pending (docs/SEO_RECOMMENDATIONS_20261107.md) |
+| Technical SEO | B- | **B+** | Slash duplicates fixed, structured data fixed. Noindex proposals (incl. the 144 URL list) REJECTED by owner 2026-11-07; no indexing restrictions ship |
 | Accessibility | n/a | **A** | 30 pages clean |
 | Performance | A- | **A-** | Unchanged except blog heroes |
 | Community features | n/a | **A-** | Everything works end to end; nobody uses it yet |
 | Community activity | D | **D** | Needs launch and outreach, not code (docs/FIRST_100_USERS_20261107.md) |
-| Organic traffic | F | **F** | Needs time and the indexing decisions |
+| Organic traffic | F | **F** | Needs time, original content and internal linking (no exclusion) |
 | **Launch readiness overall** | **C+** | **B+** | **A- for everything code controls.** The gap to A- overall is the Terms (counsel) and the first real members |
 
 ## The decision needed to go live
