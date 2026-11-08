@@ -17,8 +17,9 @@ if ($base === '') {
     $db = $root . '/database/dev.sqlite';
     if (!is_file($db) || filesize($db) < 1024) { echo "SKIP  no dev database\n"; exit(0); }
     $port = 8124;
+    $nul = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null'; // /dev/null does not exist on Windows
     $proc = proc_open([PHP_BINARY, '-S', '127.0.0.1:' . $port, '-t', $root . '/public', $root . '/public/router.php'],
-        [0 => ['pipe', 'r'], 1 => ['file', '/dev/null', 'a'], 2 => ['file', '/dev/null', 'a']], $pipes, $root);
+        [0 => ['pipe', 'r'], 1 => ['file', $nul, 'a'], 2 => ['file', $nul, 'a']], $pipes, $root);
     $base = 'http://127.0.0.1:' . $port;
     for ($i = 0; $i < 40 && @file_get_contents($base . '/healthz') === false; $i++) usleep(250000);
 }
