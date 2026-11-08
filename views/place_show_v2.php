@@ -364,6 +364,9 @@ $statusLabel = rmt_place_status_label((string) $p['status']);
         <div class="pv2-city-links">
           <a class="btn btn-primary btn-sm" href="<?= e(url('d/' . $p['dest_slug'])) ?>"><?= e($p['dest_name']) ?> guide</a>
           <a class="btn btn-ghost btn-sm" href="<?= e(url('d/' . $p['dest_slug'] . '/places')) ?>">More places in <?= e($p['dest_name']) ?></a>
+          <?php $destSlug = (string) ($p['dest_slug'] ?? ''); $destName = (string) ($p['dest_name'] ?? '');
+                $scamsLinkClass = 'btn btn-ghost btn-sm'; $scamsLinkSrc = 'place_scams';
+                include __DIR__ . '/_scams_link.php'; ?>
           <a class="btn btn-ghost btn-sm" data-cta="map_make" href="<?= e(url('map')) ?>">Color in your travel map</a>
         </div>
       </div>

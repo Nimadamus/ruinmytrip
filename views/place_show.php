@@ -167,6 +167,9 @@
       <a class="btn btn-ghost" href="<?= e(url('collection/new')) ?>">Start a list</a>
     <?php endif; ?>
       <a class="btn btn-ghost" href="<?= e(url('d/'.$p['dest_slug'].'/places')) ?>">More in <?= e($p['dest_name']) ?></a>
+      <?php $destSlug = (string) ($p['dest_slug'] ?? ''); $destName = (string) ($p['dest_name'] ?? '');
+            $scamsLinkClass = 'btn btn-ghost'; $scamsLinkSrc = 'place_scams';
+            include __DIR__ . '/_scams_link.php'; ?>
     <?php /* Editors get a direct route into the place editor from the page they are looking at. */ ?>
     <?php if ($me && in_array($me['role'], ['admin','mod'], true)): ?>
       <a class="btn btn-ghost" href="<?= e(url('admin/place/'.(int)$p['id'])) ?>">Edit this place</a>

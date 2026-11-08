@@ -146,6 +146,8 @@ const RMT_CTA_KEYS = [
     'blog_rate',
     // Scam warnings (app/city_scams.php): the home page city row, and the city section's review button (2026-11-07).
     'home_scams', 'city_scams',
+    // The "N scams to know in <city>" link on place and review pages (views/_scams_link.php, 2026-11-07).
+    'place_scams', 'review_scams',
     // Partner links (app/partners.php): counted so a program is judged on clicks before anyone guesses revenue.
     'partner_airhelp', 'partner_tickets',
     'nav_warn',

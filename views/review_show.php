@@ -190,6 +190,9 @@
     <?php endif; ?>
     <?php if ($r['dest_name']): ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('d/'.$r['dest_slug'])) ?>">More about <?= e($r['dest_name']) ?></a>
+      <?php $destSlug = (string) $r['dest_slug']; $destName = (string) $r['dest_name'];
+            $scamsLinkClass = 'btn btn-ghost btn-sm'; $scamsLinkSrc = 'review_scams';
+            include __DIR__ . '/_scams_link.php'; ?>
     <?php endif; ?>
   </div>
 

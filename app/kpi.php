@@ -118,7 +118,7 @@ function rmt_kpi_daily(int $days = 14): array {
     // The warning doors and the paid links, from the CTA clicks the browser reports (cta_click.detail).
     foreach (rmt_kpi_rows("SELECT created_at, journey, detail FROM contribution_events
                             WHERE event = 'cta_click' AND created_at >= ? AND created_at < ? AND $notSelf
-                              AND detail IN ('home_warn','city_scams','home_scams','nav_warn','partner_airhelp','partner_tickets')",
+                              AND detail IN ('home_warn','city_scams','home_scams','place_scams','review_scams','nav_warn','partner_airhelp','partner_tickets')",
                           [$from, $to]) as $r) {
         $isPartner = str_starts_with((string) $r['detail'], 'partner_');
         $put($isPartner ? 'partner_clicks' : 'warn_clicks', (string) $r['created_at'], $isPartner ? null : (string) ($r['journey'] ?? ''));
