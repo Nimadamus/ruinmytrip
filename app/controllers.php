@@ -1887,6 +1887,19 @@ function guide_delete(array $a): void {
 /* ---------- blog ---------- */
 const RMT_BLOG_CATEGORIES = ['stories', 'tips', 'safety', 'budget', 'gear', 'news'];
 
+/**
+ * Canonical for the blog index.
+ *
+ * Page 2 and later of the unfiltered index name themselves. They used to name page 1, which told
+ * a crawler that the only pages linking to the older articles were copies of the first page
+ * (measured 2026-11-10: 108 articles, 50 a page, pages 2 and 3 both canonical to /blog).
+ * Page 1 and every category view keep /blog exactly as before, so nothing else changes.
+ */
+function rmt_blog_index_canonical(int $page, string $cat): string {
+    $filtered = in_array($cat, RMT_BLOG_CATEGORIES, true);
+    return ($page > 1 && !$filtered) ? url('blog?page=' . $page) : url('blog');
+}
+
 function blog_index(array $a): void {
     $cat = input('category');
     $sql = "SELECT p.* FROM blog_posts p WHERE p.status='published'";
@@ -1904,6 +1917,7 @@ function blog_index(array $a): void {
     view('blog_index', ['posts'=>$posts,'cat'=>(string)$cat,'page'=>$page,'pages'=>$pages,'qs'=>$qs], [
         'title'=>'2026 travel notes: tourist taxes, ticket prices and rules | RuinMyTrip',
         'description'=>'Current 2026 tourist taxes, ticket prices, access fees and travel rules, plus stories from travelers who actually went.',
+        'canonical'=>rmt_blog_index_canonical($page, (string) $cat),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')]],
     ]);
 }
