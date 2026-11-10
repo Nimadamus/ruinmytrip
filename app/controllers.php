@@ -136,6 +136,7 @@ function home(array $a): void {
                             . implode(',', array_fill(0, count($featuredSlugs), '?')) . ')', $featuredSlugs);
     usort($featuredCities, static fn(array $x, array $y): int =>
         array_search($x['slug'], $featuredSlugs, true) <=> array_search($y['slug'], $featuredSlugs, true));
+    $v2Notes = [];
     $homeView = 'home';
     if (rmt_design_v2('home')) {
         /* The redesigned front door (app/design_v2.php): the travel map and one tap ratings of
@@ -144,6 +145,7 @@ function home(array $a): void {
         $homeView = 'home_v2';
         $v2Places = rmt_home_v2_places(6);
         $v2Official = rmt_home_v2_official(array_map('intval', array_column($v2Places, 'id')), 3);
+        $v2Notes = rmt_home_recent_notes(3);
         $placeCounts = [];
         foreach (q_all("SELECT destination_id, COUNT(*) n FROM places WHERE status = 'active' GROUP BY destination_id") as $pc) {
             $placeCounts[(int) $pc['destination_id']] = (int) $pc['n'];
@@ -170,7 +172,7 @@ function home(array $a): void {
         $v2CityCount = $stat_destinations;
         $v2Reviews = $reviews;
     }
-    view($homeView, compact('live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews','v2Official') : []), [
+    view($homeView, compact('v2Notes', 'live', 'featuredCities', 'trending','stories','reviews','meetups','stat_destinations','stat_community_reviews','stat_editorial_reviews','stat_travelers','stat_places','refUser','ruinedLines','ruinedTotal','askDests','goingSoon','liveCities') + (isset($v2Places) ? compact('v2Places','v2Cities','v2CityCount','v2Reviews','v2Official') : []), [
         // Written for what the site is rather than what it happens to have indexed: somebody
         // searching for a travel community should recognise this in the result, and somebody
         // searching for a ticket price should not arrive expecting a price list.

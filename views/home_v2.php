@@ -106,6 +106,12 @@ $h3Scam = $h3ScamSlugs ? q_all('SELECT slug, name FROM destinations WHERE slug I
         </a>
       <?php endforeach; ?>
     </div>
+    <?php if (!empty($v2Notes)): ?>
+      <p class="v2-sub" style="margin:18px 0 0">New 2026 notes:
+        <?php foreach ($v2Notes as $ni => $vn): ?><?= $ni ? ' · ' : ' ' ?><a href="<?= e(url('blog/' . $vn['slug'])) ?>" data-cta="home_note"><?= e((string) $vn['title']) ?></a><?php endforeach; ?>
+        · <a class="v2-link" href="<?= e(url('blog')) ?>">All 2026 notes →</a>
+      </p>
+    <?php endif; ?>
   </div>
 </section>
 <?php endif; ?>

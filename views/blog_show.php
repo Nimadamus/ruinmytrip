@@ -67,7 +67,7 @@
   <?php endif; ?>
   <?php if (!empty($blogRelated)): ?>
     <div class="card" style="margin:18px 0 0"><div class="card-body">
-      <h2 class="h-card" style="margin:0 0 8px"><?= rmt_blog_topic((string) $p['slug']) === 'tax' ? 'More 2026 tourist taxes and fees' : 'More 2026 ticket prices' ?></h2>
+      <h2 class="h-card" style="margin:0 0 8px"><?= ['tax' => 'More 2026 tourist taxes and fees', 'ticket' => 'More 2026 ticket prices'][rmt_blog_topic((string) $p['slug'])] ?? 'More to read before you go' ?></h2>
       <ul class="list-plain">
         <?php foreach ($blogRelated as $rp): ?>
           <li style="margin:0 0 6px"><a href="<?= e(url('blog/' . $rp['slug'])) ?>"><?= e((string) $rp['title']) ?></a></li>

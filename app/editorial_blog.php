@@ -125,8 +125,11 @@ function rmt_blog_topic(string $slug): string {
  * @return list<array{slug:string,title:string}>
  */
 function rmt_blog_related(string $slug, array $skip = [], int $n = 4): array {
+    /* A post that is neither a tax nor a ticket note (a city overview, a how-to) is matched with
+       the other posts of no kind. Before 2026-11-10 these eight got no block at all, and two of
+       them were linked from nothing but the blog index. */
     $topic = rmt_blog_topic($slug);
-    if ($topic === '' || $n < 1) return [];
+    if ($n < 1) return [];
     $ring = [];
     foreach (q_all("SELECT slug, title FROM blog_posts WHERE status = 'published' ORDER BY id") as $r) {
         if (rmt_blog_topic((string) $r['slug']) === $topic) $ring[] = ['slug' => (string) $r['slug'], 'title' => (string) $r['title']];
@@ -146,4 +149,30 @@ function rmt_blog_related(string $slug, array $skip = [], int $n = 4): array {
         }
     }
     return array_values($out);
+}
+
+/**
+ * The newest dated 2026 notes, for one quiet line on the homepage.
+ *
+ * Measured 2026-11-10: the homepage linked exactly one article, so a new note sat two clicks from
+ * the front door at best. Three text links, not a section: the homepage is about people and
+ * places, and this keeps the newest research one click away without turning it into a blog.
+ * Only tax and ticket notes (the posts with a number and a source in them), newest real change
+ * first, and only the house account's, so a member's post never appears here by accident.
+ *
+ * @return list<array{slug:string,title:string}>
+ */
+function rmt_home_recent_notes(int $n = 3): array {
+    if ($n < 1) return [];
+    $args = [];
+    $sql = "SELECT p.slug, p.title FROM blog_posts p";
+    if (defined('RMT_EDITORIAL_ROLE')) { $sql .= " JOIN users u ON u.id = p.user_id AND u.role = ?"; $args[] = RMT_EDITORIAL_ROLE; }
+    $sql .= " WHERE p.status = 'published' ORDER BY COALESCE(p.updated_at, p.created_at) DESC, p.id DESC LIMIT 40";
+    $out = [];
+    foreach (q_all($sql, $args) as $r) {
+        if (rmt_blog_topic((string) $r['slug']) === '') continue;
+        $out[] = ['slug' => (string) $r['slug'], 'title' => (string) $r['title']];
+        if (count($out) >= $n) break;
+    }
+    return $out;
 }
