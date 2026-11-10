@@ -77,6 +77,22 @@ $ruinedCard = static function (array $r, bool $research): void {
       <?php endforeach; ?>
     </div>
   </section>
+  <?php $rmtTypeRows = function_exists('rmt_scam_type_counts') ? rmt_scam_type_counts() : []; if ($rmtTypeRows): ?>
+  <section aria-labelledby="ruined-types" id="scam-types" style="margin:0 0 34px">
+    <h2 id="ruined-types" style="margin:0 0 6px">The scams official advice warns about most</h2>
+    <p class="hint" style="margin:0 0 12px;max-width:70ch">How many of these <?= count($rmtScamNames) ?> cities have official advice naming each kind of scam. We count a city once per kind, only where the UK, Canadian or a city or official page says it for that city. It shows what the advice talks about, not how often scams happen.</p>
+    <div class="tt-scroll"><table style="width:100%;border-collapse:collapse">
+      <thead><tr><th style="text-align:left">Scam</th><th style="text-align:right">Cities</th><th style="text-align:left">Where</th></tr></thead>
+      <tbody>
+        <?php foreach ($rmtTypeRows as $tr): ?>
+          <tr style="border-top:1px solid var(--line, #ddd)"><td style="padding:8px 8px 8px 0;vertical-align:top"><?= e($tr['label']) ?></td>
+            <td style="padding:8px;text-align:right;vertical-align:top"><?= count($tr['cities']) ?></td>
+            <td style="padding:8px 0;vertical-align:top"><?php $links = []; foreach ($tr['cities'] as $sl) if (isset($rmtScamNames[$sl])) $links[] = '<a href="' . e(url('d/' . $sl) . '#scams') . '">' . e($rmtScamNames[$sl]) . '</a>'; sort($links); echo implode(', ', $links); ?></td></tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table></div>
+  </section>
+  <?php endif; ?>
   <?php endif; ?>
 
   <?php if ($researchRows): ?>

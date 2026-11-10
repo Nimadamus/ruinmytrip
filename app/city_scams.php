@@ -70,5 +70,40 @@ function rmt_city_scam_item($it): ?array {
     }
     if (!$sources) return null;
     return ['name' => $name, 'what' => $what, 'avoid' => $avoid, 'sources' => $sources,
-            'checked' => trim((string) ($it['checked'] ?? ''))];
+            'checked' => trim((string) ($it['checked'] ?? '')),
+            'types' => array_values(array_intersect((array) ($it['types'] ?? []), array_keys(RMT_SCAM_TYPES)))];
+}
+
+/**
+ * Scam types (2026-11-09), tagged by hand on each item in city_scams.json. An item can carry more
+ * than one type, a city counts once per type, and an untagged item is simply not counted.
+ */
+const RMT_SCAM_TYPES = [
+    'taxi' => 'Taxi scams: unlicensed cabs, rigged meters, airport touts',
+    'spiking' => 'Drink spiking and drugging',
+    'pickpocket' => 'Pickpockets and distraction theft',
+    'card' => 'Card skimming and ATM fraud',
+    'bill' => 'Bar and restaurant bill scams',
+    'money' => 'Street money changers and counterfeit notes',
+    'police' => 'Fake police',
+    'touts' => 'Fake guides and touts',
+    'kidnap' => 'Express kidnapping to a cash machine',
+    'shopping' => 'Gem, carpet and swapped goods scams',
+    'rental' => 'Rental damage claims and passports held as deposit',
+    'virtual' => 'Phone "virtual kidnapping" extortion',
+    'dating' => 'Dating app setups',
+];
+
+/** @return list<array{type:string,label:string,cities:list<string>}> most cities first */
+function rmt_scam_type_counts(): array {
+    $by = [];
+    foreach (rmt_city_scams_all() as $slug => $city) {
+        $seen = [];
+        foreach ($city['items'] as $it) foreach ($it['types'] as $t) $seen[$t] = true;
+        foreach (array_keys($seen) as $t) $by[$t][] = $slug;
+    }
+    $rows = [];
+    foreach (RMT_SCAM_TYPES as $t => $label) if (!empty($by[$t])) $rows[] = ['type' => $t, 'label' => $label, 'cities' => $by[$t]];
+    usort($rows, static fn(array $a, array $b): int => count($b['cities']) <=> count($a['cities']));
+    return $rows;
 }
