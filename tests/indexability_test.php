@@ -312,8 +312,14 @@ echo "\nlastmod is only claimed where we hold one:\n";
 $listsXml = (string) q_one("SELECT xml FROM sitemap_cache WHERE group_key='lists' AND part=1")['xml'];
 check('a list with an updated_at claims it', str_contains($listsXml, '<lastmod>2026-08-02</lastmod>'), true);
 $destXml = (string) q_one("SELECT xml FROM sitemap_cache WHERE group_key='destinations' AND part=1")['xml'];
-check('a destination, which has no timestamp, claims none', str_contains($destXml, '<lastmod>'), false);
-check('and today is never invented', str_contains($destXml, gmdate('Y-m-d')), false);
+/* A destination row still has no timestamp. Since 2026-11-10 its date is the newest thing dated on
+   the page: a published review of the city or a scam item's checked day (rmt_sitemap_destination_mod).
+   Paris has a review from 2026-08-01 here, so it claims a real day no older than that. */
+$parisMod = rmt_sitemap_destination_mod(1, 'paris-france');
+check('a reviewed destination has a real day, no older than its review', is_string($parisMod) && $parisMod >= '2026-08-01' && $parisMod <= gmdate('Y-m-d'), true);
+check('and the sitemap claims exactly that day for it', substr_count($destXml, '<lastmod>') === 1 && str_contains($destXml, '<lastmod>' . $parisMod . '</lastmod>'), true);
+check('a destination with nothing dated has no day', rmt_sitemap_destination_mod(2, 'nowhere'), null);
+check('and today is never invented', $parisMod === gmdate('Y-m-d') || !str_contains($destXml, gmdate('Y-m-d')), true);
 
 echo "\nRegeneration is idempotent and does not leave stale parts:\n";
 $before = count(rmt_sitemap_parts());
