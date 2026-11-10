@@ -2608,5 +2608,134 @@
    "https://www.angkorenterprise.gov.kh/en"
   ],
   "notes": "FCDO names Siem Reap's Pub Street; Canada names Siem Reap for street theft and the Phnom Penh-Siem Reap bus. Card games, fake notes, spiking and border fees are national Cambodia advice; the border item applies to overland arrivals (e.g. from Thailand). Angkor Enterprise is listed only as the official Angkor pass seller; its page does not itself warn about fake tickets, so no ticket scam is claimed. Job scams are centred on Sihanoukville, Poipet and border areas (not listed)."
+ },
+ "budapest-hungary": {
+  "items": [
+   {
+    "name": "Unpriced menus and padded bar bills",
+    "what_happens": "Some bars, clubs and restaurants do not show prices, then add surcharges or very high amounts to the final bill; tourists who cannot pay have been taken to a cash machine by security staff.",
+    "avoid": "Ask to see a menu with prices before you order, check the bill before paying, and leave any place whose menu does not show prices. Report incidents to the police rather than arguing on the spot.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "Tourists have been taken to cashpoints with demands for the money to pay the bill."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Some scams involve surcharges on final bills for drinks or meals."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Taxi drivers and street invitations steering you to a bar",
+    "what_happens": "Some taxi drivers take a commission for bringing passengers to certain bars, clubs and restaurants; people approached in the street or in a bar with an invitation to a nearby venue have received very large bills.",
+    "avoid": "Do not ask a taxi driver to recommend a bar or club, and be wary of anyone who invites you on to another venue. Use taxis from a reputable company or a dispatcher.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "Some taxi drivers are part of these frauds. They may receive a commission to recommend certain bars, clubs and restaurants to passengers."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Once at the new bar, some travellers fall victim to criminal activity or receive very large bills for drinks and entertainment."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Taxi overcharging",
+    "what_happens": "Incidents of overcharging by taxi drivers have occurred.",
+    "avoid": "Use only officially marked taxis, book through a dispatcher instead of hailing on the street, and make sure the meter is on.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Incidents of overcharging by taxi drivers have occurred."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Card skimming and street money exchange",
+    "what_happens": "Fraudsters can copy card details without you noticing, and changing money on the street is a risk.",
+    "avoid": "Use ATMs inside banks where you can, check street ATMs for tampering, keep your card in sight when paying, and never change money on the street.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "Fraudsters can steal your card details without you noticing."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Drink spiking in bars",
+    "what_happens": "There have been reports of drinks being spiked, particularly in Budapest bars, leaving people open to robbery or assault.",
+    "avoid": "Buy your own drinks and keep them in sight.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "There have been reports of drinks being spiked, particularly in Budapest’s bars."
+     }
+    ],
+    "checked": "2026-11-09"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+   "https://travel.gc.ca/destinations/hungary"
+  ],
+  "notes": "Both governments describe the bill scam at country level; FCDO names Budapest for pickpocketing and drink spiking. Canada also warns that arguing about overcharging can lead to violence."
+ },
+ "tokyo-japan": {
+  "items": [
+   {
+    "name": "Street touts, spiked drinks and huge card bills",
+    "what_happens": "Street touts approach visitors in English and lead them to bars where drinks are spiked; victims wake with no memory and find large sums charged to their credit card. Japanese police name Kabukicho, Roppongi, Shibuya and Ikebukuro as high-risk areas.",
+    "avoid": "Do not follow street touts into bars, do not accept drinks from strangers or leave yours unattended, and carry only the cards and cash you need for the night.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/japan/safety-and-security",
+      "quote": "Victims claim to be approached in English by street touts known as “kyakuhiki”. Do not follow street touts into bars."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/japan",
+      "quote": "There have been incidents of overcharging at bars and clubs."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Disputes over bar bills",
+    "what_happens": "Arguments with staff and door staff over excessive bills have ended in arrests of foreign visitors, and disputes over overcharging have led to violence.",
+    "avoid": "Agree what you are paying before ordering, and if a bill looks wrong, leave the argument for the police rather than the door staff.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/japan/safety-and-security",
+      "quote": "British nationals have been arrested at clubs and bars following disputes with staff and doorpersons over excessive bar bills."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/japan",
+      "quote": "Disputes over overcharging have led to violence."
+     }
+    ],
+    "checked": "2026-11-09"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/japan/safety-and-security",
+   "https://travel.gc.ca/destinations/japan"
+  ],
+  "notes": "FCDO reports losses from hundreds to tens of thousands of pounds and says most British victims were targeted in Kabukicho, Shinjuku. Canada also lists Shinjuku Golden-gai."
  }
 }
