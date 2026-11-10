@@ -1744,7 +1744,12 @@ function guide_show(array $a): void {
     $mentions = rmt_editorial_entities((int) ($g['destination_id'] ?? 0),
                                        (string) ($g['body'] ?? '') . ' ' . (string) ($g['summary'] ?? ''));
 
-    view('guide_show', compact('mentions','g','me','comments','likeCount','saveCount','liked','saved','tags'), [
+    /* The dated 2026 notes about this guide's own city (the same match the city page uses). A guide
+       says what a ticket costs in a sentence; the note is where the price, the source and the date
+       are, and before 2026-11-10 none of the 66 guides with such notes linked to one. */
+    $guidePosts = !empty($g['dest_slug']) ? array_slice(rmt_blog_posts_for_destination((string) $g['dest_slug']), 0, 5) : [];
+
+    view('guide_show', compact('mentions','g','me','comments','likeCount','saveCount','liked','saved','tags','guidePosts'), [
         'title'=>rmt_meta_title((string) $g['title']),
         'description'=>rmt_meta_description((string) $g['summary']),
         'og_image'=>abs_url($g['cover_url']),
@@ -1964,7 +1969,10 @@ function blog_show(array $a): void {
                                      ORDER BY g.id LIMIT 1", [(int) $blogDest['id'], RMT_EDITORIAL_ROLE]);
         $blogMore['buddies'] = rmt_buddy_landing_for_dest((string) $blogDest['slug'], (string) $blogDest['country']);
     }
-    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest','blogMore'), [
+    /* Notes of the same kind from other cities, never one the city block above already lists. */
+    $blogRelated = rmt_blog_related((string) $p['slug'],
+        array_column(array_slice($blogMore['posts'], 0, 4), 'slug'));
+    view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest','blogMore','blogRelated'), [
         'title' => $p['title'].' | RuinMyTrip',
         'description' => rmt_meta_test('/blog/'.$p['slug']) ?? $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : rmt_default_og_image(),

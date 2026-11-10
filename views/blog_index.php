@@ -17,7 +17,7 @@
   </div>
   <?php if (($pages ?? 1) > 1): ?>
     <p style="display:flex;gap:10px;justify-content:center;margin:18px 0 40px">
-      <?php if ($page > 1): ?><a class="btn btn-ghost" rel="prev" href="<?= e(url('blog?' . $qs . 'page=' . ($page - 1))) ?>">← Newer</a><?php endif; ?>
+      <?php if ($page > 1): ?><a class="btn btn-ghost" rel="prev" href="<?= e($page === 2 ? url('blog' . ($qs !== '' ? '?' . rtrim($qs, '&') : '')) : url('blog?' . $qs . 'page=' . ($page - 1))) ?>">← Newer</a><?php endif; ?>
       <span class="hint" style="align-self:center">Page <?= (int) $page ?> of <?= (int) $pages ?></span>
       <?php if ($page < $pages): ?><a class="btn btn-ghost" rel="next" href="<?= e(url('blog?' . $qs . 'page=' . ($page + 1))) ?>">Older →</a><?php endif; ?>
     </p>

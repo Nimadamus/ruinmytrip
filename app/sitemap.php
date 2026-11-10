@@ -135,7 +135,7 @@ function rmt_sitemap_group(string $group): array {
         case 'destinations':
             foreach (rmt_index_destinations() as $d) {
                 if (!$d['verdict']['ok']) continue;
-                $add('/d/' . $d['slug']);
+                $add('/d/' . $d['slug'], rmt_sitemap_destination_mod((int) $d['id'], (string) $d['slug']));
                 // The people page for the city. It answers "travel buddy in X" and "who is going to
                 // X", but only once a real member is on it (Q1, 2026-10-01): an empty one is a template.
                 if (rmt_city_member_signal((int) $d['id']) > 0) $add('/d/' . $d['slug'] . '/travelers');
@@ -325,6 +325,39 @@ function rmt_sitemap_generate(): array {
  * Blank lines and # comments are ignored; anything that is not a slug is ignored.
  * @return array<string,true>
  */
+/**
+ * When a city page last gained something a reader can see, or null when nothing dated is on it.
+ *
+ * A destination row has no timestamp, so until 2026-11-10 the destinations sitemap carried no
+ * lastmod at all and a rewritten city page looked exactly like an untouched one. Two things on
+ * the page do carry a real date: a sourced scam item (the day it was checked against the official
+ * advice it quotes) and a published review of the city (the day it was published). The newer of
+ * the two is the date. Nothing else moves it: not a deploy, not a sitemap rebuild, not a review's
+ * updated_at, which editorial publish runs touch without changing a word. A city with neither
+ * gets no lastmod, which is the honest answer.
+ */
+function rmt_sitemap_destination_mod(int $destId, string $slug): ?string {
+    static $reviewed = null;
+    if ($reviewed === null) {
+        $reviewed = [];
+        foreach (q_all("SELECT destination_id, MAX(created_at) m FROM reviews
+                         WHERE status = 'published' AND destination_id IS NOT NULL
+                         GROUP BY destination_id") as $r) {
+            $reviewed[(int) $r['destination_id']] = (string) $r['m'];
+        }
+    }
+    $days = [];
+    if (($d = rmt_sitemap_day($reviewed[$destId] ?? null)) !== null) $days[] = $d;
+    $scams = function_exists('rmt_city_scams') ? rmt_city_scams($slug) : null;
+    foreach ((array) ($scams['items'] ?? []) as $it) {
+        $c = (string) ($it['checked'] ?? '');
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $c) && ($d = rmt_sitemap_day($c)) !== null) $days[] = $d;
+    }
+    $today = gmdate('Y-m-d');
+    $days = array_filter($days, static fn(string $x): bool => $x <= $today);
+    return $days ? max($days) : null;
+}
+
 function rmt_sitemap_place_allowlist(?string $file = null): array {
     $file ??= BASE_PATH . '/database/sitemap_places.txt';
     if (!is_file($file)) return [];

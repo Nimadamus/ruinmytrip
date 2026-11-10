@@ -98,3 +98,52 @@ function rmt_blog_posts_for_destination(string $slug): array {
         ['%/d/'.$slug.'%']
     );
 }
+
+/**
+ * What kind of 2026 note a post is, read from its slug: 'tax', 'ticket' or '' for anything else.
+ * The slug is written by the publisher from the subject, so it is the one field that says this
+ * without a column. Tax is tested first: "santorini-cruise-fee" is a charge, not a ticket.
+ */
+function rmt_blog_topic(string $slug): string {
+    if (preg_match('/(^|-)(tax|taxes|levy|fee|fees|ortstaxe|iva|gst)(-|$)/', $slug)) return 'tax';
+    if (preg_match('/(^|-)(ticket|tickets|pass|price|prices)(-|$)/', $slug)) return 'ticket';
+    return '';
+}
+
+/**
+ * Other notes of the same kind, for the foot of a post: tax notes under a tax note, ticket prices
+ * under a ticket price. A reader comparing the Berlin city tax is usually comparing cities.
+ *
+ * Measured 2026-11-10: 45 of 108 articles had two or fewer pages linking to them, because the only
+ * links were the paginated blog index and the post's own city. The choice is the post's neighbours
+ * in publishing order within its kind, wrapping round, so every post of a kind is linked from the
+ * same number of others and no handful of favourites collects them all. It is stable between
+ * requests (no randomness, so the cached page and the built page agree) and it never repeats a
+ * post already listed in the city block above it.
+ *
+ * @param list<string> $skip slugs already linked on the page
+ * @return list<array{slug:string,title:string}>
+ */
+function rmt_blog_related(string $slug, array $skip = [], int $n = 4): array {
+    $topic = rmt_blog_topic($slug);
+    if ($topic === '' || $n < 1) return [];
+    $ring = [];
+    foreach (q_all("SELECT slug, title FROM blog_posts WHERE status = 'published' ORDER BY id") as $r) {
+        if (rmt_blog_topic((string) $r['slug']) === $topic) $ring[] = ['slug' => (string) $r['slug'], 'title' => (string) $r['title']];
+    }
+    $at = array_search($slug, array_column($ring, 'slug'), true);
+    $count = count($ring);
+    if ($at === false || $count < 2) return [];
+    $skip = array_flip($skip);
+    $out = [];
+    // Nearest first, alternating after and before: +1, -1, +2, -2 ...
+    for ($step = 1; $step < $count && count($out) < $n; $step++) {
+        foreach ([$step, -$step] as $off) {
+            $cand = $ring[(($at + $off) % $count + $count) % $count];
+            if ($cand['slug'] === $slug || isset($skip[$cand['slug']]) || isset($out[$cand['slug']])) continue;
+            $out[$cand['slug']] = $cand;
+            if (count($out) >= $n) break;
+        }
+    }
+    return array_values($out);
+}

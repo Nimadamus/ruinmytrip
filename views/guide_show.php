@@ -46,6 +46,16 @@
     </section>
   <?php endif; ?>
 
+  <?php if (!empty($guidePosts)): ?>
+    <section style="margin:34px 0 0">
+      <h2 class="h-card" style="margin:0 0 10px">2026 prices, taxes and tickets in <?= e((string) $g['dest_name']) ?></h2>
+      <ul class="list-plain">
+        <?php foreach ($guidePosts as $gp): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('blog/' . $gp['slug'])) ?>"><?= e((string) $gp['title']) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+    </section>
+  <?php endif; ?>
   <?php if($isEd):?>
     <div class="empty-cta" style="margin-top:30px">
       <h2 class="h-section" style="margin:0 0 6px">Been there? Correct us.</h2>

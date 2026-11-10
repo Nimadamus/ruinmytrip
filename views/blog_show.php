@@ -65,6 +65,16 @@
       </ul>
     </div></div>
   <?php endif; ?>
+  <?php if (!empty($blogRelated)): ?>
+    <div class="card" style="margin:18px 0 0"><div class="card-body">
+      <h2 class="h-card" style="margin:0 0 8px"><?= rmt_blog_topic((string) $p['slug']) === 'tax' ? 'More 2026 tourist taxes and fees' : 'More 2026 ticket prices' ?></h2>
+      <ul class="list-plain">
+        <?php foreach ($blogRelated as $rp): ?>
+          <li style="margin:0 0 6px"><a href="<?= e(url('blog/' . $rp['slug'])) ?>"><?= e((string) $rp['title']) ?></a></li>
+        <?php endforeach; ?>
+      </ul>
+    </div></div>
+  <?php endif; ?>
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin:30px 0 20px">
     <a class="btn btn-ghost" href="<?= e(url('blog')) ?>">← Back to blog</a>
