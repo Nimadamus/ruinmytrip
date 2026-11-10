@@ -34,9 +34,11 @@ Pages with the most impressions (28 days): /p/esperit-sants-barcelona 150 impres
 | Week | Action | Why | Measure (judge at day 30, not before) |
 |---|---|---|---|
 | 1 | **Done, staged:** sourced scam sections for Budapest (5 items) and Tokyo (2), branch `content-1109` | Same proven format as the 24 live cities; official quotes verified verbatim 11/09 | Impressions on /d/budapest-hungary and /d/tokyo-japan |
-| 1 | Improve /p/esperit-sants-barcelona content: what is verifiably on the page today vs what searchers want (menu prices, hours, how to book) from the restaurant's own site | 150 impressions at position ~10: the page Google already tests most | Clicks and position on its 3 queries |
-| 2 | Improve /blog/san-francisco-hotel-tax-2026 and /blog/gold-museum-san-jose-tickets-2026 body content against the official sources (SF Treasurer, Banco Central de Costa Rica museums) | Shown at positions 4.7 to 6.6 with 0 clicks: the content must answer the search better | Clicks; no title or meta change without owner OK |
-| 2 | More sourced scam sections only where FCDO, US State or Canada name the city (checked 11/09: Naples, Venice, Berlin, Reykjavik, Zanzibar did not qualify; no padding) | Section rule: city specific official advice or nothing | Count of cities, impressions |
+| 1 | **Dropped 11/09:** /p/esperit-sants-barcelona. No official website or menu found; the editorial rule is official sources or no facts, so the page stays as is | | |
+| 2 | **Left alone 11/09:** /blog/san-francisco-hotel-tax-2026. Keyword research of 11/07 marks it the best ranker, "leave the content alone"; it already states 14 percent TOT plus TID | Protect what works | |
+| 2 | **Staged 11/09:** sourced scam sections for Medellin (3 items) and Havana (3), branch `content-1109`; Canada names Medellin, FCDO names Old Havana | Same rule as above | Impressions on both city pages |
+| 1 to 2 | Amsterdam council votes the 2027 budget and tourist tax rate 11/11 to 11/12 (proposal 16 percent). Update /blog/amsterdam-tourist-tax-2026 in place once amsterdam.nl publishes the decided rate | Queries for "amsterdam tourist tax 2027" | Clicks on that post |
+| 2 | More sourced scam sections only where FCDO, US State or Canada name the city (checked 11/09 across 27 countries: only Budapest, Tokyo, Medellin and Havana qualified; no padding) | Section rule: city specific official advice or nothing | Count of cities, impressions |
 | 3 | Answer bank use (docs/ANSWER_BANK_20261107.md): owner posts from his own accounts, at most 3 a day, disclosed | Referral was the second channel (16 humans) | Tagged link visits per thread |
 | 4 | Review the numbers; keep what moved, drop what did not | | 28 day GSC vs this baseline |
 
@@ -46,3 +48,7 @@ Pages with the most impressions (28 days): /p/esperit-sants-barcelona 150 impres
 - No Facebook group posts: no personal Facebook account exists for this work (docs/ACQUISITION_FACEBOOK.md)
   and personal messages are off (owner 11/02).
 - No fake or house written reviews presented as members.
+
+## Already built before this plan (checked 11/09)
+
+Keyword research items 3 (2027 rates: Barcelona already states the April 2027 surcharge; Amsterdam awaits the vote) and 14 ("worth it / skip if": editorial /p/ pages already carry best_for and skip_if) need no new work.

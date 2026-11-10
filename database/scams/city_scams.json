@@ -2737,5 +2737,116 @@
    "https://travel.gc.ca/destinations/japan"
   ],
   "notes": "FCDO reports losses from hundreds to tens of thousands of pounds and says most British victims were targeted in Kabukicho, Shinjuku. Canada also lists Shinjuku Golden-gai."
+ },
+ "medellin-colombia": {
+  "items": [
+   {
+    "name": "Dating app setups",
+    "what_happens": "Criminals use dating apps to find foreigners travelling alone; once trust is built the victim is drugged, robbed or kidnapped. Canada lists Medellin among the cities where this happens most and reports deaths linked to it.",
+    "avoid": "Meet only in busy public places, never bring a new acquaintance back to your accommodation, and tell a friend who you are meeting and where.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "Criminals use dating applications and websites to identify and lure foreign nationals who are travelling alone and looking to meet local people."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Once trust is established, the victim is drugged with scopolamine or another incapacitating drug and is robbed and/or kidnapped."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Scopolamine in drinks, food and other items",
+    "what_happens": "Scopolamine and similar drugs leave victims disoriented and easy to rob; criminals often work in teams and target people alone in bars, clubs, restaurants and taxis.",
+    "avoid": "Never leave food or drinks unattended and do not accept snacks, drinks, gum or cigarettes from new acquaintances or people in the street.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+      "quote": "This includes the use of scopolamine, which temporarily incapacitates victims."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Drugging of victims has led to overdose and death."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Street taxis and forced ATM withdrawals",
+    "what_happens": "Victims are taken from the street or a taxi and forced to withdraw cash at an ATM; express kidnappings and assaults often happen in unlicensed taxis.",
+    "avoid": "Do not hail taxis on the street; book through your hotel, a reputable taxi company or a ride-hailing app.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/colombia",
+      "quote": "Criminals kidnap the victim from the street or a taxi and force the person to withdraw funds from an ATM."
+     }
+    ],
+    "checked": "2026-11-09"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/colombia/safety-and-security",
+   "https://travel.gc.ca/destinations/colombia"
+  ],
+  "notes": "Canada names Bogota, Cartagena and Medellin as the cities where dating app and drugging incidents occur most often; FCDO names Medellin for street crime and describes the dating app and scopolamine risk at country level."
+ },
+ "havana-cuba": {
+  "items": [
+   {
+    "name": "Fake taxi drivers and tour operators",
+    "what_happens": "A small number of criminals pose as taxi drivers or tour operators at the airport and around Old Havana.",
+    "avoid": "From the airport take only a registered yellow taxi, do not accept lifts from strangers, and book tours only with reputable operators.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cuba/safety-and-security",
+      "quote": "These fake drivers operate at the airport and around Old Havana."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cuba",
+      "quote": "Fraudulent tour agents and taxi drivers also operate throughout the country, including at Havana’s international airport."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Exorbitant prices and padded tabs",
+    "what_happens": "Some businesses, including taxis and classic car rentals, try to charge exorbitant prices, and bar bills can be inflated.",
+    "avoid": "Confirm the price before you order or ride (taxis have no meters, so agree the fare first), do not run an open tab, keep your card in your hand and check the bill.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/cuba",
+      "quote": "Some businesses, including taxis and classic car rentals, may try to charge exorbitant prices."
+     }
+    ],
+    "checked": "2026-11-09"
+   },
+   {
+    "name": "Street money changers",
+    "what_happens": "People in the street offer to change money; exchanging anywhere other than an authorised exchange is illegal.",
+    "avoid": "Change money only at a Cadeca exchange house, a bank, a major hotel or an airport exchange bureau.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/cuba/safety-and-security",
+      "quote": "It is illegal to exchange money anywhere other than Cadeca exchange houses, including with any individuals who may offer exchange services."
+     }
+    ],
+    "checked": "2026-11-09"
+   }
+  ],
+  "official_links": [
+   "https://www.gov.uk/foreign-travel-advice/cuba/safety-and-security",
+   "https://travel.gc.ca/destinations/cuba"
+  ],
+  "notes": "FCDO also says the Cuban Central Bank has announced that international cards such as Visa and Mastercard are no longer accepted in Cuba, so plan cash before you travel."
  }
 }
