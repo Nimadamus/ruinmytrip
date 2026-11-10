@@ -81,6 +81,23 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
     <p class="muted">Rates come from our <a href="<?= e(url('blog/tourist-taxes-2026')) ?>">2026 tourist tax notes</a>, which cite the city or tax office. This is an estimate: your booking is the final word.</p>
   </section>
 
+  <?php $cmp = rmt_tt_compare(); ?>
+  <section class="tt-table" id="same-trip">
+    <h2>Same trip, <?= count($cmp) ?> euro cities: what the tax adds</h2>
+    <p class="muted">Two adults, one room, four nights at 200 euros a night before VAT, in a four star hotel where the city charges by category (Dubrovnik in high season).</p>
+    <div class="tt-scroll"><table>
+      <thead><tr><th>City</th><th>Tax now</th><th>2027</th></tr></thead>
+      <tbody>
+        <?php foreach ($cmp as $r): ?>
+          <tr><td><a href="<?= e(url('blog/' . $r['note'])) ?>"><?= e($r['name']) ?></a></td>
+            <td><?= e(rmt_tt_money($r['now'], 'EUR')) ?></td>
+            <td><?= $r['next'] !== null ? e(rmt_tt_money($r['next'], 'EUR')) . '<br><span class="muted">' . e($r['status']) . '</span>' : '<span class="muted">' . e($r['status']) . '</span>' ?></td></tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table></div>
+    <p class="muted">Worked out from the same rates as the calculator above. VAT and booking fees are not included.</p>
+  </section>
+
   <section class="tt-faq">
     <h2>Questions</h2>
     <?php foreach (rmt_tt_faq() as [$q, $a]): ?>
