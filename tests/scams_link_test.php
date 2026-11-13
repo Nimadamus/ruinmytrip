@@ -20,7 +20,7 @@ $with = array_keys(rmt_city_scams_all());
 ok(count($with) > 0, 'some cities have a sourced scams section');
 $in = implode(',', array_map([$pdo, 'quote'], $with));
 $one = fn(string $sql) => $pdo->query($sql)->fetch(PDO::FETCH_ASSOC) ?: null;
-$place   = $one("SELECT p.slug, d.slug ds, d.name dn FROM places p JOIN destinations d ON d.id = p.destination_id WHERE d.slug IN ($in) ORDER BY p.id LIMIT 1");
+$place   = $one("SELECT p.slug, d.slug ds, d.name dn FROM places p JOIN destinations d ON d.id = p.destination_id WHERE d.slug IN ($in) AND (EXISTS (SELECT 1 FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') OR EXISTS (SELECT 1 FROM place_editorial pe WHERE pe.place_id = p.id AND TRIM(COALESCE(pe.what_it_is,'')) <> '')) ORDER BY p.id LIMIT 1"); // has words of its own, so indexable under the 2026-11-13 rule
 $plain   = $one("SELECT p.slug, d.slug ds FROM places p JOIN destinations d ON d.id = p.destination_id WHERE d.slug NOT IN ($in) ORDER BY p.id LIMIT 1");
 $review  = $one("SELECT r.id, r.slug, d.slug ds, d.name dn FROM reviews r JOIN destinations d ON d.id = r.destination_id
                   JOIN users u ON u.id = r.user_id WHERE r.status = 'published' AND u.status = 'active' AND d.slug IN ($in) ORDER BY r.id LIMIT 1");

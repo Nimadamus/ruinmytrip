@@ -62,7 +62,7 @@ check('an unknown entity type is refused, not waved through',
 
 echo "\nPlaces -- community reviews are deliberately NOT required:\n";
 $base = ['status' => 'active', 'destination_id' => 1];
-check('a real venue with an address',    why('place', $base + ['street_address' => '1 Rue X']), 'indexable');
+check('a real venue with an address',    why('place', $base + ['street_address' => '1 Rue X', 'review_count' => 1]), 'indexable');
 /* A coordinate is NOT content, and this is the assertion that says so. It used to be, and
    because every imported place has one the rule said yes to everything: 565 of 1,388 live
    place pages were a name, a type, a map dot and nothing else. The dot still draws the map;
@@ -70,13 +70,17 @@ check('a real venue with an address',    why('place', $base + ['street_address' 
 check('a coordinate alone is not enough',
       why('place', $base + ['lat' => 48.85]), 'noindex_thin');
 check('...but a coordinate plus one real signal is',
-      why('place', $base + ['lat' => 48.85, 'website_url' => 'https://x.example']), 'indexable');
-check('...or opening hours',             why('place', $base + ['hours_count' => 7]), 'indexable');
-check('...or a website',                 why('place', $base + ['website_url' => 'https://x.test']), 'indexable');
+      why('place', $base + ['lat' => 48.85, 'website_url' => 'https://x.example', 'review_count' => 1]), 'indexable');
+check('...or opening hours',             why('place', $base + ['hours_count' => 7, 'review_count' => 1]), 'indexable');
+check('...or a website',                 why('place', $base + ['website_url' => 'https://x.test', 'review_count' => 1]), 'indexable');
 check('...or something we wrote',        why('place', $base + ['editorial' => 'What it is']), 'indexable');
-check('...or a photo',                   why('place', $base + ['photo_count' => 1]), 'indexable');
-check('a place with ZERO reviews is still indexable',
-      why('place', $base + ['street_address' => '1 Rue X', 'review_count' => 0]), 'indexable');
+check('...or a photo',                   why('place', $base + ['photo_count' => 1, 'review_count' => 1]), 'indexable');
+check('hours and an address with no review and no editorial is not (empty listing)',
+      why('place', $base + ['street_address' => '1 Rue X', 'hours_count' => 7, 'review_count' => 0]), 'noindex_thin');
+check('...one review brings it back',
+      why('place', $base + ['street_address' => '1 Rue X', 'hours_count' => 7, 'review_count' => 1]), 'indexable');
+check('...and so does our own editorial',
+      why('place', $base + ['street_address' => '1 Rue X', 'editorial' => 'What it is']), 'indexable');
 check('a name and a type and nothing else is not',
       why('place', $base), 'noindex_thin');
 // A closed place is a real answer to a real search: somebody typing the name of a restaurant that
@@ -95,7 +99,7 @@ check('a closed place with nothing behind it does not',
 // open one, because in a month it will be one.
 check('temporarily closed is judged like any other place',
       why('place', ['status' => 'temporarily_closed', 'destination_id' => 1,
-                    'street_address' => '1 Rue X']), 'indexable');
+                    'street_address' => '1 Rue X', 'review_count' => 2]), 'indexable');
 check('the legacy "closed" value still means permanently closed',
       why('place', ['status' => 'closed', 'destination_id' => 1, 'street_address' => '1 Rue X']), 'noindex_thin');
 check('hidden is ours, and is never public',
@@ -181,6 +185,7 @@ $pdo->exec("CREATE TABLE meetups (id INTEGER PRIMARY KEY, status TEXT)");
 $pdo->exec("CREATE TABLE going (id INTEGER PRIMARY KEY, visibility TEXT)");
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/055_neighborhoods.sqlite.sql'));
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/057_sitemap_cache.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/041_place_editorial.sqlite.sql'));
 
 $pdo->exec("INSERT INTO users (id,username,status,role) VALUES
     (1,'contributor','active','user'), (2,'lurker','active','user'), (3,'gone','disabled','user')");
@@ -201,6 +206,11 @@ q_run("INSERT INTO places (id,destination_id,slug,name,type,status) VALUES
     (30,1,'bare','Bare Place','hotel','active'), (31,1,'shut','Shut Place','hotel','closed')");
 q_run("INSERT INTO reviews (id,user_id,place_id,destination_id,slug,title,status,created_at)
        VALUES (1,1,1,1,'good','Good','published','2026-08-01 09:00:00')");
+// Hotels 2 to 7 and both restaurants carry our own editorial, so each has words of its own (2026-11-13 rule).
+foreach ([2,3,4,5,6,7,20,21] as $i) q_run("INSERT INTO place_editorial (place_id, what_it_is, created_at) VALUES (?, 'What it is', '2026-08-01')", [$i]);
+// An address and nothing else: a real venue, but an empty listing until somebody reviews it.
+q_run("INSERT INTO places (id,destination_id,slug,name,type,status,street_address) VALUES
+    (40,1,'empty','Empty Listing','museum','active','9 Rue Z')");
 q_run("INSERT INTO collections (id,user_id,slug,title,summary,status,created_at,updated_at)
        VALUES (1,1,'big','Big List','Why these','published','2026-08-01','2026-08-02'),
               (2,1,'tiny','Tiny List','Why these','published','2026-08-01','2026-08-02')");
@@ -222,6 +232,8 @@ $byslug = [];
 foreach ($places as $p) $byslug[$p['slug']] = $p['verdict'];
 check('an enriched place is indexable', $byslug['h1']['reason'], 'indexable');
 check('a bare place is not',            $byslug['bare']['reason'], 'noindex_thin');
+check('an empty listing with an address is not', $byslug['empty']['reason'], 'noindex_thin');
+check('editorial alone is enough in the batch',  $byslug['h2']['reason'], 'indexable');
 // It IS considered now -- the rule decides, not a WHERE clause -- and with nothing written about
 // it the rule says no.
 check('a closed place is judged rather than filtered out', isset($byslug['shut']), true);

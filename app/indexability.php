@@ -54,6 +54,19 @@ const RMT_INDEX_REASONS = [
 const RMT_IDX_DEST_MIN_PLACES = 1;
 
 /**
+ * A place page needs words of its own: a published review or our own editorial. (2026-11-13)
+ *
+ * Measured 2026-11-13: 818 place pages answered index, 707 of them with no review and no
+ * editorial, only hours, an address and "No traveler has reviewed it yet". Google crawled the
+ * site through August, then stopped: weekly impressions fell from 807 to under 200, and pages
+ * that ranked 8 to 11 went to zero while still indexed. A site judged by hundreds of identical
+ * empty listings is the likeliest cause. Those pages earned 7 clicks in four months.
+ * The pages stay live, linked and on the map; they leave the index until somebody reviews them,
+ * and come back on their own when they do. false restores the old rule in one line.
+ */
+const RMT_IDX_PLACE_NEEDS_WORDS = true;
+
+/**
  * A neighborhood page needs enough behind it to beat the destination page it sits under.
  *
  * Four places, and at least two kinds of place. The second condition is the one that matters: four
@@ -149,6 +162,11 @@ function rmt_indexable(string $type, array $e = []): array {
                    || (int) ($e['review_count'] ?? 0) > 0 || (int) ($e['photo_count'] ?? 0) > 0
                    || trim((string) ($e['editorial'] ?? '')) !== '';
             if (!$useful) return $no('noindex_thin', 'a name and a point on a map, and nothing else');
+            if (RMT_IDX_PLACE_NEEDS_WORDS
+                && (int) ($e['review_count'] ?? 0) === 0
+                && trim((string) ($e['editorial'] ?? '')) === '') {
+                return $no('noindex_thin', 'no review and nothing written about it yet; indexed again on its first review');
+            }
             return $yes();
 
         case 'neighborhood':
@@ -338,7 +356,8 @@ function rmt_index_places(): array {
                 p.website_url, p.phone, p.updated_at, p.created_at,
                 (SELECT COUNT(*) FROM place_hours h WHERE h.place_id = p.id) hours_count,
                 (SELECT COUNT(*) FROM place_photos ph WHERE ph.place_id = p.id) photo_count,
-                (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count
+                (SELECT COUNT(*) FROM reviews r WHERE r.place_id = p.id AND r.status = 'published') review_count,
+                (SELECT pe.what_it_is FROM place_editorial pe WHERE pe.place_id = p.id) editorial
            FROM places p WHERE p.status IN ('active','temporarily_closed','permanently_closed','closed')
           ORDER BY p.name");
     // Closed places are handed to the rule rather than filtered out before it, or the decision
