@@ -218,7 +218,7 @@ function rmt_tt_faq(): array {
 const RMT_TT_COMPARE_TIER = ['barcelona' => '4', 'milan' => '4', 'naples' => '4', 'nice' => '4', 'paris' => '4', 'rome' => '4', 'dubrovnik' => 'high'];
 const RMT_TT_COMPARE_2027 = [
     'amsterdam' => ['tier' => ['pct' => 16.0],
-        'status' => 'Proposed: 16% from 2027 in the city budget, council vote due 11 November 2026'],
+        'status' => 'Approved: city council passed 16% from 2027 in the 2027 budget on 12 November 2026'],
     'barcelona' => ['tier' => ['pp' => 9.4],
         'status' => 'Scheduled: city surcharge rises from 5 to 6 euros on 1 April 2027'],
 ];
