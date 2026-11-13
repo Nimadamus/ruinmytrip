@@ -442,6 +442,25 @@ function rmt_indexable_type_counts(int $destId): array {
     return $out;
 }
 
+/**
+ * Ids of place pages that are noindex only because nobody has reviewed them and we wrote nothing
+ * (RMT_IDX_PLACE_NEEDS_WORDS). Listing cards give these links rel="nofollow". One query a request.
+ * @return array<int,true>
+ */
+function rmt_empty_place_ids(): array {
+    static $ids = null;
+    if ($ids !== null) return $ids;
+    $ids = [];
+    if (!RMT_IDX_PLACE_NEEDS_WORDS) return $ids;
+    foreach (q_all("SELECT p.id FROM places p
+                     WHERE NOT EXISTS (SELECT 1 FROM reviews r WHERE r.place_id = p.id AND r.status = 'published')
+                       AND NOT EXISTS (SELECT 1 FROM place_editorial pe WHERE pe.place_id = p.id
+                                         AND TRIM(COALESCE(pe.what_it_is, '')) <> '')") as $r) {
+        $ids[(int) $r['id']] = true;
+    }
+    return $ids;
+}
+
 /** @return list<array{username:string,verdict:array}> */
 function rmt_index_profiles(): array {
     $rows = q_all(

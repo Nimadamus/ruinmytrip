@@ -17,12 +17,9 @@
 $cardActions = $cardActions ?? false;
 $rating = isset($card['rating_avg']) ? (float) $card['rating_avg'] : null;
 $count  = isset($card['review_count']) ? (int) $card['review_count'] : 0;
-// An empty listing (no review, no Official Review, nothing we wrote) is noindex until its first
-// review (RMT_IDX_PLACE_NEEDS_WORDS), so the link carries nofollow and crawl goes to real pages.
-// Only decided when the row says so; a caller without these columns links normally.
-$cardRel = (RMT_IDX_PLACE_NEEDS_WORDS && isset($card['review_count'], $card['editorial_count'])
-            && (int) $card['review_count'] === 0 && (int) $card['editorial_count'] === 0
-            && trim((string) ($card['snippet'] ?? '')) === '') ? ' rel="nofollow"' : '';
+// An empty listing (no review, nothing we wrote) is noindex until its first review
+// (RMT_IDX_PLACE_NEEDS_WORDS), so its card link carries nofollow and crawl goes to real pages.
+$cardRel = (isset($card['id']) && isset(rmt_empty_place_ids()[(int) $card['id']])) ? ' rel="nofollow"' : '';
 $price  = rmt_place_price_label(isset($card['price_level']) && $card['price_level'] !== null ? (int) $card['price_level'] : null);
 $meta   = array_filter([
     $card['category_name'] ?? rmt_place_type_label((string) ($card['type'] ?? '')),
