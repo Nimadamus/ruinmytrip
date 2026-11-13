@@ -17,6 +17,12 @@
 $cardActions = $cardActions ?? false;
 $rating = isset($card['rating_avg']) ? (float) $card['rating_avg'] : null;
 $count  = isset($card['review_count']) ? (int) $card['review_count'] : 0;
+// An empty listing (no review, no Official Review, nothing we wrote) is noindex until its first
+// review (RMT_IDX_PLACE_NEEDS_WORDS), so the link carries nofollow and crawl goes to real pages.
+// Only decided when the row says so; a caller without these columns links normally.
+$cardRel = (RMT_IDX_PLACE_NEEDS_WORDS && isset($card['review_count'], $card['editorial_count'])
+            && (int) $card['review_count'] === 0 && (int) $card['editorial_count'] === 0
+            && trim((string) ($card['snippet'] ?? '')) === '') ? ' rel="nofollow"' : '';
 $price  = rmt_place_price_label(isset($card['price_level']) && $card['price_level'] !== null ? (int) $card['price_level'] : null);
 $meta   = array_filter([
     $card['category_name'] ?? rmt_place_type_label((string) ($card['type'] ?? '')),
@@ -26,14 +32,14 @@ $meta   = array_filter([
 ?>
 <article class="card place-card">
   <?php if (!empty($card['cover_url'])): ?>
-    <a href="<?= e(url('p/' . $card['slug'])) ?>" tabindex="-1" aria-hidden="true">
+    <a href="<?= e(url('p/' . $card['slug'])) ?>"<?= $cardRel ?> tabindex="-1" aria-hidden="true">
       <img class="card-media" loading="lazy" src="<?= e(abs_url((string) $card['cover_url'])) ?>"
            alt="" style="aspect-ratio:16/10;object-fit:cover;width:100%">
     </a>
   <?php endif; ?>
   <div class="card-body" style="padding:12px 14px">
     <h3 style="margin:0 0 3px;font-size:1rem;line-height:1.3">
-      <a href="<?= e(url('p/' . $card['slug'])) ?>"><?= e((string) $card['name']) ?></a>
+      <a href="<?= e(url('p/' . $card['slug'])) ?>"<?= $cardRel ?>><?= e((string) $card['name']) ?></a>
     </h3>
     <?php if ($meta): ?>
       <p class="muted" style="margin:0 0 5px;font-size:.86rem"><?= e(implode(' · ', $meta)) ?></p>
