@@ -12,7 +12,10 @@
       "quote": "merchants sell lower-quality items at inflated prices with promises that the items can be resold at a profit"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "shopping"
+    ]
    },
    {
     "name": "Bar or nightclub overcharging",
@@ -25,7 +28,10 @@
       "quote": "Some bars, nightclubs and entertainment venues may try to charge exorbitant prices. Discussions about overcharging may lead to threats of violence."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Rental damage claim / passport held as deposit",
@@ -43,7 +49,10 @@
       "quote": "Rental companies have at times accused renters of causing damage upon return of the equipment."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "rental"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -61,7 +70,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Card skimming and ATM fraud",
@@ -79,7 +91,10 @@
       "quote": "pay careful attention when your cards are being handled by others"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Unlicensed taxis and tuk-tuk disputes",
@@ -97,7 +112,10 @@
       "quote": "Unlicensed vehicles (bearing black and white licence plates) are not correctly insured to carry passengers and may not use meters."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    }
   ],
   "official_links": [
@@ -124,7 +142,10 @@
       "quote": "spill drinks on you or your belongings"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Unlicensed airport taxi / touts in arrivals",
@@ -147,7 +168,10 @@
       "quote": "Use only officially licensed taxis from a stand or requested by phone or app."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Fake car fault / help-me stop",
@@ -183,7 +207,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Card and ATM fraud",
@@ -196,7 +223,10 @@
       "quote": "Credit and debit card as well as ATM fraud occurs."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    }
   ],
   "official_links": [
@@ -224,7 +254,10 @@
       "quote": "Petty crime occurs frequently on public transportation"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Fake petition",
@@ -268,7 +301,10 @@
       "quote": "N’acceptez jamais d’être pris en charge par une personne qui viendrait vous proposer ses services de transport dans les aéroports, les gares"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Fake police officers",
@@ -281,7 +317,10 @@
       "quote": "Certains escrocs peuvent se faire passer pour des policiers et vous demander vos papiers et de l’argent."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Street ticket resellers and touting cabarets",
@@ -327,7 +366,10 @@
       "quote": "Individuals posing as plainclothes police officers may ask to see your passport, IDs or wallets."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Distraction theft (stain or directions)",
@@ -350,7 +392,10 @@
       "quote": "It is best to carry money, credit cards and documents in front inner pockets or zipped pockets."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Something's wrong with your car",
@@ -386,7 +431,10 @@
       "quote": "Only use official registered or licensed taxis, or reputable transport companies you recognise."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Street money changers",
@@ -399,7 +447,10 @@
       "quote": "Always use official money exchange offices or banks because unofficial money changers may give you counterfeit money."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -417,7 +468,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    }
   ],
   "official_links": [
@@ -440,7 +494,10 @@
       "quote": "It is common for people posing as official tourist guides to harass tourists."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    },
    {
     "name": "Swapped goods after purchase",
@@ -453,7 +510,10 @@
       "quote": "Beware of scammers substituting inferior goods for the ones you bought."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "shopping"
+    ]
    },
    {
     "name": "Card fraud and ATM theft",
@@ -471,7 +531,10 @@
       "quote": "Credit and debit card fraud, as well as thefts from ATMs occur frequently."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Unmetered or unlicensed taxis",
@@ -484,7 +547,10 @@
       "quote": "It is advisable to either agree a fare in advance or check the taxi is using a meter."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Medina pickpockets and drive-by snatching",
@@ -502,7 +568,10 @@
       "quote": "Petty crime, such as pickpocketing, purse and drive-by snatching, scams and other types of thefts occur"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    }
   ],
   "official_links": [
@@ -529,7 +598,10 @@
       "quote": "Be wary of strangers approaching you to change money, or to take you to a restaurant or nightclub."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Counterfeit US dollar notes",
@@ -542,7 +614,10 @@
       "quote": "Banks and money exchanges may not accept 50 or 100 US dollar bills, due to a reported surge in counterfeit banknotes"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Street money changers",
@@ -560,7 +635,10 @@
       "quote": "If you want to exchange currency, go to reputable banks or official exchange offices."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Unofficial taxis",
@@ -578,7 +656,10 @@
       "quote": "Confirm the driver's identity and licence plate before getting into the car"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Card and ATM fraud",
@@ -591,7 +672,10 @@
       "quote": "Use ATMs inside establishments such as banks and shopping centres instead of those on the street"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    }
   ],
   "official_links": [
@@ -618,7 +702,10 @@
       "quote": "use reputable providers for any services and excursions, and carry out research beforehand"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    },
    {
     "name": "Distraction theft at sights and on the metro",
@@ -631,7 +718,10 @@
       "quote": "Purse snatching and pickpocketing occur most often in tourist locations and on the metro."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Hotel doctor overcharging",
@@ -671,7 +761,10 @@
       "quote": "Individuals posing as plainclothes police officers may ask to see your foreign currency and passports."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Street money exchange (counterfeit notes)",
@@ -689,7 +782,10 @@
       "quote": "Non-official currency exchange is illegal. Plus, you are at risk of receiving counterfeit bills."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Taxi overcharging and rigged meters",
@@ -712,7 +808,10 @@
       "quote": "there have been complaints of fare overcharging and reports of illegally modified taximeters"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Airport touts posing as 'Official Taxi'",
@@ -730,7 +829,10 @@
       "quote": "If the fare is clearly excessive or the driver refuses to issue a receipt, do not pay and contact the Municipal Police at 156."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Nightclub consumption charges and consumption cards",
@@ -748,7 +850,10 @@
       "quote": "Some bars, restaurants and nightclubs may try to charge exorbitant prices or overcharge you."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Pickpockets on tram 22 and central metro stations",
@@ -766,7 +871,10 @@
       "quote": "tram 22, which runs to and from Prague Castle"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    }
   ],
   "official_links": [
@@ -794,7 +902,10 @@
       "quote": "Take care on public transport and at crowded bus and tram stops. Thieves use distraction techniques and often work in teams."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Airport taxi fare discrepancies",
@@ -812,7 +923,10 @@
       "quote": "Taxi Voucher is a pre-paid service, only available at Turismo de Lisboa Askme Lisboa desk"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Drink spiking in bars and nightclubs",
@@ -830,7 +944,10 @@
       "quote": "Incidents are most likely to occur in nightclubs, bars and restaurants."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Break-ins targeting rental cars",
@@ -871,7 +988,10 @@
       "quote": "Individuals posing as plain-clothes police officers have also approached foreigners to verify their documents or foreign currency with the intent to rob them."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Distraction pickpocketing on trains and trams",
@@ -889,7 +1009,10 @@
       "quote": "on public transportation, particularly tram routes 1, 2, and 5, between Central Station and the museum district"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Bag theft in restaurants and cafés",
@@ -925,7 +1048,10 @@
       "quote": "Only take taxis with a blue license plate. Don't take unlicensed, illegal taxis to avoid potential scams."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -943,7 +1069,10 @@
       "quote": "These items may contain drugs that could put you at risk of sexual assault and robbery."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Card and ATM fraud",
@@ -956,7 +1085,10 @@
       "quote": "Credit card and ATM fraud occurs. Be cautious when using debit or credit cards"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    }
   ],
   "official_links": [
@@ -990,7 +1122,10 @@
       "quote": "The golden rule for any international traveler is to completely ignore people offering transportation services in the arrival halls."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Express kidnapping to an ATM",
@@ -1008,7 +1143,10 @@
       "quote": "Thieves often work in cooperation with, or pose as, taxi drivers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "kidnap"
+    ]
    },
    {
     "name": "Fake police and on-the-spot \"fines\"",
@@ -1026,7 +1164,10 @@
       "quote": "They have requested immediate cash payment in exchange for their release. This practice is common in tourist areas."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Phone \"virtual kidnapping\" extortion",
@@ -1044,7 +1185,10 @@
       "quote": "Many of these tactics involve criminals calling potential victims in their hotel rooms, posing as their friends or family members in distress"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "virtual"
+    ]
    },
    {
     "name": "Robbery after ATM or exchange visits",
@@ -1080,7 +1224,10 @@
       "quote": "Travellers have been drugged and robbed after inviting new acquaintances they met online to their accommodation."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Pickpockets on the metro",
@@ -1098,7 +1245,10 @@
       "quote": "Pickpocketing and theft are common, including on public transport."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Bar and nightclub overcharging",
@@ -1111,7 +1261,10 @@
       "quote": "Discussions about overcharging have turned violent. Tourists have been threatened and forced to pay the bill."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    }
   ],
   "official_links": [
@@ -1140,7 +1293,10 @@
       "quote": "They have requested immediate cash payment in exchange for their release. This practice is common in tourist areas."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Timeshare pressure sales",
@@ -1171,7 +1327,10 @@
       "quote": "Some bars, restaurants and resorts have served unregulated alcohol. Some travellers have reported getting sick or blacking out after drinking alcohol."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Unofficial airport and street taxis",
@@ -1189,7 +1348,10 @@
       "quote": "In some cases, hotel employees, taxi drivers and security personnel were involved."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Phone \"virtual kidnapping\" calls to hotel rooms",
@@ -1207,7 +1369,10 @@
       "quote": "If you are threatened over the phone, hang up and check on your family member or employee's safety."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "virtual"
+    ]
    },
    {
     "name": "Bar and nightclub overcharging",
@@ -1220,7 +1385,10 @@
       "quote": "Certain establishments, such as bars or nightclubs, may try to overcharge you."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Card skimming and ATM fraud",
@@ -1238,7 +1406,10 @@
       "quote": "It's generally safer to use ATMs during daylight hours inside shops or malls."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    }
   ],
   "official_links": [
@@ -1265,7 +1436,10 @@
       "quote": "The most common incidents affecting British nationals in Rio de Janeiro are thefts and pickpocketing around:"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Card machine and beach-vendor overcharging",
@@ -1283,7 +1457,10 @@
       "quote": "Vendors have also pretended card readers weren't working or didn't have signal to charge the client multiple times."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Spiked drinks to drain your bank account",
@@ -1301,7 +1478,10 @@
       "quote": "Dating apps have been used by criminals to target foreign nationals in Brazil, leading to spiking of drinks, robbery and theft from bank accounts."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Express kidnapping",
@@ -1319,7 +1499,10 @@
       "quote": "Victims have been kidnapped for a short period of time and driven to an ATM to withdraw money before being abandoned."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "kidnap"
+    ]
    },
    {
     "name": "Unofficial taxis",
@@ -1337,7 +1520,10 @@
       "quote": "only use authorized taxis, reputable ride-sharing services or transfers arranged by hotels or trusted organizations"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Fake sellers and \"helpers\"",
@@ -1350,7 +1536,10 @@
       "quote": "Criminals sometimes attempt to rob you by pretending to sell you something or by offering to help if you appear lost."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    },
    {
     "name": "Robberies on the Corcovado trail",
@@ -1404,7 +1593,10 @@
       "quote": "They may try to grab your bag and other valuables while passing on a motorbike or slash your bag in crowded streets and markets."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Passport held as a rental \"guarantee\"",
@@ -1417,7 +1609,10 @@
       "quote": "to motorcycle rental shops or landlords. They can hold your passport against claimed damage."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "rental"
+    ]
    },
    {
     "name": "Unlicensed taxis and fake ride-hail drivers",
@@ -1435,7 +1630,10 @@
       "quote": "Confirm the taxi fare in advance or insist that the driver use the meter"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "\"Free\" hotel bus transfers at the airport",
@@ -1466,7 +1664,11 @@
       "quote": "including scams involving drugging victims and taking them to ATMs to withdraw money"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking",
+     "bill"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -1484,7 +1686,10 @@
       "quote": "Snacks, beverages, gum and cigarettes may contain drugs that could put you at risk of sexual assault and robbery."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Too-good-to-be-true job offers",
@@ -1537,7 +1742,10 @@
       "quote": "Unlicensed money changers may short-change you. Only use licensed currency exchanges, identified by a Bank of Indonesia logo and a QR code."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Card fraud and fake ATM helplines",
@@ -1555,7 +1763,10 @@
       "quote": "There is a very high rate of credit and debit card fraud in Indonesia, including online fraud."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Fake taxis and app-driver impostors",
@@ -1573,7 +1784,10 @@
       "quote": "Reliable taxis are available from Bluebird, Thunderbird and Express. Be careful of \"lookalike\" taxis from competitors."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -1591,7 +1805,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Counterfeit spirits (methanol)",
@@ -1657,7 +1874,10 @@
       "quote": "Scams involving the exportation of jewels, gemstones, carpets, and other items have occurred. Taxi drivers may approach you, offering money to export such items."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "shopping"
+    ]
    },
    {
     "name": "Touts, detour rides and unsolicited guides",
@@ -1675,7 +1895,10 @@
       "quote": "Beware of offers for cheap transportation or accommodation, extended taxi rides and unsolicited guided tours"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    },
    {
     "name": "Taxi overcharging",
@@ -1688,7 +1911,10 @@
       "quote": "Negotiate fares in advance, or insist that the driver use the meter, as you may be overcharged"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Card skimming and confidence scams",
@@ -1706,7 +1932,10 @@
       "quote": "pay careful attention when your cards are being handled by others"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Spiked food and drinks",
@@ -1724,7 +1953,10 @@
       "quote": "Be wary of accepting snacks or beverages from new acquaintances"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    }
   ],
   "official_links": [
@@ -1751,7 +1983,10 @@
       "quote": "Rental companies have at times accused renters of causing damage upon return of the equipment."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "rental"
+    ]
    },
    {
     "name": "Bar and nightclub overcharging",
@@ -1764,7 +1999,10 @@
       "quote": "Some bars, nightclubs and entertainment venues may try to charge exorbitant prices. Discussions about overcharging may lead to threats of violence."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -1782,7 +2020,10 @@
       "quote": "These items may contain drugs that could put you at risk of sexual assault and robbery."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Taxi and tuk-tuk disputes, unlicensed vehicles",
@@ -1800,7 +2041,10 @@
       "quote": "Pre-arrange your transport home so you do not have to accept lifts in unlicensed vehicles."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Card fraud and ATM skimming",
@@ -1818,7 +2062,10 @@
       "quote": "Credit card and ATM fraud occurs. Be cautious when using debit or credit cards"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Gem and jewellery resale scam",
@@ -1831,7 +2078,10 @@
       "quote": "merchants sell lower-quality items at inflated prices with promises that the items can be resold at a profit"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "shopping"
+    ]
    }
   ],
   "official_links": [
@@ -1879,7 +2129,10 @@
       "quote": "Credit card and ATM fraud occur. Be cautious when using debit or credit cards"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -1897,7 +2150,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Unlicensed taxis and unagreed private-taxi fares",
@@ -1920,7 +2176,10 @@
       "quote": "Pay the taxi fare as per the meter."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Romance scams",
@@ -1961,7 +2220,10 @@
       "quote": "on public transportation, including metro and trains to and from Athens International Airport"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Distraction thefts and unsolicited \"help\"",
@@ -1979,7 +2241,10 @@
       "quote": "be wary of unsolicited offers or advice from strangers"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Airport taxi fare",
@@ -1997,7 +2262,10 @@
       "quote": "taxi-hailing apps such as Uber or Free Now which supply licensed cabs"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -2015,7 +2283,10 @@
       "quote": "Never leave food or drinks unattended or in the care of strangers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Card and ATM fraud",
@@ -2028,7 +2299,10 @@
       "quote": "Credit card and ATM fraud occurs."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "card"
+    ]
    }
   ],
   "official_links": [
@@ -2055,7 +2329,10 @@
       "quote": "spraying a substance on victims and then robbing them while pretending to help clean the stain"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Phone lifted under merchandise at café tables",
@@ -2068,7 +2345,10 @@
       "quote": "putting merchandise such as dishcloths or socks on top of your phone at restaurants and picking up your phone along with the merchandise"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Fake \"hotel guests\" at check-in",
@@ -2104,7 +2384,11 @@
       "quote": "Only use officially marked taxis for travel to and from Buenos Aires' Ministro Pistarini International Airport."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi",
+     "money"
+    ]
    },
    {
     "name": "Followed from ATMs and exchange bureaus",
@@ -2140,7 +2424,10 @@
       "quote": "express kidnappings involving tourists have occurred in Argentina"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "kidnap"
+    ]
    },
    {
     "name": "Spiking and robbery by new acquaintances",
@@ -2158,7 +2445,10 @@
       "quote": "Drinks and food can be spiked and could put you at risk of robbery or assault."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    }
   ],
   "official_links": [
@@ -2186,7 +2476,10 @@
       "quote": "Avoid moneychangers on the street, as they may carry counterfeit currency or work with pickpockets."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Unscrupulous tour agents and guides",
@@ -2204,7 +2497,10 @@
       "quote": "In some cases, tour guides have been implicated."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    },
    {
     "name": "Machu Picchu tickets from informal sellers",
@@ -2240,7 +2536,11 @@
       "quote": "Only use authorized cabs located inside airport terminals and bus stations"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi",
+     "kidnap"
+    ]
    },
    {
     "name": "Fake police",
@@ -2253,7 +2553,10 @@
       "quote": "Thieves also pose as police officers to gain the confidence and cooperation of their potential victims."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Spill-and-clean distraction thefts",
@@ -2271,7 +2574,10 @@
       "quote": "A common scam involves spraying a substance on victims and then robbing them while pretending to help clean the stain"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Unregulated ayahuasca and San Pedro \"cleansing\"",
@@ -2318,7 +2624,10 @@
       "quote": "Criminals can administer drugs through food, drinks, cigarettes, aerosols and even paper flyers."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Dating-app lures",
@@ -2336,7 +2645,10 @@
       "quote": "Do not accept invitations from strangers to their accommodation, and do not invite strangers to your accommodation."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "dating"
+    ]
    },
    {
     "name": "Tourist overcharging",
@@ -2367,7 +2679,10 @@
       "quote": "Individuals posing as police officers have approached foreigners to verify their documents or foreign currency with the intent to rob them."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "police"
+    ]
    },
    {
     "name": "Express kidnapping in unlicensed taxis",
@@ -2385,7 +2700,11 @@
       "quote": "Express kidnappings are frequent and often occur in affluent areas, as well as in tourist areas."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi",
+     "kidnap"
+    ]
    },
    {
     "name": "Unlicensed tour boats",
@@ -2398,7 +2717,10 @@
       "quote": "Due to unlicensed tour boats not meeting safety standards, boating accidents have occurred"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "touts"
+    ]
    }
   ],
   "official_links": [
@@ -2443,7 +2765,10 @@
       "quote": "Take particular care when walking around Kupandol, Sanepa and Thamel, popular tourist spots in Kathmandu, where pickpocketing is common."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Drink spiking",
@@ -2461,7 +2786,10 @@
       "quote": "Avoid accepting snacks, beverages, gum or cigarettes from new acquaintances, as these items may contain drugs"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Theft from hotel rooms",
@@ -2501,7 +2829,10 @@
       "quote": "lone women being sexually assaulted by men claiming to be motorbike taxi drivers in the Pub Street area of Siem Reap"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Bag snatching from tuk-tuks and motorbikes",
@@ -2519,7 +2850,10 @@
       "quote": "Theft targeting foreigners is frequent on sidewalks, on motorcycles and tuktuks (rickshaws) in:"
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "pickpocket"
+    ]
    },
    {
     "name": "Rigged card games and \"meet my family\" invitations",
@@ -2550,7 +2884,10 @@
       "quote": "Travellers have reported fake dollar bills being given as change in shops and clubs."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "money"
+    ]
    },
    {
     "name": "Extra \"fees\" at land border crossings",
@@ -2599,7 +2936,10 @@
       "quote": "Police have reported instances of drink spiking in some bars visited by foreign nationals. Do not leave drinks unattended."
      }
     ],
-    "checked": "2026-11-07"
+    "checked": "2026-11-07",
+    "types": [
+     "spiking"
+    ]
    }
   ],
   "official_links": [
@@ -2627,7 +2967,10 @@
       "quote": "Some scams involve surcharges on final bills for drinks or meals."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Taxi drivers and street invitations steering you to a bar",
@@ -2645,7 +2988,11 @@
       "quote": "Once at the new bar, some travellers fall victim to criminal activity or receive very large bills for drinks and entertainment."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "taxi",
+     "bill"
+    ]
    },
    {
     "name": "Taxi overcharging",
@@ -2658,7 +3005,10 @@
       "quote": "Incidents of overcharging by taxi drivers have occurred."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "taxi"
+    ]
    },
    {
     "name": "Card skimming and street money exchange",
@@ -2671,7 +3021,11 @@
       "quote": "Fraudsters can steal your card details without you noticing."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "card",
+     "money"
+    ]
    },
    {
     "name": "Drink spiking in bars",
@@ -2684,7 +3038,10 @@
       "quote": "There have been reports of drinks being spiked, particularly in Budapest’s bars."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "spiking"
+    ]
    }
   ],
   "official_links": [
@@ -2711,7 +3068,12 @@
       "quote": "There have been incidents of overcharging at bars and clubs."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "spiking",
+     "bill",
+     "touts"
+    ]
    },
    {
     "name": "Disputes over bar bills",
@@ -2729,7 +3091,10 @@
       "quote": "Disputes over overcharging have led to violence."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "bill"
+    ]
    }
   ],
   "official_links": [
@@ -2756,7 +3121,10 @@
       "quote": "Once trust is established, the victim is drugged with scopolamine or another incapacitating drug and is robbed and/or kidnapped."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "dating"
+    ]
    },
    {
     "name": "Scopolamine in drinks, food and other items",
@@ -2774,7 +3142,10 @@
       "quote": "Drugging of victims has led to overdose and death."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "spiking"
+    ]
    },
    {
     "name": "Street taxis and forced ATM withdrawals",
@@ -2787,7 +3158,11 @@
       "quote": "Criminals kidnap the victim from the street or a taxi and force the person to withdraw funds from an ATM."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "taxi",
+     "kidnap"
+    ]
    }
   ],
   "official_links": [
@@ -2814,7 +3189,11 @@
       "quote": "Fraudulent tour agents and taxi drivers also operate throughout the country, including at Havana’s international airport."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "taxi",
+     "touts"
+    ]
    },
    {
     "name": "Exorbitant prices and padded tabs",
@@ -2827,7 +3206,10 @@
       "quote": "Some businesses, including taxis and classic car rentals, may try to charge exorbitant prices."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "bill"
+    ]
    },
    {
     "name": "Street money changers",
@@ -2840,7 +3222,10 @@
       "quote": "It is illegal to exchange money anywhere other than Cadeca exchange houses, including with any individuals who may offer exchange services."
      }
     ],
-    "checked": "2026-11-09"
+    "checked": "2026-11-09",
+    "types": [
+     "money"
+    ]
    }
   ],
   "official_links": [

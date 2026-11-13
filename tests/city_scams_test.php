@@ -44,5 +44,17 @@ if (is_file(RMT_CITY_SCAMS_FILE)) {
     ok(count(rmt_city_scams_all()) === count((array) $raw), 'every city in the file renders');
 }
 
+// Scam types (2026-11-09): a typo in the file would be dropped silently, so check the raw tags.
+foreach ((array) $raw as $slug => $city) foreach ((array) ($city['items'] ?? []) as $n => $it) {
+    $tt = (array) ($it['types'] ?? []);
+    ok(!array_diff($tt, array_keys(RMT_SCAM_TYPES)), "$slug#$n: every type is a known type");
+    ok(count($tt) === count(array_unique($tt)), "$slug#$n: no repeated type");
+}
+$tr = rmt_scam_type_counts();
+ok((bool) $tr, 'type table is not empty');
+$prev = PHP_INT_MAX; $sorted = true;
+foreach ($tr as $r) { if (count($r['cities']) > $prev) $sorted = false; $prev = count($r['cities']); ok(count($r['cities']) === count(array_unique($r['cities'])), $r['type'] . ': a city counts once'); }
+ok($sorted, 'type table is most cities first');
+
 echo "city_scams_test: $pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

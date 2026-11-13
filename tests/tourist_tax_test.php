@@ -36,5 +36,19 @@ if (rmt_tt_money(1234.5, 'EUR') !== '€1,234.50' || rmt_tt_money(7200, 'HUF') !
 if (rmt_tt_key_for_dest('paris-france') !== 'paris' || rmt_tt_key_for_dest('nowhere') !== null) { echo "FAIL dest key\n"; $fail++; }
 $nb = array_column(rmt_tt_neighbours('vienna', 2), 'name');
 if ($nb !== ['Amsterdam', 'Barcelona']) { echo "FAIL neighbours wrap\n"; $fail++; }
+// Same trip table (2026-11-09): euro cities only, highest first, 2027 only where a change is stated.
+$cmp = rmt_tt_compare();
+$byKey = array_column($cmp, null, 'key');
+if (count($cmp) !== count(array_filter($C, static fn($c) => $c['cur'] === 'EUR'))) { echo "FAIL compare: not every euro city
+"; $fail++; }
+if (abs($byKey['amsterdam']['now'] - 100.0) > 0.001 || abs((float) $byKey['amsterdam']['next'] - 128.0) > 0.001) { echo "FAIL compare amsterdam
+"; $fail++; }
+if (abs($byKey['barcelona']['now'] - 67.2) > 0.001 || abs((float) $byKey['barcelona']['next'] - 75.2) > 0.001) { echo "FAIL compare barcelona
+"; $fail++; }
+if ($byKey['paris']['next'] !== null || $byKey['paris']['status'] !== 'No 2027 change in our notes') { echo "FAIL compare no guess
+"; $fail++; }
+$nows = array_column($cmp, 'now'); $sorted = $nows; rsort($sorted);
+if ($nows !== $sorted) { echo "FAIL compare order
+"; $fail++; }
 echo $fail ? "FAILED\n" : "ok\n";
 exit($fail ? 1 : 0);

@@ -206,3 +206,39 @@ function rmt_tt_faq(): array {
         ['Do children pay tourist tax?', 'It depends on the city. Lisbon charges guests aged 13 and over, Porto exempts guests aged 12 or under, Rome exempts children under 10, Barcelona exempts guests aged 16 or under, and Paris and Nice charge adults. Each city note lists what the source says.'],
     ];
 }
+
+/**
+ * One trip priced in every euro city (2026-11-09): 2 adults, 1 room, 4 nights, 200 euros a night
+ * before VAT, four star where a city prices by category (Dubrovnik: high season). Worked out live
+ * from rmt_tt_cities(), so the table can never disagree with the calculator or the notes.
+ *
+ * The 2027 column is filled only where a 2027 change is published or formally proposed, with its
+ * status stated; everything else shows "no change in our notes", never a guess.
+ */
+const RMT_TT_COMPARE_TIER = ['barcelona' => '4', 'milan' => '4', 'naples' => '4', 'nice' => '4', 'paris' => '4', 'rome' => '4', 'dubrovnik' => 'high'];
+const RMT_TT_COMPARE_2027 = [
+    'amsterdam' => ['tier' => ['pct' => 16.0],
+        'status' => 'Proposed: 16% from 2027 in the city budget, council vote due 11 November 2026'],
+    'barcelona' => ['tier' => ['pp' => 9.4],
+        'status' => 'Scheduled: city surcharge rises from 5 to 6 euros on 1 April 2027'],
+];
+
+/** @return list<array{key:string,name:string,note:string,now:float,next:?float,status:string}> highest first */
+function rmt_tt_compare(int $nights = 4, int $people = 2, float $price = 200.0): array {
+    $rows = [];
+    foreach (rmt_tt_cities() as $k => $c) {
+        if ($c['cur'] !== 'EUR') continue;
+        $tk = RMT_TT_COMPARE_TIER[$k] ?? (string) array_key_first($c['tiers']);
+        if (!isset($c['tiers'][$tk])) continue;
+        $now = rmt_tt_estimate($c, $c['tiers'][$tk], $nights, $people, 1, $price)['total'];
+        $next = null; $status = 'No 2027 change in our notes';
+        if (isset(RMT_TT_COMPARE_2027[$k])) {
+            $x = RMT_TT_COMPARE_2027[$k];
+            $next = rmt_tt_estimate($c, ['label' => ''] + $x['tier'], $nights, $people, 1, $price)['total'];
+            $status = $x['status'];
+        }
+        $rows[] = ['key' => $k, 'name' => $c['name'], 'note' => $c['note'], 'now' => (float) $now, 'next' => $next, 'status' => $status];
+    }
+    usort($rows, static fn(array $a, array $b): int => $b['now'] <=> $a['now'] ?: strcmp($a['name'], $b['name']));
+    return $rows;
+}
