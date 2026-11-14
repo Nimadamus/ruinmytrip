@@ -526,6 +526,13 @@ if ('serviceWorker' in navigator) {
     var when = document.createElement('span');
     when.className = 'msg-when';
     when.textContent = m.when;
+    if (m.report) {
+      when.appendChild(document.createTextNode(' · '));
+      var rep = document.createElement('a');
+      rep.href = m.report;
+      rep.textContent = 'Report';
+      when.appendChild(rep);
+    }
     b.appendChild(when);
     row.appendChild(b);
     list.appendChild(row);
@@ -541,6 +548,14 @@ if ('serviceWorker' in navigator) {
       .then(function (d) {
         var nearBottom = atEnd();
         (d.lines || []).forEach(function (m) { add(m); if (m.id > after) after = m.id; });
+        /* Lines whose author has left the room go with them. */
+        if (d.ids) {
+          var keep = {};
+          d.ids.forEach(function (id) { keep['m' + id] = true; });
+          Array.prototype.slice.call(list.querySelectorAll('.msg-row')).forEach(function (row) {
+            if (!keep[row.id]) row.remove();
+          });
+        }
         if (count && typeof d.count === 'number') count.textContent = d.count;
         if (d.lines && d.lines.length && nearBottom) toEnd();
       })

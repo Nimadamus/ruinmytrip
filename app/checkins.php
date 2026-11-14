@@ -294,12 +294,16 @@ function city_room_feed(array $a): void {
     rmt_city_room_json([
         'ok' => true,
         'count' => rmt_city_room_count($dest),
+        /* Every line the reader may see right now. The page drops any line it is showing that is
+           not in this list, which is how a traveler whose check-in ran out leaves an open room. */
+        'ids' => array_map(static fn(array $m): int => (int) $m['id'], rmt_city_room_feed($dest, $meId, 0, null, 200)),
         'lines' => array_map(static fn(array $m): array => [
             'id'   => (int) $m['id'],
             'mine' => (int) $m['user_id'] === $meId,
             'who'  => (string) ($m['display_name'] ?: $m['username']),
             'html' => rmt_linkify_mentions(e((string) $m['body'])),
             'when' => ago((string) $m['created_at']),
+            'report' => (int) $m['user_id'] === $meId ? null : url('report?target_type=room_message&target_id=' . (int) $m['id']),
         ], rmt_city_room_feed($dest, $meId, max(0, (int) input('after')))),
     ]);
 }

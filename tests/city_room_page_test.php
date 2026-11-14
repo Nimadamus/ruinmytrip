@@ -128,6 +128,9 @@ ok(str_contains($routes, "'city_room'],") && function_exists('city_room'), 'the 
 ok(str_contains((string) file_get_contents(dirname(__DIR__) . '/views/buddies_index.php'), '_checkin_card.php')
    && str_contains((string) file_get_contents(dirname(__DIR__) . '/views/destination_travelers.php'), '_checkin_card.php'), 'the card is on the buddies page and on each city\'s travelers page');
 ok(str_contains((string) file_get_contents(dirname(__DIR__) . '/public/assets/js/app.js'), "getElementById('city-room-list')"), 'the polling script ships');
+$js = (string) file_get_contents(dirname(__DIR__) . '/public/assets/js/app.js');
+ok(str_contains($js, 'if (!keep[row.id]) row.remove();') && str_contains($src, "'ids' =>"), 'an open room drops the lines of a traveler who has left');
+ok(str_contains($js, 'm.report') && str_contains($src, "'report' =>"), 'a line that arrives live can be reported too');
 
 $pdo->rollBack();
 echo $fails ? "\ncity_room_page_test: $fails FAILED\n" : "\ncity_room_page_test: all passed\n";
