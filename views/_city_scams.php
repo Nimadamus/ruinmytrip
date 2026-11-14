@@ -14,6 +14,20 @@ $checked = $scams['checked'] ?: ($scams['items'][0]['checked'] ?? '');
     <h2 class="h-card" style="margin:0">Scams and traps in <?= e((string) $d['name']) ?></h2>
     <?= rmt_editorial_badge() ?>
   </div>
+  <?php /* A city with enough sourced warnings has a page of its own for them (/warnings/{city},
+           app/hubs.php), with the quoted advisory text and how to avoid each one. Here the city
+           page names them and points there, so the two pages do not carry the same words
+           (Nima, 2026-11-14). A city with fewer keeps the full list below: its warnings page is
+           noindex, and this is then the only place the detail is found. */
+        /* The same count rmt_warnings_indexable() uses, read from the list already in hand. */
+        $scamsFull = !defined('RMT_HUB_MIN_WARNINGS') || count($scams['items']) < RMT_HUB_MIN_WARNINGS; ?>
+  <?php if (!$scamsFull): $scamsN = count($scams['items']); ?>
+    <p style="margin:8px 0 0">Official travel advice warns visitors to <?= e((string) $d['name']) ?> about <?= (int) $scamsN ?> things<?= $checked ? ', last checked ' . e(date('j M Y', strtotime($checked) ?: time())) : '' ?>:</p>
+    <ul class="scam-list" style="margin:8px 0 0;padding-left:1.1rem">
+      <?php foreach ($scams['items'] as $it): ?><li style="margin:0 0 4px"><?= e($it['name']) ?></li><?php endforeach; ?>
+    </ul>
+    <p style="margin:10px 0 0"><a class="btn btn-primary btn-sm" href="<?= e(url('warnings/' . $d['slug'])) ?>">How each one works and how to avoid it</a></p>
+  <?php else: ?>
   <p class="hint" style="margin:8px 0 0">What official travel advice warns visitors about, in plain words. Each point links to the
     page that says it<?= $checked ? ', checked ' . e(date('j M Y', strtotime($checked) ?: time())) : '' ?>.</p>
   <ul class="scam-list" style="margin:12px 0 0;padding-left:1.1rem">
@@ -28,6 +42,7 @@ $checked = $scams['checked'] ?: ($scams['items'][0]['checked'] ?? '');
       </li>
     <?php endforeach; ?>
   </ul>
+  <?php endif; ?>
   <?php $shareUrl = url('d/' . $d['slug']) . '#scams'; $shareText = 'Scams and traps in ' . $d['name'] . ', from official travel advice'; $shareLabel = 'Share this list';
         include __DIR__ . '/_share.php'; ?>
   <p style="margin:6px 0 0;display:flex;gap:8px;flex-wrap:wrap">

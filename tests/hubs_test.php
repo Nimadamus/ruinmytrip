@@ -119,6 +119,18 @@ ok(substr_count($noPhoto, "<?php if (!empty(\$d['hero_url'])): ?><img") === 2, '
 $h = $block($richDest);
 ok(str_contains($h, 'warnings for ' . e((string) $richDest['name'])) && str_contains($h, 'warnings/' . $rich) && str_contains($h, 'Post your dates'), 'a city with sourced warnings links to them, and invites the first trip');
 ok(str_contains((string) file_get_contents($root . '/views/destination.php'), "_hub_partners.php"), 'the city page includes the block');
+
+/* The city page names the warnings and points to the detail; it does not repeat it. */
+$scamSec = static function (array $d): string { ob_start(); include dirname(__DIR__) . '/views/_city_scams.php'; return (string) ob_get_clean(); };
+$rw = rmt_city_scams($rich);
+$h = $scamSec($richDest);
+ok(str_contains($h, e($rw['items'][0]['name'])) && str_contains($h, 'href="' . e(url('warnings/' . $rich)) . '"'), 'the city page lists each warning by name and links to the warnings page');
+ok(!str_contains($h, e($rw['items'][0]['what'])) && !str_contains($h, 'Avoid it:') && !str_contains($h, e($rw['items'][0]['sources'][0]['url'])), 'and no longer carries the detail, the advice or the sources');
+ok(str_contains($h, 'id="scams"') && str_contains($h, 'Got caught out here?'), 'the section keeps its anchor and its way to add a warning');
+if ($thin) {
+    $h = $scamSec(q_one('SELECT * FROM destinations WHERE slug=?', [$thin]));
+    ok(str_contains($h, 'Avoid it:') || str_contains($h, 'Source:'), 'a city whose warnings page is noindex keeps the full list on its city page');
+}
 $live = rmt_hub_live($trip);
 ok($live['open_trip_count'] === 1 && $live['checked_in'] === 0, 'the numbers are counts of real rows');
 
