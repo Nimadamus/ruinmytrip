@@ -155,6 +155,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
 
     <aside class="buddy-side">
       <?php if ($me): ?>
+        <?php $ckDest = null; $ckBack = '/buddies'; include __DIR__ . '/_checkin_card.php'; ?>
         <div class="card"><div class="card-body">
           <h3>Already there?</h3>
           <p class="hint">Show up for travelers searching a city while you are in it. Only the city and your dates show.</p>

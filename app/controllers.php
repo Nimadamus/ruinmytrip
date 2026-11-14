@@ -5780,6 +5780,8 @@ const RMT_REPORT_TARGETS = [
     'message'    => 'messages',
     /* A line in a trip chat, which only the people on the trip can see, for the same reason. */
     'trip_message' => 'trip_messages',
+    /* A line in a city room, which only travelers checked in to that city can see. */
+    'room_message' => 'city_room_messages',
     /* A reference one member wrote about another. Its subject reports it to dispute it. */
     'reference'    => 'member_references',
     /* A stay, reported by its guest or its host. */
@@ -5841,6 +5843,14 @@ function report_submit(array $a): void {
         if (!$errors && $tt === 'trip_message') {
             $tr = q_one('SELECT t.* FROM trip_messages m JOIN trips t ON t.id = m.trip_id WHERE m.id = ?', [$tid]);
             if (!rmt_trip_chat_allowed($tr, $me)) $errors[] = 'That content no longer exists.';
+        }
+        /* A city room line is reportable by anybody who has been checked in to that city, now or
+           before: the reporter's own check-in may have run out by the time they report. */
+        if (!$errors && $tt === 'room_message' && !q_one(
+                'SELECT 1 FROM city_room_messages m JOIN city_rooms r ON r.id = m.room_id
+                   JOIN active_checkins c ON c.destination_id = r.destination_id AND c.user_id = ?
+                  WHERE m.id = ? LIMIT 1', [(int) $me['id'], $tid])) {
+            $errors[] = 'That content no longer exists.';
         }
     }
 

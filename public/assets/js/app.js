@@ -491,3 +491,63 @@ if ('serviceWorker' in navigator) {
   setInterval(poll, 5000);
   document.addEventListener('visibilitychange', poll);
 })();
+
+/* City room: the same polling as the trip chat, for the travelers checked in to one city. A 403
+   means the reader's check-in has run out, so the page reloads into the way-in view. */
+(function () {
+  var list = document.getElementById('city-room-list');
+  if (!list || !window.fetch) return;
+  var base = list.getAttribute('data-city-room');
+  var after = parseInt(list.getAttribute('data-after') || '0', 10);
+  var count = document.getElementById('city-room-count');
+  var composer = document.querySelector('.msg-composer');
+  var busy = false;
+  /* To the composer, not to the end of the document: the footer sits under the room. */
+  function toEnd() { (composer || list).scrollIntoView({ block: 'end' }); }
+  function atEnd() { return (composer || list).getBoundingClientRect().bottom <= window.innerHeight + 120; }
+  function add(m) {
+    if (document.getElementById('m' + m.id)) return;
+    var empty = list.querySelector('.trip-chat-empty');
+    if (empty) empty.remove();
+    var row = document.createElement('div');
+    row.className = 'msg-row' + (m.mine ? ' mine' : '');
+    row.id = 'm' + m.id;
+    var b = document.createElement('div');
+    b.className = 'msg-bubble';
+    if (!m.mine) {
+      var who = document.createElement('span');
+      who.className = 'msg-who';
+      who.textContent = m.who;
+      b.appendChild(who);
+    }
+    var p = document.createElement('p');
+    p.innerHTML = m.html;
+    b.appendChild(p);
+    var when = document.createElement('span');
+    when.className = 'msg-when';
+    when.textContent = m.when;
+    b.appendChild(when);
+    row.appendChild(b);
+    list.appendChild(row);
+  }
+  function poll() {
+    if (busy || document.hidden) return;
+    busy = true;
+    fetch(base + '?after=' + after, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) {
+        if (r.status === 403) { location.reload(); return { lines: [] }; }
+        return r.ok ? r.json() : { lines: [] };
+      })
+      .then(function (d) {
+        var nearBottom = atEnd();
+        (d.lines || []).forEach(function (m) { add(m); if (m.id > after) after = m.id; });
+        if (count && typeof d.count === 'number') count.textContent = d.count;
+        if (d.lines && d.lines.length && nearBottom) toEnd();
+      })
+      .catch(function () {})
+      .then(function () { busy = false; });
+  }
+  if (!location.hash) toEnd();
+  setInterval(poll, 5000);
+  document.addEventListener('visibilitychange', poll);
+})();

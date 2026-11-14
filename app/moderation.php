@@ -48,7 +48,7 @@ function rmt_moderate(int $actorId, string $targetType, int $targetId, string $a
        it was sent to already has it, and the decision a reported message actually calls for is
        about the account that sent it. Both types are logged, reviewed and acted on through the
        sender rather than through a status column they do not have. */
-    $movesStatus = !in_array($targetType, ['user', 'message', 'trip_message', 'stay'], true) && isset(RMT_MOD_STATUS[$action]);
+    $movesStatus = !in_array($targetType, ['user', 'message', 'trip_message', 'room_message', 'stay'], true) && isset(RMT_MOD_STATUS[$action]);
 
     $from = null;
     $to = null;
@@ -206,6 +206,21 @@ function rmt_moderation_context(string $targetType, int $targetId): array {
         return $out;
     }
 
+    /* A line in a city room: seen only by travelers checked in there, so the same again. */
+    if ($targetType === 'room_message') {
+        $row = q_one("SELECT m.id, m.body, u.username, d.name dest_name
+                        FROM city_room_messages m JOIN city_rooms r ON r.id = m.room_id
+                        JOIN destinations d ON d.id = r.destination_id
+                        LEFT JOIN users u ON u.id = m.user_id
+                       WHERE m.id = ?", [$targetId]);
+        if (!$row) return $out;
+        $out['title']   = 'A ' . (string) $row['dest_name'] . ' room line from @' . (string) ($row['username'] ?? 'a deleted account');
+        $out['author']  = (string) ($row['username'] ?? '');
+        $out['excerpt'] = mb_strimwidth(strip_tags((string) $row['body']), 0, 300, '…');
+        $out['status']  = null;
+        return $out;
+    }
+
     /* A line in a trip chat: private to the people on the trip, so the same treatment. */
     if ($targetType === 'trip_message') {
         $row = q_one("SELECT m.id, m.body, m.trip_id, u.username
@@ -245,7 +260,7 @@ const RMT_MOD_OWNER_COLUMN = [
     'review' => 'user_id', 'trip' => 'user_id', 'guide' => 'user_id', 'blog_post' => 'user_id',
     'meetup' => 'host_id', 'buddy' => 'user_id', 'comment' => 'user_id', 'collection' => 'user_id',
     'post' => 'user_id', 'activity' => 'user_id', 'trip_photo' => 'user_id', 'review_photo' => 'user_id',
-    'activity_photo' => 'user_id', 'message' => 'sender_id', 'trip_message' => 'user_id',
+    'activity_photo' => 'user_id', 'message' => 'sender_id', 'trip_message' => 'user_id', 'room_message' => 'user_id',
     'reference' => 'from_user_id',
 ];
 

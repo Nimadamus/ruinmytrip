@@ -217,6 +217,7 @@ $routes = [
     // Right now check-ins and the city room they open (app/checkins.php).
     ['POST', '#^/checkin$#',                   'checkin_start'],
     ['POST', '#^/checkin/end$#',               'checkin_end'],
+    ['GET',  '#^/city-room/(?<id>\d+)$#',     'city_room'],
     ['GET',  '#^/city-room/(?<id>\d+)/feed$#', 'city_room_feed'],
     ['POST', '#^/city-room/(?<id>\d+)/message$#', 'city_room_post'],
     ['GET',  '#^/cron/checkins$#',             'cron_checkins'],

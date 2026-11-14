@@ -186,6 +186,9 @@ $planUrl = static function (array $over) use ($d, $winFrom, $winTo, $winSource, 
   <?php /* Who is in the city today, according to dates they published themselves. Above "who is
            going", because somebody who is there now is somebody you can have a coffee with this
            afternoon. Never a location: a range that covers today is a fact its owner wrote down. */ ?>
+  <?php if ($me): $ckDest = $d; $ckBack = '/d/' . (string) $d['slug'] . '/travelers'; ?>
+    <div style="margin:18px 0"><?php include __DIR__ . '/_checkin_card.php'; ?></div>
+  <?php endif; ?>
   <?php if ($hereNow): ?>
     <h2>Here right now</h2>
     <div class="tag-list">

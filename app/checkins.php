@@ -23,6 +23,8 @@ declare(strict_types=1);
 const RMT_CHECKIN_MIN_HOURS = 1;
 const RMT_CHECKIN_MAX_HOURS = 168;
 const RMT_CHECKIN_DEFAULT_HOURS = 24;
+/** What the form offers. Hours => words. */
+const RMT_CHECKIN_CHOICES = [3 => 'A few hours', 12 => 'Today', 24 => '24 hours', 72 => '3 days', 168 => 'A week'];
 const RMT_CITY_ROOM_BODY_MAX = 1000;
 /** Messages are kept this long after they stop being shown, for moderation, then deleted. */
 const RMT_CITY_ROOM_RETAIN_DAYS = 30;
@@ -30,6 +32,16 @@ const RMT_CITY_ROOM_RETAIN_DAYS = 30;
 const RMT_CHECKIN_LIVE = 'c.ended_at IS NULL AND c.expires_at > ?';
 
 function rmt_checkin_now(?string $now = null): string { return $now ?? date('Y-m-d H:i:s'); }
+
+/** "5 hours", "40 minutes", "2 days": how long a check-in has left, in words. */
+function rmt_checkin_left(string $expiresAt, ?string $now = null): string {
+    $s = max(0, (strtotime($expiresAt) ?: 0) - strtotime(rmt_checkin_now($now)));
+    if ($s < 90) return 'a minute';
+    if ($s < 5400) return (int) round($s / 60) . ' minutes';
+    if ($s < 129600) { $h = (int) round($s / 3600); return $h . ($h === 1 ? ' hour' : ' hours'); }
+    $d = (int) round($s / 86400);
+    return $d . ($d === 1 ? ' day' : ' days');
+}
 
 /** The member's live check-in, or null. An expired row the sweep has not reached yet is null. */
 function rmt_checkin_live(int $userId, ?string $now = null): ?array {
@@ -222,12 +234,12 @@ function checkin_start(array $a): void {
     if (!rmt_rate_ok('checkin', (string) $me['id'], 10, 3600)) { flash('Slow down a little and try again soon.'); redirect($back); }
     $hours = (int) input('hours', (string) RMT_CHECKIN_DEFAULT_HOURS);
     $hood = (int) input('neighborhood_id');
-    $r = rmt_checkin_start((int) $me['id'], (int) input('destination_id'), $hours > 0 ? $hours : RMT_CHECKIN_DEFAULT_HOURS,
+    $dest = (int) input('destination_id');
+    $r = rmt_checkin_start((int) $me['id'], $dest, $hours > 0 ? $hours : RMT_CHECKIN_DEFAULT_HOURS,
                            $hood > 0 ? $hood : null, (string) input('note'));
-    flash($r['ok']
-        ? 'You are checked in until ' . date('M j, g:i a', strtotime($r['expires_at'])) . '. Travelers in town can see you until then.'
-        : $r['error']);
-    redirect($back);
+    if (!$r['ok']) { flash($r['error']); redirect($back); }
+    flash('You are checked in for the next ' . rmt_checkin_left($r['expires_at']) . '. This is the room for travelers who are here right now.');
+    redirect('/city-room/' . $dest);
 }
 
 /** POST /checkin/end */
@@ -237,32 +249,55 @@ function checkin_end(array $a): void {
     redirect(rmt_return_to('/buddies'));
 }
 
-/** POST /city-room/{id}/message */
-function city_room_post(array $a): void {
-    require_login(); csrf_check(); $me = current_user();
-    $dest = (int) $a['id'];
-    if (!rmt_rate_ok('city_room_post', (string) $me['id'], 60, 3600)) rmt_city_room_json(['ok' => false, 'error' => 'Slow down a little.'], 429);
-    $r = rmt_city_room_post((int) $me['id'], $dest, (string) input('body'));
-    rmt_city_room_json($r, $r['ok'] ? 200 : 403);
+/**
+ * GET /city-room/{destination id}: the room for a member, the way in for anybody else signed in.
+ * Never indexed: it is a private conversation between people who are in a city today.
+ */
+function city_room(array $a): void {
+    require_login(); $me = current_user();
+    $d = q_one('SELECT * FROM destinations WHERE id = ?', [(int) $a['id']]);
+    if (!$d) not_found();
+    $dest = (int) $d['id'];
+    $checkin = rmt_city_room_member((int) $me['id'], $dest);
+    view('city_room', [
+        'd' => $d, 'checkin' => $checkin, 'count' => rmt_city_room_count($dest),
+        'roster' => $checkin ? rmt_city_room_roster($dest, (int) $me['id']) : [],
+        'lines' => $checkin ? rmt_city_room_feed($dest, (int) $me['id']) : [],
+    ], ['title' => $d['name'] . ' travelers right now | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,nofollow']);
 }
 
-/** GET /city-room/{id}/feed?after=<message id>: members only; 403 once the check-in has expired. */
+/** POST /city-room/{id}/message: say something, then back to the room. */
+function city_room_post(array $a): void {
+    require_verified_email(); csrf_check(); $me = current_user();
+    $dest = (int) $a['id'];
+    $back = '/city-room/' . $dest;
+    if (!rmt_submit_ok('city_room_' . $dest, input('_submit'))) redirect($back);
+    if (!rmt_rate_ok('city_room_post', (string) $me['id'], 60, 3600)) { flash('Slow down a little and try again soon.'); redirect($back); }
+    $r = rmt_city_room_post((int) $me['id'], $dest, (string) input('body'));
+    if (!$r['ok']) flash((string) $r['error']);
+    redirect($back . (!empty($r['id']) ? '#m' . (int) $r['id'] : ''));
+}
+
+/**
+ * GET /city-room/{id}/feed?after=<message id>: what the open page polls. Members only; 403 the
+ * moment the check-in has expired, which is the page's cue to reload into the way-in view.
+ */
 function city_room_feed(array $a): void {
     require_login(); $me = current_user();
     $dest = (int) $a['id'];
-    $c = rmt_city_room_member((int) $me['id'], $dest);
+    $meId = (int) $me['id'];
+    $c = rmt_city_room_member($meId, $dest);
     if (!$c) rmt_city_room_json(['ok' => false, 'error' => 'Check in to this city to join its room.'], 403);
     rmt_city_room_json([
         'ok' => true,
-        'expires_at' => $c['expires_at'],
         'count' => rmt_city_room_count($dest),
-        'members' => array_map(static fn(array $r): array => [
-            'username' => $r['username'], 'name' => $r['display_name'], 'avatar' => $r['avatar_url'], 'until' => $r['expires_at'],
-        ], rmt_city_room_roster($dest, (int) $me['id'])),
-        'messages' => array_map(static fn(array $r): array => [
-            'id' => (int) $r['id'], 'username' => $r['username'], 'name' => $r['display_name'], 'avatar' => $r['avatar_url'],
-            'body' => $r['body'], 'at' => $r['created_at'], 'mine' => (int) $r['user_id'] === (int) $me['id'],
-        ], rmt_city_room_feed($dest, (int) $me['id'], (int) input('after'))),
+        'lines' => array_map(static fn(array $m): array => [
+            'id'   => (int) $m['id'],
+            'mine' => (int) $m['user_id'] === $meId,
+            'who'  => (string) ($m['display_name'] ?: $m['username']),
+            'html' => rmt_linkify_mentions(e((string) $m['body'])),
+            'when' => ago((string) $m['created_at']),
+        ], rmt_city_room_feed($dest, $meId, max(0, (int) input('after')))),
     ]);
 }
 
