@@ -1143,22 +1143,43 @@ function buddy_status(array $a): void {
     redirect(rmt_return_to('/buddy/' . (int) $b['id']));
 }
 
-/** POST /buddies/here: "I am in this city now", as a public trip covering today. */
+/**
+ * Show a member as in town: a public plan for this city from today to $until, open to meeting.
+ * This is what puts them under "There now" for travelers searching the city and under "Here right
+ * now" on the city's travelers page. A check-in calls it, so there is one way to say "I am here".
+ *
+ * @return array{ok:bool, errors:list<string>, slug:string}
+ */
+function rmt_here_now_publish(int $userId, int $destinationId, string $until): array {
+    $today = date('Y-m-d');
+    if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $until) || $until < $today) $until = $today;
+    $v = rmt_plan_validate(['destination_id' => $destinationId, 'date_from' => $today, 'date_to' => $until, 'visibility' => 'public']);
+    if (!$v['ok']) return ['ok' => false, 'errors' => $v['errors'], 'slug' => ''];
+    $tripId = rmt_plan_upsert($userId, $v['data']);
+    q_run('UPDATE trips SET open_to_meeting = 1 WHERE id = ? AND user_id = ?', [$tripId, $userId]);
+    if (function_exists('rmt_match_notify')) rmt_match_notify($userId, $tripId, (int) $v['data']['destination_id'], $today, $until, 'public');
+    rmt_buddy_notify_matches('trip', $tripId);
+    $slug = (string) (q_one('SELECT slug FROM destinations WHERE id=?', [(int) $v['data']['destination_id']])['slug'] ?? '');
+    return ['ok' => true, 'errors' => [], 'slug' => $slug];
+}
+
+/**
+ * POST /buddies/here: the older "I'm here now" form, kept so a page somebody still has open does
+ * not break. It is a check-in now: until the end of the day they picked, a week at most.
+ */
 function buddies_here_now(array $a): void {
     require_login(); csrf_check(); $me = current_user();
     if (!can_host_meetups($me)) rmt_adult_gate($me, '/buddies', 'Travel buddies is 18+.', '/buddies');
     $today = date('Y-m-d');
     $until = (string) input('until');
     if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $until) || $until < $today) $until = $today;
-    $v = rmt_plan_validate(['destination_id' => input('destination_id'), 'date_from' => $today, 'date_to' => $until, 'visibility' => 'public']);
-    if (!$v['ok']) { flash(implode(' ', $v['errors'])); redirect('/buddies'); }
-    $tripId = rmt_plan_upsert((int) $me['id'], $v['data']);
-    q_run('UPDATE trips SET open_to_meeting = 1 WHERE id = ? AND user_id = ?', [$tripId, (int) $me['id']]);
-    if (function_exists('rmt_match_notify')) rmt_match_notify((int) $me['id'], $tripId, (int) $v['data']['destination_id'], $today, $until, 'public');
-    rmt_buddy_notify_matches('trip', $tripId);
-    $slug = (string) (q_one('SELECT slug FROM destinations WHERE id=?', [(int) $v['data']['destination_id']])['slug'] ?? '');
-    flash('You are marked as in town until ' . date('M j', strtotime($until)) . '. Travelers searching this city will see you. It shows the city and dates only.');
-    redirect('/buddies?dest=' . rawurlencode($slug) . '&show=here');
+    $dest = (int) input('destination_id');
+    $hours = (int) ceil((strtotime($until . ' 23:59:59') - time()) / 3600);
+    $r = rmt_checkin_start((int) $me['id'], $dest, $hours);
+    if (!$r['ok']) { flash($r['error']); redirect('/buddies'); }
+    rmt_here_now_publish((int) $me['id'], $dest, substr($r['expires_at'], 0, 10));
+    flash('You are checked in for the next ' . rmt_checkin_left($r['expires_at']) . '. Travelers searching this city will see you. It shows the city and dates only.');
+    redirect('/city-room/' . $dest);
 }
 
 /** POST /buddies/local: "I live here and I am open to meeting travelers", or switch it off. */

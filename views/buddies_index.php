@@ -155,19 +155,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
 
     <aside class="buddy-side">
       <?php if ($me): ?>
-        <?php $ckDest = null; $ckBack = '/buddies'; include __DIR__ . '/_checkin_card.php'; ?>
-        <div class="card"><div class="card-body">
-          <h3>Already there?</h3>
-          <p class="hint">Show up for travelers searching a city while you are in it. Only the city and your dates show.</p>
-          <form method="post" action="<?= e(url('buddies/here')) ?>"><?= csrf_field() ?>
-            <label for="here-dest">I am in</label>
-            <select id="here-dest" name="destination_id" required><option value="">Pick a city</option>
-              <?php foreach ($dests as $d): ?><option value="<?= (int) $d['id'] ?>"<?= (int) ($bf['dest_id'] ?? 0) === (int) $d['id'] ? ' selected' : '' ?>><?= e($d['name']) ?></option><?php endforeach; ?></select>
-            <label for="here-until">Until</label>
-            <input id="here-until" type="date" name="until" min="<?= e(date('Y-m-d')) ?>" value="<?= e(date('Y-m-d', strtotime('+3 days'))) ?>">
-            <button class="btn btn-primary btn-sm" style="margin-top:10px">I'm here now</button>
-          </form>
-        </div></div>
+        <?php $ckDest = null; $ckBack = '/buddies'; $ckPick = (int) ($bf['dest_id'] ?? 0); include __DIR__ . '/_checkin_card.php'; ?>
         <div class="card"><div class="card-body">
           <h3>Live somewhere travelers go?</h3>
           <p class="hint">List yourself as a local who is happy to meet travelers. Only your city shows, and you choose who to accept.</p>

@@ -238,6 +238,9 @@ function checkin_start(array $a): void {
     $r = rmt_checkin_start((int) $me['id'], $dest, $hours > 0 ? $hours : RMT_CHECKIN_DEFAULT_HOURS,
                            $hood > 0 ? $hood : null, (string) input('note'));
     if (!$r['ok']) { flash($r['error']); redirect($back); }
+    /* One way to say "I am here": the check-in opens the room, and the same act lists the member
+       as in town for travelers searching the city (what the old "Already there?" card did). */
+    if (function_exists('rmt_here_now_publish')) rmt_here_now_publish((int) $me['id'], $dest, substr($r['expires_at'], 0, 10));
     flash('You are checked in for the next ' . rmt_checkin_left($r['expires_at']) . '. This is the room for travelers who are here right now.');
     redirect('/city-room/' . $dest);
 }

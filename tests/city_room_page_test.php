@@ -111,6 +111,17 @@ $ctx = rmt_moderation_context('room_message', (int) $leoLine);
 ok(str_contains((string) ($ctx['title'] ?? ''), '@crleo') && str_contains((string) ($ctx['excerpt'] ?? ''), 'Leo here'), 'a moderator can read a reported line');
 ok(rmt_moderation_account_for('room_message', (int) $leoLine) === $id('crleo'), 'and reach the account that wrote it');
 
+/* ---- one way to say "I am here" ---- */
+$bi = (string) file_get_contents(dirname(__DIR__) . '/views/buddies_index.php');
+ok(!str_contains($bi, 'Already there?') && !str_contains($bi, "url('buddies/here')"), 'the older "Already there?" card is gone from the buddies page');
+$pub = rmt_here_now_publish($id('crana'), (int) $other['id'], date('Y-m-d', strtotime('+2 days')));
+$plan = q_one('SELECT * FROM trips WHERE user_id = ? AND destination_id = ? ORDER BY id DESC LIMIT 1', [$id('crana'), (int) $other['id']]);
+ok($pub['ok'] && $plan && (string) $plan['date_from'] === date('Y-m-d') && (string) $plan['date_to'] === date('Y-m-d', strtotime('+2 days'))
+   && (int) $plan['open_to_meeting'] === 1 && (string) $plan['visibility'] === 'public', 'checking in lists the member as in town for travelers searching the city');
+$src = (string) file_get_contents(dirname(__DIR__) . '/app/checkins.php');
+$old = (string) file_get_contents(dirname(__DIR__) . '/app/buddies.php');
+ok(str_contains($src, 'rmt_here_now_publish(') && preg_match('/function buddies_here_now.*?rmt_checkin_start\(/s', $old) === 1, 'the check-in does it, and the old form now checks in');
+
 /* ---- wiring ---- */
 $routes = (string) file_get_contents(dirname(__DIR__) . '/public/index.php');
 ok(str_contains($routes, "'city_room'],") && function_exists('city_room'), 'the room page is routed');

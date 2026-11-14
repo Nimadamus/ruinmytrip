@@ -10,6 +10,7 @@
  *                      choice from $dests
  * @var ?array $dests   destinations for the choice, when $ckDest is null
  * @var ?string $ckBack where to come back to after checking out
+ * @var ?int $ckPick    a destination id to preselect in the choice
  */
 $ckMe = current_user();
 if (!$ckMe) return;
@@ -38,14 +39,14 @@ $ckBack = $ckBack ?? (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/
     <?php endif; ?>
   <?php else: ?>
     <h3><?= $ckDest ? 'In ' . e((string) $ckDest['name']) . ' right now?' : 'In town right now?' ?></h3>
-    <p class="hint">Check in to join the city's room and talk to the other travelers who are there today. Only your city shows, never where you are staying, and you drop out by yourself when your time is up.</p>
+    <p class="hint">Check in to join the city's room and talk to the other travelers who are there today. You also show up for travelers searching this city. Only your city and dates show, never where you are staying, and you drop out of the room by yourself when your time is up.</p>
     <form method="post" action="<?= e(url('checkin')) ?>"><?= csrf_field() ?>
       <?php if ($ckDest): ?>
         <input type="hidden" name="destination_id" value="<?= (int) $ckDest['id'] ?>">
       <?php else: ?>
         <label for="ck-dest">I am in</label>
         <select id="ck-dest" name="destination_id" required><option value="">Pick a city</option>
-          <?php foreach (($dests ?? []) as $ckD): ?><option value="<?= (int) $ckD['id'] ?>"><?= e((string) $ckD['name']) ?></option><?php endforeach; ?></select>
+          <?php foreach (($dests ?? []) as $ckD): ?><option value="<?= (int) $ckD['id'] ?>"<?= (int) ($ckPick ?? 0) === (int) $ckD['id'] ? ' selected' : '' ?>><?= e((string) $ckD['name']) ?></option><?php endforeach; ?></select>
       <?php endif; ?>
       <label for="ck-hours">For</label>
       <select id="ck-hours" name="hours">
