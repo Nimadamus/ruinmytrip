@@ -22,6 +22,7 @@ require BASE_PATH . '/app/db.php';
 require BASE_PATH . '/app/helpers.php';
 require BASE_PATH . '/app/profiles.php';
 require BASE_PATH . '/app/plans.php';
+require BASE_PATH . '/app/vibe.php';
 require BASE_PATH . '/app/buddies.php';
 
 function rmt_is_blocked(int $a, int $b): bool {
@@ -48,6 +49,7 @@ $pdo->exec('CREATE TABLE notifications (id INTEGER PRIMARY KEY AUTOINCREMENT, us
               actor_id INT, target_type TEXT, target_id INT, read_at TEXT, created_at TEXT)');
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/099_travel_buddies.sqlite.sql'));
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/100_buddy_matching.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/124_travel_vibe.sqlite.sql'));
 
 $y = (int) date('Y') + 1;
 $d = static fn(string $md): string => $y . '-' . $md;

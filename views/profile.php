@@ -65,6 +65,10 @@
           <?php /* Self-declared, so it is stated as a preference and never as a fact about them. */ ?>
           <span><span class="chip">Travels <?= e(strtolower(RMT_TRAVEL_STYLES[$u['travel_style']])) ?></span></span>
         <?php endif; ?>
+        <?php if (function_exists('rmt_vibe_for')): $pvVibe = rmt_vibe_for((int) $u['id']);
+              foreach (rmt_vibe_labels($pvVibe['budget_level'], $pvVibe['travel_pace']) as $pvLabel): ?>
+          <span><span class="chip"><?= e($pvLabel) ?></span></span>
+        <?php endforeach; endif; ?>
         <?php if (!empty($homeDest)): ?>
           <?php /* The one fact a traveler heading somewhere most wants on a profile: this person is
                    there all the time. Links to that city's people page. */ ?>

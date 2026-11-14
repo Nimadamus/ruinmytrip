@@ -112,6 +112,29 @@
       and nothing about it is displayed.
     </p>
 
+    <?php $vibe = function_exists('rmt_vibe_for') ? rmt_vibe_for((int) $me['id']) : ['budget_level' => null, 'travel_pace' => null];
+          $vibeB = (string) ($_POST['budget_level'] ?? $vibe['budget_level'] ?? ''); $vibeP = (string) ($_POST['travel_pace'] ?? $vibe['travel_pace'] ?? ''); ?>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:180px">
+        <label for="budget_level">Your usual budget <span class="hint">(optional)</span></label>
+        <select id="budget_level" name="budget_level">
+          <option value="">Rather not say</option>
+          <?php foreach (RMT_VIBE_BUDGETS as $k => $label): ?><option value="<?= e($k) ?>"<?= $vibeB === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
+        </select>
+      </div>
+      <div style="flex:1;min-width:180px">
+        <label for="travel_pace">Your usual pace <span class="hint">(optional)</span></label>
+        <select id="travel_pace" name="travel_pace">
+          <option value="">Rather not say</option>
+          <?php foreach (RMT_VIBE_PACES as $k => $label): ?><option value="<?= e($k) ?>"<?= $vibeP === $k ? ' selected' : '' ?>><?= e($label) ?></option><?php endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <p class="muted" style="margin:.3rem 0 1rem;font-size:.9rem">
+      Shown on your profile, and travelers can search for a budget or a pace that suits them.
+      Leave them unset and nothing about them is displayed.
+    </p>
+
     <label for="home_city">Home location</label>
     <input type="text" id="home_city" name="home_city" maxlength="80"
            value="<?= e($p['home_city'] ?? '') ?>" placeholder="e.g. Lisbon, PT">

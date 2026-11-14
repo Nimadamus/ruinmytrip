@@ -82,6 +82,10 @@ $action = $isEdit ? url('buddy/' . (int) $b['id'] . '/edit') : url('buddies/new'
         <select id="budget" name="budget">
           <?php foreach (RMT_BUDDY_BUDGETS as $k => $v): ?><option value="<?= e($k) ?>"<?= $val('budget', 'any') === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?>
         </select></div>
+      <div style="flex:1;min-width:160px"><label for="travel_pace">Pace</label>
+        <select id="travel_pace" name="travel_pace"><option value="">Any pace</option>
+          <?php foreach (RMT_VIBE_PACES as $k => $v): ?><option value="<?= e($k) ?>"<?= $val('travel_pace') === $k ? ' selected' : '' ?>><?= e($v) ?></option><?php endforeach; ?>
+        </select></div>
     </div>
 
     <p style="margin:14px 0 4px;font-weight:600">What you are into on this trip</p>

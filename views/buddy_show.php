@@ -26,6 +26,7 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
   <?php endif; ?>
 
   <p class="meta-row">Looking for <?= (int) $b['spots'] ?> &middot; <?= e(RMT_BUDDY_BUDGETS[$b['budget']] ?? 'Any budget') ?>
+    <?php if (!empty($b['travel_pace']) && isset(RMT_VIBE_PACES[$b['travel_pace']])): ?> &middot; <?= e(RMT_VIBE_PACES[$b['travel_pace']]) ?><?php endif; ?>
     <?php if (!empty($b['age_min']) || !empty($b['age_max'])): ?> &middot; ages <?= (int) ($b['age_min'] ?: 18) ?> to <?= (int) ($b['age_max'] ?: 99) ?><?php endif; ?>
     &middot; <?= count($interest) ?> interested &middot; <?= (int) $accepted ?> accepted</p>
 

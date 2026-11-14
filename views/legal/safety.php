@@ -17,6 +17,14 @@
     <li>Keep personal and financial details private.</li>
     <li>You're never obligated to stay.</li>
   </ul>
+  <h2 id="check-ins">Check-ins and city rooms</h2>
+  <ul>
+    <li>A check-in shows your city and how long you are there. Never your hotel, your street or your live location.</li>
+    <li>It ends by itself. When your time is up you leave the room and what you wrote there goes with you.</li>
+    <li>Only travelers checked in to the same city can read its room, and each message has a Report link.</li>
+    <li>Meet somebody from a room the way you would meet anybody new: in a public place, with a friend knowing where you are.</li>
+    <li>Nobody here should ask you for money. If somebody does, report the message and stop replying.</li>
+  </ul>
   <h2>Tools we give you</h2>
   <ul>
     <li><b>Age requirements:</b> 16+ to use RuinMyTrip, 18+ to host or attend meetups.</li>

@@ -1136,6 +1136,7 @@ function profile_edit_submit(array $a): void {
                    (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
     /* Interests, from the fixed vocabulary. Saved after the profile row is certain to exist. */
     rmt_interests_save((int) $me['id'], (array) ($_POST['interests'] ?? []));
+    if (function_exists('rmt_vibe_save') && (isset($_POST['budget_level']) || isset($_POST['travel_pace']))) rmt_vibe_save((int) $me['id'], $_POST);
     rmt_languages_save((int) $me['id'], (array) ($_POST['languages'] ?? []));
 
     /* "Completed" is a threshold, not a save: a name somebody can recognise, a few words about
@@ -5749,6 +5750,7 @@ function settings_save(array $a): void {
         ->execute([$d['display_name'], $d['bio'], $d['home_city'], $d['avatar_url'],
                    $d['home_destination_id'] ?? null, $d['travel_style'] ?? null,
                    (int) ($d['open_to_meeting'] ?? 0), (int)$me['id']]);
+    if (function_exists('rmt_vibe_save') && (isset($_POST['budget_level']) || isset($_POST['travel_pace']))) rmt_vibe_save((int) $me['id'], $_POST);
     flash('Profile updated.'); redirect('/u/'.$me['username']);
 }
 

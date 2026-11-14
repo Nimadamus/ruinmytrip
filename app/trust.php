@@ -56,6 +56,14 @@ function rmt_trust_signals(int $userId, ?array $viewer = null): array {
         $out[] = ['key' => 'email', 'label' => 'Email confirmed', 'href' => null];
     }
 
+    /* A linked sign-in. Optional, and stated as exactly what it is: this account signs in through
+       another service. It is not a check of who somebody is, and no document is ever asked for. */
+    $linked = q_one('SELECT provider FROM oauth_identities WHERE user_id = ? ORDER BY created_at LIMIT 1', [$userId]);
+    if ($linked) {
+        $out[] = ['key' => 'signin', 'href' => null,
+                  'label' => (string) $linked['provider'] === 'google' ? 'Signs in with Google' : 'Linked sign-in'];
+    }
+
     /* Trips posted, counted public only, because that is what a stranger could go and read. A
        private trip is real and is nobody else's evidence of anything. */
     $trips = (int) (q_one("SELECT COUNT(*) c FROM trips

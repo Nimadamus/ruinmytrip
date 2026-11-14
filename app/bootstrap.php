@@ -44,6 +44,7 @@ require BASE_PATH . '/app/feedback.php';
 require BASE_PATH . '/app/admin_places.php';
 require BASE_PATH . '/app/destination_new.php';
 require BASE_PATH . '/app/meetups.php';
+require BASE_PATH . '/app/vibe.php';
 require BASE_PATH . '/app/buddies.php';
 require BASE_PATH . '/app/checkins.php';
 require BASE_PATH . '/app/trust_reviews.php';

@@ -41,6 +41,8 @@ $pdo->exec("CREATE TABLE reviews (id INTEGER PRIMARY KEY, user_id INT, status TE
 $pdo->exec("CREATE TABLE trip_activities (id INTEGER PRIMARY KEY, user_id INT, day TEXT, status TEXT DEFAULT 'published')");
 $pdo->exec("CREATE TABLE activity_joins (activity_id INT, user_id INT, state TEXT)");
 $pdo->exec("CREATE TABLE follows (followee_id INT, follower_id INT)");
+$pdo->exec("CREATE TABLE oauth_identities (provider TEXT, provider_uid TEXT, user_id INT, created_at TEXT)");
+$pdo->exec("INSERT INTO oauth_identities VALUES ('google','g-1',1,'2026-01-01 00:00:00')");
 
 $old = date('Y-m-d H:i:s', strtotime('-900 days'));
 $new = date('Y-m-d H:i:s', strtotime('-2 days'));
@@ -107,6 +109,8 @@ ok(rmt_trust_signals(0) === [], 'and neither does no account at all');
    rather than as a comment, so adding one fails the build. */
 $forbidden = ['gender', 'age_years', 'attractive', 'rating', 'score', 'reliability', 'risk',
               'ethnicity', 'religion', 'politics', 'health', 'orientation'];
+ok($labelOf(rmt_trust_signals(1), 'signin') === 'Signs in with Google', 'a linked sign-in is shown as exactly that');
+ok(!in_array('signin', $keys(rmt_trust_signals(2)), true), 'and not for an account without one');
 $leaked = array_intersect($forbidden, $keys(rmt_trust_signals(1, ['id' => 3])));
 ok($leaked === [], 'no signal is a judgement about the person' . ($leaked ? ': ' . implode(', ', $leaked) : ''));
 

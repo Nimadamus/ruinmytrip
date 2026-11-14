@@ -73,7 +73,12 @@ $bcLogin = url('register?return=' . rawurlencode(parse_url($bcBack, PHP_URL_PATH
     <?php if ($bc['party'] !== '' && isset(RMT_BUDDY_PARTIES[$bc['party']])): ?><span class="chip"><?= e(RMT_BUDDY_PARTIES[$bc['party']]) ?></span><?php endif; ?>
     <?php foreach ($bc['interests'] ?? [] as $ik): ?><span class="chip chip-soft"><?= e(RMT_INTERESTS[$ik] ?? $ik) ?></span><?php endforeach; ?>
   </div>
+  <?php $bcVibe = function_exists('rmt_vibe_labels') ? rmt_vibe_labels($bc['budget'] ?? null, $bc['pace'] ?? null) : [];
+        $bcMine = $bcMine ?? ((function_exists('rmt_vibe_for') && ($bcMe = current_user())) ? rmt_vibe_for((int) $bcMe['id']) : ['budget_level' => null, 'travel_pace' => null]);
+        $bcShared = ($bcVibe && empty($bc['example'])) ? rmt_vibe_shared($bcMine, $bc['budget'] ?? null, $bc['pace'] ?? null) : []; ?>
   <?php $bcMeta = array_filter([
+      $bcVibe ? implode(', ', $bcVibe) : '',
+      $bcShared ? implode(' and ', array_map('lcfirst', $bcShared)) : '',
       $bc['languages'] ? 'Speaks ' . implode(', ', $bc['languages']) : '',
       ($bc['spots'] ?? 0) > 0 ? 'Looking for ' . (int) $bc['spots'] : '',
       (($bc['age_min'] ?? 0) || ($bc['age_max'] ?? 0)) ? 'Hoping for ages ' . ((int) $bc['age_min'] ?: 18) . ' to ' . ((int) $bc['age_max'] ?: 99) : '',

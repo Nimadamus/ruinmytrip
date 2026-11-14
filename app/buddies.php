@@ -126,6 +126,7 @@ function rmt_buddy_validate(array $in, ?string $today = null): array {
     if (!isset(RMT_BUDDY_BUDGETS[$budget])) $budget = 'any';
     $party = (string) ($in['travel_party'] ?? '');
     if (!isset(RMT_BUDDY_PARTIES[$party])) $party = '';
+    $pace = function_exists('rmt_vibe_pace') ? rmt_vibe_pace((string) ($in['travel_pace'] ?? '')) : null;
     $ints = $in['interests'] ?? [];
     $ints = rmt_buddy_interest_keys(implode(',', is_array($ints) ? array_map('strval', $ints) : [(string) $ints]));
     $ageMin = (int) ($in['age_min'] ?? 0); $ageMax = (int) ($in['age_max'] ?? 0);
@@ -144,6 +145,7 @@ function rmt_buddy_validate(array $in, ?string $today = null): array {
         'date_from' => $from, 'date_to' => $to, 'flexible' => empty($in['flexible']) ? 0 : 1,
         'spots' => $spots, 'budget' => $budget, 'description' => $desc,
         'travel_party' => $party ?: null, 'interests' => $ints ? implode(',', $ints) : null,
+        'travel_pace' => $pace,
         'age_min' => $ageMin ?: null, 'age_max' => $ageMax ?: null,
         'cruise_line' => $cruise['cruise_line'] ?: null, 'ship' => $cruise['ship'] ?: null,
         'departure_port' => $cruise['departure_port'] ?: null, 'itinerary' => $cruise['itinerary'] ?: null,
@@ -153,7 +155,7 @@ function rmt_buddy_validate(array $in, ?string $today = null): array {
 
 const RMT_BUDDY_WRITE_COLS = ['trip_type', 'title', 'where_text', 'destination_id', 'date_from', 'date_to', 'flexible',
     'spots', 'budget', 'description', 'travel_party', 'interests', 'age_min', 'age_max', 'cruise_line', 'ship',
-    'departure_port', 'itinerary', 'ship_key'];
+    'departure_port', 'itinerary', 'ship_key', 'travel_pace'];
 
 function rmt_buddy_insert(int $userId, array $d): int {
     $cols = RMT_BUDDY_WRITE_COLS;
@@ -337,6 +339,9 @@ function rmt_buddy_filters(array $g): array {
         'type' => isset(RMT_BUDDY_TYPES[$g['type'] ?? '']) ? (string) $g['type'] : '',
         'party' => isset(RMT_BUDDY_PARTIES[$g['party'] ?? '']) ? (string) $g['party'] : '',
         'interest' => (defined('RMT_INTERESTS') && isset(RMT_INTERESTS[$g['interest'] ?? ''])) ? (string) $g['interest'] : '',
+        /* Travel vibe (app/vibe.php): the budget and the pace somebody is after. */
+        'budget' => (string) (function_exists('rmt_vibe_budget') ? rmt_vibe_budget((string) ($g['budget'] ?? '')) : ''),
+        'pace' => (string) (function_exists('rmt_vibe_pace') ? rmt_vibe_pace((string) ($g['pace'] ?? '')) : ''),
         /* Age is never searched on other people's birthdates: that would let a stranger narrow
            members down by how old they are. The only age question is the poster's own stated
            preference, asked of the reader's own age, which the reader never sees for anybody else. */
@@ -368,7 +373,7 @@ function rmt_buddy_filters(array $g): array {
 
 /** Did the reader narrow the search by anything at all. */
 function rmt_buddy_filters_active(array $f): bool {
-    foreach (['where', 'from', 'type', 'party', 'interest', 'line', 'ship', 'port', 'want'] as $k) if (($f[$k] ?? '') !== '') return true;
+    foreach (['where', 'from', 'type', 'party', 'interest', 'budget', 'pace', 'line', 'ship', 'port', 'want'] as $k) if (($f[$k] ?? '') !== '') return true;
     return $f['show'] !== 'all' || $f['flexible'] || $f['myage'];
 }
 
@@ -399,7 +404,8 @@ function rmt_buddy_post_query(array $f): array {
 /** The same form as a query string, for links and "widen the search". */
 function rmt_buddy_query(array $f, array $override = []): string {
     $q = ['where' => $f['where'], 'from' => $f['from'], 'to' => $f['to'], 'type' => $f['type'], 'party' => $f['party'],
-          'interest' => $f['interest'], 'myage' => $f['myage'] ? '1' : '', 'show' => $f['show'] === 'all' ? '' : $f['show'],
+          'interest' => $f['interest'], 'budget' => $f['budget'] ?? '', 'pace' => $f['pace'] ?? '',
+          'myage' => $f['myage'] ? '1' : '', 'show' => $f['show'] === 'all' ? '' : $f['show'],
           'flexible' => $f['flexible'] ? '1' : '', 'line' => $f['line'], 'ship' => $f['ship'], 'port' => $f['port']];
     $q = array_filter(array_merge($q, $override), static fn($v) => $v !== '' && $v !== null);
     return $q ? '?' . http_build_query($q) : '';
@@ -474,6 +480,10 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
             $w[] = '(LOWER(COALESCE(b.interests,\'\')) LIKE ? OR EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = b.user_id AND pi.interest = ?))';
             array_push($a, $like($f['interest']), $f['interest']);
         }
+        /* A post that named a budget is matched on it; one that said "any budget" is matched on
+           what its author usually spends. The same for pace. */
+        if (($f['budget'] ?? '') !== '') { $w[] = "(b.budget = ? OR (b.budget = 'any' AND p.budget_level = ?))"; array_push($a, $f['budget'], $f['budget']); }
+        if (($f['pace'] ?? '') !== '') { $w[] = 'COALESCE(b.travel_pace, p.travel_pace) = ?'; $a[] = $f['pace']; }
         if ($f['line'] !== '') { $w[] = "LOWER(COALESCE(b.cruise_line,'')) LIKE ?"; $a[] = $like($f['line']); }
         if ($f['ship'] !== '') {
             $w[] = "(b.ship_key = ? OR LOWER(COALESCE(b.ship,'')) LIKE ?)";
@@ -497,6 +507,7 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
                 'summary' => (string) $r['description'], 'where' => (string) $r['where_text'],
                 'from' => (string) $r['date_from'], 'to' => (string) $r['date_to'], 'flexible' => (int) $r['flexible'] === 1,
                 'post_interests' => rmt_buddy_interest_keys($r['interests'] ?? ''),
+                'budget' => (string) ($r['budget'] ?? ''), 'pace' => (string) ($r['travel_pace'] ?? ''),
                 'spots' => (int) $r['spots'], 'interest_count' => (int) $r['interest_count'],
                 'cruise_line' => (string) ($r['cruise_line'] ?? ''), 'ship' => (string) ($r['ship'] ?? ''),
                 'ship_key' => (string) ($r['ship_key'] ?? ''), 'departure_port' => (string) ($r['departure_port'] ?? ''),
@@ -536,6 +547,8 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
             $a[] = $f['party'] === 'group' ? 'friends' : $f['party'];
         }
         if ($f['interest'] !== '') { $w[] = 'EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = t.user_id AND pi.interest = ?)'; $a[] = $f['interest']; }
+        if (($f['budget'] ?? '') !== '') { $w[] = 'p.budget_level = ?'; $a[] = $f['budget']; }
+        if (($f['pace'] ?? '') !== '') { $w[] = 'p.travel_pace = ?'; $a[] = $f['pace']; }
         [$bs, $ba] = $blocks('t.user_id'); $w[] = $bs; array_push($a, ...$ba);
         // The visibility clause is in here: $vis, from rmt_plan_visibility_sql(), is the first filter.
         $whereSql = implode(' AND ', $w);
@@ -576,6 +589,8 @@ function rmt_buddy_search_run(array $f, ?array $viewer, int $limit): array {
         if ($f['country'] !== '') { $w[] = 'd.country = ?'; $a[] = $f['country']; }
         if ($f['text'] !== '') { $w[] = '(LOWER(d.name) LIKE ? OR LOWER(d.country) LIKE ?)'; array_push($a, $like($f['text']), $like($f['text'])); }
         if ($f['interest'] !== '') { $w[] = 'EXISTS (SELECT 1 FROM profile_interests pi WHERE pi.user_id = u.id AND pi.interest = ?)'; $a[] = $f['interest']; }
+        if (($f['budget'] ?? '') !== '') { $w[] = 'p.budget_level = ?'; $a[] = $f['budget']; }
+        if (($f['pace'] ?? '') !== '') { $w[] = 'p.travel_pace = ?'; $a[] = $f['pace']; }
         [$bs, $ba] = $blocks('u.id'); $w[] = $bs; array_push($a, ...$ba);
         $rows = q_all("SELECT u.id user_id, u.username, u.email_verified_at, p.avatar_url, p.display_name, p.languages,
                               p.bio, p.travel_style, d.name dest_name, d.slug dest_slug, d.country dest_country
@@ -646,6 +661,7 @@ function rmt_buddy_card(string $kind, array $r, array $c, array $f): array {
         'overlap_days' => $overlap, 'viewer_state' => null, 'saved' => false,
         'spots' => 0, 'interest_count' => 0, 'cruise_line' => '', 'ship' => '', 'ship_key' => '', 'departure_port' => '', 'nights' => 0,
         'itinerary' => '', 'age_min' => 0, 'age_max' => 0, 'example' => false, 'on_sailing' => 0,
+        'budget' => '', 'pace' => '',
     ], $c, ['rank' => rmt_buddy_rank($c, $f)]);
 }
 
