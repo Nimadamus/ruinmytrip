@@ -48,6 +48,7 @@ require BASE_PATH . '/app/vibe.php';
 require BASE_PATH . '/app/buddies.php';
 require BASE_PATH . '/app/checkins.php';
 require BASE_PATH . '/app/trust_reviews.php';
+require BASE_PATH . '/app/hubs.php';
 require BASE_PATH . '/app/buddy_examples.php';
 require BASE_PATH . '/app/buddy_landing.php';
 require BASE_PATH . '/app/plans.php';

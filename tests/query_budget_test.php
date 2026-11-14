@@ -62,8 +62,11 @@ $cases = [];
    63 from 2026-10-30: the city's published guide (one row), linked from the page because the 80
    editorial guides were otherwise reachable only from the unlinked /guides index.
    64 from 2026-11-14: one primary key read of the signed-in member's trust state, for the notice
-   a restricted member is shown on every page (kept out of current_user() on purpose). */
-$cases[] = ['the city page', 64, static function () use ($dest) {
+   a restricted member is shown on every page (kept out of current_user() on purpose).
+   67 from 2026-11-14: the travel partners block (app/hubs.php): the city's open trips, how many
+   travelers are checked in right now, and one read of which cities are seeded so the nearby
+   cities list can leave out the ones still below the content threshold. */
+$cases[] = ['the city page', 67, static function () use ($dest) {
     destination(['slug' => (string) $dest['slug']]);
 }];
 

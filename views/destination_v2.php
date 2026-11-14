@@ -9,8 +9,8 @@
  */
 $heroSet = rmt_media_srcset($d['hero_url'] ?? null);
 ?>
-<section class="v2-city-hero">
-  <img src="<?= e(abs_url($d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="100vw"<?php endif; ?> fetchpriority="high" alt="<?= e($d['name'] . ', ' . $d['country']) ?>">
+<section class="v2-city-hero"<?= empty($d['hero_url']) ? ' style="min-height:280px;background:linear-gradient(135deg,#0b1f2a,#0f766e)"' : '' ?>>
+  <?php if (!empty($d['hero_url'])): ?><img src="<?= e(abs_url($d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="100vw"<?php endif; ?> fetchpriority="high" alt="<?= e($d['name'] . ', ' . $d['country']) ?>"><?php endif; ?>
   <div class="v2-city-hero-in wrap">
     <p class="v2-crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url(rmt_country_path((string) $d['country']))) ?>"><?= e($d['country']) ?></a></p>
     <h1 class="v2-city-name"><?= e($d['name']) ?><span>, <?= e($d['country']) ?></span></h1>

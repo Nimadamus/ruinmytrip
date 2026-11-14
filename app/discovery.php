@@ -342,6 +342,8 @@ function rmt_nearby_destinations(array $d, int $limit = 6, array $exclude = []):
     $id = (int) ($d['id'] ?? 0);
     if ($id < 1 || !is_numeric($d['lat'] ?? null) || !is_numeric($d['lng'] ?? null)) return [];
     $skip = array_flip(array_map('intval', $exclude));
+    /* A seeded city below the content threshold is not linked from other cities (app/hubs.php). */
+    if (function_exists('rmt_hub_seeded_ids') && rmt_hub_seeded_ids()) $skip += rmt_hub_hidden_ids();
     $lat1 = deg2rad((float) $d['lat']); $lng1 = deg2rad((float) $d['lng']);
     $out = [];
     foreach (q_all('SELECT id, name, slug, country, lat, lng FROM destinations WHERE id <> ? AND lat IS NOT NULL AND lng IS NOT NULL', [$id]) as $r) {

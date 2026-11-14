@@ -140,6 +140,16 @@ function rmt_sitemap_group(string $group): array {
                 // X", but only once a real member is on it (Q1, 2026-10-01): an empty one is a template.
                 if (rmt_city_member_signal((int) $d['id']) > 0) $add('/d/' . $d['slug'] . '/travelers');
             }
+            /* Destination hubs (app/hubs.php, approved by Nima 2026-11-14): a warnings page with
+               enough sourced items, and its one-kind pages. */
+            if (function_exists('rmt_warnings_city') && function_exists('rmt_city_scams_all')) {
+                foreach (array_keys(rmt_city_scams_all()) as $ws) {
+                    $w = rmt_warnings_city((string) $ws);
+                    if (!$w || !rmt_warnings_indexable($w)) continue;
+                    $add('/warnings/' . $ws, $w['checked'] !== '' ? $w['checked'] : null);
+                    foreach ($w['type_pages'] as $wt) $add('/warnings/' . $ws . '/' . RMT_WARNING_TYPE_SLUGS[$wt], $w['checked'] !== '' ? $w['checked'] : null);
+                }
+            }
             break;
 
         case 'places':

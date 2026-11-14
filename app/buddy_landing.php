@@ -155,6 +155,11 @@ function rmt_buddy_landing_cities(array $p): array {
     } else {
         $rows = q_all('SELECT id, slug, name, country, hero_url FROM destinations WHERE country = ? ORDER BY name', [$p['country']]);
     }
+    /* A seeded city below the content threshold is not listed here either (app/hubs.php). */
+    if (function_exists('rmt_hub_seeded_ids') && rmt_hub_seeded_ids()) {
+        $hubHidden = rmt_hub_hidden_ids();
+        $rows = array_values(array_filter($rows, static fn(array $x): bool => !isset($hubHidden[(int) $x['id']])));
+    }
     $today = date('Y-m-d'); $now = date('Y-m-d H:i:s');
     foreach ($rows as &$d) {
         $d['going'] = (int) (q_one("SELECT COUNT(*) c FROM trips WHERE destination_id = ? AND visibility = 'public'

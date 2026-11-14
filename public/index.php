@@ -221,6 +221,9 @@ $routes = [
     ['GET',  '#^/city-room/(?<id>\d+)/feed$#', 'city_room_feed'],
     ['POST', '#^/city-room/(?<id>\d+)/message$#', 'city_room_post'],
     ['GET',  '#^/cron/checkins$#',             'cron_checkins'],
+    // Destination hubs: the warnings directory (app/hubs.php). Country pages already exist at /in/{country}.
+    ['GET',  '#^/warnings/(?<slug>[a-z0-9\-]+)$#', 'warnings_city'],
+    ['GET',  '#^/warnings/(?<slug>[a-z0-9\-]+)/(?<type>[a-z0-9\-]+)$#', 'warnings_city'],
     // A member's own trust numbers, and the vouch or flag they can leave (app/trust_reviews.php).
     ['GET',  '#^/trust$#',                     'trust_page'],
     ['POST', '#^/trust/review$#',              'trust_review'],

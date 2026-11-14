@@ -277,8 +277,20 @@ function explore(array $a): void {
         default   => ' ORDER BY name',
     };
     $dests = q_all($sql, $args);
+    /* A seeded city below the content threshold is not listed (app/hubs.php). It is still there to
+       be picked when posting a trip or checking in, which is how it earns its place. */
+    if (function_exists('rmt_hub_seeded_ids') && rmt_hub_seeded_ids()) {
+        $hubHidden = rmt_hub_hidden_ids();
+        $dests = array_values(array_filter($dests, static fn(array $x): bool => !isset($hubHidden[(int) $x['id']])));
+    }
     $cats = q_all('SELECT DISTINCT category FROM destinations WHERE category IS NOT NULL ORDER BY category');
     $countries = q_all('SELECT country, COUNT(*) n FROM destinations WHERE country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY country');
+    if (!empty($hubHidden)) {
+        $listedBy = [];
+        foreach (q_all('SELECT id, country FROM destinations') as $x) if (!isset($hubHidden[(int) $x['id']])) $listedBy[(string) $x['country']] = ($listedBy[(string) $x['country']] ?? 0) + 1;
+        $countries = array_values(array_filter(array_map(static fn(array $c): array => ['country' => $c['country'], 'n' => $listedBy[(string) $c['country']] ?? 0], $countries),
+                                               static fn(array $c): bool => $c['n'] > 0));
+    }
     $topTags = rmt_top_tags(14);
     $exploreView = 'explore';
     if (rmt_design_v2('explore')) {
@@ -306,8 +318,17 @@ function country_show(array $a): void {
     $slug = rmt_country_slug($country);
     $dests = q_all('SELECT * FROM destinations WHERE country = ? ORDER BY name', [$country]);
     if (!$dests) not_found();
+    /* Seeded cities below the content threshold are not listed (app/hubs.php). A country that has
+       nothing else yet still opens, so the link from one of its city pages works, but it lists
+       those cities under a noindex tag: a page of empty cities is not a search result. */
+    $countryRobots = null;
+    if (function_exists('rmt_hub_seeded_ids') && rmt_hub_seeded_ids()) {
+        $hubHidden = rmt_hub_hidden_ids();
+        $listed = array_values(array_filter($dests, static fn(array $x): bool => !isset($hubHidden[(int) $x['id']])));
+        if ($listed) $dests = $listed; else $countryRobots = 'noindex,follow';
+    }
     $n = count($dests);
-    view('country_show', compact('country','slug','dests'), [
+    view('country_show', compact('country','slug','dests'), ($countryRobots ? ['robots' => $countryRobots] : []) + [
         'title' => $country.' cities and the travelers going there | RuinMyTrip',
         'description' => $n.' destination'.($n===1?'':'s').' in '.$country.' on RuinMyTrip. See who is going, and find travel buddies on your dates.',
         'og_image' => abs_url($dests[0]['hero_url'] ?? ''),

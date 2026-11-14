@@ -154,6 +154,13 @@ ok('a city with nothing dated gets null', rmt_sitemap_destination_mod(-1, 'no-su
 $rows = rmt_sitemap_group('destinations');
 $mis = [];
 foreach ($rows as $row) {
+    /* A warnings page (app/hubs.php) is dated by the day its sources were last checked. */
+    if (preg_match('#/warnings/([a-z0-9\-]+)(?:/[a-z0-9\-]+)?$#', (string) $row['loc'], $wm)) {
+        $wc = rmt_warnings_city($wm[1]);
+        $want = ($wc && $wc['checked'] !== '') ? gmdate('Y-m-d', (int) strtotime($wc['checked'])) : null;
+        if ($row['lastmod'] !== $want || ($want !== null && $want > $today)) $mis[] = $row['loc'] . ' (warnings page date)';
+        continue;
+    }
     if (!preg_match('#/d/([a-z0-9\-]+)$#', (string) $row['loc'], $m)) {
         if ($row['lastmod'] !== null) $mis[] = $row['loc'] . ' (travelers page should carry no date)';
         continue;

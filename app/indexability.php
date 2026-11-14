@@ -118,6 +118,13 @@ function rmt_indexable(string $type, array $e = []): array {
 
         case 'destination':
             if (($e['status'] ?? 'active') !== 'active') return $no('noindex_private');
+            /* A seeded city (app/hubs.php) is held to the content threshold and nothing else: a
+               trip or a check-in in the last 90 days, or three sourced warnings. Cities that were
+               here before seeding never reach this branch. */
+            if (function_exists('rmt_hub_is_seeded') && rmt_hub_is_seeded($e)) {
+                $hub = rmt_hub_threshold((int) ($e['id'] ?? 0), (string) ($e['slug'] ?? ''));
+                return $hub['ok'] ? $yes() : $no('noindex_thin', 'seeded city below the content threshold');
+            }
             $places = (int) ($e['place_count'] ?? 0);
             $hasText = trim((string) ($e['body'] ?? '')) !== '' || trim((string) ($e['summary'] ?? '')) !== '';
             if ($places < RMT_IDX_DEST_MIN_PLACES && !$hasText) {

@@ -2,9 +2,9 @@
 <div class="wrap">
   <?php if (empty($v2Body)): /* views/destination_v2.php draws its own hero and includes the rest */ ?>
   <p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('explore')) ?>">Explore</a> / <a href="<?= e(url(rmt_country_path((string)$d['country']))) ?>"><?= e($d['country']) ?></a> / <?= e($d['name']) ?></p>
-  <div class="dest-hero">
+  <div class="dest-hero"<?= empty($d['hero_url']) ? ' style="min-height:220px;background:linear-gradient(135deg,#0b1f2a,#0f766e)"' : '' ?>>
     <?php $heroSet = rmt_media_srcset($d['hero_url'] ?? null); ?>
-    <img src="<?= e(abs_url($d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="(max-width: 1140px) 100vw, 1100px"<?php endif; ?> fetchpriority="high" alt="<?= e($d['name'].', '.$d['country']) ?>">
+    <?php if (!empty($d['hero_url'])): ?><img src="<?= e(abs_url($d['hero_url'])) ?>"<?php if ($heroSet !== ''): ?> srcset="<?= e($heroSet) ?>" sizes="(max-width: 1140px) 100vw, 1100px"<?php endif; ?> fetchpriority="high" alt="<?= e($d['name'].', '.$d['country']) ?>"><?php endif; ?>
     <div class="overlay">
       <div>
         <span class="chip chip-cap"><?= e($d['category']) ?></span>
@@ -248,6 +248,7 @@
         </div></div>
       <?php endif; ?>
 
+      <?php include __DIR__ . '/_hub_partners.php'; ?>
       <?php include __DIR__ . '/_city_scams.php'; ?>
 
       <?php
