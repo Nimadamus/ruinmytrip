@@ -220,15 +220,71 @@ function rmt_buddy_toggle_interest(array $post, int $userId, string $note = ''):
     return ['ok' => true, 'action' => 'interested'];
 }
 
-/** The poster answers one person. Only the poster, only an existing hand. */
+/** How many people the poster has said yes to. */
+function rmt_buddy_accepted_count(int $postId): int {
+    return (int) (q_one("SELECT COUNT(*) n FROM buddy_interest WHERE post_id=? AND state='accepted'", [$postId])['n'] ?? 0);
+}
+
+/** Every place the poster asked for is taken. */
+function rmt_buddy_is_full(array $post): bool {
+    return rmt_buddy_accepted_count((int) $post['id']) >= max(1, (int) $post['spots']);
+}
+
+/**
+ * The poster answers one person. Only the poster, only an existing hand.
+ *
+ * This is the second half of the handshake: the traveler asked (rmt_buddy_toggle_interest), and
+ * nothing passes between the two of them until the poster says yes here. rmt_message_allowed()
+ * reads the accepted row through rmt_buddy_mutual(), so a pending or declined request can never
+ * open a conversation.
+ *
+ * A post has a number of places (spots). Accepting is refused once they are taken, and taking the
+ * last one closes the post to new requests. The count and the write happen under a lock on the
+ * post row, so two accepts sent at once cannot both take the last place.
+ */
 function rmt_buddy_decide(array $post, int $ownerId, int $userId, string $answer): bool {
     if ($ownerId !== (int) $post['user_id'] || !in_array($answer, ['accepted', 'declined'], true)) return false;
-    $row = q_one('SELECT state FROM buddy_interest WHERE post_id=? AND user_id=?', [(int) $post['id'], $userId]);
-    if (!$row || $row['state'] === $answer) return false;
-    q_run('UPDATE buddy_interest SET state=?, decided_at=? WHERE post_id=? AND user_id=?',
-          [$answer, date('Y-m-d H:i:s'), (int) $post['id'], $userId]);
-    if ($answer === 'accepted') rmt_buddy_notify($userId, 'buddy_accepted', $ownerId, (int) $post['id']);
+    $pid = (int) $post['id'];
+    $now = date('Y-m-d H:i:s');
+    $pdo = db();
+    $own = !$pdo->inTransaction();
+    if ($own) $pdo->beginTransaction();
+    try {
+        q_run('UPDATE buddy_posts SET status = status WHERE id = ?', [$pid]);          // row lock
+        $row = q_one('SELECT state FROM buddy_interest WHERE post_id=? AND user_id=?', [$pid, $userId]);
+        $live = q_one('SELECT status, spots FROM buddy_posts WHERE id = ?', [$pid]);
+        $spots = max(1, (int) ($live['spots'] ?? 1));
+        $refuse = !$row || !$live || $row['state'] === $answer;
+        if (!$refuse && $answer === 'accepted') {
+            $refuse = !in_array($live['status'], ['open', 'closed'], true)
+                   || rmt_buddy_accepted_count($pid) >= $spots
+                   || (function_exists('rmt_is_blocked') && rmt_is_blocked($ownerId, $userId));
+        }
+        if ($refuse) { if ($own) $pdo->rollBack(); return false; }
+        q_run('UPDATE buddy_interest SET state=?, decided_at=? WHERE post_id=? AND user_id=?', [$answer, $now, $pid, $userId]);
+        if ($answer === 'accepted' && rmt_buddy_accepted_count($pid) >= $spots) {
+            q_run("UPDATE buddy_posts SET status='closed', updated_at=? WHERE id=? AND status='open'", [$now, $pid]);
+        }
+        if ($own) $pdo->commit();
+    } catch (\Throwable $e) {
+        if ($own && $pdo->inTransaction()) $pdo->rollBack();
+        throw $e;
+    }
+    if ($answer === 'accepted') rmt_buddy_notify($userId, 'buddy_accepted', $ownerId, $pid);
     return true;
+}
+
+/**
+ * Stamp completed_at on every buddy trip whose last day has passed. The trip's status is left as
+ * its owner set it; completed_at is only the fact "this is over, as of when", which is what opens
+ * the private vouch / flag window. Returns how many were stamped.
+ */
+function rmt_buddy_complete_past(?string $now = null): int {
+    $now ??= date('Y-m-d H:i:s');
+    $st = db()->prepare("UPDATE buddy_posts SET completed_at = ?
+                          WHERE completed_at IS NULL AND date_to < ? AND status IN ('open','closed','completed')");
+    $st->execute([$now, substr($now, 0, 10)]);
+    return $st->rowCount();
 }
 
 /* ---------- locals ---------- */
@@ -1056,8 +1112,15 @@ function buddy_decide(array $a): void {
     $b = rmt_buddy_get((int) $a['id']); if (!$b) not_found();
     $answer = (string) input('answer');
     // Acceptance opens messaging, the same moment a trip connect emails about, so it emails too.
-    if (rmt_buddy_decide($b, (int) $me['id'], (int) $a['user_id'], $answer) && $answer === 'accepted' && function_exists('rmt_notify_email_direct')) {
-        rmt_notify_email_direct((int) $a['user_id'], 'You can message your travel buddy now', 'A traveler accepted your request to join their trip on RuinMyTrip.', '/buddy/' . (int) $b['id'], 'your request was accepted');
+    $wasFull = $answer === 'accepted' && (int) $me['id'] === (int) $b['user_id'] && rmt_buddy_is_full($b);
+    $done = rmt_buddy_decide($b, (int) $me['id'], (int) $a['user_id'], $answer);
+    if ($done && $answer === 'accepted') {
+        if (function_exists('rmt_notify_email_direct')) {
+            rmt_notify_email_direct((int) $a['user_id'], 'You can message your travel buddy now', 'A traveler accepted your request to join their trip on RuinMyTrip.', '/buddy/' . (int) $b['id'], 'your request was accepted');
+        }
+        if (rmt_buddy_is_full($b)) flash('That fills your trip, so it is now closed to new requests. You can reopen it from this page.');
+    } elseif (!$done && $wasFull) {
+        flash('Your trip is full. Raise the number of people you are looking for to accept somebody else.');
     }
     redirect(rmt_return_to('/buddy/' . (int) $b['id']));
 }
@@ -1073,6 +1136,7 @@ function buddy_status(array $a): void {
     if ($mine && in_array($b['status'], RMT_BUDDY_VISIBLE_STATUSES, true) && in_array($to, $allowed, true)) {
         if ($to === 'open' && (string) $b['date_to'] < date('Y-m-d')) { flash('That trip is over, so it cannot be reopened.'); redirect('/buddy/' . (int) $b['id']); }
         q_run('UPDATE buddy_posts SET status=?, updated_at=? WHERE id=?', [$to, date('Y-m-d H:i:s'), (int) $b['id']]);
+        if ($to === 'completed') q_run('UPDATE buddy_posts SET completed_at=? WHERE id=? AND completed_at IS NULL', [date('Y-m-d H:i:s'), (int) $b['id']]);
         if ($to === 'removed') { flash('Trip cancelled and removed.'); redirect('/buddies/mine'); }
         if ($to === 'completed') { flash('Marked as completed. It stays in your past trips, and is no longer listed.'); redirect('/buddies/mine'); }
     }

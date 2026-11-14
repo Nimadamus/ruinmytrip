@@ -132,6 +132,11 @@ $buddy = ins('buddy_posts', ['user_id' => $dana, 'trip_type' => 'city', 'title' 
 ins('buddy_interest', ['post_id' => $buddy, 'user_id' => $omar, 'state' => 'pending', 'created_at' => $now]);
 $omarBuddy = ins('buddy_posts', ['user_id' => $omar, 'trip_type' => 'city', 'title' => 'Omar buddy', 'where_text' => 'Lisbon', 'date_from' => '2026-12-01', 'date_to' => '2026-12-05', 'description' => 'o', 'status' => 'open', 'created_at' => $now]);
 ins('buddy_interest', ['post_id' => $omarBuddy, 'user_id' => $dana, 'note' => 'dana note', 'state' => 'pending', 'created_at' => $now]);
+$danaIn = ins('active_checkins', ['user_id' => $dana, 'destination_id' => $dest, 'created_at' => $now, 'expires_at' => '2999-01-01 00:00:00']);
+$omarIn = ins('active_checkins', ['user_id' => $omar, 'destination_id' => $dest, 'created_at' => $now, 'expires_at' => '2999-01-01 00:00:00']);
+$room = ins('city_rooms', ['destination_id' => $dest, 'created_at' => $now]);
+ins('city_room_messages', ['room_id' => $room, 'user_id' => $dana, 'checkin_id' => $danaIn, 'body' => 'Dana in the city room', 'created_at' => $now]);
+ins('city_room_messages', ['room_id' => $room, 'user_id' => $omar, 'checkin_id' => $omarIn, 'body' => 'Omar in the city room', 'created_at' => $now]);
 $collSolo = ins('collections', ['user_id' => $dana, 'slug' => 'dana-list', 'title' => 'Dana list', 'status' => 'published', 'created_at' => $now]);
 ins('collection_members', ['collection_id' => $collSolo, 'user_id' => $dana, 'role' => 'owner', 'status' => 'active', 'joined_at' => $now]);
 $collGroup = ins('collections', ['user_id' => $dana, 'slug' => 'group-list', 'title' => 'Group list', 'status' => 'published', 'created_at' => $now]);
@@ -281,6 +286,11 @@ ok('her host profile and every reference by or about her are gone',
     cnt('SELECT COUNT(*) c FROM host_profiles WHERE user_id=?', [$dana]) === 0
     && cnt('SELECT COUNT(*) c FROM member_references WHERE from_user_id=? OR to_user_id=?', [$dana, $dana]) === 0
     && cnt('SELECT COUNT(*) c FROM stay_requests WHERE guest_id=? OR host_id=?', [$dana, $dana]) === 0);
+ok('her check-ins and city room lines are gone, and other members keep theirs',
+    cnt('SELECT COUNT(*) c FROM active_checkins WHERE user_id=?', [$dana]) === 0
+    && cnt('SELECT COUNT(*) c FROM city_room_messages WHERE user_id=?', [$dana]) === 0
+    && cnt('SELECT COUNT(*) c FROM active_checkins WHERE user_id=?', [$omar]) === 1
+    && cnt('SELECT COUNT(*) c FROM city_room_messages WHERE user_id=?', [$omar]) === 1);
 ok('her trip chat lines are gone and those of Omar stay',
     cnt("SELECT COUNT(*) c FROM trip_messages WHERE body LIKE 'Dana%'") === 0
     && cnt("SELECT COUNT(*) c FROM trip_messages WHERE trip_id=? AND user_id=?", [$tripShared, $omar]) === 1);

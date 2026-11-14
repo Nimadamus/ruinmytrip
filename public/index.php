@@ -214,6 +214,12 @@ $routes = [
     ['POST', '#^/buddy/(?<id>\d+)/interest$#', 'buddy_interest'],
     ['POST', '#^/buddy/(?<id>\d+)/decide/(?<user_id>\d+)$#', 'buddy_decide'],
     ['POST', '#^/buddy/(?<id>\d+)/status$#',   'buddy_status'],
+    // Right now check-ins and the city room they open (app/checkins.php).
+    ['POST', '#^/checkin$#',                   'checkin_start'],
+    ['POST', '#^/checkin/end$#',               'checkin_end'],
+    ['GET',  '#^/city-room/(?<id>\d+)/feed$#', 'city_room_feed'],
+    ['POST', '#^/city-room/(?<id>\d+)/message$#', 'city_room_post'],
+    ['GET',  '#^/cron/checkins$#',             'cron_checkins'],
     ['GET',  '#^/going$#',                     'going_index'],
     ['POST', '#^/going$#',                     'going_save'],
     ['POST', '#^/going/delete$#',              'going_delete'],
