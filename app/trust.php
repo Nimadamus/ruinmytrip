@@ -13,9 +13,10 @@
  * Every line this returns is a count of public rows the viewer could go and count by hand.
  *
  * Vouches and flags (app/trust_reviews.php, 2026-11-14) live inside this rule, not outside it. Who
- * vouched or flagged is private. The result is not: a member sees their own vouch count, flag
- * count, score and the arithmetic on /trust, and the one consequence, the restricted state, is
- * announced to them on every page. No score is used to hide or reorder a member out of their sight.
+ * vouched or flagged is private. A member's score and counts are shown to that member and to
+ * moderators, never publicly, and nothing is ranked by them. Flags and scores restrict nobody:
+ * only a moderator can, after a written review, and the member is told, shown the reason, and can
+ * appeal. No score is used to hide or reorder a member out of their sight.
  *
  * The signals are also deliberately the ones that are hard to fake in bulk: an account cannot be a
  * year old on its first day, and reviews and trips take work. Nothing here is a guarantee, and the

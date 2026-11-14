@@ -224,7 +224,9 @@ $routes = [
     // A member's own trust numbers, and the vouch or flag they can leave (app/trust_reviews.php).
     ['GET',  '#^/trust$#',                     'trust_page'],
     ['POST', '#^/trust/review$#',              'trust_review'],
-    ['POST', '#^/admin/trust/lift$#',          'admin_trust_lift'],
+    ['POST', '#^/trust/appeal$#',              'trust_appeal'],
+    ['POST', '#^/admin/trust/act$#',           'admin_trust_act'],
+    ['POST', '#^/admin/trust/appeal$#',        'admin_trust_appeal'],
     ['GET',  '#^/going$#',                     'going_index'],
     ['POST', '#^/going$#',                     'going_save'],
     ['POST', '#^/going/delete$#',              'going_delete'],

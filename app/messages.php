@@ -395,7 +395,7 @@ function messages_send(array $a): void {
         flash($gate['reason'] === 'blocked'
             ? 'You cannot message this traveler.'
             : ($gate['reason'] === 'restricted'
-                ? 'Your messaging is paused while your account is restricted. Your trust page explains why.'
+                ? 'Your messaging is paused while your account is restricted. Your trust page has the reason and how to appeal.'
                 : 'You can message a traveler once you have both said you would like to meet.'));
         redirect($return);
     }

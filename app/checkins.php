@@ -161,7 +161,7 @@ function rmt_city_room_post(int $userId, int $destinationId, string $body, ?stri
     $c = rmt_city_room_member($userId, $destinationId, $now);
     if (!$c) return ['ok' => false, 'error' => 'Check in to this city to join its room.'];
     if (function_exists('rmt_trust_restricted') && rmt_trust_restricted($userId)) {
-        return ['ok' => false, 'error' => 'Your messaging is paused while your account is restricted. Your trust page explains why.'];
+        return ['ok' => false, 'error' => 'Your messaging is paused while your account is restricted. Your trust page has the reason and how to appeal.'];
     }
     $body = trim($body);
     if ($body === '') return ['ok' => false, 'error' => 'Write something first.'];

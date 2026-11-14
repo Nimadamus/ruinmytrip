@@ -121,28 +121,6 @@
       </table>
     </div>
   <?php endif; ?>
-  <?php if (!empty($restricted)): ?>
-    <h2 style="margin-top:28px">Restricted by traveler flags</h2>
-    <p class="hint">These members cannot send messages. Read the flags. If they do not hold up, set them aside and the restriction lifts. If they do, suspend the account from a report.</p>
-    <?php foreach ($restricted as $rm): ?>
-      <div class="card" style="margin:12px 0"><div class="card-body">
-        <p style="margin:0 0 6px"><a href="<?= e(url('u/' . $rm['username'])) ?>"><b>@<?= e((string) $rm['username']) ?></b></a>
-          <span class="muted">score <?= (int) $rm['trust_score'] ?> &middot; <?= (int) $rm['vouch_count'] ?> vouched &middot; <?= (int) $rm['flag_count'] ?> flagged
-            &middot; restricted <?= e(ago((string) $rm['trust_state_at'])) ?></span></p>
-        <ul style="margin:0 0 8px">
-          <?php foreach ($rm['flags'] as $fl): ?>
-            <li>@<?= e((string) ($fl['reviewer'] ?? 'deleted account')) ?> <span class="muted">(<?= e((string) $fl['context_type']) ?>, <?= e(ago((string) $fl['created_at'])) ?>)</span>:
-              <?= $fl['note'] !== null && $fl['note'] !== '' ? e((string) $fl['note']) : '<span class="muted">no note</span>' ?></li>
-          <?php endforeach; ?>
-        </ul>
-        <form method="post" action="<?= e(url('admin/trust/lift')) ?>" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <?= csrf_field() ?>
-          <input type="hidden" name="user_id" value="<?= (int) $rm['id'] ?>">
-          <input type="text" name="note" placeholder="Why (recorded in the log)" maxlength="500" style="flex:1;min-width:220px">
-          <button class="btn btn-ghost">Set flags aside and lift</button>
-        </form>
-      </div></div>
-    <?php endforeach; ?>
-  <?php endif; ?>
+  <?php if (isset($trust)) include __DIR__ . '/_admin_trust.php'; ?>
   <div style="height:40px"></div>
 </div>

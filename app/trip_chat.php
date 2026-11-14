@@ -112,7 +112,7 @@ function rmt_trip_chat_audience(array $trip, int $exceptId): array {
 function rmt_trip_chat_post(array $trip, array $me, string $body): array {
     if (!rmt_trip_chat_allowed($trip, $me)) return ['ok' => false, 'error' => 'Only the travelers on this trip can talk here.'];
     if (function_exists('rmt_trust_restricted') && rmt_trust_restricted((int) $me['id'])) {
-        return ['ok' => false, 'error' => 'Your messaging is paused while your account is restricted. Your trust page explains why.'];
+        return ['ok' => false, 'error' => 'Your messaging is paused while your account is restricted. Your trust page has the reason and how to appeal.'];
     }
     $body = trim($body);
     if ($body === '') return ['ok' => false, 'error' => 'Write something first.'];

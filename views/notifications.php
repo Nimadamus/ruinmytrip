@@ -347,7 +347,9 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
             <b><?= e($who) ?></b> sent you a message.
           <?php endif; ?>
         <?php elseif ($n['type'] === 'trust_restricted'): ?>
-          <a href="<?= e(url('trust')) ?>"><b>Your account is restricted.</b> Travelers you met flagged it, so sending messages is paused. See your numbers and what happens next.</a>
+          <a href="<?= e(url('trust')) ?>"><b>Your account is restricted.</b> A moderator paused your messaging after reviewing flags from travelers you met. See the reason and how to appeal.</a>
+        <?php elseif ($n['type'] === 'trust_appeal_upheld'): ?>
+          <a href="<?= e(url('trust')) ?>"><b>Your appeal was answered.</b> The restriction stays for now. See the answer.</a>
         <?php elseif ($n['type'] === 'trust_restored'): ?>
           <a href="<?= e(url('trust')) ?>"><b>Your messaging is back on.</b> The restriction on your account was lifted.</a>
         <?php else: ?>
