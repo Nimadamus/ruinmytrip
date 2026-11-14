@@ -60,8 +60,10 @@ $cases = [];
    62 from 2026-10-30: one read of city coordinates for "Near {city}" (rmt_nearby_destinations),
    so every city page links to other cities even before travelers post dates for two of them.
    63 from 2026-10-30: the city's published guide (one row), linked from the page because the 80
-   editorial guides were otherwise reachable only from the unlinked /guides index. */
-$cases[] = ['the city page', 63, static function () use ($dest) {
+   editorial guides were otherwise reachable only from the unlinked /guides index.
+   64 from 2026-11-14: one primary key read of the signed-in member's trust state, for the notice
+   a restricted member is shown on every page (kept out of current_user() on purpose). */
+$cases[] = ['the city page', 64, static function () use ($dest) {
     destination(['slug' => (string) $dest['slug']]);
 }];
 

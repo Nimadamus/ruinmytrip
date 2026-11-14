@@ -92,7 +92,11 @@ $gone = !empty($gone);
            no next step is how a product feels broken rather than careful. */ ?>
   <?php if (!$gate['ok'] && $gate['reason'] !== 'blocked'): ?>
     <div class="msg-gate">
-      <?php if ($gate['reason'] === 'gone'): ?>
+      <?php if ($gate['reason'] === 'restricted'): ?>
+        <p style="margin:0 0 4px"><b>Your messaging is paused.</b></p>
+        <p class="hint" style="margin:0">Your account is restricted because travelers you met flagged it. You can read this conversation but not reply.
+          <a href="<?= e(url('trust')) ?>">See your trust page</a> for your numbers and what happens next.</p>
+      <?php elseif ($gate['reason'] === 'gone'): ?>
         <p style="margin:0"><b>This member deleted their account.</b>
           <span class="hint">You can still read this conversation, but you cannot reply.</span></p>
       <?php elseif ($gate['reason'] === 'requested'): ?>

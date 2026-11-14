@@ -126,6 +126,13 @@
   </div>
 </header>
 <?php endif; ?>
+<?php /* A restricted member is told on every page, never left to find out by a message failing. */
+      if (function_exists('rmt_trust_restricted') && ($rmtTrustMe = current_user()) && rmt_trust_restricted((int) $rmtTrustMe['id'])): ?>
+<div class="wrap trust-notice" role="status" style="margin-top:12px;margin-bottom:14px"><div style="padding:10px 14px;border-left:4px solid #b45309;background:#fff7ed;color:#7c2d12;border-radius:8px">
+  <b>Your account is restricted.</b> Sending messages is paused because travelers you met flagged your account.
+  <a href="<?= e(url('trust')) ?>" style="color:inherit;text-decoration:underline">See why and what happens next</a>.
+</div></div>
+<?php endif; ?>
 <?php if ($f = flash()): ?><div class="flash wrap"><?= e($f) ?></div><?php endif; ?>
 <?php /* Arrived from one of our social posts: say which, and offer what it asked (app/social_landing.php). */
       if (function_exists('rmt_social_landing') && ($rmtSocial = rmt_social_landing())): ?>

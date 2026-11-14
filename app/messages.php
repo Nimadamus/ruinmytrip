@@ -197,6 +197,9 @@ function rmt_message_request_count(int $uid): int {
 function rmt_message_allowed(int $meId, int $themId): array {
     if ($meId < 1 || $themId < 1 || $meId === $themId) return ['ok' => false, 'reason' => 'self'];
     if (rmt_is_blocked($meId, $themId)) return ['ok' => false, 'reason' => 'blocked'];
+    /* A restricted member's messaging is paused, including in threads that already exist. They can
+       still read; the thread tells them why they cannot write (app/trust_reviews.php). */
+    if (function_exists('rmt_trust_restricted') && rmt_trust_restricted($meId)) return ['ok' => false, 'reason' => 'restricted'];
 
     $convId = rmt_find_conversation($meId, $themId);
     if ($convId && q_one('SELECT 1 FROM messages WHERE conversation_id = ? LIMIT 1', [$convId])) {
@@ -391,7 +394,9 @@ function messages_send(array $a): void {
     if (!$gate['ok']) {
         flash($gate['reason'] === 'blocked'
             ? 'You cannot message this traveler.'
-            : 'You can message a traveler once you have both said you would like to meet.');
+            : ($gate['reason'] === 'restricted'
+                ? 'Your messaging is paused while your account is restricted. Your trust page explains why.'
+                : 'You can message a traveler once you have both said you would like to meet.'));
         redirect($return);
     }
 

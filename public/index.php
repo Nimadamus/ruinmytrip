@@ -221,6 +221,10 @@ $routes = [
     ['GET',  '#^/city-room/(?<id>\d+)/feed$#', 'city_room_feed'],
     ['POST', '#^/city-room/(?<id>\d+)/message$#', 'city_room_post'],
     ['GET',  '#^/cron/checkins$#',             'cron_checkins'],
+    // A member's own trust numbers, and the vouch or flag they can leave (app/trust_reviews.php).
+    ['GET',  '#^/trust$#',                     'trust_page'],
+    ['POST', '#^/trust/review$#',              'trust_review'],
+    ['POST', '#^/admin/trust/lift$#',          'admin_trust_lift'],
     ['GET',  '#^/going$#',                     'going_index'],
     ['POST', '#^/going$#',                     'going_save'],
     ['POST', '#^/going/delete$#',              'going_delete'],

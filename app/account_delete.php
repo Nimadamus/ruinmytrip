@@ -79,6 +79,8 @@ const RMT_ACCOUNT_DELETE_INVENTORY = [
     'trip_messages'       => 'delete: their lines in trip chats; a trip deleted with them takes its chat',
     'trip_chat_reads'     => 'delete',
     'active_checkins'     => 'delete: where they checked in, live or past',
+    'user_reviews'        => 'delete: vouches and flags they left and received; the people they reviewed are counted again',
+    'trust_events'        => 'delete: their own trust history; a moderator who is deleted is unlinked from the events they made',
     'city_room_messages'  => 'delete: their lines in city rooms',
     'host_profiles'       => 'delete',
     'stay_requests'       => 'delete: stays they asked for and stays they hosted',
@@ -314,6 +316,11 @@ function rmt_account_delete(int $uid): array {
         } while ($n > 0);
         $x("UPDATE comments SET body = '', status = 'removed', updated_at = ? WHERE user_id = ?", [$now, $uid]);
 
+        /* The travelers this member vouched for or flagged: once those reviews are gone their
+           numbers are counted again, so nobody stays restricted on the word of a deleted account. */
+        $trustSubjects = array_map('intval', array_column(
+            $pdo->query('SELECT DISTINCT subject_id FROM user_reviews WHERE reviewer_id = ' . (int) $uid)->fetchAll(PDO::FETCH_ASSOC), 'subject_id'));
+
         // Everything that is about the person and nobody else.
         foreach ([
             'DELETE FROM likes WHERE user_id = ?',
@@ -325,6 +332,9 @@ function rmt_account_delete(int $uid): array {
             'DELETE FROM trip_chat_reads WHERE user_id = ?',
             'DELETE FROM city_room_messages WHERE user_id = ?',
             'DELETE FROM active_checkins WHERE user_id = ?',
+            'DELETE FROM user_reviews WHERE reviewer_id = ? OR subject_id = ?',
+            'DELETE FROM trust_events WHERE user_id = ?',
+            'UPDATE trust_events SET actor_id = NULL WHERE actor_id = ?',
             'DELETE FROM host_profiles WHERE user_id = ?',
             'DELETE FROM stay_requests WHERE guest_id = ? OR host_id = ?',
             'DELETE FROM member_references WHERE from_user_id = ? OR to_user_id = ?',
@@ -351,6 +361,7 @@ function rmt_account_delete(int $uid): array {
         ] as $sql) {
             $x($sql, substr_count($sql, '?') === 2 ? [$uid, $uid] : [$uid]);
         }
+        if (function_exists('rmt_trust_recompute')) foreach ($trustSubjects as $sid) rmt_trust_recompute($sid);
         // Alerts signed up for by address before the account existed are theirs too.
         $x('DELETE FROM going_cards WHERE alert_id IN (SELECT id FROM match_alerts WHERE user_id = ? OR LOWER(email) = ?)', [$uid, $oldEmail]);
         $x('DELETE FROM match_alerts WHERE user_id = ? OR LOWER(email) = ?', [$uid, $oldEmail]);

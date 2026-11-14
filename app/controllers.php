@@ -6278,6 +6278,7 @@ function admin_moderation(array $a): void {
     view('admin_moderation', [
         'queue'   => rmt_moderation_queue(100),
         'history' => rmt_moderation_history(40),
+        'restricted' => rmt_trust_restricted_queue(50),
     ], ['title' => 'Moderation queue | RuinMyTrip admin']);
 }
 

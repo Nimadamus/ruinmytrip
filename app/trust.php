@@ -12,6 +12,11 @@
  * "quality" ranking of human beings; any signal a person cannot see and check for themselves.
  * Every line this returns is a count of public rows the viewer could go and count by hand.
  *
+ * Vouches and flags (app/trust_reviews.php, 2026-11-14) live inside this rule, not outside it. Who
+ * vouched or flagged is private. The result is not: a member sees their own vouch count, flag
+ * count, score and the arithmetic on /trust, and the one consequence, the restricted state, is
+ * announced to them on every page. No score is used to hide or reorder a member out of their sight.
+ *
  * The signals are also deliberately the ones that are hard to fake in bulk: an account cannot be a
  * year old on its first day, and reviews and trips take work. Nothing here is a guarantee, and the
  * page that shows it says so.

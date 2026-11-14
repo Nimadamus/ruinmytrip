@@ -156,6 +156,13 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     <aside class="buddy-side">
       <?php if ($me): ?>
         <?php $ckDest = null; $ckBack = '/buddies'; $ckPick = (int) ($bf['dest_id'] ?? 0); include __DIR__ . '/_checkin_card.php'; ?>
+        <?php if (function_exists('rmt_trust_reviewable') && ($rmtOpen = count(rmt_trust_reviewable((int) $me['id'])))): ?>
+          <div class="card"><div class="card-body">
+            <h3><?= $rmtOpen === 1 ? 'One traveler you met' : (int) $rmtOpen . ' travelers you met' ?></h3>
+            <p class="hint">Vouch for the people you would travel with again, and flag anybody who should not be here. It is private.</p>
+            <a class="btn btn-primary btn-sm" href="<?= e(url('trust')) ?>">Vouch or flag</a>
+          </div></div>
+        <?php endif; ?>
         <div class="card"><div class="card-body">
           <h3>Live somewhere travelers go?</h3>
           <p class="hint">List yourself as a local who is happy to meet travelers. Only your city shows, and you choose who to accept.</p>
