@@ -63,6 +63,10 @@ php /var/www/html/scripts/search_maintenance.php --quiet   || echo "entrypoint: 
 # neighborhood seed decides which areas have enough density. One query per entity group.
 php /var/www/html/scripts/sitemap_build.php --quiet   || echo "entrypoint: sitemap build reported errors, continuing"
 
+# Tell confirmed "before you go" signups when a city's tax or official warnings changed in this
+# deploy (app/before_you_go.php). Idempotent: a restart with nothing changed sends nothing.
+php /var/www/html/scripts/byg_notify.php   || echo "entrypoint: byg notify reported errors, continuing"
+
 sed -i "s/Listen 80/Listen ${PORT}/" /etc/apache2/ports.conf
 sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/000-default.conf
 exec apache2-foreground
