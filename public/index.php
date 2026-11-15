@@ -43,6 +43,13 @@ $routes = [
     ['POST', '#^/alerts/confirm$#',            'alert_confirm_submit'],
     ['GET',  '#^/alerts/off$#',                'alert_off'],
     ['POST', '#^/alerts/off$#',                'alert_off'],
+    // Before you go updates on tax and warnings pages (app/before_you_go.php).
+    ['POST', '#^/updates$#',                   'byg_submit'],
+    ['GET',  '#^/updates/sent$#',              'byg_sent'],
+    ['GET',  '#^/updates/confirm/(?<token>[a-f0-9]{48})$#', 'byg_confirm_form'],
+    ['POST', '#^/updates/confirm$#',           'byg_confirm_submit'],
+    ['GET',  '#^/updates/off$#',               'byg_off'],
+    ['POST', '#^/updates/off$#',               'byg_off'],
     ['POST', '#^/im-going$#',                  'going_card_create'],
     ['GET',  '#^/im-going/(?<code>[a-z0-9]{6,16})$#', 'going_card_show'],
     ['POST', '#^/answer$#',                    'visitor_answer_submit'],

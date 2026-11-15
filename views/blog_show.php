@@ -42,6 +42,9 @@
       <p class="muted" style="margin:14px 0 0">Tourist tax in other cities:
         <?php foreach (rmt_tt_neighbours($ttCity, 6) as $i => $ttN): ?><?= $i ? ', ' : ' ' ?><a href="<?= e(url('blog/' . $ttN['note'])) ?>"><?= e($ttN['name']) ?></a><?php endforeach; ?>.</p>
     <?php endif; ?>
+    <?php $byg = ['topic' => 'tax', 'city' => (string) ($ttCity ?? ''), 'name' => $ttCity !== null ? (string) (rmt_tt_cities()[$ttCity]['name'] ?? '') : '',
+                  'source' => 'tax_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];
+          include __DIR__ . '/_byg_form.php'; ?>
   <?php endif; ?>
   <?php $bm = $blogMore ?? []; if (!empty($blogDest) && (!empty($bm['posts']) || !empty($bm['guide']) || !empty($bm['buddies']))): ?>
     <div class="card" style="margin:26px 0 0"><div class="card-body">

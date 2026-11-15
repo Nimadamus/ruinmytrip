@@ -98,6 +98,10 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
     <p class="muted">Worked out from the same rates as the calculator above. VAT and booking fees are not included.</p>
   </section>
 
+  <?php $byg = ['topic' => 'tax', 'city' => $slug, 'name' => (string) ($city['name'] ?? ''), 'source' => 'tax_calc',
+                'return' => '/tourist-tax-calculator' . ($slug !== '' ? '?city=' . rawurlencode($slug) : '') . '#byg'];
+        include __DIR__ . '/_byg_form.php'; ?>
+
   <section class="tt-faq">
     <h2>Questions</h2>
     <?php foreach (rmt_tt_faq() as [$q, $a]): ?>

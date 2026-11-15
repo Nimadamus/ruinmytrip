@@ -69,6 +69,10 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
 
   <?php /* The way from reading about what goes wrong to the people going. The count is real or it
            is not shown: with nobody there yet the invitation is to be the first, said plainly. */ ?>
+  <?php $byg = ['topic' => 'scams', 'city' => (string) $d['slug'], 'name' => $city, 'source' => 'warnings',
+                'return' => '/warnings/' . (string) $d['slug'] . '#byg'];
+        include __DIR__ . '/_byg_form.php'; ?>
+
   <div class="card warnings-cta" style="margin:18px 0;border-left:4px solid #0f766e"><div class="card-body">
     <?php if ($partners > 0): ?>
       <h2 class="h-card" style="margin:0 0 6px">Do not get caught out in <?= e($city) ?> alone</h2>

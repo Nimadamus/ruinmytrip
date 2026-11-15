@@ -50,3 +50,6 @@ $checked = $scams['checked'] ?: ($scams['items'][0]['checked'] ?? '');
     <a class="btn btn-accent btn-sm" data-cta="city_scams" href="<?= e(url('review/new?src=city_scams&destination=' . (int) $d['id'])) ?>">Got caught out here? Warn the next traveler</a>
   </p>
 </div></div>
+<?php $byg = ['topic' => 'scams', 'city' => (string) $d['slug'], 'name' => (string) $d['name'], 'source' => 'city_scams',
+              'return' => '/d/' . (string) $d['slug'] . '#byg'];
+      include __DIR__ . '/_byg_form.php'; ?>

@@ -62,6 +62,7 @@ require BASE_PATH . '/app/onboarding_pending.php';
 require BASE_PATH . '/app/plan_first.php';
 require BASE_PATH . '/app/review_drafts.php';
 require BASE_PATH . '/app/match_alerts.php';
+require BASE_PATH . '/app/before_you_go.php';
 require BASE_PATH . '/app/going_cards.php';
 require BASE_PATH . '/app/recognitions.php';
 require BASE_PATH . '/app/growth_scorecard.php';
