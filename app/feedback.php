@@ -82,11 +82,13 @@ function rmt_feedback_submit(string $kind, ?int $placeId, string $message,
     if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) $email = '';
     if (mb_strlen($email) > 190) $email = '';
 
+    // topic (migration 127) only when there is one, so a correction writes exactly what it always did.
+    $hasTopic = $topic !== null && $topic !== '';
     $id = (int) q_run(
-        "INSERT INTO feedback (kind, place_id, message, contact_email, reported_by, status, created_at, topic)
-         VALUES (?,?,?,?,?,'pending',?,?)",
-        [$kind, $placeId, $message, $email !== '' ? $email : null, $userId, date('Y-m-d H:i:s'),
-         $topic !== null && $topic !== '' ? mb_substr($topic, 0, 120) : null]);
+        "INSERT INTO feedback (kind, place_id, message, contact_email, reported_by, status, created_at" . ($hasTopic ? ', topic' : '') . ")
+         VALUES (?,?,?,?,?,'pending',?" . ($hasTopic ? ',?' : '') . ")",
+        array_merge([$kind, $placeId, $message, $email !== '' ? $email : null, $userId, date('Y-m-d H:i:s')],
+                    $hasTopic ? [mb_substr($topic, 0, 120)] : []));
 
     return ['ok' => true, 'error' => null, 'id' => $id];
 }
