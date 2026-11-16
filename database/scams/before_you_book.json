@@ -1,0 +1,1382 @@
+{
+ "amsterdam-netherlands": {
+  "checked": "2026-11-16",
+  "checklist": [
+   {
+    "title": "Tourist tax rises to 16 percent in 2027",
+    "detail": "The tourist tax is 12.5 percent of the room price in 2026. On 23 September 2026 the city executive agreed one rate of 16 percent of the overnight price for 2027, and the city council passed the 2027 budget with it on 12 November 2026. The city's tax page still shows the 2026 rate.",
+    "check": "For any night in 2027, ask whether the quoted price already includes the 16 percent tourist tax.",
+    "kind": "tax",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/bestuur-organisatie/college/besluiten-college-burgemeester/nieuws-23-september-2026/",
+      "quote": "Het college van B en W stemt in met de eerste wijzigingsverordening Toeristenbelasting 2024, waarmee in 2027 een uniform tarief van 16% van de overnachtingsprijs gehanteerd wordt."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/municipal-taxes/tourist-tax/",
+      "quote": "Tourist tax: 12.5% of the overnight price (excluding VAT)"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Cruise passengers on a day stop pay a 15 euro tax",
+    "detail": "Amsterdam charges a day tourist tax of 15 euros per passenger when a cruise ship offers a day visit in the city. The cruise operator pays it to the city, so it can show up in your fare or port charges.",
+    "check": "If your cruise stops in Amsterdam, check your fare breakdown for the 15 euro day tourist tax.",
+    "kind": "tax",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/municipal-taxes/tourist-tax/",
+      "quote": "As a cruise operator, you pay tourist tax if you offer day visits to cruise passengers within the municipality of Amsterdam."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/municipal-taxes/tourist-tax/",
+      "quote": "Day tourist tax: €15 per passenger"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "A legal holiday rental shows a registration number",
+    "detail": "Anyone renting a home to tourists in Amsterdam needs a registration number and a permit, and must put the number in the listing. The host rents the whole home, is not there during your stay, and can take at most 4 guests. The limit is 30 nights a year per home.",
+    "check": "Before you book an apartment, look for the registration number in the listing and skip it if your group is more than 4 people.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/housing/holiday-rentals/",
+      "quote": "If you want to rent out your home or houseboat to tourists, you need a registration number and a holiday rental permit."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/wonen-bouwen-verbouwen/huisvestingsvergunning/regels-voor-vakantieverhuur/",
+      "quote": "Vermeld het registratienummer in uw advertenties en geef het door aan verhuurplatforms zoals Booking en Airbnb."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/wonen-bouwen-verbouwen/huisvestingsvergunning/regels-voor-vakantieverhuur/",
+      "quote": "U verhuurt aan maximaal 4 personen per verblijf."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/wonen-bouwen-verbouwen/huisvestingsvergunning/regels-voor-vakantieverhuur/",
+      "quote": "U verhuurt uw woning of woonboot maximaal 30 nachten per kalenderjaar."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Central rentals get only 15 nights a year, so bookings can be cut",
+    "detail": "Since 1 April 2026 homes in parts of the centre and De Pijp, including the Jordaan, the canal ring areas and Oude Pijp, may be rented to tourists for only 15 nights a year. A host who already used those nights may not rent for the rest of the year and has to change or cancel bookings that break the rule.",
+    "check": "If your rental is in the Jordaan, the canal ring or Oude Pijp, read the cancellation terms and keep a backup option.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/wonen-bouwen-verbouwen/huisvestingsvergunning/vergunning-vakantieverhuur-aanvragen/regels-vakantieverhuur-deel-centrum-en/",
+      "quote": "In een aantal wijken in het Centrum en de Pijp mag u uw woning vanaf 1 april 2026 nog maar 15 nachten per jaar verhuren aan toeristen."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/wonen-bouwen-verbouwen/huisvestingsvergunning/vergunning-vakantieverhuur-aanvragen/regels-vakantieverhuur-deel-centrum-en/",
+      "quote": "Uw reserveringen passen niet meer binnen de regels. Pas deze aan of annuleer ze."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "You cannot pay cash on Amsterdam trams",
+    "detail": "GVB trams and buses do not take cash. Only a tram conductor sells tickets on board, and night bus and night tram drivers do not sell them at all.",
+    "check": "Bring a contactless debit or credit card, or buy your GVB ticket before you board.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "GVB",
+      "url": "https://www.gvb.nl/en/Payment-options",
+      "quote": "Night bus or tram drivers do not sell cards. You can only purchase a card from a tram conductor. It is not possible to pay with cash, so make sure you can pay using a debit card or credit card."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "GVB day tickets do not work on NS trains",
+    "detail": "GVB paper tickets are valid only on GVB trams, buses, metro and ferries. They are not valid on other carriers such as NS, which runs the trains, and you still have to check in and out with them.",
+    "check": "If you plan a train trip, such as to Schiphol, budget for a separate NS ticket or use your bank card.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "GVB",
+      "url": "https://www.gvb.nl/en/Payment-options",
+      "quote": "These tickets are only valid in our vehicles, so they may not be used with other public transport carriers, such as Connexxion, EBS or NS."
+     },
+     {
+      "publisher": "GVB",
+      "url": "https://www.gvb.nl/en/Payment-options",
+      "quote": "To make a paper card a valid ticket, you still need to check in and check out."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The City Card does not cover the airport trip",
+    "detail": "Travel between Schiphol and the city is not included in the I amsterdam City Card. Trains run eight times an hour to Central Station and take about 17 minutes. On bus 397 the driver takes cards only, not cash.",
+    "check": "Plan and pay for your airport transfer separately from any City Card.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "I amsterdam (Amsterdam & Partners)",
+      "url": "https://www.iamsterdam.com/en/travel-stay/how-to-get-from-schiphol-airport-to-amsterdam",
+      "quote": "Travel to and from the airport is not included in the I amsterdam City Card"
+     },
+     {
+      "publisher": "I amsterdam (Amsterdam & Partners)",
+      "url": "https://www.iamsterdam.com/en/travel-stay/how-to-get-from-schiphol-airport-to-amsterdam",
+      "quote": "Trains run eight times an hour between Schiphol and Amsterdam Central Station"
+     },
+     {
+      "publisher": "I amsterdam (Amsterdam & Partners)",
+      "url": "https://www.iamsterdam.com/en/travel-stay/how-to-get-from-schiphol-airport-to-amsterdam",
+      "quote": "from the bus driver (debit or credit card only"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "No pub crawls, no street drinking, bars close at 2 AM",
+    "detail": "Pub crawls are banned in Amsterdam, and bars in the historic centre close at 2 AM. Drinking alcohol or smoking cannabis in the public area of the city centre is forbidden. Fines for nuisance run from 100 euros to 650 euros.",
+    "check": "Do not book a pub crawl or plan to drink outside in the centre.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/how-to-amsterdam/",
+      "quote": "No pub crawls: pub crawls are prohibited to maintain a peaceful atmosphere in our neighbourhoods"
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/how-to-amsterdam/",
+      "quote": "drinking alcohol and smoking cannabis is forbidden in the public area of the city centre. It can lead to fines."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/how-to-amsterdam/",
+      "quote": "Fines for nuisance vary from € 100,- to € 650,-."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Red Light District tours are not allowed",
+    "detail": "The city says guided tours are not permitted in the Red Light District. Any guided tour in the centre may have at most 15 people, may run only from 8 AM to 10 PM, and must not pass sex workers' windows.",
+    "check": "Skip any tour sold as a Red Light District walk, and check that a centre tour keeps its group to 15 or fewer.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/how-to-amsterdam/",
+      "quote": "Guided tours are not permitted."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/business/rules-permit-tours/",
+      "quote": "Guided tours in the city centre may have up to 15 participants."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/business/rules-permit-tours/",
+      "quote": "Tours must not pass sex workers' windows. This also applies to groups of up to 4 people."
+     },
+     {
+      "publisher": "City of Amsterdam",
+      "url": "https://www.amsterdam.nl/en/business/rules-permit-tours/",
+      "quote": "Tours may take place between 8 am and 10 pm."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Carry ID at all times or risk a 100 euro fine",
+    "detail": "Anyone aged 14 or over in the Netherlands must be able to show ID. Adults who cannot are fined 100 euros. For most visitors that means your passport.",
+    "check": "Plan to carry your passport or national ID card with you every day.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/netherlands/safety-and-security",
+      "quote": "Anyone aged 14 or over must always be able to show identification."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/netherlands/safety-and-security",
+      "quote": "For people aged 16 or over who fail to comply with the requirement to identify themselves, the fine is 100 euros."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "EU border checks now take your fingerprints and photo",
+    "detail": "The EU Entry/Exit System has been fully running since 10 April 2026. If you are not an EU citizen and come for a short stay, your face and fingerprints are recorded at the border instead of a passport stamp. Checks can also happen when you leave, so allow extra time at Schiphol.",
+    "check": "If you are not an EU citizen, allow extra time at the border on arrival and before your flight home.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/news/main-differences-between-ees-and-etias-what-travellers-need-know-2026-04-28_en",
+      "quote": "The EES is fully operational across all Schengen countries since 10 April 2026."
+     },
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/news/entryexit-system-will-become-fully-operational-10-april-2026-2026-03-30_en",
+      "quote": "The system will replace passport stamping with digitally recorded entries, exits or refusals of entry of non-EU nationals coming for short stays."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/netherlands/entry-requirements",
+      "quote": "If you are departing the Schengen area by plane, allow extra time to reach your departure gate as EES checks may take place before boarding."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "ETIAS is not running yet but will cost 20 euros",
+    "detail": "Visa free visitors, such as US citizens, will need an ETIAS travel authorisation once it starts. The EU says it is scheduled for the last quarter of 2026, and it is not taking applications yet. The fee will be 20 euros.",
+    "check": "Before a trip in late 2026 or 2027, check the official EU site to see whether ETIAS has started.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/news/main-differences-between-ees-and-etias-what-travellers-need-know-2026-04-28_en",
+      "quote": "ETIAS is scheduled to start in the last quarter of 2026 ."
+     },
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/european-travel-information-authorisation-system_en",
+      "quote": "is currently not in operation and no applications for travel authorisations are collected at this point."
+     },
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/news/european-travel-authorisation-etias-will-cost-eur-20-2025-07-17_en",
+      "quote": "The European Travel Information and Authorisation System (ETIAS) fee will be EUR 20 instead of the previous EUR 7."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Anne Frank House tickets are online only and cannot be refunded",
+    "detail": "The museum sells no tickets at the door, only online for a set time slot, and it takes card payment only. Tickets cannot be exchanged or refunded, and the I amsterdam City Card gives no discount. The adult price rises to 17 euros in 2027.",
+    "check": "Book only on annefrank.org and pick a time slot you are sure you can make.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Anne Frank House",
+      "url": "https://www.annefrank.org/en/museum/tickets/",
+      "quote": "Tickets are not sold at the door, only online. Tickets cannot be exchanged or refunded."
+     },
+     {
+      "publisher": "Anne Frank House",
+      "url": "https://www.annefrank.org/en/museum/tickets/",
+      "quote": "We only accept payments by bank or credit card."
+     },
+     {
+      "publisher": "Anne Frank House",
+      "url": "https://www.annefrank.org/en/museum/tickets/",
+      "quote": "I amsterdam Card no discount"
+     },
+     {
+      "publisher": "Anne Frank House",
+      "url": "https://www.annefrank.org/en/museum/tickets/",
+      "quote": "adult (from 2027 € 17.00*)"
+     }
+    ],
+    "checked": "2026-11-16"
+   }
+  ]
+ },
+ "barcelona-spain": {
+  "checked": "2026-11-16",
+  "checklist": [
+   {
+    "title": "Check the flat's licence on the city register before you pay",
+    "detail": "Barcelona runs a public lookup of licensed tourist flats. If the address is not in it, the city says the flat is illegal. A legal flat has a Catalan Tourism Register Number (NIRTC) that must be given to you when you book and shown on a sign inside.",
+    "check": "Ask the host for the NIRTC number and look up the exact address on the city tool before you pay.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://meet.barcelona.cat/habitatgesturistics/ca",
+      "quote": "Si la teva adreça no hi apareix, el pis que busques és il·legal."
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://ajuntament.barcelona.cat/urbanisme-accio-climatica-mobilitat-pla-barris-serveis-urbans/en/holiday-lets",
+      "quote": "A sign with this number must be displayed inside the property, and visitors must also be given the number when they make their booking."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Barcelona plans to end all tourist flat licences by 2028",
+    "detail": "The City Council has decided to withdraw every holiday let licence in the city by 2028, about 10,000 flats. It says it will not issue or renew these licences.",
+    "check": "If you are booking a flat for 2028 or later, keep a hotel or hostel backup and confirm the flat is still licensed close to your dates.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://ajuntament.barcelona.cat/urbanisme-accio-climatica-mobilitat-pla-barris-serveis-urbans/en/holiday-lets",
+      "quote": "the City Council has decided to withdraw all licences for holiday lets in the city by 2028."
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://www.barcelona.cat/infobarcelona/en/new-digital-tool-to-check-the-legality-of-tourist-lets_1530418.html",
+      "quote": "Barcelona will no longer issue or renew licences for the 10,000 plus tourist lets currently operating in the city, meaning that these will return to the residential market in 2028"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Your hotel or rental must record your passport details",
+    "detail": "Spanish law makes hotels, tourist flats and car hire firms register guests' ID details. The national list of data includes your document number and nationality, plus how you paid. Wait while staff register your passport, and do not leave it at reception to collect later.",
+    "check": "Have your passport ready at check in and expect to give ID and payment details for every adult guest.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
+      "quote": "Hotels, tourist accommodation and car rental companies have a legal duty to register passport and other details of tourists who check in or collect a vehicle."
+     },
+     {
+      "publisher": "Boletín Oficial del Estado (Spanish state gazette), Real Decreto 933/2021",
+      "url": "https://www.boe.es/buscar/act.php?id=BOE-A-2021-17461",
+      "quote": "e) Numero de documento de identidad. f) Número de soporte del documento. g) Tipo de documento (DNI, pasaporte, TIE). h) Nacionalidad."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Non EU visitors give fingerprints and a photo at the border",
+    "detail": "The EU Entry/Exit System has been fully running since 10 April 2026 and replaces passport stamps for short stays. On your first entry you may need to register at a special booth, which is free.",
+    "check": "Allow extra time at passport control on your first trip into Europe since April 2026.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/entry-exit-system_en",
+      "quote": "As of 10 April 2026 , the EES replaces the stamping of passports allowing the automatic detection of overstayers"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/spain/entry-requirements",
+      "quote": "There is no cost for EES registration. On your first visit into a Schengen country, you may be asked to register your details at a special booth"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "ETIAS is not open yet, so there is nothing to buy now",
+    "detail": "The EU's new travel authorisation for visa free visitors has not started. The EU will announce the start date before launch, and applications are not yet open.",
+    "check": "Check the official EU site again shortly before you travel instead of paying any website now.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/news/main-differences-between-ees-and-etias-what-travellers-need-know-2026-04-28_en",
+      "quote": "ETIAS is scheduled to start in the last quarter of 2026 . The exact start date of ETIAS will be officially communicated later this year."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/guidance/eu-entryexit-system",
+      "quote": "No action is required from travellers at this point. The European Union will announce the specific date for the start of ETIAS before its launch."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/spain",
+      "quote": "Applications are not yet open. Apply only through the official EU website once the system is launched."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The 10 trip metro card does not cover the airport stations",
+    "detail": "The T casual card for 10 journeys is not valid at the Aeroport T1 and T2 metro stations on line L9 Sud. A single airport metro ticket costs 5.90 euros. The Hola Barcelona travel card does include metro trips to and from the airport.",
+    "check": "Buy an airport ticket or a Hola Barcelona card for the airport metro ride, not the 10 trip card.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "TMB (Barcelona transport operator)",
+      "url": "https://www.tmb.cat/en/barcelona-fares-metro-bus",
+      "quote": "Not valid at the metro stations Aeroport T1 i Aeroport T2 on line L9 Sud."
+     },
+     {
+      "publisher": "TMB (Barcelona transport operator)",
+      "url": "https://www.tmb.cat/en/barcelona-fares-metro-bus",
+      "quote": "Airport ticket A metro journey including Aeroport T1 and Aeroport T2 stations. Price: €5.90"
+     },
+     {
+      "publisher": "TMB (Barcelona transport operator)",
+      "url": "https://www.tmb.cat/en/hola-barcelona-travel-card",
+      "quote": "Hola Barcelona Travel Card includes metro service travel between the airport and Barcelona city centre"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Sagrada Família tickets: official app or site, about two months out",
+    "detail": "The basilica sells tickets through its official app and website, roughly two months before the visit. On the day you can only buy through QR codes around the building, and only if there is space.",
+    "check": "Book your time slot on sagradafamilia.org or the official app as soon as your dates are fixed.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Sagrada Família (official site)",
+      "url": "https://sagradafamilia.org/en/faqs",
+      "quote": "Tickets can currently be purchased roughly two months before the visit."
+     },
+     {
+      "publisher": "Sagrada Família (official site)",
+      "url": "https://sagradafamilia.org/en/faqs",
+      "quote": "You can buy tickets using the direct purchase QR codes around the Basilica. Availability will be based on occupancy at the time."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Sagrada Família has a dress code at the door",
+    "detail": "It is a Catholic church. Clothing cannot be see through, trousers and skirts must reach at least mid thigh, and swimwear is not allowed. Hats are not allowed inside except for religious, health or belief reasons.",
+    "check": "Pack covered clothing for the day of your visit, especially in summer.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Sagrada Família (official site)",
+      "url": "https://sagradafamilia.org/en/faqs",
+      "quote": "No see-through clothing. Trousers and skirts must come down to at least mid-thigh. Visitors may not enter in swimwear."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Park Güell is timed entry with a 30 minute window",
+    "detail": "Tickets for the monumental area are sold online and give you a set entry time. You have 30 minutes after that time to get in or you lose the ticket. The general ticket is 18 euros and you cannot go back in once you leave.",
+    "check": "Buy on parkguell.barcelona and plan your route so you reach the gate on time.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Park Güell (official site, Barcelona City Council)",
+      "url": "https://parkguell.barcelona/en/buy-tickets",
+      "quote": "You have 30 minutes after the time marked on your ticket to enter the site. Once that deadline has passed, you will lose your right to enter."
+     },
+     {
+      "publisher": "Park Güell (official site, Barcelona City Council)",
+      "url": "https://parkguell.barcelona/en/planning-your-visit/prices-and-times",
+      "quote": "once you exit, you cannot re-enter. RATES PRICES General ticket 18 €"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Drinking in the street can cost you 30 to 1,500 euros",
+    "detail": "Under the city's coexistence bylaw, in force since 15 February 2026, drinking from glass bottles or cans where it is not allowed costs 30 to 100 euros. Drinking near children or in night noise zones can reach 1,500 euros, and organising pub crawls up to 3,000 euros. Alcohol cannot be sold between 10 pm and 8 am.",
+    "check": "Drink in bars and restaurants, and buy any alcohol before 10 pm.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://www.barcelona.cat/endrecembarcelona/en/what-are-we-doing/fines-anti-social-behaviour",
+      "quote": "Consuming alcoholic beverages in glass bottles or cans in public spaces where it is not authorised. From €30 to €100"
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://ajuntament.barcelona.cat/usosdeltemps/en/who-are-we/news/the-coexistence-bylaw-comes-into-force-on-15-february-1586387",
+      "quote": "consumption of alcohol in places where minors are present, up to 1,500 euros; prohibition of pub crawls, up to 3,000 euros"
+     },
+     {
+      "publisher": "Turisme de Barcelona (official tourism board)",
+      "url": "https://barcelonaturisme.com/wv3/en/page/2467/safety-coexistence-and-health.html",
+      "quote": "Sales are restricted to over 18s and are not allowed between 10 pm and 8 am. Organising or taking part in pub crawls is also prohibited."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Buying from street sellers can get you fined up to 600 euros",
+    "detail": "The fine applies to the buyer, not only the seller. It covers goods and also food or drinks bought from unlicensed street sellers.",
+    "check": "Buy souvenirs, drinks and snacks only from shops, bars and licensed stalls.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://www.barcelona.cat/endrecembarcelona/en/what-are-we-doing/fines-anti-social-behaviour",
+      "quote": "Purchasing or acquiring products from unauthorised street hawkers in a public space. Up to €600"
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://www.barcelona.cat/endrecembarcelona/en/what-are-we-doing/fines-anti-social-behaviour",
+      "quote": "Purchasing or acquiring food or drinks from an unauthorised street hawker in a public space. Up to €600"
+     },
+     {
+      "publisher": "Turisme de Barcelona (official tourism board)",
+      "url": "https://barcelonaturisme.com/wv3/en/page/2467/safety-coexistence-and-health.html",
+      "quote": "Buying from unauthorised street vendors is illegal"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "No smoking on the beach and keep off the breakwaters",
+    "detail": "Smoking is not allowed on Barcelona's beaches. Walking on the breakwaters, fishing from them or diving from them is forbidden. Sea conditions are shown by the beach flags.",
+    "check": "Check the flag colour and swim near a lifeguard before you go in.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Turisme de Barcelona (official tourism board)",
+      "url": "https://barcelonaturisme.com/wv3/en/page/2467/safety-coexistence-and-health.html",
+      "quote": "Smoking is not allowed on Barcelona’s beaches."
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://www.barcelona.cat/en/what-to-do-in-bcn/bathing-and-beaches/bathing-safely",
+      "quote": "It is forbidden to walk on the breakwaters, fish from them or climb up on them to dive back into the water."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Report a theft online, then sign it at a station within 72 hours",
+    "detail": "The Mossos d'Esquadra, Catalonia's police, take online reports for petty theft and lost belongings, but not for violent crime. After an online report you must go to a police station within 72 hours to sign it. For any emergency call 112, which is free and works without a SIM card.",
+    "check": "Save 112 in your phone and keep your online report number to show at the station.",
+    "kind": "safety",
+    "sources": [
+     {
+      "publisher": "Mossos d'Esquadra (Generalitat de Catalunya)",
+      "url": "https://mossos.gencat.cat/en/temes/denuncies/",
+      "quote": "if you report a crime online, you must go to any police station to sign and complete your police report. The time frame to do this is 72 hours upon completion of the online report."
+     },
+     {
+      "publisher": "Turisme de Barcelona (official tourism board)",
+      "url": "https://barcelonaturisme.com/wv3/en/page/2467/safety-coexistence-and-health.html",
+      "quote": "call 112. It is free, available 24 hours a day and works even without credit or a SIM card."
+     }
+    ],
+    "checked": "2026-11-16"
+   }
+  ]
+ },
+ "budapest-hungary": {
+  "checked": "2026-11-16",
+  "checklist": [
+   {
+    "title": "Hungary uses the forint, not the euro",
+    "detail": "The currency is the forint (HUF). Some places in Budapest take euros where a sign is posted, but the exchange rate may not be very competitive.",
+    "check": "Plan to pay in forints, and do not change money with unofficial moneychangers.",
+    "kind": "money",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "The currency in Hungary is the forint (HUF). Euros are accepted in Budapest and some other major cities where a sign is posted. Rates may not be very competitive."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Don’t use unofficial moneychangers."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "A restaurant service charge must be on the menu",
+    "detail": "Restaurants may add a service charge, but they must show it on the menu and other price lists. The service charge printed on your receipt can be at most 15 percent.",
+    "check": "Read the menu for a service charge line before you order, and check the bill so you do not tip twice.",
+    "kind": "money",
+    "sources": [
+     {
+      "publisher": "Hungarian Government (kormany.hu), Ministry for National Economy",
+      "url": "https://kormany.hu/hirek/uj-lepesek-a-felszolgalasi-dij-maximalizalasanak-es-a-borravalo-adomentessegenek-biztositasa-erdekeben",
+      "quote": "Az általuk alkalmazott díj mértékét − a maximált értékig − továbbra is a szolgáltatók állapíthatják meg, azt fel kell tüntetniük az étlapon és az egyéb tájékoztatási felületeiken."
+     },
+     {
+      "publisher": "National Tax and Customs Administration of Hungary (NAV)",
+      "url": "https://nav.gov.hu/sajtoszoba/hirek/Februartol_mar_alkalmazhato_az_adokonnyites_a_felszolgalasi_dijnal",
+      "quote": "Fontos, hogy a vendégnek átadott bizonylaton továbbra is legfeljebb 15 százalék felszolgálási díj szerepeltethető."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Real Budapest taxis are yellow with a fixed official fare",
+    "detail": "Licensed taxis are yellow, have yellow number plates and the words qualified Budapest taxi on the front left door. The official fare is the same at all times of day and for all operators, and you can pay by cash or card.",
+    "check": "Order your taxi by app or phone from a licensed company and only get into a car with these markings.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/travel-information/taxi-services/",
+      "quote": "Budapest taxis have standardised signage: the cars are yellow with the words \"qualified Budapest taxi/minősített budapesti taxi\" on the left-side front door, the number plates are yellow"
+     },
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/travel-information/taxi-services/",
+      "quote": "The official price is the same at all times of the day and for all operators. You can pay in taxis with cash, physical and digital bankcards."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Airport taxis add a 2,100 forint airport base fare",
+    "detail": "Since August 2026 a taxi to or from Budapest Airport starts with an airport base fare of 2,100 forints. Főtaxi is the airport's official taxi partner, with stands at Terminals 2A and 2B.",
+    "check": "Budget for the airport base fare and book at the Főtaxi stand instead of accepting a ride from someone in the arrivals hall.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/travel-information/taxi-services/",
+      "quote": "From August 2026, an airport base fare of HUF 2,100 applies to taxi journeys to and from Budapest Liszt Ferenc International Airport."
+     },
+     {
+      "publisher": "Budapest Info / Visit Budapest, official city guide 2025/2026 (PDF)",
+      "url": "https://www.budapestinfo.hu/storage/files/GBm6FrGupWdIt02ktNeA30WVJalrL3tVD5oUN7nV.pdf",
+      "quote": "Főtaxi is the airport’s official partner. You can book a taxi at the Főtaxi stands located at Terminals 2A and 2B."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The 100E airport bus needs its own 2,500 forint ticket",
+    "detail": "Bus 100E runs around the clock between the airport and Deák Ferenc tér. A normal single ticket is not valid on it; you need the 2,500 forint airport shuttle bus single ticket, which you can buy by tapping your bank card on board.",
+    "check": "Buy the airport shuttle ticket or tap your card at the machine by the door as you board 100E.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/travel-information/airport-express/",
+      "quote": "Please note that bus line 100E Airport Express is to be used only with the 2,500 HUF Airport shuttle bus single ticket or the add-on airport shuttlebus single ticket"
+     },
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/travel-information/airport-express/",
+      "quote": "The bus service operates around the clock, seven days a week"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Validate paper tickets before the metro line",
+    "detail": "On the metro the validators stand at the station entrance, and crossing that line with an unstamped ticket can already get you fined. On buses, trams and trolleybuses you stamp the ticket right after boarding.",
+    "check": "Stamp your ticket at the metro entrance or as soon as you board, and keep it until the end of the trip.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/tickets-and-passes/validation-of-paper-tickets/",
+      "quote": "Please note that the row of machines is also a platform boundary line: if you cross this line without a ticket or a non-validated ticket, you can already be fined!"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "On buses, trams or trolley buses, you must validate your ticket immediately after boarding."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Riding without a valid ticket costs 30,000 forints",
+    "detail": "Inspectors issue a penalty fare of 30,000 forints. It drops to 15,000 forints if you pay in forint cash on the spot, and you must get a receipt. Hungary may refuse entry to people with an unpaid earlier fine.",
+    "check": "Carry a valid ticket at all times, ask for a receipt if fined, and settle any fine before a later trip.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/tickets-and-passes/validation-of-paper-tickets/",
+      "quote": "If you travel without of a valid ticket, travelcard or pass, the inspectors will issue a penalty fare cheque for 30 000 HUF. This amount is reduced to 15 000 HUF if paid in cash on the spot (only Forints are accepted.)"
+     },
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/tickets-and-passes/validation-of-paper-tickets/",
+      "quote": "The sum of the on-the-spot fine will not exceed 15 000 HUF and you must be given a receipt."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Hungarian authorities may deny you entry if you’ve failed to pay a previous fine."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Your bank card can be your metro ticket",
+    "detail": "With Budapest Pay&GO you tap a bank card or phone at the terminal at the metro entrance or on bus 100E, and that one tap buys and validates a single ticket. If an inspector checks you, tap the same card or phone again; nothing is charged.",
+    "check": "Use the same card or phone for every tap, and tap once per person on the metro since it sells one ticket per tap.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/tickets-and-passes/pay-and-go/",
+      "quote": "Tap your bankcard or compatible smart device on the Pay&GO terminal as you enter the metro station, and your journey can begin. With this single gesture, you not only purchase your single ticket but also validate it."
+     },
+     {
+      "publisher": "BKK Centre for Budapest Transport",
+      "url": "https://bkk.hu/en/tickets-and-passes/pay-and-go/",
+      "quote": "During inspection, tap the bankcard or smart device you used to purchase your ticket against the inspector's checker. The process is secure; the device will not deduct any money during inspection."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Short term rentals are banned in District VI from 2026",
+    "detail": "Terézváros (District VI) set the number of days a private home or other accommodation may host guests to zero from January 1, 2026. Operators who break the rule face a fine and a 45 day closure.",
+    "check": "If an apartment listing is in District VI (Terézváros), book a licensed hotel instead or confirm the place is legal before you pay.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Terézváros (District VI) local government, Decree 26/2024 (X. 31.) (PDF)",
+      "url": "https://terezvaros.hu/terezvaros-portal/methods/fmFrontendControl/getFile?key=rc2wE4X2sVhtZuXCpLS8qocNZbWwrQLQzrQgmEsT3LDTdaAVyA",
+      "quote": "2. § A magánszálláshely és az egyéb szálláshely esetében a magánszálláshelyen és az egyéb szálláshelyen az egy naptári éven belül szálláshely-szolgáltatás céljára felhasználható napok száma: 0."
+     },
+     {
+      "publisher": "Terézváros (District VI) local government, Decree 26/2024 (X. 31.) (PDF)",
+      "url": "https://terezvaros.hu/terezvaros-portal/methods/fmFrontendControl/getFile?key=rc2wE4X2sVhtZuXCpLS8qocNZbWwrQLQzrQgmEsT3LDTdaAVyA",
+      "quote": "7. § Ez a rendelet 2026. január 1-jén lép hatályba."
+     },
+     {
+      "publisher": "Terézváros (District VI) local government, Decree 26/2024 (X. 31.) (PDF)",
+      "url": "https://terezvaros.hu/terezvaros-portal/methods/fmFrontendControl/getFile?key=rc2wE4X2sVhtZuXCpLS8qocNZbWwrQLQzrQgmEsT3LDTdaAVyA",
+      "quote": "5. § A 3. § b) pontja szerinti ideiglenes bezárás időtartama 45 nap."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Legal rentals show an NTAK registration number",
+    "detail": "Every accommodation advertised on a booking site in Hungary must show its NTAK registration number and its accommodation type. The authority can close unregistered places and fine them.",
+    "check": "Look for the NTAK registration number on the listing and ask the host for it if it is missing.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "NTAK, National Tourism Data Service Centre (Hungarian Tourism Agency)",
+      "url": "https://info.ntak.hu/szallas",
+      "quote": "2020. október 1-jétől a szálláshely-közvetítői tevékenység útján kínált szolgálatások hirdetéseiben az NTAK regisztrációs számot és a szálláshely típusát is kötelezően fel kell tüntetni."
+     },
+     {
+      "publisher": "NTAK, National Tourism Data Service Centre (Hungarian Tourism Agency)",
+      "url": "https://info.ntak.hu/szallas",
+      "quote": "NTAK-ba nem regisztrált szálláshely üzemeltetését, és pénzbírságot szab ki."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Non EU visitors register fingerprints and a photo at the border",
+    "detail": "The EU Entry/Exit System has been fully running since April 10, 2026 and replaces passport stamps. You may give fingerprints and a photo when you enter, which can mean longer waits.",
+    "check": "Allow extra time at passport control on arrival and before your flight home.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/entry-exit-system_en",
+      "quote": "As of 10 April 2026 , the EES replaces the stamping of passports allowing the automatic detection of overstayers"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/entry-requirements",
+      "quote": "when you travel into the Schengen area for short stays, you may need to register your biometric details, such as fingerprints and a photo. There is no cost for EES registration."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Carry your passport; a copy is not accepted",
+    "detail": "You must show ID if the police ask for it, and a photocopy does not count.",
+    "check": "Keep your passport with you when you go out and leave a copy in a safe place in case it is lost.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "Always carry your passport. You must show ID if the police ask for it, and a copy is not acceptable."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "You must carry photo identification, such as your passport, at all times. Photocopies are not accepted."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Emergency numbers: 112, or 107 for police",
+    "detail": "The general emergency number in Hungary is 112. The police number is 107.",
+    "check": "Save 112 in your phone before you go.",
+    "kind": "safety",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "general emergency assistance: 112"
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "police: 107"
+     },
+     {
+      "publisher": "Hungarian Police (police.hu)",
+      "url": "https://www.police.hu/en",
+      "quote": "Please, call the 112 emergency number."
+     }
+    ],
+    "checked": "2026-11-16"
+   }
+  ]
+ },
+ "paris-france": {
+  "checked": "2026-11-16",
+  "checklist": [
+   {
+    "title": "A legal Paris holiday rental shows a registration number",
+    "detail": "Every furnished tourist rental in Paris must be declared to the city, which gives the host a registration number. The host must show that number on every published listing.",
+    "check": "Before you book an apartment, look for the Paris registration number on the listing and skip any listing that does not show one.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Ville de Paris",
+      "url": "https://www.paris.fr/meubles-touristiques",
+      "quote": "Cette déclaration obligatoire permet d’obtenir immédiatement un numéro d’enregistrement. Ce numéro doit être impérativement mentionné sur vos annonces de location publiées."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "A host can rent out their own home for only 90 days a year",
+    "detail": "If the apartment is the host's main home, Paris lets them rent it to tourists for no more than 90 days a year. A host who goes over faces a fine of up to 10,000 euros for each year.",
+    "check": "If a host says the flat is their own home, ask how many nights it has already been rented this year before you pay.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Ville de Paris",
+      "url": "https://www.paris.fr/meubles-touristiques",
+      "quote": "Vous souhaitez louer votre résidence principale en meublé touristique : la limite est de 90 jours par an"
+     },
+     {
+      "publisher": "Ville de Paris",
+      "url": "https://www.paris.fr/meubles-touristiques",
+      "quote": "Le fait de louer sa résidence principale en meublé de tourisme au-delà de 90 jours par an est sanctionné par une amende pouvant atteindre 10 000 € par année de dépassement"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Airport taxis to central Paris have fixed fares",
+    "detail": "A licensed taxi between Charles de Gaulle airport and Paris costs a flat 56 euros to the right bank or 65 euros to the left bank. From Orly it is 45 euros to the right bank or 36 euros to the left bank. No extra fees can be added to these fares.",
+    "check": "Know whether your hotel is on the right or left bank and refuse any taxi that asks for more than the fixed fare.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "Service Public (French government)",
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34349",
+      "quote": "Entre l'aéroport de Paris-Charles-de-Gaulle et Paris rive droite 56 € Entre l'aéroport de Paris-Charles-de-Gaulle et Paris rive gauche 65 €"
+     },
+     {
+      "publisher": "Service Public (French government)",
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34349",
+      "quote": "Entre l'aéroport de Paris-Orly et Paris rive droite 45 € Entre l'aéroport de Paris-Orly et Paris rive gauche 36 €"
+     },
+     {
+      "publisher": "Service Public (French government)",
+      "url": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34349",
+      "quote": "Aucun frais supplémentaire ou majoration ne peut y être ajouté."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "A single metro ticket costs 2.55 euros in 2026",
+    "detail": "Since 1 January 2026, one Metro, train and RER ticket costs 2.55 euros at full fare, and a bus or tram ticket costs 2.05 euros. Buying a bus ticket on board costs 2.50 euros.",
+    "check": "Budget 2.55 euros per metro or RER ride and buy your bus ticket before you board.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "Service Public (French government)",
+      "url": "https://entreprendre.service-public.gouv.fr/actualites/A18679?lang=en",
+      "quote": "Ticket fares in Île-de-France in 2026 (normal and reduced) Occasional titles Metro-train-RER: €2.55 (€1.30) Bus-Tram: €2.05 (€1.05) Access on board: 2,50 €"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The airport ticket costs 14 euros",
+    "detail": "Trips to and from the Paris airports use a special airports ticket. It costs 14 euros at full fare and 7 euros at the reduced fare in 2026.",
+    "check": "Buy the airports ticket, not a regular metro ticket, for the ride to or from CDG or Orly.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "Service Public (French government)",
+      "url": "https://entreprendre.service-public.gouv.fr/actualites/A18679?lang=en",
+      "quote": "Tourist packages Airports ticket: 14 € (7 €)"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The Louvre costs 32 euros if you live outside the EEA",
+    "detail": "Visitors who are neither residents nor citizens of a European Economic Area country pay 32 euros. Residents and citizens of the EEA pay 22 euros.",
+    "check": "Budget 32 euros per adult for the Louvre unless you are from or live in the EEA.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Musée du Louvre",
+      "url": "https://www.louvre.fr/horaires-tarifs-acces/tarifs",
+      "quote": "Tarif hors EEE Visiteurs non résidents et/ou non ressortissants des pays de l'Espace Economique Européen 32.00€"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "The Louvre is closed on Tuesdays and wants a booked time slot",
+    "detail": "The Louvre is closed every Tuesday. The museum recommends booking a visit time online, even for visitors who get in free.",
+    "check": "Do not plan the Louvre for a Tuesday and book your entry time online before you go.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Musée du Louvre",
+      "url": "https://www.louvre.fr/horaires-tarifs-acces/tarifs",
+      "quote": "Fermé mardi"
+     },
+     {
+      "publisher": "Musée du Louvre",
+      "url": "https://www.louvre.fr/horaires-tarifs-acces/tarifs",
+      "quote": "La réservation en ligne d’un créneau de visite est recommandée, y compris pour les visiteurs bénéficiant de la gratuité"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Eiffel Tower summit by lift costs 36.70 euros on the official site",
+    "detail": "The official Eiffel Tower site is toureiffel.paris, run by the tower's operating company. There an adult summit ticket by lift costs 36.70 euros and a second floor ticket by lift costs 23.50 euros.",
+    "check": "Compare any Eiffel Tower ticket price with toureiffel.paris before you pay anyone else.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Tour Eiffel (SETE, official site)",
+      "url": "https://www.toureiffel.paris/fr/tarifs-horaires",
+      "quote": "TOUREIFFEL.PARIS LE SITE OFFICIEL DE LA TOUR EIFFEL Un site de la Société d'Exploitation de la Tour Eiffel"
+     },
+     {
+      "publisher": "Tour Eiffel (SETE, official site)",
+      "url": "https://www.toureiffel.paris/fr/tarifs-horaires",
+      "quote": "Sommet Billet ascenseur Adulte 36,70€"
+     },
+     {
+      "publisher": "Tour Eiffel (SETE, official site)",
+      "url": "https://www.toureiffel.paris/fr/tarifs-horaires",
+      "quote": "2ème étage Billet ascenseur Adulte 23,50€"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Versailles palace entry needs a ticket with a set time",
+    "detail": "The Passeport is the only ticket that lets you into the palace, and it comes with a set entry time. It costs 25 euros in low season and 35 euros in high season at the normal rate, or 22 and 32 euros for France and EEA visitors.",
+    "check": "Book your Versailles Passeport and palace time slot online before the day you go.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "Château de Versailles",
+      "url": "https://www.chateauversailles.fr/tarification-2026",
+      "quote": "C'est aussi le seul billet qui permet de visiter le château, avec un créneau horodaté."
+     },
+     {
+      "publisher": "Château de Versailles",
+      "url": "https://www.chateauversailles.fr/tarification-2026",
+      "quote": "Passeport Basse saison Haute saison Tarif normal 25 € 35 € Tarif réduit - France et Espace économique européen 22 € 32 €"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Expect fingerprints and a photo at the border",
+    "detail": "The EU Entry/Exit System has been fully running since 10 April 2026. If you are not an EU citizen, your fingerprints and face photo are taken when you enter for a short stay, and checks can take longer than before.",
+    "check": "Allow extra time at passport control when you arrive and when you leave France.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/entry-exit-system_en",
+      "quote": "The system became fully operational on 10 April 2026."
+     },
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/entry-exit-system_en",
+      "quote": "biometric data (fingerprints and captured facial images)"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/france/entry-requirements",
+      "quote": "EES may take each passenger extra time to complete so be prepared to wait longer than usual at the border"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "ETIAS travel authorisation is not open yet",
+    "detail": "The EU ETIAS travel authorisation is coming for visa free visitors, but applications are not open yet. When it starts, you should apply only on the official EU website.",
+    "check": "Do not pay any website for an ETIAS before the EU opens applications.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/france",
+      "quote": "Applications are not yet open. Apply only through the official EU website once the system is launched."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Call 17 for police or 112 in an emergency",
+    "detail": "In Paris the police number is 17. The European emergency number 112 also works.",
+    "check": "Save 17 and 112 in your phone before you travel.",
+    "kind": "safety",
+    "sources": [
+     {
+      "publisher": "Préfecture de police (via French Ministry of the Interior)",
+      "url": "https://masecurite.interieur.gouv.fr/media/1487/download/Staying_safe_in_Paris.pdf",
+      "quote": "EMERGENCY NUMBERS • police : 17 • European emergency number : 112"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "You can report some thefts online, but the service may be down",
+    "detail": "France lets victims of theft by an unknown person file a complaint online. On 16 November 2026 the online complaint service said it was under maintenance, so you may need to go to a police station.",
+    "check": "If something is stolen, try the online complaint first and go to the nearest police station if it is not working.",
+    "kind": "safety",
+    "sources": [
+     {
+      "publisher": "French Ministry of the Interior (masecurite.interieur.gouv.fr)",
+      "url": "https://www.masecurite.interieur.gouv.fr/fr/demarches-en-ligne/plainte-en-ligne",
+      "quote": "La plainte en ligne est proposée pour les faits d 'atteinte aux biens , comme les vols ou les dégradations, dont l' auteur est inconnu ."
+     },
+     {
+      "publisher": "French Ministry of the Interior (masecurite.interieur.gouv.fr)",
+      "url": "https://www.masecurite.interieur.gouv.fr/fr/demarches-en-ligne/plainte-en-ligne",
+      "quote": "Les services Plainte en ligne, Visioplainte et Perceval sont actuellement en maintenance et indisponibles."
+     }
+    ],
+    "checked": "2026-11-16"
+   }
+  ]
+ },
+ "prague-czechia": {
+  "checked": "2026-11-16",
+  "checklist": [
+   {
+    "title": "Prague uses the koruna, so pay cards in koruna",
+    "detail": "Czechia's currency is the Czech koruna (CZK), not the euro. When a card machine or ATM offers to charge you in your home currency, the extra fees often make that option more expensive.",
+    "check": "Before you go, set up a card with low foreign fees and plan to choose koruna whenever a terminal asks.",
+    "kind": "money",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/czechia",
+      "quote": "The currency of Czechia is the Czech koruna (CZK)."
+     },
+     {
+      "publisher": "European Union (Your Europe)",
+      "url": "https://europa.eu/youreurope/citizens/consumers/shopping/pricing-payments/index_en.htm",
+      "quote": "If you pay in your home currency, you know immediately exactly how much you will be charged. The extra fees often make this option more expensive."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "You can cancel a cash exchange within 3 hours",
+    "detail": "Czech law lets you cancel an exchange at the same exchange office within three hours, for free and without a reason, for up to the equivalent of 1,000 euros. For exchange machines the limit is three working days.",
+    "check": "Keep your exchange receipt and check the amount you got right away, so you can return to the same office in time if the rate was bad.",
+    "kind": "money",
+    "sources": [
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/exchange",
+      "quote": "The customer may withdraw from an exchange contract within three hours after the execution of the exchange transaction in the bureau de change where the exchange transaction was executed"
+     },
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/cs/dohled-financni-trh/ochrana-spotrebitele/desatero-smenarny/",
+      "quote": "Stornovat lze obchod do výše v přepočtu 1 000 EUR"
+     },
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/exchange",
+      "quote": "he may withdraw from the exchange contract within three working days of the date of the exchange transaction"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Exchange offices may not charge a fee, so compare both rates",
+    "detail": "Charging a fee for a currency exchange is banned, except for coins or cheques. Each office sets its own rates, so a big gap between its buy and sell rate is a warning sign. The office must give you a receipt.",
+    "check": "Read the rate board before handing over cash, compare the buy and sell columns, and insist on a receipt.",
+    "kind": "money",
+    "sources": [
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/cs/dohled-financni-trh/ochrana-spotrebitele/desatero-smenarny/",
+      "quote": "Účtovat úplatu za provedení směnárenského obchodu je zakázáno. Výjimkou může být směna mincí nebo šeků."
+     },
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/cs/dohled-financni-trh/ochrana-spotrebitele/desatero-smenarny/",
+      "quote": "Před směnou si vždy porovnejte nákupní a prodejní kurz směnárny"
+     },
+     {
+      "publisher": "Czech National Bank (CNB)",
+      "url": "https://www.cnb.cz/cs/dohled-financni-trh/ochrana-spotrebitele/desatero-smenarny/",
+      "quote": "Po provedení směny trvejte na vydání dokladu („účtenky“) o provedené směně, směnárna je povinna vám jej vydat."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Book the airport taxi through the official Uber Airport service",
+    "detail": "Uber Airport is the official taxi service at Prague Airport, booked in the Uber app, at kiosks or at counters in the arrivals hall, and it shows the total fare before you confirm. Metered taxi fares in Prague have had no maximum since 1 October 2026, and a typical airport to centre fare is around 800 CZK.",
+    "check": "Decide before you land how you will get into town, and use a service that shows the full fare in advance.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "Prague Airport (Letiště Praha)",
+      "url": "https://www.prg.aero/en/taxi",
+      "quote": "To book your ride, you can use the Uber app , self-service kiosks, or the counters in the arrivals hall."
+     },
+     {
+      "publisher": "Prague Airport (Letiště Praha)",
+      "url": "https://www.prg.aero/en/unofficial-taxi-services",
+      "quote": "The official Uber Airport service shows the total fare before you confirm your booking."
+     },
+     {
+      "publisher": "Prague Airport (Letiště Praha)",
+      "url": "https://www.prg.aero/en/unofficial-taxi-services",
+      "quote": "A typical fare from Prague Airport to the city centre (approx. 20 km) is around CZK 800 / EUR 32 ."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Transport tickets are cheaper in the PID Litacka app",
+    "detail": "A 90 minute ticket costs 46 CZK in the PID Litacka app and 50 CZK on paper; a 24 hour ticket is 140 CZK in the app and 150 CZK on paper. The 24 and 72 hour tickets do not cover the Airport Express AE bus.",
+    "check": "Install the PID Litacka app before your trip, and buy a separate ticket if you plan to take the AE bus.",
+    "kind": "transport",
+    "sources": [
+     {
+      "publisher": "Prague Integrated Transport (PID)",
+      "url": "https://pid.cz/en/tickets/",
+      "quote": "30 min. 36 CZK 39 CZK 90 min. 46 CZK 50 CZK 24 hours 140 CZK 150 CZK 72 hours 340 CZK 350 CZK"
+     },
+     {
+      "publisher": "Prague Integrated Transport (PID)",
+      "url": "https://pid.cz/en/tickets/",
+      "quote": "Can be used on PID trams, subway, buses, ferries, trains in Prague, except for vintage routes K, 41, 42 and Airport express AE."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Stamp paper tickets once, or risk a 1,200 CZK fine",
+    "detail": "Stamp a paper ticket when you board a tram or bus or enter the metro, and do not stamp it again when you change, because restamping makes it invalid. Since 1 January 2026 riding without a valid ticket in Prague costs 1,200 CZK paid on the spot, 1,500 CZK within 15 days, or 2,000 CZK otherwise.",
+    "check": "Learn the stamping rule before you ride, and keep the ticket until you leave the vehicle or station.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/public-transport/",
+      "quote": "Don’t forget to stamp your ticket upon entering the vehicle (tram, bus, ferry) or the transport space (metro and funicular) in the stamping device, otherwise you risk incurring a fine ."
+     },
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/public-transport/",
+      "quote": "When transferring, do not stamp the ticket again. Restamping invalidates the ticket!"
+     },
+     {
+      "publisher": "Prague Public Transit Company (DPP)",
+      "url": "https://www.dpp.cz/spolecnost/aktuality/detail/66_3223-souhrn-tarifnich-a-prepravnich-novinek-pid-od-1-ledna-2026",
+      "quote": "Přirážka za jízdu bez platného jízdního dokladu: 1 200 Kč (na místě) 1 500 Kč (do 15 dnů) 2 000 Kč (ostatní případy)"
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "No drinking in public in the centre, and quiet after 10 pm",
+    "detail": "Drinking alcohol in public in the city centre is forbidden. Night time quiet hours start at 10 pm, and the city says the fine for disturbing the peace is 400 euros.",
+    "check": "If you are planning a group or party trip, plan to drink inside bars, not on the street.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/enjoy-respect/",
+      "quote": "It is forbidden to drink alcohol in public in the city centre."
+     },
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/enjoy-respect/",
+      "quote": "After 10 pm, the night-time quiet hours apply."
+     },
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/enjoy-respect/",
+      "quote": "The fine for disturbing the peace is 400 euros."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Carry your passport at all times",
+    "detail": "Carrying ID is a legal requirement in Czechia and police can ask for it at any time. The police may fine or arrest you if you do not have it.",
+    "check": "Pack your passport for daily use and keep a digital copy somewhere safe.",
+    "kind": "rules",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "quote": "It is a legal requirement to carry ID. Always carry your passport. The police may fine or arrest you if you do not."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/czechia",
+      "quote": "Local police may ask for your identification at any time."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Your address must be registered within 3 days",
+    "detail": "Visitors without a Czech residence permit must register their address with the foreign police within 3 days of arriving. Hotels and other commercial stays usually do it for you; if you skip it, the fine can reach 3,000 koruna.",
+    "check": "If you book a private stay, ask the host before booking whether they will register you, and if not, plan a visit to the foreign police.",
+    "kind": "booking",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/entry-requirements",
+      "quote": "you must register your address with the nearest foreign police department (in Czech) within 3 days of arriving. You can also register through your hotel or accommodation service."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/entry-requirements",
+      "quote": "If you do not register, you could get a fine of up to 3,000 Czech koruna."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/czechia",
+      "quote": "Commercial accommodations will generally complete the registration on your behalf. Make sure they do so."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Expect fingerprints and a photo at the border under EES",
+    "detail": "Since 10 April 2026 the EU Entry/Exit System has replaced passport stamps for non EU short stay visitors and records fingerprints and a face image. It costs nothing, but it can add time at the border, including when you leave.",
+    "check": "Allow extra time at the airport on arrival and departure, and check your passport is under 10 years old and valid 3 months past your exit.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/entry-exit-system_en",
+      "quote": "As of 10 April 2026 , the EES replaces the stamping of passports allowing the automatic detection of overstayers"
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/entry-requirements",
+      "quote": "There is no cost for EES registration."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/entry-requirements",
+      "quote": "If you are departing the Schengen area by plane, allow extra time to reach your departure gate as EES checks may take place before boarding."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "ETIAS is not running yet, so do not pay anyone for it",
+    "detail": "The EU travel authorisation ETIAS is not in operation and no applications are being taken. When it starts, the fee will be 20 euros and you should apply only through the official EU website.",
+    "check": "Ignore websites selling ETIAS approvals now, and check the official EU site again before future trips.",
+    "kind": "entry",
+    "sources": [
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/european-travel-information-authorisation-system_en",
+      "quote": "The European Travel Information and Authorisation System (ETIAS) is currently not in operation and no applications for travel authorisations are collected at this point."
+     },
+     {
+      "publisher": "European Commission, Migration and Home Affairs",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/european-travel-information-authorisation-system_en",
+      "quote": "ETIAS fee has been set at EUR 20 instead of the previous EUR 7."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/czechia",
+      "quote": "Apply only through the official EU website once the system is launched."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Prague Castle tickets cost 450 CZK and last 2 days",
+    "detail": "A basic Prague Castle ticket costs 450 CZK, a family ticket 950 CZK. Tickets are valid for 2 days, but you can enter each building only once. Tickets are sold at the castle information centres, and the castle names GetYourGuide as its online partner for the Main circuit.",
+    "check": "Plan which buildings you want to see before you buy, and buy only from the castle desks or the partner it names.",
+    "kind": "tickets",
+    "sources": [
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/objevujte/prague-castle-prazsky-hrad/",
+      "quote": "admission basic 450 CZK reduced 300 CZK family 950 CZK"
+     },
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/objevujte/prague-castle-prazsky-hrad/",
+      "quote": "Tickets are valid for 2 days. You may enter each building only once with a valid ticket."
+     },
+     {
+      "publisher": "Prague Castle (hrad.cz)",
+      "url": "https://www.hrad.cz/en/prague-castle-for-visitors/tickets",
+      "quote": "Tickets for the circuits can be purchased in the information centres in the Prague Castle."
+     },
+     {
+      "publisher": "Prague Castle (hrad.cz)",
+      "url": "https://www.hrad.cz/en/prague-castle-for-visitors/tickets",
+      "quote": "Online tickets for the Main circuit can be also purchased online through the GetYourGuide ticketing network here."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "title": "Report a theft in person within 24 hours",
+    "detail": "Thefts should be reported in person at a police station within 24 hours to get a crime number for insurance. The station at Jungmannovo namesti 9 near Mustek metro is open 24 hours with English interpreters. Lampposts carry a 6 digit number you can give the police as your location.",
+    "check": "Save 112 and the police station address in your phone before you go.",
+    "kind": "safety",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "quote": "Report thefts in person to the nearest Czech police station within 24 hours and get a police report crime number for insurance purposes."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "quote": "Prague police station (Jungmannovo namesti 9, Prague 1, nearest metro stop is Mustek) is open 24 hours a day and would provide English speaking interpreters."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "quote": "Every lamppost in Prague has a 6-digit number posted at eye level."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/getting-help",
+      "quote": "Telephone: 112 (ambulance, fire, police)"
+     }
+    ],
+    "checked": "2026-11-16"
+   }
+  ]
+ }
+}

@@ -42,6 +42,13 @@
       <p class="muted" style="margin:14px 0 0">Tourist tax in other cities:
         <?php foreach (rmt_tt_neighbours($ttCity, 6) as $i => $ttN): ?><?= $i ? ', ' : ' ' ?><a href="<?= e(url('blog/' . $ttN['note'])) ?>"><?= e($ttN['name']) ?></a><?php endforeach; ?>.</p>
     <?php endif; ?>
+    <?php if ($ttCity !== null): $ttDest = (string) rmt_tt_cities()[$ttCity]['dest']; $ttByb = rmt_byb($ttDest); ?>
+      <?php if ($ttByb !== null): ?>
+        <p style="margin:14px 0 0"><a href="<?= e(url('warnings/' . $ttDest . '#before-you-book')) ?>"><?= count($ttByb['items']) ?> more things to check before you book in <?= e((string) rmt_tt_cities()[$ttCity]['name']) ?></a>, each from an official source.</p>
+      <?php endif; ?>
+      <?php $story = ['topic' => 'tax:' . $ttCity, 'name' => (string) rmt_tt_cities()[$ttCity]['name'], 'return' => '/blog/' . (string) $p['slug'] . '#story'];
+            include __DIR__ . '/_story_form.php'; ?>
+    <?php endif; ?>
     <?php $byg = ['topic' => 'tax', 'city' => (string) ($ttCity ?? ''), 'name' => $ttCity !== null ? (string) (rmt_tt_cities()[$ttCity]['name'] ?? '') : '',
                   'source' => 'tax_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];
           include __DIR__ . '/_byg_form.php'; ?>

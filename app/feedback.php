@@ -33,6 +33,7 @@ const RMT_FEEDBACK_KINDS = [
     'site_problem'       => 'Something on the site is broken',
     'privacy_request'    => 'A privacy request',
     'general'            => 'General feedback',
+    'trip_story'         => 'A trip story: what went wrong',
 ];
 
 /** The ones that belong to a place, and are offered on a place page. */
@@ -53,7 +54,7 @@ const RMT_FEEDBACK_MAX = 2000;
  * @return array{ok:bool,error:?string,id:?int}
  */
 function rmt_feedback_submit(string $kind, ?int $placeId, string $message,
-                             ?int $userId = null, string $email = ''): array {
+                             ?int $userId = null, string $email = '', ?string $topic = null): array {
     $fail = static fn(string $e): array => ['ok' => false, 'error' => $e, 'id' => null];
 
     if (!isset(RMT_FEEDBACK_KINDS[$kind])) return $fail('Pick what is wrong.');
@@ -82,9 +83,10 @@ function rmt_feedback_submit(string $kind, ?int $placeId, string $message,
     if (mb_strlen($email) > 190) $email = '';
 
     $id = (int) q_run(
-        "INSERT INTO feedback (kind, place_id, message, contact_email, reported_by, status, created_at)
-         VALUES (?,?,?,?,?,'pending',?)",
-        [$kind, $placeId, $message, $email !== '' ? $email : null, $userId, date('Y-m-d H:i:s')]);
+        "INSERT INTO feedback (kind, place_id, message, contact_email, reported_by, status, created_at, topic)
+         VALUES (?,?,?,?,?,'pending',?,?)",
+        [$kind, $placeId, $message, $email !== '' ? $email : null, $userId, date('Y-m-d H:i:s'),
+         $topic !== null && $topic !== '' ? mb_substr($topic, 0, 120) : null]);
 
     return ['ok' => true, 'error' => null, 'id' => $id];
 }

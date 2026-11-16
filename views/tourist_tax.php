@@ -101,6 +101,8 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
   <?php $byg = ['topic' => 'tax', 'city' => $slug, 'name' => (string) ($city['name'] ?? ''), 'source' => 'tax_calc',
                 'return' => '/tourist-tax-calculator' . ($slug !== '' ? '?city=' . rawurlencode($slug) : '') . '#byg'];
         include __DIR__ . '/_byg_form.php'; ?>
+  <?php if ($slug !== ''): $story = ['topic' => 'tax:' . $slug, 'name' => (string) ($city['name'] ?? ''), 'return' => '/tourist-tax-calculator?city=' . rawurlencode($slug) . '#story'];
+        include __DIR__ . '/_story_form.php'; endif; ?>
 
   <section class="tt-faq">
     <h2>Questions</h2>

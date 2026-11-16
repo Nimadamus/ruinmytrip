@@ -339,12 +339,42 @@
      }
     ],
     "checked": "2026-11-07"
+   },
+   {
+    "name": "Fake Versailles tickets",
+    "what_happens": "Fraudulent entry tickets for the Palace of Versailles are in circulation, so a ticket bought from an unofficial seller may not get you in.",
+    "avoid": "Buy Versailles tickets from the official palace ticket office linked from chateauversailles.fr.",
+    "sources": [
+     {
+      "publisher": "Château de Versailles",
+      "url": "https://www.chateauversailles.fr/",
+      "quote": "En raison de la circulation de billets frauduleux, nous recommandons aux visiteurs de privilégier la billetterie officielle pour acheter des billets d’entrée."
+     }
+    ],
+    "checked": "2026-11-16",
+    "types": [
+     "touts"
+    ]
+   },
+   {
+    "name": "Fake ETIAS websites",
+    "what_happens": "Websites claim to sell ETIAS travel authorisations for Europe, even though applications are not open yet.",
+    "avoid": "Do not pay any site for an ETIAS and apply only on the official EU website once it launches.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/france",
+      "quote": "Be cautious of fraudulent websites claiming to sell ETIAS authorizations."
+     }
+    ],
+    "checked": "2026-11-16"
    }
   ],
   "official_links": [
    "https://www.gov.uk/foreign-travel-advice/france/safety-and-security",
    "https://masecurite.interieur.gouv.fr/media/1480/download/Paris_en_toute-securite.pdf",
-   "https://travel.gc.ca/destinations/france"
+   "https://travel.gc.ca/destinations/france",
+   "https://www.chateauversailles.fr/"
   ],
   "notes": "The Préfecture de police guide is in French and lists 2022 taxi tariffs (not used). It is undated beyond those tariffs, so treat details as possibly older. A 'bracelet' scam in Montmartre came up in search but was not in a fetched official source, so it is not claimed."
  },
@@ -472,12 +502,50 @@
     "types": [
      "spiking"
     ]
+   },
+   {
+    "name": "Fake ETIAS websites",
+    "what_happens": "Websites charge you for an ETIAS travel authorisation even though the EU has not opened applications.",
+    "avoid": "Do not pay any site for ETIAS now. Apply only on the official EU website once the system launches.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/guidance/eu-entryexit-system",
+      "quote": "Any website selling ETIAS at this time is doing so fraudulently, and you should only apply on the official EU website when able to."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/spain",
+      "quote": "Be cautious of fraudulent websites claiming to sell ETIAS authorizations."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "name": "Illegal tourist flat",
+    "what_happens": "You book a flat that has no tourist licence. Warning signs include a licence address that differs from the flat, or other people named in your contract.",
+    "avoid": "Look up the address on the city's tourist flat tool and make sure the licence address matches where you are staying.",
+    "sources": [
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://ajuntament.barcelona.cat/urbanisme-accio-climatica-mobilitat-pla-barris-serveis-urbans/en/holiday-lets",
+      "quote": "Check if the rented flat has a municipal permit and that its address matches the one you are staying in."
+     },
+     {
+      "publisher": "Ajuntament de Barcelona (City Council)",
+      "url": "https://ajuntament.barcelona.cat/urbanisme-accio-climatica-mobilitat-pla-barris-serveis-urbans/en/holiday-lets",
+      "quote": "Sometimes other people who are not staying in the flat with you are named in the contract you sign."
+     }
+    ],
+    "checked": "2026-11-16"
    }
   ],
   "official_links": [
    "https://www.gov.uk/foreign-travel-advice/spain/safety-and-security",
    "https://ajuntament.barcelona.cat/seguretatiprevencio/en/stay-safe",
-   "https://travel.gc.ca/destinations/spain"
+   "https://travel.gc.ca/destinations/spain",
+   "https://www.gov.uk/guidance/eu-entryexit-system",
+   "https://ajuntament.barcelona.cat/urbanisme-accio-climatica-mobilitat-pla-barris-serveis-urbans/en/holiday-lets"
   ],
   "notes": "FCDO advice is national; Canada lists Barcelona hotspots by name. FCDO also warns about timeshare and holiday-club offers with false incentives (not city-specific; not listed). Barcelona City Council's pages give general prevention tips but name no specific scams."
  },
@@ -875,12 +943,45 @@
     "types": [
      "pickpocket"
     ]
+   },
+   {
+    "name": "Drink spiking in bars and clubs",
+    "what_happens": "There is a risk of drinks being spiked in bars and clubs.",
+    "avoid": "Do not accept drinks from strangers and never leave your drink unattended.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
+      "quote": "There is a risk of drink spiking in bars and clubs. Be careful not to take drinks from strangers or leave your drinks unattended."
+     }
+    ],
+    "checked": "2026-11-16",
+    "types": [
+     "spiking"
+    ]
+   },
+   {
+    "name": "Street sellers of city tours",
+    "what_happens": "People sell tours on the street in the city centre, which is illegal.",
+    "avoid": "Book only licensed guides, online, at a tour desk or at an official information centre.",
+    "sources": [
+     {
+      "publisher": "Prague City Tourism (prague.eu)",
+      "url": "https://prague.eu/en/enjoy-respect/",
+      "quote": "Only book licensed guides and buy tours online, at a tour desk or information centre. Selling tours on the street in the city centre is illegal."
+     }
+    ],
+    "checked": "2026-11-16",
+    "types": [
+     "touts"
+    ]
    }
   ],
   "official_links": [
    "https://www.gov.uk/foreign-travel-advice/czechia/safety-and-security",
    "https://www.prg.aero/en/unofficial-taxi-services",
-   "https://travel.gc.ca/destinations/czechia"
+   "https://travel.gc.ca/destinations/czechia",
+   "https://prague.eu/en/enjoy-respect/"
   ],
   "notes": "Prague Airport says that from 1 October 2026 metered taxi fares in Prague are no longer capped, so FCDO/Canada advice to check the rate printed on the taxi still applies, but there is no legal maximum now. The airport gives a typical airport-to-centre fare (about CZK 800) as a guide only. FCDO points to Prague City Police advice for some of these items."
  },
@@ -1089,13 +1190,54 @@
     "types": [
      "card"
     ]
+   },
+   {
+    "name": "Fake ETIAS websites",
+    "what_happens": "Unofficial sites offer to file the ETIAS travel authorisation for you and charge extra fees or misuse your personal data. ETIAS is not taking applications yet.",
+    "avoid": "Apply only through the official EU ETIAS website or app, and only once the EU says ETIAS has started. The official fee will be 20 euros.",
+    "sources": [
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/news/main-differences-between-ees-and-etias-what-travellers-need-know-2026-04-28_en",
+      "quote": "This helps avoid fraudulent third-party sites that may charge extra fees or misuse personal data."
+     },
+     {
+      "publisher": "European Commission (Migration and Home Affairs)",
+      "url": "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/european-travel-information-authorisation-system_en",
+      "quote": "is currently not in operation and no applications for travel authorisations are collected at this point."
+     }
+    ],
+    "checked": "2026-11-16"
+   },
+   {
+    "name": "Street drug sellers",
+    "what_happens": "People offer drugs on the street, often in quiet alleys late at night. Buying drugs outside the licensed coffee shops is illegal, and arguing with a seller can turn into a confrontation.",
+    "avoid": "Say no and walk away, do not argue, and keep to busy, lit streets at night.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/netherlands/safety-and-security",
+      "quote": "Avoid confrontation with anyone offering you drugs. Stay away from quiet or dark alleys, particularly late at night."
+     },
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/netherlands/safety-and-security",
+      "quote": "Buying or possessing prohibited drugs and substances outside of designated areas, including when transiting through airports, is illegal"
+     }
+    ],
+    "types": [
+     "touts"
+    ],
+    "checked": "2026-11-16"
    }
   ],
   "official_links": [
    "https://www.gov.uk/foreign-travel-advice/netherlands/safety-and-security",
    "https://travel.gc.ca/destinations/netherlands",
    "https://www.iamsterdam.com/en/travel-stay/getting-around/taxis-in-amsterdam",
-   "https://www.iamsterdam.com/en/travel-stay/how-to-get-from-schiphol-airport-to-amsterdam"
+   "https://www.iamsterdam.com/en/travel-stay/how-to-get-from-schiphol-airport-to-amsterdam",
+   "https://home-affairs.ec.europa.eu/news/main-differences-between-ees-and-etias-what-travellers-need-know-2026-04-28_en",
+   "https://home-affairs.ec.europa.eu/policies/schengen/smart-borders/european-travel-information-authorisation-system_en"
   ],
   "notes": "FCDO and Canada both name Amsterdam specifically for the fake-police and pickpocketing items. Card/ATM fraud is Canada's national advice. I amsterdam is the city's official marketing organisation (Amsterdam & Partners). Schiphol's own taxi page and amsterdam.nl returned HTTP 403 to the fetcher, so they are not cited. FCDO also advises avoiding confrontation with street drug sellers (not a scam; not listed)."
  },
@@ -3042,6 +3184,45 @@
     "types": [
      "spiking"
     ]
+   },
+   {
+    "name": "Pickpocketing and bag snatching",
+    "what_happens": "Pickpockets and bag snatchers target tourists in Budapest, especially in crowded places such as buses, trains, stations and markets.",
+    "avoid": "Keep your passport, phone and wallet in a secure inside place and do not carry large amounts of cash.",
+    "sources": [
+     {
+      "publisher": "UK FCDO",
+      "url": "https://www.gov.uk/foreign-travel-advice/hungary/safety-and-security",
+      "quote": "Bag-snatching and pickpocketing are common, especially in Budapest and other cities."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Petty crime, such as pickpocketing and bag snatching, occurs. Thieves target tourists."
+     }
+    ],
+    "checked": "2026-11-16",
+    "types": [
+     "pickpocket"
+    ]
+   },
+   {
+    "name": "Fake ETIAS websites",
+    "what_happens": "Websites claim to sell the EU ETIAS travel authorization, but applications are not open yet.",
+    "avoid": "Do not pay any site for ETIAS now; when it opens, apply only through the official EU website.",
+    "sources": [
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Applications are not yet open. Apply only through the official EU website once the system is launched."
+     },
+     {
+      "publisher": "Government of Canada (travel.gc.ca)",
+      "url": "https://travel.gc.ca/destinations/hungary",
+      "quote": "Be cautious of fraudulent websites claiming to sell ETIAS authorizations."
+     }
+    ],
+    "checked": "2026-11-16"
    }
   ],
   "official_links": [

@@ -67,6 +67,18 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
     </p>
   <?php endif; ?>
 
+  <?php $bybTax = rmt_tt_key_for_dest((string) $d['slug']); $bybTaxCity = $bybTax !== null ? rmt_tt_cities()[$bybTax] : null; ?>
+  <?php if ($bybTaxCity !== null): ?>
+    <p class="hint" style="margin:0 0 16px"><b>Tourist tax in <?= e($city) ?>:</b> <?= e((string) $bybTaxCity['rate']) ?>.
+      <a href="<?= e(url('blog/' . $bybTaxCity['note'])) ?>">How it works</a> &middot;
+      <a href="<?= e(url('tourist-tax-calculator?city=' . rawurlencode($bybTax))) ?>">Work out yours</a></p>
+  <?php endif; ?>
+
+  <?php if ($type === null && ($byb = rmt_byb((string) $d['slug'])) !== null): $bybCity = $city; include __DIR__ . '/_byb_checklist.php'; endif; ?>
+
+  <?php $story = ['topic' => 'warnings:' . (string) $d['slug'], 'name' => $city, 'return' => '/warnings/' . (string) $d['slug'] . '#story'];
+        include __DIR__ . '/_story_form.php'; ?>
+
   <?php /* The way from reading about what goes wrong to the people going. The count is real or it
            is not shown: with nobody there yet the invitation is to be the first, said plainly. */ ?>
   <?php $byg = ['topic' => 'scams', 'city' => (string) $d['slug'], 'name' => $city, 'source' => 'warnings',

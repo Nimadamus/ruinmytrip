@@ -28,7 +28,7 @@
           <span class="muted"><?= e((string) $r['dest_name']) ?></span>
           &middot; <a href="<?= e(url('admin/place/'.(int) $r['place_id'])) ?>">Edit this place</a>
         <?php else: ?>
-          <span class="muted">&middot; not about a place</span>
+          <span class="muted">&middot; <?= !empty($r['topic']) ? 'from ' . e((string) $r['topic']) : 'not about a place' ?></span>
         <?php endif; ?>
       </p>
       <p class="hint" style="margin:0 0 8px">
