@@ -48,6 +48,7 @@
       <?php if ($ttByb !== null): ?>
         <p style="margin:14px 0 0"><a href="<?= e(url('warnings/' . $ttDest . '#before-you-book')) ?>"><?= count($ttByb['items']) ?> more things to check before you book in <?= e((string) rmt_tt_cities()[$ttCity]['name']) ?></a>, each from an official source.</p>
       <?php endif; ?>
+      <?php $clDest = (string) rmt_tt_cities()[$ttCity]['dest']; $clName = (string) rmt_tt_cities()[$ttCity]['name']; include __DIR__ . '/_checklist_cta.php'; ?>
       <?php $story = ['topic' => 'tax:' . $ttCity, 'name' => (string) rmt_tt_cities()[$ttCity]['name'], 'return' => '/blog/' . (string) $p['slug'] . '#story'];
             include __DIR__ . '/_story_form.php'; ?>
     <?php endif; ?>

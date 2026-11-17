@@ -141,6 +141,8 @@ $authorSaid = $authorSaid ?? [];
 
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
 
+  <?php include __DIR__ . '/_trip_checklist.php'; ?>
+
   <?php /* Who is planning it, and the box for inviting somebody, under the plan rather than over
            it. On a phone the invite field sat a hundred and fifty pixels above the itinerary, so
            the loudest thing on an owner's own trip was a request for somebody else's username.

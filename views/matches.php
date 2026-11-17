@@ -57,6 +57,10 @@
       <p class="hint" style="margin:0">It is on your profile, and it is what everything below is
         matched against. <a href="<?= e(url('trip/' . (int) $newTrip['id'])) ?>">Open the trip</a>
         to add a plan or a photograph.</p>
+      <?php $nlCount = !empty($newTrip['dest_slug']) ? count(rmt_trip_checklist_items((string) $newTrip['dest_slug'])) : 0;
+            if ($nlCount > 0): ?>
+        <p style="margin:10px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('trip/' . (int) $newTrip['id'] . '#before-you-go')) ?>">Your before you go checklist: <?= $nlCount ?> things to sort for <?= e((string) $newTrip['dest_name']) ?></a></p>
+      <?php endif; ?>
       <form method="post" action="<?= e(url('im-going')) ?>" style="margin:10px 0 0">
         <?= csrf_field() ?><input type="hidden" name="trip_id" value="<?= (int) $newTrip['id'] ?>">
         <b>Somebody you know is going too?</b> Send them an "I'm going" card.

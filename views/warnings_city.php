@@ -76,6 +76,8 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
 
   <?php if ($type === null && ($byb = rmt_byb((string) $d['slug'])) !== null): $bybCity = $city; include __DIR__ . '/_byb_checklist.php'; endif; ?>
 
+  <?php $clDest = (string) $d['slug']; $clName = $city; include __DIR__ . '/_checklist_cta.php'; ?>
+
   <?php $story = ['topic' => 'warnings:' . (string) $d['slug'], 'name' => $city, 'return' => '/warnings/' . (string) $d['slug'] . '#story'];
         include __DIR__ . '/_story_form.php'; ?>
 

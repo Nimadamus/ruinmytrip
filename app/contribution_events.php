@@ -122,6 +122,7 @@ const RMT_CONTRIB_EVENTS = [
     /* Before you go updates, 2026-11-15 (app/before_you_go.php): asked for on a tax or scam page, confirmed. */
     'byg_submitted',
     'story_submitted',
+    'checklist_ticked',            // a before-you-go item ticked off on a trip (app/trip_checklist.php)
     'byg_confirmed',
     'share_visit',                 // a going card opened by somebody who did not make it
     'recognition_earned',
@@ -142,6 +143,8 @@ const RMT_CTA_KEYS = [
     // The home page action tiles and the empty board (2026-10-01), the header Join button, Google sign in.
     'home_act_trip', 'home_act_find', 'home_act_ask', 'home_act_review', 'home_act_ruined', 'home_act_follow',
     'home_dates', 'nav_join', 'google_signin',
+    // The before you go checklist offer on tax notes, warnings pages and the calculator (2026-11-17).
+    'checklist_cta',
     // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
     // The "Been here?" stars on a place page, and the next step after a first review (2026-10-02).

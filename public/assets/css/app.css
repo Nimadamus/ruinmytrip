@@ -1828,5 +1828,16 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .tt-embed-code{padding:18px;margin:18px 0}
 .tt-embed-code pre{overflow-x:auto;padding:12px;background:var(--line-soft);border-radius:8px;font-size:.85rem;white-space:pre-wrap;word-break:break-all}
 .tt-embed-preview{margin-top:26px}
+.tcl-group{margin:14px 0 6px;font-size:.82rem;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.tcl-list{list-style:none;margin:0;padding:0}
+.tcl-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+.tcl-item form{margin:0;flex:none}
+.tcl-box{width:28px;height:28px;min-width:28px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:#fff;font-weight:700;line-height:1;cursor:pointer;padding:0}
+.tcl-item.is-done .tcl-box{background:#0f766e;border-color:#0f766e}
+.tcl-item.is-done .tcl-title{text-decoration:line-through;color:var(--muted)}
+.tcl-text{min-width:0}
+.tcl-title{margin:2px 0 2px;font-weight:600}
+.tcl-detail{margin:0 0 4px;font-size:.9rem;color:var(--muted)}
+.tcl-src{font-size:.85rem;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
 @media (max-width:520px){.tt-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tt-links a,.tt-table td a,.tt-table p a{text-decoration:underline;text-underline-offset:2px}

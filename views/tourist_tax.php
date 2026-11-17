@@ -66,6 +66,7 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
       </p>
     </section>
   <?php endif; ?>
+  <?php if ($city): $clDest = (string) $city['dest']; $clName = (string) $city['name']; include __DIR__ . '/_checklist_cta.php'; endif; ?>
 
   <section class="tt-table">
     <h2>2026 tourist tax by city</h2>
