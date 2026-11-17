@@ -38,6 +38,8 @@
   <?php $ttCity = null; foreach (rmt_tt_cities() as $ttK => $ttC) { if ($ttC['note'] === ($p['slug'] ?? '')) { $ttCity = $ttK; break; } }
   if ($ttCity !== null || ($p['slug'] ?? '') === 'tourist-taxes-2026'): ?>
     <p style="margin:22px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : ''))) ?>">Work out the tax on your stay</a></p>
+    <?php $tt27 = null; foreach (rmt_tt27_rows() as $tt27R) { if ($ttCity !== null && $tt27R['key'] === $ttCity) { $tt27 = $tt27R; break; } } ?>
+    <p style="margin:14px 0 0"><?php if ($tt27): ?>Changing in 2027: <?= e($tt27['rate_2027']) ?><?= $tt27['date'] !== '' ? ' from ' . e(date('j F Y', (int) strtotime($tt27['date']))) : '' ?>. <?php endif; ?><a href="<?= e(url('tourist-tax-2027' . ($tt27 ? '#' . $tt27['key'] : ''))) ?>">Every European tourist tax change for 2027, ranked</a></p>
     <?php if ($ttCity !== null): ?>
       <p class="muted" style="margin:14px 0 0">Tourist tax in other cities:
         <?php foreach (rmt_tt_neighbours($ttCity, 6) as $i => $ttN): ?><?= $i ? ', ' : ' ' ?><a href="<?= e(url('blog/' . $ttN['note'])) ?>"><?= e($ttN['name']) ?></a><?php endforeach; ?>.</p>
