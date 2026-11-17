@@ -1813,5 +1813,20 @@ button.act-tile{width:100%;text-align:left;font:inherit;cursor:pointer}
 .tt-table td:first-child{white-space:nowrap}
 .tt-faq h3{margin:16px 0 4px;font-size:1.02rem}
 .tt-faq p{margin:0}
+.tt27 .tt-table td:nth-child(3),.tt27 .tt-table td:nth-child(4){white-space:nowrap}
+@media (max-width:520px){.tt27 .tt-table th,.tt27 .tt-table td{padding:8px 4px;font-size:.86rem}.tt27 .tt-table td:first-child,.tt27 .tt-table th:first-child{padding-left:0}}
+.tt27 .tt-table td,.tt27 .tt-table th,.tt27 .tt-table td *{overflow-wrap:normal;word-break:normal;hyphens:none}
+.tt27 .tt-faq p{margin:0 0 12px}
+.tt27-cities{margin-top:30px}
+.tt27-city{padding:16px 18px;margin:0 0 14px;scroll-margin-top:80px}
+.tt27-city h3{margin:0 0 6px;font-size:1.08rem}
+.tt27-city p{margin:0 0 8px}
+.tt27-quote{margin:10px 0 0;padding:8px 0 8px 14px;border-left:3px solid var(--line)}
+.tt27-quote p{margin:0 0 4px;font-size:.92rem}
+.tt27-quote footer{font-size:.85rem}
+.tt27-quote a{text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.tt-embed-code{padding:18px;margin:18px 0}
+.tt-embed-code pre{overflow-x:auto;padding:12px;background:var(--line-soft);border-radius:8px;font-size:.85rem;white-space:pre-wrap;word-break:break-all}
+.tt-embed-preview{margin-top:26px}
 @media (max-width:520px){.tt-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tt-links a,.tt-table td a,.tt-table p a{text-decoration:underline;text-underline-offset:2px}

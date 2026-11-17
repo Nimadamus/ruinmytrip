@@ -19,7 +19,7 @@ declare(strict_types=1);
 const RMT_BYG_TOPICS = ['tax' => 'tourist tax', 'scams' => 'official scam warnings'];
 const RMT_BYG_MAIL_GAP = 20 * 3600;
 const RMT_BYG_SESSION = 'byg_last';
-const RMT_BYG_SOURCES = ['tax_calc', 'tax_note', 'warnings', 'city_scams'];
+const RMT_BYG_SOURCES = ['tax_calc', 'tax_note', 'warnings', 'city_scams', 'tax_2027'];
 
 /** The cities a topic knows: key => display name. */
 function rmt_byg_cities(string $topic): array {

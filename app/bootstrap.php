@@ -34,6 +34,8 @@ require BASE_PATH . '/app/indexability.php';
 require BASE_PATH . '/app/neighborhoods.php';
 require BASE_PATH . '/app/sitemap.php';
 require BASE_PATH . '/app/tourist_tax.php';
+require BASE_PATH . '/app/tax_embed.php';
+require BASE_PATH . '/app/tax_study.php';
 require BASE_PATH . '/app/similar_places.php';
 require BASE_PATH . '/app/editorial_links.php';
 require BASE_PATH . '/app/destination_modules.php';

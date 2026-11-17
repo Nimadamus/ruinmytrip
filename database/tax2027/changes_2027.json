@@ -1,0 +1,340 @@
+{
+ "checked": "2026-11-17",
+ "changes": [
+  {
+   "key": "amsterdam",
+   "city": "Amsterdam",
+   "country": "Netherlands",
+   "currency": "EUR",
+   "status": "approved",
+   "effective_date": "2027-01-01",
+   "rate_2026": "12.5% of the room price",
+   "rate_2027": "16% of the room price",
+   "calc_2027": {
+    "pct": 16
+   },
+   "who_pays_notes": "Worked out on the room price before VAT, and 21% VAT comes on top. The city council passed the 2027 budget with the new rate on 12 November 2026.",
+   "sources": [
+    {
+     "url": "https://www.amsterdam.nl/bestuur-organisatie/college/besluiten-college-burgemeester/nieuws-23-september-2026/",
+     "publisher": "City of Amsterdam, decisions of the Mayor and Aldermen, 23 September 2026",
+     "quote": "Het college van B en W stemt in met de eerste wijzigingsverordening Toeristenbelasting 2024, waarmee in 2027 een uniform tarief van 16% van de overnachtingsprijs gehanteerd wordt.",
+     "quote_en": "The Mayor and Aldermen agree to the first amendment of the Tourist Tax Bylaw 2024, which sets a uniform rate of 16% of the overnight price in 2027.",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "vienna",
+   "city": "Vienna",
+   "country": "Austria",
+   "currency": "EUR",
+   "status": "scheduled_in_law",
+   "effective_date": "2027-07-01",
+   "rate_2026": "5% of the room price",
+   "rate_2027": "8% of the room price",
+   "calc_2027": {
+    "pct": 8
+   },
+   "who_pays_notes": "Worked out on the net accommodation charge, without VAT or breakfast. Nights before 1 July 2027 stay at 5%. Hotel groups have asked the city to suspend the rise; the city still lists it.",
+   "sources": [
+    {
+     "url": "https://www.wien.gv.at/pdf/ma06/ortstaxe-faq.pdf",
+     "publisher": "Stadt Wien (MA 6)",
+     "quote": "Die Ortstaxe in Höhe von 5% gilt erstmals für entgeltliche Aufenthalte ab dem 1. Juli 2026, für entgeltliche Aufenthalte ab dem 1. Juli 2027 gilt eine Ortstaxe in Höhe von 8%.",
+     "quote_en": "The 5% Ortstaxe first applies to paid stays from 1 July 2026; for paid stays from 1 July 2027 an Ortstaxe of 8% applies.",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "barcelona",
+   "city": "Barcelona",
+   "country": "Spain",
+   "currency": "EUR",
+   "status": "approved",
+   "effective_date": "2027-04-01",
+   "rate_2026": "8.40 euros per person per night in a four star hotel",
+   "rate_2027": "9.40 euros per person per night in a four star hotel",
+   "calc_2027": {
+    "pp": 9.4
+   },
+   "who_pays_notes": "The regional rate for a four star hotel stays at 3.40 euros; the city surcharge rises from 5 to 6 euros, and to 7 euros from 1 April 2028.",
+   "sources": [
+    {
+     "url": "https://bop.diba.cat/anuncio/descargar-pdf/3893255",
+     "publisher": "Butlletí Oficial de la Província de Barcelona, 2-2-2026 (Ajuntament de Barcelona, definitive approval by Plenari 30 Jan 2026)",
+     "quote": "2027 6€ De l'1 d'abril de 2027 al 31 de març de 2028",
+     "quote_en": "2027: EUR 6 surcharge, from 1 April 2027 to 31 March 2028",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://www.boe.es/ccaa/dogc/2026/9621/f00001-00009.pdf",
+     "publisher": "DOGC núm. 9621 (10.3.2026), Ley 2/2026, Generalitat de Catalunya (BOE mirror)",
+     "quote": "La tarifa aplicable a partir del 1 de abril de 2026 para Barcelona ciudad ... 2. Hotel de 4 estrellas y 4 estrellas superior ... 3,40",
+     "quote_en": "Tariff applicable from 1 April 2026 for Barcelona city ... 4-star hotel ... EUR 3.40",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "catalonia",
+   "city": "Rest of Catalonia",
+   "country": "Spain",
+   "currency": "EUR",
+   "status": "scheduled_in_law",
+   "effective_date": "2027-04-01",
+   "rate_2026": "1.80 euros per person per night in a four star hotel",
+   "rate_2027": "2.40 euros per person per night in a four star hotel",
+   "calc_2026": {
+    "pp": 1.8
+   },
+   "calc_2027": {
+    "pp": 2.4
+   },
+   "who_pays_notes": "The regional tax outside Barcelona city, for example in Girona, Tarragona and Sitges. Five star hotels go from 4.50 to 6 euros and tourist flats from 1.75 to 2.50 euros. Some towns add their own surcharge on top.",
+   "sources": [
+    {
+     "url": "https://www.boe.es/ccaa/dogc/2026/9621/f00001-00009.pdf",
+     "publisher": "DOGC núm. 9621 (10.3.2026), Ley 2/2026, Generalitat de Catalunya (BOE mirror)",
+     "quote": "c) La tarifa aplicable a partir del 1 de abril de 2027 para el resto de Cataluña ... 2. Hotel de 4 estrellas y 4 estrellas superior ... 2,40",
+     "quote_en": "c) Tariff applicable from 1 April 2027 for the rest of Catalonia ... 4-star hotel ... EUR 2.40",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "glasgow",
+   "city": "Glasgow",
+   "country": "Scotland, UK",
+   "currency": "GBP",
+   "status": "approved",
+   "effective_date": "2027-01-25",
+   "rate_2026": "",
+   "rate_2027": "5% of the room price",
+   "calc_2027": {
+    "pct": 5
+   },
+   "who_pays_notes": "Charged on every night of the stay, with no limit on nights. Bookings made from April 2026 for stays from 25 January 2027 include it.",
+   "sources": [
+    {
+     "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
+     "publisher": "VisitScotland (national tourism agency), business support",
+     "quote": "From 25 January 2027, a levy of 5% on overnight accommodation will be applied for the full length of a stay in the city.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "aberdeen",
+   "city": "Aberdeen",
+   "country": "Scotland, UK",
+   "currency": "GBP",
+   "status": "approved",
+   "effective_date": "2027-04-01",
+   "rate_2026": "",
+   "rate_2027": "7% of the room price",
+   "calc_2027": {
+    "pct": 7
+   },
+   "who_pays_notes": "The highest visitor levy rate in Scotland so far, charged on every night of the stay.",
+   "sources": [
+    {
+     "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
+     "publisher": "VisitScotland (national tourism agency), business support",
+     "quote": "From 1 April 2027, a levy of 7% on overnight accommodation will be applied for the full length of a stay in the city.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "stirling",
+   "city": "Stirling",
+   "country": "Scotland, UK",
+   "currency": "GBP",
+   "status": "approved",
+   "effective_date": "2027-06-14",
+   "rate_2026": "",
+   "rate_2027": "3% of the room price",
+   "calc_2027": {
+    "pct": 3,
+    "cap_nights": 7
+   },
+   "who_pays_notes": "Charged on every night, but visitors can claim back the levy on nights after the first 7.",
+   "sources": [
+    {
+     "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
+     "publisher": "VisitScotland (national tourism agency), business support",
+     "quote": "From 14th June 2027, a levy of 3% will apply to all paid overnight visitor accommodation stays in the Stirling Council area.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "west-dunbartonshire",
+   "city": "Balloch and Loch Lomond",
+   "country": "West Dunbartonshire, Scotland",
+   "currency": "GBP",
+   "status": "approved",
+   "effective_date": "2027-07-01",
+   "rate_2026": "",
+   "rate_2027": "5% of the room price",
+   "calc_2027": {
+    "pct": 5
+   },
+   "who_pays_notes": "Charged on every night of the stay.",
+   "sources": [
+    {
+     "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
+     "publisher": "VisitScotland (national tourism agency), business support",
+     "quote": "From 1 July 2027, a levy of 5% on overnight accommodation will be applied for the full length of stay in the area.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "cardiff",
+   "city": "Cardiff",
+   "country": "Wales, UK",
+   "currency": "GBP",
+   "status": "approved",
+   "effective_date": "2027-04-01",
+   "rate_2026": "",
+   "rate_2027": "1.30 pounds per person per night",
+   "calc_2027": {
+    "pp": 1.3
+   },
+   "who_pays_notes": "Hostel dorm beds and campsite pitches pay 75p. Collected by the Welsh Revenue Authority, for new bookings made from 28 September 2026. No other Welsh council has a 2027 start yet.",
+   "sources": [
+    {
+     "url": "https://www.gov.wales/visitor-levy-wales",
+     "publisher": "Welsh Government (gov.wales)",
+     "quote": "Cardiff Council has introduced a Visitor Levy on overnight stays.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://www.gov.wales/visitor-levy-wales",
+     "publisher": "Welsh Government (gov.wales)",
+     "quote": "£1.30 per person per night is paid for all other types of accommodation.",
+     "quote_en": "",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "tromso",
+   "city": "Tromsø",
+   "country": "Norway",
+   "currency": "NOK",
+   "status": "approved",
+   "effective_date": null,
+   "rate_2026": "",
+   "rate_2027": "3% of the room price",
+   "calc_2027": {
+    "pct": 3
+   },
+   "who_pays_notes": "Worked out on the price before VAT. Norway approved the city plan on 28 October 2026; collection can start on 1 January 2027 at the earliest, and the exact start is not announced yet.",
+   "sources": [
+    {
+     "url": "https://kommunikasjon.ntb.no/pressemelding/19121605/tromso-kommune-far-innfore-besoksbidrag?publisherId=14943704",
+     "publisher": "Nærings- og fiskeridepartementet (press release via NTB, 28.10.2026)",
+     "quote": "kan begynne å krevje inn overnattingsavgift frå tidlegast 1. januar 2027",
+     "quote_en": "may start collecting the overnight fee from 1 January 2027 at the earliest",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://stortinget.no/no/Saker-og-publikasjoner/Vedtak/Beslutninger/Lovvedtak/2024-2025/vedtak-202425-110/",
+     "publisher": "Stortinget (lovvedtak, besøksbidragslova)",
+     "quote": "Den kommunale overnattingsavgiften skal beregnes som et prosentvist påslag på 3 prosent av vederlaget som betales for overnattingen, eksklusive merverdiavgift.",
+     "quote_en": "The municipal overnight fee is calculated as a 3 percent surcharge on the payment for the overnight stay, excluding VAT.",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "vagan",
+   "city": "Lofoten (Svolvær, Henningsvær)",
+   "country": "Vågan, Norway",
+   "currency": "NOK",
+   "status": "approved",
+   "effective_date": null,
+   "rate_2026": "",
+   "rate_2027": "3% of the room price",
+   "calc_2027": {
+    "pct": 3
+   },
+   "who_pays_notes": "Worked out on the price before VAT. Plan approved on 28 October 2026; the local rules apply to stays from 1 January 2027 once in force. Other Lofoten towns are still waiting for approval.",
+   "sources": [
+    {
+     "url": "https://kommunikasjon.ntb.no/pressemelding/19121627/vagan-kommune-far-innfore-besoksbidrag?publisherId=14943704",
+     "publisher": "Nærings- og fiskeridepartementet (press release via NTB, 28.10.2026)",
+     "quote": "Vågan er blant dei første kommunane i Noreg som får godkjent planen sin for besøksbidrag.",
+     "quote_en": "Vågan is among the first municipalities in Norway to have its visitor contribution plan approved.",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://stortinget.no/no/Saker-og-publikasjoner/Vedtak/Beslutninger/Lovvedtak/2024-2025/vedtak-202425-110/",
+     "publisher": "Stortinget (lovvedtak, besøksbidragslova)",
+     "quote": "Den kommunale overnattingsavgiften skal beregnes som et prosentvist påslag på 3 prosent av vederlaget som betales for overnattingen, eksklusive merverdiavgift.",
+     "quote_en": "3 percent surcharge on the overnight payment, excluding VAT.",
+     "accessed": "2026-11-17"
+    }
+   ]
+  }
+ ],
+ "pending": [
+  {
+   "key": "san-sebastian",
+   "city": "San Sebastián",
+   "country": "Spain",
+   "effective_date": "2027-01-01",
+   "rate_2027": "1.25 to 6.50 euros per person per night, at most 6 nights",
+   "who_pays_notes": "The city has given the new tax its first approval; the rate for each hotel category is not final.",
+   "sources": [
+    {
+     "url": "https://donostia.eus/documents/d/asset-library-1467167/oharra_uzt28_tgbjgl_zergak-docx",
+     "publisher": "Ayuntamiento de Donostia / San Sebastián (press note, Jul 2026)",
+     "quote": "Las tarifas oscilarán entre 1,25 euros por noche y persona en agroturismos y 7 euros en el caso de los cruceros, mientras que los hoteles de mayor categoría y las viviendas de uso turístico tendrán una tarifa de 6,5 euros por noche.",
+     "quote_en": "Rates will range from EUR 1.25 per night per person in agritourism to EUR 7 for cruises, while top-category hotels and tourist flats will pay EUR 6.50 per night.",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://donostia.eus/documents/d/asset-library-1467167/oharra_uzt28_tgbjgl_zergak-docx",
+     "publisher": "Ayuntamiento de Donostia / San Sebastián (press note, Jul 2026)",
+     "quote": "lo que permitirá aplicar este tributo a partir del 1 de enero de 2027",
+     "quote_en": "which will allow this tax to be applied from 1 January 2027",
+     "accessed": "2026-11-17"
+    }
+   ]
+  },
+  {
+   "key": "bilbao",
+   "city": "Bilbao and the rest of Bizkaia",
+   "country": "Spain",
+   "effective_date": "2027-01-01",
+   "rate_2027": "Rates not final, at most 5 nights",
+   "who_pays_notes": "Bizkaia law brings in the tax in every town from 1 January 2027; Bilbao has not set its own rates yet.",
+   "sources": [
+    {
+     "url": "https://www.bizkaia.eus/es/web/comunicacion/noticias/-/news/detailView/la-diputacion-aprueba-el-anteproyecto-de-norma-foral-del-impuesto-sobre-estancias-turisticas",
+     "publisher": "Diputación Foral de Bizkaia",
+     "quote": "producirá efectos en los municipios del territorio desde el 1 de enero de 2027",
+     "quote_en": "will take effect in the territory's municipalities from 1 January 2027",
+     "accessed": "2026-11-17"
+    },
+    {
+     "url": "https://www.bizkaia.eus/es/web/comunicacion/noticias/-/news/detailView/la-diputacion-aprueba-el-anteproyecto-de-norma-foral-del-impuesto-sobre-estancias-turisticas",
+     "publisher": "Diputación Foral de Bizkaia",
+     "quote": "máximo de 5 unidades por contribuyente para cada estancia continuada",
+     "quote_en": "maximum of 5 units per taxpayer for each continuous stay",
+     "accessed": "2026-11-17"
+    }
+   ]
+  }
+ ]
+}

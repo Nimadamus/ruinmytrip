@@ -96,6 +96,7 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
       </tbody>
     </table></div>
     <p class="muted">Worked out from the same rates as the calculator above. VAT and booking fees are not included.</p>
+    <p class="tt-links"><a href="<?= e(url('tourist-tax-2027')) ?>">Every European tourist tax change for 2027, ranked</a> <a href="<?= e(url('tourist-tax-calculator/embed')) ?>">Put this calculator on your site</a></p>
   </section>
 
   <?php $byg = ['topic' => 'tax', 'city' => $slug, 'name' => (string) ($city['name'] ?? ''), 'source' => 'tax_calc',

@@ -192,7 +192,7 @@ function rmt_tt_estimate(array $city, array $tier, int $nights, int $people, int
 }
 
 function rmt_tt_money(float $v, string $cur): string {
-    $whole = in_array($cur, ['JPY', 'ISK', 'HUF', 'CZK'], true);
+    $whole = in_array($cur, ['JPY', 'ISK', 'HUF', 'CZK', 'NOK'], true);
     $n = number_format($v, $whole ? 0 : 2);
     $sym = ['EUR' => '€', 'USD' => '$', 'GBP' => '£', 'JPY' => '¥'][$cur] ?? null;
     return $sym !== null ? $sym . $n : $n . ' ' . $cur;
@@ -221,6 +221,8 @@ const RMT_TT_COMPARE_2027 = [
         'status' => 'Approved: city council passed 16% from 2027 in the 2027 budget on 12 November 2026'],
     'barcelona' => ['tier' => ['pp' => 9.4],
         'status' => 'Scheduled: city surcharge rises from 5 to 6 euros on 1 April 2027'],
+    'vienna' => ['tier' => ['pct' => 8.0],
+        'status' => 'Scheduled: rises from 5% to 8% on 1 July 2027'],
 ];
 
 /** @return list<array{key:string,name:string,note:string,now:float,next:?float,status:string}> highest first */
