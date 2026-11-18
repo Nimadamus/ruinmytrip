@@ -48,6 +48,9 @@ $newCount = count(array_filter($rows, static fn(array $r) => $r['new']));
             <footer><a href="<?= e($s['url']) ?>" rel="noopener" target="_blank"><?= e($s['publisher']) ?></a></footer>
           </blockquote>
         <?php endforeach; ?>
+        <?php if (!$r['in_calc'] && $r['note']): ?>
+          <p class="tt-links"><a href="<?= e(url('blog/' . $r['note'])) ?>">How the <?= e($r['city']) ?> levy works</a></p>
+        <?php endif; ?>
         <?php if ($r['in_calc']): ?>
           <p class="tt-links"><a href="<?= e(url('tourist-tax-calculator?city=' . $r['key'])) ?>">Work out your own stay in <?= e($r['city']) ?></a>
             <?php if ($r['note']): ?><a href="<?= e(url('blog/' . $r['note'])) ?>">How <?= e($r['city']) ?> charges it now</a><?php endif; ?></p>

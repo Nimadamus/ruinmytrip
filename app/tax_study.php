@@ -73,7 +73,7 @@ function rmt_tt27_rows(): array {
             'now' => $now, 'next' => $next,
             'rise_pct' => $now > 0 ? round(($next - $now) / $now * 100, 1) : null,
             'new' => $now <= 0 && $next > 0,
-            'in_calc' => $cal !== null, 'note' => $cal['note'] ?? null, 'sources' => $sources,
+            'in_calc' => $cal !== null, 'note' => $cal['note'] ?? (isset($r['note']) && preg_match('/^[a-z0-9-]+$/', (string) $r['note']) ? (string) $r['note'] : null), 'sources' => $sources,
         ];
     }
     usort($rows, static function (array $a, array $b): int {

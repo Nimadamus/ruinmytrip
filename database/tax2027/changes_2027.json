@@ -36,7 +36,7 @@
    "calc_2027": {
     "pct": 8
    },
-   "who_pays_notes": "Worked out on the net accommodation charge, without VAT or breakfast. Nights before 1 July 2027 stay at 5%. Hotel groups have asked the city to suspend the rise; the city still lists it.",
+   "who_pays_notes": "Worked out on the net accommodation charge, without VAT or breakfast. Nights before 1 July 2027 stay at 5%.",
    "sources": [
     {
      "url": "https://www.wien.gv.at/pdf/ma06/ortstaxe-faq.pdf",
@@ -59,7 +59,7 @@
    "calc_2027": {
     "pp": 9.4
    },
-   "who_pays_notes": "The regional rate for a four star hotel stays at 3.40 euros; the city surcharge rises from 5 to 6 euros, and to 7 euros from 1 April 2028.",
+   "who_pays_notes": "The regional rate for a four star hotel stays at 3.40 euros; the city surcharge rises from 5 to 6 euros.",
    "sources": [
     {
      "url": "https://bop.diba.cat/anuncio/descargar-pdf/3893255",
@@ -105,6 +105,7 @@
   },
   {
    "key": "glasgow",
+   "note": "glasgow-visitor-levy-2027",
    "city": "Glasgow",
    "country": "Scotland, UK",
    "currency": "GBP",
@@ -115,7 +116,7 @@
    "calc_2027": {
     "pct": 5
    },
-   "who_pays_notes": "Charged on every night of the stay, with no limit on nights. Bookings made from April 2026 for stays from 25 January 2027 include it.",
+   "who_pays_notes": "Charged on every night of the stay, with no limit on nights. Advance bookings made from April 2026 for stays from 25 January 2027 include it, and the accommodation keeps 1.5% of what it collects to cover its costs.",
    "sources": [
     {
      "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
@@ -128,6 +129,7 @@
   },
   {
    "key": "aberdeen",
+   "note": "aberdeen-visitor-levy-2027",
    "city": "Aberdeen",
    "country": "Scotland, UK",
    "currency": "GBP",
@@ -138,7 +140,7 @@
    "calc_2027": {
     "pct": 7
    },
-   "who_pays_notes": "The highest visitor levy rate in Scotland so far, charged on every night of the stay.",
+   "who_pays_notes": "The highest rate among the approved Scottish schemes, charged on every night of the stay. Advance bookings made from 1 October 2026 for stays from 1 April 2027 include it.",
    "sources": [
     {
      "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
@@ -162,7 +164,7 @@
     "pct": 3,
     "cap_nights": 7
    },
-   "who_pays_notes": "Charged on every night, but visitors can claim back the levy on nights after the first 7.",
+   "who_pays_notes": "Charged on every night, but visitors can ask for a refund of the levy on nights after the first 7. Stirling Council residents are exempt. Advance bookings made from 1 January 2027 include it.",
    "sources": [
     {
      "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
@@ -185,7 +187,7 @@
    "calc_2027": {
     "pct": 5
    },
-   "who_pays_notes": "Charged on every night of the stay.",
+   "who_pays_notes": "Charged on every night of the stay. Advance bookings made and paid from 1 October 2026 for stays from 1 July 2027 include it.",
    "sources": [
     {
      "url": "https://support.visitscotland.org/advice-support/start-your-business/legislation/visitor-levy",
@@ -198,6 +200,7 @@
   },
   {
    "key": "cardiff",
+   "note": "cardiff-visitor-levy-2027",
    "city": "Cardiff",
    "country": "Wales, UK",
    "currency": "GBP",
@@ -208,7 +211,7 @@
    "calc_2027": {
     "pp": 1.3
    },
-   "who_pays_notes": "Hostel dorm beds and campsite pitches pay 75p. Collected by the Welsh Revenue Authority, for new bookings made from 28 September 2026. No other Welsh council has a 2027 start yet.",
+   "who_pays_notes": "Shared hostel rooms and tent pitches pay a lower rate of 75p. It applies to new bookings for stays from 1 April 2027; the accommodation pays it to the Welsh Revenue Authority and may pass it on, and VAT applies on top where the provider is VAT registered.",
    "sources": [
     {
      "url": "https://www.gov.wales/visitor-levy-wales",
