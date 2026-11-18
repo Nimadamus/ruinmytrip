@@ -115,6 +115,7 @@ function tourist_tax_2027_page(array $a): void {
             'name' => 'European tourist tax changes for 2027', 'url' => url('tourist-tax-2027'),
             'description' => 'Tourist and accommodation tax changes taking effect in 2027 in European cities, each with the official source, and the tax on one standard trip in 2026 and 2027.',
             'dateModified' => $checked, 'isAccessibleForFree' => true,
+            'license' => 'https://creativecommons.org/licenses/by/4.0/',
             'creator' => ['@type' => 'Organization', 'name' => 'RuinMyTrip', 'url' => url('')],
             'distribution' => [['@type' => 'DataDownload', 'encodingFormat' => 'text/csv', 'contentUrl' => url('tourist-tax-2027.csv')]]]),
     ]);

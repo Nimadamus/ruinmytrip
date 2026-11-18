@@ -84,7 +84,7 @@ $newCount = count(array_filter($rows, static fn(array $r) => $r['new']));
     <p>A city is in the table only when the 2027 change is approved by its council, written into law, or formally proposed, and the official page saying so is quoted above. Changes reported only in the news are left out until an official source confirms them. Cities with no published 2027 change are not listed.</p>
     <p>The trip is the same everywhere so the cities can be compared: 2 adults sharing 1 room for 4 nights at 200 euros or pounds a night before VAT, or 2,000 kroner in Norway. Where a city charges by hotel category we used four stars. Where a city stops charging after a number of nights, we applied that limit. The change column compares the tax on that trip in 2027 with 2026, so euro, pound and krone cities can sit in one list without an exchange rate. New taxes come first, in the order they start. VAT, booking fees and exemptions for children are not included.</p>
     <p>Rates change. Your booking is the final word. Spot a mistake or a change we missed? <a href="<?= e(url('contact')) ?>">Tell us</a> and we will check it.</p>
-    <p class="muted">You may republish the table with a link to this page. Writing about it? The CSV has every row and source.</p>
+    <p class="muted">You may republish the table with a link to this page (<a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a>). Writing about it? The CSV has every row and source.</p>
   </section>
 
   <?php $byg = ['topic' => 'tax', 'city' => '', 'name' => '', 'source' => 'tax_2027', 'return' => '/tourist-tax-2027#byg'];
