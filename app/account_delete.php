@@ -70,6 +70,7 @@ const RMT_ACCOUNT_DELETE_INVENTORY = [
     'going'               => 'delete',
     'going_cards'         => 'delete',
     'match_alerts'        => 'delete: by account and by their email address',
+    'sailing_alerts'      => 'delete: by account and by their email address',
     'visitor_answers'     => 'delete',
     'held_work'           => 'delete',
     'reviews'             => 'delete, with review_photos, review_ratings and place photos made from them',
@@ -369,6 +370,7 @@ function rmt_account_delete(int $uid): array {
         // Alerts signed up for by address before the account existed are theirs too.
         $x('DELETE FROM going_cards WHERE alert_id IN (SELECT id FROM match_alerts WHERE user_id = ? OR LOWER(email) = ?)', [$uid, $oldEmail]);
         $x('DELETE FROM match_alerts WHERE user_id = ? OR LOWER(email) = ?', [$uid, $oldEmail]);
+        $x('DELETE FROM sailing_alerts WHERE user_id = ? OR LOWER(email) = ?', [$uid, $oldEmail]);
 
         // Shared records that stay, without the link to this person.
         $x('UPDATE places SET created_by = NULL WHERE created_by = ?', [$uid]);
