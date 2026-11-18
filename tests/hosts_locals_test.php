@@ -108,7 +108,7 @@ foreach (q_all('SELECT id, slug FROM destinations ORDER BY id DESC LIMIT 40') as
     $cc = rmt_hl_city_counts((int) $cand['id']);
     if ($cc['locals'] + $cc['hosts'] + $cc['going'] === 0) { $empty = $cand; break; }
 }
-if ($empty) ok(str_contains(render('hosts_locals_city', ['slug' => $empty['slug']]), 'content="noindex, follow"'), 'an empty city is noindex');
+if ($empty) ok(str_contains(render('hosts_locals_city', ['slug' => $empty['slug']]), 'content="index, follow"'), 'an empty city is still indexable (never noindex, Nima 2026-11-18)');
 ok(str_contains(render('hosts_locals_page', ['page' => 'safety']), 'Nothing on this site guarantees personal safety'), 'the safety page renders');
 ok(str_contains(render('hosts_locals_page', ['page' => 'how-it-works']), 'One profile, three roles'), 'how it works renders');
 ok(str_contains(render('hosts_locals_destinations'), 'Hosts &amp; Locals by city'), 'the cities page renders');

@@ -116,7 +116,7 @@ ok('home v2 star links are nofollow', !preg_match('#<a href="[^"]*rating=\d[^"]*
 // Preview and cookie.
 [$pv, $hdr] = fetch($baseOff . '/explore?design=v2');
 ok('a preview serves the redesign with the switches off', str_contains($pv, 'class="v2-header"'));
-ok('a preview is noindex', seo($pv)['robots'] === 'noindex,follow', (string) seo($pv)['robots']);
+ok('a preview still says index (never noindex, Nima 2026-11-18)', seo($pv)['robots'] === 'index, follow', (string) seo($pv)['robots']);
 ok('a preview sets the preview cookie', (bool) preg_grep('#^Set-Cookie: rmt_design=v2#i', $hdr));
 [$ck] = fetch($baseOff . '/d/lisbon-portugal', 'rmt_design=v2');
 ok('the cookie carries the preview to the next page', str_contains($ck, 'class="v2-header"') && str_contains($ck, 'v2-city-hero'));

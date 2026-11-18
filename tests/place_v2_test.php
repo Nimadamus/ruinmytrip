@@ -98,10 +98,10 @@ foreach ($slugs as $slug) {
 
 $pv = fetch("$baseOff/p/a-brasileira-lisbon?design=v2");
 ok('a preview serves v2 with the flag off', str_contains($pv, 'class="pv2"'));
-ok('a preview is noindex', seo($pv)['robots'] === 'noindex,follow', (string) seo($pv)['robots']);
+ok('a preview still says index (never noindex, Nima 2026-11-18)', seo($pv)['robots'] === 'index, follow', (string) seo($pv)['robots']);
 ok('a preview keeps the real canonical', seo($pv)['canonical'] === seo(fetch("$baseOff/p/a-brasileira-lisbon"))['canonical']);
 $back = fetch("$baseOn/p/a-brasileira-lisbon?design=v1");
-ok('?design=v1 shows the old page with the flag on', !str_contains($back, 'class="pv2"') && seo($back)['robots'] === 'noindex,follow');
+ok('?design=v1 shows the old page with the flag on', !str_contains($back, 'class="pv2"') && seo($back)['robots'] === 'index, follow');
 
 proc_terminate($off); proc_terminate($on);
 echo $fails ? "\nplace_v2_test: $fails FAILED\n" : "\nplace_v2_test: all passed\n";

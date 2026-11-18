@@ -256,6 +256,11 @@ function view(string $name, array $data = [], array $meta = []): void {
        so a visitor who reads three pages is one arrival rather than three. Crawlers are refused
        inside rmt_track itself. */
     rmt_track_landing((string) $__meta['robots']);
+    /* Nima's standing rule (2026-06-23, repeated 2026-11-18): never noindex a page. If Google does not
+       want a page it will not index it. The page's own verdict above still decides the landing count
+       and the sitemap; the tag itself says index on every page except a member's private account
+       screens (his 2026-09-13 exception). */
+    $__meta['robots'] = (!empty($__meta['private']) || rmt_private_account_path()) ? 'noindex, nofollow' : 'index, follow';
 
     $__view = BASE_PATH . '/views/' . $name . '.php';
     require BASE_PATH . '/views/layout/header.php';
@@ -318,4 +323,16 @@ function show_verified(?array $row): bool {
 function rmt_not_qa_sql(string $alias = 'u'): string { return "COALESCE($alias.email, '') NOT LIKE '%+rmtqa%'"; }
 function rmt_is_qa_user(int $uid): bool {
     return str_contains((string) (q_one('SELECT email FROM users WHERE id = ?', [$uid])['email'] ?? ''), '+rmtqa');
+}
+
+/** A member's own private screens (account, inbox, settings, admin): the only pages that are noindex. */
+function rmt_private_account_path(?string $path = null): bool {
+    $path = $path ?? (string) (parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH) ?: '/');
+    if (preg_match('#^/trip/\d+/chat$#', $path)) return true;
+    foreach (['/admin', '/account', '/settings', '/messages', '/notifications', '/saved', '/trust',
+              '/verify-email', '/reset-password', '/logout', '/alerts', '/updates', '/hosts-locals/me',
+              '/buddies/mine', '/stays', '/stay/', '/cron', '/welcome', '/join/', '/city-room'] as $pre) {
+        if ($path === $pre || str_starts_with($path, rtrim($pre, '/') . '/') || ($pre !== rtrim($pre, '/') && str_starts_with($path, $pre))) return true;
+    }
+    return false;
 }

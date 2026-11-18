@@ -42,7 +42,6 @@ function tourist_tax_embed_js(array $a): void {
     header('Content-Type: application/javascript; charset=utf-8');
     header('Cache-Control: public, max-age=3600');
     header('Access-Control-Allow-Origin: *');
-    header('X-Robots-Tag: noindex');
     $js = (string) file_get_contents(BASE_PATH . '/public/assets/js/tourist-tax-embed.src.js');
     echo str_replace('/*RMT_DATA*/null', (string) $data, $js);
 }

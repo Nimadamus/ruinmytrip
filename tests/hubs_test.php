@@ -157,7 +157,7 @@ ok(!str_contains($h, '"@type":"Event"') && !str_contains($h, 'LocalBusiness') &&
 ok(!preg_match('/[\x{2013}\x{2014}]/u', strip_tags(substr($h, (int) strpos($h, '<h1'), 6000))), 'the page copy has no dashes');
 if ($thin) {
     [$h] = $render(['slug' => $thin]);
-    ok(preg_match('/<meta name="robots" content="noindex,follow"/', $h) === 1, 'a city with fewer than ' . RMT_HUB_MIN_WARNINGS . ' warnings gets a noindex warnings page');
+    ok(preg_match('/<meta name="robots" content="index, follow"/', $h) === 1, 'a city with fewer than ' . RMT_HUB_MIN_WARNINGS . ' warnings still says index (never noindex, Nima 2026-11-18)');
 }
 ok(rmt_warnings_city('hubtest-quiet') === null, 'a city with no sourced warnings has no warnings page');
 
@@ -193,7 +193,7 @@ ok(!str_contains($h, 'content="noindex'), 'and keeps its index tag');
 $seed('hubtest-lonely', 'Lonelyville', 'Emptyland');
 rmt_hub_seeded_ids(true);
 $h = $cview(rmt_country_slug('Emptyland'));
-ok(str_contains($h, 'Lonelyville') && str_contains($h, 'content="noindex,follow"'), 'a country with only cities below the threshold opens, but noindex');
+ok(str_contains($h, 'Lonelyville') && str_contains($h, 'content="index, follow"'), 'a country with only cities below the threshold opens and says index');
 $h = $cview(rmt_country_slug((string) $old['country']));
 ok(str_contains($h, e((string) $old['name'])) && !str_contains($h, 'content="noindex'), 'an existing country page is unchanged');
 ok(!str_contains((string) file_get_contents($root . '/public/index.php'), "'#^/destinations/"), 'no second family of country addresses was added');

@@ -269,7 +269,7 @@ function city_room(array $a): void {
         'd' => $d, 'checkin' => $checkin, 'count' => rmt_city_room_count($dest),
         'roster' => $checkin ? rmt_city_room_roster($dest, (int) $me['id']) : [],
         'lines' => $checkin ? rmt_city_room_feed($dest, (int) $me['id']) : [],
-    ], ['title' => $d['name'] . ' travelers right now | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,nofollow']);
+    ], ['title' => $d['name'] . ' travelers right now | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,nofollow', 'private' => true]);
 }
 
 /** POST /city-room/{id}/message: say something, then back to the room. */

@@ -508,7 +508,7 @@ function trust_page(array $a): void {
        the appeal live. */
     if (!rmt_trust_open_for($me) && $t['trust_state'] !== 'restricted') not_found();
     view('trust_page', ['me' => $me, 't' => $t, 'open' => rmt_trust_reviewable((int) $me['id'])],
-         ['title' => 'Your trust | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,nofollow']);
+         ['title' => 'Your trust | RuinMyTrip', 'canonical' => '', 'robots' => 'noindex,nofollow', 'private' => true]);
 }
 
 /** POST /trust/review: subject_id, context_key, answer (vouch | flag), note. */

@@ -125,7 +125,6 @@ function tourist_tax_2027_page(array $a): void {
 function tourist_tax_2027_csv(array $a): void {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="ruinmytrip-tourist-tax-changes-2027.csv"');
-    header('X-Robots-Tag: noindex');
     $f = fopen('php://output', 'w');
     fputcsv($f, ['rank', 'city', 'country', 'status', 'effective_date', 'rate_2026', 'rate_2027', 'currency',
                  'trip_tax_2026', 'trip_tax_2027', 'rise_percent', 'source_publisher', 'source_url', 'source_quote', 'checked'], ',', '"', '');
