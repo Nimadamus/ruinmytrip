@@ -501,18 +501,23 @@ function rmt_meta_title(string $head, string $brand = 'RuinMyTrip', int $max = 6
 
 /**
  * Search snippet experiment: a hand written description for a named path, read from
- * database/meta_tests.json. Only the meta description changes; title, URL, canonical,
- * robots and body stay as they are, so the before and after clicks compare one thing.
+ * database/meta_tests.json. Only the meta description (and a test's optional "title") changes;
+ * URL, canonical, robots and body stay as they are, so the before and after clicks compare one thing.
  */
-function rmt_meta_test(string $path): ?string {
+function rmt_meta_test(string $path, string $field = 'description'): ?string {
     static $map = null;
     if ($map === null) {
         $raw = @file_get_contents(BASE_PATH . '/database/meta_tests.json');
         $j = $raw ? json_decode($raw, true) : null;
         $map = is_array($j['tests'] ?? null) ? $j['tests'] : [];
     }
-    $d = trim((string) ($map[$path]['description'] ?? ''));
+    $d = trim((string) ($map[$path][$field] ?? ''));
     return $d !== '' ? $d : null;
+}
+
+/** The test title for a path, if the experiment sets one (same file, key "title"). */
+function rmt_meta_test_title(string $path): ?string {
+    return rmt_meta_test($path, 'title');
 }
 
 /**
