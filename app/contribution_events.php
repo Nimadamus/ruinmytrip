@@ -118,6 +118,11 @@ const RMT_CONTRIB_EVENTS = [
     'alert_confirmed',
     'alert_match',                 // an alert was emailed about a real overlap
     'alert_converted',             // ...and became a member's trip and follow
+    /* Sailing pages, 2026-11-18 (app/sailings.php): a ship and day viewed, its alert asked for, confirmed, matched. */
+    'sailing_view',
+    'sailing_alert_submitted',
+    'sailing_alert_confirmed',
+    'sailing_alert_match',
     'card_created',
     /* Before you go updates, 2026-11-15 (app/before_you_go.php): asked for on a tax or scam page, confirmed. */
     'byg_submitted',

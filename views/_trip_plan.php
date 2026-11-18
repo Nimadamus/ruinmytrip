@@ -82,7 +82,7 @@ if (!empty($t['date_from']) && !empty($t['date_to'])) {
               <?php endif; ?>
               <?php if (!empty($act['notes'])): ?><p class="plan-note"><?= e((string) $act['notes']) ?></p><?php endif; ?>
               <?php if (!empty($act['link'])): ?>
-                <p class="plan-note"><a href="<?= e((string) $act['link']) ?>" rel="noopener nofollow" target="_blank">Link</a></p>
+                <p class="plan-note"><a href="<?= e((string) $act['link']) ?>" rel="noopener nofollow ugc" target="_blank">Link</a></p>
               <?php endif; ?>
 
               <?php /* How it went, once it has. The plan becomes the recommendation. */ ?>

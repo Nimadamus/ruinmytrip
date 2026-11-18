@@ -64,6 +64,7 @@ require BASE_PATH . '/app/onboarding_pending.php';
 require BASE_PATH . '/app/plan_first.php';
 require BASE_PATH . '/app/review_drafts.php';
 require BASE_PATH . '/app/match_alerts.php';
+require BASE_PATH . '/app/sailings.php';
 require BASE_PATH . '/app/before_you_go.php';
 require BASE_PATH . '/app/before_you_book.php';
 require BASE_PATH . '/app/trip_checklist.php';

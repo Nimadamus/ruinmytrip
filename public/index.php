@@ -210,6 +210,15 @@ $routes = [
     // Landing pages for the countries and cruise lines people search a companion for (app/buddy_landing.php).
     // The bare paths people type or guess: 301 to the hub instead of a 404.
     ['GET',  '#^/(?:travel-buddies|travel-buddy|find-a-travel-buddy)/?$#', 'buddy_landing_hub_redirect'],
+    // One ship, one departure day, and its signed out alert (app/sailings.php, 2026-11-18).
+    ['GET',  '#^/sailing/find$#',              'sailing_find'],
+    ['GET',  '#^/sailing/(?<ship>[a-z0-9\-]+)/(?<date>\d{4}-\d{2}-\d{2})$#', 'sailing_show'],
+    ['POST', '#^/sailing-alerts$#',            'sailing_alert_submit'],
+    ['GET',  '#^/sailing-alerts/sent$#',       'sailing_alert_sent'],
+    ['GET',  '#^/sailing-alerts/confirm/(?<token>[a-f0-9]{48})$#', 'sailing_alert_confirm_form'],
+    ['POST', '#^/sailing-alerts/confirm$#',    'sailing_alert_confirm_submit'],
+    ['GET',  '#^/sailing-alerts/off$#',        'sailing_alert_off'],
+    ['POST', '#^/sailing-alerts/off$#',        'sailing_alert_off'],
     ['GET',  '#^/cruise-buddies/?$#',          'buddy_landing_cruise_hub_redirect'],
     ['GET',  '#^/travel-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_country'],
     ['GET',  '#^/cruise-buddies/(?<slug>[a-z0-9\-]+)$#', 'buddy_landing_cruise'],

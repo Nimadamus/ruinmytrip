@@ -21,13 +21,12 @@ $meetOn = 'going'; include __DIR__ . '/_meet_nav.php';
   </div>
   <?php endif; ?>
   <?php if ($isCruise): ?>
-    <form class="buddy-search" method="get" action="<?= e(url('buddies/cruise')) ?>" role="search">
-      <input type="hidden" name="line" value="<?= e($p['line']) ?>">
+    <form class="buddy-search" method="get" action="<?= e(url('sailing/find')) ?>" role="search">
+      <input type="hidden" name="return" value="<?= e('/cruise-buddies/' . $p['slug']) ?>">
       <div class="bs-row">
-        <label><span>Your ship</span><input type="text" name="ship" placeholder="Ship name" autocomplete="off"></label>
-        <label><span>Sail date</span><input type="date" name="from"></label>
-        <label><span>Back</span><input type="date" name="to"></label>
-        <button class="btn btn-primary bs-go" type="submit">Find people on it</button>
+        <label><span>Your ship</span><input type="text" name="ship" placeholder="Ship name" autocomplete="off" required minlength="3" maxlength="80"></label>
+        <label><span>Day it leaves</span><input type="date" name="date" required></label>
+        <button class="btn btn-primary bs-go" type="submit">Find people on my sailing</button>
       </div>
     </form>
   <?php else: ?>

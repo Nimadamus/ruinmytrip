@@ -21,6 +21,16 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
     <a class="btn btn-accent" href="<?= e($postHref) ?>">Post your trip</a>
     <?php if ($me): ?><a class="btn btn-ghost-light" href="<?= e(url('buddies/mine')) ?>">Your buddies and requests</a><?php endif; ?>
   </div>
+  <?php if ($bf['type'] === 'cruise'): /* One ship, one day: the sailing page (app/sailings.php). */ ?>
+    <form class="buddy-search" method="get" action="<?= e(url('sailing/find')) ?>" style="margin-bottom:14px">
+      <input type="hidden" name="return" value="/buddies/cruise">
+      <div class="bs-row">
+        <label><span>Your ship</span><input type="text" name="ship" placeholder="Norwegian Encore" required minlength="3" maxlength="80" autocomplete="off"></label>
+        <label><span>Day it leaves</span><input type="date" name="date" required></label>
+        <button class="btn btn-primary bs-go" type="submit">Find people on my sailing</button>
+      </div>
+    </form>
+  <?php endif; ?>
 
   <form class="buddy-search" method="get" action="<?= e($action) ?>" role="search">
     <div class="bs-row">
@@ -120,7 +130,7 @@ $shown = array_filter($sailings, static fn($s) => count($s['cards']) > 1);
             <p class="sailing"><b><?= e($s['ship'] !== '' ? $s['ship'] : $s['cruise_line']) ?></b>
               <?= e(date('M j, Y', strtotime($s['from']))) ?><?= $s['nights'] ? ', ' . (int) $s['nights'] . ' nights' : '' ?><?= $s['port'] !== '' ? ', from ' . e($s['port']) : '' ?>
               &middot; <?= count($s['cards']) ?> travelers
-              <a href="<?= e(url('buddies/cruise') . rmt_buddy_query($bf, ['ship' => $s['ship'], 'from' => $s['from'], 'to' => $s['from'], 'type' => ''])) ?>">See them</a></p>
+              <a href="<?= e($s['ship'] !== '' ? url(ltrim(rmt_sailing_path($s['ship'], $s['from']), '/')) : url('buddies/cruise') . rmt_buddy_query($bf, ['ship' => $s['ship'], 'from' => $s['from'], 'to' => $s['from'], 'type' => ''])) ?>">See them</a></p>
           <?php endforeach; ?>
         </section>
       <?php endif; ?>

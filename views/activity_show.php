@@ -36,7 +36,7 @@ $backTo = '/activity/' . (int) $act['id'];
   <?php if (!empty($act['location_text']) || !empty($act['link'])): ?>
     <p class="muted">
       <?php if (!empty($act['location_text'])): ?><?= e((string) $act['location_text']) ?><?php endif; ?>
-      <?php if (!empty($act['link'])): ?> <a href="<?= e((string) $act['link']) ?>" rel="noopener nofollow" target="_blank">Link</a><?php endif; ?>
+      <?php if (!empty($act['link'])): ?> <a href="<?= e((string) $act['link']) ?>" rel="noopener nofollow ugc" target="_blank">Link</a><?php endif; ?>
     </p>
   <?php endif; ?>
 

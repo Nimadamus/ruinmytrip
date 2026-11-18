@@ -767,7 +767,11 @@ function rmt_buddy_notify_matches(string $kind, int $targetId): int {
         if (!$p || $p['status'] !== 'open') return 0;
         $actor = (int) $p['user_id'];
         if (rmt_is_qa_user($actor)) return 0;   // a site test post never emails real travelers
-        if ($p['trip_type'] === 'cruise') $add(rmt_buddy_same_sailing($p, null, RMT_BUDDY_MATCH_NOTIFY_MAX), 'buddy_sailing');
+        if ($p['trip_type'] === 'cruise') {
+            $add(rmt_buddy_same_sailing($p, null, RMT_BUDDY_MATCH_NOTIFY_MAX), 'buddy_sailing');
+            // People with no account who asked to hear about this ship and day (app/sailings.php).
+            if (function_exists('rmt_sailing_alerts_on_post')) rmt_sailing_alerts_on_post($p);
+        }
         if (!empty($p['destination_id'])) {
             $add(q_all("SELECT DISTINCT user_id FROM trips WHERE destination_id=? AND status='published' AND visibility='public'
                           AND date_from IS NOT NULL AND date_to IS NOT NULL AND date_from <= ? AND date_to >= ? AND date_to >= ?
