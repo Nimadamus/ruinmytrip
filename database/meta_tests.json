@@ -1,5 +1,5 @@
 {
-  "note": "Search snippet experiment approved by Nima. Changes only the meta description of these paths. Compare Search Console clicks for 28 days before and after the start date.",
+  "note": "Search snippet experiment approved by Nima. Changes only the meta description (and, where a test sets \"title\", the title tag) of these paths. Compare Search Console clicks for 28 days before and after the start date.",
   "tests": {
     "/p/le-rapido-paris": {
       "description": "Le Rapido is a cafe at 25 Avenue Ledru-Rollin in Paris 12e. Check today's opening hours, get directions or call, and read what travelers say about it.",
@@ -12,6 +12,12 @@
     "/blog/tokyo-skytree-tickets-2026": {
       "description": "Tokyo Skytree 2026: Tembo Deck from 1,800 yen online, both decks from 3,000 yen, children 6 to 14 from 900 yen. At the counter you pay 500 yen more.",
       "start": "2026-10-18"
+    },
+    "/g/zanzibar-tanzania-travel-guide": {
+      "title": "Zanzibar Travel Tips 2026: E-Visa, $10 Levy, Which Coast",
+      "description": "Zanzibar travel tips for 2026: apply for the e-visa early, budget the $10 a night hotel levy, check the $45 departure tax and pick the right coast.",
+      "start": "2026-11-18",
+      "why": "28 days to 11/18: 379 impressions for 'zanzibar travel tips' at position 6.7, 0 clicks; old title never said tips."
     }
   }
 }

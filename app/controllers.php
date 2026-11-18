@@ -1774,8 +1774,8 @@ function guide_show(array $a): void {
     $guidePosts = !empty($g['dest_slug']) ? array_slice(rmt_blog_posts_for_destination((string) $g['dest_slug']), 0, 5) : [];
 
     view('guide_show', compact('mentions','g','me','comments','likeCount','saveCount','liked','saved','tags','guidePosts'), [
-        'title'=>rmt_meta_title((string) $g['title']),
-        'description'=>rmt_meta_description((string) $g['summary']),
+        'title'=>rmt_meta_title(rmt_meta_test_title('/g/'.$g['slug']) ?? (string) $g['title']),
+        'description'=>rmt_meta_test('/g/'.$g['slug']) ?? rmt_meta_description((string) $g['summary']),
         'og_image'=>abs_url($g['cover_url']),
         'breadcrumbs'=>[['name'=>'Home','url'=>url()],['name'=>'Guides','url'=>url('guides')],['name'=>$g['title'],'url'=>url('g/'.$g['slug'])]],
         // ISO dates, an author and the cover (crawl 2026-11-07: "2026-07-25 03:30:37", no author, no image).
