@@ -213,6 +213,8 @@ $routes = [
     // One ship, one departure day, and its signed out alert (app/sailings.php, 2026-11-18).
     ['GET',  '#^/sailing/find$#',              'sailing_find'],
     ['GET',  '#^/sailing/(?<ship>[a-z0-9\-]+)/(?<date>\d{4}-\d{2}-\d{2})$#', 'sailing_show'],
+    ['GET',  '#^/sailing/(?<ship>[a-z0-9\-]+)/(?<date>\d{4}-\d{2}-\d{2})/chat$#', 'sailing_chat'],
+    ['POST', '#^/sailing/(?<ship>[a-z0-9\-]+)/(?<date>\d{4}-\d{2}-\d{2})/chat$#', 'sailing_chat_send'],
     ['POST', '#^/sailing-alerts$#',            'sailing_alert_submit'],
     ['GET',  '#^/sailing-alerts/sent$#',       'sailing_alert_sent'],
     ['GET',  '#^/sailing-alerts/confirm/(?<token>[a-f0-9]{48})$#', 'sailing_alert_confirm_form'],

@@ -337,6 +337,15 @@ $unreadIds = $unreadIds ?? []; $actMap = $actMap ?? []; ?>
         ?>
           <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.</a>
           <?php else: ?><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.<?php endif; ?>
+        <?php elseif ($n['type'] === 'sailing_chat'):
+          /* A line in the chat of a sailing the reader posted. Checked again: a closed post leaves the room. */
+          $sr = q_one('SELECT * FROM sailing_rooms WHERE id = ?', [(int) $n['target_id']]);
+          $who = $n['actor'] ? '@' . $n['actor'] : 'Somebody';
+          $what = $sr ? (string) $sr['ship'] . ', ' . rmt_sailing_date_label((string) $sr['sail_date']) : 'a sailing';
+          $href = ($sr && rmt_sailing_chat_allowed((string) $sr['ship_key'], (string) $sr['sail_date'], $me)) ? url(ltrim(rmt_sailing_chat_url($sr), '/')) : null;
+        ?>
+          <?php if ($href): ?><a href="<?= e($href) ?>"><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.</a>
+          <?php else: ?><b><?= e($who) ?></b> wrote in the chat for <?= e($what) ?>.<?php endif; ?>
         <?php elseif ($n['type']==='message'):
           $who  = $n['actor'] ? '@'.$n['actor'] : 'Someone';
           $href = rmt_notification_target_url((string)$n['target_type'], (int)$n['target_id'], (int)$me['id']);

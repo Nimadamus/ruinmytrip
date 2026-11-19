@@ -30,8 +30,15 @@ $bcBack = $here;
     </div></section>
   <?php elseif ($me && $mine): ?>
     <section class="card" style="margin:0 0 22px"><div class="card-body">
-      <p style="margin:0">You are on this sailing. When somebody else posts it, you get a notification and an email.
+      <?php if (count(array_unique(array_column($members, 'user_id'))) >= RMT_SAILING_CHAT_MIN): ?>
+        <h2 style="margin:0 0 8px">Your sailing chat is open</h2>
+        <p class="hint" style="margin:0 0 12px">Everyone who posted <?= e($ship) ?> leaving <?= e($label) ?> can talk here. Only they can read it.</p>
+        <a class="btn btn-accent" href="<?= e(url(ltrim(rmt_sailing_path($ship, $date), '/') . '/chat')) ?>">Open the chat</a>
+        <p class="hint" style="margin:12px 0 0"><a href="<?= e(url('buddy/' . (int) $mine[0]['id'])) ?>">Your post</a></p>
+      <?php else: ?>
+      <p style="margin:0">You are on this sailing. When somebody else posts it, you get a notification and an email, and a chat for everyone on the ship opens.
         <a href="<?= e(url('buddy/' . (int) $mine[0]['id'])) ?>">Your post</a></p>
+      <?php endif; ?>
     </div></section>
   <?php elseif ($me): ?>
     <section class="card" style="margin:0 0 22px"><div class="card-body">
