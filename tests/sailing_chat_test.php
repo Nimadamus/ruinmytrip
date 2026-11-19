@@ -76,6 +76,10 @@ ok(rmt_sailing_chat_allowed($key, $sail, $user('scone')), 'the rest stay in it')
 q_run('DELETE FROM sailing_messages WHERE user_id = ?', [$uid('scone')]);
 ok((int) q_one('SELECT COUNT(*) n FROM sailing_messages WHERE room_id=?', [(int) $room['id']])['n'] === 0, 'deleting a member\'s lines empties them');
 
+// A sailing with a real member on it goes in the core sitemap.
+$locs = implode(' ', array_map(static fn($r) => (string) ($r['loc'] ?? $r[0] ?? ''), rmt_sitemap_group('core')));
+ok(str_contains($locs, '/sailing/chat-test-ship/' . $sail), 'a sailing with members is in the core sitemap');
+
 $pdo->rollBack();
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";
 exit($fails ? 1 : 0);

@@ -95,6 +95,10 @@ function rmt_sitemap_group(string $group): array {
                     if ($hc['locals'] + $hc['hosts'] + $hc['going'] > 0) $add('/hosts-locals/destinations/' . $hd['slug']);
                 }
             }
+            // Sailing pages, only once a real member has posted that ship and day (app/sailings.php, 2026-11-19).
+            if (function_exists('rmt_sailings_live')) {
+                foreach (rmt_sailings_live(500) as $sl) $add(rmt_sailing_path((string) $sl['ship'], (string) $sl['date_from']));
+            }
             // Occasion pages, only once a real member is on one (app/occasions.php).
             if (function_exists('rmt_occasions_upcoming')) {
                 foreach (rmt_occasions_upcoming() as $oc) if (rmt_occasion_indexable($oc)) $add('/e/' . $oc['slug']);
