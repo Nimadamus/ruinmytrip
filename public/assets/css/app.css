@@ -1471,6 +1471,9 @@ input:not([type]):focus{outline:none;border-color:var(--brand-2);
    pushing the page sideways on a phone; ordinary words are unaffected, because this only breaks
    a word that would otherwise overflow. tests/long_username_test.php keeps it. */
 main :is(a,b,strong,span,p,h1,h2,h3,h4,li,td){overflow-wrap:anywhere}
+/* Editorial tables size their columns to whole words: anywhere above would let a narrow column
+   split a city name mid word on a phone (Washingt|on). break-word still wraps a word that cannot fit. */
+.prose :is(td,th),.prose :is(td,th) *{overflow-wrap:break-word}
 .person-who,.cc-post-main,.cc-post-by,.meta-row,.card-body,.rail-row,.thread-line,.profile-head > div{min-width:0}
 
 /* Travel buddies. Phone first: the search stacks, cards are one column, every control is 44px. */
