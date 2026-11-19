@@ -4432,7 +4432,7 @@ function review_show(array $a): void {
     // Canonicalise: a wrong or missing slug redirects to the real one rather than serving the
     // same content on many URLs.
     $slug = $r['slug'] ?: rmt_review_slug($r);
-    if (($a['slug'] ?? '') !== $slug) redirect(rmt_review_path($r));
+    if (($a['slug'] ?? '') !== $slug) redirect_permanent(rmt_review_path($r));
 
     $author = author((int)$r['user_id']);
     $photos = q_all('SELECT * FROM review_photos WHERE review_id = ? ORDER BY sort, id', [(int)$r['id']]);
