@@ -2564,20 +2564,20 @@
       "destination_slug": "new-orleans-usa",
       "name": "National WWII Museum",
       "type": "attraction",
-      "headline": "Twenty-Seven Dollars to Start, and the Packages Climb From There",
-      "body": "The National WWII Museum sells general admission starting at $27, an Essentials package starting at $36 that adds the Beyond All Boundaries 4D cinematic experience, and a Best Value package starting at $39 that adds the Freedom Theater experience as well.\n\nIt is the official museum of the Second World War in the United States and it occupies several buildings across a campus in the Warehouse District. The aircraft hanging in the Boeing Center, the D-Day exhibition and the Road to Berlin and Road to Tokyo galleries are all substantial, and the whole thing takes far longer than people plan for.\n\nThe presentation is unashamedly emotional, with personal dog tags issued at the entrance that follow one service member's story through the galleries. It works, and it is worth knowing in advance that it is designed to.",
-      "what_great": "Enormous scope for twenty-seven dollars, real aircraft and vehicles rather than models, and a dog tag device that turns a survey into one person's war. The campus is genuinely well organised.",
+      "headline": "Thirty-Seven Dollars for an Adult, and the Packages Climb From There",
+      "body": "The National WWII Museum charges adults $37 to $42 for general admission, depending on the day, with students and military visitors at $27. The Essentials package ($36 to $51) adds the Beyond All Boundaries 4D cinematic experience, and the Best Value package ($39 to $54) adds the Freedom Theater experience as well.\n\nIt is the official museum of the Second World War in the United States and it occupies several buildings across a campus in the Warehouse District. The aircraft hanging in the Boeing Center, the D-Day exhibition and the Road to Berlin and Road to Tokyo galleries are all substantial, and the whole thing takes far longer than people plan for.\n\nThe presentation is unashamedly emotional, with personal dog tags issued at the entrance that follow one service member's story through the galleries. It works, and it is worth knowing in advance that it is designed to.",
+      "what_great": "Enormous scope for the price of a ticket, real aircraft and vehicles rather than models, and a dog tag device that turns a survey into one person's war. The campus is genuinely well organised.",
       "what_ruined": "The upsell is relentless: three package tiers, extra experiences and a submarine simulator, all priced separately. It needs a full day and most visitors give it three hours. The tone is celebratory in a way that flattens some of the harder history.",
       "rating": 5,
       "safety_rating": 5,
       "value_rating": 4,
-      "rating_rationale": "Five for scale and execution. Five for safety in the Warehouse District. Four for value: twenty-seven dollars is fair, but the real cost is whichever package you end up buying.",
-      "meta_description": "The National WWII Museum in New Orleans starts at $27 general admission, $36 with the 4D film. Several buildings, real aircraft, and a full day of it.",
+      "rating_rationale": "Five for scale and execution. Five for safety in the Warehouse District. Four for value: thirty-seven dollars for an adult is fair, but the real cost is whichever package you end up buying.",
+      "meta_description": "The National WWII Museum in New Orleans charges adults $37 to $42, students and military $27. Several buildings, real aircraft, and a full day of it.",
       "facts_checked": [
         {
-          "fact": "General admission starts at $27.",
-          "url": "https://www.nationalww2museum.org/buy-tickets",
-          "assert_text": "general admission starting at $27",
+          "fact": "Adult general admission is $37 to $42; students and military pay $27.",
+          "url": "https://www.nationalww2museum.org/visit",
+          "assert_text": "Adult $37 - $42",
           "confidence": "verified on the museum's official tickets page"
         },
         {
@@ -2594,12 +2594,12 @@
       "best_for": "Anyone with an interest in the Second World War, and families with teenagers.",
       "skip_if": "You have half a day in New Orleans. The French Quarter and the Garden District are the better use of it.",
       "practical": "Arrive at opening and plan a full day. Decide on the package before you get to the counter, because deciding at the desk is how people spend forty dollars they did not intend to. The 4D film is worth it once.",
-      "tickets": "General admission from $27, Essentials package from $36 including the Beyond All Boundaries 4D experience, Best Value package from $39 adding the Freedom Theater experience. Members enter free.",
+      "tickets": "General admission $37 to $42 for adults, $34 to $39 for seniors, $27 for students and military with ID, free for under 5s, WWII veterans and members. Essentials package $36 to $51 including the Beyond All Boundaries 4D experience, Best Value package $39 to $54 adding the Freedom Theater experience.",
       "getting_there": "The St Charles or Riverfront streetcar to the Warehouse District, or a fifteen-minute walk from the French Quarter along Magazine Street.",
       "location_context": "The Warehouse District, south-west of the French Quarter, an area of converted warehouses, galleries and restaurants that is quieter than the Quarter and easy to walk.",
       "time_needed": "A full day. Four hours is the absolute minimum.",
       "accessibility": "Fully step-free with lifts between all buildings and levels, and wheelchairs available to borrow.",
-      "verdict": "Give it a whole day, pick your package before you reach the desk, and start at opening. Twenty-seven dollars buys more museum than almost anywhere in the country."
+      "verdict": "Give it a whole day, pick your package before you reach the desk, and start at opening. Thirty-seven dollars buys more museum than almost anywhere in the country."
     },
     {
       "destination_slug": "new-orleans-usa",
