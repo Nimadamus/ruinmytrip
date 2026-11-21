@@ -153,6 +153,9 @@ select 'returning_30d', count(*) from (select visitor from contribution_events w
 select 'join_submit_7d', count(*) from contribution_events where event='join_submit' and created_at::timestamptz > now()-interval '7 days';
 select 'join_created_7d', count(*) from contribution_events where event='join_created' and created_at::timestamptz > now()-interval '7 days';
 select 'join_confirmed_7d', count(*) from contribution_events where event='join_confirmed' and created_at::timestamptz > now()-interval '7 days';
+select 'watch_submitted_7d', count(*) from contribution_events where event='byg_submitted' and created_at::timestamptz > now()-interval '7 days';
+select 'watch_confirmed_7d', count(*) from contribution_events where event='byg_confirmed' and created_at::timestamptz > now()-interval '7 days';
+select 'watch_clicks_7d', count(*) from contribution_events where event='cta_click' and detail like 'watch_city%' and created_at::timestamptz > now()-interval '7 days';
 select 'checklist_ticked_7d', count(*) from contribution_events where event='checklist_ticked' and created_at::timestamptz > now()-interval '7 days';
 select 'alert_signups_total', count(*) from byg_signups;
 select 'users_total', count(*) from users;

@@ -151,6 +151,8 @@ const RMT_CTA_KEYS = [
     'home_dates', 'nav_join', 'google_signin',
     // The before you go checklist offer on tax notes, warnings pages and the calculator (2026-11-17).
     'checklist_cta',
+    // The Watch {city} card (views/_watch_city.php, 2026-11-21): signed in one tap, and Continue with Google.
+    'watch_city', 'watch_city_google',
     // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
     // The "Been here?" stars on a place page, and the next step after a first review (2026-10-02).
