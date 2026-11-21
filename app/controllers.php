@@ -1997,7 +1997,7 @@ function blog_show(array $a): void {
     $blogRelated = rmt_blog_related((string) $p['slug'],
         array_column(array_slice($blogMore['posts'], 0, 4), 'slug'));
     view('blog_show', compact('p','me','comments','likeCount','saveCount','liked','saved','tags','askDests','blogDest','blogMore','blogRelated'), [
-        'title' => $p['title'].' | RuinMyTrip',
+        'title' => (rmt_meta_test_title('/blog/'.$p['slug']) ?? $p['title'].' | RuinMyTrip'),
         'description' => rmt_meta_test('/blog/'.$p['slug']) ?? $p['summary'],
         'og_image' => $p['cover_url'] ? abs_url($p['cover_url']) : rmt_default_og_image(),
         'breadcrumbs' => [['name'=>'Home','url'=>url()],['name'=>'Blog','url'=>url('blog')],['name'=>$p['title'],'url'=>url('blog/'.$p['slug'])]],
