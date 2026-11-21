@@ -1,0 +1,20 @@
+{
+  "note": "Place page and ticket note about the same attraction. Each links to the other so the two pages stop competing blind. Internal links only: no canonical, redirect or sitemap change (those need Nima's yes). Pairs found by a slug and title audit of the place and blog sitemaps on 2026-11-21.",
+  "pairs": {
+    "acropolis-museum-athens": "acropolis-museum-tickets-2026",
+    "anne-frank-house-amsterdam": "anne-frank-house-tickets-2026",
+    "basilica-de-la-sagrada-familia-barcelona": "sagrada-familia-tickets-2026",
+    "empire-state-building-new-york-city": "empire-state-building-tickets-2026",
+    "museo-frida-kahlo-mexico-city": "frida-kahlo-museum-tickets-2026",
+    "museo-larco-lima": "museo-larco-tickets-2026",
+    "national-wwii-museum-new-orleans": "national-wwii-museum-tickets-2026",
+    "nijo-castle-kyoto": "nijo-castle-tickets-2026",
+    "oceanario-de-lisboa-lisbon": "oceanario-de-lisboa-tickets-2026",
+    "oskar-schindler-s-enamel-factory-krakow": "schindlers-factory-krakow-tickets-2026",
+    "pinacoteca-di-brera-milan": "pinacoteca-di-brera-tickets-2026",
+    "rijksmuseum-amsterdam": "rijksmuseum-tickets-2026",
+    "vasa-museum-stockholm": "vasa-museum-tickets-2026",
+    "warsaw-rising-museum": "warsaw-rising-museum-tickets-2026",
+    "westminster-abbey-london": "westminster-abbey-tickets-2026"
+  }
+}

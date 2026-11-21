@@ -176,3 +176,47 @@ function rmt_home_recent_notes(int $n = 3): array {
     }
     return $out;
 }
+
+/** Place slug => ticket note slug, from database/seo/place_ticket_notes.json. */
+function rmt_place_ticket_pairs(): array {
+    static $m = null;
+    if ($m !== null) return $m;
+    $raw = json_decode((string) @file_get_contents(BASE_PATH . '/database/seo/place_ticket_notes.json'), true);
+    $m = [];
+    foreach ((array) ($raw['pairs'] ?? []) as $place => $note) {
+        if (is_string($place) && is_string($note) && $place !== '' && $note !== '') $m[$place] = $note;
+    }
+    return $m;
+}
+
+/** The editorial ticket note paired with a place page: ['slug','title'] or null. */
+function rmt_ticket_note_for_place(string $placeSlug): ?array {
+    $note = rmt_place_ticket_pairs()[$placeSlug] ?? null;
+    if ($note === null) return null;
+    foreach (rmt_editorial_blog_items() as $p) {
+        if (($p['slug'] ?? '') === $note) return ['slug' => $note, 'title' => (string) $p['title']];
+    }
+    return null;
+}
+
+/** The place slug paired with a ticket note, or null. */
+function rmt_place_for_ticket_note(string $noteSlug): ?string {
+    $place = array_search($noteSlug, rmt_place_ticket_pairs(), true);
+    return is_string($place) ? $place : null;
+}
+
+/**
+ * Every tourist, hotel and visitor tax note, for the index on /blog/tourist-taxes-2026, so no
+ * tax note is left without a hub linking to it. Sorted by title. ['slug','title'] each.
+ */
+function rmt_tax_note_index(): array {
+    $out = [];
+    foreach (rmt_editorial_blog_items() as $p) {
+        $slug = (string) ($p['slug'] ?? '');
+        if ($slug === '' || $slug === 'tourist-taxes-2026') continue;
+        if (!preg_match('/(tax|levy|ortstaxe)/', $slug)) continue;
+        $out[] = ['slug' => $slug, 'title' => (string) ($p['title'] ?? $slug)];
+    }
+    usort($out, static fn($a, $b) => strcasecmp($a['title'], $b['title']));
+    return $out;
+}

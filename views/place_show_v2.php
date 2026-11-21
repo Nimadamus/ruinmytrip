@@ -202,6 +202,13 @@ $statusLabel = rmt_place_status_label((string) $p['status']);
           </section>
         <?php endif; ?>
 
+        <?php $tnote = rmt_ticket_note_for_place((string) $p['slug']); if ($tnote !== null): ?>
+          <section class="pv2-card">
+            <h2 class="pv2-h2">Tickets in 2026</h2>
+            <p style="margin:0">Every price, discount and booking rule, sourced from the official site: <a href="<?= e(url('blog/' . $tnote['slug'])) ?>"><?= e($tnote['title']) ?></a></p>
+          </section>
+        <?php endif; ?>
+
         <?php if ($photos): ?>
           <section class="pv2-card">
             <h2 class="pv2-h2"><?= count($photos) === 1 ? 'Photo' : 'Photos' ?></h2>

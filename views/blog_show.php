@@ -31,6 +31,17 @@
   <div style="white-space:<?= $isEd ? 'normal' : 'pre-wrap' ?>"><?= $isEd ? $p['body'] : rmt_linkify_mentions(rmt_linkify_tags(nl2br(e($p['body'])))) ?></div>
   <?php /* A partner link only on our own utility notes, only once a program is joined (app/partners.php). */
         if ($isEd) echo rmt_partner_block_for_post((string) $p['slug']); ?>
+  <?php $tplace = $isEd ? rmt_place_for_ticket_note((string) $p['slug']) : null;
+        $tplaceRow = $tplace !== null ? q_one("SELECT slug, name FROM places WHERE slug = ? AND status = 'active'", [$tplace]) : null;
+        if ($tplaceRow): ?>
+    <p style="margin:18px 0 0">Opening hours, map and what it is like inside: <a href="<?= e(url('p/' . $tplaceRow['slug'])) ?>"><?= e((string) $tplaceRow['name']) ?></a></p>
+  <?php endif; ?>
+  <?php if ($isEd && ($p['slug'] ?? '') === 'tourist-taxes-2026'): $taxIdx = rmt_tax_note_index(); if ($taxIdx): ?>
+    <h2 id="every-city" style="margin:26px 0 8px">Every city we cover</h2>
+    <ul class="list-plain">
+      <?php foreach ($taxIdx as $ti): ?><li style="margin:0 0 6px"><a href="<?= e(url('blog/' . $ti['slug'])) ?>"><?= e($ti['title']) ?></a></li><?php endforeach; ?>
+    </ul>
+  <?php endif; endif; ?>
   <?php if (!empty($tags)): ?>
     <div class="tag-row"><?php foreach ($tags as $tg): ?><a class="chip" href="<?= e(url('tag/'.$tg['name'])) ?>">#<?= e($tg['name']) ?></a><?php endforeach; ?></div>
   <?php endif; ?>
