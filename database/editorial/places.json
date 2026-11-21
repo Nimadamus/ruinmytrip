@@ -1432,14 +1432,14 @@
       "name": "Miod Malina",
       "type": "restaurant",
       "headline": "Forty-Eight Zloty for Crostini, Open Until Half Ten",
-      "body": "Miod Malina charges 48 zloty for crostini misti and 72 zloty for spicy prawns. It opens Monday to Thursday 13:00 to 21:30 and Friday to Sunday 12:00 to 22:00.\n\nThe name means honey raspberry, and the room is exactly what that suggests: small, warm, hand-painted, and about as far from a themed pierogi hall as Krakow gets. The cooking is Polish with a strong Italian streak, which sounds like a compromise and is in fact the house style, done deliberately for two decades.\n\nIt is on Grodzka, the street running from the main square to Wawel, which means it is in the middle of everything and still needs booking.",
+      "body": "Miod Malina charges 48 zloty for crostini misti and 72 zloty for spicy prawns. It opens Monday to Thursday 13:00 to 22:00 and Friday to Sunday 12:00 to 22:00.\n\nThe name means honey raspberry, and the room is exactly what that suggests: small, warm, hand-painted, and about as far from a themed pierogi hall as Krakow gets. The cooking is Polish with a strong Italian streak, which sounds like a compromise and is in fact the house style, done deliberately for two decades.\n\nIt is on Grodzka, the street running from the main square to Wawel, which means it is in the middle of everything and still needs booking.",
       "what_great": "Polish-Italian cooking done with conviction rather than as a hedge. A small hand-painted room with actual atmosphere. On Grodzka, so it fits into any Old Town day without a detour.",
       "what_ruined": "Small, so tables go quickly and walk-ins are optimistic. Prices are at the upper end for Krakow. The Grodzka location means the street outside is a constant procession of tour groups.",
       "rating": 5,
       "safety_rating": 5,
       "value_rating": 4,
       "rating_rationale": "Five for a restaurant with a clear identity, cooking well for twenty years. Five for safety in the Old Town. Four for value: not cheap locally, and the quality is plainly there.",
-      "meta_description": "Miod Malina in Krakow charges 48 zloty for crostini and opens Monday to Thursday 13:00 to 21:30. Polish-Italian cooking on Grodzka.",
+      "meta_description": "Miod Malina in Krakow charges 48 zloty for crostini and opens Monday to Thursday 13:00 to 22:00. Polish-Italian cooking on Grodzka.",
       "facts_checked": [
         {
           "fact": "Crostini misti are 48 zloty.",
@@ -1448,9 +1448,9 @@
           "confidence": "verified on the restaurant's official menu page"
         },
         {
-          "fact": "It opens Monday to Thursday 13:00 to 21:30 and Friday to Sunday 12:00 to 22:00.",
-          "url": "https://miodmalina.pl/menu/",
-          "assert_text": "poniedziałek - czwartek 13:00 - 21:30 piątek - niedziela 12:00 - 22:00",
+          "fact": "It opens Monday to Thursday 13:00 to 22:00 and Friday to Sunday 12:00 to 22:00.",
+          "url": "https://miodmalina.pl/",
+          "assert_text": "poniedziałek - czwartek 13:00 - 22:00 piątek - niedziela 12:00 - 22:00",
           "confidence": "verified on the restaurant's official menu page"
         }
       ],
@@ -1797,19 +1797,19 @@
       "name": "Pestana Palace Lisboa",
       "type": "hotel",
       "headline": "A Hundred and Ninety Rooms Inside a Listed National Monument",
-      "body": "Pestana Palace Lisboa has 190 rooms and suites. Check-in is from 3:00 p.m. and check-out until 12:00 p.m. Nightly rates are not published as a fixed figure and move with season and availability, so treat the current rate as something to request rather than something we can quote.\n\nThe hotel is a nineteenth-century palace in Alcantara, classified as a national monument, with a domed entrance hall, a monumental staircase and French-style gardens that are part of the listing. There is a swimming pool, the Casa do Lago restaurant and a spa in the grounds.\n\nIt is a genuine palace rather than a hotel styled as one, which is the distinction that matters here and the reason the public rooms are worth walking through even if you are not staying.",
+      "body": "Pestana Palace Lisboa has 194 rooms and suites. Check-in is from 3:00 p.m. and check-out until 12:00 p.m. Nightly rates are not published as a fixed figure and move with season and availability, so treat the current rate as something to request rather than something we can quote.\n\nThe hotel is a nineteenth-century palace in Alcantara, classified as a national monument, with a domed entrance hall, a monumental staircase and French-style gardens that are part of the listing. There is a swimming pool, the Casa do Lago restaurant and a spa in the grounds.\n\nIt is a genuine palace rather than a hotel styled as one, which is the distinction that matters here and the reason the public rooms are worth walking through even if you are not staying.",
       "what_great": "An actual listed palace with gardens, not a pastiche. A hundred and ninety rooms, so it has the staffing of a full resort. A pool and spa in the grounds, which almost nothing central in Lisbon offers.",
       "what_ruined": "Alcantara is west of the centre, so everything is a taxi or a tram ride. The scale means it can feel more like a resort than a city hotel. No published rate card, so budgeting means asking.",
       "rating": 5,
       "safety_rating": 5,
       "value_rating": 4,
       "rating_rationale": "Five for a listed palace running properly as a hotel. Five for safety in Alcantara. Four for value: less central than the price implies, and you get gardens and a pool that no central hotel can match.",
-      "meta_description": "Pestana Palace Lisboa has 190 rooms and suites in a listed 19th-century palace, check-in from 3pm. Rates are not published; ask the hotel.",
+      "meta_description": "Pestana Palace Lisboa has 194 rooms and suites in a listed 19th-century palace, check-in from 3pm. Rates are not published; ask the hotel.",
       "facts_checked": [
         {
-          "fact": "The hotel has 190 rooms and suites, in a palace classified as a national monument.",
+          "fact": "The hotel has 194 rooms and suites, in a palace classified as a national monument.",
           "url": "https://www.pestana.com/en/hotel/pestana-palace/rooms",
-          "assert_text": "190 rooms and suites",
+          "assert_text": "194 rooms and suites",
           "confidence": "verified on the hotel's official rooms page"
         },
         {
@@ -1819,9 +1819,9 @@
           "confidence": "verified on the hotel's official rooms page"
         }
       ],
-      "what_it_is": "A 190-room hotel in a nineteenth-century palace in Alcantara, Lisbon, classified as a national monument, with French-style gardens, a swimming pool and a spa.",
+      "what_it_is": "A 194-room hotel in a nineteenth-century palace in Alcantara, Lisbon, classified as a national monument, with French-style gardens, a swimming pool and a spa.",
       "why_go": "Because it is a real palace with the listing to prove it, and because the gardens and pool give you somewhere to be in the afternoon that central Lisbon hotels cannot offer.",
-      "the_good": "A listed nineteenth-century palace, gardens that form part of the monument, a pool, a spa, and the staffing that 190 rooms supports.",
+      "the_good": "A listed nineteenth-century palace, gardens that form part of the monument, a pool, a spa, and the staffing that 194 rooms supports.",
       "the_downsides": "West of the centre, so you commute in. Resort-scale rather than intimate. No published rates.",
       "best_for": "Travelers who want space and grounds rather than a central address, and anyone with a car or an unhurried itinerary.",
       "skip_if": "You want to walk to Baixa and Alfama from your door. Stay in Chiado or Baixa instead.",
@@ -2849,36 +2849,36 @@
       "name": "One World Observatory",
       "type": "attraction",
       "headline": "The Highest View in the City, Behind Glass, Starting at Forty-Four Dollars",
-      "body": "One World Observatory sits at the top of One World Trade Center and is the highest view in New York. Standard general admission starts at 44 dollars, a combination ticket at 54, the all-inclusive experience at 64 and a VIP tour at 74.\n\nThat ladder is the defining feature of the visit. Where the Empire State Building sells you a deck, this sells you a tiered experience, and the difference between the tiers is largely about queueing and extras rather than about the view, which is identical from all of them.\n\nThe view is entirely behind glass. That is a genuine trade against the Empire State Building's open-air 86th floor, and it is the single thing most likely to decide which one you should pick.",
+      "body": "One World Observatory sits at the top of One World Trade Center and is the highest view in New York. Standard general admission starts at 39 dollars, a combination ticket at 49, the all-inclusive experience at 59 and a VIP tour at 69.\n\nThat ladder is the defining feature of the visit. Where the Empire State Building sells you a deck, this sells you a tiered experience, and the difference between the tiers is largely about queueing and extras rather than about the view, which is identical from all of them.\n\nThe view is entirely behind glass. That is a genuine trade against the Empire State Building's open-air 86th floor, and it is the single thing most likely to decide which one you should pick.",
       "what_great": "It is the highest view in the city and the glass is floor to ceiling, so the outlook is uninterrupted. The harbour, the Statue of Liberty and the Brooklyn and Manhattan bridges all sit in one sweep, which no Midtown observatory can offer. Security and crowd handling are efficient.",
-      "what_ruined": "Everything is behind glass, so there is no open-air option at any price. The four-tier ticket ladder from 44 to 74 dollars makes the real cost hard to pin down before you start. The lift presentation and the routing through retail make it feel like a produced attraction rather than a viewpoint.",
+      "what_ruined": "Everything is behind glass, so there is no open-air option at any price. The four-tier ticket ladder from 39 to 69 dollars makes the real cost hard to pin down before you start. The lift presentation and the routing through retail make it feel like a produced attraction rather than a viewpoint.",
       "rating": 3,
       "safety_rating": 5,
       "value_rating": 3,
       "rating_rationale": "Three because it is a very high view delivered as a managed experience, with a scripted lift ride and a route that pushes you through upsells. Value is three: the entry price matches the Empire State Building for a view that is higher but enclosed.",
-      "meta_description": "One World Observatory starts at 44 dollars, rising to 74 for the VIP tier. What the higher tiers actually add and whether the height is worth it.",
+      "meta_description": "One World Observatory starts at 39 dollars, rising to 69 for the VIP tier. What the higher tiers actually add and whether the height is worth it.",
       "facts_checked": [
         {
-          "fact": "Standard general admission starts at 44 dollars.",
+          "fact": "Standard general admission starts at 39 dollars.",
           "url": "https://oneworldobservatory.com/en-US/tickets",
-          "assert_text": "standard general admission starting at $44",
+          "assert_text": "standard general admission starting at $39",
           "confidence": "verified on the observatory's official ticketing page"
         },
         {
-          "fact": "The all-inclusive experience starts at 64 dollars, above the combination tier at 54 and below the VIP tour at 74.",
+          "fact": "The all-inclusive experience starts at 59 dollars, above the combination tier at 49 and below the VIP tour at 69.",
           "url": "https://oneworldobservatory.com/en-US/tickets",
-          "assert_text": "all - inclusive experience the best starting at $64",
+          "assert_text": "all - inclusive experience the best starting at $59",
           "confidence": "verified on the observatory's official ticketing page"
         }
       ],
       "what_it_is": "An observatory on the upper floors of One World Trade Center in the Financial District, the tallest building in the Western Hemisphere, reached by a lift that runs a time-lapse presentation on the way up.",
       "why_go": "For the downtown-facing view, which is the one Midtown cannot give you: the harbour, the Statue of Liberty, Governors Island and the bridges laid out together, with Manhattan running north away from you.",
       "the_good": "The highest vantage point in the city and floor-to-ceiling glass with a genuinely uninterrupted outlook. The downtown and harbour angle is distinct from every Midtown observatory. Crowd flow and security are handled well for the volume involved.",
-      "the_downsides": "Enclosed throughout, with no open-air deck at any tier. Four ticket tiers between 44 and 74 dollars obscure what you are actually paying for, since the view does not change between them. The scripted lift and the retail routing make it feel packaged.",
+      "the_downsides": "Enclosed throughout, with no open-air deck at any tier. Four ticket tiers between 39 and 69 dollars obscure what you are actually paying for, since the view does not change between them. The scripted lift and the retail routing make it feel packaged.",
       "best_for": "Visitors who want the harbour and downtown view, anyone travelling in cold or wet weather where an enclosed deck is an advantage, and people already visiting the 9/11 Memorial next door.",
       "skip_if": "You want to be outside at height, in which case the Empire State Building's 86th floor is the better ticket for the same starting price. Skip it also if you are doing more than one paid observatory, because the marginal value of the second is low.",
       "practical": "Buy the standard tier unless you have a specific reason to want the extras, because the view is the same from all of them. Combine it with the 9/11 Memorial, which is directly below and free to walk through. Cloud cover ruins this one more completely than the lower observatories, so check conditions before committing.",
-      "tickets": "Standard general admission starts at 44 dollars, the combination ticket at 54 dollars, the all-inclusive experience at 64 dollars and the VIP tour at 74 dollars.",
+      "tickets": "Standard general admission starts at 39 dollars, the combination ticket at 49 dollars, the all-inclusive experience at 59 dollars and the VIP tour at 69 dollars.",
       "getting_there": "World Trade Center on the E line, Cortlandt Street on the R and W, Fulton Street on the 2, 3, 4, 5, A, C and J, and the PATH from New Jersey all arrive within the complex.",
       "location_context": "The Financial District at the World Trade Center site, directly above the 9/11 Memorial pools and the Oculus transit hall. Battery Park and the Staten Island Ferry terminal are both a short walk south.",
       "time_needed": "About ninety minutes including security and the lift. The observatory floors themselves take around forty-five minutes at a relaxed pace.",
@@ -3934,9 +3934,9 @@
           "confidence": "verified on the gallery's official visit page"
         },
         {
-          "fact": "Barrier-free access is from the right side of the museum on Calle della Carita.",
+          "fact": "Step-free access is on the right-hand side of the museum, in Calle della Carita.",
           "url": "https://www.gallerieaccademia.it/en/visit/museum-accessibility/",
-          "assert_text": "barrier-free access is available from the right side of the museum, on calle della carità",
+          "assert_text": "step-free access is available on the right-hand side of the museum, in calle della carità",
           "confidence": "verified on the gallery's official accessibility page"
         },
         {

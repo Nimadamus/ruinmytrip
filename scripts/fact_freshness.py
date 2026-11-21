@@ -17,6 +17,7 @@ import html
 import json
 import os
 import re
+import subprocess
 import sys
 import urllib.request
 
@@ -66,13 +67,14 @@ _cache = {}
 
 
 def page(url):
+    """curl, not urllib: several museum sites 403 or loop on redirects for urllib but serve curl."""
     if url not in _cache:
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept-Language': 'en-US,en;q=0.9'})
-            with urllib.request.urlopen(req, timeout=25) as r:
-                _cache[url] = (r.status, norm(r.read().decode('utf-8', 'replace')))
-        except urllib.error.HTTPError as e:
-            _cache[url] = (e.code, '')
+            r = subprocess.run(['curl', '-sL', '--compressed', '-m', '30', '-A', UA, '-H', 'Accept-Language: en-US,en;q=0.9',
+                                '-H', 'Accept: text/html,application/xhtml+xml', '-w', '\n%{http_code}', url],
+                               capture_output=True, timeout=45, creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+            body, _, code = r.stdout.decode('utf-8', 'replace').rpartition('\n')
+            _cache[url] = (int(code or 0), norm(body))
         except Exception as e:  # noqa: BLE001
             _cache[url] = (0, str(e)[:80])
     return _cache[url]
