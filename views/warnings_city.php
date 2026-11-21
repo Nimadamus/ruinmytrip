@@ -76,6 +76,23 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
 
   <?php if ($type === null && ($byb = rmt_byb((string) $d['slug'])) !== null): $bybCity = $city; include __DIR__ . '/_byb_checklist.php'; endif; ?>
 
+  <?php if (rmt_cta_focus()): /* one sign up ask (rmt_cta_focus): Watch card, the rest folded under it */ ?>
+    <?php $byg = ['topic' => 'scams', 'city' => (string) $d['slug'], 'name' => $city, 'source' => 'warnings',
+                  'return' => '/warnings/' . (string) $d['slug'] . '#byg'];
+          include __DIR__ . '/_watch_city.php'; ?>
+    <details class="more-trip" style="margin:18px 0"><summary>More for your trip: your checklist, tell us what went wrong</summary>
+      <?php $clDest = (string) $d['slug']; $clName = $city; include __DIR__ . '/_checklist_cta.php'; ?>
+      <?php $story = ['topic' => 'warnings:' . (string) $d['slug'], 'name' => $city, 'return' => '/warnings/' . (string) $d['slug'] . '#story'];
+            include __DIR__ . '/_story_form.php'; ?>
+    </details>
+    <?php if ($partners > 0): /* real people going is not an empty ask, so it stays */ ?>
+      <div class="card warnings-cta" style="margin:18px 0;border-left:4px solid #0f766e"><div class="card-body">
+        <h2 class="h-card" style="margin:0 0 6px">Do not get caught out in <?= e($city) ?> alone</h2>
+        <p style="margin:0 0 10px"><?= (int) $partners ?> <?= $partners === 1 ? 'traveler is' : 'travelers are' ?> looking for company in <?= e($city) ?> this month. Two people are harder to distract, overcharge or separate from a bag than one.</p>
+        <a class="btn btn-primary btn-sm" href="<?= e(url('buddies?dest=' . rawurlencode((string) $d['slug']))) ?>">See who is going to <?= e($city) ?></a>
+      </div></div>
+    <?php endif; ?>
+  <?php else: ?>
   <?php $clDest = (string) $d['slug']; $clName = $city; include __DIR__ . '/_checklist_cta.php'; ?>
 
   <?php $story = ['topic' => 'warnings:' . (string) $d['slug'], 'name' => $city, 'return' => '/warnings/' . (string) $d['slug'] . '#story'];
@@ -98,6 +115,8 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
       <a class="btn btn-primary btn-sm" href="<?= e(url('buddies/new?dest=' . rawurlencode((string) $d['slug']))) ?>">Post your dates for <?= e($city) ?></a>
     <?php endif; ?>
   </div></div>
+
+  <?php endif; ?>
 
   <p style="display:flex;gap:8px;flex-wrap:wrap;margin:0">
     <?php if ($type !== null): ?><a class="btn btn-ghost btn-sm" href="<?= e($warnUrl) ?>">All warnings for <?= e($city) ?></a><?php endif; ?>

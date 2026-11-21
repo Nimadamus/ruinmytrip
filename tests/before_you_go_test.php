@@ -101,5 +101,13 @@ ok('the Amsterdam and every-city signups hear, Rome, pending and off do not', $w
 $GLOBALS['sc']['amsterdam-netherlands']['items'][] = ['name' => 'Bike theft', 'what' => 'z', 'avoid' => ''];
 ok('a new official warning is a change', rmt_byg_notify(true)['changed'], ['scams' => ['amsterdam-netherlands']]);
 
+/* One sign up ask (rmt_cta_focus, 2026-11-21). */
+ok('the Watch card is on by default', rmt_cta_focus(), true);
+putenv('RMT_CTA_OLD=1');
+ok('RMT_CTA_OLD=1 brings the old blocks back', rmt_cta_focus(), false);
+putenv('RMT_CTA_OLD');
+ok('ticket notes are a known source', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'scams', 'city' => 'amsterdam-netherlands', 'source' => 'ticket_note'])['data']['source'], 'ticket_note');
+ok('no Google, no Google watch link', rmt_byg_watch_url('tax', 'amsterdam', 'tax_note'), null);
+
 echo $fail ? "\n$fail FAIL(S), $pass pass\n" : "\nALL PASS ($pass)\n";
 exit($fail ? 1 : 0);

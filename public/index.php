@@ -47,6 +47,8 @@ $routes = [
     ['POST', '#^/updates$#',                   'byg_submit'],
     ['POST', '#^/story$#',                     'story_submit'],
     ['GET',  '#^/updates/sent$#',              'byg_sent'],
+    ['GET',  '#^/updates/watch$#',             'byg_watch_form'],
+    ['POST', '#^/updates/watch$#',             'byg_watch_submit'],
     ['GET',  '#^/updates/confirm/(?<token>[a-f0-9]{48})$#', 'byg_confirm_form'],
     ['POST', '#^/updates/confirm$#',           'byg_confirm_submit'],
     ['GET',  '#^/updates/off$#',               'byg_off'],

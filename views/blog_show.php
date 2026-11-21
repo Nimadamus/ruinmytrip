@@ -2,6 +2,12 @@
 <div class="wrap"><p class="crumbs"><a href="<?= e(url()) ?>">Home</a> / <a href="<?= e(url('blog')) ?>">Blog</a> / <?= e($p['title']) ?></p></div>
 <div class="wrap prose">
   <?php $isEd = rmt_is_editorial($p); ?>
+  <?php /* Utility notes (tax and ticket notes) get one sign up ask, the Watch card (rmt_cta_focus). */
+        $utilTt = null;
+        if ($isEd) { foreach (rmt_tt_cities() as $uK => $uC) { if ($uC['note'] === ($p['slug'] ?? '')) { $utilTt = $uK; break; } } }
+        $utilTicket = $isEd && str_contains((string) ($p['slug'] ?? ''), '-tickets-') && !empty($blogDest)
+                      && isset(rmt_byg_cities('scams')[(string) $blogDest['slug']]);
+        $util = $isEd && rmt_cta_focus() && ($utilTt !== null || $utilTicket); ?>
   <span class="chip chip-cap"><?= e(ucfirst($p['category'])) ?></span>
   <?php if ($isEd): ?><?= rmt_editorial_badge() ?><?php endif; ?>
   <?php /* Arrived from a post that asked them (rmt_outreach_arrival): the question comes before the title. */ ?>
@@ -14,7 +20,7 @@
   <p class="muted">by <a href="<?= e(url('u/'.$p['author']['username'])) ?>"><?= $isEd ? e(rmt_editorial_name()) : '@'.e($p['author']['username']) ?></a> · <?= e(ago($p['created_at'])) ?></p>
   <?php /* On the first screen (2026-10-17): under the summary it started 1.2 screens down on a laptop
            and 1.8 on a phone, past where a 2 to 10 second visit ever scrolls. */ ?>
-  <?php if (!empty($blogDest) && !$askFirst): ?>
+  <?php if (!empty($blogDest) && !$askFirst && !$util): ?>
     <?php $rateDest = $blogDest; $rateSrc = 'blog_rate'; $rateQ = null; include __DIR__ . '/_rate_dest.php'; ?>
   <?php endif; ?>
   <?php if ($isEd): ?><div class="callout"><?= rmt_editorial_disclosure() ?></div><?php endif; ?>
@@ -24,7 +30,7 @@
            article. On 2026-09-29 every engaged search visit of the week was one blog page read
            for 2 to 10 seconds and left: nobody reached the bottom. So the people going to the
            city now sit under the summary, in the short form the place pages use. */ ?>
-  <?php if (!empty($blogDest)): ?>
+  <?php if (!empty($blogDest) && !$util): ?>
     <?php $destSlug = (string) $blogDest['slug']; $destName = (string) $blogDest['name']; $dsCompact = true;
           include __DIR__ . '/_meet_travelers.php'; $dsCompact = false; ?>
   <?php endif; ?>
@@ -36,6 +42,10 @@
         if ($tplaceRow): ?>
     <p style="margin:18px 0 0">Opening hours, map and what it is like inside: <a href="<?= e(url('p/' . $tplaceRow['slug'])) ?>"><?= e((string) $tplaceRow['name']) ?></a></p>
   <?php endif; ?>
+  <?php if ($util && $utilTicket && $utilTt === null):
+        $byg = ['topic' => 'scams', 'city' => (string) $blogDest['slug'], 'name' => (string) $blogDest['name'],
+                'source' => 'ticket_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];
+        include __DIR__ . '/_watch_city.php'; endif; ?>
   <?php if ($isEd && ($p['slug'] ?? '') === 'tourist-taxes-2026'): $taxIdx = rmt_tax_note_index(); if ($taxIdx): ?>
     <h2 id="every-city" style="margin:26px 0 8px">Every city we cover</h2>
     <ul class="list-plain">
@@ -48,7 +58,14 @@
 
   <?php $ttCity = null; foreach (rmt_tt_cities() as $ttK => $ttC) { if ($ttC['note'] === ($p['slug'] ?? '')) { $ttCity = $ttK; break; } }
   if ($ttCity !== null || ($p['slug'] ?? '') === 'tourist-taxes-2026'): ?>
-    <p style="margin:22px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : ''))) ?>">Work out the tax on your stay</a></p>
+    <?php $calcHref = url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : '')); ?>
+    <?php if ($util && $ttCity !== null):
+          $byg = ['topic' => 'tax', 'city' => (string) $ttCity, 'name' => (string) (rmt_tt_cities()[$ttCity]['name'] ?? ''),
+                  'source' => 'tax_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];
+          include __DIR__ . '/_watch_city.php'; ?>
+    <?php else: ?>
+    <p style="margin:22px 0 0"><a class="btn btn-accent btn-sm" href="<?= e($calcHref) ?>">Work out the tax on your stay</a></p>
+    <?php endif; ?>
     <?php $tt27 = null; foreach (rmt_tt27_rows() as $tt27R) { if ($ttCity !== null && $tt27R['key'] === $ttCity) { $tt27 = $tt27R; break; } } ?>
     <p style="margin:14px 0 0"><?php if ($tt27): ?>Changing in 2027: <?= e($tt27['rate_2027']) ?><?= $tt27['date'] !== '' ? ' from ' . e(date('j F Y', (int) strtotime($tt27['date']))) : '' ?>. <?php endif; ?><a href="<?= e(url('tourist-tax-2027' . ($tt27 ? '#' . $tt27['key'] : ''))) ?>">Every European tourist tax change for 2027, ranked</a></p>
     <?php if ($ttCity !== null): ?>
@@ -59,13 +76,16 @@
       <?php if ($ttByb !== null): ?>
         <p style="margin:14px 0 0"><a href="<?= e(url('warnings/' . $ttDest . '#before-you-book')) ?>"><?= count($ttByb['items']) ?> more things to check before you book in <?= e((string) rmt_tt_cities()[$ttCity]['name']) ?></a>, each from an official source.</p>
       <?php endif; ?>
+      <?php if ($util): ?><details class="more-trip" style="margin:18px 0"><summary>More for your trip: work out the tax, your checklist, tell us what went wrong</summary>
+        <p style="margin:14px 0 0"><a class="btn btn-ghost btn-sm" href="<?= e($calcHref) ?>">Work out the tax on your stay</a></p><?php endif; ?>
       <?php $clDest = (string) rmt_tt_cities()[$ttCity]['dest']; $clName = (string) rmt_tt_cities()[$ttCity]['name']; include __DIR__ . '/_checklist_cta.php'; ?>
       <?php $story = ['topic' => 'tax:' . $ttCity, 'name' => (string) rmt_tt_cities()[$ttCity]['name'], 'return' => '/blog/' . (string) $p['slug'] . '#story'];
             include __DIR__ . '/_story_form.php'; ?>
+      <?php if ($util): ?></details><?php endif; ?>
     <?php endif; ?>
-    <?php $byg = ['topic' => 'tax', 'city' => (string) ($ttCity ?? ''), 'name' => $ttCity !== null ? (string) (rmt_tt_cities()[$ttCity]['name'] ?? '') : '',
+    <?php if (!$util) { $byg = ['topic' => 'tax', 'city' => (string) ($ttCity ?? ''), 'name' => $ttCity !== null ? (string) (rmt_tt_cities()[$ttCity]['name'] ?? '') : '',
                   'source' => 'tax_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];
-          include __DIR__ . '/_byg_form.php'; ?>
+          include __DIR__ . '/_byg_form.php'; } ?>
   <?php endif; ?>
   <?php $bm = $blogMore ?? []; if (!empty($blogDest) && (!empty($bm['posts']) || !empty($bm['guide']) || !empty($bm['buddies']))): ?>
     <div class="card" style="margin:26px 0 0"><div class="card-body">
@@ -106,9 +126,11 @@
 
   <?php /* A reader who came for a price has a trip behind them. Ask for the sentence, here, while
            the page is still open: it becomes their first review. */ ?>
+  <?php if (!$util): ?>
   <div class="card" style="margin:22px 0"><div class="card-body">
     <?php $dests = $askDests ?? []; $askVariant = 'card'; include __DIR__ . '/_ruined_ask.php'; ?>
   </div></div>
+  <?php endif; ?>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <?php if (rmt_blog_can_edit($p, $me)): ?>
       <a class="btn btn-ghost" href="<?= e(url('blog/'.(int)$p['id'].'/edit')) ?>">Edit</a>

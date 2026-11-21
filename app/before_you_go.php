@@ -19,7 +19,22 @@ declare(strict_types=1);
 const RMT_BYG_TOPICS = ['tax' => 'tourist tax', 'scams' => 'official scam warnings'];
 const RMT_BYG_MAIL_GAP = 20 * 3600;
 const RMT_BYG_SESSION = 'byg_last';
-const RMT_BYG_SOURCES = ['tax_calc', 'tax_note', 'warnings', 'city_scams', 'tax_2027'];
+const RMT_BYG_SOURCES = ['tax_calc', 'tax_note', 'warnings', 'city_scams', 'tax_2027', 'ticket_note'];
+
+/**
+ * One sign up ask on tax notes, ticket notes and warnings pages (Nima's yes 2026-11-21): a "Watch
+ * {city}" card right after the answer, the calculator / checklist / story asks folded under it,
+ * and the buddy, dates and star asks left to the city pages. RMT_CTA_OLD=1 brings the old blocks back.
+ */
+function rmt_cta_focus(): bool {
+    return getenv('RMT_CTA_OLD') !== '1';
+}
+
+/** /updates/watch link: Google sign in, then one tap to watch the city. Null when Google is off. */
+function rmt_byg_watch_url(string $topic, string $city, string $source): ?string {
+    if (!function_exists('rmt_google_enabled') || !rmt_google_enabled()) return null;
+    return url('updates/watch?' . http_build_query(['topic' => $topic, 'city' => $city, 'source' => $source]));
+}
 
 /** The cities a topic knows: key => display name. */
 function rmt_byg_cities(string $topic): array {
@@ -271,4 +286,45 @@ function byg_off(array $a): void {
     view('byg_off', ['valid' => $valid, 'done' => $done || ($s['status'] ?? '') === 'off', 'id' => $id, 'sig' => $sig,
                      'label' => $s ? rmt_byg_label($s) : ''],
          ['title' => 'Updates | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
+}
+
+/** GET /updates/watch  signed in: one button to watch the city. Signed out: Google first, then back here. */
+function byg_watch_form(array $a): void {
+    $v = rmt_byg_validate(['email' => 'x@example.com'] + $_GET);
+    $back = '/updates/watch?' . http_build_query(['topic' => $v['data']['topic'], 'city' => $v['data']['city'], 'source' => $v['data']['source']]);
+    if (!$v['ok'] || $v['data']['city'] === '') { flash(implode(' ', $v['errors']) ?: 'Pick a city to watch.'); redirect('/'); }
+    if (!current_user()) {
+        if (!rmt_google_enabled()) redirect('/login?return=' . rawurlencode($back));
+        redirect('/auth/google?return=' . rawurlencode($back));
+    }
+    view('byg_watch', ['label' => rmt_byg_label($v['data']), 'd' => $v['data']],
+         ['title' => 'Watch a city | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
+}
+
+/** POST /updates/watch  a verified account email is switched on at once; otherwise the usual confirm email. */
+function byg_watch_submit(array $a): void {
+    csrf_check();
+    $me = current_user();
+    if (!$me) redirect('/login');
+    $v = rmt_byg_validate(['email' => (string) $me['email']] + $_POST);
+    if (!$v['ok'] || $v['data']['city'] === '') { flash(implode(' ', $v['errors']) ?: 'Pick a city to watch.'); redirect('/'); }
+    $saved = rmt_byg_save($v['data']);
+    $s = rmt_byg_by_id($saved['id']);
+    if ($s && $s['status'] === 'pending') {
+        if (email_is_verified($me)) {
+            q_run("UPDATE byg_signups SET status = 'active', confirmed_at = ? WHERE id = ?", [date('Y-m-d H:i:s'), (int) $s['id']]);
+            $s['status'] = 'active';
+            rmt_track('byg_confirmed', ['source' => 'other', 'detail' => 'account']);
+        } else {
+            rmt_byg_send_confirm($s, $saved['token']);
+        }
+    }
+    rmt_track('byg_submitted', ['source' => 'other', 'detail' => 'account']);
+    $_SESSION[RMT_BYG_SESSION] = (int) $saved['id'];
+    if ($s && $s['status'] === 'active') {
+        view('byg_sent', ['s' => $s, 'label' => rmt_byg_label($s), 'confirmed' => true],
+             ['title' => 'You are signed up | RuinMyTrip', 'robots' => 'noindex,nofollow', 'canonical' => '']);
+        return;
+    }
+    redirect('/updates/sent');
 }

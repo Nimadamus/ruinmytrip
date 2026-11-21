@@ -149,7 +149,9 @@ ok(str_contains($h, '>Is ' . e($city) . ' safe? Tourist traps and scams to know 
 ok(str_contains($h, e($w['items'][0]['name'])) && str_contains($h, e($w['items'][0]['sources'][0]['publisher'])) && str_contains($h, 'How to avoid it'), 'every warning is there with its source');
 ok(substr_count($h, '<blockquote') >= count($w['items']), 'and the sentence it was taken from');
 ok(preg_match('/<meta name="robots" content="index, follow"/', $h) === 1 && str_contains($h, '<link rel="canonical" href="' . e(url('warnings/' . $rich)) . '"'), 'it is indexable, with its own canonical');
-ok(str_contains($h, 'Post your dates for ' . e($city)) && !preg_match('/\d+ travelers? (is|are) looking for company/', $h), 'with nobody going, it invites the first trip and shows no number');
+ok(!preg_match('/\d+ travelers? (is|are) looking for company/', $h), 'with nobody going, it shows no number');
+ok(str_contains($h, 'class="card byg watch-city"') && !str_contains($h, 'Post your dates for ' . e($city)), 'one sign up ask: the Watch card, no empty buddy ask (rmt_cta_focus, 2026-11-21)');
+ok(substr_count($h, 'id="byg"') === 1, 'and only one updates form');
 $post($id('hbana'), (int) $w['d']['id'], $now); $post($id('hbleo'), (int) $w['d']['id'], $now);
 [$h] = $render(['slug' => $rich]);
 ok(str_contains($h, '2 travelers are looking for company in ' . e($city) . ' this month'), 'with two travelers going, it says two');
