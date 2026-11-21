@@ -24,6 +24,11 @@
       "description": "San Francisco hotel tax in 2026: 14% occupancy tax plus a 2 to 2.25% tourism district fee, so a $300 night costs $348.75 in Zone 1. Stays of 30+ nights skip the TOT.",
       "start": "2026-11-21",
       "why": "28 days to 11/19: 219 impressions at position 6.7, 0 clicks; old title read 'TOT plus TID' with no total."
+    },
+    "/p/esperit-sants-barcelona": {
+      "description": "Esperit Sants is a restaurant at Passeig de Sant Antoni 13 in Sants, Barcelona. Map and directions, plus space for the first traveler review.",
+      "start": "2026-11-21",
+      "why": "28 days to 11/19: 186 impressions at position 9.5 (151 mobile), 1 click; old description was the bare address. No venue source beyond OSM, so no cuisine or distance claims."
     }
   }
 }
