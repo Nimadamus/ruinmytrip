@@ -130,6 +130,7 @@ const RMT_CONTRIB_EVENTS = [
     'story_submitted',
     'checklist_ticked',            // a before-you-go item ticked off on a trip (app/trip_checklist.php)
     'byg_confirmed',
+    'byg_reminder_sent',           // a 14 or 3 day reminder before a signup's trip date (2026-11-23)
     'share_visit',                 // a going card opened by somebody who did not make it
     'recognition_earned',
 ];
@@ -153,6 +154,8 @@ const RMT_CTA_KEYS = [
     'checklist_cta',
     // The Watch {city} card (views/_watch_city.php, 2026-11-21): signed in one tap, and Continue with Google.
     'watch_city', 'watch_city_google',
+    // The page specific offer that replaced it (2026-11-23): signup with or without a trip date, reminders sent.
+    'byg_dated', 'byg_undated', 'byg_d14', 'byg_d3',
     // An occasion page (app/occasions.php): add trip, find travelers, ask, follow.
     'occ_trip', 'occ_find', 'occ_ask', 'occ_follow', 'occ_review', 'occ_ruined',
     // The "Been here?" stars on a place page, and the next step after a first review (2026-10-02).

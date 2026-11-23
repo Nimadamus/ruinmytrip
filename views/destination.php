@@ -147,9 +147,9 @@
             score is the site's own research-based assessment and is labelled as such. */ ?>
   <div class="card" style="margin-top:18px"><div class="card-body">
     <div class="rating-split">
+      <?php /* No traveler reviews yet: show nothing rather than an empty score (2026-11-23). */ if ((int)$avg['c'] > 0): ?>
       <div class="rs-item">
         <p class="rs-label">Community rating</p>
-        <?php if ((int)$avg['c'] > 0): ?>
           <p class="rs-value"><span class="stars"><?= stars((int)round((float)$avg['a'])) ?></span> <?= e((string)$avg['a']) ?><span class="muted" style="font-weight:400"> from <?= (int)$avg['c'] ?> traveler <?= (int)$avg['c'] === 1 ? 'review' : 'reviews' ?></span></p>
           <?php if ($avg['safety_c'] > 0 || $avg['value_c'] > 0): ?>
             <p class="hint" style="margin:0">
@@ -158,11 +158,8 @@
               <?php if ($avg['value_c'] > 0): ?>Value <?= e((string)$avg['value_a']) ?>/5 <span class="muted">(<?= $avg['value_c'] ?>)</span><?php endif; ?>
             </p>
           <?php endif; ?>
-        <?php else: ?>
-          <p class="rs-value muted" style="font-weight:600">Visited recently? Help the next traveler</p>
-          <p class="hint" style="margin:0">This score stays empty until real travelers post. We do not fill it in ourselves.</p>
-        <?php endif; ?>
       </div>
+      <?php endif; ?>
       <?php foreach ($editorial as $ed): ?>
         <div class="rs-item">
           <p class="rs-label"><?= rmt_editorial_badge('review') ?> rating</p>

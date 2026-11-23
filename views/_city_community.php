@@ -193,17 +193,18 @@ $stats = array_values(array_filter([
         $ccX = rmt_city_extras((int) $d['id']); $ed = defined('RMT_EDITORIAL_ROLE') ? RMT_EDITORIAL_ROLE : 'editorial'; ?>
     <div class="cc-extra">
       <div>
-        <h3>Looking for a travel buddy in <?= e($cityName) ?></h3>
+        <?php /* An empty buddy list is an empty room: with nobody posted, ask for dates instead (2026-11-23). */ ?>
+        <h3><?= $ccX['buddies'] ? 'Looking for a travel buddy in ' . e($cityName) : 'Going to ' . e($cityName) . '?' ?></h3>
         <?php if ($ccX['buddies']): ?>
           <ul><?php foreach ($ccX['buddies'] as $b): ?>
             <li><a href="<?= e(url('buddy/' . (int) $b['id'])) ?>"><?= e((string) $b['title']) ?></a>
               <span class="hint">@<?= e((string) $b['username']) ?> · <?= e(rmt_live_range((string) $b['date_from'], (string) $b['date_to'])) ?></span></li>
           <?php endforeach; ?></ul>
         <?php else: ?>
-          <p class="hint" style="margin:0 0 8px">Going here? Add your dates and say who you would like to go with.</p>
+          <p class="hint" style="margin:0 0 8px">Add your dates and we tell you when another traveler will be here at the same time.</p>
         <?php endif; ?>
-        <a class="btn btn-ghost btn-sm" data-cta="cta_buddy" data-destination-id="<?= (int) $d['id'] ?>"
-           href="<?= e($me ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Find a travel buddy</a>
+        <?php if ($ccX['buddies']): ?><a class="btn btn-ghost btn-sm" data-cta="cta_buddy" data-destination-id="<?= (int) $d['id'] ?>"
+           href="<?= e($me ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Find a travel buddy</a><?php endif; ?>
         <a class="btn btn-ghost btn-sm" data-cta="cta_dates" data-destination-id="<?= (int) $d['id'] ?>"
            href="<?= e($me ? url('trip/new?destination_id=' . (int) $d['id']) : url('plan?cta=cta_dates&d=' . rawurlencode((string) $d['slug']))) ?>">I'm going here</a>
       </div>

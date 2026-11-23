@@ -43,6 +43,7 @@ $pdo->exec("INSERT INTO destinations (id, slug, name) VALUES (1, 'amsterdam-neth
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/126_before_you_go.sqlite.sql'));
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/126_before_you_go.sqlite.sql'));
 ok('the migration is safe to run twice', true, true);
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/131_byg_trip_dates.sqlite.sql'));
 
 echo "\nValidation:\n";
 $v = rmt_byg_validate(['email' => ' Me@Example.com ', 'topic' => 'tax', 'city' => 'amsterdam', 'source' => 'tax_calc']);
@@ -108,6 +109,60 @@ ok('RMT_CTA_OLD=1 brings the old blocks back', rmt_cta_focus(), false);
 putenv('RMT_CTA_OLD');
 ok('ticket notes are a known source', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'scams', 'city' => 'amsterdam-netherlands', 'source' => 'ticket_note'])['data']['source'], 'ticket_note');
 ok('no Google, no Google watch link', rmt_byg_watch_url('tax', 'amsterdam', 'tax_note'), null);
+
+/* Trip dates, the page a signup came from, and reminders (2026-11-23, migration 131). */
+echo "\nTrip dates and reminders:\n";
+$in30 = date('Y-m-d', strtotime('+30 days'));
+$tv = rmt_byg_validate(['email' => 'trip@example.com', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => $in30, 'page' => '/blog/rome-tax-2026#byg']);
+ok('a future trip date passes', $tv['ok'], true);
+ok('the page keeps its path, not its fragment', $tv['data']['page'], '/blog/rome-tax-2026');
+ok('a past trip date is refused', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => date('Y-m-d', strtotime('-2 days'))])['ok'], false);
+ok('a date three years out is refused', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => date('Y-m-d', strtotime('+3 years'))])['ok'], false);
+ok('a non date is refused', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => '2027-02-30'])['ok'], false);
+ok('no date is fine', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => ''])['ok'], true);
+ok('an outside page is dropped', rmt_byg_clean_page('https://evil.example/x'), '');
+ok('a path outside the answer pages is dropped', rmt_byg_clean_page('/admin/users'), '');
+ok('the calculator is an allowed page', rmt_byg_clean_page('/tourist-tax-calculator?city=rome'), '/tourist-tax-calculator');
+$t1 = rmt_byg_save($tv['data']);
+$row = rmt_byg_by_id($t1['id']);
+ok('the trip date is stored', (string) $row['travel_date'], $in30);
+ok('the page is stored', (string) $row['page'], '/blog/rome-tax-2026');
+$in40 = date('Y-m-d', strtotime('+40 days'));
+q_run('UPDATE byg_signups SET reminded_14 = ? WHERE id = ?', ['2026-01-01 00:00:00', $t1['id']]);
+$t2 = rmt_byg_save(rmt_byg_validate(['email' => 'trip@example.com', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => $in40])['data']);
+ok('signing up again is the same row', $t2['id'], $t1['id']);
+$row = rmt_byg_by_id($t1['id']);
+ok('a new trip date replaces the old one', (string) $row['travel_date'], $in40);
+ok('...and its reminders start again', $row['reminded_14'], null);
+ok('...and the page is kept', (string) $row['page'], '/blog/rome-tax-2026');
+
+$today = '2027-03-01';
+$base = ['status' => 'active', 'travel_date' => '2027-03-15', 'reminded_14' => null, 'reminded_3' => null];
+ok('14 days out, the 14 day reminder is due', rmt_byg_reminder_due($base, $today), 14);
+ok('15 days out, nothing is due', rmt_byg_reminder_due(['travel_date' => '2027-03-16'] + $base, $today), null);
+ok('10 days out with no reminder yet, the 14 day one still goes', rmt_byg_reminder_due(['travel_date' => '2027-03-11'] + $base, $today), 14);
+ok('10 days out after the 14 day one, nothing', rmt_byg_reminder_due(['travel_date' => '2027-03-11', 'reminded_14' => 'x'] + $base, $today), null);
+ok('3 days out, the 3 day reminder is due', rmt_byg_reminder_due(['travel_date' => '2027-03-04', 'reminded_14' => 'x'] + $base, $today), 3);
+ok('2 days out with nothing sent, only the 3 day one goes', rmt_byg_reminder_due(['travel_date' => '2027-03-03'] + $base, $today), 3);
+ok('after the 3 day one, nothing more', rmt_byg_reminder_due(['travel_date' => '2027-03-03', 'reminded_3' => 'x'] + $base, $today), null);
+ok('a trip that already started gets nothing', rmt_byg_reminder_due(['travel_date' => '2027-02-27'] + $base, $today), null);
+ok('an unconfirmed signup gets nothing', rmt_byg_reminder_due(['status' => 'pending'] + $base, $today), null);
+ok('a switched off signup gets nothing', rmt_byg_reminder_due(['status' => 'off'] + $base, $today), null);
+ok('no trip date, no reminder', rmt_byg_reminder_due(['travel_date' => null] + $base, $today), null);
+
+q_run("UPDATE byg_signups SET status = 'active', travel_date = ?, reminded_14 = NULL, reminded_3 = NULL WHERE id = ?", [date('Y-m-d', strtotime('+5 days')), $t1['id']]);
+$r = rmt_byg_remind(false);
+ok('the daily run finds the reminder due', $r['due'], 1);
+ok('a dry run sends nothing', $r['sent'], 0);
+$r = rmt_byg_remind(true);
+ok('with mail off, nothing counts as sent', $r['sent'], 0);
+ok('...and the reminder is not stamped, so it goes tomorrow', rmt_byg_by_id($t1['id'])['reminded_14'], null);
+$sum = rmt_byg_summary(['topic' => 'tax', 'city' => 'rome', 'city_name' => 'Rome', 'page' => '']);
+ok('the email summary carries the city tax line', $sum['lines'][0] ?? '', 'Tourist tax in Rome: 6 euros.');
+ok('...and links back to the free page', str_contains($sum['url'], 'tourist-tax-calculator?city=rome'), true);
+$sum = rmt_byg_summary(['topic' => 'scams', 'city' => 'amsterdam-netherlands', 'city_name' => 'Amsterdam', 'page' => '/warnings/amsterdam-netherlands']);
+ok('a warnings summary lists the warnings', $sum['lines'][0] ?? '', 'Fake police: y');
+ok('...and links to the page it came from', str_contains($sum['url'], '/warnings/amsterdam-netherlands'), true);
 
 echo $fail ? "\n$fail FAIL(S), $pass pass\n" : "\nALL PASS ($pass)\n";
 exit($fail ? 1 : 0);

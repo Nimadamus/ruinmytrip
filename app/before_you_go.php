@@ -73,8 +73,23 @@ function rmt_byg_validate(array $in): array {
     }
     $source = (string) ($in['source'] ?? '');
     if (!in_array($source, RMT_BYG_SOURCES, true)) $source = '';
+    // The trip date is optional. A date in the past or more than two years out is a typo, not a trip.
+    $date = trim((string) ($in['travel_date'] ?? ''));
+    if ($date !== '') {
+        $ts = preg_match('/^\d{4}-\d{2}-\d{2}$/', $date) ? strtotime($date . ' 00:00:00') : false;
+        $today = strtotime(date('Y-m-d') . ' 00:00:00');
+        if ($ts === false || date('Y-m-d', $ts) !== $date) { $errors[] = 'Enter the date your trip starts, or leave it empty.'; $date = ''; }
+        elseif ($ts < $today || $ts > $today + 731 * 86400) { $errors[] = 'Pick a trip date between today and two years from now.'; $date = ''; }
+    }
     return ['ok' => !$errors, 'errors' => $errors,
-            'data' => ['email' => $email, 'topic' => $topic, 'city' => $city, 'city_name' => $name, 'source' => $source]];
+            'data' => ['email' => $email, 'topic' => $topic, 'city' => $city, 'city_name' => $name, 'source' => $source,
+                       'travel_date' => $date, 'page' => rmt_byg_clean_page((string) ($in['page'] ?? ''))]];
+}
+
+/** Only our own answer pages may be named as the page a signup came from. */
+function rmt_byg_clean_page(string $p): string {
+    $p = (string) preg_replace('/[?#].*$/s', '', trim($p));
+    return preg_match('~^/(blog|warnings)/[a-z0-9-]{1,120}$~', $p) || $p === '/tourist-tax-calculator' || $p === '/tourist-tax-2027' ? $p : '';
 }
 
 function rmt_byg_label(array $s): string {
@@ -95,18 +110,25 @@ function rmt_byg_save(array $data): array {
     $hash = hash('sha256', $raw);
     $ex = q_one("SELECT id FROM byg_signups WHERE email = ? AND topic = ? AND city = ? AND status IN ('pending', 'active')
                   ORDER BY id DESC LIMIT 1", [$data['email'], $data['topic'], $data['city']]);
+    $date = (string) ($data['travel_date'] ?? '');
+    $page = (string) ($data['page'] ?? '');
     if ($ex) {
+        // A new trip date is a new trip: its reminders start again.
+        if ($date !== '') q_run('UPDATE byg_signups SET travel_date = ?, reminded_14 = NULL, reminded_3 = NULL WHERE id = ? AND (travel_date IS NULL OR travel_date <> ?)',
+                                [$date, (int) $ex['id'], $date]);
+        if ($page !== '') q_run('UPDATE byg_signups SET page = ? WHERE id = ?', [$page, (int) $ex['id']]);
         q_run('UPDATE byg_signups SET token_hash = ? WHERE id = ?', [$hash, (int) $ex['id']]);
         return ['id' => (int) $ex['id'], 'token' => $raw];
     }
     $visitor = function_exists('rmt_visitor_id') ? rmt_visitor_id() : null;
     $acq = function_exists('rmt_acq_current') ? rmt_acq_current() : [];
     $id = (int) q_run('INSERT INTO byg_signups (email, topic, city, city_name, status, token_hash, source, visitor, created_at,
-                                                acq_source, acq_medium, acq_campaign, acq_content)
-                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                                                acq_source, acq_medium, acq_campaign, acq_content, travel_date, page)
+                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                       [$data['email'], $data['topic'], $data['city'], $data['city_name'], 'pending', $hash,
                        $data['source'] !== '' ? $data['source'] : null, $visitor, date('Y-m-d H:i:s'),
-                       $acq['source'] ?? null, $acq['medium'] ?? null, $acq['campaign'] ?? null, $acq['content'] ?? null]);
+                       $acq['source'] ?? null, $acq['medium'] ?? null, $acq['campaign'] ?? null, $acq['content'] ?? null,
+                       $date !== '' ? $date : null, $page !== '' ? $page : null]);
     return ['id' => $id, 'token' => $raw];
 }
 
@@ -131,12 +153,16 @@ function rmt_byg_off_url(array $s): string {
 function rmt_byg_send_confirm(array $s, string $raw): bool {
     $link = abs_url(url('updates/confirm/' . $raw));
     $label = rmt_byg_label($s);
-    $html = rmt_mail_layout('Confirm your updates',
-        '<p>You asked to hear about: <b>' . e($label) . '</b>.</p>'
-        . '<p>Confirm it and we email you only when it changes. No newsletter, and every email has a one click off switch.</p>',
-        'Confirm', $link);
-    $text = "Confirm your RuinMyTrip updates ($label):\n$link\n\nIf you did not ask for this, ignore this email and nothing will be sent.";
-    $r = rmt_mail_send((string) $s['email'], 'Confirm: ' . $label, $html, $text);
+    $sum = rmt_byg_summary($s);
+    $when = rmt_byg_when($s);
+    $html = rmt_mail_layout($sum['title'], rmt_byg_summary_html($sum)
+        . '<p style="margin-top:18px"><b>Want a reminder before you go?</b> Confirm and we email you '
+        . ($when !== '' ? '14 days and 3 days before ' . e($when) . ', and ' : '')
+        . 'once if the official ' . e(RMT_BYG_TOPICS[(string) $s['topic']] ?? 'rules') . ' change. No newsletter, and every email has a one click off switch.</p>',
+        'Confirm my reminders', $link);
+    $text = $sum['title'] . "\n\n" . implode("\n", $sum['lines']) . "\nRead it: " . $sum['url']
+          . "\n\nConfirm your reminders ($label):\n$link\n\nIf you did not ask for this, ignore this email and nothing more will be sent.";
+    $r = rmt_mail_send((string) $s['email'], $sum['title'], $html, $text);
     return (bool) ($r[0] ?? false);
 }
 
@@ -214,6 +240,104 @@ function rmt_byg_mail_change(array $s, array $cityNames): bool {
     return true;
 }
 
+/* ---------- the answer by email, and reminders before the trip ---------- */
+
+/** "Sunday 14 December 2026", or '' when the signup has no trip date. */
+function rmt_byg_when(array $s): string {
+    $d = (string) ($s['travel_date'] ?? '');
+    $ts = $d !== '' ? strtotime($d . ' 00:00:00') : false;
+    return $ts ? date('l j F Y', $ts) : '';
+}
+
+/**
+ * What the signup was reading, ready for an email: the note's own title and summary, the city's tax
+ * line, or the first official warnings. Always ends in a link back to the page, which stays free.
+ */
+function rmt_byg_summary(array $s): array {
+    $topic = (string) $s['topic'];
+    $city = (string) $s['city'];
+    $name = (string) ($s['city_name'] ?? '');
+    $page = (string) ($s['page'] ?? '');
+    $title = $name !== '' ? ucfirst(RMT_BYG_TOPICS[$topic] ?? 'updates') . ' in ' . $name : rmt_byg_label($s);
+    $lines = [];
+    if (preg_match('~^/blog/([a-z0-9-]+)$~', $page, $m) && function_exists('q_one')) {
+        try { $p = q_one('SELECT title, summary FROM blog_posts WHERE slug = ?', [$m[1]]); } catch (Throwable $e) { $p = null; }
+        if ($p) { $title = (string) $p['title']; if (trim((string) $p['summary']) !== '') $lines[] = trim((string) $p['summary']); }
+    }
+    if (!$lines && $topic === 'tax' && $city !== '' && function_exists('rmt_tt_cities')) {
+        $c = rmt_tt_cities()[$city] ?? null;
+        if ($c) {
+            if (!empty($c['rate'])) $lines[] = 'Tourist tax in ' . (string) $c['name'] . ': ' . (string) $c['rate'] . '.';
+            if (!empty($c['tip'])) $lines[] = (string) $c['tip'];
+        }
+    }
+    if (!$lines && $topic === 'scams' && $city !== '' && function_exists('rmt_city_scams_all')) {
+        foreach (array_slice((array) (rmt_city_scams_all()[$city]['items'] ?? []), 0, 3) as $it) {
+            $n = trim((string) ($it['name'] ?? ''));
+            $avoid = trim((string) ($it['avoid'] ?? ''));
+            if ($n !== '') $lines[] = $n . ($avoid !== '' ? ': ' . $avoid : '');
+        }
+    }
+    $url = abs_url($page !== '' ? url(ltrim($page, '/')) : rmt_byg_page($s));
+    return ['title' => $title, 'lines' => $lines, 'url' => $url];
+}
+
+function rmt_byg_summary_html(array $sum): string {
+    $h = '';
+    foreach ($sum['lines'] as $l) $h .= '<p>' . e($l) . '</p>';
+    return $h . '<p><a href="' . e($sum['url']) . '">Read the full page with sources</a></p>';
+}
+
+/** Which reminder is due today for a confirmed signup: 14, 3, or null. */
+function rmt_byg_reminder_due(array $s, string $today): ?int {
+    if ((string) ($s['status'] ?? '') !== 'active' || empty($s['travel_date'])) return null;
+    $days = (int) round((strtotime((string) $s['travel_date'] . ' 00:00:00') - strtotime($today . ' 00:00:00')) / 86400);
+    if ($days < 0) return null;
+    if ($days <= 3) return empty($s['reminded_3']) ? 3 : null;
+    // Signed up 10 days out: the 14 day email still goes, once, as the first reminder.
+    if ($days <= 14) return empty($s['reminded_14']) ? 14 : null;
+    return null;
+}
+
+/** Send the reminders due today. $send false is a dry run. Returns ['due' => n, 'sent' => n]. */
+function rmt_byg_remind(bool $send = true, ?string $today = null): array {
+    $today = $today ?? date('Y-m-d');
+    $max = date('Y-m-d', strtotime($today . ' 00:00:00') + 14 * 86400);
+    $due = 0; $sent = 0;
+    foreach (q_all("SELECT * FROM byg_signups WHERE status = 'active' AND travel_date IS NOT NULL AND travel_date >= ? AND travel_date <= ?", [$today, $max]) as $s) {
+        $which = rmt_byg_reminder_due($s, $today);
+        if ($which === null) continue;
+        $due++;
+        if ($send && rmt_byg_mail_reminder($s, $which, $today)) $sent++;
+    }
+    return ['due' => $due, 'sent' => $sent];
+}
+
+function rmt_byg_mail_reminder(array $s, int $which, string $today): bool {
+    $days = (int) round((strtotime((string) $s['travel_date'] . ' 00:00:00') - strtotime($today . ' 00:00:00')) / 86400);
+    $name = (string) ($s['city_name'] ?? '') !== '' ? (string) $s['city_name'] : 'your trip';
+    $head = $days === 0 ? 'Your trip to ' . $name . ' starts today' : 'Your trip to ' . $name . ' is in ' . $days . ' day' . ($days === 1 ? '' : 's');
+    $sum = rmt_byg_summary($s);
+    $off = rmt_byg_off_url($s);
+    $plan = abs_url(url('plan'));
+    $html = rmt_mail_layout($head, '<p>Here is what we have for ' . e($name) . ' today, checked against the official source.</p>'
+            . '<p><b>' . e($sum['title']) . '</b></p>' . rmt_byg_summary_html($sum)
+            . '<p>Still things to sort out? Make a free before you go checklist for the trip: <a href="' . e($plan) . '">' . e($plan) . '</a></p>',
+            'Check the page', $sum['url'])
+        . '<p style="font-family:sans-serif;font-size:12px;color:#8895a3;text-align:center">'
+        . '<a href="' . e($off) . '" style="color:#8895a3">Stop these emails</a></p>';
+    $text = $head . "\n\n" . $sum['title'] . "\n" . implode("\n", $sum['lines']) . "\nRead it: " . $sum['url']
+          . "\nChecklist: $plan\nStop these emails: $off";
+    $r = rmt_mail_send((string) $s['email'], $head, $html, $text, rmt_mail_unsub_headers($off));
+    if (!($r[0] ?? false)) return false;
+    $now = date('Y-m-d H:i:s');
+    // A 3 day email also stands in for a 14 day one that never went.
+    if ($which === 3) q_run('UPDATE byg_signups SET reminded_3 = ?, reminded_14 = COALESCE(reminded_14, ?) WHERE id = ?', [$now, $now, (int) $s['id']]);
+    else q_run('UPDATE byg_signups SET reminded_14 = ? WHERE id = ?', [$now, (int) $s['id']]);
+    if (function_exists('rmt_track')) rmt_track('byg_reminder_sent', ['source' => 'other', 'detail' => 'byg_d' . $which]);
+    return true;
+}
+
 /* ---------- controllers ---------- */
 
 /** POST /updates  the form on tax and warnings pages. */
@@ -234,7 +358,7 @@ function byg_submit(array $a): void {
     $saved = rmt_byg_save($data);
     $s = rmt_byg_by_id($saved['id']);
     if ($s && $s['status'] === 'pending') rmt_byg_send_confirm($s, $saved['token']);
-    rmt_track('byg_submitted', ['source' => 'other']);
+    rmt_track('byg_submitted', ['source' => 'other', 'detail' => $data['travel_date'] !== '' ? 'byg_dated' : 'byg_undated']);
     $_SESSION[RMT_BYG_SESSION] = (int) $saved['id'];
     redirect('/updates/sent');
 }
