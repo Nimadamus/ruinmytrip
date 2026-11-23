@@ -43,6 +43,26 @@
                dismissed as noise. */ ?>
       <p style="margin:0 0 12px;white-space:pre-wrap"><?= e((string) $r['message']) ?></p>
 
+      <?php $fbStory = $r['kind'] === 'trip_story' ? rmt_story_for_feedback((int) $r['id']) : null; ?>
+      <?php if ($r['kind'] === 'trip_story' && $r['status'] === 'pending' && rmt_story_topic_ok((string) ($r['topic'] ?? ''))):
+            $fbSplit = rmt_story_split((string) $r['message']); ?>
+        <details style="margin:0 0 12px"><summary><b>Publish on the city page</b> (checked it? shorten or fix it first)</summary>
+          <form method="post" action="<?= e(url('admin/stories/publish')) ?>" style="margin:8px 0 0">
+            <?= csrf_field() ?><input type="hidden" name="id" value="<?= (int) $r['id'] ?>">
+            <textarea name="body" rows="5" maxlength="1200" style="width:100%"><?= e($fbSplit['body']) ?></textarea>
+            <label class="hint">When <input type="text" name="when" maxlength="60" value="<?= e($fbSplit['when']) ?>"></label>
+            <p class="hint" style="margin:6px 0">Shows as "A traveler" on <?= e((string) $r['topic']) ?>, with no name or email.</p>
+            <button class="btn btn-primary btn-sm" type="submit">Publish</button>
+          </form>
+        </details>
+      <?php endif; ?>
+      <?php if ($fbStory && $fbStory['status'] === 'live'): ?>
+        <form method="post" action="<?= e(url('admin/stories/down')) ?>" style="margin:0 0 10px">
+          <?= csrf_field() ?><input type="hidden" name="story" value="<?= (int) $fbStory['id'] ?>">
+          <span class="hint">Published <?= e(substr((string) $fbStory['published_at'], 0, 16)) ?>.</span>
+          <button class="btn btn-ghost btn-sm" type="submit">Take it down</button>
+        </form>
+      <?php endif; ?>
       <?php if ($r['status'] === 'pending'): ?>
         <form method="post" action="<?= e(url('admin/feedback/resolve')) ?>"
               style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">

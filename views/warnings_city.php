@@ -76,6 +76,8 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
 
   <?php if ($type === null && ($byb = rmt_byb((string) $d['slug'])) !== null): $bybCity = $city; include __DIR__ . '/_byb_checklist.php'; endif; ?>
 
+  <?php $tsTopics = rmt_story_topics_for_dest((string) $d['slug']); $tsCity = $city; include __DIR__ . '/_traveler_stories.php'; ?>
+
   <?php if (rmt_cta_focus()): /* one sign up ask (rmt_cta_focus): Watch card, the rest folded under it */ ?>
     <?php $byg = ['topic' => 'scams', 'city' => (string) $d['slug'], 'name' => $city, 'source' => 'warnings',
                   'return' => '/warnings/' . (string) $d['slug'] . '#byg'];

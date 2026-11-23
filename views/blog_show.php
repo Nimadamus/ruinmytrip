@@ -59,6 +59,7 @@
   <?php $ttCity = null; foreach (rmt_tt_cities() as $ttK => $ttC) { if ($ttC['note'] === ($p['slug'] ?? '')) { $ttCity = $ttK; break; } }
   if ($ttCity !== null || ($p['slug'] ?? '') === 'tourist-taxes-2026'): ?>
     <?php $calcHref = url('tourist-tax-calculator' . ($ttCity !== null ? '?city=' . $ttCity : '')); ?>
+    <?php if ($ttCity !== null) { $tsTopics = rmt_story_topics_for_dest((string) rmt_tt_cities()[$ttCity]['dest']); $tsCity = (string) rmt_tt_cities()[$ttCity]['name']; include __DIR__ . '/_traveler_stories.php'; } ?>
     <?php if ($util && $ttCity !== null):
           $byg = ['topic' => 'tax', 'city' => (string) $ttCity, 'name' => (string) (rmt_tt_cities()[$ttCity]['name'] ?? ''),
                   'source' => 'tax_note', 'return' => '/blog/' . (string) $p['slug'] . '#byg'];

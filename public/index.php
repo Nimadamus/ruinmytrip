@@ -354,6 +354,8 @@ $routes = [
     ['GET',  '#^/admin/seo$#',                 'admin_seo'],
     ['GET',  '#^/admin/feedback$#',            'admin_feedback'],
     ['POST', '#^/admin/feedback/resolve$#',    'admin_feedback_resolve'],
+    ['POST', '#^/admin/stories/publish$#',     'admin_story_publish'],
+    ['POST', '#^/admin/stories/down$#',        'admin_story_down'],
     ['GET',  '#^/admin/moderation$#',           'admin_moderation'],
     ['GET',  '#^/admin/hosts$#',                'admin_hosts'],
     ['GET',  '#^/admin/safety$#',               'admin_safety'],
