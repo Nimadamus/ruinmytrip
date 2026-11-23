@@ -191,6 +191,7 @@ function rmt_destination_og_description(array $d): string {
 
 function rmt_destination_page_description(array $d): string {
     $slug = (string) ($d['slug'] ?? '');
+    if ($slug !== '' && ($m = rmt_meta_test('/d/'.$slug)) !== null) return $m;
     if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][1];
     if ($t = rmt_destination_scam_title($d)) return $t[1];
     return (string) ($d['summary'] ?? '');
