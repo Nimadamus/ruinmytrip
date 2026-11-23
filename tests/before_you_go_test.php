@@ -44,6 +44,7 @@ $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/126_before_you_go
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/126_before_you_go.sqlite.sql'));
 ok('the migration is safe to run twice', true, true);
 $pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/131_byg_trip_dates.sqlite.sql'));
+$pdo->exec(file_get_contents(BASE_PATH . '/database/migrations/133_byg_story_ask.sqlite.sql'));
 
 echo "\nValidation:\n";
 $v = rmt_byg_validate(['email' => ' Me@Example.com ', 'topic' => 'tax', 'city' => 'amsterdam', 'source' => 'tax_calc']);
@@ -163,6 +164,25 @@ ok('...and links back to the free page', str_contains($sum['url'], 'tourist-tax-
 $sum = rmt_byg_summary(['topic' => 'scams', 'city' => 'amsterdam-netherlands', 'city_name' => 'Amsterdam', 'page' => '/warnings/amsterdam-netherlands']);
 ok('a warnings summary lists the warnings', $sum['lines'][0] ?? '', 'Fake police: y');
 ok('...and links to the page it came from', str_contains($sum['url'], '/warnings/amsterdam-netherlands'), true);
+
+/* After the trip: one "how was it" email (2026-11-23, migration 133). */
+echo "\nAfter the trip:\n";
+$st = ['status' => 'active', 'travel_date' => '2027-03-01', 'story_asked' => null, 'topic' => 'tax', 'city' => 'rome'];
+ok('3 days after, too soon', rmt_byg_story_due($st, '2027-03-04'), false);
+ok('4 days after, due', rmt_byg_story_due($st, '2027-03-05'), true);
+ok('30 days after, still due', rmt_byg_story_due($st, '2027-03-31'), true);
+ok('31 days after, too late', rmt_byg_story_due($st, '2027-04-01'), false);
+ok('asked once, never again', rmt_byg_story_due(['story_asked' => 'x'] + $st, '2027-03-05'), false);
+ok('unconfirmed, never', rmt_byg_story_due(['status' => 'pending'] + $st, '2027-03-05'), false);
+ok('no trip date, never', rmt_byg_story_due(['travel_date' => null] + $st, '2027-03-05'), false);
+ok('the link opens the story form for the city', str_contains(rmt_byg_story_url($st), '/story?topic=tax%3Arome'), true);
+ok('a warnings signup gets the warnings topic', str_contains(rmt_byg_story_url(['topic' => 'scams', 'city' => 'amsterdam-netherlands']), 'topic=warnings%3Aamsterdam-netherlands'), true);
+q_run("UPDATE byg_signups SET status = 'active', travel_date = ?, story_asked = NULL WHERE id = ?", [date('Y-m-d', strtotime('-6 days')), $t1['id']]);
+$r = rmt_byg_story_run(false);
+ok('the daily run finds the ask due', $r['due'] >= 1, true);
+$r = rmt_byg_story_run(true);
+ok('with mail off, nothing counts as sent', $r['sent'], 0);
+ok('...and it is not stamped, so it goes tomorrow', rmt_byg_by_id($t1['id'])['story_asked'], null);
 
 echo $fail ? "\n$fail FAIL(S), $pass pass\n" : "\nALL PASS ($pass)\n";
 exit($fail ? 1 : 0);

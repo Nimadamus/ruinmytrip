@@ -134,7 +134,8 @@ const RMT_CONTRIB_EVENTS = [
     'group_link_created',
     'group_guest_joined',
     'group_saved',
-    'byg_reminder_sent',           // a 14 or 3 day reminder before a signup's trip date (2026-11-23)
+    'byg_reminder_sent',
+    'byg_story_asked',             // the one 'how was it' email a few days after a signup's trip date           // a 14 or 3 day reminder before a signup's trip date (2026-11-23)
     'share_visit',                 // a going card opened by somebody who did not make it
     'recognition_earned',
 ];

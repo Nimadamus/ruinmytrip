@@ -13,4 +13,5 @@ require BASE_PATH . '/app/bootstrap.php';
 
 $dry = in_array('--dry', $argv, true);
 $r = rmt_byg_remind(!$dry);
-echo date('Y-m-d H:i:s'), ' ', ($dry ? 'dry run: ' : ''), "{$r['due']} due, {$r['sent']} sent\n";
+$s = rmt_byg_story_run(!$dry);
+echo date('Y-m-d H:i:s'), ' ', ($dry ? 'dry run: ' : ''), "reminders {$r['due']} due, {$r['sent']} sent; after-trip asks {$s['due']} due, {$s['sent']} sent\n";

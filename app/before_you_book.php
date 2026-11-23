@@ -82,6 +82,20 @@ function rmt_byb_count(string $slug): array {
 }
 
 /** POST /story  the "Did something go wrong here?" form on tax and warnings pages. */
+/** GET /story?topic=tax:rome  the story form on its own, for the after-trip email. */
+function story_form_page(array $a): void {
+    $topic = (string) input('topic');
+    if (!preg_match('/^(tax|warnings):[a-z0-9-]{2,80}$/', $topic)) $topic = '';
+    $name = '';
+    if ($topic !== '' && function_exists('rmt_byg_cities')) {
+        [$kind, $city] = explode(':', $topic, 2);
+        $name = (string) (rmt_byg_cities($kind === 'tax' ? 'tax' : 'scams')[$city] ?? '');
+        if ($name === '') $topic = '';
+    }
+    view('story_page', ['story' => ['topic' => $topic, 'name' => $name, 'return' => '/story' . ($topic !== '' ? '?topic=' . rawurlencode($topic) : '') . '#story']],
+         ['title' => 'Tell us what went wrong | RuinMyTrip', 'robots' => 'noindex,follow', 'canonical' => '']);
+}
+
 function story_submit(array $a): void {
     csrf_check();
     $back = rmt_return_to('/');

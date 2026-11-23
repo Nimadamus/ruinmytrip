@@ -338,6 +338,58 @@ function rmt_byg_mail_reminder(array $s, int $which, string $today): bool {
     return true;
 }
 
+/* ---------- after the trip: what went wrong? ---------- */
+
+const RMT_BYG_STORY_AFTER = 4;   // days after the trip date
+const RMT_BYG_STORY_UNTIL = 30;  // past this, the trip is too long ago to ask
+
+/** Is the one "how did it go" email due today for this signup? */
+function rmt_byg_story_due(array $s, string $today): bool {
+    if ((string) ($s['status'] ?? '') !== 'active' || empty($s['travel_date']) || !empty($s['story_asked'])) return false;
+    $days = (int) round((strtotime($today . ' 00:00:00') - strtotime((string) $s['travel_date'] . ' 00:00:00')) / 86400);
+    return $days >= RMT_BYG_STORY_AFTER && $days <= RMT_BYG_STORY_UNTIL;
+}
+
+/** The story form for this signup's city: /story?topic=tax:rome */
+function rmt_byg_story_url(array $s): string {
+    $topic = ((string) $s['topic'] === 'tax' ? 'tax:' : 'warnings:') . (string) $s['city'];
+    return abs_url(url('story?' . http_build_query(['topic' => $topic])));
+}
+
+/** Ask everybody due today, once each. Returns ['due' => n, 'sent' => n]. */
+function rmt_byg_story_run(bool $send = true, ?string $today = null): array {
+    $today = $today ?? date('Y-m-d');
+    $from = date('Y-m-d', strtotime($today . ' 00:00:00') - RMT_BYG_STORY_UNTIL * 86400);
+    $to = date('Y-m-d', strtotime($today . ' 00:00:00') - RMT_BYG_STORY_AFTER * 86400);
+    $due = 0; $sent = 0;
+    foreach (q_all("SELECT * FROM byg_signups WHERE status = 'active' AND city <> '' AND travel_date IS NOT NULL
+                     AND story_asked IS NULL AND travel_date >= ? AND travel_date <= ?", [$from, $to]) as $s) {
+        if (!rmt_byg_story_due($s, $today)) continue;
+        $due++;
+        if ($send && rmt_byg_mail_story($s)) $sent++;
+    }
+    return ['due' => $due, 'sent' => $sent];
+}
+
+function rmt_byg_mail_story(array $s): bool {
+    $name = (string) ($s['city_name'] ?? '') !== '' ? (string) $s['city_name'] : 'your trip';
+    $head = 'How was ' . $name . '?';
+    $link = rmt_byg_story_url($s);
+    $off = rmt_byg_off_url($s);
+    $html = rmt_mail_layout($head,
+        '<p>You read up on ' . e($name) . ' before you went. Did anything go wrong, or nearly? A charge nobody mentioned, a scam, a rule, a queue.</p>'
+        . '<p>Two lines is plenty. An editor checks every story before anything from it is published, and it is what the next person going to ' . e($name) . ' reads.</p>',
+        'Tell us what happened', $link)
+        . '<p style="font-family:sans-serif;font-size:12px;color:#8895a3;text-align:center">'
+        . '<a href="' . e($off) . '" style="color:#8895a3">Stop these emails</a></p>';
+    $text = "$head\n\nDid anything go wrong, or nearly? Tell us in two lines: $link\nAn editor checks every story before anything is published.\n\nStop these emails: $off";
+    $r = rmt_mail_send((string) $s['email'], $head, $html, $text, rmt_mail_unsub_headers($off));
+    if (!($r[0] ?? false)) return false;
+    q_run('UPDATE byg_signups SET story_asked = ? WHERE id = ?', [date('Y-m-d H:i:s'), (int) $s['id']]);
+    if (function_exists('rmt_track')) rmt_track('byg_story_asked', ['source' => 'other']);
+    return true;
+}
+
 /* ---------- controllers ---------- */
 
 /** POST /updates  the form on tax and warnings pages. */

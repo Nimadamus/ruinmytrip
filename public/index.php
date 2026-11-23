@@ -45,6 +45,7 @@ $routes = [
     ['POST', '#^/alerts/off$#',                'alert_off'],
     // Before you go updates on tax and warnings pages (app/before_you_go.php).
     ['POST', '#^/updates$#',                   'byg_submit'],
+    ['GET',  '#^/story$#',                     'story_form_page'],
     ['POST', '#^/story$#',                     'story_submit'],
     ['GET',  '#^/updates/sent$#',              'byg_sent'],
     ['GET',  '#^/updates/watch$#',             'byg_watch_form'],
