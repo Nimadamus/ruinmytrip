@@ -61,6 +61,12 @@
             if ($nlCount > 0): ?>
         <p style="margin:10px 0 0"><a class="btn btn-accent btn-sm" href="<?= e(url('trip/' . (int) $newTrip['id'] . '#before-you-go')) ?>">Your before you go checklist: <?= $nlCount ?> things to sort for <?= e((string) $newTrip['dest_name']) ?></a></p>
       <?php endif; ?>
+      <?php /* Going with friends: the group link (app/trip_group.php) is the way a trip brings its own people. */ ?>
+      <form method="post" action="<?= e(url('trip/' . (int) $newTrip['id'] . '/group-link')) ?>" style="margin:10px 0 0">
+        <?= csrf_field() ?>
+        <b>Going with friends?</b> One link for your group chat: they join with a first name and share the checklist and the date vote.
+        <button class="btn btn-accent btn-sm" type="submit">Make the group link</button>
+      </form>
       <form method="post" action="<?= e(url('im-going')) ?>" style="margin:10px 0 0">
         <?= csrf_field() ?><input type="hidden" name="trip_id" value="<?= (int) $newTrip['id'] ?>">
         <b>Somebody you know is going too?</b> Send them an "I'm going" card.
