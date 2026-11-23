@@ -88,7 +88,20 @@ function rmt_byg_validate(array $in): array {
 
 /** Only our own answer pages may be named as the page a signup came from. */
 function rmt_byg_clean_page(string $p): string {
-    $p = (string) preg_replace('/[?#].*$/s', '', trim($p));
+    $p = trim($p);
+    // The calculator keeps its inputs, so "email me this calculation" can send the same answer.
+    if (preg_match('~^/tourist-tax-calculator\?([^#]*)~', $p, $m)) {
+        parse_str($m[1], $q);
+        $keep = [];
+        if (isset($q['city']) && preg_match('/^[a-z0-9-]{2,40}$/', (string) $q['city'])) $keep['city'] = (string) $q['city'];
+        if (isset($q['tier']) && preg_match('/^[a-z0-9_-]{1,20}$/i', (string) $q['tier'])) $keep['tier'] = (string) $q['tier'];
+        foreach (['nights' => 60, 'people' => 20, 'rooms' => 10] as $k => $max) {
+            if (isset($q[$k]) && ctype_digit((string) $q[$k])) $keep[$k] = (string) max(1, min($max, (int) $q[$k]));
+        }
+        if (isset($q['price']) && is_numeric($q['price'])) $keep['price'] = (string) max(0, min(100000000, round((float) $q['price'], 2)));
+        return '/tourist-tax-calculator' . ($keep ? '?' . http_build_query($keep) : '');
+    }
+    $p = (string) preg_replace('/[?#].*$/s', '', $p);
     return preg_match('~^/(blog|warnings)/[a-z0-9-]{1,120}$~', $p) || $p === '/tourist-tax-calculator' || $p === '/tourist-tax-2027' ? $p : '';
 }
 
@@ -264,7 +277,11 @@ function rmt_byg_summary(array $s): array {
         try { $p = q_one('SELECT title, summary FROM blog_posts WHERE slug = ?', [$m[1]]); } catch (Throwable $e) { $p = null; }
         if ($p) { $title = (string) $p['title']; if (trim((string) $p['summary']) !== '') $lines[] = trim((string) $p['summary']); }
     }
-    if (!$lines && $topic === 'tax' && $city !== '' && function_exists('rmt_tt_cities')) {
+    if (str_starts_with($page, '/tourist-tax-calculator?') && function_exists('rmt_tt_estimate')) {
+        $calc = rmt_byg_calc_line($page);
+        if ($calc !== null) { $title = $calc['title']; $lines[] = $calc['line']; }
+    }
+    if ($topic === 'tax' && $city !== '' && function_exists('rmt_tt_cities') && count($lines) < 2) {
         $c = rmt_tt_cities()[$city] ?? null;
         if ($c) {
             if (!empty($c['rate'])) $lines[] = 'Tourist tax in ' . (string) $c['name'] . ': ' . (string) $c['rate'] . '.';
@@ -280,6 +297,28 @@ function rmt_byg_summary(array $s): array {
     }
     $url = abs_url($page !== '' ? url(ltrim($page, '/')) : rmt_byg_page($s));
     return ['title' => $title, 'lines' => $lines, 'url' => $url];
+}
+
+/** The calculator's answer for a saved query, worked out from today's rates. Null when it cannot be. */
+function rmt_byg_calc_line(string $page): ?array {
+    parse_str((string) parse_url($page, PHP_URL_QUERY), $q);
+    $c = rmt_tt_cities()[(string) ($q['city'] ?? '')] ?? null;
+    if (!$c) return null;
+    $tk = (string) ($q['tier'] ?? '');
+    $tierKey = isset($c['tiers'][$tk]) ? $tk : (string) array_key_first($c['tiers']);
+    $nights = max(1, (int) ($q['nights'] ?? 3));
+    $people = max(1, (int) ($q['people'] ?? 2));
+    $rooms = max(1, (int) ($q['rooms'] ?? 1));
+    $needsPrice = rmt_tt_needs($c)['price'];
+    if ($needsPrice && !isset($q['price'])) return null;
+    $e = rmt_tt_estimate($c, $c['tiers'][$tierKey], $nights, $people, $rooms, (float) ($q['price'] ?? 0));
+    $label = (string) ($c['tiers'][$tierKey]['label'] ?? '');
+    $line = 'Your stay: ' . $nights . ' ' . ($nights === 1 ? 'night' : 'nights') . ', ' . $people . ' ' . ($people === 1 ? 'person' : 'people')
+          . ', ' . $rooms . ' ' . ($rooms === 1 ? 'room' : 'rooms') . ($label !== '' ? ', ' . $label : '')
+          . ($needsPrice ? ', ' . rmt_tt_money((float) $q['price'], (string) $c['cur']) . ' a night' : '')
+          . '. Tourist tax: ' . rmt_tt_money((float) $e['total'], (string) $c['cur'])
+          . ' (' . rmt_tt_money((float) $e['per_night'], (string) $c['cur']) . ' a night' . ($e['paid_nights'] < $e['nights'] ? ', charged for ' . $e['paid_nights'] . ' nights' : '') . ').';
+    return ['title' => $c['name'] . ' tourist tax for your stay: ' . rmt_tt_money((float) $e['total'], (string) $c['cur']), 'line' => $line];
 }
 
 function rmt_byg_summary_html(array $sum): string {

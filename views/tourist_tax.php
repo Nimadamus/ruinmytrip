@@ -64,6 +64,21 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
         <a href="<?= e(url('blog/' . $city['note'])) ?>">How <?= e($city['name']) ?> charges it, with sources</a>
         <a href="<?= e(url('d/' . $city['dest'])) ?>">See who is going to <?= e($city['name']) ?></a>
       </p>
+      <?php /* Email me this calculation (2026-11-23): the answer they just got, kept, plus reminders if they add a date. */
+            $ttPage = '/tourist-tax-calculator?' . http_build_query(array_filter(['city' => $slug, 'tier' => $tierKey, 'nights' => $nights, 'people' => $people, 'rooms' => $rooms, 'price' => $priceIn], static fn($v) => $v !== '' && $v !== null)); ?>
+      <form method="post" action="<?= e(url('updates')) ?>" class="ma-form" id="byg" style="margin:14px 0 0;padding:12px 0 0;border-top:1px solid #e5e7eb">
+        <?= csrf_field() ?>
+        <input type="hidden" name="topic" value="tax"><input type="hidden" name="city" value="<?= e($slug) ?>">
+        <input type="hidden" name="source" value="tax_calc"><input type="hidden" name="page" value="<?= e($ttPage) ?>">
+        <input type="hidden" name="return" value="<?= e($ttPage . '#byg') ?>">
+        <div class="ma-hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+        <p style="margin:0 0 8px"><b>Email me this calculation.</b> <span class="hint">Add your trip date and we remind you 14 and 3 days before, with anything that changed. No password.</span></p>
+        <div class="ma-row" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));max-width:520px">
+          <label class="ma-email">Email<input type="email" name="email" required autocomplete="email" maxlength="254" placeholder="you@example.com"></label>
+          <label>Trip starts (optional)<input type="date" name="travel_date" min="<?= e(date('Y-m-d')) ?>" max="<?= e(date('Y-m-d', strtotime('+730 days'))) ?>"></label>
+        </div>
+        <button class="btn btn-accent btn-sm" type="submit">Email me this</button>
+      </form>
     </section>
   <?php endif; ?>
   <?php if ($city): $clDest = (string) $city['dest']; $clName = (string) $city['name']; include __DIR__ . '/_checklist_cta.php'; endif; ?>
@@ -100,9 +115,9 @@ $tiers = $city ? array_filter($city['tiers'], static fn(array $t) => ($t['label'
     <p class="tt-links"><a href="<?= e(url('tourist-tax-2027')) ?>">Every European tourist tax change for 2027, ranked</a> <a href="<?= e(url('tourist-tax-calculator/embed')) ?>">Put this calculator on your site</a></p>
   </section>
 
-  <?php $byg = ['topic' => 'tax', 'city' => $slug, 'name' => (string) ($city['name'] ?? ''), 'source' => 'tax_calc',
+  <?php if (!$result): $byg = ['topic' => 'tax', 'city' => $slug, 'name' => (string) ($city['name'] ?? ''), 'source' => 'tax_calc',
                 'return' => '/tourist-tax-calculator' . ($slug !== '' ? '?city=' . rawurlencode($slug) : '') . '#byg'];
-        include __DIR__ . '/_byg_form.php'; ?>
+        include __DIR__ . '/_byg_form.php'; endif; ?>
   <?php if ($slug !== ''): $story = ['topic' => 'tax:' . $slug, 'name' => (string) ($city['name'] ?? ''), 'return' => '/tourist-tax-calculator?city=' . rawurlencode($slug) . '#story'];
         include __DIR__ . '/_story_form.php'; endif; ?>
 

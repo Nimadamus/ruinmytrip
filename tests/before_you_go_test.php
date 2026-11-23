@@ -123,7 +123,9 @@ ok('a non date is refused', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 't
 ok('no date is fine', rmt_byg_validate(['email' => 'a@b.co', 'topic' => 'tax', 'city' => 'rome', 'travel_date' => ''])['ok'], true);
 ok('an outside page is dropped', rmt_byg_clean_page('https://evil.example/x'), '');
 ok('a path outside the answer pages is dropped', rmt_byg_clean_page('/admin/users'), '');
-ok('the calculator is an allowed page', rmt_byg_clean_page('/tourist-tax-calculator?city=rome'), '/tourist-tax-calculator');
+ok('the calculator keeps its inputs', rmt_byg_clean_page('/tourist-tax-calculator?city=rome&nights=4&people=2&evil=%3Cx%3E&price=abc#byg'), '/tourist-tax-calculator?city=rome&nights=4&people=2');
+ok('calculator numbers are clamped', rmt_byg_clean_page('/tourist-tax-calculator?city=rome&nights=999'), '/tourist-tax-calculator?city=rome&nights=60');
+ok('a bad calculator city is dropped', rmt_byg_clean_page('/tourist-tax-calculator?city=%3Cscript%3E'), '/tourist-tax-calculator');
 $t1 = rmt_byg_save($tv['data']);
 $row = rmt_byg_by_id($t1['id']);
 ok('the trip date is stored', (string) $row['travel_date'], $in30);
