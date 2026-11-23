@@ -141,6 +141,8 @@ $authorSaid = $authorSaid ?? [];
 
   <?php $planDays = $planDays ?? []; include __DIR__ . '/_trip_plan.php'; ?>
 
+  <?php include __DIR__ . '/_trip_group_link.php'; ?>
+
   <?php include __DIR__ . '/_trip_checklist.php'; ?>
 
   <?php /* Who is planning it, and the box for inviting somebody, under the plan rather than over

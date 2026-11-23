@@ -130,6 +130,10 @@ const RMT_CONTRIB_EVENTS = [
     'story_submitted',
     'checklist_ticked',            // a before-you-go item ticked off on a trip (app/trip_checklist.php)
     'byg_confirmed',
+    /* Group trip link, 2026-11-23 (app/trip_group.php): link made, a friend joined by name, a guest saved it to an account. */
+    'group_link_created',
+    'group_guest_joined',
+    'group_saved',
     'byg_reminder_sent',           // a 14 or 3 day reminder before a signup's trip date (2026-11-23)
     'share_visit',                 // a going card opened by somebody who did not make it
     'recognition_earned',
