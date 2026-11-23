@@ -55,6 +55,9 @@ $allowed = [
     // Account deletion reads a member's OWN trips and plans to delete them and find their photo
     // keys. Nothing it reads is shown to anybody.
     'account_delete.php',
+    // The group trip link (2026-11-23) reads one trip by its unguessable group_code, which the owner
+    // made to share it and can reset. Holding the code is the permission, like a shared document link.
+    'trip_group.php',
 ];
 
 foreach ($files as $file) {

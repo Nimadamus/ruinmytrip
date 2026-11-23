@@ -78,6 +78,7 @@ const RMT_ACCOUNT_DELETE_INVENTORY = [
     'trips'               => 'delete; a trip other members accepted passes to the earliest of them, emptied of the deleted member\'s notes, cover, photos and activities',
     'trip_photos'         => 'delete',
     'trip_checklist'      => 'cleared: user_id set to null by its foreign key; a tick belongs to the trip and goes with it',
+    'trip_guests'         => 'cleared: user_id set to null by its foreign key; the guest name stays with the group trip it was given to',
     'trip_messages'       => 'delete: their lines in trip chats; a trip deleted with them takes its chat',
     'trip_chat_reads'     => 'delete',
     'sailing_rooms'       => 'kept: a room belongs to the sailing, not to one member',
