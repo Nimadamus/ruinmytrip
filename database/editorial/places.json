@@ -763,26 +763,26 @@
       "destination_slug": "berlin-germany",
       "name": "Zur letzten Instanz",
       "type": "restaurant",
-      "headline": "Six Euros for Pickled Vegetables in Berlin's Oldest Restaurant",
-      "body": "Zur letzten Instanz charges 6 euros for pickled vegetables and 10 euros for matjes with yoghurt and red onion, which places it firmly in the ordinary-prices bracket for a restaurant that has been trading since 1621.\n\nIt claims to be the oldest restaurant in Berlin and the claim holds up better than most: the building is early seventeenth century, the tiled corner stove is original, and Napoleon, Beethoven and Chirac have all reportedly eaten here, which the restaurant mentions rather more often than necessary.\n\nThe cooking is straightforward Berlin food, and the reason to come is the room and the continuity rather than any culinary ambition.",
+      "headline": "Pickled Vegetables and Matjes in Berlin's Oldest Restaurant",
+      "body": "Zur letzten Instanz puts pickled vegetables and matjes with yoghurt and red onion on its menu, plain Berlin cooking at ordinary restaurant prices in a dining room that has been trading since 1621.\n\nIt claims to be the oldest restaurant in Berlin and the claim holds up better than most: the building is early seventeenth century, the tiled corner stove is original, and Napoleon, Beethoven and Chirac have all reportedly eaten here, which the restaurant mentions rather more often than necessary.\n\nThe cooking is straightforward Berlin food, and the reason to come is the room and the continuity rather than any culinary ambition.",
       "what_great": "Four hundred years in the same building, with an original tiled stove and a genuinely old dining room. Normal prices, which for a restaurant with this much history is unusual. Two minutes from the medieval quarter.",
       "what_ruined": "The cooking is solid rather than exciting. The historic-guest roll call is laid on thick. It is small, so a table needs booking, and the Nikolaiviertel around it is a postwar reconstruction that some find twee.",
       "rating": 4,
       "safety_rating": 5,
       "value_rating": 5,
-      "rating_rationale": "Four for a genuinely historic room serving competent food. Five for safety in Mitte. Five for value: six euros for a starter in a four-hundred-year-old restaurant is unusually fair.",
-      "meta_description": "Zur letzten Instanz, Berlin's oldest restaurant since 1621, charges 6 euros for pickled vegetables and 10 for matjes. Come for the room.",
+      "rating_rationale": "Four for a genuinely historic room serving competent food. Five for safety in Mitte. Five for value: ordinary Berlin prices in a four-hundred-year-old restaurant are unusually fair.",
+      "meta_description": "Zur letzten Instanz, Berlin's oldest restaurant since 1621, serves pickled vegetables, matjes and Berlin classics. Come for the room.",
       "facts_checked": [
         {
-          "fact": "Pickled vegetables are 6 euros.",
+          "fact": "The menu lists pickled vegetables.",
           "url": "https://zurletzteninstanz.com/menu/",
-          "assert_text": "eingelegtes gemüse 6€",
+          "assert_text": "eingelegtes gemüse",
           "confidence": "verified on the restaurant's official menu page"
         },
         {
-          "fact": "Matjes with yoghurt and red onion is 10 euros.",
+          "fact": "The menu lists matjes with yoghurt and red onion.",
           "url": "https://zurletzteninstanz.com/menu/",
-          "assert_text": "matjes, joghurt, rote zwiebel 10€",
+          "assert_text": "matjes, joghurt, rote zwiebel",
           "confidence": "verified on the restaurant's official menu page"
         }
       ],
@@ -793,7 +793,7 @@
       "best_for": "Anyone interested in old Berlin, and anyone wanting a traditional meal that is not a themed beer hall.",
       "skip_if": "You are in Berlin for the modern food scene. Kreuzberg and Neukolln are where that is.",
       "practical": "Book, because it is smaller than it looks. Sit in the front room with the stove rather than the back. Combine it with the Nikolaikirche two minutes away.",
-      "tickets": "A la carte, with starters from 6 euros. Reservations recommended, particularly at weekends.",
+      "tickets": "A la carte; the online menu does not list prices. Reservations recommended, particularly at weekends.",
       "getting_there": "U2 to Klosterstrasse, then three minutes on foot. It is ten minutes' walk from Alexanderplatz.",
       "location_context": "Waisenstrasse on the edge of the Nikolaiviertel, Berlin's medieval quarter, rebuilt in the 1980s around a handful of genuinely old survivors, of which this is one.",
       "time_needed": "An hour and a half.",
@@ -966,14 +966,14 @@
       "name": "Design Museum Denmark",
       "type": "attraction",
       "headline": "A Hundred and Forty Kroner for Why Your Chair Looks Like That",
-      "body": "Design Museum Denmark charges DKK 140 for adults, DKK 90 for under-27s and students with valid ID, and admits children under 18 free. It opens daily from 10.00 to 18.00, with late opening until 20.00 on Thursdays.\n\nThe museum is the answer to a question most visitors to Copenhagen arrive already asking: why does everything here look like that. The Danish Chair gallery alone lines up the twentieth century's most copied furniture in one long room, and seeing the originals in sequence makes the copies in every airport lounge on earth suddenly legible.\n\nIt is housed in an eighteenth-century former hospital in Frederiksstaden, a few minutes from Amalienborg, which gives the collection a set of calm rooms and a courtyard garden that most design museums would envy.",
+      "body": "Design Museum Denmark charges DKK 140 for adults, DKK 90 for under-27s and students with valid ID, and admits children under 18 free. It opens Tuesday to Sunday from 10.00 to 18.00, with late opening until 20.00 on Thursdays, and is closed on Mondays.\n\nThe museum is the answer to a question most visitors to Copenhagen arrive already asking: why does everything here look like that. The Danish Chair gallery alone lines up the twentieth century's most copied furniture in one long room, and seeing the originals in sequence makes the copies in every airport lounge on earth suddenly legible.\n\nIt is housed in an eighteenth-century former hospital in Frederiksstaden, a few minutes from Amalienborg, which gives the collection a set of calm rooms and a courtyard garden that most design museums would envy.",
       "what_great": "The Danish Chair gallery, which is the clearest single exhibit about modern design anywhere. Free for under-18s. The building and its garden are worth the visit on their own, and the late Thursday opening is genuinely useful.",
       "what_ruined": "A hundred and forty kroner is steep for a museum you can see in ninety minutes, and Copenhagen is expensive enough already. The collection is narrow by design, so if you are not interested in objects you will be finished quickly.",
       "rating": 5,
       "safety_rating": 5,
       "value_rating": 4,
       "rating_rationale": "Five for a museum that does one thing better than anyone else. Five for safety in Frederiksstaden. Four for value, because DKK 140 is a lot for ninety minutes even when those ninety minutes are excellent.",
-      "meta_description": "Design Museum Denmark costs DKK 140 for adults, free under 18, open daily 10.00 to 18.00. The Danish Chair gallery is the best design exhibit in Europe.",
+      "meta_description": "Design Museum Denmark costs DKK 140 for adults, free under 18, open Tuesday to Sunday 10.00 to 18.00. The Danish Chair gallery is the best design exhibit in Europe.",
       "facts_checked": [
         {
           "fact": "Adult admission is DKK 140, under-27s and students pay DKK 90, and children under 18 are free.",
@@ -982,9 +982,9 @@
           "confidence": "verified on the museum's official opening hours and admission page"
         },
         {
-          "fact": "The museum opens Monday to Sunday 10.00 to 18.00, and until 20.00 on Thursdays.",
+          "fact": "The museum opens Tuesday to Sunday 10 to 18, and until 20 on Thursdays.",
           "url": "https://designmuseum.dk/en/besog-os/opening-hours-admission-2/",
-          "assert_text": "monday – sunday: 10.00-18.00 thursday: 10.00-20.00",
+          "assert_text": "tuesday - sunday 10 - 18 thursday 10 - 20",
           "confidence": "verified on the museum's official opening hours and admission page"
         }
       ],
@@ -1993,9 +1993,9 @@
           "confidence": "verified on the restaurant's official page"
         },
         {
-          "fact": "Lunch runs Monday to Sunday 12.00pm to 3pm, with last seating at 3pm.",
+          "fact": "Lunch runs Monday to Sunday 12.00pm to 3pm.",
           "url": "https://stjohnrestaurant.com/a/restaurants/bread-and-wine",
-          "assert_text": "lunch monday - sunday: 12.00pm - 3pm (last seating)",
+          "assert_text": "lunch monday - sunday 12.00pm - 3.00pm",
           "confidence": "verified on the restaurant's official page"
         }
       ],
@@ -3418,20 +3418,20 @@
       "destination_slug": "rome-italy",
       "name": "Capitoline Museums",
       "type": "attraction",
-      "headline": "Twenty Euros Fifty, and the Best View of the Forum Is Inside",
-      "body": "The Capitoline Museums charge 20.50 euros full price for non-residents and 15.00 euros reduced. They open every day from 9.30 to 19.30, with last admission an hour before closing.\n\nThese are the oldest public museums in the world, founded in 1471, and they sit on the Campidoglio in a square Michelangelo laid out. The collection is the one people picture when they picture Roman sculpture: the Capitoline Wolf, the Dying Gaul, the colossal fragments of Constantine, and the original equestrian Marcus Aurelius that stood outside for centuries.\n\nThe part nobody mentions is the Tabularium gallery, an ancient records office built into the hillside whose arches frame the Roman Forum. It is the best view of the Forum in Rome and it is included in the ticket.",
+      "headline": "Sixteen Euros Fifty, and the Best View of the Forum Is Inside",
+      "body": "The Capitoline Museums charge 16.50 euros full price for non-residents and 11.00 euros reduced, with the current exhibition included. They open every day from 9.30 to 19.30, with last admission an hour before closing.\n\nThese are the oldest public museums in the world, founded in 1471, and they sit on the Campidoglio in a square Michelangelo laid out. The collection is the one people picture when they picture Roman sculpture: the Capitoline Wolf, the Dying Gaul, the colossal fragments of Constantine, and the original equestrian Marcus Aurelius that stood outside for centuries.\n\nThe part nobody mentions is the Tabularium gallery, an ancient records office built into the hillside whose arches frame the Roman Forum. It is the best view of the Forum in Rome and it is included in the ticket.",
       "what_great": "The Dying Gaul, the Constantine fragments and the real Marcus Aurelius. The Tabularium view over the Forum, which alone justifies the price. Open every day, which in Rome is rarer than it should be.",
-      "what_ruined": "Twenty euros fifty is a two-tier price: residents of Rome now enter free, so visitors pay for a museum locals do not. Labelling is thin in places and the layout across two palaces linked by an underground passage confuses people.",
+      "what_ruined": "Sixteen euros fifty is a two-tier price: residents of Rome now enter free, so visitors pay for a museum locals do not. Labelling is thin in places and the layout across two palaces linked by an underground passage confuses people.",
       "rating": 5,
       "safety_rating": 4,
       "value_rating": 4,
       "rating_rationale": "Five for the collection, the building and the Forum view together. Four for safety, purely for pickpockets on the approach from Piazza Venezia. Four for value: fair for what it holds, though the resident and non-resident split stings.",
-      "meta_description": "The Capitoline Museums in Rome cost 20.50 euros for non-residents, open daily 9.30 to 19.30. The oldest public museums in the world, with the best Forum view.",
+      "meta_description": "The Capitoline Museums in Rome cost 16.50 euros for non-residents, open daily 9.30 to 19.30. The oldest public museums in the world, with the best Forum view.",
       "facts_checked": [
         {
-          "fact": "Full price for non-residents is 20.50 euros and the reduced price for non-residents is 15.00 euros.",
+          "fact": "Full price for non-residents is 16.50 euros and the reduced price for non-residents is 11.00 euros, with the current exhibition included.",
           "url": "https://www.museicapitolini.org/en/informazioni_pratiche/biglietti_e_videoguide",
-          "assert_text": "full price for non-residents € 20,50 reduced price for non-residents € 15,00",
+          "assert_text": "full price for non-residents € 16,50 reduced price for non-residents € 11,00",
           "confidence": "verified on the museums' official tickets page"
         },
         {
@@ -3448,7 +3448,7 @@
       "best_for": "Every visitor to Rome with any interest in the ancient city, and anyone who wants a Forum view without the Forum queue.",
       "skip_if": "You have already booked the full Colosseum, Forum and Palatine circuit for the same day. Two sites of that density in one day is too much.",
       "practical": "Go at opening or after 17:00. Find the Tabularium before you tire, because it is the thing you will remember. The underground passage between the two palaces is easy to miss and is the only link.",
-      "tickets": "Full price for non-residents 20.50 euros, reduced 15.00 euros. Residents of Rome and the metropolitan city enter free. Advance purchase at the ticket office carries a 1 euro pre-sale fee.",
+      "tickets": "Full price for non-residents 16.50 euros, reduced 11.00 euros, with the current exhibition included. Residents of Rome and the metropolitan city enter free. Advance purchase at the ticket office carries a 1 euro pre-sale fee.",
       "getting_there": "A five-minute walk up the cordonata from Piazza Venezia. The nearest metro is Colosseo on line B, about ten minutes away.",
       "location_context": "The Campidoglio, the smallest of Rome's seven hills, between Piazza Venezia and the Forum, with the Vittoriano on one side and the Forum below on the other.",
       "time_needed": "Two to three hours.",
@@ -3472,13 +3472,13 @@
         {
           "fact": "The hotel has 82 rooms and suites.",
           "url": "https://www.hotelhasslerroma.com/en/",
-          "assert_text": "offers 82 rooms and suites",
+          "assert_text": "our 82 individually designed rooms",
           "confidence": "verified on the hotel's official site"
         },
         {
           "fact": "Its rooftop restaurant Imago holds a Michelin star.",
           "url": "https://www.hotelhasslerroma.com/en/",
-          "assert_text": "panoramic michelin-starred restaurant imàgo",
+          "assert_text": "michelin-starred imàgo restaurant",
           "confidence": "verified on the hotel's official site"
         }
       ],
