@@ -22,7 +22,8 @@
      "quote_en": "The Mayor and Aldermen agree to the first amendment of the Tourist Tax Bylaw 2024, which sets a uniform rate of 16% of the overnight price in 2027.",
      "accessed": "2026-11-17"
     }
-   ]
+   ],
+   "note": "amsterdam-tourist-tax-2027"
   },
   {
    "key": "vienna",
@@ -45,7 +46,8 @@
      "quote_en": "The 5% Ortstaxe first applies to paid stays from 1 July 2026; for paid stays from 1 July 2027 an Ortstaxe of 8% applies.",
      "accessed": "2026-11-17"
     }
-   ]
+   ],
+   "note": "vienna-ortstaxe-2027"
   },
   {
    "key": "barcelona",
@@ -75,7 +77,8 @@
      "quote_en": "Tariff applicable from 1 April 2026 for Barcelona city ... 4-star hotel ... EUR 3.40",
      "accessed": "2026-11-17"
     }
-   ]
+   ],
+   "note": "barcelona-tourist-tax-2027"
   },
   {
    "key": "catalonia",
@@ -257,7 +260,8 @@
      "quote_en": "The municipal overnight fee is calculated as a 3 percent surcharge on the payment for the overnight stay, excluding VAT.",
      "accessed": "2026-11-17"
     }
-   ]
+   ],
+   "note": "tromso-lofoten-tourist-tax-2027"
   },
   {
    "key": "vagan",
@@ -287,7 +291,8 @@
      "quote_en": "3 percent surcharge on the overnight payment, excluding VAT.",
      "accessed": "2026-11-17"
     }
-   ]
+   ],
+   "note": "tromso-lofoten-tourist-tax-2027"
   }
  ],
  "pending": [

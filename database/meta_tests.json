@@ -29,6 +29,11 @@
       "description": "Esperit Sants is a restaurant at Passeig de Sant Antoni 13 in Sants, Barcelona. Map and directions, plus space for the first traveler review.",
       "start": "2026-11-21",
       "why": "28 days to 11/19: 186 impressions at position 9.5 (151 mobile), 1 click; old description was the bare address. No venue source beyond OSM, so no cuisine or distance claims."
+    },
+    "/d/miami-usa": {
+      "description": "Travel to Miami in 2026: the places worth it, neighborhoods, practical tips, the 13% City of Miami hotel tax and what goes wrong for visitors.",
+      "start": "2026-11-23",
+      "why": "28 days to 11/21: 50 impressions for 'travel to miami' at position 7.6, 0 clicks; old description was generic."
     }
   }
 }
