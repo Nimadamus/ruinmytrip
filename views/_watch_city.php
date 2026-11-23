@@ -31,7 +31,7 @@ $wMax = date('Y-m-d', strtotime('+730 days'));
     <div class="ma-hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="ma-row" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));max-width:520px">
       <label class="ma-email">Email<input type="email" name="email" required autocomplete="email" maxlength="254" placeholder="you@example.com" value="<?= e((string) ($wMe['email'] ?? '')) ?>"></label>
-      <label>Trip starts <span class="hint">(optional)</span><input type="date" name="travel_date" min="<?= e($wToday) ?>" max="<?= e($wMax) ?>"></label>
+      <label>Trip starts (optional)<input type="date" name="travel_date" min="<?= e($wToday) ?>" max="<?= e($wMax) ?>"></label>
     </div>
     <button class="btn btn-accent btn-sm" type="submit">Email me this</button>
   </form>
