@@ -181,6 +181,8 @@ const RMT_CTA_KEYS = [
     // The 2026-10 redesign (app/design_v2.php): rate a place from the menu, the home page, a city.
     'nav_rate', 'home_rate', 'home_map', 'home_city', 'home_place', 'city_rate', 'city_top_place', 'explore_city',
     'home_explore', 'home_share', 'home_talk', 'home_join', 'home_warn', 'home_find',
+    // The 2026-11-25 home hero: its four doors and the destinations row's "Explore all" link.
+    'home_card_warn', 'home_card_reviews', 'home_card_buddies', 'home_dest_all',
     'profile_map',
     'dest_been_map', // "I've been" on a city page, signed out: opens the travel map with that country in (2026-10-12)
     'share_whatsapp', 'share_facebook', 'share_x', 'share_telegram', 'share_email', 'share_copy', 'share_native',

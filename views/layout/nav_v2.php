@@ -5,12 +5,21 @@
    menu carries is still here, in the sheet or the "More" panel, so internal linking loses nothing.
    @var ?array $me */
 $nv2Path = parse_url(rmt_current_url(), PHP_URL_PATH) ?: '/';
+/* The home page wears the darker header of its photograph hero (2026-11-25 mockup): airplane mark,
+   tagline, an icon on each main link and a round search button that jumps to the hero search. */
+$nv2Home = $nv2Path === '/';
+$nv2I = static fn(string $d): string => $nv2Home ? '<svg class="v2-li" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $d . '</svg>' : '';
 $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_starts_with($nv2Path, $p)) ? ' aria-current="page"' : '';
 ?>
-<header class="v2-header">
+<header class="v2-header<?= $nv2Home ? ' v2-header-home' : '' ?>">
   <div class="wrap v2-header-in">
     <a class="v2-brand" href="<?= e(url()) ?>" aria-label="RuinMyTrip home">
+      <?php if ($nv2Home): ?>
+      <svg class="v2-brand-plane" viewBox="0 0 64 40" width="58" height="36" aria-hidden="true" focusable="false"><path d="M3 35c12 3 30-2 45-14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M61 3c-2-1.6-5-1.4-7.4.3L44.8 9.6 27 6.4l-4 2.8 13.7 6.6-7.4 5.4-6.2-1.3-2.8 2.1 7.3 3.1 3.5 6.9 2.8-2.1-.6-6.3 7.4-5.4 4.6 14.6 4-2.8-.3-18 8.6-6.6c2.3-1.8 3-4.7 2.1-6z" fill="currentColor"/></svg>
+      <span class="v2-brand-txt"><span class="v2-brand-name">Ruin<b>My</b>Trip</span><small>Honest travel reviews &amp; warnings</small></span>
+      <?php else: ?>
       <span class="v2-brand-mark" aria-hidden="true">◈</span><span>Ruin<b>My</b>Trip</span>
+      <?php endif; ?>
     </a>
     <form class="v2-search" action="<?= e(url('search')) ?>" method="get" role="search"
           data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
@@ -18,11 +27,11 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <input type="search" name="q" placeholder="Search a city or place" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
     </form>
     <nav class="v2-links" aria-label="Primary">
-      <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>>Explore</a>
+      <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?>Explore</a>
       <?php /* Warnings are what the site is for (2026-11-07); the map stays one tap away in More and in the phone tab bar. */ ?>
-      <a href="<?= e(url('ruined')) ?>"<?= $nv2On('/ruined') ?>>Warnings</a>
-      <a href="<?= e(url('reviews')) ?>"<?= $nv2On('/reviews') ?>>Reviews</a>
-      <a href="<?= e(url('buddies')) ?>"<?= $nv2On('/buddies') ?>>Travel buddies</a>
+      <a href="<?= e(url('ruined')) ?>"<?= $nv2On('/ruined') ?>><?= $nv2I('<path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>') ?>Warnings</a>
+      <a href="<?= e(url('reviews')) ?>"<?= $nv2On('/reviews') ?>><?= $nv2I('<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z"/>') ?>Reviews</a>
+      <a href="<?= e(url('buddies')) ?>"<?= $nv2On('/buddies') ?>><?= $nv2I('<circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.3.3 4 2 4.5 5"/>') ?><?= $nv2Home ? 'Travel Buddies' : 'Travel buddies' ?></a>
       <details class="v2-more">
         <summary>More</summary>
         <div class="v2-more-panel">
@@ -42,6 +51,9 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       </details>
     </nav>
     <div class="v2-acts">
+      <?php if ($nv2Home): ?>
+      <a class="v2-ico-search" href="<?= e(url('search')) ?>" data-focus="v2-home-q" aria-label="Search" title="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg></a>
+      <?php endif; ?>
       <?php if ($me): ?>
         <a class="v2-ico" href="<?= e(url('messages')) ?>" title="Messages" aria-label="Messages">&#9993;<?php
           $nv2Unread = rmt_unread_message_count((int) $me['id']);
