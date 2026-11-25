@@ -575,3 +575,24 @@ body:has(.v2-hero-split) .v2-stars{gap:0;margin-left:-8px}
   .v2-act{padding:18px}
   .v2-act-form-row{flex-direction:column}
 }
+
+/* ---- Home hero photograph, 2026-11-25 (Nima): the approved Santorini picture from 6755eea is
+   the home hero background, always. Same files as .hero-santorini in app.css (WebP where
+   supported, the 473 px phone crop under 700 px). The dark layer on top is only there so the
+   white text reads; keep it light enough that the photograph still shows. Do not remove. ---- */
+.v2-hero.v2-home3{background-color:#0f1b2d;
+  background-image:linear-gradient(180deg,rgba(9,20,34,.50) 0%,rgba(9,20,34,.58) 45%,rgba(9,20,34,.74) 100%),url('../img/hero-santorini.jpg');
+  background-image:linear-gradient(180deg,rgba(9,20,34,.50) 0%,rgba(9,20,34,.58) 45%,rgba(9,20,34,.74) 100%),
+    image-set(url('../img/hero-santorini.webp') type('image/webp'),url('../img/hero-santorini.jpg') type('image/jpeg'));
+  background-size:cover;background-position:center,80% center;background-repeat:no-repeat}
+.v2-home3-top .v2-h1,.v2-home3-top .v2-lede,.v2-home3-top .v2-kicker{text-shadow:0 1px 14px rgba(0,0,0,.45)}
+@media (max-width:700px){
+  /* The section is several screens tall on a phone (the three cards stack), so the phone crop is
+     drawn at its own shape over the first screen and fades into the dark below; stretched over
+     the whole section it went soft and showed only sky. */
+  .v2-hero.v2-home3{background-color:#0f1b2d;
+    background-image:linear-gradient(180deg,rgba(9,20,34,.46) 0%,rgba(9,20,34,.56) 55%,#0f1b2d 100%),url('../img/hero-santorini-m.jpg');
+    background-image:linear-gradient(180deg,rgba(9,20,34,.46) 0%,rgba(9,20,34,.56) 55%,#0f1b2d 100%),
+      image-set(url('../img/hero-santorini-m.webp') type('image/webp'),url('../img/hero-santorini-m.jpg') type('image/jpeg'));
+    background-size:100% 640px,auto 640px;background-position:center top,center top}
+}
