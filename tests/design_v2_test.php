@@ -83,8 +83,8 @@ foreach ($pages as $path) {
     [$v1] = fetch($baseOff . $path);
     [$v2] = fetch($baseOn . $path);
     if ($v1 === '' || $v2 === '') { ok("$path: both servers answered", false); continue; }
-    ok("$path: switches off serve the current site", !str_contains($v1, 'class="v2-header"') && !str_contains($v1, 'design-v2.css'));
-    ok("$path: switches on serve the redesign", str_contains($v2, 'class="v2-header"') && str_contains($v2, 'design-v2.css'));
+    ok("$path: switches off serve the current site", preg_match('/class="v2-header[" ]/', $v1) !== 1 && !str_contains($v1, 'design-v2.css'));
+    ok("$path: switches on serve the redesign", preg_match('/class="v2-header[" ]/', $v2) === 1 && str_contains($v2, 'design-v2.css'));
     $a = seo($v1); $b = seo($v2);
     foreach (['title', 'description', 'canonical', 'robots', 'jsonld'] as $k) {
         ok("$path: $k unchanged", $a[$k] === $b[$k], json_encode([$a[$k], $b[$k]]));
