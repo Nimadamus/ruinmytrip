@@ -477,9 +477,10 @@ function destination(array $a): void {
     /* The strongest indexable places, linked straight from the city (app/design_v2.php). Off unless
        RMT_CITY_TOP_PLACES=1 or the city redesign is on: it changes internal linking on 85 pages. */
     $cityTop = rmt_city_top_places_enabled() ? rmt_city_top_places($id, 12) : [];
+    $pageDesc = rmt_destination_page_description($d);
     view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','nearby','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','cityGuide','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
-        'description' => rmt_destination_page_description($d),
+        'description' => $pageDesc,
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,
            same robots rule: only the words on the card change. */
         'og_title' => rmt_destination_og_title($d),
@@ -493,7 +494,7 @@ function destination(array $a): void {
                           ['name'=>$d['country'],'url'=>url(rmt_country_path((string)$d['country']))],
                           ['name'=>$d['name'],'url'=>url('d/'.$d['slug'])]],
         'jsonld' => jsonld(['@context'=>'https://schema.org','@type'=>'TouristDestination','name'=>$d['name'],
-            'description'=>$d['summary'],'url'=>url('d/'.$d['slug']),
+            'description'=>trim((string) ($d['summary'] ?? '')) !== '' ? $d['summary'] : $pageDesc,'url'=>url('d/'.$d['slug']),
             // No aggregateRating: TouristDestination is not one of the types Google accepts for a
             // review rich result, so a rating here is reported as an invalid reviewed-item type.
             // The visible community score on the page is unaffected.

@@ -194,7 +194,18 @@ function rmt_destination_page_description(array $d): string {
     if ($slug !== '' && ($m = rmt_meta_test('/d/'.$slug)) !== null) return $m;
     if (isset(RMT_DEST_SOCIAL_TITLE_TEST[$slug])) return RMT_DEST_SOCIAL_TITLE_TEST[$slug][1];
     if ($t = rmt_destination_scam_title($d)) return $t[1];
-    return (string) ($d['summary'] ?? '');
+    $summary = trim((string) ($d['summary'] ?? ''));
+    if ($summary !== '') return $summary;
+    /* Six city rows have no summary of their own. The page still links a researched
+       note (hotel tax or visitor levy), and that note already has a summary. Use the
+       whole sentence. A stock line would invent a review the page does not have. */
+    if ($slug !== '' && function_exists('rmt_blog_posts_for_destination')) {
+        foreach (rmt_blog_posts_for_destination($slug) as $post) {
+            $line = trim((string) ($post['summary'] ?? ''));
+            if ($line !== '') return $line;
+        }
+    }
+    return '';
 }
 
 /**

@@ -89,6 +89,19 @@ check('related post found via /d/slug in body', count($rel) === 1 && $rel[0]['sl
 check('unrelated slug is empty', rmt_blog_posts_for_destination('kyoto-japan'), []);
 check('junk slug rejected', rmt_blog_posts_for_destination('../etc'), []);
 
+$note = 'A Boston hotel night carries 14.95 percent in tax.';
+$pdo->exec("INSERT INTO blog_posts (slug,title,summary,body,status,created_at) VALUES ('empty-city-note','Note',"
+    . $pdo->quote($note) . ",'See <a href=\"/d/empty-summary-city\">X</a>','published','2026-11-19')");
+check('a written city summary is kept whole',
+    rmt_destination_page_description(['slug' => 'empty-summary-city', 'summary' => 'Hand written summary.']),
+    'Hand written summary.');
+check('an empty city summary uses the linked note whole',
+    rmt_destination_page_description(['slug' => 'empty-summary-city', 'summary' => '']),
+    $note);
+check('a city with no note stays blank',
+    rmt_destination_page_description(['slug' => 'no-such-city', 'summary' => '']),
+    '');
+
 echo "\n-- review slug --\n";
 check('trailing hyphen stripped', rmt_review_slug(['title' => 'Barcelona 2026: Gaudi Glory Behind a Doubled Tourist Tax and an Airbnb Countdown to Zero']),
       rtrim(mb_substr(slugify('Barcelona 2026: Gaudi Glory Behind a Doubled Tourist Tax and an Airbnb Countdown to Zero'), 0, 70), '-'));
