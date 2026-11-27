@@ -480,7 +480,7 @@ function destination(array $a): void {
     $pageDesc = rmt_destination_page_description($d);
     view(rmt_design_v2('city') ? 'destination_v2' : 'destination', compact('cityTop','cityMap','related','nearby','cityPlans','d','trips','tripCount','reviews','editorial','tips','meetups','going','hereNow','myGoing','avg','avgByCategory','me','saved','wantCount','photos','photoCount','topPlaces','placeCount','categoryPages','relatedPosts','cityGuide','been','beenCount','beenPeople','wantPeople','comments','discovery','talk','talkCount'), [
         'title' => rmt_destination_page_title($d),
-        'description' => $pageDesc,
+        'description' => rmt_destination_page_description($d),
         /* The shared card leads with the people, whatever the title says. Same URL, same canonical,
            same robots rule: only the words on the card change. */
         'og_title' => rmt_destination_og_title($d),
