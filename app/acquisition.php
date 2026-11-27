@@ -469,8 +469,13 @@ function rmt_acq_window(?string $campaign = null): ?array {
 
 /** The link that opens a trip form with the city and both dates already in it. */
 function rmt_acq_trip_link(array $w): string {
-    return url('trip/new?destination_id=' . (int) $w['id']
-             . '&date_from=' . rawurlencode($w['from']) . '&date_to=' . rawurlencode($w['to']));
+    /* Signed out, /trip/new is a redirect to /plan. Link straight at the page that answers. */
+    if (function_exists('is_logged_in') && is_logged_in()) {
+        return url('trip/new?destination_id=' . (int) $w['id']
+                 . '&date_from=' . rawurlencode($w['from']) . '&date_to=' . rawurlencode($w['to']));
+    }
+    return url('plan?cta=cta_dates&destination_id=' . (int) $w['id']
+             . '&from=' . rawurlencode($w['from']) . '&to=' . rawurlencode($w['to']));
 }
 
 /**

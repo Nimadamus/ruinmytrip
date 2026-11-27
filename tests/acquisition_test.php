@@ -249,9 +249,9 @@ ok('a closed window suggests nothing',
    })(), true);
 
 $link = rmt_acq_trip_link($w);
-ok('the link opens the trip form', str_contains($link, '/trip/new?'), true);
+ok('the link opens the plan form when signed out', str_contains($link, '/plan?'), true);
 ok('...with the city',             str_contains($link, 'destination_id=42'), true);
-ok('...and both dates',            str_contains($link, 'date_from=' . $ow['from']) && str_contains($link, 'date_to=' . $ow['to']), true);
+ok('...and both dates',            str_contains($link, 'from=' . $ow['from']) && str_contains($link, 'to=' . $ow['to']), true);
 /* The link is a GET to a form. Nothing here writes a trip, and nothing should: the person still
    chooses the dates and submits them. */
 $acqSrc = (string) file_get_contents(BASE_PATH . '/app/acquisition.php');

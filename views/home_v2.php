@@ -383,7 +383,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
   <?php /* The travel buddy pages the current home page links, kept so none of them loses its link. */ ?>
   <div class="wrap v2-band-links">
     <span>Popular:</span>
-    <a href="<?= e(url('trip/new')) ?>">Share a trip story</a>
+    <a href="<?= e(is_logged_in() ? url('trip/new') : url('plan?cta=cta_dates')) ?>">Share a trip story</a>
     <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
     <a href="<?= e(url('buddies/backpacking')) ?>">Backpacking</a>
     <a href="<?= e(url('buddies/road-trip')) ?>">Road trips</a>

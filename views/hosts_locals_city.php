@@ -79,7 +79,7 @@ $filtered = $flt['lang'] !== '' || $flt['interest'] !== '' || $flt['offer'] !== 
       <div class="hl-empty">
         <h3>Nobody has posted dates for <?= e((string) $d['name']) ?> yet</h3>
         <p>Going? Post your dates and you will be told when somebody lines up with you.</p>
-        <a class="btn btn-primary" href="<?= e(url('buddies/new?dest=' . rawurlencode((string) $d['slug']))) ?>">Post your trip</a>
+        <a class="btn btn-primary" href="<?= e(is_logged_in() ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Post your trip</a>
       </div>
     <?php endif; ?>
   </section>

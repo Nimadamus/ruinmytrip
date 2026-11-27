@@ -38,7 +38,7 @@ $hubCity = (string) $d['name'];
     <?php if ($hubLive['open_trip_count'] > 0): ?>
       <a class="btn btn-primary btn-sm" href="<?= e(url('buddies?dest=' . rawurlencode((string) $d['slug']))) ?>">See who is going to <?= e($hubCity) ?></a>
     <?php else: ?>
-      <a class="btn btn-primary btn-sm" href="<?= e(url('buddies/new?dest=' . rawurlencode((string) $d['slug']))) ?>">Post your dates for <?= e($hubCity) ?></a>
+      <a class="btn btn-primary btn-sm" href="<?= e(is_logged_in() ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Post your dates for <?= e($hubCity) ?></a>
     <?php endif; ?>
     <?php if ($hubWarn >= RMT_HUB_MIN_WARNINGS): ?>
       <a class="btn btn-ghost btn-sm" href="<?= e(url('warnings/' . $d['slug'])) ?>"><?= (int) $hubWarn ?> warnings for <?= e($hubCity) ?>, with sources</a>

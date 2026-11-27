@@ -114,7 +114,7 @@ $typeShort = static fn(string $t): string => trim((string) preg_replace('/:.*$/'
     <?php else: ?>
       <h2 class="h-card" style="margin:0 0 6px">Going to <?= e($city) ?>?</h2>
       <p style="margin:0 0 10px">Post your dates and find company before you land. Two people are harder to distract, overcharge or separate from a bag than one. Nobody can message you until you say yes.</p>
-      <a class="btn btn-primary btn-sm" href="<?= e(url('buddies/new?dest=' . rawurlencode((string) $d['slug']))) ?>">Post your dates for <?= e($city) ?></a>
+      <a class="btn btn-primary btn-sm" href="<?= e(is_logged_in() ? url('buddies/new?dest=' . rawurlencode((string) $d['slug'])) : url('plan?buddy=1&cta=cta_buddy&d=' . rawurlencode((string) $d['slug']))) ?>">Post your dates for <?= e($city) ?></a>
     <?php endif; ?>
   </div></div>
 

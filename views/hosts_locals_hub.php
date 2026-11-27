@@ -53,7 +53,7 @@ $back = '/hosts-locals';
         <p class="hint">Your trip shows the city and dates, never where you are staying.</p>
         <div class="hl-exp-acts">
           <a class="btn btn-primary btn-sm" href="<?= e(url('buddies')) ?>">Search buddies</a>
-          <a class="btn btn-ghost btn-sm" href="<?= e(url('buddies/new')) ?>">Post your trip</a>
+          <a class="btn btn-ghost btn-sm" href="<?= e(is_logged_in() ? url('buddies/new') : url('plan?buddy=1&cta=cta_buddy')) ?>">Post your trip</a>
         </div>
       </div>
       <div class="hl-exp">
