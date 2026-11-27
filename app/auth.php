@@ -18,6 +18,23 @@ function current_user(): ?array {
 
 function is_logged_in(): bool { return current_user() !== null; }
 
+/**
+ * Href for a report link.
+ *
+ * GET /report always requires an account and sends a signed-out visitor to
+ * /login. Public pages must link at that login URL, with the same return
+ * path, so the link is not a redirect. Signed-in visitors still go to
+ * /report, and report_form() still refuses a signed-out request.
+ */
+function rmt_report_href(string $query = ''): string {
+    $query = ltrim($query, '?');
+    $path = '/report' . ($query !== '' ? '?' . $query : '');
+    if (is_logged_in()) {
+        return url(ltrim($path, '/'));
+    }
+    return url('login?return=' . rawurlencode($path));
+}
+
 function require_login(): void {
     if (!is_logged_in()) {
         // A logged-out visit to any protected route (a notification link, a deep link, a bookmark)

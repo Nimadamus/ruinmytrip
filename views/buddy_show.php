@@ -128,7 +128,7 @@ $nights = rmt_buddy_nights((string) $b['date_from'], (string) $b['date_to']); ?>
         <input type="hidden" name="target_id" value="<?= $pid ?>"><input type="hidden" name="return" value="<?= e($back) ?>">
         <button class="btn btn-ghost btn-sm" aria-pressed="<?= $saved ? 'true' : 'false' ?>"><?= $saved ? 'Saved' : 'Save trip' ?></button></form>
     <?php endif; ?>
-    <?php if (!$isOwner): ?><a class="btn btn-ghost btn-sm" href="<?= e(url('report?target_type=buddy&target_id=' . $pid)) ?>">Report</a><?php endif; ?>
+    <?php if (!$isOwner): ?><a class="btn btn-ghost btn-sm" href="<?= e(rmt_report_href('target_type=buddy&target_id=' . $pid)) ?>">Report</a><?php endif; ?>
   </div>
   <?php /* A buddy request travels further in a group chat than on this page. The owner hands it to
            people they know; a reader passes it to a friend who might go. */ ?>

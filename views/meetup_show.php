@@ -21,7 +21,7 @@
 
   <p style="font-size:1.1rem"><?= nl2br(e($m['description'])) ?></p>
 
-  <div class="callout warn"><b>Meetup safety:</b> meet in public, tell someone your plans, trust your instincts, and use <a href="<?= e(url('report')) ?>">report</a> or block if anything feels off. You must be 18+ to attend. <a href="<?= e(url('safety')) ?>">Full safety guide →</a></div>
+  <div class="callout warn"><b>Meetup safety:</b> meet in public, tell someone your plans, trust your instincts, and use <a href="<?= e(rmt_report_href()) ?>">report</a> or block if anything feels off. You must be 18+ to attend. <a href="<?= e(url('safety')) ?>">Full safety guide →</a></div>
 
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:20px 0">
     <?php /* Withdrawing is always offered, including from something cancelled or past: being stuck
@@ -57,7 +57,7 @@
         <button class="btn <?= $saved?'btn-primary':'btn-ghost' ?>" aria-pressed="<?= $saved?'true':'false' ?>">
           <?= $saved?'⭑ Saved':'⭑ Save' ?><?= $saveCount?' · '.$saveCount:'' ?></button></form>
     <?php endif; ?>
-    <a class="btn btn-ghost" href="<?= e(url('report?target_type=meetup&target_id='.$m['id'])) ?>">⚑ Report</a>
+    <a class="btn btn-ghost" href="<?= e(rmt_report_href('target_type=meetup&target_id='.$m['id'])) ?>">⚑ Report</a>
   </div>
 
   <?php /* Who is asking. Every number is a live count of things the host actually posted; there is

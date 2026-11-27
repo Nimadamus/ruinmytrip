@@ -63,7 +63,7 @@ $ackChecked = $_SERVER['REQUEST_METHOD'] === 'POST' ? !empty(input('safety_ack')
 
   <div class="callout warn" style="margin-top:18px">
     <b>Hosting a meetup means:</b> it is public and open to any traveler 18 or over,
-    you will meet somewhere public, and you will use <a href="<?= e(url('report')) ?>">report</a> or block if
+    you will meet somewhere public, and you will use <a href="<?= e(rmt_report_href()) ?>">report</a> or block if
     something is wrong. <a href="<?= e(url('safety')) ?>">Full safety guide →</a>
   </div>
   <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-weight:400">
