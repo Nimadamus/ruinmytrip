@@ -100,9 +100,7 @@ and the signup lands on `/saved#checklist` with the warning on it.
 
 ## Open questions for the owner
 
-1. Notifications: the signup copy (exact owner copy) promises "get notified if new traps are reported". The checklist
-   rows record which cities a member follows, but no notifier sends that mail yet. Build it, or soften
-   the copy?
+1. Notifications: built (see New trap alerts below). Needs a schedule approved.
 2. Founding Traveler: the existing rule (a published review) is unchanged. Should an editor
    published trap report also qualify?
 3. Duplicate content: the city page now carries the scam list that also lives at `/warnings/{city}`.
@@ -118,7 +116,8 @@ and the signup lands on `/saved#checklist` with the warning on it.
 ## Approvals needed before anything goes live
 
 - Deploy of this branch, and setting the flags on the host.
-- Running migration 135 on production.
+- Running migrations 135 and 136 on production.
+- Turning on the trap-alerts schedule (`.github/workflows/trap-alerts.yml`, manual only for now).
 - The SEO adjacent items above (fewer nav, footer and home links; duplicate warnings content).
 
 ## Other notes
@@ -134,4 +133,4 @@ and the signup lands on `/saved#checklist` with the warning on it.
 
 ## New trap alerts (2026-11-27)
 The signup promise "get notified if new traps are reported" is real: `app/trap_alerts.php` + `scripts/send_trap_alerts.php [--dry-run]`.
-When an editor publishes a traveler story on `warnings:{city}`, every member with that city on their checklist gets one email per city per run (mutes, opt out, unverified and the daily cap all apply via `rmt_notify_email_direct`). Migration 136 `trap_alerts_sent` stops repeats. Not scheduled yet: needs a workflow (like weekly-digest.yml) once the owner approves deploy and migrations 135 + 136.
+When an editor publishes a traveler story on `warnings:{city}`, every member with that city on their checklist gets one email per city per run (mutes, opt out, unverified and the daily cap all apply via `rmt_notify_email_direct`). Migration 136 `trap_alerts_sent` stops repeats. Workflow `.github/workflows/trap-alerts.yml` is manual only (schedule commented out) until the owner approves deploy, migrations 135 + 136 and the daily schedule.

@@ -1,0 +1,103 @@
+name: trap-alerts
+
+# "New trap reported for [city]" emails (scripts/send_trap_alerts.php, Phase 1). Same firewall
+# pattern as weekly-digest.yml. Each story is mailed to a member once (migration 136), so a rerun
+# sends nothing twice. MANUAL ONLY until the owner approves a schedule; then uncomment it.
+
+on:
+  # schedule:
+  #   - cron: '0 16 * * *'    # daily 16:00 UTC (8 AM PST)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (preview only, sends nothing)'
+        type: boolean
+        default: false
+
+concurrency:
+  # Shared with db-backup.yml on purpose -- see the note there. Overlapping runs would
+  # clear each other's ipAllowList entry and fail with "SSL connection has been closed
+  # unexpectedly" partway through.
+  group: render-db-firewall
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  trap-alerts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      MAIL_FROM: 'RuinMyTrip <noreply@send.ruinmytrip.com>'
+      APP_ENV: production
+      APP_URL: https://ruinmytrip.com
+      # Resolved at run time by scripts/ci/resolve_render_db.sh -- see db-backup.yml.
+      RENDER_SERVICE_NAME: ruinmytrip-web
+      ALERT_EMAIL: nj2121@gmail.com
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql, curl, openssl, mbstring
+
+      - name: Resolve production database id
+        run: ./scripts/ci/resolve_render_db.sh
+
+      - name: Open DB firewall to this runner and fetch connection string
+        run: |
+          set -euo pipefail
+          IP=$(curl -fsS https://api.ipify.org)
+          echo "Runner IP: $IP"
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d "{\"ipAllowList\":[{\"cidrBlock\":\"$IP/32\",\"description\":\"gha-trap-alerts temporary\"}]}" \
+            "https://api.render.com/v1/postgres/$DB_ID" > /dev/null
+          # connection-info returns the INSTANCE default database. Since 2026-09-03 the
+          # ruinmytrip database is one of several on that instance, so keep only the external
+          # host from it and put back the database name the app itself is configured with.
+          CONN=$(curl -fsS -H "Authorization: Bearer $RENDER_API_KEY" \
+            "https://api.render.com/v1/postgres/$DB_ID/connection-info" \
+            | DB_NAME="$DB_NAME" python3 -c "import sys,json,os,urllib.parse as up;u=up.urlsplit(json.load(sys.stdin)['externalConnectionString']);print(up.urlunsplit((u.scheme,u.netloc,'/'+os.environ['DB_NAME'],u.query,u.fragment)))")
+          echo "::add-mask::$CONN"
+          echo "DATABASE_URL=$CONN" >> "$GITHUB_ENV"
+          sleep 20
+
+      - name: Send trap alerts
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            php scripts/send_trap_alerts.php --dry-run
+          else
+            php scripts/send_trap_alerts.php
+          fi
+
+      - name: Re-lock DB firewall (always)
+        if: always()
+        run: |
+          # If resolution failed, the firewall was never opened -- nothing to undo.
+          if [ -z "${DB_ID:-}" ]; then
+            echo "No DB_ID was resolved; firewall was never opened, nothing to re-lock."
+            exit 0
+          fi
+          curl -fsS -X PATCH -H "Authorization: Bearer $RENDER_API_KEY" -H "Content-Type: application/json" \
+            -d '{"ipAllowList":[]}' "https://api.render.com/v1/postgres/$DB_ID" > /dev/null && \
+            echo "DB firewall re-locked to internal-only." || echo "WARNING: re-lock call failed"
+
+      - name: Email alert on failure
+        if: failure()
+        run: |
+          printf '%s' '{
+            "from": "'"$MAIL_FROM"'",
+            "to": ["'"$ALERT_EMAIL"'"],
+            "subject": "RuinMyTrip trap alerts FAILED",
+            "html": "<p>The RuinMyTrip trap alerts run failed. Run: <a href=\"'"$GITHUB_SERVER_URL"'/'"$GITHUB_REPOSITORY"'/actions/runs/'"$GITHUB_RUN_ID"'\">view logs</a>.</p>"
+          }' | curl -fsS -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" -H "Content-Type: application/json" --data @- > /dev/null \
+            && echo "Failure alert emailed to $ALERT_EMAIL" || echo "WARNING: alert email failed"
