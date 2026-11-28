@@ -46,7 +46,7 @@ $pdo->exec("UPDATE users SET status='suspended' WHERE id=3");
 
 $o = rmt_occasion('yi-peng-chiang-mai');
 ok('the occasion resolves to its city', (int) $o['d']['id'], 1);
-ok('a written guide is indexable with nobody on it yet', rmt_occasion_indexable($o), true);
+ok('a written guide is indexable with nobody on it yet', rmt_occasion_indexable(['to' => '2099-12-31'] + $o), true);
 ok('nobody yet', count(rmt_occasion_people($o)), 0);
 $pdo->exec("INSERT INTO trips VALUES (1,2,1,'published','public','2026-11-22','2026-11-27')");
 ok('a team account does not count', count(rmt_occasion_people($o)), 0);

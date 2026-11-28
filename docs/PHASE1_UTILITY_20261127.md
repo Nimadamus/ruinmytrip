@@ -81,8 +81,8 @@ deployed; set `RMT_PHASE1=0` on the host first if the deploy should not switch i
 - `tests/phase1_test.php`: 39 PASS. Covers real data and honest cost badges, guest vote dedupe,
   stored counts and rate limit, the held save surviving signup onto the dashboard checklist, full city
   save, the guest report held in the editor queue and credited after joining, and every flag combination.
-- Full suite (`tests/*_test.php`): 194 files, 193 pass. The one failure, `occasions_test` ("a written guide
-  is indexable"), fails the same way on main without this branch.
+- Full suite (`tests/*_test.php`): 194 of 194 pass (pre push gate). `occasions_test` ("a written guide
+  is indexable") had a date time bomb (Yi Peng ended 2026-11-26), fixed in the test only.
 - `place_v2_test` needs port 8191 free; it fails only when another test server is already running.
 
 ## Screenshots
