@@ -77,6 +77,7 @@ const RMT_ACCOUNT_DELETE_INVENTORY = [
     'review_photos'       => 'delete',
     'trips'               => 'delete; a trip other members accepted passes to the earliest of them, emptied of the deleted member\'s notes, cover, photos and activities',
     'trip_photos'         => 'delete',
+    'checklist_saves'     => 'delete: their trip checklist (Phase 1); their warning votes (voter u:id) go too',
     'trip_checklist'      => 'cleared: user_id set to null by its foreign key; a tick belongs to the trip and goes with it',
     'traveler_stories'    => 'cleared: published_by set to null by its foreign key; the editor decision stays with the story',
     'trip_guests'         => 'cleared: user_id set to null by its foreign key; the guest name stays with the group trip it was given to',
@@ -234,6 +235,8 @@ function rmt_account_delete(int $uid): array {
         $x('DELETE FROM activity_joins WHERE user_id = ?', [$uid]);
         $x('UPDATE activity_joins SET decided_by = NULL WHERE decided_by = ?', [$uid]);
         $x('DELETE FROM trip_photos WHERE user_id = ?', [$uid]);
+        $x('DELETE FROM checklist_saves WHERE user_id = ?', [$uid]);
+        $x('DELETE FROM warning_votes WHERE voter = ?', ['u:' . $uid]);
         if ($dropTrips) {
             $in = rmt_ad_in($dropTrips);
             foreach (q_all("SELECT storage_key k FROM trip_photos WHERE trip_id IN ($in)", $dropTrips) as $r) {

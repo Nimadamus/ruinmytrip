@@ -10,6 +10,9 @@ if (preg_match('#^/p/([a-z0-9\-]+)#', $tb2Path, $tb2m) && ($tb2Place = rmt_place
 } elseif (preg_match('#^/d/([a-z0-9\-]+)#', $tb2Path, $tb2m) && ($tb2Dest = dest_by_slug($tb2m[1]))) {
     $tb2Rate = url('review/new?destination=' . (int) $tb2Dest['id'] . '&src=destination');
 }
+/* Phase 1: the + is "Report a trap" (for the city being read, when there is one). */
+$tb2P1 = function_exists('rmt_phase1_on') && rmt_phase1_on();
+if ($tb2P1) $tb2Rate = url('report-a-trap' . (!empty($tb2Dest) ? '?d=' . rawurlencode((string) $tb2Dest['slug']) : ''));
 $tb2On = static fn(bool $on): string => $on ? ' class="on" aria-current="page"' : '';
 ?>
 <nav class="v2-tabbar" aria-label="Primary mobile">
@@ -17,7 +20,7 @@ $tb2On = static fn(bool $on): string => $on ? ' class="on" aria-current="page"' 
     <span class="v2-tb-ico" aria-hidden="true">⌂</span><span>Home</span></a>
   <a href="<?= e(url('explore')) ?>"<?= $tb2On(str_starts_with($tb2Path, '/explore') || str_starts_with($tb2Path, '/d/') || str_starts_with($tb2Path, '/p/')) ?>>
     <span class="v2-tb-ico" aria-hidden="true">⚲</span><span>Explore</span></a>
-  <a class="v2-tb-plus" href="<?= e($tb2Rate) ?>" data-cta="nav_rate" aria-label="Rate a place">
+  <a class="v2-tb-plus" href="<?= e($tb2Rate) ?>" data-cta="<?= $tb2P1 ? 'nav_report' : 'nav_rate' ?>" aria-label="<?= $tb2P1 ? 'Report a trap' : 'Rate a place' ?>">
     <span aria-hidden="true">+</span></a>
   <a href="<?= e(url('map')) ?>"<?= $tb2On(str_starts_with($tb2Path, '/map')) ?>>
     <span class="v2-tb-ico" aria-hidden="true">◉</span><span>My map</span></a>

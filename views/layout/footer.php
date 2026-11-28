@@ -27,15 +27,15 @@
       <a href="<?= e(url('blog/trip-went-wrong-what-you-can-claim')) ?>">Trip went wrong? What to claim</a>
       <a href="<?= e(url('ruined')) ?>">Travel warnings</a>
       <a href="<?= e(url('travelers')) ?>">Travelers</a>
-      <a href="<?= e(url('going')) ?>">Who's going</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a>
-      <a href="<?= e(url('talk')) ?>">Travel talk</a>
+      <?php if (rmt_social_on('going')): ?><a href="<?= e(url('going')) ?>">Who's going</a><?php endif; ?>
+      <?php if (rmt_social_on('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?>
+      <?php if (rmt_social_on('talk')): ?><a href="<?= e(url('talk')) ?>">Travel talk</a><?php endif; ?>
       <a href="<?= e(url('explore')) ?>">Destinations</a>
       <a href="<?= e(url('events')) ?>">Upcoming events</a>
       <a href="<?= e(url('contribute')) ?>">Write a review</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
       <a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('collections')) ?>">Collections</a>
+      <?php if (rmt_social_on('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
 <?php /* Signed out this is a redirect to /login, which is a link worth nothing to a reader
              and a wasted crawl to everybody else. */ ?>
       <?php if (current_user()): ?><a href="<?= e(url('matches')) ?>">Your matches</a><?php endif; ?>
@@ -101,8 +101,8 @@
   <a class="tabbar-post" aria-label="<?= e($rmt_post_label) ?>"
      href="<?= e($rmt_me ? url(ltrim($rmt_post_to, '/')) : ($rmt_post_to === '/going' ? url('plan?cta=nav_plan') : url('register?return=' . rawurlencode($rmt_post_to)))) ?>">
     <span aria-hidden="true">+</span></a>
-  <a href="<?= e(url('talk')) ?>" class="<?= str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/') ? 'on' : '' ?>" aria-label="Talk">
-    <span aria-hidden="true">&#9993;</span><span class="tabbar-l">Talk</span></a>
+  <?php if (rmt_social_on('talk')): ?><a href="<?= e(url('talk')) ?>" class="<?= str_starts_with($rmt_path, '/talk') || str_starts_with($rmt_path, '/post/') ? 'on' : '' ?>" aria-label="Talk">
+    <span aria-hidden="true">&#9993;</span><span class="tabbar-l">Talk</span></a><?php else: ?><a href="<?= e(url('report-a-trap')) ?>" aria-label="Report a trap"><span aria-hidden="true">!</span><span class="tabbar-l">Report</span></a><?php endif; ?>
   <?php if ($rmt_me): ?>
     <a href="<?= e(url('notifications')) ?>" class="<?= str_starts_with($rmt_path, '/notifications') ? 'on' : '' ?>" aria-label="Notifications">
       <span aria-hidden="true">&#9788;</span><span class="tabbar-l">Alerts</span>
@@ -116,6 +116,7 @@
 <?php endif; ?>
 
 <script src="<?= e(rmt_asset('assets/js/app.js')) ?>" defer></script>
+<?php if (function_exists('rmt_phase1_on') && rmt_phase1_on()): ?><script src="<?= e(rmt_asset('assets/js/phase1.js')) ?>" defer></script><?php endif; ?>
 <script src="<?= e(rmt_asset('assets/js/suggest.js')) ?>" defer></script>
 <script src="<?= e(rmt_asset('assets/js/contribute-track.js')) ?>" defer></script>
 <?php /* A review the server now holds (app/review_drafts.php): the browser's own copy goes, here,

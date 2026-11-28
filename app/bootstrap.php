@@ -88,6 +88,7 @@ require BASE_PATH . '/app/activities.php';
 require BASE_PATH . '/app/trip_members.php';
 require BASE_PATH . '/app/trip_group.php';
 require BASE_PATH . '/app/traveler_stories.php';
+require BASE_PATH . '/app/phase1.php';
 require BASE_PATH . '/app/trust.php';
 require BASE_PATH . '/app/place_import.php';
 require BASE_PATH . '/app/place_provider_osm.php';

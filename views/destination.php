@@ -43,6 +43,13 @@
   <?= rmt_photo_credit_html($d) ?>
   <?php if (!empty($cityTop)) include __DIR__ . '/_city_top_places.php'; ?>
   <?php endif; ?>
+  <?php /* Phase 1 (app/phase1.php): the city's warnings lead the page, and the social parts below
+           are drawn only where their flag is on for this city. With RMT_PHASE1=0 every flag is on. */
+        $p1 = rmt_phase1_on();
+        $p1Going = rmt_social_on('going', (string) $d['slug']);
+        $p1Meet = rmt_social_on('meetups', (string) $d['slug']);
+        $p1Talk = rmt_social_on('talk', (string) $d['slug']);
+        if ($p1) include __DIR__ . '/_p1_warnings.php'; ?>
 
   <?php /* The people, directly under the hero. This page had a "Who's going" card, and it was in
            the sidebar below the guides, which is to say below everything the site wrote about the
@@ -52,7 +59,7 @@
            Drawn only when it is true. A strip reading "0 going, 0 meetups" is an advert for an
            empty room, and this site's rule is that a count appears when it is real. */ ?>
   <?php $rmt_meets = array_slice($meetups ?? [], 0, 3); ?>
-  <?php if (!empty($going) || !empty($hereNow) || $rmt_meets): ?>
+  <?php if (($p1Going || $p1Meet) && (!empty($going) || !empty($hereNow) || $rmt_meets)): ?>
     <div class="city-people">
       <?php if (!empty($hereNow)): ?>
         <?php /* Today beats next month. Somebody whose published dates cover today is somebody a
@@ -130,18 +137,18 @@
       </div>
     </div>
   <?php endif; ?>
-  <?php if (function_exists('rmt_occasion_for_city') && ($cityOcc = rmt_occasion_for_city((string) $d['slug']))): ?>
+  <?php if ($p1Going && function_exists('rmt_occasion_for_city') && ($cityOcc = rmt_occasion_for_city((string) $d['slug']))): ?>
     <p class="city-occ"><b><?= e((string) $cityOcc['name']) ?></b>, <?= e((string) ($cityOcc['when'] ?? (date('j M', strtotime((string) $cityOcc['from'])) . ' to ' . date('j M Y', strtotime((string) $cityOcc['to']))))) ?>.
       <a href="<?= e(url('e/' . $cityOcc['slug'])) ?>">See who is going and add your dates</a></p>
   <?php endif; ?>
-  <?php if (!$me):
+  <?php if (!$me && $p1Going):
       $ma = ['dest' => $d, 'occ' => '', 'from' => '', 'to' => '', 'source' => 'destination', 'return' => '/d/' . $d['slug']];
       include __DIR__ . '/_match_alert.php';
   endif; ?>
-  <?php if ($bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint" style="margin:14px 0 0">Seeing more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
+  <?php if ($p1Going && $bl = rmt_buddy_landing_for_dest((string) $d['slug'], (string) $d['country'])): ?><p class="hint" style="margin:14px 0 0">Seeing more of <?= e($bl['name']) ?>? <a href="<?= e(url(rmt_buddy_landing_path($bl['slug']))) ?>">Travel buddies in <?= e($bl['name']) ?></a></p><?php endif; ?>
 
   <?php /* The community, before anything this site wrote. See views/_city_community.php. */ ?>
-  <?php include __DIR__ . '/_city_community.php'; ?>
+  <?php if ($p1Talk || $p1Going) include __DIR__ . '/_city_community.php'; ?>
 
   <?php /* Two ratings, never blended. The community score is what travelers said; the editorial
             score is the site's own research-based assessment and is labelled as such. */ ?>
@@ -246,7 +253,7 @@
       <?php endif; ?>
 
       <?php include __DIR__ . '/_hub_partners.php'; ?>
-      <?php include __DIR__ . '/_city_scams.php'; ?>
+      <?php if (!$p1) include __DIR__ . '/_city_scams.php'; /* Phase 1 shows them in full above */ ?>
 
       <?php
       /* Discovery. Every row here is built from rows this site holds, and a row with nothing
@@ -569,6 +576,7 @@
     </div>
 
     <aside>
+      <?php if ($p1Going): ?>
       <div class="card"><div class="card-body">
         <h3>Who's going</h3>
         <p class="hint">Destination + date range only. Never precise location.</p>
@@ -588,8 +596,9 @@
         <?php endif; ?>
         <a class="btn btn-ghost btn-sm btn-block" style="margin-top:10px" href="<?= e(url('d/'.$d['slug'].'/travelers')) ?>">Travelers in <?= e($d['name']) ?></a>
       </div></div>
+      <?php endif; ?>
 
-      <?php if (empty($v2Body) || $meetups): ?>
+      <?php if ($p1Meet && (empty($v2Body) || $meetups)): ?>
       <div class="card" style="margin-top:18px"><div class="card-body">
         <h3>Meetups here</h3>
         <?php if (!$meetups): ?><p class="muted">Planning something? Create the first meetup. Public places only.</p><?php endif; ?>
@@ -608,4 +617,5 @@
       <?php endif; ?>
     </aside>
   </div>
+  <?php if ($p1) include __DIR__ . '/_p1_report.php'; ?>
 </div>

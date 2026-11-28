@@ -9,6 +9,10 @@ $nv2Path = parse_url(rmt_current_url(), PHP_URL_PATH) ?: '/';
    tagline, an icon on each main link and a round search button that jumps to the hero search. */
 $nv2Home = $nv2Path === '/';
 $nv2I = static fn(string $d): string => $nv2Home ? '<svg class="v2-li" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $d . '</svg>' : '';
+/* Phase 1 (app/phase1.php): three actions, Explore Traps, Report a Trap and Log In / Sign Up; the
+   social pages keep their URLs, only their links wait until rmt_social_on() turns them back on. */
+$nv2P1 = function_exists('rmt_phase1_on') && rmt_phase1_on();
+$nv2S = static fn(string $f): bool => !$nv2P1 || rmt_social_on($f);
 $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_starts_with($nv2Path, $p)) ? ' aria-current="page"' : '';
 ?>
 <header class="v2-header<?= $nv2Home ? ' v2-header-home' : '' ?>">
@@ -27,6 +31,13 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <input type="search" name="q" placeholder="Search a city or place" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
     </form>
     <nav class="v2-links" aria-label="Primary">
+      <?php if ($nv2P1): ?>
+      <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?> data-cta="nav_explore_traps"><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?>Explore Traps</a>
+      <?php if ($nv2S('talk')): ?><a href="<?= e(url('talk')) ?>">Travel Talk</a><?php endif; ?>
+      <?php if ($nv2S('going')): ?><a href="<?= e(url('going')) ?>">Who is going</a><?php endif; ?>
+      <?php if ($nv2S('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?>
+      <?php if ($nv2S('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
+      <?php else: ?>
       <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?>Explore</a>
       <?php /* Warnings are what the site is for (2026-11-07); the map stays one tap away in More and in the phone tab bar. */ ?>
       <a href="<?= e(url('ruined')) ?>"<?= $nv2On('/ruined') ?>><?= $nv2I('<path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>') ?>Warnings</a>
@@ -49,10 +60,14 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
           <a href="<?= e(url('buddies')) ?>">Meet travelers</a>
         </div>
       </details>
+      <?php endif; ?>
     </nav>
     <div class="v2-acts">
       <?php if ($nv2Home): ?>
       <a class="v2-ico-search" href="<?= e(url('search')) ?>" data-focus="v2-home-q" aria-label="Search" title="Search"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg></a>
+      <?php endif; ?>
+      <?php if ($nv2P1): ?>
+        <a class="v2-btn v2-btn-report" data-cta="nav_report" href="<?= e(url('report-a-trap')) ?>"><span>Report<span class="p1-sm-hide"> a Trap</span></span></a>
       <?php endif; ?>
       <?php if ($me): ?>
         <a class="v2-ico" href="<?= e(url('messages')) ?>" title="Messages" aria-label="Messages">&#9993;<?php
@@ -64,7 +79,9 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
         <a class="v2-me" href="<?= e(url('u/' . $me['username'])) ?>" title="Your profile">
           <span class="v2-initial" aria-hidden="true"><?= e(rmt_design_initial((string) $me['username'])) ?></span>
         </a>
-        <a class="v2-btn v2-btn-primary v2-hide-sm" data-cta="nav_rate" href="<?= e(url('review/new?src=home')) ?>">Rate a place</a>
+        <?php if (!$nv2P1): ?><a class="v2-btn v2-btn-primary v2-hide-sm" data-cta="nav_rate" href="<?= e(url('review/new?src=home')) ?>">Rate a place</a><?php endif; ?>
+      <?php elseif ($nv2P1): ?>
+        <span class="v2-auth v2-hide-sm"><a class="v2-signin" href="<?= e(url('login')) ?>">Log In</a><span aria-hidden="true"> / </span><a class="v2-signin" data-cta="nav_join" href="<?= e(url('register')) ?>">Sign Up</a></span>
       <?php else: ?>
         <a class="v2-signin v2-hide-sm" href="<?= e(url('login')) ?>">Sign in</a>
         <a class="v2-btn v2-btn-primary v2-hide-sm" data-cta="nav_join" href="<?= e(url('register')) ?>">Join free</a>
@@ -88,6 +105,14 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <span class="v2-search-ico" aria-hidden="true">⌕</span>
       <input type="search" name="q" placeholder="A place, a city, or a country" aria-label="Search">
     </form>
+    <?php if ($nv2P1): ?>
+    <a class="v2-sheet-item" data-cta="nav_report" href="<?= e(url('report-a-trap')) ?>"><span class="v2-si-ico" aria-hidden="true">!</span>
+      <span><b>Report a Trap</b><small>A surprise fee, scam or tourist trap, in three quick steps</small></span></a>
+    <a class="v2-sheet-item" data-cta="nav_explore_traps" href="<?= e(url('explore')) ?>"><span class="v2-si-ico" aria-hidden="true">⚲</span>
+      <span><b>Explore Traps</b><small>Hidden fees, scams and gotchas by city</small></span></a>
+    <?php if ($me): ?><a class="v2-sheet-item" href="<?= e(url('saved') . '#checklist') ?>"><span class="v2-si-ico" aria-hidden="true">✓</span>
+      <span><b>Your trip checklist</b><small>The warnings you saved</small></span></a><?php endif; ?>
+    <?php endif; ?>
     <p class="v2-sheet-h">Share</p>
     <a class="v2-sheet-item" data-cta="nav_warn" href="<?= e(url('ruined')) ?>"><span class="v2-si-ico" aria-hidden="true">!</span>
       <span><b>Travel warnings</b><small>What went wrong for others, and yours for the next traveler</small></span></a>
@@ -100,18 +125,18 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
     <p class="v2-sheet-h">Plan</p>
     <a class="v2-sheet-item" href="<?= e(url('explore')) ?>"><span class="v2-si-ico" aria-hidden="true">⚲</span>
       <span><b>Explore cities</b><small>Places with hours, addresses and honest reviews</small></span></a>
-    <a class="v2-sheet-item" href="<?= e(url('buddies')) ?>"><span class="v2-si-ico" aria-hidden="true">☺</span>
-      <span><b>Travel buddies</b><small>See who overlaps your dates</small></span></a>
+    <?php if ($nv2S('going')): ?><a class="v2-sheet-item" href="<?= e(url('buddies')) ?>"><span class="v2-si-ico" aria-hidden="true">☺</span>
+      <span><b>Travel buddies</b><small>See who overlaps your dates</small></span></a><?php endif; ?>
     <a class="v2-sheet-item" href="<?= e(url('hosts-locals')) ?>"><span class="v2-si-ico" aria-hidden="true">&#8962;</span>
       <span><b>Hosts &amp; Locals</b><small>Meet people who live where you are going</small></span></a>
-    <a class="v2-sheet-item" href="<?= e(url('talk')) ?>"><span class="v2-si-ico" aria-hidden="true">?</span>
-      <span><b>Ask a question</b><small>Travelers who have been answer</small></span></a>
+    <?php if ($nv2S('talk')): ?><a class="v2-sheet-item" href="<?= e(url('talk')) ?>"><span class="v2-si-ico" aria-hidden="true">?</span>
+      <span><b>Ask a question</b><small>Travelers who have been answer</small></span></a><?php endif; ?>
     <p class="v2-sheet-h">More</p>
     <div class="v2-sheet-links">
       <a href="<?= e(url('reviews')) ?>">Reviews</a><a href="<?= e(url('events')) ?>">Events</a>
-      <a href="<?= e(url('going')) ?>">Who is going</a><a href="<?= e(url('travelers')) ?>">All travelers</a>
-      <a href="<?= e(url('meetups')) ?>">Meetups</a><a href="<?= e(url('communities')) ?>">Communities</a>
-      <a href="<?= e(url('collections')) ?>">Collections</a>
+      <?php if ($nv2S('going')): ?><a href="<?= e(url('going')) ?>">Who is going</a><?php endif; ?><a href="<?= e(url('travelers')) ?>">All travelers</a>
+      <?php if ($nv2S('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?><a href="<?= e(url('communities')) ?>">Communities</a>
+      <?php if ($nv2S('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
       <a href="<?= e(url('leaderboard')) ?>">Top travelers</a><a href="<?= e(url('tags')) ?>">Topics</a>
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a><a href="<?= e(url('matches')) ?>">Matches</a>
@@ -124,8 +149,8 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
     </div>
     <?php if (!$me): ?>
       <div class="v2-sheet-cta">
-        <a class="v2-btn v2-btn-primary v2-btn-block" data-cta="nav_join" href="<?= e(url('register')) ?>">Join free</a>
-        <a class="v2-btn v2-btn-ghost v2-btn-block" href="<?= e(url('login')) ?>">Sign in</a>
+        <a class="v2-btn v2-btn-primary v2-btn-block" data-cta="nav_join" href="<?= e(url('register')) ?>"><?= $nv2P1 ? 'Sign Up' : 'Join free' ?></a>
+        <a class="v2-btn v2-btn-ghost v2-btn-block" href="<?= e(url('login')) ?>"><?= $nv2P1 ? 'Log In' : 'Sign in' ?></a>
       </div>
     <?php endif; ?>
   </div>

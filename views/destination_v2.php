@@ -16,12 +16,23 @@ $heroSet = rmt_media_srcset($d['hero_url'] ?? null);
     <h1 class="v2-city-name"><?= e($d['name']) ?><span>, <?= e($d['country']) ?></span></h1>
     <p class="v2-city-sum"><?= e($d['summary']) ?></p>
     <div class="v2-city-acts">
+      <?php if (rmt_phase1_on()): /* Phase 1: the checklist and the trap report lead; social doors only where switched on */ ?>
+      <form method="post" action="<?= e(url('checklist/save')) ?>" class="p1-inline" data-p1-save data-dest="<?= e($d['name']) ?>" data-full="1"><?= csrf_field() ?>
+        <input type="hidden" name="dest" value="<?= e($d['slug']) ?>"><input type="hidden" name="key" value="*">
+        <button class="v2-btn v2-btn-primary p1-save-full" type="submit" data-cta="city_save_full">Save Full City Checklist</button>
+      </form>
+      <a class="v2-btn v2-btn-glass" data-cta="city_report" href="#report">Report a trap</a>
+      <?php if (rmt_social_on('going', (string) $d['slug'])): ?>
+      <a class="v2-btn v2-btn-glass" data-cta="cta_travelers" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">Who is going</a>
+      <?php endif; ?>
+      <?php else: ?>
       <a class="v2-btn v2-btn-accent" data-cta="city_rate" href="<?= e(url('review/new?destination=' . (int) $d['id'] . '&src=destination')) ?>">Rate a place in <?= e($d['name']) ?></a>
       <a class="v2-btn v2-btn-glass" data-cta="cta_dates" href="<?= e($me ? url('trip/new?destination_id=' . (int) $d['id']) : url('plan?cta=cta_dates&d=' . rawurlencode($d['slug']))) ?>">Post your dates</a>
       <a class="v2-btn v2-btn-glass" data-cta="cta_travelers" href="<?= e(url('d/' . $d['slug'] . '/travelers')) ?>">Who is going</a>
       <?php $beenCode = rmt_map_country_code($d['country'] ?? null);
             if (!$me && $beenCode !== null): /* see views/destination.php: no account, the map opens with this country in */ ?>
         <a class="v2-btn v2-btn-glass" rel="nofollow" data-cta="dest_been_map" href="<?= e(url('map?c=' . $beenCode)) ?>">Been to <?= e($d['country']) ?>? Color it in</a>
+      <?php endif; ?>
       <?php endif; ?>
     </div>
   </div>

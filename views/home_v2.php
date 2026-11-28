@@ -33,6 +33,12 @@ usort($hxRows, static function (array $x, array $y) use ($hxFirst): int {
     return $ix <=> $iy ?: ((int) $y['places'] <=> (int) $x['places']);
 });
 $hxDests = array_slice($hxRows, 0, 12);
+/* Phase 1 (app/phase1.php): the anti trap promise, one search, quick start pills, a three part value
+   strip and the six cities with the most published warnings. Counts and previews are the warnings
+   the city pages show; a city with none is not listed. The social bands below wait for their flags. */
+$p1Home = function_exists('rmt_phase1_on') && rmt_phase1_on();
+$p1Top = $p1Home ? rmt_p1_top_cities(6) : [];
+$p1Going = !$p1Home || rmt_social_on('going');
 $hxIco = [
   'warn'   => '<path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>',
   'pin'    => '<circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/>',
@@ -50,17 +56,65 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
   <div class="wrap v2-hx-in">
     <div class="v2-hx-top">
       <p class="v2-hx-eyebrow">Honest travel, before you book</p>
+      <?php if ($p1Home): ?>
+      <h1 class="v2-hx-h1 p1-hx-h1" id="hx-title">Don't let hidden fees, scams, and tourist traps <span class="v2-hx-accent">ruin your trip.<svg class="v2-hx-swoosh" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M4 13.5C70 5 175 2.5 296 8.5" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/></svg></span></h1>
+      <p class="v2-hx-lede">Search real traveler warnings on surprise taxes, overrated attractions, and local gotchas before you go.</p>
+      <?php else: ?>
       <h1 class="v2-hx-h1" id="hx-title">Find out what could ruin <br class="v2-hx-br">your trip, <span class="v2-hx-accent">before it does.<svg class="v2-hx-swoosh" viewBox="0 0 300 18" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M4 13.5C70 5 175 2.5 296 8.5" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/></svg></span></h1>
       <p class="v2-hx-lede">The tourist traps, hidden fees and travel scams travelers wish somebody had warned them about. Read real reviews, real warnings and real experiences so you can travel smarter, safer and better prepared.</p>
+      <?php endif; ?>
       <form class="v2-hx-search" action="<?= e(url('search')) ?>" method="get" role="search"
             data-suggest-url="<?= e(url('suggest')) ?>" data-suggest-click="<?= e(url('suggest/click')) ?>">
         <svg class="v2-hx-search-ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
-        <label class="sr-only" for="v2-home-q">Search a city, country or place</label>
-        <input type="search" name="q" id="v2-home-q" placeholder="Search a city, country or place" autocomplete="off">
+        <label class="sr-only" for="v2-home-q"><?= $p1Home ? 'Where are you going?' : 'Search a city, country or place' ?></label>
+        <input type="search" name="q" id="v2-home-q" placeholder="<?= $p1Home ? 'Where are you going? e.g., Las Vegas, Rome, Cancun...' : 'Search a city, country or place' ?>" autocomplete="off">
         <button class="v2-hx-search-btn" type="submit">Search <?= $hxSvg('arrow', 20) ?></button>
       </form>
+      <?php if ($p1Home && $p1Top): ?>
+      <ul class="p1-pills" aria-label="Quick start">
+        <?php foreach (array_slice($p1Top, 0, 5) as $pc): ?><li><a href="<?= e(url('d/' . $pc['slug']) . '#warnings') ?>" data-cta="home_pill"><?= e((string) $pc['name']) ?></a></li><?php endforeach; ?>
+      </ul>
+      <?php endif; ?>
     </div>
 
+    <?php if ($p1Home): ?>
+    <ul class="v2-hx-cards p1-value">
+      <li><div class="v2-hx-card v2-hx-card-warn">
+        <span class="v2-hx-card-ico"><?= $hxSvg('bolt', 40) ?></span>
+        <span class="v2-hx-card-txt"><b>Spot Hidden Costs</b><span>Tourist taxes, resort fees and the charges that never make the booking page.</span></span></div></li>
+      <li><div class="v2-hx-card v2-hx-card-dest">
+        <span class="v2-hx-card-ico"><?= $hxSvg('shield', 40) ?></span>
+        <span class="v2-hx-card-txt"><b>Avoid Local Scams</b><span>The tricks official travel advice and travelers warn about, city by city.</span></span></div></li>
+      <li><div class="v2-hx-card v2-hx-card-rev">
+        <span class="v2-hx-card-ico"><?= $hxSvg('check', 40) ?></span>
+        <span class="v2-hx-card-txt"><b>Build a Trip Checklist</b><span>Save the warnings that matter for your trip and keep them in one place.</span></span></div></li>
+    </ul>
+
+    <?php if ($p1Top): ?>
+    <div class="v2-hx-pop p1-top">
+      <div class="v2-hx-pop-head">
+        <h2 id="hx-pop"><span class="v2-hx-plane"><?= $hxSvg('warn', 26) ?></span>Know before you go</h2>
+        <a href="<?= e(url('explore')) ?>" data-cta="home_dest_all">Explore Traps <?= $hxSvg('arrow', 16) ?></a>
+      </div>
+      <ul class="p1-top-grid">
+        <?php foreach ($p1Top as $i => $pc):
+          $pSet = function_exists('rmt_media_srcset') ? rmt_media_srcset((string) $pc['hero_url']) : '';
+          $pSrc = $pSet !== '' ? (string) strtok($pSet, ' ') : abs_url((string) $pc['hero_url']);
+          $pv = $pc['preview']; ?>
+        <li class="p1-top-card">
+          <a class="p1-top-img" href="<?= e(url('d/' . $pc['slug']) . '#warnings') ?>" data-cta="home_city" tabindex="-1" aria-hidden="true"><img src="<?= e($pSrc) ?>"<?php if ($pSet !== ''): ?> srcset="<?= e($pSet) ?>" sizes="(max-width: 700px) 92vw, 380px"<?php endif; ?> alt="" width="380" height="200" loading="<?= $i < 3 ? 'eager' : 'lazy' ?>" decoding="async"></a>
+          <div class="p1-top-txt">
+            <h3><a href="<?= e(url('d/' . $pc['slug']) . '#warnings') ?>" data-cta="home_city"><?= e((string) $pc['name']) ?></a></h3>
+            <p class="p1-top-n"><?= (int) $pc['count'] ?> <?= (int) $pc['count'] === 1 ? 'warning' : 'warnings' ?></p>
+            <?php if ($pv): ?><p class="p1-top-pv"><span class="p1-tag"><?= e(RMT_P1_IMPACT[$pv['cat']] ?? 'Traveler Report') ?></span> <?= e((string) $pv['title']) ?><?php if (!empty($pv['cost'])): ?> <span class="p1-cost"><?= e((string) $pv['cost']) ?></span><?php endif; ?></p><?php endif; ?>
+            <a class="p1-top-go" href="<?= e(url('d/' . $pc['slug']) . '#warnings') ?>" data-cta="home_checklist">See the full checklist <?= $hxSvg('arrow', 14) ?></a>
+          </div>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+    </div>
+    <?php endif; ?>
+    <?php else: ?>
     <ul class="v2-hx-cards">
       <li><a class="v2-hx-card v2-hx-card-warn" href="<?= e(url('ruined')) ?>" data-cta="home_card_warn">
         <span class="v2-hx-card-ico"><?= $hxSvg('warn', 40) ?></span>
@@ -112,13 +166,15 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
       <li><?= $hxSvg('people', 30) ?>A Global Travel Community</li>
       <li><?= $hxSvg('bolt', 30) ?>Travel Smarter, Not Sorrier</li>
     </ul>
+    <?php endif; ?>
   </div>
 </section>
 <script src="<?= e(rmt_asset('assets/js/home-hero.js')) ?>" defer></script>
 
 <section class="v2-hero v2-home3-acts" aria-label="Warn, explore, find people">
   <div class="wrap">
-    <div class="v2-act3">
+    <div class="v2-act3<?= $p1Home ? ' p1-act-one' : '' ?>">
+<?php if (!$p1Home): ?>
       <section class="v2-act v2-act-warn" aria-labelledby="act-warn">
         <span class="v2-act-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/></svg></span>
         <h2 id="act-warn">Warn the next traveler</h2>
@@ -131,6 +187,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
         </form>
         <p class="v2-act-note">No account needed to start. <a href="<?= e(url('ruined')) ?>">Read the warnings</a></p>
       </section>
+<?php endif; ?>
 
       <section class="v2-act" aria-labelledby="act-explore">
         <span class="v2-act-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/></svg></span>
@@ -142,6 +199,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
         <a class="v2-btn v2-btn-glass v2-act-btn" href="<?= e(url('explore')) ?>" data-cta="home_explore">See every city</a>
       </section>
 
+<?php if ($p1Going): ?>
       <section class="v2-act" aria-labelledby="act-find">
         <span class="v2-act-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2.3.3 4 2 4.5 5"/></svg></span>
         <h2 id="act-find">Find travel companions</h2>
@@ -153,6 +211,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
         </form>
         <p class="v2-act-note">Going somewhere? <a href="<?= e(url('plan?cta=home_plan')) ?>" data-cta="home_plan">Post your dates</a> and travelers on the same dates can find you.</p>
       </section>
+<?php endif; ?>
     </div>
 
     <ul class="v2-why v2-why-row" aria-label="What we promise">
@@ -293,7 +352,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
   </div>
 </section>
 
-<?php if (!empty($live) || !empty($liveCities)): ?>
+<?php if (!$p1Home && (!empty($live) || !empty($liveCities))): ?>
 <section class="v2-section">
   <div class="wrap">
     <div class="v2-sec-head">
@@ -329,6 +388,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
 </section>
 <?php endif; ?>
 
+<?php if (!$p1Home): ?>
 <section class="v2-section v2-section-tint">
   <div class="wrap">
     <div class="v2-sec-head"><div><h2 class="v2-h2">What RuinMyTrip is for</h2><p class="v2-sub">Honest travel, before, during and after the trip.</p></div></div>
@@ -351,6 +411,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <?php if (!empty($v2Reviews)): ?>
 <section class="v2-section v2-section-tint">
@@ -369,6 +430,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
 </section>
 <?php endif; ?>
 
+<?php if ($p1Going): ?>
 <section class="v2-band">
   <div class="wrap v2-band-in">
     <div>
@@ -392,4 +454,5 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
     <?php endforeach; ?>
   </div>
 </section>
+<?php endif; ?>
 <script src="<?= e(rmt_asset('assets/js/travel-map.js')) ?>" defer></script>

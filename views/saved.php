@@ -2,7 +2,8 @@
 // Labels for the reading list. Kept here rather than in the controller: it is presentation, and a
 // kind with no label would still render (falling back to the raw key) instead of vanishing.
 $kindLabels = ['guide'=>'Guide', 'blog_post'=>'Post', 'collection'=>'Collection', 'trip'=>'Trip', 'review'=>'Review', 'post'=>'Talk', 'meetup'=>'Meetup', 'buddy'=>'Travel buddy trip'];
-$total = count($places) + count($dests) + count($reading);
+$p1List = ($me && function_exists('rmt_phase1_on') && rmt_phase1_on()) ? rmt_p1_checklist((int) $me['id']) : [];
+$total = count($places) + count($dests) + count($reading) + count($p1List);
 ?>
 <section class="block"><div class="wrap">
   <div class="section-head">
@@ -11,6 +12,26 @@ $total = count($places) + count($dests) + count($reading);
       <p class="muted">Everything you have collected. Only you can see this page.</p>
     </div>
   </div>
+
+  <?php if ($p1List): /* Phase 1: the trip checklist, the warnings saved from city pages */ ?>
+  <section class="p1-checklist" id="checklist" aria-labelledby="p1-cl-h">
+    <h2 id="p1-cl-h" class="h-card">Your trip checklist</h2>
+    <?php foreach ($p1List as $cl): $cd = $cl['dest']; ?>
+    <div class="card p1-cl-city"><div class="card-body">
+      <h3><a href="<?= e(url('d/' . $cd['slug']) . '#warnings') ?>"><?= e((string) $cd['name']) ?></a>
+        <span class="muted" style="font-weight:400">(<?= count($cl['items']) ?> <?= count($cl['items']) === 1 ? 'warning' : 'warnings' ?><?= $cl['full'] ? ', full city checklist' : '' ?>)</span></h3>
+      <?php if ($cl['items']): ?>
+      <ul class="p1-cl-items">
+        <?php foreach ($cl['items'] as $w): ?>
+        <li><span class="p1-tag"><?= e(RMT_P1_IMPACT[$w['cat']] ?? 'Traveler Report') ?></span>
+          <a href="<?= e(url('d/' . $cd['slug']) . '#w-' . preg_replace('/[^a-z0-9]/i', '-', (string) $w['key'])) ?>"><?= e((string) $w['title']) ?></a><?php if (!empty($w['cost'])): ?> <span class="p1-cost"><?= e((string) $w['cost']) ?></span><?php endif; ?></li>
+        <?php endforeach; ?>
+      </ul>
+      <?php else: ?><p class="muted">No warnings published for this city yet. New ones will show here.</p><?php endif; ?>
+    </div></div>
+    <?php endforeach; ?>
+  </section>
+  <?php endif; ?>
 
   <?php if ($total === 0): ?>
     <div class="empty-cta" style="margin-bottom:50px">

@@ -45,6 +45,13 @@ $routes = [
     ['POST', '#^/alerts/off$#',                'alert_off'],
     // Before you go updates on tax and warnings pages (app/before_you_go.php).
     ['POST', '#^/updates$#',                   'byg_submit'],
+    // Phase 1 single player utility (app/phase1.php): votes, trip checklist, trap reports.
+    ['POST', '#^/d/(?<slug>[a-z0-9-]+)/warning-vote$#', 'p1_vote_action'],
+    ['POST', '#^/checklist/save$#',            'p1_save_action'],
+    ['GET',  '#^/checklist/join$#',            'p1_join_page'],
+    ['GET',  '#^/checklist/claim$#',           'p1_claim_page'],
+    ['GET',  '#^/report-a-trap$#',             'p1_report_page'],
+    ['POST', '#^/report-a-trap$#',             'p1_report_submit'],
     ['GET',  '#^/story$#',                     'story_form_page'],
     ['POST', '#^/story$#',                     'story_submit'],
     ['GET',  '#^/updates/sent$#',              'byg_sent'],

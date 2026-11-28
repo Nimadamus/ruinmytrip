@@ -43,6 +43,9 @@
 <?php if (rmt_design_v2_any() || getenv('RMT_CITY_TOP_PLACES') === '1'): /* the redesign's own sheet (app/design_v2.php), all .v2- classes */ ?>
 <link rel="stylesheet" href="<?= e(rmt_asset('assets/css/design-v2.css')) ?>">
 <?php endif; ?>
+<?php if (function_exists('rmt_phase1_on') && rmt_phase1_on()): /* Phase 1 (app/phase1.php) */ ?>
+<link rel="stylesheet" href="<?= e(rmt_asset('assets/css/phase1.css')) ?>">
+<?php endif; ?>
 <?php foreach ((array) ($__meta['css'] ?? []) as $__css): /* a page's own stylesheet, after the shared one */ ?>
 <link rel="stylesheet" href="<?= e(rmt_asset((string) $__css)) ?>">
 <?php endforeach; ?>
@@ -76,20 +79,20 @@
       <?php if ($me): ?>
         <a href="<?= e(url('feed')) ?>">Feed</a>
       <?php endif; ?>
-      <a href="<?= e(url('buddies')) ?>" title="Find people going where you are going">Meet travelers</a>
-      <a href="<?= e(url('talk')) ?>">Talk</a>
+      <?php if (rmt_social_on('going')): ?><a href="<?= e(url('buddies')) ?>" title="Find people going where you are going">Meet travelers</a><?php endif; ?>
+<?php if (rmt_social_on('talk')): ?><a href="<?= e(url('talk')) ?>">Talk</a><?php endif; ?>
       <a href="<?= e(url('explore')) ?>">Explore</a>
       <a href="<?= e(url('events')) ?>">Events</a>
       <details class="nav-more">
         <summary aria-label="More of the site">More</summary>
         <div class="nav-more-panel">
-          <a href="<?= e(url('going')) ?>">Who is going</a>
+          <?php if (rmt_social_on('going')): ?><a href="<?= e(url('going')) ?>">Who is going</a><?php endif; ?>
           <a href="<?= e(url('travelers')) ?>">All travelers</a>
-          <a href="<?= e(url('meetups')) ?>">Meetups</a>
+          <?php if (rmt_social_on('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?>
           <a href="<?= e(url('communities')) ?>">Communities</a>
           <a href="<?= e(url('ruined')) ?>">Ruined</a>
           <a href="<?= e(url('reviews')) ?>">Reviews</a>
-          <a href="<?= e(url('collections')) ?>">Collections</a>
+          <?php if (rmt_social_on('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
           <a href="<?= e(url('leaderboard')) ?>">Top travelers</a>
           <a href="<?= e(url('tags')) ?>">Topics</a>
           <?php if ($me): ?>
