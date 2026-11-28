@@ -136,3 +136,5 @@
 .p1-value .v2-hx-card-rev .v2-hx-card-ico svg{fill:none;stroke:var(--hx-gold)}
 .p1-top .v2-hx-pop-head{gap:12px}.p1-top .v2-hx-pop-head a{white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:6px;min-height:44px}@media (max-width:480px){.p1-top .v2-hx-pop-head h2{font-size:1.25rem;white-space:nowrap}.p1-top .v2-hx-pop-head a{font-size:.9rem}}
 .p1-cat span,.p1-report label.p1-cat{color:#fff}
+.p1-more{display:flex;align-items:center;justify-content:center;gap:.3em;width:100%;max-width:420px;margin:14px auto 0;min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid var(--p1-navy);background:#fff;color:var(--p1-navy);font:inherit;font-weight:700;cursor:pointer}
+.p1-more[hidden]{display:none}

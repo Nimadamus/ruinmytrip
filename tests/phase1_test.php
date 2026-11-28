@@ -94,6 +94,10 @@ $src = (string) file_get_contents(BASE_PATH . '/app/phase1.php');
 ok(str_contains($src, "rmt_feedback_submit('trip_story'"), 'the report controller uses the trip story queue');
 
 echo "\nFeature flags:\n";
+$foot = (string) file_get_contents(BASE_PATH . '/views/layout/footer.php');
+foreach (['buddies', 'events', 'communities', 'leaderboard', 'travelers'] as $lnk) {
+    ok(str_contains($foot, "): ?><a href=\"<?= e(url('$lnk')) ?>\"") && !str_contains($foot, "      <a href=\"<?= e(url('$lnk')) ?>\""), "footer /$lnk sits behind a flag");
+}
 ok(rmt_phase1_on(), 'Phase 1 is on by default');
 foreach (RMT_P1_SOCIAL as $f) ok(!rmt_social_on($f, $city), "$f links are hidden");
 putenv('RMT_SOCIAL_CITY_ON=' . $city . '=talk|going');

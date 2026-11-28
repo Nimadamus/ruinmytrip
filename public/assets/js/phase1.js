@@ -12,13 +12,26 @@
 
   /* tabs */
   var tabs = document.querySelectorAll('[data-p1-tab]');
-  function showCat(cat) {
+  /* Long lists show the first FIRST cards of a tab and a "Show all N" button; every card stays in the HTML. */
+  var FIRST = 8, more = document.querySelector('[data-p1-more]'), curCat = 'all', open = {};
+  function showCat(cat, expand) {
+    curCat = cat; if (expand) open[cat] = true;
     tabs.forEach(function (t) { t.setAttribute('aria-selected', t.getAttribute('data-p1-tab') === cat ? 'true' : 'false'); });
-    document.querySelectorAll('.p1-card').forEach(function (c) { c.hidden = !(cat === 'all' || c.getAttribute('data-cat') === cat); });
+    var n = 0;
+    document.querySelectorAll('.p1-card').forEach(function (c) {
+      var inCat = cat === 'all' || c.getAttribute('data-cat') === cat;
+      if (inCat) n++;
+      c.hidden = !inCat || (!open[cat] && n > FIRST);
+    });
+    if (more) { more.hidden = open[cat] || n <= FIRST; var m = more.querySelector('[data-p1-more-n]'); if (m) m.textContent = n; }
     document.querySelectorAll('[data-p1-empty]').forEach(function (p) { p.hidden = p.getAttribute('data-p1-empty') !== cat; });
   }
   tabs.forEach(function (t) { t.addEventListener('click', function () { showCat(t.getAttribute('data-p1-tab')); }); });
+  if (more) more.addEventListener('click', function () { showCat(curCat, true); });
+  var hashCard = /^#w-/.test(location.hash) ? document.getElementById(location.hash.slice(1)) : null;
   if (location.hash === '#scams' && document.querySelector('[data-p1-tab="scams"]')) showCat('scams');
+  else if (tabs.length) showCat('all', !!hashCard);
+  if (hashCard) hashCard.scrollIntoView();
 
   /* votes */
   var mine = readVotes();

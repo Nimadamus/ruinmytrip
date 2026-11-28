@@ -19,8 +19,10 @@ migration run. Built from the owner's plan of 2026-11-27.
 **Navigation (views/layout/nav_v2.php, header.php, footer.php, tabbar_v2.php)**
 - Header: logo, Explore Traps, Report a Trap (high contrast button, also on phones), Log In / Sign Up.
 - Travel Talk, Who's going, Meetups, Collections (and the header "Travel buddies" / "Meet travelers" link) are hidden from the header,
-  sheet menu and footer unless switched back on. Their URLs still work. The footer "Travel buddies" and
-  "Cruise buddies" links are kept.
+  sheet menu and footer unless switched back on. Their URLs still work. The footer also hides Travel and
+  Cruise buddies and Travelers (`going`), Upcoming events (`events`), Communities (`communities`) and Top
+  Reviewers (`reviewers`); its "Community / Meetup Safety" column becomes "Get started / Safety" and the
+  tagline drops "optional meetups" (all back with `meetups` or the flags above).
 - The mobile tab bar "+" goes to Report a Trap (for that city on a city page).
 
 **City page (views/_p1_warnings.php, views/destination.php, views/destination_v2.php)**
@@ -29,6 +31,8 @@ migration run. Built from the owner's plan of 2026-11-27.
 - Each card: impact tag (Costly Surprise / Scam Alert / Time Waster, and Local Rule for the fourth tab), cost badge only
   when the source text has the figure, title, two or three sentences, source link,
   Helpful and Saved Me (no account), Save to Trip Checklist.
+- Each tab shows its first 8 cards and a "Show all N warnings" button (every card stays in the HTML;
+  without JavaScript all show; a `#w-...` link opens the full list).
 - "Save Full City Checklist" at the top (hero button on the v2 page).
 - Warnings come only from data the site already publishes: the tourist tax table, the 2027 tax
   changes, the before you book list, the official scam list and editor published traveler stories.
@@ -64,7 +68,7 @@ migration run. Built from the owner's plan of 2026-11-27.
 | Flag | Effect |
 |---|---|
 | `RMT_PHASE1` | On unless set to `0`, `off`, `false` or `no`. Off renders the site exactly as before. |
-| `RMT_SOCIAL_ON=talk,going,meetups,collections` (or `all`) | Show those social links again everywhere. |
+| `RMT_SOCIAL_ON=talk,going,meetups,collections,events,communities,reviewers` (or `all`) | Show those social links again everywhere. |
 | `RMT_SOCIAL_CITY_ON=lisbon-portugal=talk\|going,paris-france=all` | Show them again on one city's page only. |
 
 `going` covers Who's going and Travel buddies links. Note: Phase 1 is ON by default once this code is
@@ -125,4 +129,5 @@ and the signup lands on `/saved#checklist` with the warning on it.
   sit in the menu and tab bar below 900 px, as before.
 - The home "Explore a destination" card stays; "Warn the next traveler" (replaced by Report a Trap) and
   "Find travel companions" are hidden in Phase 1.
-- Footer "Meetup Safety" (a safety page) is still linked.
+- The safety page stays linked in the footer as "Safety". On phones the Amsterdam city page is 15,909 px
+  tall (was 22,640); the warnings block is 3,887 px with the first 8 cards.

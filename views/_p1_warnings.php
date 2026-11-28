@@ -66,6 +66,7 @@ $p1City = (string) $d['name'];
     </article>
     <?php endforeach; ?>
   </div>
+  <button type="button" class="p1-more" data-p1-more hidden><span>Show all</span> <span data-p1-more-n></span> <span>warnings</span></button>
   <?php foreach (RMT_P1_CATS as $ck => $cl): if ($p1N[$ck] > 0) continue; ?>
   <p class="p1-empty" data-p1-empty="<?= e($ck) ?>" hidden>No <?= e(strtolower($cl)) ?> warnings for <?= e($p1City) ?> yet. Been there? <a href="#report">Report one</a>.</p>
   <?php endforeach; ?>

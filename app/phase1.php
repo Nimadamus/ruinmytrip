@@ -19,7 +19,7 @@
  * A cost badge is only drawn when that text itself carries a figure.
  */
 
-const RMT_P1_SOCIAL = ['talk', 'going', 'meetups', 'collections'];
+const RMT_P1_SOCIAL = ['talk', 'going', 'meetups', 'collections', 'events', 'communities', 'reviewers'];
 
 /** Tabs in the order the owner gave them. */
 const RMT_P1_CATS = [

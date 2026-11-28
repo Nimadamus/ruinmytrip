@@ -16,35 +16,36 @@
   <div class="wrap footer-grid">
     <div>
       <a class="brand" href="<?= e(url()) ?>"><span class="brand-mark">◈</span> Ruin<span>My</span>Trip</a>
-      <p class="muted">Real trips. Honest reviews. Safe, optional meetups. A travel community built on trust.</p>
+      <p class="muted"><?php if (rmt_social_on('meetups')): ?>Real trips. Honest reviews. Safe, optional meetups. A travel community built on trust.<?php else: ?>Hidden fees, scams and tourist traps, flagged by official sources and travelers before you go.<?php endif; ?></p>
     </div>
     <div>
       <h4>Explore</h4>
-      <a href="<?= e(url('buddies')) ?>">Travel buddies</a>
-      <a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a>
+      <?php if (rmt_social_on('going')): ?><a href="<?= e(url('buddies')) ?>">Travel buddies</a><?php endif; ?>
+      <?php if (rmt_social_on('going')): ?><a href="<?= e(url('buddies/cruise')) ?>">Cruise buddies</a><?php endif; ?>
       <a href="<?= e(url('map')) ?>">Travel map</a>
       <a href="<?= e(url('tourist-tax-calculator')) ?>">Tourist tax calculator</a>
       <a href="<?= e(url('blog/trip-went-wrong-what-you-can-claim')) ?>">Trip went wrong? What to claim</a>
       <a href="<?= e(url('ruined')) ?>">Travel warnings</a>
-      <a href="<?= e(url('travelers')) ?>">Travelers</a>
+      <?php if (rmt_social_on('going')): ?><a href="<?= e(url('travelers')) ?>">Travelers</a><?php endif; ?>
       <?php if (rmt_social_on('going')): ?><a href="<?= e(url('going')) ?>">Who's going</a><?php endif; ?>
       <?php if (rmt_social_on('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?>
       <?php if (rmt_social_on('talk')): ?><a href="<?= e(url('talk')) ?>">Travel talk</a><?php endif; ?>
       <a href="<?= e(url('explore')) ?>">Destinations</a>
-      <a href="<?= e(url('events')) ?>">Upcoming events</a>
+      <?php if (rmt_social_on('events')): ?><a href="<?= e(url('events')) ?>">Upcoming events</a><?php endif; ?>
       <a href="<?= e(url('contribute')) ?>">Write a review</a>
       <a href="<?= e(url('reviews')) ?>">Reviews</a>
-      <a href="<?= e(url('communities')) ?>">Communities</a>
+      <?php if (rmt_social_on('communities')): ?><a href="<?= e(url('communities')) ?>">Communities</a><?php endif; ?>
       <?php if (rmt_social_on('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
 <?php /* Signed out this is a redirect to /login, which is a link worth nothing to a reader
              and a wasted crawl to everybody else. */ ?>
       <?php if (current_user()): ?><a href="<?= e(url('matches')) ?>">Your matches</a><?php endif; ?>
-      <a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a>
+      <?php if (rmt_social_on('reviewers')): ?><a href="<?= e(url('leaderboard')) ?>">Top Reviewers</a><?php endif; ?>
       <a href="<?= e(url('tags')) ?>">Topics</a>
     </div>
     <div>
-      <h4>Community</h4>
-      <a href="<?= e(url('safety')) ?>">Meetup Safety</a>
+      <?php if (rmt_social_on('meetups')): ?><h4>Community</h4>
+      <a href="<?= e(url('safety')) ?>">Meetup Safety</a><?php else: ?><h4>Get started</h4>
+      <a href="<?= e(url('safety')) ?>">Safety</a><?php endif; ?>
       <a href="<?= e(url('register')) ?>">Create an account</a>
       <a href="<?= e(url('founding')) ?>">Founding Traveler</a>
       <a href="<?= e(url('start')) ?>">How to start</a>
