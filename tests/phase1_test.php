@@ -114,6 +114,28 @@ putenv('RMT_PHASE1=0');
 ok(!rmt_phase1_on() && rmt_social_on('talk') && rmt_social_on('going', $city), 'Phase 1 off shows everything as before');
 putenv('RMT_PHASE1');
 
+echo "\nNew trap alerts reach members who saved the city, once:\n";
+$other = null;
+foreach (q_all('SELECT slug FROM destinations WHERE slug <> ? ORDER BY id LIMIT 1', [$city]) as $r2) $other = (string) $r2['slug'];
+$nowS = date('Y-m-d H:i:s');
+q_run("INSERT INTO traveler_stories (feedback_id, topic, body, when_text, published_by, published_at, status) VALUES (NULL,?,?,NULL,?,?,'live')",
+      ['warnings:' . $city, 'Taxi at the airport added a 30 euro fee nobody mentioned.', $uid, $nowS]);
+$sid = (int) q_one("SELECT MAX(id) m FROM traveler_stories")['m'];
+q_run("INSERT INTO traveler_stories (feedback_id, topic, body, when_text, published_by, published_at, status) VALUES (NULL,?,?,NULL,?,?,'live')",
+      ['warnings:' . $city, 'An old report from long ago, already past the window.', $uid, date('Y-m-d H:i:s', time() - 30 * 86400)]);
+if ($other !== null) q_run("INSERT INTO traveler_stories (feedback_id, topic, body, when_text, published_by, published_at, status) VALUES (NULL,?,?,NULL,?,?,'live')",
+      ['warnings:' . $other, 'A trap in a city this member never saved.', $uid, $nowS]);
+$plan = rmt_trap_alert_plan();
+ok(isset($plan[$uid][$city]) && $plan[$uid][$city] === [$sid], 'the member is planned one alert for the new story in the saved city only');
+ok(count($plan[$uid] ?? []) === 1, 'no alert for a city they did not save');
+$dry = rmt_trap_alerts_run(true);
+ok($dry['emails'] >= 1 && $dry['sent'] === 0, 'a dry run counts and sends nothing');
+$real = rmt_trap_alerts_run(false);
+ok($real['sent'] === 0 && $real['skipped'] >= 1, 'with mail disabled nothing is sent');
+ok((int) q_one('SELECT COUNT(*) n FROM trap_alerts_sent')['n'] === 0, 'and nothing is marked sent, so it goes out once mail works');
+q_run('INSERT INTO trap_alerts_sent (user_id, story_id, sent_at) VALUES (?,?,?)', [$uid, $sid, $nowS]);
+ok(!isset(rmt_trap_alert_plan()[$uid][$city]), 'a story already mailed is never planned again');
+
 $pdo = null;
 @unlink($tmp);
 echo $fails ? "\n$fails FAILED\n" : "\nALL PASS\n";

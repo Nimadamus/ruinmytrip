@@ -131,3 +131,7 @@ and the signup lands on `/saved#checklist` with the warning on it.
   "Find travel companions" are hidden in Phase 1.
 - The safety page stays linked in the footer as "Safety". On phones the Amsterdam city page is 15,909 px
   tall (was 22,640); the warnings block is 3,887 px with the first 8 cards.
+
+## New trap alerts (2026-11-27)
+The signup promise "get notified if new traps are reported" is real: `app/trap_alerts.php` + `scripts/send_trap_alerts.php [--dry-run]`.
+When an editor publishes a traveler story on `warnings:{city}`, every member with that city on their checklist gets one email per city per run (mutes, opt out, unverified and the daily cap all apply via `rmt_notify_email_direct`). Migration 136 `trap_alerts_sent` stops repeats. Not scheduled yet: needs a workflow (like weekly-digest.yml) once the owner approves deploy and migrations 135 + 136.
