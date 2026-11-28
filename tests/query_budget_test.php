@@ -65,8 +65,11 @@ $cases = [];
    a restricted member is shown on every page (kept out of current_user() on purpose).
    67 from 2026-11-14: the travel partners block (app/hubs.php): the city's open trips, how many
    travelers are checked in right now, and one read of which cities are seeded so the nearby
-   cities list can leave out the ones still below the content threshold. */
-$cases[] = ['the city page', 67, static function () use ($dest) {
+   cities list can leave out the ones still below the content threshold.
+   69 from 2026-11-27: Phase 1 warnings block (app/phase1.php): one read of the city's published
+   traveler reports and one grouped count of Helpful / Saved Me votes. Measured on the same
+   database: main 67, this branch 69. */
+$cases[] = ['the city page', 69, static function () use ($dest) {
     destination(['slug' => (string) $dest['slug']]);
 }];
 

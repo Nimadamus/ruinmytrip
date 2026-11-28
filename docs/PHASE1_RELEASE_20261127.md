@@ -111,6 +111,7 @@ Recommendation: keep both OFF. Revisit them separately with Search Console data.
   - Founding Traveler not granted
   - every flag combination
 - Full suite: 194 of 194 files pass (pre push gate).
+- Query budget: the city page budget goes from 67 to 69. On the same database main runs 67 and this branch 69. The two new reads are the city's published traveler reports and one grouped vote count.
 
 ## Risks
 
