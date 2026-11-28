@@ -13,12 +13,14 @@ migration run. Built from the owner's plan of 2026-11-27.
 - "Know before you go" grid of six city cards: photo, name, real warning count, one preview warning
   (tag, title, cost badge only when the source carries a figure), link to the full checklist.
 - The Santorini hero photo and overlay are unchanged.
-- Hidden in Phase 1: the community activity band, "From the community", "What RuinMyTrip is for" and
-  the "Going somewhere?" buddy band (comes back with `RMT_SOCIAL_ON=going`).
+- SEO preserve mode (default, 2026-11-27 release review): every existing home section and internal link
+  stays, plus a "More destinations:" chip row. The community sections are hidden only when
+  `RMT_P1_TRIM_LINKS=1` is set (not approved).
 
 **Navigation (views/layout/nav_v2.php, header.php, footer.php, tabbar_v2.php)**
 - Header: logo, Explore Traps, Report a Trap (high contrast button, also on phones), Log In / Sign Up.
-- Travel Talk, Who's going, Meetups, Collections (and the header "Travel buddies" / "Meet travelers" link) are hidden from the header,
+- By default the header, sheet menu and footer keep every existing link (SEO preserve mode). Only with
+  `RMT_P1_TRIM_LINKS=1`: Travel Talk, Who's going, Meetups, Collections (and the header "Travel buddies" / "Meet travelers" link) are hidden from the header,
   sheet menu and footer unless switched back on. Their URLs still work. The footer also hides Travel and
   Cruise buddies and Travelers (`going`), Upcoming events (`events`), Communities (`communities`) and Top
   Reviewers (`reviewers`); its "Community / Meetup Safety" column becomes "Get started / Safety" and the
@@ -36,7 +38,9 @@ migration run. Built from the owner's plan of 2026-11-27.
 - "Save Full City Checklist" at the top (hero button on the v2 page).
 - Warnings come only from data the site already publishes: the tourist tax table, the 2027 tax
   changes, the before you book list, the official scam list and editor published traveler stories.
-- The old scam block (`_city_scams`) is not shown when Phase 1 is on, since its items are now cards.
+- SEO dedupe (default): where `/warnings/{city}` is indexable (at least `RMT_HUB_MIN_WARNINGS` scams), the
+  scam and before you book cards show a short line and link to `/warnings/{city}` instead of repeating
+  its text. The full text on city pages needs `RMT_P1_FULL_SCAMS=1` (not approved).
 - Bottom of every city page: "Have you been to {City}? Did any surprise fee or trap catch you off
   guard?" and "Yes, tell the next traveler" opens the three step form.
 
@@ -54,7 +58,8 @@ migration run. Built from the owner's plan of 2026-11-27.
 - The report goes into the existing editor queue (feedback kind `trip_story`, topic `warnings:{city}`,
   status `pending`), the same path trip stories use. Nothing shows until an editor publishes it at
   `/admin/stories`; then it appears as a traveler card on that city.
-- After sending, a guest is asked to claim the Founding Traveler badge (join or log in). Joining puts
+- After sending, a guest is asked to "Make this report yours" (join or log in). A report never grants
+  the Founding Traveler badge (that still needs a published review; tested). Joining puts
   their name on the report (`feedback.reported_by`). Honeypot and a per address rate limit apply.
 
 **Guest votes**
@@ -69,6 +74,8 @@ migration run. Built from the owner's plan of 2026-11-27.
 |---|---|
 | `RMT_PHASE1` | On unless set to `0`, `off`, `false` or `no`. Off renders the site exactly as before. |
 | `RMT_SOCIAL_ON=talk,going,meetups,collections,events,communities,reviewers` (or `all`) | Show those social links again everywhere. |
+| `RMT_P1_TRIM_LINKS=1` | Not approved. Hides the social links in header, footer, sheet and home. Off = every existing link kept. |
+| `RMT_P1_FULL_SCAMS=1` | Not approved. Full scam and before you book text on city pages that already have an indexable `/warnings/{city}`. |
 | `RMT_SOCIAL_CITY_ON=lisbon-portugal=talk\|going,paris-france=all` | Show them again on one city's page only. |
 
 `going` covers Who's going and Travel buddies links. Note: Phase 1 is ON by default once this code is
@@ -101,13 +108,10 @@ and the signup lands on `/saved#checklist` with the warning on it.
 ## Open questions for the owner
 
 1. Notifications: built (see New trap alerts below). Needs a schedule approved.
-2. Founding Traveler: the existing rule (a published review) is unchanged. Should an editor
-   published trap report also qualify?
-3. Duplicate content: the city page now carries the scam list that also lives at `/warnings/{city}`.
-   Keep both, or point one at the other (SEO decision).
-4. Fewer internal links: hiding Talk, Who's going, Meetups, Collections, buddies (header, sheet,
-   footer and the home "Going somewhere?" band with its buddy landing links) removes sitewide links
-   to those pages. Their URLs, titles, canonicals and sitemap entries are unchanged.
+2. Founding Traveler: decided, an editor published report does NOT grant it (test in phase1_test).
+3. Duplicate content: not implemented by default; behind `RMT_P1_FULL_SCAMS` pending SEO approval.
+4. Fewer internal links: not implemented by default; behind `RMT_P1_TRIM_LINKS` pending SEO approval.
+   Before/after link counts are in `docs/PHASE1_RELEASE_20261127.md`.
 5. `/report-a-trap` is `noindex,follow` and already covered by the existing `Disallow: /report` in
    robots.txt. Nothing in robots, canonicals, sitemaps or titles was changed.
 6. The full city variant of the signup copy differs from the exact copy (it says "this city
@@ -133,4 +137,4 @@ and the signup lands on `/saved#checklist` with the warning on it.
 
 ## New trap alerts (2026-11-27)
 The signup promise "get notified if new traps are reported" is real: `app/trap_alerts.php` + `scripts/send_trap_alerts.php [--dry-run]`.
-When an editor publishes a traveler story on `warnings:{city}`, every member with that city on their checklist gets one email per city per run (mutes, opt out, unverified and the daily cap all apply via `rmt_notify_email_direct`). Migration 136 `trap_alerts_sent` stops repeats. Workflow `.github/workflows/trap-alerts.yml` is manual only (schedule commented out) until the owner approves deploy, migrations 135 + 136 and the daily schedule.
+When an editor publishes a traveler story on `warnings:{city}`, every member with that city on their checklist gets one email per city per run (mutes, opt out, unverified and the daily cap all apply via `rmt_notify_email_direct`). Migration 136 `trap_alerts_sent` stops repeats. Each (member, story) pair is claimed in `trap_alerts_sent` BEFORE the send and the claim is removed if the send fails, so two overlapping runs cannot both email the same story. Workflow `.github/workflows/trap-alerts.yml`: two crons (15:00 and 16:00 UTC) plus a gate step that continues only when it is 08 in America/Los_Angeles, so exactly one run per day at 8 AM Pacific across daylight saving. The whole job is skipped unless the repo variable `TRAP_ALERTS_AUTO` is `true` (not set: automatic sending is OFF). A day with no new published reports sends nothing (tested).

@@ -44,19 +44,33 @@ function rmt_trap_alerts_run(bool $dryRun = false, int $hours = RMT_TRAP_ALERT_L
             if ($dryRun) continue;
             $d = q_one('SELECT name FROM destinations WHERE slug = ?', [$slug]);
             $name = $d ? (string) $d['name'] : ucwords(str_replace('-', ' ', $slug));
-            $n = count($ids);
+            // Claim first, then send: the rows go in before the mail, so two runs that overlap can
+            // never both mail the same story; a send that fails gives its claim back for the next run.
+            $now = date('Y-m-d H:i:s');
+            $claimed = [];
+            $ins = db()->prepare('INSERT INTO trap_alerts_sent (user_id, story_id, sent_at) VALUES (?,?,?) ON CONFLICT DO NOTHING');
+            foreach ($ids as $sid) {
+                $ins->execute([$uid, $sid, $now]);
+                if ($ins->rowCount() === 1) $claimed[] = (int) $sid;
+            }
+            if (!$claimed) { $out['skipped']++; continue; }
+            $n = count($claimed);
             $subject = $n === 1 ? "A new trap was reported for $name" : "$n new traps were reported for $name";
             $line = ($n === 1 ? 'A traveler reported a new trap in ' : "Travelers reported $n new traps in ")
                   . $name . '. An editor checked ' . ($n === 1 ? 'it' : 'them') . ' before ' . ($n === 1 ? 'it went' : 'they went')
                   . ' on your trip checklist page.';
-            $ok = rmt_notify_email_direct((int) $uid, $subject, $line, '/d/' . $slug . '#warnings',
-                                          'you saved ' . $name . ' to your trip checklist');
+            $ok = false;
+            try {
+                $ok = rmt_notify_email_direct((int) $uid, $subject, $line, '/d/' . $slug . '#warnings',
+                                              'you saved ' . $name . ' to your trip checklist');
+            } finally {
+                if (!$ok) {
+                    $del = db()->prepare('DELETE FROM trap_alerts_sent WHERE user_id = ? AND story_id = ? AND sent_at = ?');
+                    foreach ($claimed as $sid) $del->execute([$uid, $sid, $now]);
+                }
+            }
             if (!$ok) { $out['skipped']++; continue; }
             $out['sent']++;
-            $now = date('Y-m-d H:i:s');
-            foreach ($ids as $sid) {
-                q_run('INSERT INTO trap_alerts_sent (user_id, story_id, sent_at) VALUES (?,?,?) ON CONFLICT DO NOTHING', [$uid, $sid, $now]);
-            }
         }
     }
     return $out;

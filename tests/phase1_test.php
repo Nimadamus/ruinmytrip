@@ -99,7 +99,11 @@ foreach (['buddies', 'events', 'communities', 'leaderboard', 'travelers'] as $ln
     ok(str_contains($foot, "): ?><a href=\"<?= e(url('$lnk')) ?>\"") && !str_contains($foot, "      <a href=\"<?= e(url('$lnk')) ?>\""), "footer /$lnk sits behind a flag");
 }
 ok(rmt_phase1_on(), 'Phase 1 is on by default');
-foreach (RMT_P1_SOCIAL as $f) ok(!rmt_social_on($f, $city), "$f links are hidden");
+foreach (RMT_P1_SOCIAL as $f) ok(rmt_social_on($f, $city), "SEO preserve: $f links stay by default");
+ok(!rmt_p1_trim_links(), 'link trimming is off unless approved');
+putenv('RMT_P1_TRIM_LINKS=1');
+ok(rmt_p1_trim_links(), 'RMT_P1_TRIM_LINKS=1 switches trimming on');
+foreach (RMT_P1_SOCIAL as $f) ok(!rmt_social_on($f, $city), "trimmed: $f links are hidden");
 putenv('RMT_SOCIAL_CITY_ON=' . $city . '=talk|going');
 ok(rmt_social_on('talk', $city) && rmt_social_on('going', $city), 'switched back on for one city');
 ok(!rmt_social_on('meetups', $city), 'only the features named');
@@ -110,6 +114,16 @@ ok(rmt_social_on('meetups') && rmt_social_on('meetups', $city) && !rmt_social_on
 putenv('RMT_SOCIAL_ON=all');
 ok(rmt_social_on('collections') && rmt_social_on('talk'), 'all brings every one back');
 putenv('RMT_SOCIAL_ON');
+putenv('RMT_P1_TRIM_LINKS');
+$hubCity = null;
+foreach (q_all('SELECT slug FROM destinations ORDER BY id') as $r3) {
+    if (count(rmt_city_scams((string) $r3['slug'])['items'] ?? []) >= RMT_HUB_MIN_WARNINGS) { $hubCity = (string) $r3['slug']; break; }
+}
+if ($hubCity !== null) {
+    $sc = array_values(array_filter(rmt_p1_warnings($hubCity), static fn(array $x): bool => str_starts_with($x['key'], 'scam:') || str_starts_with($x['key'], 'byb:')));
+    ok($sc && !array_filter($sc, static fn(array $x): bool => !str_ends_with($x['url'], 'warnings/' . $hubCity)), 'SEO dedupe: a city with its own warnings page only names its scams and points there');
+    ok(!array_filter($sc, static fn(array $x): bool => $x['cost'] !== null), 'and repeats no figures from that page');
+}
 putenv('RMT_PHASE1=0');
 ok(!rmt_phase1_on() && rmt_social_on('talk') && rmt_social_on('going', $city), 'Phase 1 off shows everything as before');
 putenv('RMT_PHASE1');
@@ -135,6 +149,32 @@ ok($real['sent'] === 0 && $real['skipped'] >= 1, 'with mail disabled nothing is 
 ok((int) q_one('SELECT COUNT(*) n FROM trap_alerts_sent')['n'] === 0, 'and nothing is marked sent, so it goes out once mail works');
 q_run('INSERT INTO trap_alerts_sent (user_id, story_id, sent_at) VALUES (?,?,?)', [$uid, $sid, $nowS]);
 ok(!isset(rmt_trap_alert_plan()[$uid][$city]), 'a story already mailed is never planned again');
+
+
+echo "
+A day with no new reports sends nothing:
+";
+q_run("UPDATE traveler_stories SET status = 'down'");
+$zero = rmt_trap_alerts_run(false);
+ok($zero === ['members' => 0, 'emails' => 0, 'sent' => 0, 'skipped' => 0], 'zero reports: zero emails, clean exit');
+
+echo "
+An editor published trap report never grants Founding Traveler:
+";
+ok(rmt_story_publish((int) $r['id'], $uid, 'The taxi rank at the station added a fee nobody had mentioned to us.', '') === '', 'the editor publishes the guest report');
+ok((int) q_one('SELECT reported_by FROM feedback WHERE id = ?', [$r['id']])['reported_by'] === $uid, 'it is credited to the member');
+// Test on a member who meets every other part of the rule (an early account, active), so only the
+// review requirement stands between them and the badge.
+$early = q_one("SELECT u.id FROM users u WHERE u.id <= ? AND u.status = 'active'
+                  AND NOT EXISTS (SELECT 1 FROM reviews v WHERE v.user_id = u.id AND v.status = 'published')
+                  AND NOT EXISTS (SELECT 1 FROM user_badges ub JOIN badges b ON b.id = ub.badge_id WHERE ub.user_id = u.id AND b.slug = 'founding-traveler')
+                ORDER BY u.id LIMIT 1", [RMT_FOUNDING_TRAVELER_CUTOFF]);
+ok($early !== null, 'an early member without a review exists to test with');
+$eid = (int) ($early['id'] ?? 0);
+q_run('UPDATE feedback SET reported_by = ? WHERE id = ?', [$eid, $r['id']]);
+rmt_award_badges($eid);
+ok(!rmt_qualifies_founding_traveler($eid), 'an early member does not qualify from a published trap report');
+ok(!q_one("SELECT 1 x FROM user_badges ub JOIN badges b ON b.id = ub.badge_id WHERE ub.user_id = ? AND b.slug = 'founding-traveler'", [$eid]), 'and no badge was awarded');
 
 $pdo = null;
 @unlink($tmp);

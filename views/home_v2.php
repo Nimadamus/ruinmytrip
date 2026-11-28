@@ -39,6 +39,7 @@ $hxDests = array_slice($hxRows, 0, 12);
 $p1Home = function_exists('rmt_phase1_on') && rmt_phase1_on();
 $p1Top = $p1Home ? rmt_p1_top_cities(6) : [];
 $p1Going = !$p1Home || rmt_social_on('going');
+$p1Trim = $p1Home && rmt_p1_trim_links(); /* sections that carry internal links stay unless trimming is approved */
 $hxIco = [
   'warn'   => '<path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>',
   'pin'    => '<circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z"/>',
@@ -112,6 +113,12 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
         </li>
         <?php endforeach; ?>
       </ul>
+      <?php /* SEO protection: every city the old Popular Destinations row linked to keeps its home page
+               link (owner, 2026-11-27). Gone only once RMT_P1_TRIM_LINKS is approved. */
+      $p1MoreDests = $p1Trim ? [] : array_values(array_filter($hxDests, static fn(array $d): bool => !in_array((string) $d['slug'], array_column($p1Top, 'slug'), true)));
+      if ($p1MoreDests): ?>
+      <p class="p1-more-dests"><span>More destinations:</span><?php foreach ($p1MoreDests as $d): ?> <a class="v2-chip v2-chip-sm" href="<?= e(url('d/' . $d['slug'])) ?>" data-cta="home_city"><?= e((string) $d['name']) ?></a><?php endforeach; ?></p>
+      <?php endif; ?>
     </div>
     <?php endif; ?>
     <?php else: ?>
@@ -173,8 +180,8 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
 
 <section class="v2-hero v2-home3-acts" aria-label="Warn, explore, find people">
   <div class="wrap">
-    <div class="v2-act3<?= $p1Home ? ' p1-act-one' : '' ?>">
-<?php if (!$p1Home): ?>
+    <div class="v2-act3<?= $p1Trim ? ' p1-act-one' : '' ?>">
+<?php if (!$p1Trim): ?>
       <section class="v2-act v2-act-warn" aria-labelledby="act-warn">
         <span class="v2-act-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/></svg></span>
         <h2 id="act-warn">Warn the next traveler</h2>
@@ -352,7 +359,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
   </div>
 </section>
 
-<?php if (!$p1Home && (!empty($live) || !empty($liveCities))): ?>
+<?php if (!$p1Trim && (!empty($live) || !empty($liveCities))): ?>
 <section class="v2-section">
   <div class="wrap">
     <div class="v2-sec-head">
@@ -388,7 +395,7 @@ $hxSvg = static fn(string $k, int $s = 24): string => '<svg viewBox="0 0 24 24" 
 </section>
 <?php endif; ?>
 
-<?php if (!$p1Home): ?>
+<?php if (!$p1Trim): ?>
 <section class="v2-section v2-section-tint">
   <div class="wrap">
     <div class="v2-sec-head"><div><h2 class="v2-h2">What RuinMyTrip is for</h2><p class="v2-sub">Honest travel, before, during and after the trip.</p></div></div>

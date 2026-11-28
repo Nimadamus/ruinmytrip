@@ -138,3 +138,10 @@
 .p1-cat span,.p1-report label.p1-cat{color:#fff}
 .p1-more{display:flex;align-items:center;justify-content:center;gap:.3em;width:100%;max-width:420px;margin:14px auto 0;min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid var(--p1-navy);background:#fff;color:var(--p1-navy);font:inherit;font-weight:700;cursor:pointer}
 .p1-more[hidden]{display:none}
+
+/* SEO protection: the old Popular Destinations links, kept as chips under the grid */
+.p1-more-dests{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0;color:rgba(255,255,255,.82);font-size:.92rem}
+.p1-more-dests span{font-weight:650;margin-right:2px}
+.p1-done{padding:28px 26px}
+.p1-done .p1-muted a{text-decoration:underline}
+@media (max-width:480px){.p1-done{padding:22px 18px}}

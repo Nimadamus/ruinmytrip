@@ -13,6 +13,7 @@ $nv2I = static fn(string $d): string => $nv2Home ? '<svg class="v2-li" viewBox="
    social pages keep their URLs, only their links wait until rmt_social_on() turns them back on. */
 $nv2P1 = function_exists('rmt_phase1_on') && rmt_phase1_on();
 $nv2S = static fn(string $f): bool => !$nv2P1 || rmt_social_on($f);
+$nv2Trim = $nv2P1 && rmt_p1_trim_links(); /* trimmed primary nav only once approved; default keeps every link */
 $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_starts_with($nv2Path, $p)) ? ' aria-current="page"' : '';
 ?>
 <header class="v2-header<?= $nv2Home ? ' v2-header-home' : '' ?>">
@@ -31,14 +32,14 @@ $nv2On = static fn(string $p): string => ($p === '/' ? $nv2Path === '/' : str_st
       <input type="search" name="q" placeholder="Search a city or place" aria-label="Search" value="<?= e($_GET['q'] ?? '') ?>">
     </form>
     <nav class="v2-links" aria-label="Primary">
-      <?php if ($nv2P1): ?>
+      <?php if ($nv2Trim): ?>
       <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?> data-cta="nav_explore_traps"><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?>Explore Traps</a>
       <?php if ($nv2S('talk')): ?><a href="<?= e(url('talk')) ?>">Travel Talk</a><?php endif; ?>
       <?php if ($nv2S('going')): ?><a href="<?= e(url('going')) ?>">Who is going</a><?php endif; ?>
       <?php if ($nv2S('meetups')): ?><a href="<?= e(url('meetups')) ?>">Meetups</a><?php endif; ?>
       <?php if ($nv2S('collections')): ?><a href="<?= e(url('collections')) ?>">Collections</a><?php endif; ?>
       <?php else: ?>
-      <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?>Explore</a>
+      <a href="<?= e(url('explore')) ?>"<?= $nv2On('/explore') ?>><?= $nv2I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/>') ?><?= $nv2P1 ? 'Explore Traps' : 'Explore' ?></a>
       <?php /* Warnings are what the site is for (2026-11-07); the map stays one tap away in More and in the phone tab bar. */ ?>
       <a href="<?= e(url('ruined')) ?>"<?= $nv2On('/ruined') ?>><?= $nv2I('<path d="M12 3.5 2.5 20h19L12 3.5z"/><path d="M12 10v4.5"/><path d="M12 17.5h.01"/>') ?>Warnings</a>
       <a href="<?= e(url('reviews')) ?>"<?= $nv2On('/reviews') ?>><?= $nv2I('<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3z"/>') ?>Reviews</a>

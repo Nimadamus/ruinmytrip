@@ -50,6 +50,20 @@ function rmt_phase1_on(): bool {
     return $v === false || !in_array(strtolower(trim((string) $v)), ['0', 'off', 'false', 'no'], true);
 }
 
+/**
+ * SEO protection (owner, 2026-11-27): the established internal linking stays exactly as before unless
+ * RMT_P1_TRIM_LINKS is switched on after a separate approval. Default off: every social link that
+ * main renders is still rendered, Phase 1 only adds links.
+ */
+function rmt_p1_trim_links(): bool {
+    return rmt_phase1_on() && rmt_p1_flag_on('RMT_P1_TRIM_LINKS');
+}
+
+/** An opt in switch: on only when set to 1, on, true or yes. */
+function rmt_p1_flag_on(string $name): bool {
+    return in_array(strtolower(trim((string) getenv($name))), ['1', 'on', 'true', 'yes'], true);
+}
+
 /** @return array<string,true> */
 function rmt_p1_flag_list(string $raw): array {
     $out = [];
@@ -61,11 +75,11 @@ function rmt_p1_flag_list(string $raw): array {
 }
 
 /**
- * Is a social feature's link shown? Always true with Phase 1 off. With it on, only when switched
+ * Is a social feature's link shown? Always true unless RMT_P1_TRIM_LINKS is on. Then only when switched
  * back on everywhere (RMT_SOCIAL_ON) or for this city (RMT_SOCIAL_CITY_ON).
  */
 function rmt_social_on(string $feature, ?string $citySlug = null): bool {
-    if (!rmt_phase1_on()) return true;
+    if (!rmt_p1_trim_links()) return true;
     if (isset(rmt_p1_flag_list((string) getenv('RMT_SOCIAL_ON'))[$feature])) return true;
     if ($citySlug === null || $citySlug === '') return false;
     foreach (explode(',', (string) getenv('RMT_SOCIAL_CITY_ON')) as $pair) {
@@ -146,20 +160,38 @@ function rmt_p1_warnings(string $destSlug): array {
             }
         }
     }
+    $scamItems = rmt_city_scams($destSlug)['items'] ?? [];
+    /* Same rule as _city_scams (owner, 2026-11-14): a city whose warnings have their own indexable page
+       (/warnings/{city}, which carries the scams and the before you book list) only names them here and points there, so the two pages do not carry the
+       same words. RMT_P1_FULL_SCAMS=1 shows the full text on the city page too, only once that
+       duplicate content is approved. */
+    $scamsHere = rmt_p1_flag_on('RMT_P1_FULL_SCAMS') || !defined('RMT_HUB_MIN_WARNINGS') || count($scamItems) < RMT_HUB_MIN_WARNINGS;
     foreach ((function_exists('rmt_byb') ? (rmt_byb($destSlug)['items'] ?? []) : []) as $it) {
         $kind = (string) $it['kind'];
         $cat = in_array($kind, ['tax', 'money'], true) ? 'fees' : ($kind === 'tickets' ? 'overhyped' : 'rules');
         $body = trim((string) $it['detail']);
         if ((string) $it['check'] !== '') $body = rmt_p1_sentences($body, 2) . ' ' . $it['check'];
+        if (!$scamsHere) {
+            $add('byb:' . substr(md5((string) $it['title']), 0, 10), $cat, null, (string) $it['title'],
+                 'Official sources cover this one before you book.', url('warnings/' . $destSlug), 'The details and the official source');
+            continue;
+        }
         $add('byb:' . substr(md5((string) $it['title']), 0, 10), $cat, rmt_p1_cost_from($it['title'] . ' ' . $it['detail']),
              (string) $it['title'], $body, (string) ($it['sources'][0]['url'] ?? ''), (string) ($it['sources'][0]['publisher'] ?? 'Official source'));
     }
-    foreach ((rmt_city_scams($destSlug)['items'] ?? []) as $s) {
-        $body = rmt_p1_sentences((string) $s['what'], 2);
-        if ((string) $s['avoid'] !== '') $body .= ' ' . rmt_p1_sentences((string) $s['avoid'], 1);
-        $add('scam:' . substr(md5((string) $s['name']), 0, 10), 'scams', rmt_p1_cost_from($s['name'] . ' ' . $s['what']),
-             (string) $s['name'], $body, (string) ($s['sources'][0]['url'] ?? url('warnings/' . $destSlug)),
-             (string) ($s['sources'][0]['publisher'] ?? 'Official warning'));
+    foreach ($scamItems as $s) {
+        if ($scamsHere) {
+            $body = rmt_p1_sentences((string) $s['what'], 2);
+            if ((string) $s['avoid'] !== '') $body .= ' ' . rmt_p1_sentences((string) $s['avoid'], 1);
+            $u = (string) ($s['sources'][0]['url'] ?? url('warnings/' . $destSlug));
+            $src = (string) ($s['sources'][0]['publisher'] ?? 'Official warning');
+        } else {
+            $body = 'Official travel advice warns visitors about this one.';
+            $u = url('warnings/' . $destSlug);
+            $src = 'How it works and how to avoid it';
+        }
+        $add('scam:' . substr(md5((string) $s['name']), 0, 10), 'scams', $scamsHere ? rmt_p1_cost_from($s['name'] . ' ' . $s['what']) : null,
+             (string) $s['name'], $body, $u, $src);
     }
     if (function_exists('rmt_stories_for') && function_exists('rmt_story_topics_for_dest')) {
         try {

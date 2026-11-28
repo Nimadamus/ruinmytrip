@@ -2,11 +2,17 @@ name: trap-alerts
 
 # "New trap reported for [city]" emails (scripts/send_trap_alerts.php, Phase 1). Same firewall
 # pattern as weekly-digest.yml. Each story is mailed to a member once (migration 136), so a rerun
-# sends nothing twice. MANUAL ONLY until the owner approves a schedule; then uncomment it.
+# sends nothing twice (each story is claimed before its mail goes out).
+#
+# Schedule: 8 AM Pacific every day, right in both PDT and PST. Cron runs in UTC, so it fires at
+# 15:00 and 16:00 UTC and the gate step lets through only the one where Los Angeles reads 08.
+# AUTOMATIC SENDING IS OFF: scheduled runs are skipped unless the repository variable
+# TRAP_ALERTS_AUTO is 'true' (set only after the owner approves). Manual runs always work.
 
 on:
-  # schedule:
-  #   - cron: '0 16 * * *'    # daily 16:00 UTC (8 AM PST)
+  schedule:
+    - cron: '0 15 * * *'    # 8 AM PDT
+    - cron: '0 16 * * *'    # 8 AM PST
   workflow_dispatch:
     inputs:
       dry_run:
@@ -26,6 +32,7 @@ permissions:
 
 jobs:
   trap-alerts:
+    if: github.event_name == 'workflow_dispatch' || vars.TRAP_ALERTS_AUTO == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -39,19 +46,34 @@ jobs:
       ALERT_EMAIL: nj2121@gmail.com
 
     steps:
+      - name: Only at 8 AM Pacific
+        id: gate
+        run: |
+          H=$(TZ=America/Los_Angeles date +%H)
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ] && [ "$H" != "08" ]; then
+            echo "Los Angeles hour is $H, not 08: the other cron of the pair sends today."
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check out repo
+        if: steps.gate.outputs.go == 'true'
         uses: actions/checkout@v4
 
       - name: Set up PHP
+        if: steps.gate.outputs.go == 'true'
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           extensions: pdo_pgsql, curl, openssl, mbstring
 
       - name: Resolve production database id
+        if: steps.gate.outputs.go == 'true'
         run: ./scripts/ci/resolve_render_db.sh
 
       - name: Open DB firewall to this runner and fetch connection string
+        if: steps.gate.outputs.go == 'true'
         run: |
           set -euo pipefail
           IP=$(curl -fsS https://api.ipify.org)
@@ -70,6 +92,7 @@ jobs:
           sleep 20
 
       - name: Send trap alerts
+        if: steps.gate.outputs.go == 'true'
         run: |
           set -euo pipefail
           if [ "${{ inputs.dry_run }}" = "true" ]; then
